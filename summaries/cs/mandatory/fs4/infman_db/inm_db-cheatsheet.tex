@@ -1,0 +1,3096 @@
+\documentclass[a4paper, 11pt, accentcolor = tud3b]{tudreport}
+
+% Core packages.
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+% Other packages.
+\usepackage[linesnumbered, ruled]{algorithm2e}
+\usepackage{bytefield}
+\usepackage{cite}
+\usepackage{csvsimple}
+\usepackage{enumitem}
+\usepackage[mathcal]{euscript} % Get readable mathcal font.
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{xspace}
+\usepackage[disable]{todonotes} % Enable...
+\usepackage{tcolorbox}
+\usepackage[german = quotes]{csquotes}
+\usepackage{tikz}
+\usepackage{wrapfig}
+\usepackage{listings}
+\usepackage{stmaryrd}
+\usepackage{float}
+\usepackage{multicol}
+\usepackage{epstopdf}
+\usepackage{tabto}
+\usepackage{makecell}
+\usepackage{qtree}
+\usepackage[graphicx]{realboxes}
+\usepackage[normalem]{ulem}
+\tcbuselibrary{skins}
+\usetikzlibrary{arrows.meta, shapes, backgrounds, chains, calc, scopes, decorations.pathmorphing, patterns, er, positioning}
+
+% Basic information.
+\title{Informationsmanagement \\ Datenbanken}
+\subtitle{Merkzettel \\ Fabian Damken}
+\author{Fabian Damken}
+\date{\today}
+
+% Description-list styling.
+\SetLabelAlign{parright}{\parbox[t]{\labelwidth}{\raggedleft#1}}
+\setlist[description]{style = multiline, leftmargin = 4cm, align = parright}
+
+\colorlet{lstcomments}{tud4c}
+\colorlet{lstkeywords}{tud9d}
+\colorlet{lstlinenumbers}{tud0c}
+\colorlet{lststrings}{tud2c}
+\colorlet{functionalmarker}{tud2b}
+\colorlet{imperativemarker}{tud4b}
+\colorlet{oopmarker}{tud6b}
+%\colorlet{errorred}{tud9b}
+\colorlet{changedpurple}{tud11a}
+
+\tikzset{> = { Latex[length = 2mm] }}
+
+\lstdefinestyle{base}{
+    moredelim = **[is][\color{errorred}]{@@!}{@@@},
+    moredelim = **[is][\color{changedpurple}]{@@?}{@@@}
+}
+\lstset{
+    backgroundcolor = \color{white},
+    basicstyle = \ttfamily\footnotesize\color{black},
+    breakatwhitespace = true,
+    breaklines = true,
+    breakautoindent = true,
+    commentstyle = \color{lstcomments},
+    escapeinside = {{*@}{@*}},
+    keywordstyle = \color{lstkeywords},
+    numbers = left,
+    numberstyle = \tiny\color{lstlinenumbers},
+    showstringspaces = false,
+    stringstyle = \color{lststrings},
+    tabsize = 4,
+    language = SQL
+}
+
+% New commands.
+\providecommand{\textbox}[1]{
+    \begin{figure}[H]
+        \centering
+        \fbox{\parbox[c]{0.75\textwidth}{#1}}
+    \end{figure}
+}
+\providecommand{\info}[1]{\textbox{\textbf{Info:} #1}}
+\providecommand{\warning}[1]{\textbox{\textbf{Warnung:} #1}}
+\providecommand{\funfact}[1]{\textbox{\textbf{Fun Fact:} #1}}
+
+\providecommand{\forwhich}{\ensuremath{{\,\vert\,}}}
+\providecommand{\abs}[1]{\ensuremath{{\lvert #1 \rvert}}}
+\providecommand{\qed}{{\hfill q.e.d.}}
+
+\providecommand{\subsubparagraph}[1]{\hspace{1cm} \textbf{#1:}}
+\providecommand{\definition}[2]{\subparagraph{Definition (#1)} #2}
+\providecommand{\notation}[2]{\subparagraph{Notation (#1)} #2}
+\providecommand{\theorem}[1]{\subparagraph{Theorem} #1}
+\providecommand{\intuition}[1]{\subsubparagraph{Intuition} #1}
+
+\providecommand{\HREF}[1]{\href{#1}{#1}}
+
+\providecommand{\STAR}{\raisebox{-0.05cm}{\tikz{\node[draw, star, star point height = 0.7em, scale = 0.5] {};}}}
+
+\renewcommand{\Re}{\text{Re}}
+\renewcommand{\Im}{\text{Im}}
+\newcommand{\Schema}{\text{Schema}}
+\newcommand{\KEYS}{\text{KEYS}}
+\newcommand{\PK}{\text{PK}}
+\newcommand{\DB}{\text{DB}}
+
+% https://tex.stackexchange.com/a/333383
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+    \hskip -\arraycolsep
+    \let\@ifnextchar\new@ifnextchar
+    \array{#1}}
+\makeatother
+
+\begin{document}
+    \maketitle
+    \tableofcontents
+    \listoftodos
+
+    \chapter{Einführung} % 1
+	    \label{c:intro}
+
+        \section{Daten, Informationen und Wissen} % 1.3, 1.5, 1.6, 1.7
+            \begin{itemize}
+            	\item \textbf{Daten} sind noch nicht interpretierte Nachrichten, also Zeichenketten, welche nach gewissen Regeln produziert wurden.
+            	\item \textbf{Informationen} sind interpretierte Daten.
+            	\item \textbf{Wissen} ist die Gesamtheit der Erkenntnisse, \dots, die aus den Informationen gezogen werden können.
+            	\item Daten = Zeichenkette + Syntax
+            	\item Information = Daten + Interpretation
+            	\item Wissen = Information + Vernetzung
+            \end{itemize}
+
+            \subsection{Informationskreislauf} % 1.9
+                \begin{figure}[H]
+                	\centering
+                	\begin{tikzpicture}[main/.style = { draw, rectangle, minimum width = 3cm, minimum height = 1cm }]
+	                	\node [main] (wissen) {Wissen};
+	                	\node [main, below right = 3 of wissen] (daten) {Daten};
+	                	\node [main, above right = 3 of daten] (information) {Information};
+	                	
+	                	\draw [->](wissen) to[bend right] node[left]{\textbf{Problemlösung}} (daten);
+	                	\draw [->] (daten) to[bend right] node[right]{\textbf{Interpretation}} (information);
+	                	\draw [->] (information) to[bend right] node[above]{\textbf{Wissenserwerb}} (wissen);
+                	\end{tikzpicture}
+                \end{figure}
+            % end
+
+            \subsection{Strukturierungsgrad} % 1.10
+                \begin{itemize}
+                	\item \textbf{Strukturierte Daten:} Daten mit gleichartiger Datenstruktur, einem Modell folgend.
+                	\item \textbf{Semistrukturierte Daten:} Daten ohne festes Modell, die Strukturen implizieren oder andere Modelle enthalten.
+                	\item \textbf{\enquote{Unstrukturierte} Daten:} Daten ohne formalisierte inhaltliche Struktur.
+                \end{itemize}
+
+                \subsubsection{Unstrukturierte Daten} % 1.13, 1.14
+                    \begin{itemize}
+                    	\item Text in natürlicher Sprache gilt als \enquote{unstrukturiert}.
+                    	\item Für Menschen sind Texte oft intuitiv verständlich,
+                    	\item für Rechner sind die Inhalte nur schwer erfassbar.
+                    	\item Meistens lassen sich allerdings strukturierte Daten aus Texten ableiten (Text Mining und NLP).
+                    \end{itemize}
+                % end
+            % end
+        % end
+
+        \section{Informationsmanagement} % 1.15, 1.16
+            \subsection{Informationssystem} % 1.17
+            	Anforderungen:
+                \begin{itemize}
+                	\item Die für die Anwendung nötigen Daten sollen vollständig aus den gespeicherten Daten ableitbar sein (Informationserhalt).
+                	\item Die Wiedergewinnung der Daten soll möglichst effizient sein.
+                	\item Es sollen nur vernünftige Daten gespeichert werden (je nach Informationsbedarf) und gespeichert werden können (Konsistenz).
+                	\item Anwendungsdaten sollten möglichst ohne Redundanzen gespeichert werden.
+                \end{itemize}
+            % end
+
+            \subsection{Typischer Entwurfsprozess} % 1.18, 1.19, 1.20
+                \begin{enumerate}
+                	\item \textbf{Anforderungsanalyse}
+                	\item \textbf{Konzeptioneller Entwurf} \\ Abstrakte Modellierung der Domäne, Formale Beschreibung (ER-Modell, UML, \dots)
+                	\item \textbf{Verteilungsentwurf} \\ Fragmentierung der Daten, Synchronisation und Replikation
+                	\item \textbf{Logischer Entwurf} \\ Abbildung des konzeptionellen Modells auf die Konzepte des Informationssystems
+                	\item \textbf{Datendefinition} \\ Deklaration/Programmierung des Modells im Informationssystem
+                	\item \textbf{Physischer Entwurf} \\ Definition von Zugriffs-/Speicherstrukturen
+                	\item \textbf{Implementierung und Wartung}
+                \end{enumerate}
+            % end
+
+            \subsection{Datenzugang} % 1.21
+                Das Speichern von Daten ist sinnlos, wenn diese nicht abgefragt werden können.
+                
+                \begin{itemize}
+                	\item Deklarativer Zugang (Suche), spezifiziert durch Prädikate
+                	\item Navigierender Zugang (Blättern), Positionierung und Verfolgung von Pointern
+                \end{itemize}
+            % end
+        % end
+    % end
+
+    \chapter{Datenbankarchitekturen} % 2
+	    \label{c:dbarchs}
+    
+        \section{Datenbanksysteme} % 2.3
+            \subsection{Ehemalige Systeme, Nachteile und Probleme} % 2.4, 2.5, 2.6
+                \begin{itemize}
+                	\item Zu Anfang (um 1960) wurden Daten in Dateien abgelegt, deren Format von Anwendung und Gerät abhängig war.
+                	\item Problemfelder
+	                	\begin{itemize}
+	                		\item Datenredundanz
+	                		\item Effiziente Verarbeitung der Daten \\ Muss von jeder Anwendung selbst geschaffen werden.
+	                		\item Paralleles Arbeiten mit gleichen Daten
+	                		\item Fehlende Zugriffskontrolle und Datensicherheit
+	                		\item Datenunabhängigkeit \\ Nur die Anwendung weiß über das Format der Daten Bescheid, d.h. ohne die Anwendung können die Daten nicht gelesen werden.
+	                	\end{itemize}
+                \end{itemize}
+            % end
+
+            \subsection{Datenintegration und -unabhängigkeit} % 2.7, 2.8, 2.11
+	            \begin{description}
+	            	\item[Datenintegration] Die gesamte Anwendungssoftware arbeitet mit den gleichen Daten, der Gesamtbestand der Daten wird \textit{Datenbank} genannt.
+		            	\begin{itemize}
+		            		\item Die Daten werden nur einmal gespeichert \(\rightarrow\) Auflösung der Datenredundanz.
+		            		\item Abfragesprachen und automatische Optimierung \(\rightarrow\) effizienter Zugriff.
+		            		\item Transaktionen und einheitliche Schnittstellen \(\rightarrow\) gemeinsame Datennutzung und paralleler Zugriff.
+		            		\item Benutzerverwaltung und Zugriffskontrolle \(\rightarrow\) Schutz von ungewolltem Zugriff.
+		            		\item Datensicherheit (z.B. Backups) \(\rightarrow\) Schutz von ungewolltem Verlust.
+		            	\end{itemize}
+		            \item[Datenunabhängigkeit] Die Anwendungssoftware ist von der (technischen) Implementierung der Datenbank entkoppelt.
+			            \begin{itemize}
+			            	\item Gleiche Schnittstelle und gleiche logische Struktur.
+			            	\item Unabhängig davon, ob die Daten in Tabellen, Bäumen, etc. abgelegt werden.
+			            \end{itemize}
+            	\end{description}
+            % end
+
+            \subsection{Abgrenzung: Datenbank vs. Datenbankmanagementsystem vs. Datenbanksystem} % 2.9
+                \paragraph{Datenbank (DB)}
+	                Einheitlich beschriebene Darstellung mittels diskreter Daten auf persistenten Speichermedian (z.B. Festplatte, SSD, Hauptspeicher).
+                % end
+                
+                \paragraph{Datenbankmanagementsystem (DBMS)}
+	                Software zur Verwaltung von Datenbanken (ein DBMS, mehrere DBs). Die Daten können nur über das DBMS in die DB eingefügt, gelöscht, geändert, gelesen werden.
+                % end
+                
+                \paragraph{Datenbanksystem (DBS)}
+	                Das Gesamtsystems aus Datenbank und Datenbanksystem.
+                % end
+            % end
+
+            \subsection{DBMS} % 2.10, 2.13
+                Ermöglichung der einheitlichen Beschreibung (Datenmodellierung) und sicheren Bearbeitungen der Daten.
+                
+                Typische Anforderungen:
+                \begin{itemize}
+                	\item Verwaltung der persistenten Daten (lange Lebensdauer, Gewährleistung der Konsistenz).
+                	\item Effizienter Zugriff auf große Datenmengen (siehe Kapitel \ref{c:performance}).
+                	\item Optimierbare Anfragesprachen (siehe Kapitel \ref{c:sql}).
+                	\item Flexibler Mehrbenutzerbetrieb (siehe Kapitel \ref{c:transactions}).
+                	\item Sicherheit vor Systemabsturz und fehlerhaften Transaktionen.
+                	\item Feinkörnige Zugriffskontrolle.
+                	\item Datenunabhängigkeit.
+                \end{itemize}
+                
+                Beispiele:
+                \begin{itemize}
+                	\item Hierarchisch: IMS (IBM)
+                	\item Netzwerkmodell: UDS (Siemens), CODASYL
+                	\item Relational:
+	                	\begin{itemize}
+	                		\item DB2, System R, SQL/DS (IBM)
+	                		\item ORACLE
+	                		\item Ingres, PostgreSQL
+	                		\item Informix
+	                		\item MySQL, MariaDB
+	                		\item Firebird, Interbase
+	                		\item Sybase
+	                		\item dBASE, Paradox
+	                		\item MS-Access, FileMaker
+	                	\end{itemize}
+	                \item Objektorientiert: Poet, ODABA (siehe Kapitel \ref{c:outlook})
+	                \item Dokumentenbasiert: CouchDB, Elasticsearch, MongoDB (siehe Kapitel \ref{c:outlook})
+                \end{itemize}
+
+                \subsubsection{Aufgaben eines DBMS nach Codd} % 2.12
+                    \begin{enumerate}
+                    	\item \textit{Integration:} einheitliche, nicht redundante Verwaltung der Daten
+                    	\item \textit{Operationen} zum Speicher, Suchen, Ändern
+                    	\item \textit{Katalog} zur Datenspeicherung
+                    	\item \textit{Benutzersichten:} Abbildung des Gesamtbestandes auf die für den Nutzer relevanten Daten
+                    	\item \textit{Konsistenzüberwachung:} Korrektheit, Integritätssicherung
+                    	\item \textit{Zugriffskontrolle:} Schutz vor unautorisiertem Zugriff
+                    	\item \textit{Transaktionen:} Ausführung mehrerer Operationen als Ganzes (atomar)
+                    	\item \textit{Synchronisation:} z.B. Vermeidung von Schreibkonflikten
+                    	\item \textit{Datensicherung:} z.B. Wiederherstellung bei Systemfehlern
+                    \end{enumerate}
+                % end
+            % end
+
+            \subsection{DBS} % 2.14
+                \paragraph{Vorteile}
+	                \begin{itemize}
+	                	\item Datenintegration
+	                	\item Datenunabhängigkeit
+	                	\item Verwaltung der Daten durch DBMS
+	                	\item Optimierbare Anfragesprachen
+	                	\item Kompatible Mechanismen für Zugriffskontrolle, Ausfallsicherheit, Mehrbenutzerbetrieb
+	                	\item Anwenderbezogene Sichten
+	                	\item \dots
+                	\end{itemize}
+                % end
+                
+                \paragraph{Nachteile}
+	                \begin{itemize}
+	                	\item Schwergewichtig, zum Teil zu viele Funktionalitäten
+	                	\item Effizienzeinbußen durch Verallgemeinerung
+	                	\item Gegebenenfalls konkurrierende Optimierungsziele mehrerer Anwendungen
+	                	\item Hohe Kosten: DBMS und zusätzliche Hardware
+	                	\item Qualifiziertes Personal (DB Admin, Data Analyst, Data Scientist, \dots)
+	                	\item \dots
+	                \end{itemize}
+                % end
+            % end
+        % end
+
+        \section{Architekturmodelle} % 2.16, 2.17, 2.18
+            \begin{itemize}
+            	\item Schemaarchitektur
+	            	\begin{itemize}
+	            		\item Welche Daten werden im DBS wo und wie gespeichert?
+	            		\item Welche Datenmodelle und Datenstrukturen werden genutzt?
+	            		\item Wie kann Datenunabhängigkeit erreicht werden?
+	            	\end{itemize}
+            	\item Systemarchitektur
+	            	\begin{itemize}
+	            		\item Aus welchen Komponenten besteht ein DBS?
+	            	\end{itemize}
+            	\item Anwendungsarchitektur
+	            	\begin{itemize}
+	            		\item Wie können Benutzer und Anwendungen mit dem DBS arbeiten und Daten verwalten?
+	            	\end{itemize}
+            \end{itemize}
+
+            \subsection{Drei-Ebenen-Schemaarchitektur} % 2.18, 2.19, 2.23
+                \begin{figure}[H]
+                	\centering
+                	\begin{tikzpicture}[align = left]
+	                	\node (hardware) {Hardware};
+	                	\node [draw, above = of hardware, label = right:{ Zugriffspfade und Dateiorganisation, \\ Betriebssystem- und \\ Hardwareabhängige Realisierung }] (internal) {Internes Schema};
+	                	\node [draw, above = of internal, label = right:{ Anwendungsübergreifende \\ DBMS-Abhängig, aber \\ Hardwareunabhängig }] (logical) {Logisches Schema};
+	                	\node [above = of logical] (schema) {\(\cdots\)};
+	                	\node [draw, left = 0.5 of schema, align = center] (schema1) {Externes \\ Schema 1};
+	                	\node [draw, right = 0.5 of schema, align = center, label = right:{ Anwendungs-, bzw. \\ Benutzerabhängige \\ Sicht auf die Daten }] (schemaN) {Externes \\ Schema \(n\)};
+	                	\node [above = of schema1] (user1) {Benutzer 1};
+	                	\node [above = of schemaN] (userN) {Benutzer \(n\)};
+	                	
+	                	\draw [<->] (hardware) -- (internal);
+	                	\draw (internal) -- (logical);
+	                	\draw (logical) -- (schema1);
+	                	\draw (logical) -- (schemaN);
+	                	\draw [<->] (schema1) -- (user1);
+	                	\draw [<->] (schemaN) -- (userN);
+                	\end{tikzpicture}
+                	\caption{Drei-Ebenen-Schemaarchitektur}
+                \end{figure}
+
+                \subsubsection{Datenunabhängigkeit} % 2.20, 2.21
+                    \begin{itemize}
+                    	\item Die Daten zwischen dem externen Schema, dem logischen Schema und dem internen Schema sind unabhängig, wobei das logische Schema die \textit{logische Datenunabhängigkeit} und das interne Schema die \textit{physische Unabhängigkeit} sichert.
+                    	\item Logische Datenunabhängigkeit
+	                    	\begin{itemize}
+	                    		\item Die Änderungen an Speicherstrukturen und Zugriffspfaden sind für Anwenderprogramme und Anfragen unsichtbar.
+	                    	\end{itemize}
+                    	\item Physische Datenunabhängigkeit
+	                    	\begin{itemize}
+	                    		\item Änderungen an der logischen Schicht sind für Anwenderprogramme und Anfragen unsichtbar.
+	                    		\item Jede Anwendung kann ihre eigene Sicht auf die gemeinsame DB erhalten.
+	                    	\end{itemize}
+                    \end{itemize}
+                % end
+
+                \subsubsection{Anfragenbearbeitung und -ergebnis} % 2.22
+                    \begin{itemize}
+                    	\item Für die \textit{Anfragenbearbeitung} wird die Anfrage immer weiter nach unten durchgereicht, bis auf dem internen Schema das Ergebnis berechnet wird.
+                    	\item Dieses \textit{Ergebnis}, bzw. die \textit{Ergebnisdarstellung}, wird anschließend nach oben durchgereicht.
+                    \end{itemize}
+                % end
+            % end
+        % end
+    % end
+
+    \chapter{Konzeptionelle Datenmodellierung} % 3, 3.3
+	    \label{c:concept_model}
+
+        \section{Wissensrepräsentation} % 3.5
+            \subsection{Semiotisches Dreieck} % 3.7, 3.8
+                \begin{figure}[H]
+                	\centering
+                	\begin{tikzpicture}[every node/.style = { align = center }]
+	                	\node [draw, circle, fill, label = above:{\textbf{Konzept} \\ Begriff \\ Inhalt}] (concept) {};
+	                	\node [draw, circle, fill, below left = 3 of concept, label = below:{\textbf{Zeichen} \\ Symbol \\ Wort}] (symbol) {};
+	                	\node [draw, circle, fill, below right = 3 of concept, label = below:{\textbf{Ding} \\ Objekt \\ Sachverhalt}] (thing) {};
+	                	
+	                	\draw (concept) -- (thing);
+	                	\draw (concept) -- (symbol);
+	                	\draw [dashed] (symbol) -- (thing);
+                	\end{tikzpicture}
+                \end{figure}
+
+                \subsubsection{Intension, Merkmale, Extension, Instanz} % 3.8, 3.9
+                    \begin{itemize}
+                    	\item Intension: Die zu speichernden gemeinsamen Merkmale, das Schema der Daten.
+                    	\item Extension: Eine genau Ausprägung der Intension.
+                    \end{itemize}
+                % end
+            % end
+
+            \subsection{Merksmalsrepräsentation} % 3.10
+                \begin{itemize}
+                	\item Informationsbedarf zu konkreten Objekten.
+                	\item Ein reales Objekt kann nicht in einer DB gespeichert werden \(\rightarrow\) Stattdessen Speicherung von Merkmalen, welche das Objekt repräsentieren.
+                	\item Identifikation: Merkmale des Objektes, welche das Objekt eindeutig bestimmen.
+                \end{itemize}
+            % end
+
+            \subsection{Objektbeschreibung} % 3.11
+                \begin{itemize}
+                	\item Statische Eigenschaften: Merkmale, eindeutige Identifikation
+                	\item Dynamische Eigenschaften: Aktionen/Operationen
+                	\item Integritätsbedingung: Was definiert das Objekt? Wann ist das Objekt sinnvoll?
+                \end{itemize}
+            % end
+        % end
+
+        \section{Datenmodellierung} % 3.12, 3.13, 3.14, 3.15, 3.16
+            \begin{itemize}
+            	\item Ein Datenmodell ist ein System von Konzepten zur Darstellung von Ausschnitten aus der realen Welt.
+            	\item Die Modelle dienen der Erfassung und Darstellung der Informationsstruktur.
+            	\item Datenmodelle bestehen aus
+            		\begin{itemize}
+            			\item Strukturen (Statische Eigenschaften)
+            			\item Operatoren (Dynamische Eigenschaften)
+            			\item Constraints (Integritätsbedingungen)
+            		\end{itemize}
+            	\item Ein Datenmodell kann auf unterschiedlichen Abstraktionsebenen erstellt werden:
+            		\begin{itemize}
+            			\item Konzeptuell (Implementierungsabhängig), siehe Kapitel \ref{c:concept_model}.
+            			\item Logisch (Implementierungsspezifisch, Geräteunabhängig), siehe Kapitel \ref{c:logic_model}.
+            			\item Physisch (Geräteabhängig, technisch motiviert), siehe Kapitel \ref{c:transactions}.
+            			\item Benutzer-/Anwendungsbezogen (fachlich motiviert), siehe Kapitel \ref{c:sql}.
+            		\end{itemize}
+            \end{itemize}
+
+            \subsection{Konzeptuelle Datenmodellierung} % 3.17, 3.18
+                \begin{itemize}
+                	\item Kernfragen
+                		\begin{itemize}
+                			\item Welche Objekte sollen in der DB gespeichert werden?
+                			\item Zu welchen Konzepten (Objekttypen) lassen sich die Objekte zusammenfassen?
+                			\item Welche Merkmale sollen gespeichert werden?
+                			\item Welche Regeln müssen gelten?
+                		\end{itemize}
+                	\item Klassische Datenbankmodelle\dots
+                		\begin{itemize}
+                			\item modellieren nur statische Eigenschaften und
+                			\item nutzen nur minimale Mechanismen zur Beschreibung von Integritätsbedingungen (z.B. Eindeutigkeit).
+                			\item Operatoren (dynamische Eigenschaften) werden meistens allgemein betrachtet und daher nicht im Modell dargestellt:
+                				\begin{itemize}
+                					\item Einfügen
+                					\item Verändern
+                					\item Löschen
+                				\end{itemize}
+                		\end{itemize}
+                \end{itemize}
+            % end
+        % end
+
+        \section{Entitäten-Beziehungsmodell (ERM)} % 3.19, 3.20
+            \begin{itemize}
+            	\item Das Entity-Relationship-Model (ERM) ist ein einfacher Formalismus zur konzeptuellen Modellierung von Datenbanken.
+            	\item Eigenschaften:
+            		\begin{itemize}
+            			\item Fokus auf statische Eigenschaften (Struktur).
+            			\item Keine dynamischen Eigenschaften (Operatoren).
+            			\item Nur minimale Mechanismen zur Beschreibung von Integritätsbedingungen.
+            		\end{itemize}
+            	\item Sehr einfach verständlich.
+            	\item Das Standardmodell in frühen Entwurfsphasen.
+            	\item Textuell und grafisch darstellbar.
+            \end{itemize}
+
+            \subsection{Entitätstypen} % 3.22, 3.23
+                \begin{itemize}
+                	\item \textit{Entitäten} sind identifizierbare Objekte in der modellierten Welt.
+                	\item Ein \textit{Entitätstyp} ist ein gemeinsamer Typ von Objekten mit gleichen Merkmalen.
+                	\item Textuelle Notation: \(E(\cdots)\)
+                	\item Grafische Notation: Rechteck
+                	\item Beispiel:
+                \end{itemize}
+            	\begin{figure}[H]
+            		\centering
+            		
+            		\( \text{Konto}(\cdots) \)
+            		
+            		\vspace{1cm}
+            		
+            		\begin{tikzpicture}[auto]
+            			\node [entity] {Konto};
+            		\end{tikzpicture}
+            	\end{figure}
+
+                \subsubsection{Abhängiger/Schwacher Entitätstyp} % 3.42
+                	\begin{enumerate}
+                		\item Wird durch eine funktionale Beziehung (\texttt{N:1}) identifiziert.
+                		\item Die Existenz hängt von einer anderen, bestimmenden, Entität ab.
+                		\item Abhängige Entitätstypen haben nur einen partiellen Schlüssel.
+                	\end{enumerate}
+                
+                	\begin{figure}[H]
+                		\centering
+                		\begin{tikzpicture}[auto]
+                			\node [entity] (thesis) {Master Thesis}
+                				[grow = up]
+                				child { node [attribute] {\underline{Titel}} };
+                			\node [relationship, right = of thesis, thick, double] (rel) {enthält};
+                			\node [entity, right = of rel, thick, double] (chapter) {Kapitel}
+                				[grow = up]
+                				child { node [attribute] {\dotuline{KapitelNr}} };
+                			
+                			\draw (thesis) -- node[below]{1} (rel);
+                			\draw [thick, double] (rel) -- node[below]{N} (chapter);
+                		\end{tikzpicture}
+                	\end{figure}
+                % end
+            % end
+            
+            \subsection{Attribute} % 3.26, 3.27
+            	\begin{itemize}
+            		\item Ein \textit{Attribut} ist eine Eigenschaft eines modellierten Entitäts- oder Beziehungstyps.
+            		\item Der \textit{Wert} eines Attributs \(A\) kann durch eine Funktion \( A : E \rightarrow D \) abgebildet werden, wobei \(D\) der Wertebereich ist.
+            		\item Der \textit{Datentyp} und \textit{Wertebereich} kann frei definiert werden, in vielen Fällen ist die Nutzung von Grundmengen (\( \mathbb{N} \), \( \mathbb{Q} \), \dots) hilfreich.
+            		\item Textuelle Notation (Entitätstyp): \( E(A_1, \cdots, A_n) \)
+            		\item Textuelle Notation (Beziehungstyp): \( R(E_1, \cdots, E_k; A_1, \cdots, A_n) \)
+            		\item Optional kann auch die Domäne mit angegeben werden.
+            		\item Grafische Notation: Oval an dem Entitätstyp/Beziehungstyp
+            	\end{itemize}
+	            \begin{figure}[H]
+		            \centering
+		            
+		            \( \text{Inhaber}(\text{Person}, \text{Konto}) \)
+		            
+		            \vspace{1cm}
+		            
+		            \begin{tikzpicture}[auto, node distance = 3]
+			            \node [entity] (person) {Person}
+			            	child [grow = up] { node [attribute] {Vorname} }
+			            	child [grow = down] { node [attribute] {Nachname} };
+			            \node [relationship, right = of person] (rel) {Inhaber}
+			            	child [grow = up] { node [attribute] {Erstelldatum: DATE} };
+			            \node [entity, right = of rel] (account) {Konto}
+			            	child [grow = up] { node [attribute] {IBAN} }
+			            	child [grow = down] { node [attribute] {Kontostand} };
+			            
+			            \draw (person) -- (rel);
+			            \draw (rel) -- (account);
+		            \end{tikzpicture}
+		        \end{figure}
+	            
+	            \subsubsection{Schlüsselattribute} % 3.29, 3.30
+	            	\begin{itemize}
+	            		\item Die \textit{Schlüsselattribute} sind ein Teilmenge der Attribute, die eine Entität eindeutig identifizieren \( \implies \) Eindeutigkeitsbedingung.
+	            		\item Für die Entität \( E = (A_1, \cdots, A_n) \) gilt: Schlüsselattribute \( \{ S_1, \cdots, S_k \} \subseteq \{ A_1, \cdots, A_n \} \).
+	            		\item Beziehungstypen haben keine Schlüsselattribute.
+	            		\item Textuelle Notation: Unterstrichen
+	            		\item Grafische Notation: Unterstrichen
+	            	\end{itemize}
+		           	\begin{figure}[H]
+			           	\centering
+			           	
+			           	\( \text{Inhaber}(\text{Person}, \text{Konto}) \)
+			           	
+			           	\vspace{1cm}
+			           	
+			           	\begin{tikzpicture}[auto, node distance = 3]
+				           	\node [entity] (person) {Person}
+				           	child [grow = up] { node [attribute] {\underline{Vorname}} }
+				           	child [grow = down] { node [attribute] {\underline{Nachname}} };
+				           	\node [relationship, right = of person] (rel) {Inhaber}
+				           	child [grow = up] { node [attribute] {Erstelldatum: DATE} };
+				           	\node [entity, right = of rel] (account) {Konto}
+				           	child [grow = up] { node [attribute] {\underline{IBAN}} }
+				           	child [grow = down] { node [attribute] {Kontostand} };
+				           	
+				           	\draw (person) -- (rel);
+				           	\draw (rel) -- (account);
+			           	\end{tikzpicture}
+			        \end{figure}
+		        	\begin{itemize}
+		        		\item Die korrekte Wahl der Schlüsselattribute ist eine Modellierungsentscheidung und benötigt Fachwissen (bspw. gehört eine E-Mail Adresse immer genau einer Person).
+		        	\end{itemize}
+	            % end
+	            
+	            \subsubsection{Schlüsselattribute: Semantik} % 3.31
+	            	Seien \( \{ S_1, \cdots, S_k \} \subseteq \{ A_1, \cdots, A_n \} \) Schlüsselattribute für \(E\), \( \sigma(E) \) die Menge aller Entitäten von \(E\) und \( \sigma(A)(e) \) der Wert, den die Entität \(e\) für das Attribut \(A\) annimmt.
+	            	
+	            	\paragraph{Eindeutigkeitsbedingung}
+	            		\begin{equation*}
+		            		\forall e_1, e_2 \in \sigma(E) : (\sigma(S_1)(e_1) = \sigma(S_1)(e_2) \land \cdots \land \sigma(S_k)(e_1) = \sigma(S_k)(e_2)) \implies e_1 = e_2
+	            		\end{equation*}
+	            	% end
+	            % end
+	        % end
+
+            \subsection{Beziehungstypen} % 3.24, 3.25
+                \begin{itemize}
+                	\item Eine \textit{Beziehung} beschreibt ein Rollenverhältnis zwischen zwei oder mehr Entitäten.
+                	\item Ein \textit{Beziehungstyp} ist eine Menge von Beziehungen des gleichen Typs.
+                	\item Textuelle Notation: \( R(E_1, \cdots, E_n) \)
+                	\item Grafische Notation: Raute
+                \end{itemize}
+            	\begin{figure}[H]
+            		\centering
+            		
+            		\( \text{Inhaber}(\text{Person}, \text{Konto}) \)
+            		
+            		\vspace{1cm}
+            		
+            		\begin{tikzpicture}[auto]
+            			\node [entity] (person) {Person};
+            			\node [relationship, right = of person] (rel) {Inhaber};
+            			\node [entity, right = of rel] (account) {Konto};
+            			
+            			\draw (person) -- (rel);
+            			\draw (rel) -- (account);
+            		\end{tikzpicture}
+            	\end{figure}
+
+                \subsubsection{Stelligkeit/Grad} % 3.32
+                    \begin{itemize}
+                    	\item Die \textit{Stelligkeit} gibt an, wie viele Entitätstypen an einem Beziehungstyp beteiligt sind.
+                    	\item Am häufigsten sind binäre Beziehungstypen (mit Stelligkeit 2).
+                    \end{itemize}
+                % end
+
+                \subsubsection{Ternäre Beziehungstypen} % 3.33, 3.34, 3.35
+                    \begin{itemize}
+                    	\item Eine ternäre Beziehung (mit Stelligkeit 3) kann durch 3 binäre Beziehungen ersetzt werden.
+                    \end{itemize}
+                
+                	\paragraph{Beispiel}
+                		\begin{itemize}
+                			\item Die ternäre Beziehungsrelation:
+                		\end{itemize}
+                		\begin{figure}[H]
+                			\centering
+                			\begin{tikzpicture}[auto]
+	                			\node [entity] (person) {Student};
+	                			\node [relationship, right = of person] (rel) {Lehrt};
+	                			\node [entity, right = of rel] (account) {Kurs};
+	                			\node [entity, above = of rel] (supervisor) {Dozent};
+	                			
+	                			\draw (person) -- (rel);
+	                			\draw (rel) -- (account);
+	                			\draw (rel) -- (supervisor);
+                			\end{tikzpicture}
+                		\end{figure}
+	                	\begin{itemize}
+	                		\item kann wie folgt durch drei Beziehungen und einer neuen Entität ersetzt werden:
+	                	\end{itemize}
+                		\begin{figure}[H]
+                			\centering
+                			\begin{tikzpicture}[auto]
+                				\node [entity] (person) {Student};
+                				\node [relationship, right = of person] (rel1) {};
+                				\node [entity, right = of rel1] (participation) {Kursteilnahme};
+                				\node [relationship, right = of participation] (rel2) {};
+                				\node [entity, right = of rel2] (course) {Kurs};
+                				\node [relationship, above = of participation] (rel3) {};
+                				\node [entity, above = of rel3] (lecturer) {Dozent};
+                				
+                				\draw (participation) -- (rel1);
+                				\draw (participation) -- (rel2);
+                				\draw (participation) -- (rel3);
+                				\draw (rel1) -- (person);
+                				\draw (rel2) -- (course);
+                				\draw (rel3) -- (lecturer);
+                			\end{tikzpicture}
+                		\end{figure}
+                		\begin{itemize}
+                			\item Damit werden nur noch binäre Relationen genutzt.
+                		\end{itemize}
+                	% end
+                % end
+
+                \subsubsection{Rekursive Beziehungen und Rollennamen} % 3.36
+                    \begin{itemize}
+                    	\item Ein \textit{rekursiver Beziehungstyp} ist ein Beziehungstyp, an dem ein Entitätstyp mehrfach beteiligt ist.
+                    	\item Hier ist es nötig, Rollennamen zu vergeben, da die Beziehung sonst nicht korrekt interpretierbar ist.
+                    	\item Beispiel: \( \text{ist-Nachwuchs-von}(\text{Mutter}: \text{Person}, \text{Vater}: \text{Person}, \text{Kind}: \text{Person}) \)
+                    \end{itemize}
+                	\begin{figure}[H]
+                		\centering
+                		\begin{tikzpicture}
+	                		\node [entity] (person) {Person};
+	                		\node [relationship, right = 3 of person] (rel) {Nachwuchs};
+	                		
+	                		\draw (rel) -- node[above]{Kind} (person);
+	                		\draw (rel.north west) to[bend right]  node[above]{Mutter} (person.north);
+	                		\draw (rel.south west) to[bend left]  node[below]{Vater} (person.south);
+                		\end{tikzpicture}
+                	\end{figure}
+                % end
+
+                \subsubsection{Kardinalitäten} % 3.37, 3.38, 3.39, 3.40
+                    \begin{itemize}
+                    	\item Die \textit{Kardinalität} einer Relation besagt, wie viele Entitäten jeweils an einer Beziehung beteiligt sind.
+                    	\item Hierzu gibt es beim ER-Diagramm 2 Grundlegende Notationen: Die Min-Max-Notation und die Chen-Notation.
+                    	\item Die grundlegenden Beziehungskardinalitäten zwischen zwei Entitäten E1, E1 sind:
+                    		\begin{itemize}
+                    			\item \texttt{1:1}, Ein E1 hat genau ein E2; Ein E2 hat genau ein E1.
+                    			\item \texttt{1:N}, Ein E1 hat beliebig viele E2; Ein E2 hat genau ein E1.
+                    			\item \texttt{N:M}, Ein E1 hat beliebig viele E2; Ein E2 hat beliebig viele E1.
+                    		\end{itemize}
+                    	\item In den folgenden Abbildung wird der Unterschied zwischen \textcolor{tud4c}{Min-Max-Notation} und \textcolor{tud1b}{Chen-Notation} ersichtlich.
+                    \end{itemize}
+                
+                	\begin{figure}[H]
+                		\centering
+                		\begin{tikzpicture}[auto, node distance = 2]
+	                		\node [entity] (left) {M.Sc.};
+	                		\node [relationship, right = of left] (rel) {abgeschlossen};
+	                		\node [entity, right = of rel] (right) {Master-Thesis};
+	                		
+	                		\draw (left) -- node[above]{\textcolor{tud4c}{[1, 1]}} node[below]{\textcolor{tud1b}{1}} (rel);
+	                		\draw (rel) -- node[above]{\textcolor{tud4c}{[1, 1]}} node[below]{\textcolor{tud1b}{1}} (right);
+                		\end{tikzpicture}
+                		\caption{\texttt{1:1} Beziehung}
+              		\end{figure}
+               		\begin{figure}[H]
+               			\centering
+               			\begin{tikzpicture}[auto, node distance = 2]
+                			\node [entity] (left) {Betreuer};
+                			\node [relationship, right = of left] (rel) {betreut};
+                			\node [entity, right = of rel] (right) {Master-Thesis};
+                			
+                			\draw (left) -- node[above]{\textcolor{tud4c}{[1, *]}} node[below]{\textcolor{tud1b}{1}} (rel);
+                			\draw (rel) -- node[above]{\textcolor{tud4c}{[1, 1]}} node[below]{\textcolor{tud1b}{N}} (right);
+               			\end{tikzpicture}
+               			\caption{\texttt{1:N} Beziehung}
+               		\end{figure}
+               		\begin{figure}[H]
+               			\centering
+               			\begin{tikzpicture}[auto, node distance = 2]
+                			\node [entity] (left) {Quelle};
+                			\node [relationship, right = of left] (rel) {zitiert-in};
+                			\node [entity, right = of rel] (right) {Master-Thesis};
+                			
+                			\draw (left) -- node[above]{\textcolor{tud4c}{[0, *]}} node[below]{\textcolor{tud1b}{N}} (rel);
+                			\draw (rel) -- node[above]{\textcolor{tud4c}{[1, *]}} node[below]{\textcolor{tud1b}{N}} (right);
+               			\end{tikzpicture}
+               			\caption{\texttt{N:M} Beziehung}
+               		\end{figure}
+                % end
+
+                \subsubsection{Funktionale Beziehungen} % 3.41
+                    \begin{itemize}
+                    	\item Ein funktionaler \texttt{1:N} Beziehungstyp \( R = E_1 \times E_2 \) lässt sich auch als Funktion \( R : E_1 \rightarrow E_2 \) darstellen.
+                    	\item Im ER-Diagramm wird dies wie in Abb. \ref{fig:fd} gekennzeichnet (die Kardinalitäten können ausgelassen werden, da sie durch die funktionale Beziehung gegeben sind).
+                    	\item Beispiel, Textuell: \( \text{betreut} : \text{Master-Thesis} \rightarrow \text{Betreuer} \) \\ \( \text{betreut}(\text{thesis1}) = \text{betreuer1} \), \( \text{betreut}(\text{thesis2}) = \text{betreuer1} \), \dots
+                    \end{itemize}
+                
+                	\begin{figure}[H]
+                		\centering
+                		\begin{tikzpicture}[auto, node distance = 2]
+	                		\node [entity] (left) {Betreuer};
+	                		\node [relationship, right = of left] (rel) {betreut};
+	                		\node [entity, right = of rel] (right) {Master-Thesis};
+	                		
+	                		\draw [<-] (left) -- (rel);
+	                		\draw (rel) -- (right);
+                		\end{tikzpicture}
+                		\caption{Funktionale Beziehungen im ER-Modell}
+                		\label{fig:fd}
+                	\end{figure}
+                % end
+            % end
+            
+            \subsection{Notationsübersicht} % 3.43
+            	\begin{description}
+            		\item[Entitätstyp]
+            			\raisebox{-0.4cm}{%
+	            			\begin{tikzpicture}[auto]
+		            			\node [entity] {\textit{Name}};
+	            			\end{tikzpicture}
+            			}
+            		\item[Abhängiger Entitätstyp]
+	            		\raisebox{-0.6cm}{%
+	            			\begin{tikzpicture}[auto]
+		            			\node [entity, thick, double] {\textit{Name}};
+	            			\end{tikzpicture}
+	            		}
+            		\item[Beziehungstyp]
+            			\raisebox{-0.6cm}{%
+            				\begin{tikzpicture}[auto]
+            					\coordinate (left);
+            					\node [relationship, right = of left] (rel) {\textit{Name}};
+            					\coordinate [right = of rel] (right);
+            					\draw (left) -- (rel);
+            					\draw (rel) -- (right);
+            				\end{tikzpicture}
+            			}
+            		\item[Bestimmender Beziehungstyp]
+	            		\raisebox{-0.8cm}{%
+	            			\begin{tikzpicture}[auto]
+		            			\coordinate (left);
+		            			\node [relationship, thick, double, right = of left] (rel) {\textit{Name}};
+		            			\coordinate [right = of rel] (right);
+		            			\draw [thick, double] (left) -- (rel);
+		            			\draw (rel) -- (right);
+	            			\end{tikzpicture}
+	            		}
+            		\item[Funktionaler Beziehungstyp]
+	            		\raisebox{-0.8cm}{%
+	            			\begin{tikzpicture}[auto]
+		            			\coordinate (left);
+		            			\node [relationship, right = of left] (rel) {\textit{Name}};
+		            			\coordinate [right = of rel] (right);
+		            			\draw (left) -- (rel);
+		            			\draw [->] (rel) -- (right);
+	            			\end{tikzpicture}
+	            		}
+            		\item[Attribut]
+            			\raisebox{-0.25cm}{%
+            				\begin{tikzpicture}[auto]
+            					\node [attribute] (attr) {\textit{Name}};
+            					\coordinate [right = of attr] (point);
+            					\draw (attr) -- (point);
+            				\end{tikzpicture}
+            			}
+            		\item[Schlüsselattribut]
+	            		\raisebox{-0.4cm}{%
+	            			\begin{tikzpicture}[auto]
+		            			\node [attribute] (attr) {\underline{\textit{Name}}};
+		            			\coordinate [right = of attr] (point);
+		            			\draw (attr) -- (point);
+	            			\end{tikzpicture}
+	            		}
+            		\item[Partieller Schlüssel]
+	            		\raisebox{-0.4cm}{%
+	            			\begin{tikzpicture}[auto]
+		            			\node [attribute] (attr) {\dotuline{\textit{Name}}};
+		            			\coordinate [right = of attr] (point);
+		            			\draw (attr) -- (point);
+	            			\end{tikzpicture}
+	            		}
+            		\item[Min-Max-Notation] \texttt{[0, 1]}, \texttt{[1, *]}, \texttt{[1, 1]}, \dots
+            		\item[Chen-Notation] \texttt{N}, \texttt{1}
+            	\end{description}
+            % end
+        % end
+    % end
+
+    \chapter{Logische Datenmodellierung} % 4
+	    \label{c:logic_model}
+
+        \section{Relationales Modell} % 4.4, 4.5, 4.13
+            \begin{itemize}
+            	\item Die zu modellierende Welt wird ausschließlich durch \textit{endliche Relationen} dargestellt. \\ \( R _ 1, \cdots, R _ n \)
+            	\item Diese werden mit \textit{Relationenschemata} beschrieben.
+            	\item Die grundlegenden Mengen werden als \textit{Wertebereiche} (oder \textit{Domänen}) bezeichnet. \\ \( D _ 1, \cdots, D _ n \)
+            \end{itemize}
+
+            \subsection{Tupel} % 4.6
+                \begin{itemize}
+                	\item Ein Tupel \(t\) ist eine Liste von Werten mit bestimmten Datentypen, d.h. \( t \in D _ 1 \times \cdots \times D _ n \).
+                	\item 2-Tupel werden dabei \enquote{Paare}, 3-Tupel \enquote{Tripel} genannt.
+                \end{itemize}
+            % end
+
+            \subsection{Relationenschema} % 4.7
+                \begin{itemize}
+                	\item Ein \textit{Relationenschema} stellt eine Beschreibung von Tupeln dar.
+                	\item Diese haben strukturelle Eigenschaften (Attribute, also Namen und Datentypen) und dynamische Eigenschaften (Operationen, z.B. zum Löschen).
+                	\item Außerdem können \textit{Integritätsbedingungen} vorliegen, bspw. ein Maximalwert für das Alter.
+                	\item \textbf{Beispiel:} \texttt{(\enquote{Paul}, 23, 50.00), (\enquote{Anna}, 24, 55.00), \dots} mit dem Schema \texttt{(Name, Alter, Kontostand)} und den Integritätsbedingungen:
+                		\begin{itemize}
+                			\item Der Name enthält nur Buchstaben und ist maximal 40 Zeichen lang,
+                			\item das Alter ist eine Zahl von 0 bis 150 und
+                			\item der Kontostand ist eine Dezimalzahl größer 0.
+                		\end{itemize}
+                \end{itemize}
+            % end
+
+            \subsection{Relation} % 4.8, 4.9
+                \begin{itemize}
+                	\item Eine \textit{Relation} \( R \subseteq D _ 1 \times \cdots D _ n \) ist eine Menge von \(n\)-Tupeln, deren Elemente bestimmte Eigenschaften erfüllen.
+                	\item \( n = \deg(R) \) heißt \textit{Stelligkeit} oder \textit{Grad} von \(R\).
+                	\item Relationen lassen sich auch als Tabellen darstellen, bspw. die Relation \( < _ \text{bis4} \subseteq \{ 1, 2, 3, 4 \} ^ 2 = \{ (1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4) \} \) mit \( (a, b) \in < _ \text{bis4} \):
+                		\begin{table}[H]
+                			\centering
+                			\begin{tabular}{c | c}
+                				\(a\) & \(b\) \\ \hline
+                				  1   & 2     \\
+                				  1   & 3     \\
+                				  1   & 4     \\
+                				  2   & 3     \\
+                				  2   & 4     \\
+                				  3   & 4
+                			\end{tabular}
+                		\end{table}
+                \end{itemize}
+            % end
+
+            \subsection{Notation} % 4.10
+                \begin{description}
+                	\item[Relation] \( R \subseteq D _ 1 \times \cdots \times D _ n \)
+                	\item[Relationenschema] \( \Schema(R) = \{ A _ 1, \cdots, A _ n \} \)
+                	\item[Attribut] Funktion \( A _ i : R \rightarrow D _ i \), die jedem Tupel aus \(R\) einen Wert aus dem Wertebereich zuordnet.
+                		\begin{itemize}
+                			\item Wert einer Spalte \(A_i\) des Tupels \( t \in R \): \( t(A_i) = A_i(t) \in D_i \)
+                			\item Werte mehrerer Spalten \( \alpha \subseteq \Schema(R) \): \( t(\alpha) = (\alpha_1(t), \cdots, \alpha_k(t) \)
+                		\end{itemize}
+                	\item[Teiltupel] \(t(\alpha)\)
+                	\item[Tupel] \( t = t(\Schema(R)) = t(A_1, \cdots, A_n) = (A_1(t), \cdots, A_n(t) \in R \)
+                \end{description}
+            % end
+        % end
+
+        \section{Schlüssel} % 4.14, 4.15
+            \begin{itemize}
+            	\item Schlüsselattribute von Entitätstypen
+            	\item Eindeutige Identifikation einer Entität
+            	\item \textbf{Beispiel:} ISBN \(\rightarrow\) Buch
+            \end{itemize}
+
+            \subsection{Formale Definition} % 4.16, 4.18
+            	\begin{itemize}
+            		\item Definiertheit: Eine Menge von Attributen \(K\) heißt \textit{definiert}, wenn keine \lstinline|NULL|-Werte enthalten sind.
+            		\item Es gilt \( \text{Primärschüssel} \subseteq \text{Schlüsselkandidaten} \subseteq \text{Superschlüssel} \subseteq \mathcal{P}(\Schema(R)) \).
+            	\end{itemize}
+
+                \subsubsection{Superschlüssel} % 4.16, 4.17
+                    \begin{itemize}
+                    	\item Eine Attributmenge \(K\) heißt \textit{Superschlüssel} gdw. jedes Teiltupel genau ein Tupel identifiziert, d.h. \(K\) ist \textit{schlüsseleindeutig:}
+                    		\begin{equation*}
+	                    		\forall t_1, t_2 \in R : t_1(K) = t_2(K) \implies t_1 = t_2
+                    		\end{equation*}
+                    	\item Ein Superschlüssel \(K\) für eine Relation \(R\) heißt:
+                    		\begin{itemize}
+                    			\item \textit{Einfach}, falls \( \abs{K} = 1 \).
+                    			\item \textit{Zusammengesetzt}, falls \( \abs{K} > 1 \).
+                    			\item \textit{Trivial}, falls \(K = \Schema(K)\).
+                    			\item \textit{Minimal}, falls \( \forall K' \subset K : K' \text{ ist kein Superschlüssel} \).
+                    		\end{itemize}
+                    \end{itemize}
+                % end
+
+                \subsubsection{Schlüsselkandidat} % 4.17
+                	\begin{itemize}
+                		\item Ein minimaler Superschlüssel ist ein \textit{Schlüsselkandidat}.
+                		\item Mit \( \KEYS(R) \) wird die Menge aller Schlüsselkandidaten für \(R\) bezeichnet.
+                	\end{itemize}
+                % end
+
+                \subsubsection{Primärschlüssel (PK)} % 4.17
+                    \begin{itemize}
+                    	\item Der \textit{Primärschlüssel} ist ein frei gewählter Schlüsselkandidat für \(R\), also \( \PK \in \KEYS(R) \).
+                    	\item Es darf maximal einen Primärschlüssel für jedes \(R\) geben.
+                    	\item Alle anderen Schlüssel \( L \in \KEYS(R) \) mit \( K \neq \PK \) heißen \textit{alternative Schlüssel} für \(R\).
+                    \end{itemize}
+                % end
+            % end
+
+            \subsection{(Nicht-) Primattribute} % 4.21
+                \begin{itemize}
+                	\item Sei \( K \in \KEYS(R) \). Alle Attribute \( A \in R \) heißen \textit{Primattribute} für \(K\).
+                	\item Nichtprimattribute (NPA) sind an keinem Schlüsselkandidaten beteiligt, d.h. \( N \in \Schema(R) \) heißt nichtprim gdw. \( N \not\in \bigcup \KEYS(R) \), kurz \( N \in \text{NPA}(R) \).
+                \end{itemize}
+            % end
+
+            \subsection{Künstliche Schlüssel} % 4.23
+                \begin{itemize}
+                	\item Ein \textit{künstlicher Schlüssel} (oder auch \textit{Surrogatschlüssel}) wird nicht aus Daten gebildet.
+                	\item Häufig wird dieser durch eine fortlaufende Nummer (Sequenz) gebildet.
+                	\item \textbf{Beispiele:} ISBN, Sozialversicherungsnummer, Steueridentifikationsnummer, Personalausweisnummer, Führerscheinnummer, Reisepassnummer, Kontonummer, IBAN, BIC, Bankleitzahl, Matrikelnummer, Nutzernamen, TU-ID, \dots
+                \end{itemize}
+            % end
+
+            \subsection{Schlüsselbeziehungen} % 4.24
+                \begin{itemize}
+                	\item Eine Attributmenge \(R'\) einer Relation \(S\) heißt \textit{Fremdschlüssel} bezüglich einer Relation \(R\) gdw. \( \rho(K') \) der PK von \(R\) ist und die Bedingung der \textit{referenziellen Integrität} erfüllt ist.
+                	\item Die Bedingung der \textit{referenziellen Identität} heißt, dass das Attribut \(K'\) in \(S\) nur Werte annimmt, für die in \(R\) ein entsprechender Wert existiert, d.h.:
+                		\begin{equation*}
+	                		\forall s \in S : \exists r \in R : s(K') = r(\rho(k'))
+                		\end{equation*}
+                \end{itemize}
+            % end
+        % end
+
+        \section{Logischer Entwurf} % 4.26, 4.27
+            \begin{itemize}
+            	\item \textbf{Ziel:} Abbildung des konzeptionellen Modells auf ein logisches Datenmodell.
+            \end{itemize}
+
+            \subsection{Notation für Relationenschemata} % 4.29
+            	\begin{table}[H]
+            		\centering
+            		\begin{tabular}{| c | c | c | c | c | l}
+            			\multicolumn{5}{l}{\textbf{R}}                  & \( \} \) Name des Schemas \\ \cline{1-5}
+            			   & \(A_1\) & \(A_2\) & \(\cdots\) & \(A _ n\) & \( \} \) Attribute        \\ \cline{1-5}
+            			PK & X       &         & \(\cdots\) &           & \( \} \) Primärschlüssel  \\ \cline{1-5}
+            			FK &         & S.A     & \(\cdots\) &           & \( \} \) Fremdschlüssel   \\ \cline{1-5}
+            		\end{tabular}
+            	\end{table}
+            % end
+
+            \subsection{Abbildung von Entitätstypen} % 4.30, 4.33
+                \begin{itemize}
+                	\item Jeder Entitätstyp \( E(A_E; K_E) \) mit Attributen \(A_E\) und Schlüsseln \(K_E\) wird auf das Relationsschema \( R_E(A_E; K_E) \) mit Primärschlüssel \( K_E \subseteq A_E \) abgebildet.
+                	\item Das Relationsschema jedes von \(E\) abhängigen Entitätstyps \(F(A_F; K_F)\) mit partiellen Schlüsselattributen \(K_F\) wird um die Schlüsselattribute aus \(E\) erweitert: \( R_F(A_F \cup K_E; K_F \cup K_E) \). Der Schlüssel \(K_E\) von \(E\) komplettiert somit den partiellen Schlüssel \(K_F\).
+                \end{itemize}
+            % end
+
+            \subsection{Abbildung von Beziehungstypen} % 4.35, 4.37, 4.38, 4.39
+                \begin{itemize}
+                	\item Beziehungen eines ER-Modells können eigene Relationen bilden.
+                	\item Ein Beziehungstyp \( B(E_1, \cdots, E_n; A_B) \) zwischen Entitätstypen \(E_i(A_{E_i}; K_{E_i})\) bildet das Relationsschema: \( R_B(A_B \cup K_1 \cup \cdots \cup K_n; K_B) \).
+                	\item Die Attributmenge von \(R_B\) enthält
+                		\begin{itemize}
+                			\item beziehungseigene Attribute (falls vorhanden) und
+                			\item Schlüsselattribute der beteiligten Entitätstypen als Fremdschlüssel, wobei
+                			\item Namenskonflikte wenn nötig durch Umbenennung gelöst werden.
+                		\end{itemize}
+			        \item Der PK von \(R_B\) (\(K_B\)) enthält alle Fremdschlüssel aus \( K _ 1 \cup \cdots \cup K _ n \).
+			        \item Besonderheiten mit \( B(E, F) \) als Beziehung zwischen den Entitätstypen \( E(A_E; K_E) \) und \( F(A_F; K_F) \):
+				        \begin{itemize}
+							        	\item Bei einer \texttt{M:N}-Beziehung ist \( K_E \cup K_F \) der PK der Beziehung.
+							        	\item Bei einer \texttt{1:N}-Beziehung ist \( K_F \) der PK der Beziehung.
+							        	\item Bei einer \texttt{1:1}-Beziehung ist kann \( K_E \) oder \( K_F \) als PK der Beziehung gewählt werden.
+				        \end{itemize}
+			        \item Bei Beziehungen \( B(E, F; \beta) \) mit Kardinalität \( 1:1 \) oder \( 1:N \) wird die eigene Relation häufig weg gelassen, sondern mittels Fremdschlüsseln in \(R_F\) abgebildet:
+			        	\begin{itemize}
+			        		\item \( R_E(A_E; K_E) \)
+			        		\item \( R_F(A_F \cup K_E \cup \beta; K_F) \) (Fremdschlüssel bzgl. \( R_E \) und beziehungseigene Attribute \( \beta \) kommen hinzu.)
+			        		\item Die Schlüssel von \(R_E\) und \(R_F\) bleiben gleich, es gibt keine eigene Relation für \(B\).
+			        	\end{itemize}
+		        \end{itemize}
+            % end
+        % end
+
+        \section{Datenbanknormalisierung} % 4.42, 4.43, 4.44
+            \subsection{Redundanz und Anomalien} % 4.45
+                \begin{itemize}
+                	\item Redundanz ist Speicherplatzverschwendung.
+                	\item Redundanz führt meistens zu Inkonsistenzen, wenn Daten editiert werden \(\implies\) Anomalien.
+                \end{itemize}
+
+                \subsubsection{Update-Anomalie} % 4.46
+                    Bei einem Update der Daten müssen alle Tupel mit den Daten aktualisiert werden. Dies führt zu \textit{Update-Anomalien}.
+                % end
+
+                \subsubsection{Einfüge-Anomalie} % 4.47
+                    Sind bei dem Einfügen von Daten noch nicht alle erforderlichen Daten verfügbar, kommt es zu \textit{Einfüge-Anomalien}.
+                % end
+
+                \subsubsection{Lösch-Anomalie} % 4.48
+                    Beim Löschen einzelner Daten kann es passieren, dass auch andere Daten verschwinden. Es kommt zu \textit{Lösch-Anomalien}.
+                % end
+            % end
+
+            \subsection{Funktionale Abhängigkeit (FD)} % 4.52, 4.53
+                Sei \( \Schema(R) = \{ A _ 1, \cdots, A _ n \} \) ein Relationenschema mit Attributteilmengen \( \alpha, \beta \). Die Menge \( \beta \) ist \textit{funktional abhängig} gdw. für jeden Wert aus \(\alpha\) genau ein Wert für \(\beta\) existiert, d.h. \(\alpha\) bestimmt \(\beta\).
+                \begin{itemize}
+                	\item \textbf{Schreibweise:} \( R.\alpha \rightarrow R.\beta \), kurz \( \alpha \rightarrow \beta \)
+                	\item \textbf{Formal:} \( \forall t_1, t_2 \in R : t_1(\alpha) = t_2(\alpha) \implies t_1(\beta) = t_2(\beta) \)
+                	\item Für alle Schlüssel \( K \) von \( R \) gilt immer \( K \rightarrow \Schema(R) \).
+                \end{itemize}
+
+                \subsubsection{Semantik} % 4.54
+                	Die funktionalen Abhängigkeiten definieren die \textit{Semantik} einer Datenbank.
+                    \begin{itemize}
+               			\item Andere Interpretationen führen oft zu anderen Schemata.
+               			\item Die Normalisierung ist abhängig von den FDs.
+                    \end{itemize}
+                % end
+
+                \subsubsection{FD-Hülle} % 4.55
+                    \begin{itemize}
+                    	\item Die FDs beeinflussen die Relationenschemata über den Normalisierungsprozess.
+                    	\item Funktionale Abhängigkeiten müssen in ihrer Gesamtheit betrachtet werden, inklusive den nicht aufgelisteten FDs.
+                    	\item Die FD-Hülle \(F^+\) ist die Menge aller FDs, die aus der bekannten FD-Menge \(F\) impliziert werden.
+                    \end{itemize}
+                % end
+
+                \subsubsection{Attributhülle} % 4.83
+                    \begin{itemize}
+                    	\item Analog zur FD-Hülle kann die Attributhülle \(A^+\) definiert werden.
+                    	\item Die Attributhülle \(A^+\) enthält alle Attribute, die von \(A\) funktional abhängig sind.
+                    \end{itemize}
+                % end
+
+                \subsubsection{Armstrong-Axiome} % 4.56, 4.57
+                	Sei \( F \) eine FD-Menge und \( \alpha, \beta, \gamma, \delta \) Attributmengen.
+                    \begin{enumerate}
+                    	\item \textbf{Reflexivität} \( \beta \subseteq \alpha \implies \alpha \rightarrow \beta \)
+                    	\item \textbf{Erweiterung} \( \alpha \rightarrow \beta \implies \alpha\delta \rightarrow \beta\delta \)
+                    	\item \textbf{Transitivität} \( \alpha \rightarrow \beta \land \beta \rightarrow \delta \implies \alpha \rightarrow \delta \)
+                    \end{enumerate}
+                	Da Armstrongs Axiome korrekt und vollständig sind, erlauben sie das Ermitteln der Hülle \(\text{F}^+\) aller implizierten FDs.
+                	
+                	Außerdem kann aus den Axiomen abgeleitet werden, dass gilt:
+                	\begin{itemize}
+                		\item \textbf{Additivität} \( \alpha \rightarrow \beta \land \alpha \rightarrow \delta \implies \alpha \rightarrow \beta\delta \)
+                		\item \textbf{Projektivität} \( \alpha \rightarrow \beta\delta \implies \alpha \rightarrow \beta \land \alpha \rightarrow \delta \)
+                		\item \textbf{Pseudotransitivität} \( \alpha \rightarrow \beta \land \beta\delta \rightarrow \gamma \implies \alpha\delta \rightarrow \gamma \)
+                	\end{itemize}
+                % end
+
+                \subsubsection{Volle/Partielle Funktionale Abhängigkeiten} % 4.64
+                    \begin{itemize}
+                    	\item Volle funktionale Abhängigkeit
+                    		\begin{itemize}
+                    			\item \(\beta\) heißt \textit{voll funktional abhängig} von \(\alpha\) gdw. \(\alpha \rightarrow \beta\) gilt und kein \( \alpha' \subset \alpha, \alpha' \neq \emptyset \) existiert mit \( \alpha' \rightarrow \beta \).
+                    		\end{itemize}
+                    	\item Partielle Funktionale Abhängigkeit
+                    		\begin{itemize}
+                    			\item \( \beta \) heißt \textit{partiell funktional abhängig} von \(\alpha\) gdw. \(\beta\) nicht voll funktional abhängig ist von \(\alpha\).
+                    		\end{itemize}
+                    \end{itemize}
+                % end
+                
+                \subsubsection{Transitive Abhängigkeit} % 4.68
+	                Eine Attributmenge \(\beta\) heißt \textit{transitiv abhängig} von \(\alpha\) gdw. \(\alpha \rightarrow \gamma\) und \(\gamma \rightarrow \beta\) voll funktional abhängig sind, aber \(\gamma \rightarrow \alpha\) keine voll funktionale Abhängigkeit darstellt (Schreibweise: \( \alpha \rightarrow \gamma \rightarrow \beta \)).
+                % end
+            % end
+
+            \subsection{Normalformen und Normalisierung} % 4.49, 4.60, 4.75, 4.81
+                \begin{itemize}
+                	\item Anforderungen an den Datenbankentwurf:
+                		\begin{itemize}
+                			\item Möglichst redundanzfreie Speicherung.
+                			\item Nur semantisch sinnvolle und konsistente Daten.
+                			\item Alle benötigten Daten müssen aus den Basisrelationen herleitbar sein (verlustfrei).
+                		\end{itemize}
+                	\item \textbf{Normalisierung}
+                		\begin{itemize}
+                			\item Regeln zur Transformation von Schemata, um Anomalien zu vermeiden und den Entwurf zu verbessern.
+                		\end{itemize}
+                \end{itemize}
+            
+            	\textbox{\enquote{The key, the whole key and nothing but the key. So help me Codd!}}
+
+                \subsubsection{Erste Normalform} % 4.61, 4.62, 4.63
+                	\textbf{Eine Relation ist in 1NF, wenn \textit{alle Attributwerte atomar} sind.}
+                	
+                	\textbox{Flapsig: Attribute sind automar, alles hängt vom Schlüssel ab.}
+                % end
+
+                \subsubsection{Zweite Normalform} % 4.65, 4.66, 4.67
+                    \textbf{Eine Relation ist in 2NF, wenn sie in 1NF ist und \textit{alle Nichtprimtattribute vollständig} von \textit{jedem Schlüsselkandidaten} abhängen.}
+                    \begin{equation*}
+	                    R \text{ in 1NF} \land \forall A \in \text{NPA}(R) : \forall K \in \KEYS(R) : K \rightarrow A \text{ ist volle FD}
+                    \end{equation*}
+                    
+                    \textbox{Flapsig: NPA hängen vom gesamte Schlüssel ab.}
+                % end
+
+                \subsubsection{Dritte Normalform} % 4.69, 4.70, 4.71
+                    \textbf{Eine Relation ist in 3NF, wenn sie in 2NF ist und \textit{alle Nichtprimattribute nicht transitiv} von \textit{einem Schlüsselkandidaten} abhängen.}
+                    \begin{equation*}
+	                    R \text{ in 2NF} \land \forall A \in \text{NPA}(R) : \forall K \in \KEYS(R) : \forall B \in \Schema(R) : \lnot(K \rightarrow B \rightarrow A \text{ ist transitive FD})
+                    \end{equation*}
+                    
+                    \textbox{Flapsig: NPA hängen nur vom Schlüssel ab, keine transitiven FDs.}
+                % end
+
+                \subsubsection{Boyce-Codd Normalform} % 4.72, 4.73
+                    \textbf{Eine Relation ist BCNF, wenn sie in 2NF ist und \textit{alle Attribute nicht transitiv} von \textit{einem Schlüsselkandidaten} abhängen.}
+                    \begin{equation*}
+	                    R \text{ in 2NF} \land \forall A \in \Schema(R) : \forall K \in \KEYS(R) : \forall B \in \Schema(R) : \lnot(K \rightarrow B \rightarrow A \text{ ist transitive FD})
+                    \end{equation*}
+                    
+                    \textbox{Flapsig: Attribute hängen nur vom Schlüssel ab, keine transitiven FDs.}
+                % end
+            % end
+
+        \section{Syntheseverfahren} % 4.82, 4.84, 4.85
+            \begin{itemize}
+            	\item Bei der \textit{Synthese} werden die Redundanzen in Relationen durch algorithmische Äquivalenzumformungen einer gegebenen Attribut- und FD-Menge entfernt.
+            	\item Einfache Syntheseverfahren sorgen dabei dafür, dass nur so viele Aufteilungen wie nötig gemacht werden, polynomiale Laufzeit erreicht wird und die Abhängigkeitstreue erhalten bleibt (es dürfen keine FDs verloren gehen).
+            	\item Vollständige Syntheseverfahren garantieren, dass alle Relationen in 3NF sind.
+            	\item Vereinfachte Syntheseschritte:
+            		\begin{enumerate}
+            			\item Linksreduktion. \\ Entfernung überflüssiger Attribute aus der linken Seite der FDs.
+            			\item Rechtsreduktion. \\ Entfernung überflüssiger FDs.
+            			\item FDs mit identischer linker Seite gruppieren.
+            			\item Gruppen mit äquivalenter linker Seite zusammenfassen. \\ Äquivalente linke Seite heißt hier, dass die Hülle gleich ist.
+            			\item Relationen bilden. \\ Jede Gruppe bildet eine Relation, jede linke Seite einer Gruppe bildet einen Schlüsselkandidaten der Relation.
+            		\end{enumerate}
+            \end{itemize}
+        % end
+    % end
+
+    \chapter{Logische Abfragemodelle} % 5, 5.3, 5.4
+	    \label{c:logic_query}
+	    
+	    Sei \( R = (A_1, \cdots, A_n; \{ K_1, \cdots, K_m \}) \) ein Relationenschema mit Attributen \( A_1, \cdots, A_n \) und Schlüsselkandidaten \( K_1, \cdots, K_m \).
+	    
+	    \begin{itemize}
+	    	\item Um mit den Relationen arbeiten zu können sind Operationen nötig, welche die Daten verändern und lesen können.
+	    	\item Idee: Eine Operation produziert aus bestehenden Relationen neuen Relationen, wodurch das Modell in sich geschlossen bleibt.
+	    	\item Die drei wesentlichen Ansätze sind die \textit{Relationenalgebra}, das \textit{Relationentupelkalkül} und das \textit{Relationenwertebereichkalkül}, welche im folgenden behandelt werden.
+	    	\item Dabei haben alle Ansätze die gleiche Aussagekraft.
+	    \end{itemize}
+
+        \section{Relationenalgebra (RA)} % 5.5, 5.6
+            \begin{itemize}
+            	\item \textbf{Algebraische Struktur:} Menge mit Operationen, welche auf dieser Menge definiert sind.
+            	\item Relationenalgebra \( \text{RA} = (\mathcal{R}, \cup, -, \times, \rho_{a,b}, \pi_\alpha, \sigma_F) \):
+            		\begin{description}
+            			\item[\( \mathcal{R} \)] Menge aller Relationen, seien \( R, S \in \mathcal{R} \)
+            			\item[\( \cup : \mathcal{R} \times \mathcal{R} \rightarrow \mathcal{R} \)] Vereinigungsmenge
+            			\item[\( - : \mathcal{R} \times \mathcal{R} \rightarrow \mathcal{R} \)] Mengendifferenz
+            			\item[\( \times : \mathcal{R} \times \mathcal{R} \rightarrow \mathcal{R} \)] Kartesisches Produkt
+            			\item[\( \rho_{a,b} : \mathcal{R} \rightarrow \mathcal{R} \)] Spaltenumbenennung
+            			\item[\( \pi_\alpha : \mathcal{R} \rightarrow \mathcal{R} \)] Projektion
+            			\item[\( \sigma_F : \mathcal{R} \rightarrow \mathcal{R} \)] Selektion
+            		\end{description}
+            		Alle Operationen sind dabei unter \( \mathcal{R} \) abgeschlossen.
+            \end{itemize}
+
+            \subsection{Grundlegende Operatoren} % 5.13
+                \subsubsection{Vereinigung} % 5.7
+                    Die Vereinigung \( R \cup S \) ist die Menge aller Tupel, die in \(R\) oder \(S\) enthalten sind.
+                    
+                    Dabei müssen die Relationen Vereinigungsverträglich sein, das heißt die gleiche Anzahl und Art an Spalten haben.
+                % end
+
+                \subsubsection{Mengendifferenz} % 5.8
+                    Die Mengendifferenz \( R - S \) ist die Menge aller Tupel, die in \(R\) aber nicht in \(S\) enthalten sind.
+                    
+                    Dabei müssen die Relationen Vereinigungsverträglich sein.
+                % end
+
+                \subsubsection{Kartesisches Produkt} % 5.9
+                    Das kartesische Produkt \( R \times S \) ist die Menge aller möglichen \( \text{deg}(R) + \text{deg}(S) \)-Tupel mit \( \text{deg}(R) \) Elementen aus \(R\) und \( \text{deg}(S) \) Elementen aus \(S\).
+                % end
+
+                \subsubsection{Spaltenumbenennung} % 5.10
+                    Sei \( a \in \Schema(R) \) ein Attribut von \(R\) mit \( a : R \rightarrow D _ a \). Die Spaltenumbenennung \( \rho_{a,b}(R) \) ersetzt dann die Spalte \(a\) durch eine Spalte \( b : R \rightarrow D _ a \) mit anderem Namen aber gleicher Definition und Werten, d.h. \( \forall r \in R : a(r) = b(r) \).
+                % end
+
+                \subsubsection{Projektion} % 5.11
+                    Sei \( \alpha \subseteq \Schema(R) \) eine Attributmenge von \(R\). Die Projektion \( \pi_\alpha(R) \) reduziert alle Tupel in \(R\) auf die Attribute \(\alpha\). Es entsteht somit eine Relation aus \(\abs{\alpha}\)-Tupeln.
+                    
+                    Da innerhalb der Relationenalgebra das Ergebnis eine Menge ist, werden Duplikate entfernt.
+                % end
+
+                \subsubsection{Selektion (Restriktion)} % 5.12
+                    Sei \(F\) eine Formel (Selektionsbedingung). Die Selektion \(\sigma_F(R)\) wählt dann alle Tupel aus \(R\) aus, für welche die Formel \(F\) erfüllt ist.
+                    
+                    Eine Formel \(F\) besteht aus:
+                    \begin{itemize}
+                    	\item Konstantenselektionen:   \tabto{5cm} \( \text{Attribut} \circ \text{Konstante} \) mit \( \circ \in \{ =, <, >, \leq, \geq \} \)
+                    	\item Attributselektionen:     \tabto{5cm} \( \text{Attribut} \circ \text{Attribut} \) mit \( \circ \in \{ =, <, >, \leq, \geq \} \)
+                    	\item Logischen Verknüpfungen: \tabto{5cm} \( F_1 \land F_2 \), \( F_1 \lor F_2 \), \( \lnot F_1 \)
+                    \end{itemize}
+                % end
+            % end
+
+            \subsection{Abgeleitete Operatoren} % -
+                \begin{itemize}
+                	\item Die sechs Basisoperatoren \( \cup, -, \times, \rho, \pi, \sigma \) reichen aus, um alle anderen Operatoren abzuleiten.
+                	\item Es werden dennoch weitere Operatoren eingeführt, welche den Umgang mit der Relationenalgebra erleichtern.
+                \end{itemize}
+
+                \subsubsection{Schnittmenge} % 5.14
+                    Die Schnittmenge \( R \cap S \) ist die Menge aller Tupel, die in \(R\) uns \(S\) enthalten sind.
+                    
+                    \begin{equation*}
+	                    R \cap S = R - (R - S)
+                    \end{equation*}
+                    
+                    Dabei müssen die Relationen Vereinigungsverträglich sein, das heißt die gleiche Anzahl und Art an Spalten haben.
+                % end
+
+                \subsubsection{Quotient} % 5.15
+                    Seien \( \alpha = \Schema(R) \) und \( \beta = \Schema(R) \). Der Quotient \( R \div S \) ist die Menge aller Tupel, deren Attribute nur in \(R\) existieren und für die alle Kombinationen mit Tupeln aus \(S\) vorkommen.
+                    
+                    \begin{equation*}
+	                    R \div S = \pi_{\alpha - \beta}(R) - \pi_{\alpha - \beta}((\pi_{\alpha-\beta}(R) \times S) - R)
+                    \end{equation*}
+                    
+                    \textbf{Beispiel}
+                   	\begin{equation*}
+                    	\begin{bmatrix}
+	                    	A & B & C & D \\ \hline
+	                    	a & b & c & d \\
+	                    	a & b & e & f \\
+	                    	b & c & e & f \\
+	                    	e & d & c & d \\
+	                    	e & d & e & f \\
+	                    	a & b & d & e
+                    	\end{bmatrix}
+                    	\div
+                    	\begin{bmatrix}
+                    		C & D \\ \hline
+                    		c & d \\
+                    		e & f
+                    	\end{bmatrix}
+                    	=
+                    	\begin{bmatrix}
+	                    	A & B \\ \hline
+	                    	a & b \\
+	                    	e & d
+                    	\end{bmatrix}
+                   	\end{equation*}
+                % end
+
+                \subsubsection{Verbund (Join)} % 5.16
+                    Ein Verbund (Join) ist die wichtigste nicht-elementare Operation, bestehend aus kartesischem Produkt und Selektion:
+                    \begin{equation*}
+	                    R \bowtie S = \sigma_F(R \times S)
+                    \end{equation*}
+
+                    \paragraph{Theta-Join} % 5.17
+                        Die allgemeine Form eines Joins ist dabei ein \textit{\(\Theta\)-Join} mit einem arithmetischen Vergleichsoperator \( \Theta \in \{ =, <, >, \leq, \geq \} \) mit Attributen \( a \in \Schema(R) \) und \( b \in \Schema(S) \).
+                        
+                        \textbf{Notation}
+                        \begin{equation*}
+	                        R \bowtie _ { a \Theta b } S = \sigma _ { a \Theta b } (R \times S)
+                        \end{equation*}
+                    % end
+
+                    \paragraph{Equijoin} % 5.18
+                        Gilt \( \Theta = = \), so wird dies \textit{Equijoin} genannt.
+                        
+                        \textbf{Notation}
+                        \begin{equation*}
+	                        R \bowtie _ { a = b } S = \pi _ { a = b } (R \times S)
+                        \end{equation*}
+                    % end
+
+                    \paragraph{Natural Join} % 5.19
+                        Ein \textit{Natural Join} Equijoin für alle Attribute mit gleichem Namen.
+                        
+                        \textbf{Notation}
+                        \begin{equation*}
+	                        R \bowtie S
+                        \end{equation*}
+                    % end
+
+                    \paragraph{Semijoin} % 5.20
+                        Ein Semijoin entspricht einem Natural Join, wobei nur die Attribute der ersten Relation erhalten bleiben.
+                        
+                        \textbf{Notation}
+                        \begin{equation*}
+                        	R \ltimes S = \pi_\alpha(R \bowtie S) = R \bowtie \pi_{\alpha \cup \beta} (S), \quad \alpha = \Schema(R), \beta = \Schema(S)
+                        \end{equation*}
+                    % end
+
+                    \paragraph{Entarteter Join} % 5.36
+                        Ein \textit{Entarteter Join} entspricht dem kartesischen Produkt, wobei alle Spalten mit doppeltem Namen im Vorhinein umbenannt wurden, sodass ein echtes kartesisches Produkt entsteht.
+                    % end
+                % end
+            % end
+
+            \subsection{Select-Project-Join-Queries (SPJ-Queries)} % 5.23
+                \begin{itemize}
+                	\item Joins sind äußert wichtig.
+                	\item Wurden Relationen aus Entwurfsgründen zerlegt, können diese während der Abfrage wieder kombiniert werden.
+                	\item Die meistgenutzten Operationen sind Selektion (S), Projektion (P) und Join (J).
+                	\item Sogenannten \textit{SPJ-Queries} enthalten nur Operationen dieser Typen.
+                	\item Relationale DBMS optimieren hauptsächlich SPJ-Queries.
+                \end{itemize}
+            % end
+        % end
+
+        \section{Relationenkalküle} % 5.27, 5.28
+            Im folgenden wird das Relationentupelkalkül (RTK) und das Relationenwertebereichkalkül (RWK) betrachtet, welche Kalküle darstellen zur formalen Bau von Abfragen. Kalküle, also formale logische Sprachen, bestehen aus:
+            \begin{itemize}
+            	\item \textbf{Bausteinen} (z.B. \(\lor\), \(\lnot\), \(\leq\), \dots), welche zu
+            	\item \textbf{wohlgeformten Ausdrücken} zusammengesetzt werden.
+            	\item \textbf{Ableitungs-/Schlussregeln}, um Ausdrücke in abgeleitete Formen zu transformieren (z.B. \( (\emptyset \models \lnot a) \implies (\models \lnot a) \)).
+            	\item \textbf{Axiome}, welche gegebene, nicht ableitbare, Ausdrücke darstellen.
+            \end{itemize}
+        % end
+
+        \section{Relationentupelkalkül (RTK)} % 5.30
+            Die allgemeine Form \( \{ t \forwhich \Psi(t) \} \) mit der Tupelvariablen \(t\) und einer Formel \(\Psi\) besteht aus:
+            \begin{itemize}
+            	\item Atomen
+            		\begin{itemize}
+            			\item Tupelvariable \( r \in R \) aus einer Relation \(R\).
+            			\item Prädikate der Form \( t(\alpha) \Theta r(\beta) \) mit \( \Theta \in \{ =, <, >, \leq, \geq, \cdots \} \).
+            			\item Prädikate der Form \( t(\alpha) \Theta c \) mit einer Konstanten \(c\).
+            		\end{itemize}
+            	\item Formeln
+            		\begin{itemize}
+            			\item Atome sind Formeln.
+            			\item \( \lnot\Psi \), \( \Psi \lor \Phi \), \( \Psi \land \Phi \) sind Formeln (mit Formeln \(\Psi\), \(\Phi\)).
+            			\item \( \forall r \in R (\Psi(r)) \) und \( \exists r \in R (\Psi(r)) \) sind Formen (mit Formel \(\Psi\)).
+            				\begin{itemize}
+            					\item \( \forall \) heißt Allquantor.
+            					\item \( \exists \) heißt Existenzquantor.
+            				\end{itemize}
+            		\end{itemize}
+            \end{itemize}
+        % end
+
+        \section{Relationenwertebereichkalkül (RWK)} % 5.37, 5.38, 5.41
+            Im Relationenwertebereichkalkül (RWK) haben Ausdrücke die allgemeine Form \( \{ x_1 \cdots x_k \forwhich \Psi(x_1 \cdots x_k) \} \) und sind sehr ähnlich zu Ausdrücken im RTK, wobei das RWK spalten- und das RTK zeilenorientiert arbeitet. Die Formel \(\Psi\) besteht aus:
+            \begin{itemize}
+            	\item Atomen
+            		\begin{itemize}
+            			\item \(R(x_1 \cdots x_k)\) mit Relation \(R\) und Wertebereichsvariable oder Konstante \(x_i\).
+            			\item Verhältnis \( x \Theta y \) zwischen zwei Wertebereichsvariablen.
+            			\item Verhältnis \( x \Theta c \) zwischen einer Wertebereichsvariablen und einer Konstante.
+            		\end{itemize}
+            	\item Formeln \\ Analog zum RTK.
+            \end{itemize}
+        % end
+
+        \section{Relationenalgebra vs. Relationentupelkalkül} % 5.33, 5.34
+            \begin{itemize}
+            	\item \textbf{Relationenalgebra} \\ Prozedurale Sprache; Es wird beschrieben, was getan wird.
+            	\item \textbf{Relationentupelkalkül} \\ Deskriptive Sprache; Es wird beschrieben, wie das Ergebnis aussehen soll.
+            	\item Trotz der Unterschiede sind RA und RTK gleich stark in ihrer Aussagekraft (zu jedem RA-Ausdruck gibt es einen RTK-Ausdruck und anders herum).
+            \end{itemize}
+        % end
+
+        \section{RA, RTK, RWK vs. Anfragesprachen} % 5.42
+        	\begin{itemize}
+        		\item \textbf{SQL} ist eine Mischung aus RA und RTK.
+        		\item \textbf{QUEL} ist rein RTK-basierte.
+        		\item \textbf{QBE} ist rein RWK-basierte.
+        	\end{itemize}
+
+            \subsection{Mächtigkeit} % 5.43
+            	Bisher können viele Anfragen nicht von RA und RTK abgedeckt werden, beispielsweise:
+            	\begin{itemize}
+            		\item Arithmetische Operationen
+            		\item Aggregatfunktionen
+            		\item Boolesche Anfragen
+            		\item Rekursive Anfragen
+            		\item Sortieroperationen
+            		\item Umgang mit Duplikaten
+            	\end{itemize}
+            % end
+        % end
+
+        \section{Änderungsoperationne} % 5.44, 5.45
+            \begin{itemize}
+            	\item Zustandsfolge der Datenbank \( \sigma = (\DB_0, \cdots, \DB_\tau, \cdots) \)
+            	\item Eine \textit{Änderungsoperation} überführt die Datenbank vom Zustand \( \DB_\tau \) in einen Zustand \( \DB_{\tau + 1} \).
+            	\item Theoretisch muss jeder Zustand vollständig neu aufgebaut werden.
+            	\item In der Praxis ist dies zu Aufwendig, weshalb Änderungsoperationen \( \DB_{\tau+1} = u(\DB_\tau) \) eingeführt werden.
+            \end{itemize}
+
+            \subsection{Einfügen} % 5.46
+                Sei \( \DB_\tau = (R_1, \cdots, R_i, \cdots, R_n) \) eine Datenbank zum Zeitpunkt \(\tau\) mit den Relationen \( R_1, \cdots, R_n \).
+                
+                Die Grundoperation zum Einfügen eines Tupels \( t \) ist die Vereinigung \( R_i \cup \{t\} \).
+                
+                \begin{equation*}
+	                \DB_{\tau + 1} =
+	                	\begin{cases*}
+		                	(R_1, \cdots, R_i \cup \{t\}, \cdots, R_n) & \text{falls konsistent} \\
+		                	\DB_\tau                                   & \text{sonst}
+	                	\end{cases*}
+                \end{equation*}
+            % end
+
+            \subsection{Löschen} % 5.47
+	            Sei \( \DB_\tau = (R_1, \cdots, R_i, \cdots, R_n) \) eine Datenbank zum Zeitpunkt \(\tau\) mit den Relationen \( R_1, \cdots, R_n \).
+	            
+	            Die Grundoperation zum Löschen eines Tupels \( t \) ist die Differenz \( R_i - \{t\} \).
+	            
+	            \begin{equation*}
+		            \DB_{\tau + 1} =
+			            \begin{cases*}
+				            (R_1, \cdots, R_i - \{t\}, \cdots, R_n) & \text{falls konsistent} \\
+				            \DB_\tau                                & \text{sonst}
+			            \end{cases*}
+	            \end{equation*}
+            % end
+
+            \subsection{Verändern} % 5.48
+	            Sei \( \DB_\tau = (R_1, \cdots, R_i, \cdots, R_n) \) eine Datenbank zum Zeitpunkt \(\tau\) mit den Relationen \( R_1, \cdots, R_n \).
+	            
+	            Die Grundoperation zum Löschen eines Tupels \( t \rightarrow t' \) ist das Löschen und Einfügen im gleichen Schritt \( (R_i - \{t\}) \cup \{t'\} \)
+	            
+	            \begin{equation*}
+		            \DB_{\tau + 1} =
+			            \begin{cases*}
+				            (R_1, \cdots, (R_i - \{t\}) \cup \{t'\}, \cdots, R_n) & \text{falls konsistent} \\
+				            \DB_\tau                                              & \text{sonst}
+			            \end{cases*}
+	            \end{equation*}
+            % end
+        % end
+    % end
+
+    \chapter{Anfragesprachen} % 6
+	    \label{c:sql}
+    
+        \section{Structured Query Language (SQL)} % 6.3, 6.4
+        	\begin{itemize}
+        		\item Anfragesprache für rationale Systeme.
+        		\item Standardisiert durch ANSI und ISO in unterschiedlichen Revisionen.
+        		\item SQL wird von fast alles freien und kommerziellen RDBMS unterstützt.
+        	\end{itemize}
+
+            \subsection{Datentypen} % 6.11
+                \begin{table}[H]
+                	\centering
+                	\begin{tabular}{l | l}
+                		Datentyp & Bedeutung \\ \hline
+                		\lstinline|SMALLINT| & Ganzzahl mit kleinem Wertebereich \\
+                		\lstinline|INT| oder \lstinline|INTEGER| & Ganzzahl mit \enquote{normalem} Wertebereich \\
+                		\lstinline|REAL| & Gleitkommazahlen mit einfacher Genauigkeit \\
+                		\lstinline|DOUBLE PRECISION| & Gleitkommazahlen mit doppelter Genauigkeit \\
+                		\lstinline|FLOAT(p)| & Gleitkommazahlen mit Genauigkeit \(p\) \\
+                		\lstinline|DECIMAL(p, q)| oder \lstinline|DEC(p, q)| oder \lstinline|NUMERIC(p, q)| & Festkommazahlen mit Genauigkeit \(p\) und Nachkommastellen \(q\) \\
+                		\lstinline|CHARACTER(n)| oder \lstinline|CHAR(n)| & Zeichenketter mit fester Länge \(n\) \\
+                		\lstinline|CHARACTER VARYING(n)| oder \lstinline|VARCHAR(n)| & Zeichenkette variabler Länge (max \(n\)) \\
+                		\lstinline|BOOLEAN| & Wahrheitswert (Wahr, Falsch) \\
+                		\lstinline|BIT(n)| & Bitfolge fester Länge \(n\) \\
+                		\lstinline|BIT VARYING(n)| & Bitfolge variabler Länge (max \(n\)) \\
+                		\lstinline|DATE| & Datum \\
+                		\lstinline|TIME| & Uhrzeit \\
+                		\lstinline|TIMESTAMP| & Zeitstempel (Datum und Uhrzeit) \\
+                		\lstinline|INTERVAL| & Zeitintervall
+                	\end{tabular}
+                	\caption{Vordefinierte Datentypen in SQL}
+                \end{table}
+            % end
+
+            \subsection{Wertebereiche} % 6.12
+                Eigene Wertebereiche lassen sich mittels \lstinline|CREATE DOMAIN| anlegen.
+                
+                Die Wertebereiche können statt den vordefinierten Datentypen in Spaltendefinitionen verwendet werden.
+                
+                \paragraph{Beispiel}
+                	\begin{lstlisting}
+CREATE DOMAIN money AS NUMERIC(7, 2);
+CREATE DOMAIN shirt_size AS CHAR(2)
+		DEFAULT 'M'
+		CHECK (VALUE IN ('S', 'M', 'L', 'XL'));
+                	\end{lstlisting}
+                % end
+            % end
+
+            \subsection{\lstinline|NULL|} % 6.16, 6.18
+            	Wird \lstinline|NULL| als Wert in einem Feld gesetzt, kann dies verschiedene Bedeutungen haben:
+            	\begin{itemize}
+            		\item Attribut nicht zutreffend
+            		\item Wert unbekannt
+            		\item Wert existiert nicht
+            		\item Wert ist nicht definiert
+            		\item Wert ist ungültig
+            		\item Wert wurde nicht angegeben
+            		\item Eingefügte Werte bei Verbundoperation
+            	\end{itemize}
+            	
+            	\lstinline|NULL|-Werte haben folgende Eigenschaften:
+            	\begin{itemize}
+            		\item Mit \lstinline|NULL| kann (meist) nicht gerechnet werden.
+            		\item Vergleiche mit \lstinline|NULL| ergeben immer \lstinline|FALSE|.
+            		\item Attribute, die mit \lstinline|NOT NULL| gekennzeichnet sind, können keine \lstinline|NULL|-Werte zugewiesen werden.
+            		\item Attribute des \lstinline|PRIMARY KEY| sind immer \lstinline|NOT NULL|.
+            		\item Anstelle von \lstinline|NULL|-Werten können auch \lstinline|DEFAULT|-Werte definiert werden.
+            	\end{itemize}
+            % end
+        % end
+
+        \section{Datendefinitionssprache (DDL)} % 6.7
+            \subsection{Relationen vs. Tabellen} % 6.8
+                \begin{itemize}
+                	\item In der Relationenalgebra sind Relationen Mengen ohne Duplikate.
+                	\item In SQL sind Relationen Tabellen und können Duplikate enthalten.
+                \end{itemize}
+            % end
+
+            \subsection{Tabellen Erstellen} % 6.9
+                \begin{lstlisting}
+CREATE TABLE *@\textit{tabellenname}@* (
+	*@\( \textit{spaltenname}_1 \)@* *@\( \textit{wertebereich}_1 \)@* [DEFAULT *@\textit{wert}@*] [NOT NULL],
+		*@\( \cdots \)@*
+	*@\( \textit{spaltenname}_n \)@* *@\( \textit{wertebereich}_n \)@* [DEFAULT *@\textit{wert}@*] [NOT NULL]
+	[, *@\( \textit{primary-key-definition} \) @*]
+	[, *@\( \textit{primary-key-definition}_1 \) @*]
+		*@\( \cdots \)@*
+	[, *@\( \textit{primary-key-definition}_k \) @*]
+);
+                \end{lstlisting}
+            % end
+
+            \subsection{Tabellen Löschen} % 6.13
+                \begin{lstlisting}
+DROP TABLE *@\textit{tabellenname}@* [CASCADE | RESTRICT];
+                \end{lstlisting}
+                
+                \begin{itemize}
+                	\item Löscht die eigentliche Tabelle mit allen enthaltenen Daten.
+                	\item Löscht das dazugehörige Relationsschema.
+                	\item Löscht die angelegten Indexstrukturen.
+                	\item Löschverhalten:
+                		\begin{description}[leftmargin = 2cm]
+                			\item[Cascade] Abhängige Sichten und Integritätsbedingungen löschen.
+                			\item[Restrict] Verweigerung des Löschens, falls abhängige Sichten oder Integritätsbedingungen existieren.
+                		\end{description}
+                \end{itemize}
+            % end
+
+            \subsection{Tabellen Ändern} % 6.14
+				\begin{lstlisting}
+ALTER TABLE *@\textit{tabellenname}@*
+		ADD [COLUMN] *@\textit{spaltendefinition}@*
+	  | ALTER [COLUMN] *@\textit{spaltenname}@* *@\textit{spaltenänderung}@*
+	  | DROP [COLUMN] *@\textit{spaltenname}@* [CASCADE | RESTRICT]
+	  | ADD CONSTRAINT *@\textit{ib\_definition}@*
+	  | DROP CONSTRAINT *@\textit{ib\_name}@* [CASCADE | RESTRICT]
+				\end{lstlisting}
+            % end
+
+            \subsection{Integritätsbedingungen} % 6.19, 6.20
+                \begin{itemize}
+                	\item Sichere Annahmen über Daten in der Datenbank.
+                	\item Integritätsbedingungen stellen sicher, dass die Datenbank konsistent ist.
+                	\item Integritätsbedingungen können sich beziehen auf:
+                		\begin{itemize}
+                			\item einzelne Spalten (Spaltenbedingungen),
+                			\item einzelne Tabellen (Tabellenbedingungen),
+                			\item Datenbankschema (tabellenübergreifende Bedingungen) und
+                			\item Wertebereiche
+                		\end{itemize}
+                	\item Modellinhärente Integritätsbedingungen
+                		\begin{itemize}
+                			\item \lstinline|NOT NULL| bei bestimmten Attributen
+                			\item \lstinline|UNIQUE| - Eindeutigkeit, insbesondere von Schlüsseln
+                			\item \lstinline|PRIMARY KEY| und \lstinline|FOREIGN KEY| - referentielle Integrität
+                		\end{itemize}
+                	\item Anwendungsbezogene Integritätsbedingungen
+                		\begin{itemize}
+                			\item \lstinline|CHECK| - Überprüfung von Bedingungen auf einer Tabelle (z.B. \lstinline|CHECK (Alter >= 0)|)
+                			\item \lstinline|ASSERTIONS| - Tabellenübergreifende Integritätsbedingungen (z.B. Kontostand muss der Summe der Buchungen entsprechen)
+                		\end{itemize}
+                \end{itemize}
+
+                \subsubsection{Eindeutigkeit (\lstinline|UNIQUE|)} % 6.21
+                    \begin{itemize}
+                    	\item Forderung der Eindeutigkeit über die gesamte Tabelle.
+                    	\item[] \( \approx \) Superschlüssel
+                    \end{itemize}
+                
+                	\paragraph{Beispiel}
+                		\begin{lstlisting}
+ALTER TABLE buecher ADD CONSTRAINT UNIQUE(autor, titel, auflage);
+                		\end{lstlisting}
+                	% end
+                % end
+
+                \subsubsection{Primärschlüssel} % 6.22
+                    \begin{itemize}
+                    	\item Gewählter Schlüsselkandidat (minimal und eindeutig) \(\rightarrow\) Primärschlüssel.
+                    	\item Der Primärschlüssel ist immer \lstinline|NOT NULL| und \lstinline|UNIQUE|.
+                    	\item Ein Primärschlüssel kann auch aus mehreren Attributen zusammengesetzt sein, diese werden dann mit Kommas getrennt.
+                    \end{itemize}
+                
+                	\paragraph{Beispiel}
+                		\begin{lstlisting}
+CREATE TABLE buecher ( [*@\( \cdots \)@*],
+	PRIMARY KEY (isbn)
+);
+
+ALTER TABLE buecher ADD CONSTRAINT PRIMARY KEY (isbn);
+                		\end{lstlisting}
+                	% end
+                % end
+
+                \subsubsection{Fremdschlüssel} % 6.23, 6.24, 6.26, 6.27
+                    \begin{itemize}
+                    	\item Die Fremdschlüssel (Foreign Keys) einer Tabelle ist eine Attributmenge, welche mit referentieller Integrität auf eine andere Tabelle verweist.
+                    	\item Wie beim Primärschlüssel kann auch ein Fremdschlüssel zusammengesetzt sein.
+                    \end{itemize}
+                
+                	\paragraph{Syntax}
+                		\begin{lstlisting}
+[*@\( \cdots \)@*]
+FOREIGN KEY (*@\textit{referenzierendes\_attribute}@*)
+	REFERENCES *@\textit{referenzierte\_tabelle}@* [(*@\textit{referenzierte\_attribute}@*)]
+	[MATCH FULL | MATCH PARTIAL]
+	[*@\textit{referenzielle\_aktionen}@*]
+[*@\( \cdots \)@*]
+                		\end{lstlisting}
+                		
+                		Mit folgenden referentiellen Aktionen (Triggern):
+                		\begin{lstlisting}
+ON UPDATE | ON DELETE
+CASCADE | SET DEFAULT | SET NULL | NO ACTION
+                		\end{lstlisting}
+                	% end
+                
+                	\paragraph{Beispiel}
+                		\begin{lstlisting}
+CREATE TABLE buecher ( [*@\( \cdots \)@*],
+	FOREIGN KEY (autorId) REFERENCES autor(id)
+);
+                		\end{lstlisting}
+                	% end
+                	
+                	\paragraph{Referentielle Integrität}
+                		Fremdschlüssel (FK, K wie Schlüssel) verweisen auf die Attributmenge \( \alpha \) einer anderen Tabelle. Es gilt referentielle Integrität:
+                		\begin{itemize}
+                			\item Die Attributmenge \(\alpha\) der Zieltabelle muss \lstinline|PRIMARY KEY| oder \lstinline|UNIQUE| sein.
+                			\item Neue Datensätze können nur eingefügt werden, wenn die Werte des FK in der referenzierten Tabelle als Wert vorkommen.
+                			\item Änderungen oder Löschungen sind nur genau dann möglich, wenn keine abhängigen Datensätze existieren.
+                		\end{itemize}
+                	
+                		Bei \lstinline|NULL| hängt \enquote{vorkommen} oder \enquote{verweisen} davon ab, ob \lstinline|MATCH FULL| oder \lstinline|MATCH PARTIAL| übergeben wurde:
+                		\begin{itemize}
+                			\item \lstinline|MATCH NONE| (Standard): \lstinline|NULL| im FK heißt \enquote{Zeile wird nicht geprüft}.
+                			\item \lstinline|MATCH PARTIAL|: Ein Teil des FK kann \lstinline|NULL| sein, der Rest wird geprüft.
+                			\item \lstinline|MATCH FULL|: FK muss entweder ganz \lstinline|NULL| oder ganz non-\lstinline|NULL| sein.
+                		\end{itemize}
+                	% end
+                	
+                	\paragraph{Referentielle Aktionen (Trigger)}
+						\begin{itemize}
+							\item \lstinline|CASCADE|
+								\begin{itemize}
+									\item Ändert sich ein referenziertes Attribut, so wird auch das referenzierende Attribut angepasst.
+									\item Bei Löschung wird die referenzierende Zeile ebenfalls gelöscht!
+								\end{itemize}
+							\item \lstinline|SET NULL| bzw. \lstinline|SET DEFAULT|
+								\begin{itemize}
+									\item Setzt den FK auf \lstinline|NULL| oder einen Standardwert, wenn der bestehende Wert nicht länger in der referenzierten Tabelle existiert.
+								\end{itemize}
+							\item \lstinline|NO ACTION| (Standard)
+								\begin{itemize}
+									\item Lässt eine Änderung nicht zu \(\rightarrow\) Fehlermeldung
+								\end{itemize}
+						\end{itemize}
+                	% end
+                % end
+            % end
+
+            \subsection{Tabellentypen} % 6.28
+                \begin{itemize}
+                	\item Persistente Basistabellen
+                		\begin{itemize}
+                			\item Persistente, also dauerhafte, sitzungsübergreifende Tabellendefinition und Ausprägung.
+                			\item Definition mittels \lstinline|CREATE TABLE|.
+                		\end{itemize}
+                	\item Temporäre Basistabellen
+                		\begin{itemize}
+                			\item Die Ausprägung der Tabelle besteht nichtsitzungsübergreifend und nicht persistent.
+                			\item Gedacht für kurzzeitig benötigte Daten, z.B. Berechnungsergebnisse.
+                			\item Daten werden bei Sitzungsende automatisch gelöscht, kein \lstinline|DROP| nötig.
+                			\item Verschiedene Untertypen.
+                		\end{itemize}
+                \end{itemize}
+            % end
+        % end
+
+        \section{Datenabfragesprachen (DQL)} % 6.34, 6.35
+            \begin{itemize}
+            	\item Abfrage der in der Datenbank gespeicherten Daten.
+            	\item Implementiert RA/RTK/RWK und weitere Operationen.
+            \end{itemize}
+
+            \subsection{\lstinline|SELECT|} % 6.36, 6.43
+                \begin{lstlisting}
+SELECT { * | *@\(\textit{spalte}_1\)@*, [*@\(\cdots\)@*] *@\(\textit{spalte}_n\)@* }
+FROM   *@\(\textit{tabelle}_1\)@*, [*@\(\cdots\)@*] *@\(\textit{tabelle}_n\)@*
+[WHERE *@\textit{bedingung}@*];
+                \end{lstlisting}
+                
+                \begin{itemize}
+                	\item RA-Ausdruck: \( \pi_{ \textit{spalte}_1, \cdots, \textit{spalte}_n } ( \sigma _ \textit{bedingung} ( \textit{tabelle}_1 \times \cdots \times \textit{tabelle}_n ) ) \)
+                \end{itemize}
+            % end
+
+            \subsection{Projektion} % 6.37
+                \begin{lstlisting}
+SELECT *@\textit{attributsliste}@*
+FROM   *@\textit{tabelle}@*;
+                \end{lstlisting}
+                
+                \begin{itemize}
+                	\item RA-Ausdruck: \( \pi _ \textit{attributsliste} (\textit{tabelle}) \)
+                \end{itemize}
+            % end
+
+            \subsection{Selektion} % 6.38
+                \begin{lstlisting}
+SELECT *
+FROM   *@\textit{tabelle}@*
+WHERE  *@\textit{bedingung}@*;
+                \end{lstlisting}
+                
+                \begin{itemize}
+                	\item RA-Ausdruck: \( \sigma _ \textit{tabelle} (\textit{tabelle}) \)
+                \end{itemize}
+            % end
+
+            \subsection{Selektionsbedingung} % 6.39
+                \begin{itemize}
+                	\item Analog zu RA/RTK:
+                		\begin{itemize}
+                			\item \textbf{Konstantenselektion:} \( \textit{attribut} \circ \textit{konstante} \)
+                			\item \textbf{Attributselektion:} \( \textit{attribut}_1 \circ \textit{attribut}_2 \)
+                			\item \textbf{Logische Verknüpfungen:} \(f_1\) \lstinline|AND| \(f_2\), \(f_1\) \lstinline|OR| \(f_2\), \lstinline|NOT| \(f_1\)
+                			\item Mit Vergleichsoperation \(\circ\), abhängig vom Wertebereich:
+                				\begin{itemize}
+                					\item Beispiel Ganzzahlen: \( \circ \in \{ \texttt{=}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{<>} \} \)
+                				\end{itemize}
+                		\end{itemize}
+               		\item Zusätzlich:
+               			\begin{itemize}
+               				\item \textbf{Nullselektion:} \textit{attribut} \lstinline|IS NULL|
+               				\item \textbf{Intervallbedingung:} \textit{attribut} \lstinline|BETWEEN| \(\textit{konst}_1\) \lstinline|AND| \(\textit{konst}_2\)
+               				\item \textbf{Verbundbedingung:} \(\textit{tabelle}_1\)\lstinline|.|\(\textit{attribut}_1\) \lstinline|=| \(\textit{tabelle}_2\)\lstinline|.|\(\textit{attribut}_2\)
+               				\item \textbf{Ähnlichkeitsselektion:} \textit{attribut} \lstinline|LIKE| \textit{muster}
+               			\end{itemize}
+                \end{itemize}
+
+                \subsubsection{Ähnlichkeitsbedingung} % 6.40
+                    \begin{itemize}
+                    	\item Finden von ähnlichen Zeichenketten:
+                    	\item[] \textit{attribut} \lstinline|[NOT] LIKE| \textit{muster} \lstinline|[ESCAPE| \textit{zeichen} \lstinline|]|
+                    	\item Das Muster kann Wildcards enthalten:
+                    		\begin{itemize}
+                    			\item Platzhalter für ein beliebiges Zeichen: \textbf{\texttt{\_}}
+                    			\item Platzhalter für mehrere (oder keine) beliebige Zeichen: \textbf{\texttt{\%}}
+                    		\end{itemize}
+                    	\item Um nach Wildcards zu suchen, kann ein Escape-Zeichen definiert werden.
+                    \end{itemize}
+                % end
+            % end
+
+            \subsection{Mengenoperationen} % 6.44
+            	Vereinigung, Schnitt, Differenz:
+                \begin{lstlisting}
+SELECT [*@\(\cdots\)@*]
+{ UNION | INTERSECT | EXCEPT } [ALL | DISTINCT]
+SELECT [*@\(\cdots\)@*]
+                \end{lstlisting}
+                
+                \begin{itemize}
+                	\item RA-Ausdrücke: \( R \cup S \), \( R \cap S \), \( R - S \)
+                	\item Das Ergebnis ist eine Multimenge (\lstinline|ALL|) oder eine Menge (\lstinline|DISTINCT|, Standard).
+                \end{itemize}
+            % end
+
+            \subsection{Duplikate} % 6.46
+                \begin{lstlisting}
+SELECT DISTINCT *@\textit{attribute}@*
+FROM            *@\textit{tabellen}@*;
+                \end{lstlisting}
+                
+                \begin{itemize}
+                	\item Das Ergebnis wird von einer Multimenge zu einer Menge.
+                	\item Das Ergebnis enthält somit keine Duplikate mehr.
+                \end{itemize}
+            % end
+
+            \subsection{Sortierung} % 6.47
+            	\begin{lstlisting}
+SELECT *@\textit{attribute}@*
+FROM   *@\textit{tabelle}@*
+ORDER BY *@attribut@* [ ASC | DESC ], [*@\(\cdots\)@*];
+            	\end{lstlisting}
+            	
+            	\begin{itemize}
+            		\item Sortiert die Ergebnisse in der gegebenen Spaltenreihenfolge.
+            		\item Die Sortierrichtung wird durch \lstinline|ASC| (Ascending, Aufsteigend) und \lstinline|DESC| (Descending, Absteigend) angegeben.
+            	\end{itemize}
+	            
+	            \paragraph{Beispiel}
+	            	\begin{lstlisting}
+SELECT *
+FROM   buecher
+ORDER BY titel ASC, jahr DESC;
+	            	\end{lstlisting}
+	            % end
+            % end
+
+			\subsection{Bedingungen über Tabellen} % 6.48
+				Folgende Operatoren können auf ganze Tabellen \texttt{T} angewendet werden, sie ergeben dabei \lstinline|TRUE| oder \lstinline|FALSE|:
+				\begin{itemize}
+					\item \lstinline|EXISTS T|  \tabto{2.5cm} Prüft, ob T nicht leer ist.
+					\item \lstinline|s IN T|    \tabto{2.5cm} Prüft, ob ein \texttt{s} in \texttt{T} existiert.
+					\item \lstinline|s > ALL T| \tabto{2.5cm} Prüft, ob \texttt{s} größer ist als alle Werte in \texttt{T}.
+					\item \lstinline|s > ANY T| \tabto{2.5cm} Prüft, ob \texttt{s} größer ist als mindestens ein Wert in \texttt{T}.
+					\item Sämtliche Bedingungen können mit \lstinline|NOT| negiert werden.
+					\item Anstelle von \enquote{Größer} sind natürlich auch andere Vergleichsoperatoren möglich.
+				\end{itemize}
+			% end
+
+            \subsection{Verschaltete Abfragen} % 6.48, 6.49
+            	\begin{itemize}
+            		\item Anstelle von Bedingungen über Tabellen kann auch eine verschachtelte Anfrage genutzt werden.
+            	\end{itemize}
+
+				\begin{lstlisting}
+SELECT *@\(\cdots\)@*
+FROM   *@\(\cdots\)@*
+WHERE  *@\(\cdots\)@* IN (
+	SELECT *@\(\cdots\)@*
+	FROM   *@\(\cdots\)@*
+	[*@\(\cdots\)@*]
+)
+				\end{lstlisting}
+            % end
+
+            \subsection{Tupelvariablen und Produkt} % 6.51
+                \begin{itemize}
+                	\item Werden mehrere Tabellen in der \lstinline|FROM|-Klausel angegeben, so werden diese kartesisch multipliziert.
+                	\item Dann müssen in der \lstinline|SELECT|-Klausel auch die Tabellen angegeben werden, von denen selektiert wird.
+                \end{itemize}
+            % end
+
+            \subsection{SQL und Relationentupelkalkül} % 6.52
+                SQL realisiert in großen Teilen das RTK, wobei die Attribute hinter dem \lstinline|SELECT| die Tupelvariablen und die \lstinline|WHERE|-Klausel die beschreibende Formel realisieren.
+            % end
+
+            \subsection{Verbund (Join)} % 6.53, 6.55
+                Durch das Selektieren von mehreren Tabellen wurde bereits ein Verbund erreicht, mit Einführung einer \lstinline|WHERE|-Bedingung kann ein allgemeiner Theta-Join gebaut werden:
+                \begin{lstlisting}
+SELECT *@\textit{attribute}@*
+FROM   *@\(\textit{tabelle}_1\)@*, *@\(\textit{tabelle}_2\)@*
+WHERE  *@\(\textit{tabelle}_1\)@*.*@\(\textit{spalte}_1\)@* = WHERE *@\(\textit{tabelle}_2\)@*.*@\(\textit{spalte}_2\)@* [AND *@\(\cdots\)@*]
+                \end{lstlisting}
+                entspricht dem RA-Ausdruck \( \textit{tabelle}_1 \bowtie_{\textit{spalte}_1 = \textit{spalte}_2} \textit{tabelle}_2 = \sigma _ {  \textit{spalte}_1 = \textit{spalte}_2 } (\textit{tabelle}_1 \times \textit{tabelle}_2) \).
+                
+                In SQL gibt, um klar zwischen Join und Selektion zu unterscheiden, einen \lstinline|JOIN|-Operator, der noch deutlich mehr Arten von Joins unterstützt:
+                \begin{itemize}
+                	\item \lstinline|r CROSS JOIN s| \tabto{3.5cm} Kartesisches Produkt \( R \times S \)
+                	\item \lstinline|r UNION JOIN s| \tabto{3.5cm} Vereinigungsmenge \( R \cup S \) \\ Keine Schemakompatibilität erforderlich (nicht vereinbares wird \lstinline|NULL| gesetzt).
+                	\item \lstinline|r NATURAL JOIN s| \tabto{3.5cm} Natürlicher Verbund \( R \bowtie S \)
+                	\item \lstinline|r [INNER] JOIN s ON r.a| \(\Theta\) \lstinline|s.b| \tabto{6.5cm} Theta-Join \( R \bowtie _ { a \Theta b } S \)
+                	\item \lstinline|r { LEFT ||\lstinline| RIGHT ||\lstinline| FULL } [OUTER] JOIN s ON r.a| \(\Theta\) \lstinline|r.b|
+                \end{itemize}
+            % end
+
+            \subsection{Spaltenumbenennung} % 6.63
+                \begin{itemize}
+                	\item Spalten können mit \lstinline|AS| umbenannt werden.
+                	\item Damit kann der Zugriff aus Programmiersprachen und die Lesbarkeit der Ergebnisse erhöht werden.
+                \end{itemize}
+            % end
+
+            \subsection{(Aggregat-) Funktionen} % 6.63
+                \begin{itemize}
+                	\item In SQL gibt es zahlreiche Funktionen, um die Ergebnisse zu manipulieren.
+                	\item Beispiele:
+                		\begin{itemize}
+                			\item \lstinline|POSITION(s IN t)| Position von \texttt{s} in \texttt{t} (beginnend bei 1).
+                			\item \lstinline|SUBSTRING(s FROM p TO l)| Teilstring aus \texttt{s} mit Länge \texttt{l}, beginnend bei \texttt{p}.
+                		\end{itemize}
+               		\item Zur Zusammenfassung von den Werten aller Zeilen in eine Spalte gibt es noch viele Aggregatfunktionen:
+               			\begin{itemize}
+               				\item \lstinline|COUNT(| \textit{ausdruck} \lstinline|)|: Anzahl der Werte inklusive \lstinline|NULL|.
+               				\item \lstinline|MAX(| \textit{ausdruck} \lstinline|)|: Maximaler Wert ohne \lstinline|NULL|.
+               				\item \lstinline|MIN(| \textit{ausdruck} \lstinline|)|: Minimaler Wert ohne \lstinline|NULL|.
+               				\item \lstinline|SUM(| \textit{ausdruck} \lstinline|)|: Summe der Werte ohne \lstinline|NULL|.
+               				\item \lstinline|AVG(| \textit{ausdruck} \lstinline|)|: Durchschnitt der Werte ohne \lstinline|NULL|.
+               			\end{itemize}
+               		\item Durch die verschiedene Behandlung von \lstinline|NULL| durch \lstinline|COUNT|, \lstinline|SUM| und \lstinline|AVG| gilt \lstinline|SUM / COUNT = AVG| im Allgemeinen nicht!
+                \end{itemize}
+            % end
+
+            \subsection{Gruppierung} % 6.66
+            	\begin{itemize}
+            		\item Aggregierte Werte können gruppiert werden, indem die \lstinline|GROUP BY|-Klausel verwendet wird.
+            		\item Attribute, welche nicht Gruppiert wurden, dürfen dann nur in aggregierter Form vorkommen.
+            		\item Die \lstinline|HAVING|-Klausel darf ausschließlich Gruppierungsattribute und aggregierte Attribute verwenden und entspricht einem \lstinline|WHERE| auf den Gruppierungen.
+            	\end{itemize}
+            
+            	\begin{lstlisting}
+SELECT   *@\textit{grupierungsattribut}@*, *@\textit{aggregierte nicht-gruppierungsattribute}@*
+FROM     *@\textit{tabelle}@*
+[WHERE   *@\textit{bedingungen}@*]
+GROUP BY *@\textit{gruppierungsattribut}@*
+[HAVING   *@\textit{grupierungsbedingung}@*];
+            	\end{lstlisting}
+            % end
+        % end
+
+        \section{Datenmanipulationssprache (DML)} % 6.69, 6.70
+            \begin{itemize}
+            	\item Mit der DML können die Daten in der Datenbank verändert werden.
+            		\begin{itemize}
+            			\item Einfügen von Tupeln: \lstinline|INSERT|
+            			\item Aktualisieren von Tupeln: \lstinline|UPDATE|
+            			\item Löschen von Tupeln: \lstinline|DELETE|
+            		\end{itemize}
+            	\item Veränderungen können dabei einzelne oder auch mehrere Tupel betreffen.
+            	\item Werden Integritätsbedingungen verletzt, wird die Änderung nicht akzeptiert.
+            \end{itemize}
+
+            \subsection{Daten Löschen} % 6.71
+                \begin{lstlisting}
+DELETE FROM *@\textit{tabelle}@*
+[WHERE *@\textit{bedingung}@*];
+                \end{lstlisting}
+                
+                \begin{itemize}
+                	\item Die Bedingung funktioniert genau so wie bei einem \lstinline|SELECT|.
+                	\item Eine Löschung bezieht sich immer auf genau eine Tabelle, auch wenn andere Tabellen in der Bedingung vorkommen dürfen.
+                \end{itemize}
+
+                \subsubsection{Alle Daten Löschen} % 6.73
+                    \begin{lstlisting}
+TRUNCATE TABLE *@\textit{tabelle}@*;
+                    \end{lstlisting}
+                    
+                    \begin{itemize}
+                    	\item Löscht alle Daten der Tabelle, logisch äquivalent zu \lstinline|DELETE FROM| \textit{tabellenname}.
+                    	\item In der Praxis aber meist schneller, da ausschließlich der \enquote{Füllgrad} der Tabelle auf 0 gesetzt wird und neue Daten somit die alten überschreiben und diese nicht explizit gelöscht werden müssen.
+                    \end{itemize}
+                % end
+            % end
+
+            \subsection{Daten Ändern} % 6.74
+                \begin{lstlisting}
+UPDATE *@\textit{tabelle}@*
+SET *@\(\textit{spalte}_1\)@* = *@\(\textit{ausdruck}_1\)@*, [*@\(\cdots\)@*] *@\(\textit{spalte}_n\)@* = *@\(\textit{ausdruck}_n\)@*
+[WHERE *@\textit{bedingung}@*];
+                \end{lstlisting}
+                
+                \begin{itemize}
+                	\item Wurde keine \lstinline|WHERE|-Klausel angegeben, so bezieht sich die Änderung auf die gesamte Tabelle.
+                	\item Der Ausdruck kann ein konstanter oder berechneter Wert sein.
+                \end{itemize}
+            % end
+
+            \subsection{Daten Einfügen} % 6.76
+                \begin{lstlisting}
+INSERT INTO *@\textit{tabelle}@* [(*@\(\textit{spalte}_1\)@*, [*@\(\cdots\)@*] *@\(\textit{spalte}_n\)@*)]
+VALUES *@(\(\textit{wert}_{1,1}\)@*, [*@\(\cdots\)@*] *@\(\textit{wert}_{1,n}\)@*), [*@\(\cdots\)@*] (*@\(\textit{wert}_{k,1}\)@*, [*@\(\cdots\)@*] *@\(\textit{wert}_{k,n}\)@*);
+
+INSERT INTO *@\textit{tabelle}@* [(*@\(\textit{spalte}_1\)@*, [*@\(\cdots\)@*] *@\(\textit{spalte}_n\)@*)]
+VALUES (SELECT [*@\(\cdots\)@*]);
+                \end{lstlisting}
+                
+                \begin{itemize}
+                	\item Die Liste der Spaltennamen ist optional. Wurden keine angegeben, so müssen die Werte genau zu dem Schema der Tabelle passen.
+                	\item Nicht in der Spaltenliste angegebene Attribute werden mit \lstinline|NULL| oder dem Default-Wert belegt.
+                	\item Auch kann ein verschachtelte Anfrage angegeben werden, um bspw. Daten zu kopieren.
+                \end{itemize}
+            % end
+        % end
+
+        \section{Weiterführende Themen} % 6.78
+            \subsection{Sichten (Views)} % 6.79, 6.80, 6.81, 6.82
+            	\begin{lstlisting}
+CREATE VIEW *@\textit{sichtname}@* AS
+	*@\(anfrage\)@*
+[ WITH [CASCADE | LOCAL] CHECK OPTION ];
+
+DROP VIEW *@\textit{sichtname}@*;
+            	\end{lstlisting}
+            	
+            	\begin{itemize}
+            		\item Mit Sichten (Views) könne virtuelle Tabellen angelegt werden, auf denen Anfragen ausgeführt werden können.
+            		\item Theoretisch kann man Views auch vollständig durch geschachtelte Anfragen ersetzen, dies kann aber sehr unübersichtlich werden.
+            		\item Die Abfrage werden aber meist nicht gespeichert, sondern jedes Mal neu erstellt! \(\implies\) Vorsicht bei großen Anfragen.
+            		\item Mit \lstinline|CHECK OPTION| wird verhindert, dass für die Sicht nicht sichtbare Daten geändert werden.
+            	\end{itemize}
+            
+            	\paragraph{Vorteile}
+            		\begin{itemize}
+            			\item Vereinfachung von Anfragen
+            			\item Zuschnitt auf die Bedürfnisse des Nutzers/der Anwendung
+            			\item Logische Datenunabhängigkeit (bei Änderungen der darunterliegenden Struktur kann eine Sicht dennoch die gleichen Ergebnisse liefern)
+            			\item Zugriffskontrolle
+            		\end{itemize}
+            	% end
+            	
+            	\paragraph{Probleme}
+            		Durch Anwendung von Änderungsoperationen auf Sichten könne viele Probleme entstehen:
+            		\begin{itemize}
+            			\item \textbf{Effektkonformität:} Aktualisierung der Sicht sollte den gleichen Effekt haben wie Aktualisierungen an den Tabellen.
+            			\item \textbf{Minimalität:} Die Datenbank sollte so wenig wie möglich geändert werden, um den gewünschten Effekt zu erzielen.
+            			\item \textbf{Konsistenzerhaltung:} Integritätsbedingungen dürfen nicht verletzt werden.
+            			\item \textbf{Zugriffskontrolle:} Aktualisierungen dürfen nur die von der Sicht eingeschlossenen Daten betreffen.
+            		\end{itemize}
+            	% end
+            % end
+        % end
+    % end
+
+    \chapter{SQL und Programmiersprachen} % 7
+	    \label{c:sql_java}
+
+        \section{Datenbankanfragen} % 7.3
+        	Anfragen an die Datenbank, bzw. das DBMS, können auf zwei grundlegend verschiedene Arten gestellt werden:
+            \begin{itemize}
+            	\item Ad-Hoc von einem Nutzer über die Kommandozeile oder Query-Tool.
+            	\item Durch eine Anwendung, welche die Daten mglw. weiter verarbeitet.
+            \end{itemize}
+        % end
+
+        \section{Cursor} % 7.7, 7.8
+            \begin{itemize}
+            	\item Die meisten Programmiersprachen haben keine Mengen, sondern erwarten einzelne Tupel.
+            	\item Dieses Tupel (das Ergebnistupel), eine Array-artige Struktur, wird nacheinander mit Daten befüllt.
+            	\item Dies wird mit Hilfe eines Cursors umgesetzt.
+            \end{itemize}
+        
+        	\begin{lstlisting}
+DECLARE *@\textit{cursorname}@* CURSOR FOR *@\textit{query}@*;
+
+OPEN *@\textit{cursorname}@*;
+
+-- Laden des ersten Ergebnistupels.
+FETCH *@\textit{cursorname}@*;
+-- Laden des zweiten Ergebnistupels.
+FETCH *@\textit{cursorname}@*;
+*@\(\cdots\)@*
+-- Laden des letzten Ergebnistupels.
+FETCH *@\textit{cursorname}@*;
+-- Versuch, noch eines zu laden.
+-- Dieses ist leer --> letztes Element erreicht.
+FETCH *@\textit{cursorname}@*;
+
+CLOSE *@\textit{cursorname}@*;
+        	\end{lstlisting}
+        % end
+
+        \section{Zugriff aus Java} % 7.4, 7.5
+            \begin{lstlisting}[language = Java]
+void insertBook() throws SQLException {
+	try (Connection con = DriverManager.getConnection("jdbc:postgresql://user:password@localhost:3306/library");
+			Statement stmt = con.createStatement()) {
+		stmt.execute("INSERT INTO books (title, author, price) VALUES ('Java ist auch eine Insel', 'Christian Ullenboom', 4990)");
+	}
+}
+            \end{lstlisting}
+            
+            \begin{itemize}
+            	\item Zum Zugriff auf eine Datenbank aus Java muss ein JDBC-Treiber geladen werden.
+            	\item Für PostgreSQL gibt es bspw. einen Treiber unter \HREF{https://jdbc.postgresql.org/download.html}.
+            \end{itemize}
+
+            \subsection{Abfragen} % 7.6
+                \begin{lstlisting}[language = Java]
+void listBooks(Connection con) throws SQLException {
+	val stmt = con.createStatement();
+
+	// Declare cursor.
+	ResultSet result = stmt.executeQuery(SELECT title, author FROM books)
+
+	// Fetch tupel.
+	while (result.next()) {
+		System.out.println(result.getString(1) + " von " + result.getString(2));
+	}
+
+	// Close cursor.
+	result.close();
+
+	stmt.close();
+}
+                \end{lstlisting}
+            % end
+
+            \subsection{Wiederkehrende Anfragen} % 7.10, 7.11
+            	Da Anfragen, werden sie mit \texttt{executeQuery(\(\cdots\))} ausgeführt, erst vorbereitet werden müssen, können \texttt{PreparedStatement}s verwendet werden, damit der Query nur einmal vorbereitet werden muss und mehrmals ausgeführt werden kann:
+            	\begin{lstlisting}[language = Java]
+void doThings(Connection con) throws SQLException {
+	// Prepare the query.
+	val pstmt = conn.prepareStatement("SELECT author, title FROM books");
+
+	// Execute the query multiple times without preparing it ever again.
+
+	val resultSet = pstmt.executeQuery();
+	*@\(\cdots\)@*
+	resultSet.close();
+
+	*@\(\cdots\)@*
+
+	val resultSet = pstmt.executeQuery();
+	*@\(\cdots\)@*
+	resultSet.close();
+
+	pstmt.close();
+}
+            	\end{lstlisting}
+            % end
+
+            \subsection{Parametrisierte Anfragen} % 7.12, 7.13
+				Werden dynamisch Queries einfach durch Konkatenation aufgebaut, ist dieser Code anfällig für SQL Injection.
+				
+				Besser werden auch hier \texttt{PreparedStatement}s genutzt, welche die Parameter korrekt Escapen:
+				\begin{lstlisting}[language = Java]
+// Condition: titles.length == authors.length == prices.length
+void insertBooks(String[] titles, String[] authors, int[] prices) {
+	val pstmt = conn.prepareStatement("INSERT INTO books (title, author, price), (?, ?, ?)");
+
+	for (int i = 0; i < titles.length; i++) {
+		String title = titles[i];
+		String authors = authors[i];
+		int price = prices[i];
+
+		pstmt.setString(1, title);
+		pstmt.setAuthor(2, author);
+		pstmt.setInt(3, price);
+		pstmt.execute();
+	}
+
+	pstmt.close();
+}
+				\end{lstlisting}
+            % end
+        % end
+
+        \section{SQL Injection} % 7.14
+			Wird ein Query wie
+			\begin{lstlisting}[language = Java]
+stmt.executeQuery("SELECT hash FROM users WHERE username = '" + login + "'");
+			\end{lstlisting}
+			aufgebaut, dann kann ein Nutzer durch die Eingabe von \texttt{Fabian'; DROP DATABASE library;} das System zur Ausführung von folgendem Query verleiten:
+			\begin{lstlisting}
+SELECT hash FROM users WHERE username = 'Fabian'; DROP DATABASE library;'
+			\end{lstlisting}
+			wodurch die gesamte Datenbank gelöscht wird.
+        % end
+
+        \section{Objektrelationale Abbildung (ORM)} % 7.15
+            \begin{itemize}
+            	\item Durch ORM können Tabellen direkt und automatisch auf Objekte abgebildet werden.
+            	\item Damit entfällt das manuelle Lesen der Daten und das Ausdenken eines Schemas.
+            	\item Somit ist ein höherer Abstraktionsgrad möglich.
+            	\item Das bekannteste Framework für ORMs ist Hibernate (\HREF{https://hibernate.org/}).
+            	\item Für weitere Informationen siehe unter anderem \HREF{https://vimeo.com/28885655}.
+            \end{itemize}
+        % end
+    % end
+
+    \chapter{Transaktionen und Mehrbenutzerbetrieb} % 8
+	    \label{c:transactions}
+
+        \section{Transaktionen} % 8.3, 8.4
+        	\begin{itemize}
+        		\item Eine \textit{Transaktion} ist ein atomarer Prozess, der eine Datenbank von einem konsistenten in einen anderen konsistenten Zustand überführt.
+        		\item Eine Transaktion ist die minimale Prozesseinheit in einem Datenbanksystem.
+        		\item Transaktionen werden gestartet (BOT, Begin of Transaction) und gestoppt (EOT, End of Transaction).
+        		\item Zwischen BOT und EOT stehen:
+        			\begin{itemize}
+        				\item SQL-Anfragen zur Manipulation, Abfrage, etc. von Daten
+        				\item Programmteile einer anderen Programmiersprache, die nicht an das DBMS übergeben werden.
+        			\end{itemize}
+        	\end{itemize}
+
+            \subsection{Terminierung} % 8.5, 8.7
+            	Eine Transaktion muss immer terminieren.
+                \begin{itemize}
+                	\item Normale Terminierung: Commit
+                		\begin{itemize}
+                			\item Die Änderungen werden permanent in die DB geschrieben.
+                			\item Ein Zurückrollen ist nicht mehr möglich.
+                			\item Der Auto-Commit-Modus nach jedem Befehl ist für den interaktiven Betrieb (Command Line, \dots) sinnvoll.
+                		\end{itemize}
+                	\item Abnormale/Vorzeitige Terminierung: Abort
+                		\begin{itemize}
+                			\item Der Zustand der Datenbank wird zu dem Zustand vor BOT zurück gerollt.
+                			\item Ist SQL ist dies in der Regel als \lstinline|ROLLBACK| definiert.
+                		\end{itemize}
+                	\item Ein Abort kann unterschiedlich eingeleitet werden, bspw. durch:
+                		\begin{itemize}
+                			\item den Benutzer,
+                			\item das Anwendungsprogramm oder
+                			\item das DBMS, wenn lange Zeit kein Commit erfolgt ist (Timeout).
+                		\end{itemize}
+                	\item Abgebrochene Transaktionen können:
+                		\begin{itemize}
+                			\item Neu gestartet werden, wenn sie durch einen Hard- oder Systemfehler aufgetreten sind (z.B. Deadlocks).
+                			\item Entfernt werden, insbesondere bei fehlerhaften Transaktionen (z.B. bei Division durch Null).
+                		\end{itemize}
+                \end{itemize}
+            % end
+
+            \subsection{Konsistenz} % 8.8
+                \begin{itemize}
+                	\item Datenbankkonsistenz
+                		\begin{itemize}
+                			\item Eine Datenbank ist konsistent, wenn alle Konsistenzregeln erfüllt wurden (Fremdschlüssel, Primärschlüssel, \lstinline|NOT NULL|).
+                		\end{itemize}
+                	\item Transaktionskonsistenz
+                		\begin{itemize}
+                			\item Transaktionen bilden einen konsistenten auf einen anderen konsistenten Zustand ab.
+                			\item Die Datenbank muss vor und nach der Ausführung konsistent bleiben!
+                			\item Nebenläufige Transaktionen dürfen sich nicht behindern und produzieren keine inkonsistenten Zustände.
+                		\end{itemize}
+                \end{itemize}
+            % end
+
+            \subsection{ACID-Eigenschaften} % 8.9
+                Transaktionen sollten die ACID-Eigenschaften einhalten:
+                \begin{itemize}
+                	\item \textbf{A}tomicity - Atomarität \\ Transaktionen werden entweder vollständig oder gar nicht ausgeführt.
+                	\item \textbf{C}onsistency - Konsistenz \\ Transaktionen produzieren nur konsistente Zustände.
+                	\item \textbf{I}solation - Isolation \\ Transaktionen beeinflussen sich nicht gegenseitig. Veränderungen werden erst nach einem Commit sichtbar.
+                	\item \textbf{D}urability - Dauerhaftigkeit \\ Veränderungen sind permanent.
+                \end{itemize}
+            % end
+        % end
+
+        \section{Anomalien im Mehrbenutzerbetrieb} % 8.11, 8.12
+        	Wenn mehrere Transaktionen parallel ablaufen und diese auf die gleichen Daten zugreifen, kann es zu Anomalien kommen. Die wichtigsten Anomalien werden im folgenden behandelt und sind:
+        	\begin{itemize}
+        		\item Inkonsistentes Lesen
+        		\item Verlorene Updates
+        		\item Schreib-Lese-Konflikt
+        		\item Phantomproblem
+        	\end{itemize}
+
+            \subsection{Inkonsistentes Lesen} % 8.13, 8.14
+               	\begin{table}[H]
+               		\centering
+               		\begin{tabular}{c | l | l | c c}
+               			\textbf{\texttt{t}} & \textbf{Transaktion TX1} & \textbf{Transaktion TX2} & \textbf{\texttt{X}} &                \\ \hline
+               			         1          & \texttt{READ(X)}         &                          & 10                  &                \\
+               			         2          &                          & \texttt{READ(X)}         & 10                  &                \\
+               			         3          &                          & \texttt{X := X + 1}      & 10                  &                \\
+               			         4          &                          & \texttt{WRITE(X)}        & 11                  &                \\
+               			         5          &                          & \texttt{COMMIT}          & 11                  &                \\
+               			         6          & \texttt{READ(X)}         &                          & 11                  & \(\lightning\)
+               		\end{tabular}
+               	\end{table}
+            
+             \begin{itemize}
+                	\item Die gleiche Leseoperation in TX1 liefert unterschiedliche Ergebnisse.
+             \end{itemize}
+            % end
+
+            \subsection{Verlorene Updates} % 8.15, 8.16
+                \begin{table}[H]
+                	\centering
+                	\begin{tabular}{c | l | l | c c}
+                		\textbf{\texttt{t}} & \textbf{Transaktion TX1} & \textbf{Transaktion TX2} & \textbf{\texttt{X}} &                \\ \hline
+                		         1          & \texttt{READ(X)}         &                          & 10                  &                \\
+                		         2          &                          & \texttt{READ(X)}         & 10                  &                \\
+                		         3          & \texttt{X := X + 10}     &                          & 10                  &                \\
+                		         4          &                          & \texttt{X := X + 1}      & 10                  &                \\
+                		         5          & \texttt{WRITE(X)}        &                          & 20                  &                \\
+                		         6          &                          & \texttt{WRITE(X)}        & 11                  & \(\lightning\)
+                	\end{tabular}
+                \end{table}
+            
+	            \begin{itemize}
+	            	\item Zeitliche Überschneidung von zwei Transaktionen.
+	            	\item Durch konkurrierendes Lesen/Schreiben geht die Änderung von TX1 vollständig verloren.
+	            \end{itemize}
+            % end
+
+            \subsection{Schreib-Lese Konflikt} % 8.17, 8.18
+                \begin{table}[H]
+                	\centering
+                	\begin{tabular}{c | l | l | c c}
+                		\textbf{\texttt{t}} & \textbf{Transaktion TX1} & \textbf{Transaktion TX2} & \textbf{\texttt{X}} &                \\ \hline
+                		         1          & \texttt{READ(X)}         &                          & 10                  &                \\
+                		         2          & \texttt{X := X + 10}     &                          & 10                  &                \\
+                		         3          & \texttt{WRITE(X)}        &                          & 20                  &                \\
+                		         4          &                          & \texttt{READ(X)}         & 20                  &                \\
+                		         5          &                          & \texttt{X := X + 1}      & 20                  &                \\
+                		         6          &                          & \texttt{WRITE(X)}        & 21                  &                \\
+                		         7          &                          & \texttt{COMMIT}          & 21                  &                \\
+                		         8          & \texttt{ABORT}           &                          & ?                   & \(\lightning\)
+                	\end{tabular}
+                \end{table}
+            	
+            	\begin{itemize}
+            		\item Aktualisierung von X durch TX1, die anschließend fehlschlägt.
+            		\item TX2 nutzt den falschen Wert, nach \( t = 8 \) sollte eigentlich \( X = 11 \) gelten.
+            	\end{itemize}
+            % end
+
+            \subsection{Phantomproblem} % 8.19, 8.20
+                \begin{table}[H]
+                	\centering
+                	\begin{tabular}{c | l | l | c c}
+                		\textbf{\texttt{t}} & \textbf{Transaktion TX1} & \textbf{Transaktion TX2}     & \textbf{\#} &                \\ \hline
+                		         1          & \texttt{READ(all rows)}  &                              & 10          &                \\
+                		         2          &                          & \texttt{WRITE(insert a row)} & 11          &                \\
+                		         3          &                          & \texttt{COMMIT}              & 11          &                \\
+                		         4          & \texttt{READ(all rows)}  &                              & 11          & \(\lightning\) \\\
+                		         5          & \texttt{COMMIT}          &                              &             &
+                	\end{tabular}
+                \end{table}
+            
+            	\begin{itemize}
+            		\item Ähnlich wie das inkonsistente Lesen, nur verändern sich hier nicht die Elemente, sondern die Anzahl dieser.
+            		\item Das von TX2 hinzugefügte Tupel heißt \textit{Phantom}.
+            		\item Dies kann nicht durch das Sperren eines Tupels verändert werden \( \rightarrow \) Tabellensperre.
+            	\end{itemize}
+            % end
+        % end
+
+        \section{Serialisierbarkeit} % 8.21
+            \subsection{Serielle vs. Verschränkte Ausführung} % 8.22
+                \begin{itemize}
+                	\item Serielle Ausführung
+                		\begin{itemize}
+                			\item Es kann nur eine Transaktion zeitgleich ausgeführt werden \( \rightarrow \) langsam.
+                			\item Per Definition korrekt (keine Anomalien).
+                			\item Bei \(n\) Transaktionen gibt es \(n!\) Ausführungspläne.
+                		\end{itemize}
+                	\item Verschränkte Ausführung
+                		\begin{itemize}
+                			\item Mehrere Transaktionen werden parallel ausgeführt \( \rightarrow \) schneller.
+                			\item Jede Transaktion behält ihre Reihenfolge bei.
+                			\item Es kann zu den vier vorgestellten Anomalien kommen.
+                			\item Durch \textit{Serialisierbarkeit} können Anomalien vermieden werden.
+                		\end{itemize}
+                \end{itemize}
+            % end
+
+            \subsection{Serialisierbarkeit} % 8.23
+                \begin{itemize}
+                	\item Serielle Ausführung sind frei von Anomalien.
+                	\item Es wird versucht, verschränkte Ausführungen zu finden, sodass diese den gleichen Effekt wie eine serielle Ausführung hat.
+                	\item Eine solche Ausführung (Schedule) heißt \textit{serialisierbar}.
+                	\item Zwei Schedules, die den gleichen Effekt haben, sind äquivalent.
+                		\begin{equation*}
+	                		S, S' \in \text{Schedule}, \quad\quad S \sim S' \iff \forall \DB : S(DB) = S'(DB)
+                		\end{equation*}
+                	\item Dies wird bspw. durch \textit{Sperren} erreicht.
+                \end{itemize}
+            % end
+
+            \subsection{Sperren} % 8.24, 8.25
+                \begin{itemize}
+                	\item Lesesperre LOCK-S (Shared Lock)
+                		\begin{itemize}
+                			\item Ein Datenobjekt darf von einer Transaktion gelesen, aber nicht geschrieben werden.
+                			\item Mehrere Transaktionen können zeitgleich eine Lesesperre auf das Objekt haben.
+                		\end{itemize}
+                	\item Schreibsperre LOCK-X (Exclusive Lock)
+                		\begin{itemize}
+                			\item Ein Datenobjekt darf von einer Transaktion gelesen und geschrieben werden.
+                			\item Eine Transaktion hat exklusiven Zugriff auf die Daten.
+                		\end{itemize}
+                	\item In den meisten Fällen können Sperren auf einzelne Zeilen (Zeilensperre) oder ganze Tabellen (Tabellensperre) gesetzt werden.
+                	\item Ein Zugriff auf eine gesperrte Zeile/Tabelle muss warten, bis die Zeile/Tabelle wieder entsperrt ist \(\rightarrow\) die Transaktion wird pausiert.
+                \end{itemize}
+            
+            	\textbf{Problematiken}
+            	\begin{itemize}
+            		\item Die Transaktionen müssen länger warten, bevor diese ausgeführt werden \(\rightarrow\) längere Ausführungszeiten.
+            		\item \textbf{Verklemmung} (Deadlock): Mehrere Transaktionen hindern sich gegenseitig an der Ausführung \(\rightarrow\) sie warten ewig wechselseitig aufeinander.
+            		\item Somit sollte nur gesperrt werden, wenn die wirklich nötig ist.
+            	\end{itemize}
+            % end
+
+            \subsection{Verklemmung (Deadlock)} % 8.26, 8.27
+            	\label{sec:deadlock}
+            
+                \begin{table}[H]
+                	\centering
+                	\begin{tabular}{c | l | l | l}
+                		\textbf{\texttt{t}} & \textbf{Transaktion TX1} & \textbf{Transaktion TX2} & \textbf{Sperren}               \\ \hline
+                		         1          & \texttt{X := 1}          &                          & LOCK-X(TX1, X)                 \\
+                		         2          &                          & \texttt{Y := 2}          & LOCK-X(TX1, X); LOCK-X(TX2, Y) \\
+                		         3          & \texttt{READ(Y)}         &                          & LOCK-X(TX1, X); LOCK-X(TX2, Y) \\
+                		         4          &                          & \texttt{READ(X)}         & LOCK-X(TX1, X); LOCK-X(TX2, Y)
+                	\end{tabular}
+                \end{table}
+            	\begin{itemize}
+            		\item TX1 wartet ab \(t = 3\) auf TX2.
+            		\item TX2 wartet ab \(t = 4\) auf TX1.
+            		\item[] \( \rightarrow \) Verklemmung \( \implies \) keine Terminierung
+            	\end{itemize}
+
+                \subsubsection{Detektion} % 8.29
+                    \begin{itemize}
+                    	\item Deadlocks können durch \textit{aktives} Prüfen von Zyklen in einem Wait-For-Graph (WFG) erkannt werden.
+                    	\item Transaktionen sind dabei Knoten und Anforderungen an gesperrte Ressourcen sind Kanten.
+                    \end{itemize}
+                	\begin{figure}[H]
+                		\centering
+                		\begin{tikzpicture}
+	                		\node [red] (tx2) {TX2};
+	                		\node [below right = of tx2] (tx4) {TX4};
+	                		\node [red, below left = of tx2] (tx1) {TX1};
+	                		\node [red, below right = of tx1] (tx3) {TX3};
+	                		
+	                		\draw [->, red] (tx1) -- (tx2);
+	                		\draw [->] (tx2) -- (tx4);
+	                		\draw [->, red] (tx2) -- (tx3);
+	                		\draw [->, red] (tx3) -- (tx1);
+	                		\draw [->] (tx3) -- (tx4);
+                		\end{tikzpicture}
+                		\caption{Beispiel: Wait-For-Graph mit Zyklen}
+                		\label{fig:wfg}
+                	\end{figure}
+                	\begin{itemize}
+                		\item Tritt, wie in Abb. \ref{fig:wfg}, ein Zyklus auf, dann existiert eine Verklemmung.
+                		\item Alternativ können Deadlocks \textit{passiv} über Timeouts bestimmt werden.
+                		\item Wurde ein Deadlock erkannt, so müssen die Transaktionen abgebrochen (Abort) werden, um die Ressourcen wieder freizugeben.
+                	\end{itemize}
+                % end
+            % end
+        % end
+
+        \section{Sperrprotokolle} % 8.21
+            \subsection{Zwei-Phasen Sperrprotokoll (2PL)} % 8.30, 8.31
+                \begin{description}
+                	\item[Phase 1] Es werden nur gesperrte Daten gelesen, eingefügt, gelöscht oder verändert.
+                	\item[Phase 2] Nach einer Fragegabe einer Sperre kann keine neue Sperre mehr erstellt werden.
+                \end{description}
+	            \begin{itemize}
+	            	\item Aus Phase 2 folgt somit, dass es \textit{Sperrphasen} und \textit{Freigabephasen} geben muss.
+	            	\item 2PL garantiert dabei serialisierbare Abläufe.
+	            	\item \textbf{Aber:} 2PL ist nicht verklemmungsfrei!
+	            		\begin{itemize}
+	            			\item Der Grund ist die dynamische Verwaltung von Sperren, siehe Beispiel in Abschnitt \ref{sec:deadlock}.
+	            		\end{itemize}
+	            \end{itemize}
+            % end
+
+            \subsection{Konservative Sperrprotokolle} % 8.32
+            	Ein konservatives 2PL ist ähnlich dem 2PL, mit folgenden Modifikationen:
+                \begin{itemize}
+                	\item Alle nötigen Sperren werden direkt nach dem BOT gesetzt (Preclaiming).
+                	\item Es gibt keine eigentliche Sperrphase.
+                \end{itemize}
+            
+            	Damit ist das konservative 2PL verklemmungsfrei. Allerdings weiß eine Transaktion vor der Ausführung noch nicht genau, welche Sperren gesetzt werden müssen, weshalb meistens mehr Sperren als nötig gesetzt werden \( \implies \) langsamere Ausführung.
+            	
+            	Daher wird das konservative 2PL in der Praxis kaum genutzt.
+            % end
+
+            \subsection{Strikte Sperrprotokolle} % 8.33
+                Bei striktem 2PL werden:
+                \begin{itemize}
+                	\item Die Sperren ausschließlich am EOT freigegeben, also bei einem Commit oder Abort.
+                	\item Es gibt keine eigentliche Freigabephase.
+                	\item EOT ist der einzig sichere Zeitpunkt, ab dem keine Befehle mehr ausgeführt werden.
+                	\item Somit wird kaskadierendes Zurücksetzen verhindert.
+                	\item Bei konservativem striktem 2PL (KS2PL) werden alle Sperren beim BOT gesetzt und erst beim EOT freigegeben. \\ \(\rightarrow\) Gar keine Sperr-/Freigabephase.
+                \end{itemize}
+            % end
+        % end
+
+        \section{Isolationsgrade} % 8.35, 8.36
+        	\begin{itemize}
+        		\item Mit dem Isolationsgrad kann in SQL bestimmt werden, in welchem Ausmaß Transaktionen konkurrierenden Transaktionen ausgesetzt sind.
+        		\item Damit kann der Benutzer zwischen höherer Performanz und höherer Ausführungssicherheit wählen.
+        		\item In SQL wird der Isolationsgrad wie folgt gesetzt:
+        	\end{itemize}
+        	\begin{lstlisting}
+SET TRANSACTION ISOLATION LEVEL
+	{ READ UNCOMMITTED
+	| READ COMMITTED
+	| REPEATABLE READ
+	| SERIALIZABLE };
+        	\end{lstlisting}
+
+            \subsection{\lstinline|SERIALIZABLE|} % 8.37, 8.38
+                \begin{itemize}
+                	\item \textit{Eigene Schreibsperren} werden angefordert uns bis EOT gehalten.
+                	\item \textit{Eigene Lesesperren} werden angefordert und bis EOT gehalten.
+                	\item \textit{Fremde Schreibsperren} werden beachtet (es werden nur Daten gelesen, die committed wurden).
+                	\item Entspricht dem strikten 2PL.
+                	\item Langsamere Ausführung, aber frei von Anomalien.
+                \end{itemize}
+            % end
+
+            \subsection{\lstinline|REPEATABLE READ|} % 8.39, 8.42
+                \begin{itemize}
+                	\item \textit{Eigene Schreibsperren} werden angefordert und bis EOT gehalten.
+                	\item \textit{Eigene Lesesperren} werden angefordert uns bis EOT gehalten.
+                	\item \textit{Fremde Schreibsperren} werden beachtet (es werden nur Daten gelesen, die commited wurden).
+                	\item Gleiche Sperrstrategie wie \lstinline|SERIALIZABLE|, setzt aber \textit{keine Indexsperren}.
+                	\item Es können Phantomprobleme auftreten.
+                \end{itemize}
+            % end
+
+            \subsection{\lstinline|READ COMMITTED|} % 8.40, 8.41, 8.43, 8.46
+                \begin{itemize}
+                	\item \textit{Eigene Schreibsperren} werden angefordert und bis EOT gehalten.
+                	\item \textit{Eigene Lesesperren} werden angefordert und \textit{sofort freigegeben}.
+                	\item \textit{Fremde Schreibsperren} werden beachtet (es werden nur Daten gelesen, die commited wurde).
+                	\item Reduzierte Wartezeit beim Lesen.
+                	\item Es kann zu inkonsistentem Lesen kommen.
+                \end{itemize}
+            % end
+
+            \subsection{\lstinline|READ UNCOMMITTED|} % 8.44, 8.45
+                \begin{itemize}
+                	\item \textit{Eigene Schreibsperren} sind nicht vorhanden, \lstinline|READ UNCOMMITTED| ist \textit{read only}.
+                	\item \textit{Eigene Lesesperren} werden angefordert und \textit{sofort freigegeben}.
+                	\item \textit{Fremde Schreibsperren} werden \textit{nicht beachtet} (es werden auch Daten gelesen, die noch nicht commited wurden).
+                	\item Eignet sich für statistische Prozesse, bei denen ein Überblick ausreicht.
+                	\item Effiziente Ausführung.
+                \end{itemize}
+            % end
+            
+            \subsection{Übersicht} % 8.47, 8.48
+            	\begin{table}[H]
+            		\centering
+            		\begin{tabular}{l | c | c | c | c}
+            			                             & \makecell{Eigene \\ Indexsperren} & \makecell{Eigene \\ Lesesperren} & \makecell{Eigene \\ Schreibsperren} & \makecell{Fremde \\ Schreibsperren} \\ \hline
+            			\lstinline|SERIALIZABLE|     & bis EOT                           & bis EOT                          & bis EOT                             & beachtet                            \\
+            			\lstinline|REPEATABLE READ|  & N/A                               & bis EOT                          & bis EOT                             & beachtet                            \\
+            			\lstinline|READ COMMITTED|   & N/A                               & nur kurzzeitig                   & bis EOT                             & beachtet                            \\
+            			\lstinline|READ UNCOMMITTED| & N/A                               & nur kurzzeitig                   & read only                           & nicht beachtet
+            		\end{tabular}
+            		\caption{Isolationsgrade und Sperren}
+	            \end{table}
+
+                \begin{table}[H]
+                    \centering
+                    \begin{tabular}{l | c | c | c | c}
+                    	                             & \makecell{Phantom \\ Read} & \makecell{Non- \\ repeatable \\ Read} & \makecell{Lost \\ Update} & \makecell{Dirty \\ Read} \\ \hline
+                    	\lstinline|SERIALIZABLE|     & verhindert                 & verhindert                            & verhindert                & verhindert               \\
+                    	\lstinline|REPEATABLE READ|  & möglich                    & verhindert                            & verhindert                & verhindert               \\
+                    	\lstinline|READ COMMITTED|   & möglich                    & möglich                               & möglich                   & verhindert               \\
+                    	\lstinline|READ UNCOMMITTED| & möglich                    & möglich                               & möglich                   & möglich
+                    \end{tabular}
+                    \caption{Isolationsgrade und Anomalien}
+                \end{table}
+            % end
+        % end
+    % end
+
+    \chapter{Indexstrukturen und Performanz} % 9, 9.3
+	    \label{c:performance}
+	    
+	    \begin{itemize}
+	    	\item Bei immer größeren Datenmengen dauert die Ausführung von Anfragen immer länger.
+	    	\item Mögliche Lösungen:
+	    		\begin{itemize}
+	    			\item Bessere Hardware.
+	    			\item Alternative DBMS einsetzen, siehe Kapitel \ref{c:outlook}.
+	    			\item Optimierung der DBMS-Einstellungen.
+	    			\item Gezielter Einsatz von Indexstrukturen, dieses Kapitel.
+	    			\item \dots
+	    		\end{itemize}
+	    \end{itemize}
+
+        \section{Datenbankindizierung} % 9.4, 9.5
+            \begin{itemize}
+            	\item Szenario: Eine Tabelle enthält 1 Mio. Zeilen, in denen genau ein Datum gesucht wird.
+            	\item Im Worst Case müssen somit 1.000.000 Zeilen überprüft werden (die gesuchten Daten existieren nicht oder stehen in der letzten Zeile).
+            	\item Zur Beschleunigung könnten die Daten sortiert werden, bzw. von vornherein sortiert eingefügt werden.
+            \end{itemize}
+
+            \subsection{Binäre Suche} % 9.7
+                \begin{itemize}
+                	\item Wurden die Daten irgendwie sortiert, so kann binäre Suche angewandt werden.
+                	\item Mit dieser müssen nicht alle Zeilen angeschaut werden und das Ergebnis ist schneller findbar.
+                \end{itemize}
+            % end
+
+            \subsection{Sortierte Tabellen} % 9.8
+                \begin{itemize}
+                	\item Es ist eine gute Idee, Tabellen direkt bei der Erstellung und Einfügung von neuen Daten zu sortieren/sortiert zu halten.
+                	\item Allerdings kann jede Tabelle zur einmal sortiert werden (z.B. exklusiv nach Telefonnummer oder Name).
+                	\item Außerdem müssen beim Einfügen einer neuen Zeile viele Daten verschoben werden \( \implies \) das Einfügen neuer Daten kann mitunter lange dauern.
+                	\item Alternativ kann eine separate Datenstruktur genutzt werden, ein Index.
+                \end{itemize}
+            % end
+
+            \subsection{Index} % 9.9, 9.11, 9.12, 9.13
+                \begin{itemize}
+                	\item Ein \textit{Index} enthält redundante Informationen, welche auf die Tabelle verweisen.
+                	\item Er muss bei jeder Änderungsoperation auf der eigentlichen Tabelle ebenfalls geändert werden.
+                		\begin{itemize}
+                			\item Dies wird vom DBMS selbstständig erledigt, kann aber viel Zeit kosten.
+                		\end{itemize}
+                	\item Zu den Aufgaben eines Index gehört es,
+                		\begin{itemize}
+                			\item Datenbankabfragen zu beschleunigen mit geeigneter Wahl der Datenstrukturen (z.B. Baumstrukturen, Hashtabellen, \dots) und
+                			\item Datenintegrität zu gewährleisten (Eindeutigkeit, Referenzielle Integrität).
+                		\end{itemize}
+                \end{itemize}
+
+                \subsubsection{Indexverwaltung in SQL} % 9.10
+                	\begin{itemize}
+                		\item Anlegen
+		                    \begin{lstlisting}
+CREATE [UNIQUE] INDEX *@\textit{indexame}@*
+	ON *@\textit{tabellenname}@* (*@\(\textit{spalte}_1\)@*, [*@\(\cdots\)@*] *@\(\textit{spalte}_n\)@*);
+		                    \end{lstlisting}
+		                \item Löschen
+		                	\begin{lstlisting}
+DROP INDEX *@\textit{indexname}@*;
+		                	\end{lstlisting}
+                    \end{itemize}
+                % end
+            % end
+        % end
+
+        \section{Indexanatomie} % 9.14
+            \subsection{Binärer Suchbaum} % 9.15, 9.16
+				\begin{figure}[H]
+					\centering
+					\begin{tikzpicture}[node distance = 0.5, every node/.style = { draw, rectangle, rounded corners, minimum height = 0.6cm, minimum width = 1.5cm  }]
+						\node [] (paris) {Paris};
+						\coordinate [left = 2.5 of paris] (parisLeft);
+						\coordinate [right = 2.5 of paris] (parisRight);
+						
+						\node [below = of parisLeft] (bonn) {Bonn};
+						\node [below left = of bonn] (bern) {Bern};
+						\node [below right = of bonn] (oslo) {Oslo};
+						\node [below = of parisRight] (rom) {Rom};
+						\node [below left = of rom] (prag) {Prag};
+						\node [below right = of rom] (wien) {Wien};
+						
+						\draw (paris) -- (bonn);
+						\draw (bonn) -- (bern);
+						\draw (bonn) -- (oslo);
+						\draw (paris) -- (rom);
+						\draw (rom) -- (prag);
+						\draw (rom) -- (wien);
+					\end{tikzpicture}
+				\end{figure}
+
+                \subsubsection{Entarteter Binärer Suchbaum} % 9.17
+                	Aufgabe: Finde die Stadt \enquote{Bern}
+                
+                	\begin{figure}[H]
+                		\centering
+                		\begin{tikzpicture}[node distance = 0.5, every node/.style = { draw, rectangle, rounded corners, minimum height = 0.6cm, minimum width = 1.5cm }]
+	                		\node [label = right:{1 Vergleich}] (wien) {Wien};
+	                		\node [below left = of wien, label = right:{2 Vergleiche}] (rom) {Rom};
+	                		\node [below left = of rom, label = right:{3 Vergleiche}] (prag) {Prag};
+	                		\node [below left = of prag, label = right:{4 Vergleiche}] (paris) {Paris};
+	                		\node [below left = of paris, label = right:{5 Vergleiche}] (oslo) {Oslo};
+	                		\node [below left = of oslo, label = right:{6 Vergleiche}] (bonn) {Bonn};
+	                		\node [below left = of bonn, label = right:{7 Vergleiche}] (bern) {Bern};
+	                		
+	                		\draw (wien) -- (rom);
+	                		\draw (rom) -- (prag);
+	                		\draw (prag) -- (paris);
+	                		\draw (paris) -- (oslo);
+	                		\draw (oslo) -- (bonn);
+	                		\draw (bonn) -- (bern);
+                		\end{tikzpicture}
+                	\end{figure}
+                % end
+
+                \subsubsection{Balancierter Binärer Suchbaum} % 9.18
+                	Aufgabe: Finde die Stadt \enquote{Bern}.
+                
+	                \begin{figure}[H]
+	                	\centering
+	                	\begin{tikzpicture}[node distance = 0.5, every node/.style = { draw, rectangle, rounded corners, minimum height = 0.6cm, minimum width = 1.5cm }]
+		                	\node [label = above:{1 Vergleich}] (paris) {Paris};
+		                	\coordinate [left = 2.5 of paris] (parisLeft);
+		                	\coordinate [right = 2.5 of paris] (parisRight);
+		                	
+		                	\node [below = of parisLeft, label = left:{2 Vergleiche}] (bonn) {Bonn};
+		                	\node [below left = of bonn, label = below:{3 Vergleiche}] (bern) {Bern};
+		                	\node [below right = of bonn, label = below:{3 Vergleiche}] (oslo) {Oslo};
+		                	\node [below = of parisRight, label = right:{2 Vergleiche}] (rom) {Rom};
+		                	\node [below left = of rom, label = below:{3 Vergleiche}] (prag) {Prag};
+		                	\node [below right = of rom, label = below:{3 Vergleiche}] (wien) {Wien};
+		                	
+		                	\draw (paris) -- (bonn);
+		                	\draw (bonn) -- (bern);
+		                	\draw (bonn) -- (oslo);
+		                	\draw (paris) -- (rom);
+		                	\draw (rom) -- (prag);
+		                	\draw (rom) -- (wien);
+	                	\end{tikzpicture}
+	                \end{figure}
+                % end
+            % end
+
+            \subsection{B-Baum} % 9.19
+                Siehe \HREF{https://de.wikipedia.org/wiki/B-Baum}.
+            % end
+
+            \subsection{B\(^+\)-Baum Index} % 4.20
+                Siehe \HREF{https://de.wikipedia.org/wiki/B+-Baum}.
+            % end
+
+            \subsection{Zusammengesetzter Index} % 4.21
+                Ein zusammengesetzter Index ist ein Index über mehrere Spalten, wobei nur schnell nach Elementen gesucht werden kann, wenn wirklich alle Spalten in der Anfrage spezifiziert werden.
+            % end
+        % end
+
+        \section{Ausführungspläne} % 9.22, 9.23
+            \begin{itemize}
+            	\item Beliebige Datenbankanfragen können bei gleichbleibendem Ergebnis unterschiedlich ausgeführt werden, zum Beispiel durch unterschiedliche Reihenfolge der Operationen.
+            	\item Beispiel:
+            		\begin{align*}
+	            		  & \pi _ { \text{Hersteller}, \text{Modell} } (\sigma _ { \text{Land} = \text{\enquote{BRD}} } (\text{PKW} \bowtie \text{Standort})) \\
+	            		= & \pi _ { \text{Hersteller}, \text{Modell} } (\text{PKW} \bowtie \sigma _ { \text{Land} = \text{\enquote{BRD}} } (\text{Standort}))
+            		\end{align*}
+            		Es könnte z.B. einen Index über das Land im Standort geben, dann ist die zweite Anfrage deutlich schneller.
+            	\item Der \textit{Ausführungsplan} legt fest, wie die einzelnen Schritte der Abfrage ausgeführt werden.
+            	\item In SQL kann der Ausführungsplan mit \enquote{\lstinline|EXPLAIN| \textit{anfrage}} angezeigt werden.
+            \end{itemize}
+
+            \subsection{Optimizer} % 9.24, 9.25
+                \begin{itemize}
+                	\item Der \textit{Optimizer} erstellt den Ausführungsplan für eine Anfrage; Dies wird häufig als \textit{compiling} oder \textit{parsing} bezeichnet.
+                	\item Regelbasierter Optimizer
+                		\begin{itemize}
+                			\item Arbeitet nach einem fest vorgegebenen Regelwerk.
+                			\item Wird heute kaum noch genutzt.
+                		\end{itemize}
+                	\item Kostenbasierter Optimizer
+                		\begin{itemize}
+                			\item Generiert mögliche Ausführungspläne und schätzt die Kosten ab.
+                			\item Die Kosten kombinieren die Anzahl und Art der Operationen und die erwartete Zeilenanzahl.
+                			\item Der beste Ausführungsplan hat die geringsten Kosten.
+                		\end{itemize}
+                	\item Ein kostenbasierter Optimizer benötigt Informationen zu:
+                		\begin{itemize}
+                			\item Anzahl der unterschiedlichen Werte einer Spalte
+                			\item Kleinster und größter Wert einer Spalte
+                			\item \texttt{NULL}-Einträge und Wertverteilung einer Spalte
+                			\item Größe einer Tabelle (in Zeilen und Blöcken)
+                			\item Baumtiefe eines Indexes
+                			\item u.v.m.
+                		\end{itemize}
+                		um die Kosten abzuschätzen.
+                	\item Das DBMS führt dazu Statistiken, die regelmäßig aktualisiert werden müssen.
+                	\item In PostgreSQL geht dies mit \enquote{\lstinline|ANALYSE| \textit{tabellenname}}.
+                \end{itemize}
+            % end
+
+			\subsection{Durchsuchen von Tabellen} % 9.27, 9.28, 9.29, 9.30
+				\begin{itemize}
+					\item Full Table Scan, Table Access Full, SEQ Scan (Indexfrei)
+						\begin{itemize}
+							\item Die gesamte Tabelle muss durchsucht werden.
+							\item Bei einer Tabelle mit 1 Mio. Einträgen und einer üblichen Festplatte\footnote{Mit \text{10ms} zur Lese-/Schreibkopfpositionierung und \(0,\!01\text{ms}\) für sequentielle Zugriffe.} dauert dies \( 1 \cdot 10\text{ms} + 1.000.000 \cdot 0,\!01\text{ms} \approx 10\text{s} \).
+						\end{itemize}
+					\item Indexzugriff, Index Unique Scan, Index Scan
+						\begin{itemize}
+							\item Direkter Zugriff auf einen Index.
+							\item Da maximal ein Indexeintrag existiert, ist kein Verfolgen des Index nötig.
+						\end{itemize}
+					\item Indexscan, Index Range Scan
+						\begin{itemize}
+							\item Anfrage an einen Bereich an Indexknoten (bspw. alle Mitarbeiter von \texttt{A} bis \texttt{D}).
+							\item Da nur indizierte Spalten verwendet werden, können die Indexknoten verfolgt werden.
+						\end{itemize}
+					\item Tabellenzugriffe, Table Access by RowID, RID Lookup
+						\begin{itemize}
+							\item Nachladen von nicht im Index erhaltenen Daten.
+							\item Beispiel: Alle Rufnummern der Mitarbeiter von \texttt{A} bis \texttt{D}.
+						\end{itemize}
+				\end{itemize}
+			% end
+
+            \subsection{Probleme} % 9.32, 9.33, 9.34
+            	\paragraph{Viele Tabellenzugriffe}
+	                \begin{itemize}
+	                	\item Bei Anfragen wie \enquote{alle Mitarbeiter von \texttt{A} bis \texttt{D} mit der Vorwahl \texttt{06171}} gibt es sehr viele zufällige Tabellenzugriffe.
+	                	\item Angenommen es gibt 500.000 Mitarbeiter von \texttt{A} bis \texttt{D}, dann werden 500.000 wahlfreie Zugriffe produziert:
+	                		\begin{equation*}
+		                		\approx \underbrace{500.000 \cdot 0,\!01\text{ms}}_{\text{Indexscan}} + \underbrace{500.000 \cdot 10\text{ms}}_{\text{Tabellenzugriffe}} = 83\text{min}
+	                		\end{equation*}
+	                	\item Vergleich: Ein Full Table Scan über eine Tabelle mit 1 Mio. Zeilen nutzt sequentielle Zugriffe:
+	                		\begin{equation*}
+		                		\approx 10\text{ms} + 1.000.000 \cdot 0,\!01\text{ms} = 10\text{s}
+	                		\end{equation*}
+	                	\item \(\implies\) Indexstrukturen sind also nicht in jedem Falle sinnvoll!
+		            \end{itemize}
+	           	% end
+	           	
+	           	\paragraph{Sortierfolge}
+	            	\begin{itemize}
+	                	\item Außerdem kann der Index nicht effektiv genutzt werden, wenn unerwartete Anfragen ausgeführt werden. Eine Lösung ist hier, einen zweiten Index anzulegen.
+	                \end{itemize}
+                % end
+            % end
+        % end
+
+        \section{Indexdesign} % 9.35, 9.36, 9.38
+            \begin{itemize}
+            	\item Proaktives Indexdesign
+            		\begin{itemize}
+            			\item Die Indexstrukturen werden schon während des Entwurfs geplant.
+            			\item Mögliche Abfragen werden geplant und gezielt indiziert.
+            		\end{itemize}
+            	\item Reaktives Indexdesign
+            		\begin{itemize}
+            			\item Langsame Anfragen werden im laufenden Betrieb analysiert.
+            			\item Diese werden dann durch geeignete Indexwahl beschleunigt.
+            		\end{itemize}
+            	\item Assistentenbasiertes Indexdesign
+            		\begin{itemize}
+            			\item Es werden verschiedene Indexstrukturen automatisiert durchprobiert.
+            			\item Indexwahl und -aufbau wird optimiert.
+            		\end{itemize}
+            \end{itemize}
+
+            \subsection{1-Sterne Index} % 9.39
+                \begin{itemize}
+                	\item Alle Spalten aus einer \lstinline|WHERE|-Bedingung werden in beliebiger Reihenfolge indiziert.
+                	\item Damit können Selektionen vollständig über den Index abgewickelt werden.
+                \end{itemize}
+            % end
+
+            \subsection{2-Sterne Index} % 9.40
+                \begin{itemize}
+                	\item Die Spalten aus der \lstinline|ORDER BY|-Klausel werden an den Index angefügt (unter Beachtung der Reihenfolge).
+                	\item Die gefilterten Zeilen müssen somit nicht mehr sortiert werden.
+                \end{itemize}
+            % end
+
+            \subsection{3-Sterne Index} % 9.41
+                \begin{itemize}
+                	\item Alle anderen referenzierten Spalten werden an den Index angefügt (Fat Index oder Covering Index).
+                	\item Somit ist gar kein Tabellenzugriff mehr nötig, da alle Spalten im Index sind.
+                \end{itemize}
+            % end
+        % end
+    % end
+
+    \chapter{Neuere Datenbankkonzepte (Ausblick)} % 10
+	    \label{c:outlook}
+
+        \section{In-Memory Datenbanken} % 10.3
+            \begin{itemize}
+            	\item Massenspeicherbasierte Datenbank
+            		\begin{itemize}
+            			\item Die Antwortzeiten sind wesentlich durch das Medium bestimmt.
+            			\item Bei wahlfreiem Zugriff \( \approx 10\text{ms} \) (Festplatte)
+            		\end{itemize}
+            	\item Hauptspeicher Datenbank
+            		\begin{itemize}
+            			\item Die Daten werden im Hauptspeicher gespeichert.
+            			\item Bei wahlfreiem Zugriff \( \approx 10\text{ns} \) (Unterschied von \( \approx 10^6 \))
+            			\item Die Daten sind flüchtig; hybride Lösungen speichern die Daten im Hintergrund auf einen Massenspeicher. \\ Die Recovery (Wiederaufbau) ist meistens langsam.
+            			\item Der bestimmende Faktor ist die Speichergröße.
+            		\end{itemize}
+            \end{itemize}
+
+            \subsection{Zeitvergleich} % 10.4, 10.5
+                \begin{figure}[H]
+                	\centering
+                	\begin{tikzpicture}[every node/.style= { minimum height = 0.7cm }, main/.style = { draw, rectangle }]
+	                	\node [main, minimum width = 2cm] (lvl1) {Register};
+	                	\node [main, minimum width = 3cm, below = 0.1 of lvl1] (lvl2) {Cache};
+	                	\node [main, minimum width = 4cm, below = 0.1 of lvl2] (lvl3) {Hauptspeicher};
+	                	\node [main, minimum width = 8cm, below = 0.1 of lvl3] (lvl4) {Festplatte};
+	                	\node [main, minimum width = 10cm, below = 0.1 of lvl4] (lvl5) {Magnetband};
+	                	
+	                	\node [left = of lvl5] (lvl5L) {60s};
+	                	\node [above = 0.1 of lvl5L] (lvl4L) {10ms};
+	                	\node [above = 0.1 of lvl4L] (lvl3L) {10ns};
+	                	\node [above = 0.1 of lvl3L] (lvl2L) {2ns};
+	                	\node [above = 0.1 of lvl2L] (lvl1L) {1ns};
+	                	
+	                	\node [right = of lvl5] (lvl5R) {50 PB};
+	                	\node [above = 0.1 of lvl5R] (lvl4R) {2 TB};
+	                	\node [above = 0.1 of lvl4R] (lvl3R) {2 GB};
+	                	\node [above = 0.1 of lvl3R] (lvl2R) {8 MB};
+	                	\node [above = 0.1 of lvl2R] (lvl1R) {1 KB};
+	                	
+	                	\node [above = 0.3 of lvl1L] {\textbf{Typische Zugriffszeit}};
+	                	\node [above = 0.3 of lvl1R] {\textbf{Typische Kapazität}};
+                	\end{tikzpicture}
+                \end{figure}
+            
+            	\begin{table}[H]
+            		\centering
+            		\begin{tabular}{l l}
+            			\textbf{Typische Zugriffzeit} & \textbf{Ungefähre Entsprechung}        \\ \hline
+            			1ns                           & Raumwechsel im Gebäude (2 Minuten)     \\
+            			2ns                           & Gebäudewechsel in der Uni (10 Minuten) \\
+            			10ns                          & Fahrt nach Köln (2 Stunden)            \\
+            			10ms                          & Reise zum Pluto (2 Jahre)              \\
+            			60s                           & Reise zum Andromedanebel (2000 Jahre)
+            		\end{tabular}
+            	\end{table}
+            % end
+
+            \subsection{Kompression} % 10.6, 10.7
+                \begin{itemize}
+                	\item Da der Speicherplatz im Hauptspeicher sehr kostbar ist, müssen die Daten komprimiert werden.
+                	\item Bspw. durch Dictionary-Ansätze, d.h. jedem duplizierten Wort wird eine ID zugewiesen und es wird nur die ID gespeichert \( \rightarrow \) nur wenig Speicherplatzverbrauch durch Deduplikation.
+                \end{itemize}
+            % end
+        % end
+
+        \section{Spaltenorientierte Datenbanken} % 10.8
+            \begin{itemize}
+            	\item Relationen sind immer Zweidimensional (\( \text{Spalten} \times \text{Zeilen} \)), die Speicherung muss aber linear erfolgen.
+            	\item Ein klassischem RDBMS speichert die Daten Zeilenorientiert.
+            	\item Es gibt aber auch Spalteorientierte DBMS.
+            	\item Vorteil: Aggregatfunktionen, z.B. \lstinline|SUM|, sind deutlich schneller.
+            	\item Vor allem relevant für Data Warehouses.
+            \end{itemize}
+
+            \subsection{Partitionierung} % 10.9
+                \begin{itemize}
+                	\item Einzelne Spaltenteile können auf verschiedenen Server liegen.
+                	\item Z.B. kleine werte auf Server 1, große auf Server 2, \dots.
+                	\item Dadurch können Join-Operationen optimiert werden.
+                \end{itemize}
+            % end
+        % end
+
+        \section{NoSQL} % 10.12
+            \begin{itemize}
+            	\item NoSQL (\enquote{Not only SQL} oder \enquote{no SQL}) ist ein Sammelbegriff für nicht-relationale Datenbanken.
+            	\item Optimiert für große Datenmengen und verteilte Systeme.
+            	\item Gut skalierbar und zum Teil noch verfügbar.
+            	\item Meistens wird auf ein umfangreiches Transaktionssystem und komplexe Integritätsbedingungen verzichtet.
+            	\item Wesentliche Konzepte:
+            		\begin{itemize}
+            			\item Spaltenorientierte DB
+            			\item Key-Value DB
+            			\item Graph-DB
+            			\item Dokumentenorientierte DB
+            		\end{itemize}
+            \end{itemize}
+
+            \subsection{Key-Value Datenbanken} % 10.13
+                \begin{itemize}
+                	\item Grundoperationen
+                		\begin{itemize}
+                			\item \texttt{INSERT(k, v)} \\ Legt einen Wert \texttt{v} unter dem Schlüssel \texttt{k} ab.
+                			\item \texttt{LOOKUP(k)} \\ Holt die Daten mit dem Schlüssel \texttt{k}.
+                			\item \texttt{DELETE(K)} \\ Löscht den Schlüssel \texttt{k}.
+                			\item Komplexere Operationen müssen die Anwendungen selbst implementieren.
+                		\end{itemize}
+                	\item Das Format des Wertes ist nicht vorgegeben, es können beliebige Strukturen verwendet werden (Binär, JSON, XML, \dots).
+                	\item Software: Cassandra, Dynamo, Berkeley DB, BigTable, LevelDB, Redis, \dots
+                \end{itemize}
+            % end
+
+            \subsection{Tripel Speicher} % 10.14
+                \begin{itemize}
+                	\item Optimiert für Tripel der Form \( (\text{Subjekt}, \text{Prädikat}, \text{Objekt}) \).
+                	\item Beispiel: \( (\text{TU\_Darmstadt}, \text{ist\_eine}, \text{Universität}) \)
+                	\item Wird vor allem im \textit{Semantic Web} eingesetzt, erlaubt Abfragen mit SPARQL.
+                	\item Software: Virtuoso, Apache Jena, \dots; Umsetzungen: DBpedia, \dots
+                \end{itemize}
+            % end
+
+            \subsection{Graphdatenbanken} % 10.15, 10.16
+            	\begin{itemize}
+            		\item Ähnlich zu Tripel Speicher, aber besonderer Fokus auf Graphenalgorithmen, bspw.:
+            			\begin{itemize}
+            				\item Kürzeste Wege
+            				\item Breitensuche
+            				\item Tiefensuche
+            				\item Identifikation von Cliquen
+            				\item \dots
+            			\end{itemize}
+            		\item Software: Titan, k-infinity, Neo4J, \dots
+            	\end{itemize}
+            % end
+
+            \subsection{Dokumentenorientierte Datenbanken} % 10.17
+                \begin{itemize}
+                	\item Optimiert für große Textmengen.
+                	\item Besonders relevant ist die Volltextsuche in Texten.
+                	\item Software: CouchDB, MongoDB, OrientDB
+                \end{itemize}
+            % end
+        % end
+
+        \section{CAP-Theorem, Brewers Theorem} % 10.10
+        	\begin{figure}[H]
+        		\centering
+        		\begin{tikzpicture}[every node/.style = { align = center }]
+	        		\node (a) {Konsistenz \\ Consistency};
+	        		\coordinate [left = of a] (aL);
+	        		\coordinate [right = of a] (aR);
+	        		\node [below = 2 of aL] (b) {Verfügbarkeit \\ Availability};
+	        		\node [below = 2 of aR] (c) {Partitionstoleranz \\ Partition Tolerance};
+	        		
+	        		\draw (a.south) -- (b.north);
+	        		\draw (a.south) -- (c.north);
+	        		\draw (b.north) -- (c.north);
+        		\end{tikzpicture}
+        	\end{figure}
+        
+        	\begin{description}
+        		\item[Konsistenz] Auf allen Knoten werden die gleichen gültigen Daten gespeichert.
+        		\item[Verfügbarkeit] Akzeptable Antwortzeiten.
+        		\item[Partitionstoleranz] Das System kann Ausfälle einzelner Knoten verkraften.
+        	\end{description}
+        
+        	\textbox{Brewer: Es können nicht alle drei Kriterien zeitgleich optimiert werden.}
+        % end
+    % end
+\end{document}

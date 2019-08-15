@@ -1,0 +1,47 @@
+\begin{tikzpicture}
+	\node [draw, rectangle, minimum width = 3.5cm, minimum height = 2cm] (mass) { \( m \) };
+	\coordinate [left = 2 of mass] (force);
+	\coordinate [right = 2 of mass] (spring);
+	
+	\coordinate [left = 3 of mass.south west] (S);
+	\coordinate [above = 1 of S] (Sy);
+	\coordinate [right = 1 of S] (Sx);
+	\draw [->] (S) -- node[left]{y} (Sy);
+	\draw [->] (S) -- node[below]{x} (Sx);
+	
+	\draw [->] (force) -- node[above]{\(f\)} (mass);
+	\draw [decoration = {zigzag, segment length = 3mm, amplitude = 1mm}, decorate] (mass) -- node[above]{\(k\)} (spring);
+	
+	\coordinate [below = 0.5 of mass.south west] (groundHelp);
+	\coordinate [left = 0.5 of groundHelp] (groundLeft);
+	\coordinate [above = 1.5 of spring] (groundTop);
+	\draw (groundLeft) -| (groundTop);
+	
+	\coordinate [below = 0.3 of groundTop] (groundHelpTopLeft);
+	\coordinate [right = 0.3 of groundTop] (groundHelpTopRight);
+	\foreach \i in { 0, 0.3, ..., 3.3 } {
+		\coordinate [below = \i of groundHelpTopLeft] (a);
+		\coordinate [below = \i of groundHelpTopRight] (b);
+		\draw (a) -- (b);
+	}
+	
+	\coordinate [right = 0.3 of groundLeft] (groundHelpLeftTop);
+	\coordinate [below = 0.3 of groundLeft] (groundHelpLeftBottom);
+	\foreach \i in { 0, 0.3, ..., 6 } {
+		\coordinate [right = \i of groundHelpLeftTop] (a);
+		\coordinate [right = \i of groundHelpLeftBottom] (b);
+		\draw (a) -- (b);
+	}
+	
+	\coordinate [right = 0.5 of mass.south west] (frictionHelpTopRight);
+	\coordinate [below = 0.5 of mass.south west] (frictionHelpBottomLeft);
+	\coordinate [right = 0.5 of frictionHelpBottomLeft] (frictionHelpBottomRight);
+	\foreach \i in { 0, ..., 3 } {
+		\coordinate [right = \i of mass.south west] (a);
+		\coordinate [right = \i of frictionHelpTopRight] (b);
+		\coordinate [right = \i of frictionHelpBottomLeft] (c);
+		\coordinate [right = \i of frictionHelpBottomRight] (d);
+		\draw (a) -- (d);
+		\draw (b) -- (c);
+	}
+\end{tikzpicture}

@@ -1,0 +1,43 @@
+\begin{tikzpicture}
+	\node [draw, rectangle, minimum width = 2cm, minimum height = 3.5cm] (mass) at (0, 0) { \(m\) };
+	\coordinate (massTop) at (1, 1);
+	\coordinate (massBottom) at (1, -1);
+	\node [draw, circle, minimum width = 0.5cm, minimum height = 0.5cm] (servo) at (3, 1) { \(M\) };
+	\node [draw, rectangle, anchor = west, minimum width = 0.5cm, minimum height = 0.5cm, label = below:\(d\)] (friction) at (3, -1) { };
+	\coordinate [left = 0.5cm of friction.north west] (frictionTopHelp);
+	\coordinate [left = 0.5cm of friction.south west] (frictionBottomHelp);
+	\node [draw, rectangle, minimum width = 1cm, minimum height = 3.5cm] (earth) at (5.5, 0) { };
+	\coordinate (earthTop) at (5, 1);
+	\coordinate (earthBottom) at (5, -1);
+	\coordinate (springLeft) at (2, 0);
+	\coordinate (springRight) at (4, 0);
+	
+	\draw [decoration = {zigzag, segment length = 3mm, amplitude = 1mm}, decorate] (springLeft) -- node[below]{\(k\)} (springRight);
+	
+	\coordinate [below left = 0.1 of mass.south west] (bottomLeft);
+	\coordinate [below right = 0.1 of earth.south east] (bottomRight);
+	
+	\draw (friction.north west) -- (frictionTopHelp);
+	\draw (friction.south west) -- (frictionBottomHelp);
+	
+	\draw (bottomLeft) -- (bottomRight);
+	
+	\draw (massTop) -- (servo);
+	\draw (mass.east) -- (springLeft);
+	\draw (massBottom) -- (friction);
+	
+	\draw (servo) -- (earthTop);
+	\draw (springRight) -- (earth.west);
+	\draw (friction) -- (earthBottom);
+	
+	
+	\coordinate [below = 0.3 of earth.north east] (groundHelpTopLeft);
+	\coordinate [right = 0.3 of earth.north east] (groundHelpTopRight);
+	\foreach \i in { 0, 0.3, ..., 3.3 } {
+		\coordinate [below = \i of groundHelpTopLeft] (a);
+		\coordinate [below = \i of groundHelpTopRight] (b);
+		\draw (a) -- (b);
+	}
+	
+	\draw [|->] (0, -2.2) -- node[below]{\(x\)} (2, -2.2);
+\end{tikzpicture}

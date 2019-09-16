@@ -2,7 +2,7 @@
 
 ## Slides
 
-Done/Structured/To-Do: 693/823/823; 84%/100%/100%
+Done/Structured/Total: 693/823/823; 84%/100%/100%
 
 - [x] Chapter 1: Organization (Slides: 62)
 - [X] Chapter 2: Linear Algebra (Slides: 37)

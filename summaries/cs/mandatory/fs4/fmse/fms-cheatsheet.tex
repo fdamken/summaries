@@ -1,28 +1,35 @@
 \documentclass[a4paper, 11pt, accentcolor = tud3b]{tudreport}
 
 % Core packages.
-\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
-\usepackage[ngerman]{babel}
+\usepackage[T1]{fontenc}
 % Other packages.
+\usepackage[colorlinks = false]{hyperref}
 \usepackage[linesnumbered, ruled]{algorithm2e}
+\usepackage{attachfile}
+\usepackage{csquotes}
 \usepackage{enumitem}
 \usepackage[mathcal]{euscript} % Get readable mathcal font.
-\usepackage{hyperref}
+\usepackage{makecell}
 \usepackage{listings}
 \usepackage{mathtools}
-%\usepackage[disable]{todonotes}
-\usepackage{todonotes}
-\usepackage[german = quotes]{csquotes}
+\usepackage{pgfplots}
+\usepackage{tabto}
+\usepackage{changepage}
+\usepackage[disable]{todonotes}
+%\usepackage{todonotes}
 \usepackage{tikz}
 \usepackage{syntax}
 \usepackage{pgfgantt}
 \usepackage{prftree}
+\usepackage{newunicodechar}
 \usepackage{subcaption}
 \usepackage{stmaryrd}
 \usepackage{multicol}
 \usepackage{float}
-\usetikzlibrary{arrows.meta, shapes, backgrounds}
+\usepackage{ocgx}
+\usetikzlibrary{angles, arrows.meta, backgrounds, calc, positioning, shapes}
 
 % Basic information.
 \title{Formal Methods in Software Engineering}
@@ -34,14 +41,33 @@
 \SetLabelAlign{parright}{\parbox[t]{\labelwidth}{\raggedleft#1}}
 \setlist[description]{style = multiline, leftmargin = 4cm, align = parright}
 
-\definecolor{gray}{rgb}{0.2, 0.2, 0.2}
-\definecolor{lightred}{rgb}{1, 0.3, 0}
-\definecolor{lightblue}{rgb}{0, 0.5, 1}
-\definecolor{darkred}{rgb}{0.6, 0, 0}
-\definecolor{darkgreen}{rgb}{0, 0.6, 0}
-\definecolor{orange}{rgb}{1, 0.8, 0}
+\colorlet{lstcomments}{tud4c}
+\colorlet{lstkeywords}{tud9d}
+\colorlet{lstlinenumbers}{tud0c}
+\colorlet{lststrings}{tud2c}
+\colorlet{colorDensity}{tud1b}
+
+\lstset{
+	backgroundcolor = \color{white},
+	basicstyle = \ttfamily\small\color{black},
+	breakatwhitespace = true,
+	breaklines = true,
+	breakautoindent = true,
+	captionpos = b,
+	commentstyle = \color{lstcomments},
+	escapeinside = {{*@}{@*}},
+	keywordstyle = \color{lstkeywords},
+	numbers = left,
+	numberstyle = \tiny\color{lstlinenumbers},
+	showstringspaces = false,
+	stringstyle = \color{lststrings},
+	tabsize = 4
+}
+
+\MakeOuterQuote{"}
 
 \tikzset{> = { Latex[length = 2mm] }}
+\pgfplotsset{compat = 1.7}
 
 % New commands.
 \newcommand{\info}[1]{
@@ -51,803 +77,1422 @@
 	\end{figure}
 }
 \newcommand{\warning}[1]{
-    \begin{figure}[H]
-        \centering
-        \fbox{\parbox[c]{0.5\textwidth}{\textbf{Warnung:} #1}}
-    \end{figure}
+	\begin{figure}[H]
+		\centering
+		\fbox{\parbox[c]{0.5\textwidth}{\textbf{Warning:} #1}}
+	\end{figure}
 }
-\newcommand{\forwhich}{\ensuremath{{\,\vert\,}}}
-\newcommand{\abs}[1]{\ensuremath{{\lvert #1 \rvert}}}
-\newcommand{\parallelAsync}{\ensuremath{\,\lvert\vert\rvert\,}}
-\newcommand{\qed}{{\hfill q.e.d.}}
+
+\newcommand{\outputlisting}[1]{\lstinputlisting[numbers = none]{#1}}
+\newcommand{\inlinePromela}[1]{\lstinline[language = PROMELA]|#1|}
+\newcommand{\forwhich}{\ensuremath{\,\vert\,}}
+\makeatletter
+\newcommand{\BIG}{\bBigg@{4}}
+\newcommand{\BIGG}{\bBigg@{5}}
+\makeatother
 
 \newcommand{\subsubparagraph}[1]{\hspace{1cm} \textbf{#1:}}
 
-\newcommand{\definition}[2]{\subparagraph{Definition (#1)} #2}
-\newcommand{\notation}[2]{\subparagraph{Notation (#1)} #2}
-\newcommand{\theorem}[1]{\subparagraph{Theorem} #1}
-\newcommand{\intuition}[1]{\subsubparagraph{Intuition} #1}
+\newcommand{\definition}[2]{\subparagraph{Definition (#1)} \begin{adjustwidth}{2cm}{} #2 \end{adjustwidth}}
+\newcommand{\notation}[2]{\subparagraph{Notation (#1)} \begin{adjustwidth}{2cm}{} #2 \end{adjustwidth}}
+\newcommand{\theorem}[1]{\subparagraph{Theorem} \begin{adjustwidth}{2cm}{} #1 \end{adjustwidth}}
+\newcommand{\intuition}[1]{\subsubparagraph{Intuition} \begin{adjustwidth}{2cm}{} #1 \end{adjustwidth}}
+
+\newcommand{\code}[1]{\attachfile[icon = Paperclip]{#1} \lstinputlisting{#1}}
+
+% Need this for Python graphs...
+\newunicodechar{−}{--}
 
 \begin{document}
-    \maketitle
-    \tableofcontents
-    \listoftodos
-
-    \chapter{Introduction} % N/A
-        \todo{Content}
-
-        \section{Motivation} % 1.10
-            \todo{Content}
-        % end
-
-        \section{Traditional Reliability Measures} % 1.11, 1.12
-            \todo{Content}
-        % end
-
-        \section{Classical Testing} % 1.13, 1.14
-            \todo{Content}
-        % end
-
-        \section{Formal Methods} % 1.15, 1.16, 1.17, 1.19, 1.20
-            \todo{Content}
-
-            \subsection{Specification} % 1.18
-                \todo{Content}
-            % end
-
-            \subsection{Difficulties} % 1.21, 1.22, 1.23, 1.24
-                \todo{Content}
-            % end
-
-            \subsection{Abstraction and Expressiveness} % 1.25, 1.26, 1.27
-                \todo{Content}
-            % end
-
-            \subsection{Automatic Proof Search} % 1.28
-                \todo{Content}
-            % end
-        % end
-
-        \section{Model Checking} % 1.29, 1.30, 1.31
-            \todo{Content}
-        % end
-
-        \section{Deductive Verification} % 1.32, 1.33, 1.34
-            \todo{Content}
-        % end
-
-        \section{Tool Support} % 1.35
-            \todo{Content}
-        % end
-    % end
-
-    \chapter{PROMELA} % 2.3, 2.4, 2.5, 2.6
-        \todo{Content}
-
-        \section{Data Types} % N/A
-            \todo{Content}
-
-            \subsection{Arithmetic} % 2.7
-                \todo{Content}
-            % end
-
-            \subsection{Booleans} % 2.8
-                \todo{Content}
-            % end
-
-            \subsection{Enumerations} % 2.9
-                \todo{Content}
-            % end
-
-            \subsection{Arrays} % 2.16
-                \todo{Content}
-            % end
-
-            \subsection{Record} % 2.17
-                \todo{Content}
-            % end
-        % end
-
-        \section{Control Statements} % 2.10
-            \todo{Content}
-
-            \subsection{Selection} % 2.11, 2.12, 2.13
-                \todo{Content}
-            % end
-
-            \subsection{Repetition} % 2.14, 2.15
-                \todo{Content}
-            % end
-
-            \subsection{Jumps} % 2.18
-                \todo{Content}
-            % end
-        % end
-
-        \section{Inlining Code} % 2.19
-            \todo{Content}
-        % end
-
-        \section{Nondeterminism} % 2.20
-            \todo{Content}
-
-            \subsection{Value Generation} % 2.21, 2.22, 2.23
-                \todo{Content}
-            % end
-        % end
-
-        \section{Concurrent Systems} % 2.24, 2.25, 2.26, 2.27, 4.2, 4.5, 4.6, 4.8, 4.9, 4.10
-            \todo{Content}
-
-            \subsection{Starting Processes} % 4.11, 4.12, 4.13, 4.16
-                \todo{Content}
-
-                \subsubsection{Parameters} % 4.15
-                    \todo{Content}
-                % end
-            % end
-
-            \subsection{Joining Processes} % 4.14
-                \todo{Content}
-            % end
-
-            \subsection{Local and Global Data} % 4.17, 4.18, 4.19
-                \todo{Content}
-
-                \subsubsection{Synchronizing Global Data} % 4.26
-                    \todo{Content}
-                % end
-            % end
-
-            \subsection{Computations} % 2.28
-                \todo{Content}
-
-                \subsubsection{Interleaving} % 2.29, 2.30, 4.20
-                    \todo{Content}
-                % end
-            % end
-
-            \subsection{Atomicity} % 2.31, 2.32, 2.34, 4.22, 4.44
-                \todo{Content}
-
-                \subsubsection{Deterministic Sequences} % 4.23
-                    \todo{Content}
-                % end
-
-                \subsubsection{Atomic Sequences} % 4.24
-                    \todo{Content}
-                % end
-            % end
-
-            \subsection{Executability} % 4.27, 4.28
-                \todo{Content}
-
-                \subsubsection{Blocking} % 4.29
-                    \todo{Content}
-                % end
-            % end
-
-            \subsection{Critical Section Problem} % 4.30, 4.31, 4.32
-                \todo{Content}
-
-                \subsubsection{Mutual Exclusion} % 4.33, 3.34, 4.35, 4.36, 4.37
-                    \todo{Content}
-                % end
-
-                \subsubsection{Verifying ME} % 4.38, 4.39, 4.40
-                    \todo{Content}
-                % end
-
-                \subsubsection{Variations} % 4.43
-                    \todo{Content}
-                % end
-
-            \subsection{Deadlocks} % 4.41, 4.42
-                \todo{Content}
-            % end
-        % end
-
-        \section{Distributed Systems} % 5.2, 5.3
-            \todo{Content}
-
-            \subsection{Channels} % 5.4, 5.5, 5.6
-                \todo{Content}
-
-                \subsubsection{Sending/Receiving} % 5.7, 5.12, 5.30
-                    \todo{Content}
-
-                    \paragraph{Pattern Matching} % 5.31, 5.32, 5.33, 5.34
-                        \todo{Content}
-                    % end
-
-                    \paragraph{Random Receive} % 5.35
-                        \todo{Content}
-                    % end
-
-                    \paragraph{Prefix Syntax} % 5.36
-                        \todo{Content}
-                    % end
-                % end
-
-                \subsubsection{Scope} % 5.8
-                    \todo{Content}
-                % end
-
-                \subsubsection{Rendezvous} % 5.14, 5.16, 5.17, 5.25
-                    \todo{Content}
-                % end
-
-                \subsubsection{Buffered} % 5.26, 5.27, 5.28, 5.29, 5.37
-                    \todo{Content}
-                % end
-            % end
-
-            \subsection{Client-Server Model} % 5.9, 5.10, 5.18, 5.19
-                \todo{Content}
-
-                \subsubsection{Reply Channels} % 5.20, 5.21
-                    \todo{Content}
-                % end
-            % end
-
-            \subsection{Sending Channels via Channels} % 5.22, 5.23
-                \todo{Content}
-            % end
-
-            \subsection{Sending Process IDs} % 5.24
-                \todo{Content}
-            % end
-        % end
-    % end
-
-    \chapter{Linear Temporal Logic (LTL)} % N/A
-        \todo{Content}
-
-        \section{Propositional Logic} % N/A
-            \todo{Content}
-
-            \subsection{Syntax} % 6.5, 6.6, 6.7, 6.8
-                \todo{Content}
-            % end
-
-            \subsection{Semantics} % 6.9, 6.10, 6.11
-                \todo{Content}
-            % end
-
-            \subsection{Semantic Notions} % 6.12, 6.13, 6.14
-                \todo{Content}
-            % end
-
-            \subsection{Expressiveness} % 6.15, 6.16, 6.17
-                \todo{Content}
-            % end
-        % end
-
-        \section{Kripke Structure and Transition Systems} % 6.18, 6.19
-            \todo{Content}
-        % end
-
-        \section{Syntax} % 6.21
-            \todo{Content}
-        % end
-
-        \section{Semantics} % 6.22, 6.23, 6.24
-            \todo{Content}
-
-            \subsection{Validity} % 6.27, 6.28, 6.29
-                \todo{Content}
-            % end
-
-            \subsection{Transition Systems} % 6.30, 6.31
-                \todo{Content}
-            % end
-        % end
-
-        \section{Safety and Liveness Properties} % 6.25, 6.26, 7.13
-            \todo{Content}
-        % end
-
-        \section{Formal Languages} % 6.33
-            \todo{Content}
-
-            \subsection{Büchi Automaton} % 6.34, 6.35
-                \todo{Content}
-
-                \subsubsection{\(\omega\)-Regular Expressions} % 6.36, 6.38
-                    \todo{Content}
-                % end
-
-                \subsubsection{LTL \(\leftrightarrow\) Büchi Automaton} % 6.40, 6.41, 6.42, 6.43
-                    \todo{Content}
-                % end
-            % end
-        % end
-
-        \section{Decidability, Closure Properties} % 6.37
-            \todo{Content}
-        % end
-    % end
-
-    \chapter{SPIN} % 3.2
-        \todo{Content}
-
-        \section{Model Checking} % 2.3, 3.4, 3.6, 3.7, 3.8, 6.45, 6.46, 6.47, 7.2
-            \todo{Content}
-        % end
-
-        \section{Workflow} % 3.9, 3.10, 3.11, 3.18, 3.19, 3.20, 3.26
-            \todo{Content}
-
-            \subsection{Guided Simulation} % 3.21, 3.22
-                \todo{Content}
-            % end
-
-            \subsection{Temporal Properties} % 7.15, 7.20, 7.23, 7.25, 7.26
-                \todo{Content}
-            % end
-        % end
-
-        \section{Preliminaries} % 7.4
-            \todo{Content}
-
-            \subsection{Acceptance Cycles} % 7.5
-                \todo{Content}
-            % end
-
-            \subsection{Fairness} % 7.6, 7.24, 7.27
-                \todo{Content}
-            % end
-        % end
-
-        \section{Correctness Properties} % 3.12, 3.13, 7.3
-            \todo{Content}
-
-            \subsection{Assertions} % 3.14, 3.15, 3.16, 3.17
-                \todo{Content}
-            % end
-
-            \subsection{Valid End States} % 3.30, 3.31, 3.32, 3.33
-                \todo{Content}
-            % end
-
-            \subsection{Temporal Properties} % 7.7, 7.8, 7.9, 7.19
-                \todo{Content}
-
-                \subsubsection{Boolean Temporal Logic} % 7.10, 7.11, 7.12
-                    \todo{Content}
-                % end
-
-                \subsubsection{Safety Properties} % 7.14, 7.15
-                    \todo{Content}
-
-                    \paragraph{Never Claims} % 7.16, 7.17, 7.18
-                        \todo{Content}
-                    % end
-                % end
-
-                \subsubsection{Liveness Properties} % 7.21, 7.22, 7.23, 7.25, 7.29
-                    \todo{Content}
-                % end
-
-                \subsubsection{Label Checking} % 7.28, 7.29
-                    \todo{Content}
-                % end
-            % end
-        % end
-    % end
-
-    \chapter{First-Order Logic (FOL)} % 8.2, 8.3
-        \todo{Content}
-
-        \section{Syntax} % N/A
-            \todo{Content}
-
-            \subsection{Signature} % 8.4, 8.5, 8.6, 8.7
-                \todo{Content}
-            % end
-
-            \subsection{Terms} % 8.8, 8.9, 8.10
-                \todo{Content}
-            % end
-
-            \subsection{Atomic Formulas} % 8.11, 8.12, 8.13
-                \todo{Content}
-            % end
-
-            \subsection{General Formulas} % 8.14, 8.15, 8.16
-                \todo{Content}
-            % end
-        % end
-
-        \section{Semantics} % 8.18, 8.19, 8.20, 8.21, 8.22, 8.23, 8.24
-            \todo{Content}
-
-            \subsection{Variable Assignments} % 8.25
-                \todo{Content}
-            % end
-
-            \subsection{Semantic Evaluation} % N/A
-                \todo{Content}
-
-                \subsubsection{Terms} % 8.26, 8.27, 8.28
-                    \todo{Content}
-                % end
-
-                \subsubsection{Formulas} % 8.29, 8.30, 8.31
-                    \todo{Content}
-                % end
-            % end
-
-            \subsection{Semantic Notions} % 8.32
-                \todo{Content}
-            % end
-
-            \subsection{Impracticality and Reasoning by Syntactic Transformation} % 8.33, 8.34
-                \todo{Content}
-            % end
-        % end
-
-        \section{Sequent Calculus} % 8.35, 8.36
-            \todo{Content}
-
-            \paragraph{Propositional Calculus Rules} % 8.38
-                \todo{Content}
-            % end
-
-            \paragraph{First-Order Calculus Rules} % 8.42, 8.43, 8.44, 8.45, 8.47, 8.49, 8.50
-                \todo{Content}
-            % end
-
-            \subsection{Proofing} % 8.39, 8.49
-                \todo{Content}
-
-                \subsubsection{Examples} % N/A
-                    \todo{Content}
-
-                    \paragraph{Propositional} % 8.40
-                        \todo{Content}
-                    % end
-
-                    \paragraph{First-Order} % 8.46
-                        \todo{Content}
-                    % end
-
-                    \paragraph{First-Order with Equality} % 8.48
-                        \todo{Content}
-                    % end
-                % end
-            % end
-
-            \subsection{Soundness and Completeness} % 8.37, 8.41
-                \todo{Content}
-            % end
-        % end
-    % end
-
-    \chapter{Java Modeling Language (JML)} % 9.2
-        \todo{Content}
-
-        \section{Running Examples} % N/A
-            \todo{Content}
-
-            \subsection{\texttt{ATM}} % 9.8
-                \todo{Content}
-            % end
-
-            \subsection{\texttt{LimitedIntegerSet}} % 10.2, 10.3
-                \todo{Content}
-            % end
-        % end
-
-        \section{Specification} % 9.3, 9.4, 9.5, 9.6, 9.7
-            \todo{Content}
-
-            \subsection{Informal Specification} % 9.9
-                \todo{Content}
-            % end
-
-            \subsection{Specification as Contract} % 9.10, 9.11
-                \todo{Content}
-            % end
-
-            \subsection{Formal Specification} % 9.12
-                \todo{Content}
-            % end
-        % end
-
-        \section{Introduction to JML} % 9.13, 9.14, 9.15
-            \todo{Content}
-
-            \subsection{JML as Java Comments} % 9.16, 9.17
-                \todo{Content}
-            % end
-        % end
-
-        \section{Specification Case} % 9.23
-            \todo{Content}
-
-            \subsection{Public} % 9.18
-                \todo{Content}
-            % end
-
-            \subsection{Normal Behavior} % 9.19, 10.23
-                \todo{Content}
-            % end
-
-            \subsection{Exceptional Behavior} % 10.22, 10.23, 10.24
-                \todo{Content}
-
-                \subsubsection{\texttt{signals}} % 10.25
-                    \todo{Content}
-                % end
-
-                \subsubsection{\texttt{signals\_only} } % 10.26
-                    \todo{Content}
-                % end
-            % end
-
-            \subsection{Non-Termination} % 10.27
-                \todo{Content}
-            % end
-        % end
-
-        \section{Preconditions} % 9.20, 9.21
-            \todo{Content}
-        % end
-
-        \section{Postconditions} % 9.22
-            \todo{Content}
-        % end
-
-        \section{Assignable} % 9.25, 9.26, 9.27
-            \todo{Content}
-        % end
-
-        \section{Modifiers} % 9.29
-            \todo{Content}
-
-            \subsection{\texttt{spec\_public}} % 9.30
-                \todo{Content}
-            % end
-
-            \subsection{\texttt{pure}} % 9.31, 9.32
-                \todo{Content}
-            % end
-
-            \subsection{\texttt{nullable}, \texttt{non\_null}} % 10.28, 10.29, 10.30, 10.31, 10.32
-                \todo{Content}
-            % end
-        % end
-
-        \section{JML Expressions} % 9.33, 9.34
-            \todo{Content}
-
-            \subsection{Access of Prestate} % 9.24
-                \todo{Content}
-            % end
-
-            \subsection{Quantifier} % 9.35, 9.36, 9.37, 9.38, 9.39
-                \todo{Content}
-            % end
-
-            \subsection{Result Values} % 10.4
-                \todo{Content}
-            % end
-        % end
-
-        \section{State Constraints} % 10.10, 10.11, 10.12, 10.13, 10.14, 10.15
-            \todo{Content}
-
-            \subsection{Class Invariants} % 10.16, 10.17, 10.18, 10.19, 10.20, 10.21
-                \todo{Content}
-            % end
-        % end
-
-        \section{Inheritance} % 10.33
-            \todo{Content}
-        % end
-
-        \section{Loop Invariants} % 14.18, 14.19
-            \todo{Content}
-        % end
-
-        \section{Loop Termination} % 14.20, 14.21, 14.22
-            \todo{Content}
-
-            \subsection{Example: GCD} % 14.23, 14.24, 14.25, 14.26, 14.27
-                \todo{Content}
-            % end
-        % end
-    % end
-
-    \chapter{Dynamic Logic (DL)} % 11.2, 11.4, 11.5, 11.6, 11.10, 11.11, 11.12, 12.2, 12.37, 13.21
-        \todo{Content}
-
-        \section{Type Hierarchy} % 11.7, 11.8, 11.9, 12.17
-            \todo{Content}
-        % end
-
-        \section{Syntax} % 11.15
-            \todo{Content}
-
-            \subsection{Variables} % 11.13, 11.14, 11.17
-                \todo{Content}
-            % end
-
-            \subsection{Terms} % 11.18
-                \todo{Content}
-            % end
-
-            \subsection{Programs} % 11.19
-                \todo{Content}
-            % end
-
-            \subsection{Modalities} % 11.20
-                \todo{Content}
-            % end
-
-            \subsection{Formulas} % 11.23, 11.24
-                \todo{Content}
-            % end
-        % end
-
-        \section{Semantics} % 11.25
-            \todo{Content}
-
-            \subsection{Kripke Structure} % 11.26, 11.27, 11.28
-                \todo{Content}
-            % end
-
-            \subsection{Semantic Evaluation} % N/A
-                \todo{Content}
-
-                \subsubsection{Formulas} % 11.29, 11.30
-                    \todo{Content}
-                % end
-
-                \subsubsection{Programs} % 11.31
-                    \todo{Content}
-            % end
-                % end
-
-            \subsection{Sequents} % 12.4
-                \todo{Content}
-            % end
-        % end
-
-        \section{KeY Input File} % 11.16, 11.21, 11.22, 12.24
-            \todo{Content}
-        % end
-
-        \section{Modeling} % N/A
-            \todo{Content}
-
-            \subsection{Heap} % 12.18, 12.19, 12.20
-                \todo{Content}
-
-                \subsubsection{Field Updates} % 12.21
-                    \todo{Content}
-                % end
-
-                \subsubsection{Field Access} % 12.22
-                    \todo{Content}
-                % end
-
-                \subsubsection{Pretty Printing} % 12.23
-                    \todo{Content}
-                % end
-            % end
-
-            \subsection{Static Fields} % 12.30
-                \todo{Content}
-            % end
-
-            \subsection{Abrupt Termination} % 12.25, 12.26, 12.27
-                \todo{Content}
-            % end
-
-            \subsection{Aliasing} % 12.28, 12.29
-                \todo{Content}
-            % end
-
-            \subsection{\texttt{this} and \texttt{self}} % 12.31
-                \todo{Content}
-            % end
-
-            \subsection{Arrays} % 12.33
-                \todo{Content}
-            % end
-
-            \subsection{Complex Expressions} % 12.34
-                \todo{Content}
-            % end
-
-            \subsection{Method Calls} % 13.4, 13.6
-                \todo{Content}
-
-                \subsubsection{Object Initialization} % 12.32, 13.7
-                    \todo{Content}
-                % end
-            % end
-        % end
-
-        \section{Symbolic Execution} % 12.5, 12.6, 14.3
-            \todo{Content}
-
-            \subsection{Rules} % 12.7, 12.12, 12.21, 12.35, 13.5, 13.9, 13.11, 13.15, 13.16, 13.19, 14.4, 14.5, 14.7, 14.12, 14.15
-                \todo{Content}
-            % end
-
-            \subsection{Updates} % 12.8, 12.9, 12.10
-                \todo{Content}
-
-                \subsubsection{Effects} % 12.11
-                    \todo{Content}
-                % end
-
-                \subsubsection{Assignment Rule} % 12.12
-                    \todo{Content}
-                % end
-
-                \subsubsection{Composition} % 12.13
-                    \todo{Content}
-                % end
-
-                \subsubsection{Parallel Updates} % 12.14, 12.15
-                    \todo{Content}
-                % end
-
-                \subsubsection{Quantifier} % 12.16
-                    \todo{Content}
-                % end
-
-                \subsubsection{Keeping the Context: Anonymising} % 13.12, 13.13, 13.14, 14.14
-                    \todo{Content}
-                % end
-            % end
-
-            \subsection{Abrupt Termination} % 12.36
-                \todo{Content}
-            % end
-
-            \subsection{Complex Expressions} % 12.35
-                \todo{Content}
-            % end
-
-            \subsection{Method Calls} % 13.5
-                \todo{Content}
-
-                \subsubsection{Limitations of Inlining} % 13.8
-                    \todo{Content}
-                % end
-
-                \subsubsection{Method Contract Rule} % 13.9, 13.10, 13.11, 13.15, 13.16
-                    \todo{Content}
-                % end
-
-                \subsubsection{Proofing Correctness of Method Contracts} % 13.19
-                    \todo{Content}
-                % end
-            % end
-
-            \subsection{Loop Invariants} % 14.4, 14.5, 14.8
-                \todo{Content}
-
-                \subsubsection{Deriving Loop Invariants} % 14.9, 14.10, 14.11, 14.29, 14.30
-                    \todo{Content}
-                % end
-
-                \subsubsection{Context Loss} % 14.12, 14.14, 14.15
-                    \todo{Content}
-            % end
-        % end
-
-        \section{Understanding Unclosed Proofs} % 13.20
-            \todo{Content}
-
-            \subsection{Model Search} % 14.31, 14.32, 14.33, 14.34
-                \todo{Content}
-            % end
-        % end
-    % end
+	\maketitle
+	\tableofcontents
+	\listoftodos
+
+	\chapter{Introduction}
+		\section{Motivation} % 1.10
+			\todo{Content}
+		% end
+
+		\section{Traditional Reliability Measures} % 1.11, 1.12
+			\todo{Content}
+		% end
+
+		\section{Classical Testing} % 1.13, 1.14
+			\todo{Content}
+		% end
+
+		\section{Formal Methods} % 1.15, 1.16, 1.17, 1.19, 1.20
+			\todo{Content}
+
+			\subsection{Specification} % 1.18
+				\todo{Content}
+			% end
+
+			\subsection{Difficulties} % 1.21, 1.22, 1.23, 1.24
+				\todo{Content}
+			% end
+
+			\subsection{Abstraction and Expressiveness} % 1.25, 1.26, 1.27
+				\todo{Content}
+			% end
+
+			\subsection{Automatic Proof Search} % 1.28
+				\todo{Content}
+			% end
+		% end
+
+		\section{Model Checking} % 1.29, 1.30, 1.31
+			\todo{Content}
+		% end
+
+		\section{Deductive Verification} % 1.32, 1.33, 1.34
+			\todo{Content}
+		% end
+
+		\section{Tool Support} % 1.35
+			\todo{Content}
+		% end
+	% end
+
+	\chapter{PROMELA}
+		\textit{PROMELA} is an acronmy for \textit{Process meta-language} and is a language for modeling concurrent systems:
+		\begin{itemize}
+			\item Multi-threaded
+			\item Synchronization and message passing
+			\item Only a few control structures and pure expressions with no side-effects
+			\item Data structures with finite and fixed bound
+		\end{itemize}
+		But PROMELA is not a programming language and thus not intended to be used for programming real systems.
+		\begin{itemize}
+			\item No reference types,
+			\item no methods or procedures (just macros),
+			\item no libraries,
+			\item no GUI nor standard input,
+			\item no floating point types and
+			\item no data encapsulation.
+			\item Assumes fair scheduling policy during verification and is
+			\item non-deterministic (but executable, e.g. with a random scheduler).
+		\end{itemize}
+	
+		\paragraph{Hello, World!}
+			\lstinputlisting[caption = { First PROMELA Program }, label = lst:promelaFirst, language = PROMELA]{code/promela/hello-world.pml}
+
+			\begin{itemize}
+				\item The program~\ref{lst:promelaFirst} can be simulated (executed, interpreted) using SPIN (this will be covered in more detail in chapter \ref{c:spin}):
+					\outputlisting{code/promela/hello-world.pml.out}
+				\item The keyword \inlinePromela{proctype} declares a \textit{process} named \texttt{P}.
+				\item Printing using \inlinePromela{printf} uses a simplified C-like formatting syntax.
+				\item PROMELA is general is a bit C-like (also adapts the comment style of C).
+			\end{itemize}
+		% end
+
+		\section{Data Types}
+			\subsection{Arithmetic}
+				\begin{itemize}
+					\item The data types \inlinePromela{byte}, \inlinePromela{short}, \inlinePromela{int} and \inlinePromela{unsigned} have the operations \inlinePromela{+}, \inlinePromela{-}, \inlinePromela{*}, \inlinePromela{/} and \inlinePromela{\%} where the semantics are mirrored from the underlying C data types.
+						\begin{itemize}
+							\item All expressions are calculates as \inlinePromela{int} and are then converted into the container type.
+							\item Variables that have not been initialized explicitly default to \inlinePromela{0}.
+						\end{itemize}
+					\item No floats and no strings.
+					\item The compiler moves all variable declarations to the start of the process, so avoid putting declarations anywhere else than the start!
+				\end{itemize}
+			% end
+
+			\subsection{Booleans}
+				\begin{itemize}
+					\item The data type \inlinePromela{bool} has the literals \inlinePromela{true} and \inlinePromela{false} which are only syntactic sugar for \inlinePromela{0} (\inlinePromela{false}) and \inlinePromela{1} (\inlinePromela{true}), thus is \inlinePromela{bool} for \inlinePromela{bit}.
+				\end{itemize}
+			% end
+
+			\subsection{Enumerations}
+				\begin{lstlisting}[caption = { PROMELA Enumerations }, label = lst:promelaEnum, language = PROMELA]
+mtype = { red, yellow, green };
+mtype light = green;
+printf("The light is %e\n", light)
+				\end{lstlisting}
+				
+				\begin{itemize}
+					\item The literals are names for a non-zero \inlinePromela{byte}, thus at most 255 elements can be defined.
+					\item The abbreviation \inlinePromela{mtype} stands for \textit{message type} (as the first use was for message names).
+					\item It is only possible to define at most one \inlinePromela{mtype} per program.
+				\end{itemize}
+			% end
+
+			\subsection{Arrays}
+				\begin{lstlisting}[caption = { PROMELA Arrays }, label = lst:promelaArray, language = PROMELA]
+/* Defines N as beeing 5, this is evaluated by the compiler. */
+#define N 5
+
+active proctype P() {
+	byte a[N];
+	byte i;
+	byte sum = 0;
+	a[0] = 0;  a[1] = 10;  a[2] = 20;  a[3] = 30;  a[4] = 40;
+	for (i in a) {
+		sum = sum + a[i]
+	}
+}
+				\end{lstlisting}
+			
+				\begin{itemize}
+					\item Array indices start with zero, like in C.
+					\item All entries are initialized with zero.
+					\item Arrays are value types and \inlinePromela{a} and \inlinePromela{b} are always different (\inlinePromela{a != b}).
+					\item The bounds of an array (especially the length) are constant and cannot be changed (there are no unbound data types in PROMELA!).
+					\item Only one-dimensional arrays are possible (except for ugly workarounds).
+					\item For-loops like in program~\ref{lst:promelaArray} run over the indices of the array, not the elements!
+				\end{itemize}
+			% end
+
+			\subsection{Record}
+				\begin{lstlisting}[caption = { PROMELA Records }, label = lst:promelaRecord, language = PROMELA]
+typedef DATE {
+	int day, month, year;
+}
+
+active proctype P() {
+	DATE D;
+	D.day = 11;  D.month = 11;  D.year = 1997
+}
+				\end{lstlisting}
+				
+				\begin{itemize}
+					\item Similar to structs in C.
+					\item Record types may include references to previously defined record type, but no self-references are allowed!
+					\item Can be used to realize multi-dimensional arrays (with arrays of record types including arrays)\dots
+				\end{itemize}
+			% end
+		% end
+
+		\section{Control Statements}
+			\begin{description}
+				\item[Sequencing] Using a semicolon (\inlinePromela{;}) as a separator. It is not required after the last statement.
+				\item[Guarded Commands] Selection: Non-deterministic choice of an alternative; Repetition: Loop until break, or forever.
+				\item[For-Loop] Translated to a do-loop, loops over keys of an array.
+				\item[Goto] Jumps to a label.
+			\end{description}
+
+			\subsection{Selection}
+				\lstinputlisting[caption = { PROMELA Selection }, label = lst:promelaSelection, language = PROMELA]{code/promela/selection.pml}
+				
+				\begin{itemize}
+					\item The \textit{guards} (the conditions before the \inlinePromela{->}) may overlap. That is, multiple guard may be true at one time (like in program~\ref{lst:promelaSelection}).
+					\item Any alternative with a true guard is chosen randomly (non-deterministic).
+					\item When no guard is true, the process blocks until one becomes true (if this never happens, that's a problem).
+					\item During command line execution, the trace of the random simulation can be printed:
+						\outputlisting{code/promela/selection.pml.out}
+					\item The Symbol \inlinePromela{->} is overloaded in PROMELA:
+					\begin{itemize}
+						\item Also used in conditional expressions \inlinePromela{boolean-guard -> then : else}.
+						\item The brackets are mandatory in conditional expressions.
+					\end{itemize}
+					\item The first statement after \inlinePromela{::} is evaluated as the guard. It is possible to use a semicolon instead of an arrow, but this is confusing and shall not be done.
+					\item If an alternative should be selectable every time, it can be the literal \inlinePromela{true}.
+					\item To mark an alternative as selectable iff no other alternative is true, it should be marked with \inlinePromela{else}.
+				\end{itemize}
+			% end
+
+			\subsection{Repetition}
+				\lstinputlisting[caption = { PROMELA Repetition }, label = lst:promelaDo, language = PROMELA]{code/promela/repetition.pml}
+				
+				\begin{itemize}
+					\item Like in the selection statement, any alternative with a true guard is chosen randomly.
+					\item The only way to exit a loop is by \inlinePromela{break} or \inlinePromela{goto}.
+					\item The command \inlinePromela{skip} continues the loop in the next iteration.
+					\item When no guard is true, the loop blocks until one becomes true.
+					\item During command line execution, the trace of the random simulation can be printed as well as the values of the local variables:
+						\outputlisting{code/promela/repetition.pml.out}
+				\end{itemize}
+			
+				\subsubsection{For-Loops}
+					\begin{lstlisting}[caption = { PROMELA For-Loops }, label = lst:promelaFor, language = PROMELA]
+#define N 10
+
+active proctype P() {
+	int i;
+	int sum = 0;
+	for (i : 1 .. N) {
+		sum = sum + i
+	}
+}
+					\end{lstlisting}
+				
+					\begin{itemize}
+						\item Starting from SPIN version 6, it is possible to have C-style for loops.
+						\item They are translated into do-loops by the compiler and can iterate over Array indices (like in program~\ref{lst:promelaArray}) or over ranges (like in program~\ref{lst:promelaFor}).
+					\end{itemize}
+				% end
+			% end
+
+			\subsection{Jumps}
+				\lstinputlisting[caption = { PROMELA Jumps }, label = lst:promelaGoto language = PROMELA]{code/promela/jumps.pml}
+			
+				\begin{itemize}
+					\item It is possible to define labels and jump to them using \inlinePromela{goto}.
+					\item These labels must be unique for a process and it is not possible to place labels in front of guards.
+					\item It is easy to write messy code with \inlinePromela{goto}! Take this into account when using!
+				\end{itemize}
+			% end
+		% end
+
+		\section{Inlining Code}
+			\begin{lstlisting}[caption = { PROMELA Inlines }, label = lst:promelaInline, language = PROMELA]
+typedef DATE {
+	int day, month, year;
+}
+
+inline setDate(D, DD, MM, YY) {
+	D.day = D;  D.month = MM;  D.year = YY;
+}
+
+active proctype P() {
+	DATE d;
+	setDate(d, 11, 11, 1997);
+}
+			\end{lstlisting}
+
+			\begin{itemize}
+				\item PROMELA has no methods or procedure calls, but it is possible to create macro-like abbreviations for code that appears multiply.
+				\item The code is then inlined (i.e. copied) into the "calling" place.
+				\item Thus, no new scope is created and all variables may be modified \(\implies\) avoid declaring variables in and inline block, they are visible for the calling process.
+			\end{itemize}
+		% end
+
+		\section{Nondeterminism}
+			Deterministic PROMELA programs are trivial: Assuming a program with only one process and no overlapping guards, all variables are (implicitly or explicitly) initialized as no user input is possible and each state is either blocking or has exactly one successor state. Non-trivial PROMELA programs are non-deterministic with different possible sources of non-determinism:
+			\begin{enumerate}
+				\item Arbitrary (non-deterministic) choice of alternatives with overlapping guards and
+				\item Scheduling of concurrent processes.
+			\end{enumerate}
+
+			\subsection{Value Generation}
+				One of the most important sources of non-determinism is the non-deterministic generation of values. This section will cover some possibilities for such generations.
+				
+				\paragraph{Overlapping Guards}
+					\begin{lstlisting}[caption = { PROMELA Non-Deterministic Value Generation by Guards }, label = lst:promelaNonDetGuard, language = PROMELA]
+active proctype P() {
+	byte range;
+	if
+		:: range = 1
+		:: range = 2
+		:: range = 3
+		:: range = 4
+	fi
+	printf("Chose %d\n", range)
+}
+					\end{lstlisting}
+					
+					\begin{itemize}
+						\item The code in listing~\ref{lst:promelaNonDetGuard} is equivalent to multiple Guards \inlinePromela{:: true -> range = 1} etc. as an assignment is always true (it always succeeds).
+						\item This yields a non-deterministic choice for \inlinePromela{range} in the domain \( \{\, 1,\, 2,\, 3,\, 4 \,\} \).
+					\end{itemize}
+				% end
+				
+				\paragraph{Loop}
+					\begin{lstlisting}[caption = { PROMELA Non-Deterministic Value Generation by Loop }, label = lst:promelaNonDetLoop, language = PROMELA]
+#define LOW  0
+#define HIGH 9
+
+active proctype P() {
+	byte range = LOW;
+	do
+		:: range < HIGH -> range++
+		:: break
+	od
+	printf("Chose %d\n", range)
+}
+					\end{lstlisting}
+					
+					\begin{itemize}
+						\item The code in listing~\ref{lst:promelaNonDetLoop} generates a value for \inlinePromela{range} in the domain \( \{\, \texttt{LOW},\, \cdots,\, \texttt{HIGH} \,\} \) with the probability \( 2^{-(n + 1)} \) for generating the number \(n\).
+						\item This the probability for larger numbers reduced \( \implies \) does not yields representative test cases for random simulation.
+						\item But as in verification, all computations are generated, this solution works well enough for verification.
+					\end{itemize}
+				% end
+				
+				\paragraph{Select}
+					\begin{lstlisting}[caption = { PROMELA Non-Deterministic Value Generation by Select }, label = lst:promelaNonDetSelect, language = PROMELA]
+#define LOW  0
+#define HIGH 9
+
+active proctype P() {
+	int i;
+	select(i: LOW .. HIGH);
+	printf("Chose %d\n", i)
+}
+					\end{lstlisting}
+					
+					\begin{itemize}
+						\item The \inlinePromela{select} macro is only available in SPIN version 6 and above.
+						\item Syntactic sugar for generating values in a given range.
+					\end{itemize}
+				% end
+			% end
+		% end
+
+		\section{Concurrent Systems}
+			\begin{itemize}
+				\item A concurrent system is about "doing things at the same time trying not to get into each others way".
+				\item Doing things at the same time can mean a lots of things, this course focuses on sharing computational resources, especially memory.
+				\item The basic concepts for controlling the accesses are:
+					\begin{itemize}
+						\item Blocking, locks
+						\item Semaphores
+						\item Busy waiting
+					\end{itemize}
+					And these need to be carefully designed, otherwise a deadlock might happen!
+			\end{itemize}
+		
+			\subsection{Modeling in PROMELA}
+				\lstinputlisting[caption = { PROMELA with multiple Processes }, label = lst:promelaMultipleProcesses, language = PROMELA]{code/promela/multiple-processes.pml}
+			
+				\begin{itemize}
+					\item The primary concept for modeling concurrent systems in PROMELA is the use of processes.
+					\item In PROMELA, more than one process can be created (max. 255) that all need unique identifiers.
+					\item Listing~\ref{lst:promelaMultipleProcesses} shows a program with two processes (introduced by \inlinePromela{proctype}).
+					\item As only one process can be executed at one time on the processor, the processes are executed concurrently.
+					\item The scheduler selects the next process randomly.
+					\item This yields many different \textit{interleavings} and thus non-determinism.
+					\item The \inlinePromela{[2]} between \inlinePromela{active} and \inlinePromela{proctype} declares how many processes of the type should be created. If no number is given, SPIN defaults to one process.
+					\item The current process identifier is stored in the reserved variable \inlinePromela{\_pid}.
+					\item One sample execution of the program~\ref{lst:promelaMultipleProcesses} (the indicates the process that has generated the string, "one tab per process ID"; can be suppressed with the switch \texttt{-T}):
+						\outputlisting{code/promela/multiple-processes.pml.out}
+				\end{itemize}
+			% end
+
+			\subsection{Starting Processing Explicitly}
+				\lstinputlisting[caption = { PROMELA Init Process }, label = lst:promelaInit, language = PROMELA]{code/promela/init.pml}
+			
+				\begin{itemize}
+					\item There is exactly one \textit{initial process} that spawns the other ones.
+					\item This process is often declared implicitly using the keyword \inlinePromela{active} in the process definition (this process is ran once the program is started).
+					\item The initial process can also be explicitly declared with the keyword \inlinePromela{init}, as shown in listing~\ref{lst:promelaInit}. This programs spawns three processes, one instance of \inlinePromela{P} and two of \inlinePromela{Q}.
+					\item Another process is started with the keyword \inlinePromela{run}. This invocation does not wait until the process is ready, thus the code in process \inlinePromela{Q} may be executed even before the first execution of an instance of process \inlinePromela{P}.
+					\item It is also possible to wrap the invocations of \inlinePromela{run} into an \inlinePromela{atomic { ... }} block, causing the process to execute only after all processes are created. The keyword \inlinePromela{atomic} is discussed in detail in section \ref{sec:atomic}.
+				\end{itemize}
+			
+				\subsubsection{Parameters}
+					Processes may also have arguments that have to be passed when instantiated by \inlinePromela{run}, see listing~\ref{lst:promelaParams}.
+					
+					\begin{lstlisting}[caption = { PROMELA Processes with Parameters }, label = lst:promelaParams, language = PROMELA]
+proctype P(byte i; bool b) { ... }
+
+init {
+	run P(7, true);
+	run P(8, false)
+}
+					\end{lstlisting}
+				% end
+			% end
+
+			\subsection{Joining Processes}
+				\begin{lstlisting}[caption = { Joining PROMELA Processes }, label = lst:promelaJoin, language = PROMELA]
+proctype P() { ... }
+
+init {
+	atomic {
+		run P();
+		run P()
+	}
+	(_nr_pr == 1) -> printf("ready")
+}
+				\end{lstlisting}
+			
+				Processes may be joined by using a trick: Wait for the variable \inlinePromela{\_nr\_pr} to equal \inlinePromela{1}, indicating that only one process still runs (the variable holds the number of processes currently running). This utilization is shown in listing~\ref{lst:promelaJoin}.
+			% end
+
+			\subsection{Local and Global Data}
+				\begin{itemize}
+					\item Variables declared outside of any process are visible (and writable) for/by all processes.
+					\item Variables declared inside a process are local to that process and only visible for that process.
+					\item Pragmatics of modeling with global data:
+						\begin{itemize}
+							\item \textit{Shared memory} of concurrent systems are often modeled by global variables of numeric (or array) type.
+							\item \textit{Shared resources} like the state of a printer, traffic light, etc. are often modeled by global variables of type boolean or enumeration type.
+							\item \textit{Communication} the media of distributed systems is often modeled by global variables of type channel (\inlinePromela{chan}), this is discussed in more detail in section~\ref{sec:distributed}.
+						\end{itemize}
+						Global variables must never be used to model process-local data!
+				\end{itemize}
+			
+				\subsubsection{Interference of Global Data}
+					\lstinputlisting[caption = { PROMELA Global Data Interference }, label = lst:promelaInterference, language = PROMELA]{code/promela/interference.pml}
+				
+					Given the program in listing~\ref{lst:promelaInterference}, how many possible outputs exist? This can be drawn in "transition graph" shown in figure~\ref{fig:promelaInterference}.
+					
+					\begin{figure}
+						\centering
+						\includegraphics[width = \textwidth]{tmp-promela-interference}
+						\caption{PROMELA Interference Graph}
+						\label{fig:promelaInterference}
+					\end{figure}
+				% end
+
+				\subsubsection{Synchronizing Global Data}
+					PROMELA provides no primitives like semaphores, locks or monitors for synchronizing on global data. Instead, PROMELA controls the statement \textit{executability} which is covered in more detail in section~\ref{sec:promelaExec}.
+				% end
+			% end
+
+			\subsection{Computations}
+				\label{sec:promelaComp}
+			
+				\begin{lstlisting}[caption = { PROMELA Computations Example }, label = lst:promelaCompEx, language = PROMELA]
+active [2] proctype P() {
+	byte n = 0;
+	n = 1;
+	n = 2
+}
+				\end{lstlisting}
+			
+				The possible computations of a PROMELA program can be shown in a transition graph. For example, figure~\ref{fig:promelaComp} shows the graph for possible computations of the program~\ref{lst:promelaCompEx} where only one computation is possible (as no global data is used). The program pointer (line number) for each process is shown in the left/upper compartment and the values of the variables in the lower compartment.
+				
+				\begin{figure}[H]
+					\centering
+					\includegraphics[width = \textwidth]{tmp-promela-computations.pdf}
+					\caption{PROMELA Computations Example}
+					\label{fig:promelaComp}
+				\end{figure}
+
+				\subsubsection{Interleaving}
+					\definition{Interleaving of independent Computations}{
+						Assume \(n\) independent processes \( P_1, \cdots, P_n \) where process \( P_i\) has the computation \( c^i = (s_0^i, s_1^i, s_2^i, \cdots) \).
+						
+						The computation \( (s_0, s_1, s_2, \cdots) \) is an \textit{interleaving} of \( c^1, \cdots, c^n \) iff for all \( s_j = s_{j'}^i \) and \( s_k = s_{k'}^i \) with \( j < k \) it is the case that \( j' < k' \).
+					}
+				
+					These interleavings can be represented as a directed graph. See figure~\ref{fig:promelaInterleaving} for the interleaving graph of the program~\ref{lst:promelaCompEx}.
+					
+					\begin{figure}
+						\centering
+						\includegraphics[width = \textwidth]{tmp-promela-interleavings.pdf}
+						\caption{PROMELA Interleavings}
+						\label{fig:promelaInterleaving}
+					\end{figure}
+				% end
+			% end
+
+			\subsection{Atomicity}
+				\definition{Atomicity}{An expression or statement that is executed entirely without the possibility of interleaving is called \textit{atomic}.}
+				
+				\begin{itemize}
+					\item In PROMELA, assignments, jumps, skip and expressions are atomic.
+					\item In particular, conditional expressions \inlinePromela{(p -> q : r)} are atomic (brackets required).
+					\item Guarded commands are not atomic! This the code in listing~\ref{lst:promelaDivByZero} is not save as a division by zero may occur in line 6 if process \inlinePromela{Q} is executed after the evaluation of the guard \inlinePromela{a != 0}, but before the execution of \inlinePromela{c = b / a}. This can be enforced by using interactive simulation:
+						\begin{lstlisting}[numbers = none]
+> spin -p -g -i divbyzero.pml
+  0: proc  - (:root:) creates proc  0 (P)
+  0: proc  - (:root:) creates proc  1 (Q)
+Select a statement
+	choice 1: proc  1 (Q:1) code/promela/divbyzero.pml:12 (state 1) [a = 0]
+	choice 2: proc  0 (P:1) code/promela/divbyzero.pml:4 (state 1) [a = 1]
+Select [1-2]: 2
+  1: proc  0 (P:1) code/promela/divbyzero.pml:4 (state 1)	[a = 1]
+		a = 1
+Select a statement
+	choice 1: proc  1 (Q:1) code/promela/divbyzero.pml:12 (state 1) [a = 0]
+	choice 2: proc  0 (P:1) code/promela/divbyzero.pml:4 (state 2) [b = 1]
+Select [1-2]: 2
+  2: proc  0 (P:1) code/promela/divbyzero.pml:4 (state 2)	[b = 1]
+		b = 1
+Select a statement
+	choice 1: proc  1 (Q:1) code/promela/divbyzero.pml:12 (state 1) [a = 0]
+	choice 2: proc  0 (P:1) code/promela/divbyzero.pml:4 (state 3) [c = 1]
+Select [1-2]: 2
+  3: proc  0 (P:1) code/promela/divbyzero.pml:4 (state 3)	[c = 1]
+		c = 1
+Select a statement
+	choice 1: proc  1 (Q:1) code/promela/divbyzero.pml:12 (state 1) [a = 0]
+	choice 2: proc  0 (P:1) code/promela/divbyzero.pml:5 (state 8) [((a!=0))]
+	choice 3: proc  0 (P:1) code/promela/divbyzero.pml:5 (state 8) unexecutable, [else]
+Select [1-3]: 2
+  4: proc  0 (P:1) code/promela/divbyzero.pml:6 (state 4)	[((a!=0))]
+Select a statement
+	choice 1: proc  1 (Q:1) code/promela/divbyzero.pml:12 (state 1) [a = 0]
+	choice 2: proc  0 (P:1) code/promela/divbyzero.pml:6 (state 5) [c = (b/a)]
+Select [1-2]: 1
+  5: proc  1 (Q:1) code/promela/divbyzero.pml:12 (state 1)	[a = 0]
+		a = 0
+Select a statement
+	choice 1: proc  1 (Q:1) code/promela/divbyzero.pml:13 (state 2) <valid end state> [-end-]
+	choice 2: proc  0 (P:1) code/promela/divbyzero.pml:6 (state 5) [c = (b/a)]
+Select [1-2]: 2
+[1]    2513 floating point exception  spin -p -g -i divbyzero.pml
+						\end{lstlisting}
+				\end{itemize}
+			
+				\lstinputlisting[caption = { Atomicity of Guards in PROMELA }, label = lst:promelaDivByZero, language = PROMELA]{code/promela/divbyzero.pml}
+
+				\subsubsection{Deterministic Sequences}
+					\begin{itemize}
+						\item A sequence marked with \inlinePromela{d\_step} is \textit{strongly atomic} and cannot be interrupted.
+						\item It is called a \textit{deterministic sequence} and inside it, every non-determinism is avoided. That is, in the case of overlapping guards, the first alternative is chosen. Nevertheless, non-determinism should be avoided in \inlinePromela{d\_step}!
+						\item If any statement in a \inlinePromela{d\_step} other than the first blocks, an error occurs.
+						\item If the first statement (the "guard") blocks, \inlinePromela{d\_step} is not entered as a whole.
+						\item Listing~\ref{lst:promelaDStep} shows the general syntax.
+					\end{itemize}
+				
+					\begin{lstlisting}[caption = { Deterministic Sequence in PROMELA }, label = ls:promelaDStep, language = PROMELA]
+d_step {
+	stmt1;  /* Guard */
+	stmt2;
+	stmt3
+}
+					\end{lstlisting}
+				% end
+
+				\subsubsection{Atomic Sequences}
+					\label{sec:atomic}
+				
+					\begin{itemize}
+						\item A sequence marked with \inlinePromela{atomic} is \textit{weakly atomic} and can be interrupted if and only if a statement blocks.
+						\item In an atomic block, non-determinism is possible (so overlapping guards have the well-known behavior of selecting a random alternative).
+						\item Any statement can block inside an \inlinePromela{atomic} block and the execution may be interleaved iff any statement blocks.
+						\item The block is only entered iff the first statement (the "guard") does not block.
+						\item Listing~\ref{lst:promelaAtomic} shows the general syntax.
+					\end{itemize}
+				
+					\begin{lstlisting}[caption = { Atomic Sequence in PROMELA }, label = lst:promelaAtomic, language = PROMELA]
+atomic {
+	stmt1;  /* Guard */
+	stmt2;
+	stmt3
+}
+					\end{lstlisting}
+				% end
+			% end
+
+			\subsection{Executability} % 4.26, 4.27, 4.28
+				\label{sec:promelaExec}
+			
+				\begin{itemize}
+					\item PROMELA does not have synchronization primitives like semaphores, locks or monitors.
+					\item Instead, PROMELA controls a statements \textit{executability} (the absence of blocking).
+					\item Non-executable statements in atomic statements permit preemption.
+					\item Most known synchronization primitives like test-and-set, compare-and-swap, semaphores, \dots can be modeled using executability and atomicity.
+					\item The executability of basic statements is shown in table~\ref{tab:promelaExec}.
+				\end{itemize}
+			
+				\begin{table}
+					\centering
+					\begin{tabular}{c | c}
+						               \textbf{Statement Type}                & \textbf{Executable}                                            \\ \hline
+						                     Assignments                      & always                                                         \\
+						                     Assertions                       & always                                                         \\
+						                  Print Statements                    & always                                                         \\
+						                Expression Statements                 & iff value not \inlinePromela{0}/\inlinePromela{false}          \\
+						   \inlinePromela{atomic}, \inlinePromela{d\_step}    & iff the guard is executable                                    \\
+						       \inlinePromela{if}, \inlinePromela{do}         & iff any alternative is executable                              \\
+						alternative of \inlinePromela{if}, \inlinePromela{do} & iff the guard is executable                                    \\
+						                 \inlinePromela{for}                  & always (body can block)
+						% TODO: Send/Receive statements?
+					\end{tabular}
+					\caption{Basic Executability in PROMELA}
+					\label{tab:promelaExec}
+				\end{table}
+
+				\subsubsection{Blocking} % 4.29
+					\definition{Blocking}{A \textit{statement} is \textit{blocking} iff it is not executable. A \textit{process} is \textit{blocking} iff its location counter points to a blocking statement.}
+					
+					\begin{itemize}
+						\item For the next step of the execution, the scheduler chooses one of the non-blocking statements randomly (non-deterministically).
+						\item Executability and blocking are the basic concepts in PROMELA for modeling solutions to synchronization problems.
+					\end{itemize}
+				% end
+			% end
+
+			\subsection{Critical Section Problem}
+				The \textit{critical section problem} is an archetypical problem of concurrent systems.
+				
+				\definition{Critical Section}{The \textit{critical section} (CS) of a process is the block of code where shared state (e.g. global variables) are accessed and possible manipulated.}
+				
+				\definition{CS Problem}{Given a set of processes that each contain at least one critical section, then the result of the computation performed may depend on their execution order.}
+				
+				\definition{Mutual Exclusion}{At most one process is executing its critical section at any given time.}
+				
+				\begin{itemize}
+					\item Mutual exclusion is a solution to the CS problem.
+					\item There are two main challenges that have to be taken into account when dealing with critical sections:
+						\begin{itemize}
+							\item \textit{Absence of Deadlocks} \\ If some processes enter their critical sections, then one of them must eventually succeed.
+							\item \textit{Absence of Starvation} \\ If any process tries to enter its critical section, then that process must eventually succeed.
+						\end{itemize}
+					\item In the following sections, the listing~\ref{lst:promelaCSP} is used as an example. This example also represents the common "critical section pattern".
+				\end{itemize}
+			
+				\begin{lstlisting}[caption = { Critical Section Pattern in PROMELA }, label = lst:promelaCSP, language = PROMELA]
+active proctype P() {
+	do
+		:: printf("P non-critical action\n");
+		   /* begin critical section */
+		   printf("P uses shared resources\n")
+		   /* end critical section */
+	od
+}
+
+active proctype Q() {
+	do
+		:: printf("Q non-critical action\n");
+		   /* begin critical section */
+		   printf("Q uses shared resources\n")
+		   /* end critical section */
+	od
+}
+				\end{lstlisting}
+
+				\subsubsection{Mutual Exclusion}
+					\paragraph{First Attempt}
+						Simple idea: Use boolean flags to control access to critical section, see listing~\ref{lst:promelaME1}. But this does not yet solve guarantee mutual exclusion!
+						
+						\begin{lstlisting}[caption = { ME in PROMELA: First Attempt }, label = lst:promelaME1 language = PROMELA]
+bool enterCriticalP = false;
+bool enterCriticalQ = false;
+
+active proctype P() {
+	do
+		:: printf("P non-critical action\n");
+		   enterCriticalP = true;
+		   /* begin critical section */
+		   printf("P uses shared resources\n");
+		   /* end critical section */
+		   enterCriticalP = false
+	od
+}
+
+active proctype Q() { /* analogous */ }
+						\end{lstlisting}
+					% end
+					
+					\paragraph{Second Attempt: Busy Waiting}
+						Busy waiting: Loop until the indicator variable gets a specific value, see listing~\ref{lst:promelaME2}.
+						
+						\begin{itemize}
+							\item Busy waiting works, but is problematic as it does not block the execution, even if the exclusion property is not fulfilled.
+							\item This is wasteful on resources.
+						\end{itemize}
+						
+						\begin{lstlisting}[caption = { ME in PROMELA: Busy Waiting }, label = lst:promelaME2 language = PROMELA]
+bool enterCriticalP = false;
+bool enterCriticalQ = false;
+
+active proctype P() {
+	do :: printf("P non-critical action\n");
+		  enterCriticalP = true;
+		  do :: !enterCriticalQ -> break
+		     :: else            -> skip
+		  od
+		  /* begin critical section */
+		  printf("P uses shared resources\n");
+		  /* end critical section */
+		  enterCriticalP = false
+	od
+}
+
+active proctype Q() { /* analogous */ }
+						\end{lstlisting}
+					% end
+					
+					\paragraph{Third Attempt: Blocking}
+						Blocking: Use the exclusion property to release control if its not fulfilled and continue only when the exclusion properties are fulfilled. For this behavior, no assignment is used by the expression statement \inlinePromela{!enterCriticalQ} which blocks when the expression evaluates to \inlinePromela{false}. See listing~\ref{lst:promelaME3} for an example implementation. This ensures ME, but is insufficient for proofing it using SPIN (see section \ref{sec:proofME} for more details).
+						
+						\begin{lstlisting}[caption = { ME in PROMELA: Busy Waiting }, label = lst:promelaME2 language = PROMELA]
+bool enterCriticalP = false;
+bool enterCriticalQ = false;
+
+active proctype P() {
+	do :: printf("P non-critical action\n");
+		  enterCriticalP = true;
+		  !enterCriticalQ;  /* Block until enterCriticalQ is false. */
+		  /* begin critical section */
+		  printf("P uses shared resources\n");
+		  /* end critical section */
+		  enterCriticalP = false
+	od
+}
+
+active proctype Q() { /* analogous */ }
+						\end{lstlisting}
+					% end
+				% end
+
+				\subsubsection{Variations}
+					\begin{itemize}
+						\item Allow at most \(n\) processes in critical sections. \\ Modeling possibilities:
+							\begin{itemize}
+								\item counters instead of booleans
+								\item semaphores
+								\item test-and-set instructions
+							\end{itemize}
+						\item Refined mutual exclusion conditions
+							\begin{itemize}
+								\item Several critical sections
+								\item Writers exclude each other and readers \\ Readers exclude writers, but not other readers \\ etc.
+								\item FIFO queues for entering sections (full semaphores)
+							\end{itemize}
+						\item And many more\dots
+					\end{itemize}
+				% end
+
+			\subsection{Deadlocks}
+				\begin{itemize}
+					\item \textit{Invalid End State}
+						\begin{itemize}
+							\item A process does not finish in an end state.
+							\item Okay, if it is not crucial to continue.
+							\item Two or more inter-dependent processes do not finish at the end \(\implies\) real deadlock.
+						\end{itemize}
+					\item \textit{Atomicity against Deadlocks}
+						\begin{itemize}
+							\item More powerful and general mechanism than flags/blocking.
+							\item Often leads to conceptionally simpler solutions.
+							\item But is not always a realistic assumption!
+						\end{itemize}
+					\item \textit{Ideal Solution of ME Problem by Atomicity}
+						\begin{itemize}
+							\item Check and set the critical section flag in one \inlinePromela{atomic} step.
+						\end{itemize}
+				\end{itemize}
+			% end
+		% end
+
+		\section{Distributed Systems} % 5.2, 5.3
+			\label{sec:distributed}
+		
+			\todo{Content}
+
+			\subsection{Channels} % 5.4, 5.5, 5.6
+				\todo{Content}
+
+				\subsubsection{Sending/Receiving} % 5.7, 5.12, 5.30
+					\todo{Content}
+
+					\paragraph{Pattern Matching} % 5.31, 5.32, 5.33, 5.34
+						\todo{Content}
+					% end
+
+					\paragraph{Random Receive} % 5.35
+						\todo{Content}
+					% end
+
+					\paragraph{Prefix Syntax} % 5.36
+						\todo{Content}
+					% end
+				% end
+
+				\subsubsection{Scope} % 5.8
+					\todo{Content}
+				% end
+
+				\subsubsection{Rendezvous} % 5.14, 5.16, 5.17, 5.25
+					\todo{Content}
+				% end
+
+				\subsubsection{Buffered} % 5.26, 5.27, 5.28, 5.29, 5.37
+					\todo{Content}
+				% end
+			% end
+
+			\subsection{Client-Server Model} % 5.9, 5.10, 5.18, 5.19
+				\todo{Content}
+
+				\subsubsection{Reply Channels} % 5.20, 5.21
+					\todo{Content}
+				% end
+			% end
+
+			\subsection{Sending Channels via Channels} % 5.22, 5.23
+				\todo{Content}
+			% end
+
+			\subsection{Sending Process IDs} % 5.24
+				\todo{Content}
+			% end
+		% end
+	% end
+
+	\chapter{Linear Temporal Logic (LTL)} % N/A
+		\todo{Content}
+
+		\section{Propositional Logic} % N/A
+			\todo{Content}
+
+			\subsection{Syntax} % 6.5, 6.6, 6.7, 6.8
+				\todo{Content}
+			% end
+
+			\subsection{Semantics} % 6.9, 6.10, 6.11
+				\todo{Content}
+			% end
+
+			\subsection{Semantic Notions} % 6.12, 6.13, 6.14
+				\todo{Content}
+			% end
+
+			\subsection{Expressiveness} % 6.15, 6.16, 6.17
+				\todo{Content}
+			% end
+		% end
+
+		\section{Kripke Structure and Transition Systems} % 6.18, 6.19
+			\todo{Content}
+		% end
+
+		\section{Syntax} % 6.21
+			\todo{Content}
+		% end
+
+		\section{Semantics} % 6.22, 6.23, 6.24
+			\todo{Content}
+
+			\subsection{Validity} % 6.27, 6.28, 6.29
+				\todo{Content}
+			% end
+
+			\subsection{Transition Systems} % 6.30, 6.31
+				\todo{Content}
+			% end
+		% end
+
+		\section{Safety and Liveness Properties} % 6.25, 6.26, 7.13
+			\todo{Content}
+		% end
+
+		\section{Formal Languages} % 6.33
+			\todo{Content}
+
+			\subsection{Büchi Automaton} % 6.34, 6.35
+				\todo{Content}
+
+				\subsubsection{\(\omega\)-Regular Expressions} % 6.36, 6.38
+					\todo{Content}
+				% end
+
+				\subsubsection{LTL \(\leftrightarrow\) Büchi Automaton} % 6.40, 6.41, 6.42, 6.43
+					\todo{Content}
+				% end
+			% end
+		% end
+
+		\section{Decidability, Closure Properties} % 6.37
+			\todo{Content}
+		% end
+	% end
+
+	\chapter{SPIN} % 3.2
+		\label{c:spin}
+	
+		\todo{Content}
+		
+		\begin{itemize}
+			\item The main goal of SPIN model checking is to fight design flaws by offering a model-based methodology for improving the design and to exhibit the defects of concurrent and distributed software systems.
+			\item Some problems of concurrent/distributed systems:
+				\begin{itemize}
+					\item Hard to predict and hard to form a correct intuition about them.
+					\item Enormous combinatorial explosion of possible behaviors.
+					\item Interleaving of processes is prone to perform unsafe operations ("data races").
+					\item Countermeasures are prone to cause deadlocks.
+					\item The application itself has limited control possibilities over external factors:
+						\begin{itemize}
+							\item Scheduling strategies,
+							\item (relative) speed of components,
+							\item performance and reliability of communication mediums.
+						\end{itemize}
+				\end{itemize}
+			\item Testing concurrent/distributed systems is also hard, as they cannot be testes exhaustively:
+				\begin{itemize}
+					\item Lack of controllability (scheduling, delays, \dots) \\
+					Some failures are missed in the test phase.
+					\item Lack of reproducibility \\
+					Even if a failure appears, it is often impossible to analyze/debug it.
+					\item Lack of resources \\
+					Exhaustive testing exhausts the tester long before it exhausts the behavior of the system.
+				\end{itemize}
+			\item The main challenges of modeling are the conflicting goals
+				\begin{itemize}
+					\item \textit{richness}, a model must be rich enough to encompass defects the real system could have and
+					\item \textit{simplicity}, a model must be simple enough to be checkable, both theoretically and in practice.
+				\end{itemize}
+		\end{itemize}
+
+		\section{Model Checking} % 2.3, 3.4, 3.6, 3.7, 3.8, 4.7, 4.8, 6.45, 6.46, 6.47, 7.2
+			\todo{Content}
+		% end
+
+		\section{Workflow} % 3.9, 3.10, 3.11, 3.18, 3.19, 3.20, 3.26
+			\todo{Content}
+
+			\subsection{Guided Simulation} % 3.21, 3.22
+				\todo{Content}
+			% end
+
+			\subsection{Temporal Properties} % 7.15, 7.20, 7.23, 7.25, 7.26
+				\todo{Content}
+			% end
+		% end
+
+		\section{Preliminaries} % 7.4
+			\todo{Content}
+
+			\subsection{Acceptance Cycles} % 7.5
+				\todo{Content}
+			% end
+
+			\subsection{Fairness} % 7.6, 7.24, 7.27
+				\todo{Content}
+			% end
+		% end
+
+		\section{Correctness Properties} % 3.12, 3.13, 7.3
+			\todo{Content}
+
+			\subsection{Assertions} % 3.14, 3.15, 3.16, 3.17
+				\todo{Content}
+			% end
+
+			\subsection{Valid End States} % 3.30, 3.31, 3.32, 3.33
+				\todo{Content}
+			% end
+
+			\subsection{Temporal Properties} % 7.7, 7.8, 7.9, 7.19
+				\todo{Content}
+
+				\subsubsection{Boolean Temporal Logic} % 7.10, 7.11, 7.12
+					\todo{Content}
+				% end
+
+				\subsubsection{Safety Properties} % 7.14, 7.15
+					\todo{Content}
+
+					\paragraph{Never Claims} % 7.16, 7.17, 7.18
+						\todo{Content}
+					% end
+				% end
+
+				\subsubsection{Liveness Properties} % 7.21, 7.22, 7.23, 7.25, 7.29
+					\todo{Content}
+				% end
+
+				\subsubsection{Label Checking} % 7.28, 7.29
+					\todo{Content}
+				% end
+			% end
+		% end
+		
+		% TODO: Proofing ME; 4.38, 4.39, 4.40; sec:proofME
+		% TODO: Finding Deadlocks; 4.41
+	% end
+
+	\chapter{First-Order Logic (FOL)} % 8.2, 8.3
+		\todo{Content}
+
+		\section{Syntax} % N/A
+			\todo{Content}
+
+			\subsection{Signature} % 8.4, 8.5, 8.6, 8.7
+				\todo{Content}
+			% end
+
+			\subsection{Terms} % 8.8, 8.9, 8.10
+				\todo{Content}
+			% end
+
+			\subsection{Atomic Formulas} % 8.11, 8.12, 8.13
+				\todo{Content}
+			% end
+
+			\subsection{General Formulas} % 8.14, 8.15, 8.16
+				\todo{Content}
+			% end
+		% end
+
+		\section{Semantics} % 8.18, 8.19, 8.20, 8.21, 8.22, 8.23, 8.24
+			\todo{Content}
+
+			\subsection{Variable Assignments} % 8.25
+				\todo{Content}
+			% end
+
+			\subsection{Semantic Evaluation} % N/A
+				\todo{Content}
+
+				\subsubsection{Terms} % 8.26, 8.27, 8.28
+					\todo{Content}
+				% end
+
+				\subsubsection{Formulas} % 8.29, 8.30, 8.31
+					\todo{Content}
+				% end
+			% end
+
+			\subsection{Semantic Notions} % 8.32
+				\todo{Content}
+			% end
+
+			\subsection{Impracticality and Reasoning by Syntactic Transformation} % 8.33, 8.34
+				\todo{Content}
+			% end
+		% end
+
+		\section{Sequent Calculus} % 8.35, 8.36
+			\todo{Content}
+
+			\paragraph{Propositional Calculus Rules} % 8.38
+				\todo{Content}
+			% end
+
+			\paragraph{First-Order Calculus Rules} % 8.42, 8.43, 8.44, 8.45, 8.47, 8.49, 8.50
+				\todo{Content}
+			% end
+
+			\subsection{Proofing} % 8.39, 8.49
+				\todo{Content}
+
+				\subsubsection{Examples} % N/A
+					\todo{Content}
+
+					\paragraph{Propositional} % 8.40
+						\todo{Content}
+					% end
+
+					\paragraph{First-Order} % 8.46
+						\todo{Content}
+					% end
+
+					\paragraph{First-Order with Equality} % 8.48
+						\todo{Content}
+					% end
+				% end
+			% end
+
+			\subsection{Soundness and Completeness} % 8.37, 8.41
+				\todo{Content}
+			% end
+		% end
+	% end
+
+	\chapter{Java Modeling Language (JML)} % 9.2
+		\todo{Content}
+
+		\section{Running Examples} % N/A
+			\todo{Content}
+
+			\subsection{\texttt{ATM}} % 9.8
+				\todo{Content}
+			% end
+
+			\subsection{\texttt{LimitedIntegerSet}} % 10.2, 10.3
+				\todo{Content}
+			% end
+		% end
+
+		\section{Specification} % 9.3, 9.4, 9.5, 9.6, 9.7
+			\todo{Content}
+
+			\subsection{Informal Specification} % 9.9
+				\todo{Content}
+			% end
+
+			\subsection{Specification as Contract} % 9.10, 9.11
+				\todo{Content}
+			% end
+
+			\subsection{Formal Specification} % 9.12
+				\todo{Content}
+			% end
+		% end
+
+		\section{Introduction to JML} % 9.13, 9.14, 9.15
+			\todo{Content}
+
+			\subsection{JML as Java Comments} % 9.16, 9.17
+				\todo{Content}
+			% end
+		% end
+
+		\section{Specification Case} % 9.23
+			\todo{Content}
+
+			\subsection{Public} % 9.18
+				\todo{Content}
+			% end
+
+			\subsection{Normal Behavior} % 9.19, 10.23
+				\todo{Content}
+			% end
+
+			\subsection{Exceptional Behavior} % 10.22, 10.23, 10.24
+				\todo{Content}
+
+				\subsubsection{\texttt{signals}} % 10.25
+					\todo{Content}
+				% end
+
+				\subsubsection{\texttt{signals\_only} } % 10.26
+					\todo{Content}
+				% end
+			% end
+
+			\subsection{Non-Termination} % 10.27
+				\todo{Content}
+			% end
+		% end
+
+		\section{Preconditions} % 9.20, 9.21
+			\todo{Content}
+		% end
+
+		\section{Postconditions} % 9.22
+			\todo{Content}
+		% end
+
+		\section{Assignable} % 9.25, 9.26, 9.27
+			\todo{Content}
+		% end
+
+		\section{Modifiers} % 9.29
+			\todo{Content}
+
+			\subsection{\texttt{spec\_public}} % 9.30
+				\todo{Content}
+			% end
+
+			\subsection{\texttt{pure}} % 9.31, 9.32
+				\todo{Content}
+			% end
+
+			\subsection{\texttt{nullable}, \texttt{non\_null}} % 10.28, 10.29, 10.30, 10.31, 10.32
+				\todo{Content}
+			% end
+		% end
+
+		\section{JML Expressions} % 9.33, 9.34
+			\todo{Content}
+
+			\subsection{Access of Prestate} % 9.24
+				\todo{Content}
+			% end
+
+			\subsection{Quantifier} % 9.35, 9.36, 9.37, 9.38, 9.39
+				\todo{Content}
+			% end
+
+			\subsection{Result Values} % 10.4
+				\todo{Content}
+			% end
+		% end
+
+		\section{State Constraints} % 10.10, 10.11, 10.12, 10.13, 10.14, 10.15
+			\todo{Content}
+
+			\subsection{Class Invariants} % 10.16, 10.17, 10.18, 10.19, 10.20, 10.21
+				\todo{Content}
+			% end
+		% end
+
+		\section{Inheritance} % 10.33
+			\todo{Content}
+		% end
+
+		\section{Loop Invariants} % 14.18, 14.19
+			\todo{Content}
+		% end
+
+		\section{Loop Termination} % 14.20, 14.21, 14.22
+			\todo{Content}
+
+			\subsection{Example: GCD} % 14.23, 14.24, 14.25, 14.26, 14.27
+				\todo{Content}
+			% end
+		% end
+	% end
+
+	\chapter{Dynamic Logic (DL)} % 11.2, 11.4, 11.5, 11.6, 11.10, 11.11, 11.12, 12.2, 12.37, 13.21
+		\todo{Content}
+
+		\section{Type Hierarchy} % 11.7, 11.8, 11.9, 12.17
+			\todo{Content}
+		% end
+
+		\section{Syntax} % 11.15
+			\todo{Content}
+
+			\subsection{Variables} % 11.13, 11.14, 11.17
+				\todo{Content}
+			% end
+
+			\subsection{Terms} % 11.18
+				\todo{Content}
+			% end
+
+			\subsection{Programs} % 11.19
+				\todo{Content}
+			% end
+
+			\subsection{Modalities} % 11.20
+				\todo{Content}
+			% end
+
+			\subsection{Formulas} % 11.23, 11.24
+				\todo{Content}
+			% end
+		% end
+
+		\section{Semantics} % 11.25
+			\todo{Content}
+
+			\subsection{Kripke Structure} % 11.26, 11.27, 11.28
+				\todo{Content}
+			% end
+
+			\subsection{Semantic Evaluation} % N/A
+				\todo{Content}
+
+				\subsubsection{Formulas} % 11.29, 11.30
+					\todo{Content}
+				% end
+
+				\subsubsection{Programs} % 11.31
+					\todo{Content}
+			% end
+				% end
+
+			\subsection{Sequents} % 12.4
+				\todo{Content}
+			% end
+		% end
+
+		\section{KeY Input File} % 11.16, 11.21, 11.22, 12.24
+			\todo{Content}
+		% end
+
+		\section{Modeling} % N/A
+			\todo{Content}
+
+			\subsection{Heap} % 12.18, 12.19, 12.20
+				\todo{Content}
+
+				\subsubsection{Field Updates} % 12.21
+					\todo{Content}
+				% end
+
+				\subsubsection{Field Access} % 12.22
+					\todo{Content}
+				% end
+
+				\subsubsection{Pretty Printing} % 12.23
+					\todo{Content}
+				% end
+			% end
+
+			\subsection{Static Fields} % 12.30
+				\todo{Content}
+			% end
+
+			\subsection{Abrupt Termination} % 12.25, 12.26, 12.27
+				\todo{Content}
+			% end
+
+			\subsection{Aliasing} % 12.28, 12.29
+				\todo{Content}
+			% end
+
+			\subsection{\texttt{this} and \texttt{self}} % 12.31
+				\todo{Content}
+			% end
+
+			\subsection{Arrays} % 12.33
+				\todo{Content}
+			% end
+
+			\subsection{Complex Expressions} % 12.34
+				\todo{Content}
+			% end
+
+			\subsection{Method Calls} % 13.4, 13.6
+				\todo{Content}
+
+				\subsubsection{Object Initialization} % 12.32, 13.7
+					\todo{Content}
+				% end
+			% end
+		% end
+
+		\section{Symbolic Execution} % 12.5, 12.6, 14.3
+			\todo{Content}
+
+			\subsection{Rules} % 12.7, 12.12, 12.21, 12.35, 13.5, 13.9, 13.11, 13.15, 13.16, 13.19, 14.4, 14.5, 14.7, 14.12, 14.15
+				\todo{Content}
+			% end
+
+			\subsection{Updates} % 12.8, 12.9, 12.10
+				\todo{Content}
+
+				\subsubsection{Effects} % 12.11
+					\todo{Content}
+				% end
+
+				\subsubsection{Assignment Rule} % 12.12
+					\todo{Content}
+				% end
+
+				\subsubsection{Composition} % 12.13
+					\todo{Content}
+				% end
+
+				\subsubsection{Parallel Updates} % 12.14, 12.15
+					\todo{Content}
+				% end
+
+				\subsubsection{Quantifier} % 12.16
+					\todo{Content}
+				% end
+
+				\subsubsection{Keeping the Context: Anonymising} % 13.12, 13.13, 13.14, 14.14
+					\todo{Content}
+				% end
+			% end
+
+			\subsection{Abrupt Termination} % 12.36
+				\todo{Content}
+			% end
+
+			\subsection{Complex Expressions} % 12.35
+				\todo{Content}
+			% end
+
+			\subsection{Method Calls} % 13.5
+				\todo{Content}
+
+				\subsubsection{Limitations of Inlining} % 13.8
+					\todo{Content}
+				% end
+
+				\subsubsection{Method Contract Rule} % 13.9, 13.10, 13.11, 13.15, 13.16
+					\todo{Content}
+				% end
+
+				\subsubsection{Proofing Correctness of Method Contracts} % 13.19
+					\todo{Content}
+				% end
+			% end
+
+			\subsection{Loop Invariants} % 14.4, 14.5, 14.8
+				\todo{Content}
+
+				\subsubsection{Deriving Loop Invariants} % 14.9, 14.10, 14.11, 14.29, 14.30
+					\todo{Content}
+				% end
+
+				\subsubsection{Context Loss} % 14.12, 14.14, 14.15
+					\todo{Content}
+			% end
+		% end
+
+		\section{Understanding Unclosed Proofs} % 13.20
+			\todo{Content}
+
+			\subsection{Model Search} % 14.31, 14.32, 14.33, 14.34
+				\todo{Content}
+			% end
+		% end
+	% end
 \end{document}

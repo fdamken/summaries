@@ -2,6 +2,8 @@ clean:
 	find . -type f -name 'tmp-*' -delete
 
 all: clean code
+	./vocabulary.sh de
+	./vocabulary.sh en
 	pdflatex fms-cheatsheet.tex
 	pdflatex fms-cheatsheet.tex
 	pdflatex fms-cheatsheet.tex
@@ -13,6 +15,7 @@ graphs:
 	dot -T pdf promela-interference.dot -o tmp-promela-interference.pdf
 	dot -T pdf promela-computations.dot -o tmp-promela-computations.pdf
 	dot -T pdf promela-interleavings.dot -o tmp-promela-interleavings.pdf
+	dot -T pdf ltl-kripkestruct.dot -o tmp-ltl-kripkestruct.pdf
 
 
 code_clean:

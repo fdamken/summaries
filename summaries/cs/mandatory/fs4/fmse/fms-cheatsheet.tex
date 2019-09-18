@@ -86,6 +86,16 @@
 \newcommand{\outputlisting}[1]{\lstinputlisting[numbers = none]{#1}}
 \newcommand{\inlinePromela}[1]{\lstinline[language = PROMELA]|#1|}
 \newcommand{\forwhich}{\ensuremath{\,\vert\,}}
+\newcommand{\pFor}{\ensuremath{\textit{For}_0}}
+\newcommand{\eqv}{\leftrightarrow}
+\newcommand{\true}{\textbf{true}}
+\newcommand{\false}{\textbf{false}}
+\newcommand{\lt}{\ensuremath{\mathfrak{t}}}
+\newcommand{\lf}{\ensuremath{\mathfrak{f}}}
+\newcommand{\val}{\textrm{val}}
+\newcommand{\always}{\square}
+\newcommand{\sometimes}{\lozenge}
+\newcommand{\until}{\mathcal{U}}
 \makeatletter
 \newcommand{\BIG}{\bBigg@{4}}
 \newcommand{\BIGG}{\bBigg@{5}}
@@ -93,10 +103,12 @@
 
 \newcommand{\subsubparagraph}[1]{\hspace{1cm} \textbf{#1:}}
 
-\newcommand{\definition}[2]{\subparagraph{Definition (#1)} \begin{adjustwidth}{2cm}{} #2 \end{adjustwidth}}
-\newcommand{\notation}[2]{\subparagraph{Notation (#1)} \begin{adjustwidth}{2cm}{} #2 \end{adjustwidth}}
-\newcommand{\theorem}[1]{\subparagraph{Theorem} \begin{adjustwidth}{2cm}{} #1 \end{adjustwidth}}
-\newcommand{\intuition}[1]{\subsubparagraph{Intuition} \begin{adjustwidth}{2cm}{} #1 \end{adjustwidth}}
+\newcommand{\definition}[2]{
+	\begin{figure}[H]
+		\centering
+		\fbox{\parbox[c]{0.9\textwidth}{\subparagraph{Definition (#1)} #2}}
+	\end{figure}
+}
 
 \newcommand{\code}[1]{\attachfile[icon = Paperclip]{#1} \lstinputlisting{#1}}
 
@@ -1078,71 +1090,305 @@ assert(clientID == _pid)
 		% end
 	% end
 
-	\chapter{Linear Temporal Logic (LTL)} % N/A
-		\todo{Content}
+	\chapter{Linear Temporal Logic (LTL)}
+		\section{Propositional Logic}
+			\subsection{Syntax}
+				\definition{Signature of Propositional Logic}{A set of \textit{propositional variables}  (with typical elements \(p\), \(q\), \(r\), \dots).}
 
-		\section{Propositional Logic} % N/A
-			\todo{Content}
-
-			\subsection{Syntax} % 6.5, 6.6, 6.7, 6.8
-				\todo{Content}
+				\definition{Propositional Formulas}{
+					The set of propositional formulas \( \pFor \) is inductively defined as
+					\begin{itemize}
+						\item The truth constants \(\true\), \(\false\) and the variables \(\mathcal{P}\) are formulas.
+						\item If \(\phi\) and \(\psi\) are formulas, then all of the following are also formulas:
+					\end{itemize}
+					\begin{equation*}
+						\lnot\phi, \quad (\phi \land \psi), \quad (\phi \lor \psi), \quad (\phi \to \psi), \quad (\phi \eqv \psi)
+					\end{equation*}
+					\begin{itemize}
+						\item[] The formulas are connected using the \textit{propositional connectives}, listed in table~\ref{tab:propopConn}.
+					\end{itemize}
+				}
+			
+				\begin{table}
+					\centering
+					\begin{tabular}{l|c}
+						\textbf{Name}       & \textbf{Symbol} \\ \hline
+						Negation            &    \(\lnot\)    \\
+						Conjunction ("and") &    \(\land\)    \\
+						Disjunction ("or")  &    \(\lor\)     \\
+						Implication         &     \(\to\)     \\
+						Equivalence         &    \(\eqv\)
+					\end{tabular}
+					\caption{Propositional Connectives}
+					\label{tab:propopConn}
+				\end{table}
 			% end
 
-			\subsection{Semantics} % 6.9, 6.10, 6.11
-				\todo{Content}
+			\subsection{Semantics}
+				\definition{Propositional Interpretation}{
+					An interpretation \(\mathcal{I}\) assigns a truth value to each propositional variable:
+					\begin{equation*}
+						\mathcal{I} : \mathcal{P} \to \{\, \lt,\, \lf \,\}
+					\end{equation*}
+				}
+			
+				\definition{Valuation Function}{
+					The valuation semantic under an interpretation \(\mathcal{I}\) is defined by the valuation function
+					\begin{equation*}
+						\val_\mathcal{I} : \pFor \to \{ \lt,\, \lf \}
+					\end{equation*}
+					with the following semantics (let \( p \in \mathcal{P} \), \( \phi, \psi \in \pFor \)):
+					\begin{align*}
+						\val_\mathcal{I}(p) &\coloneqq \mathcal{I}(p) \\
+						\val_\mathcal{I}(\true) &\coloneqq \lt \\
+						\val_\mathcal{I}(\false) &\coloneqq \lf \\
+						\val_\mathcal{I}(\lnot\phi) &\coloneqq
+							\begin{cases}
+								\lt & \textrm{iff } \val_\mathcal{I}(\phi) = \lf \\
+								\lf & \textrm{otherwise}
+							\end{cases} \\
+						\val_\mathcal{I}(\phi \land \psi) &\coloneqq
+							\begin{cases}
+								\lt & \textrm{iff } \val_\mathcal{I}(\phi) = \lt \textrm{ and } \val_\mathcal{I}(\psi) = \lt \\
+								\lf & \textrm{otherwise}
+							\end{cases} \\
+						\val_\mathcal{I}(\phi \land \psi) &\coloneqq
+							\begin{cases}
+								\lt & \textrm{iff } \val_\mathcal{I}(\phi) = \lt \textrm{ or } \val_\mathcal{I}(\psi) = \lt \\
+								\lf & \textrm{otherwise}
+							\end{cases} \\
+						\val_\mathcal{I}(\phi \to \psi) &\coloneqq
+							\begin{cases}
+								\lt & \textrm{iff } \val_\mathcal{I}(\phi) = \lf \textrm{ or } \val_\mathcal{I}(\psi) = \lt \\
+								\lf & \textrm{otherwise}
+							\end{cases} \\
+						\val_\mathcal{I}(\phi \eqv \psi) &\coloneqq
+							\begin{cases}
+								\lt & \textrm{iff } \val_\mathcal{I}(\phi) = \val_\mathcal{I}(\psi) \\
+								\lf & \textrm{otherwise}
+							\end{cases}
+					\end{align*}
+				}
 			% end
 
-			\subsection{Semantic Notions} % 6.12, 6.13, 6.14
-				\todo{Content}
+			\subsection{Semantic Notions}
+				Let \( \phi \in \pFor \), \( \Gamma \subseteq \pFor \).
+				
+				\definition{Satisfying Interpretation, Consequence Relation}{
+					An interpretation \(\mathcal{I}\) \textit{satisfies} \(\phi\) (write \( \mathcal{I} \models \phi \)) iff \( \val_\mathcal{I}(\phi) = \lt \).
+					
+					\indent \(\phi\) \textit{follows from} \( \Gamma \) (write \( \Gamma \models \phi \)) iff for all interpretations \(\mathcal{I}\):
+					\begin{equation*}
+						\textrm{If } \mathcal{I} \models \psi \textrm{ for all } \psi \in \Gamma \textrm{ then also } \mathcal{I} \models \phi
+					\end{equation*}
+					which is equivalent to
+					\begin{equation*}
+						\{\, \mathcal{I} : \mathcal{I} \models \psi \textrm{ for all } \psi \in \Gamma \,\} \subseteq \{\, \mathcal{I} : \mathcal{I} \models \phi \,\}
+					\end{equation*}
+				}
+			
+				\definition{Satisfiability, Validity}{A formula is \textit{satisfiable} if it is satisfied by some interpretation. If every interpretation satisfied \(\phi\) (write \( \models \phi \)), then \(\phi\) is called \textit{valid}.}
 			% end
 
-			\subsection{Expressiveness} % 6.15, 6.16, 6.17
-				\todo{Content}
+			\subsection{Expressiveness}
+				\begin{itemize}
+					\item Propositional logic can only express properties for one state of a program.
+					\item It is needed to express properties over every run of a program, including state changes and so on.
+					\item This cannot be done by propositional logic \(\implies\) Linear temporal logic.
+				\end{itemize}
+
+%				\subsubsection{Knights and Knaves}
+%					In old times there existed an island whose inhabitants were either knights or knaves. A knight always tells the truth, while a knave always lies. Hedwig and Katrin lives on that Island. A historian found in the archives the following statements:
+%					\begin{itemize}
+%						\item Hedwig: I am a knave if and only if Katrin is a knave.
+%						\item Katrin: We are of different kind.
+%					\end{itemize}
+%					Who is who?
+%				% end
 			% end
 		% end
 
-		\section{Kripke Structure and Transition Systems} % 6.18, 6.19
-			\todo{Content}
+		\section{Kripke Structure and Transition Systems}
+			\begin{itemize}
+				\item Each program state \(s_j\) has its own propositional interpretation \( \mathcal{I}_j \). The values of the variables are listen in lexicographic order below the "state name", see figure~\ref{fig:kripkeStruct} for an example.
+				\item Computations (or "runs") are infinite paths through states (infinite is not a restriction! Let a finite run be stuck at the final state).
+				\item In general, infinitely many different runs are possible.
+				\item Temporal logic is about expressing properties like that a variables changes its value infinitely many often in each run.
+			\end{itemize}
+		
+			\begin{figure}
+				\centering
+				\includegraphics[width = \textwidth]{tmp-ltl-kripkestruct}
+				\caption{Kripke Structure}
+				\label{fig:kripkeStruct}
+			\end{figure}
 		% end
 
-		\section{Syntax} % 6.21
-			\todo{Content}
+		\section{Syntax}
+			\definition{Syntax of Temporal Logic}{
+				Temporal logic is an extension of the propositional logic with the three following formulas. Let \(\phi\) and \(\psi\) be formulas, then all of the following are also formulas:
+				\begin{equation*}
+					\always \psi, \quad \sometimes \psi, \quad \psi \until \phi
+				\end{equation*}
+				The formulas are connected using the \textit{temporal connectives}, listed in table~\ref{tab:ltlConn}.
+			}
+		
+			\begin{table}
+				\centering
+				\begin{tabular}{l|c|l}
+					\textbf{Name} &   \textbf{Symbol}    & \textbf{Intution}                                                                         \\ \hline
+					Always        &   \(\always \phi\)   & \(\phi\) has to hold on the entire subsequent run                                         \\
+					Sometimes     & \(\sometimes \phi\)  & \(\phi\) eventually has to hold (somewhere)                                               \\
+					Until         & \(\phi \until \psi\) & \(\psi\) at the current or a future position and \(\phi\) has to hold until that position
+				\end{tabular}
+				\caption{Temporal Connectives}
+				\label{tab:ltlConn}
+			\end{table}
 		% end
 
-		\section{Semantics} % 6.22, 6.23, 6.24
-			\todo{Content}
+		\section{Semantics}
+			Temporal logic semantics generalize the semantics of propositional logic relative to a sequence of interpretations rather than relative to one interpretation.
+			
+			\definition{Run and Suffix}{
+				A \textit{run} \(\sigma\) of a transition system is an infinite chain of states \(s_j\) where \(\mathcal{I}_j\) is the propositional interpretation of variables in the \(j\)-th state. Write \( \sigma = s_0 s_1 \cdots \).
+				
+				Let \( \sigma = s_0 s_1 \cdots \) be a run, then \( \sigma \vert_i \) denotes the \textit{suffix} \( s_i s_{i + 1} \cdots \) of \(\sigma\). 
+			}
+		
+			\definition{Validity Relation}{
+				The validity of temporal formulas depends on runs \( \sigma = s_0 s_1 \cdots \). Let \( p \in \mathcal{P} \) and \( \psi, \phi \in \pFor \), then the validity relation is defined as:
+				\begin{equation*}
+					\begin{array}{lcl}
+						\sigma \models p               & \iff & \mathcal{I}_0(p) = \lt                                                           \\
+						\sigma \models \lnot \phi      & \iff & \textrm{not } \sigma \models \phi \textrm{ (write \( \sigma \not\models \phi \)} \\
+						\sigma \models \phi \land \psi & \iff & \sigma \models \phi \textrm{ and } \sigma \models \psi                           \\
+						\sigma \models \phi \lor \psi  & \iff & \sigma \models \phi \textrm{ or } \sigma \models \psi                            \\
+						\sigma \models \phi \to \psi   & \iff & \sigma \not\models \psi \textrm{ or } \sigma \models \psi \\
+						\sigma \models \always \phi & \iff & \sigma \vert_k \models \phi \textrm{ for all } k \geq 0 \\
+						\sigma \models \sometimes \phi & \iff & \sigma \vert_k \models \phi \textrm{ for some } k \geq 0 \\
+						\sigma \models \phi \until \psi & \iff & \sigma \vert_k \models \psi \textrm{ for some } k \geq 0 \textrm{ and } \sigma \vert_j \models \phi \textrm{ for all } 0 \leq j < k
+					\end{array}
+				\end{equation*}
+				So propositional formulas are always evaluated in the initial state of some suffix or run \(\sigma\).
+			}
 
-			\subsection{Validity} % 6.27, 6.28, 6.29
-				\todo{Content}
+			\subsection{Validity}
+				\definition{Validity}{A formula \(\phi\) is called \textit{valid} (write \( \models \phi \)) iff for all runs \( \sigma \) it holds that \( \sigma \models \phi \).}
+				
+				\definition{Representation of Runs}{A set of runs can be represented as a sequence of propositional formulas: \( \phi_0 \phi_1 \cdots \) represents all runs \( s_0 s_1 \cdots \) such that \( \mathcal{I}_j \models \phi_j \) for \( j \geq 0 \).}
 			% end
 
-			\subsection{Transition Systems} % 6.30, 6.31
-				\todo{Content}
+			\subsection{Transition Systems}
+				\definition{Transition System}{
+					A \textit{transition system} \( \mathcal{T} = (S, \textrm{Ini}, \delta, \mathcal{I}) \) is composed of:
+					\begin{itemize}
+						\item Set of states \(S\),
+						\item set \( \textrm{Ini} \subseteq S \), \( \textrm{Ini} \neq \emptyset \) of initial states,
+						\item transition relation \( \delta \subseteq S \times S \) and
+						\item labeling \( \mathcal{I} \) of each state \( s \in S \) with a propositional interpretation \( \mathcal{I}_s \).
+					\end{itemize}
+				}
+			
+				\definition{Run of Transition System}{A \textit{run} of \(\mathcal{T}\) is a sequence of states \( \sigma = s_0 s_1 \cdots \) so that \( s_0 \in \textrm{Ini} \) and \( (s_i, s_{i + 1} \in \delta \) for all \(i\).}
+				
+				\definition{Validity Relation}{Given a transition system \(\mathcal{T}\), a temporal formula \(\phi\) is \textit{valid} \(\mathcal{T}\) (write \( \mathcal{T} \models \phi \)) iff \( \sigma \models \phi \) for all runs \(\sigma\) of \(\mathcal{T}\).}
 			% end
 		% end
 
-		\section{Safety and Liveness Properties} % 6.25, 6.26, 7.13
-			\todo{Content}
+		\section{Safety and Liveness Properties}
+			\subsection{Safety Properties}
+				\begin{itemize}
+					\item Always-formulas called \textit{safety property}: "something bad never happens"
+					\item Let \texttt{mutex} be a variable that is true when two processes do not access a critical resource at the same time (so true is good).
+					\item The formula \( \always \texttt{mutex} \) expresses that simultaneous access never happens.
+				\end{itemize}
+			% end
+			
+			\subsection{Liveness Properties}
+				\begin{itemize}
+					\item Sometimes-formulas called \textit{liveness properties}: "something good happens eventually"
+					\item Let \texttt{s} be a variable that is true when a process delivers a service.
+					\item The formula \( \sometimes \texttt{s} \) expresses that the service is eventually provided.
+				\end{itemize}
+			% end
+			
+			\subsection{Complex Properties}
+				\begin{equation*}
+					\always \sometimes \phi
+				\end{equation*}
+				A property \(\phi\) becomes true infinitely often during a run (but not necessarily successive or maybe with large gaps).
+				
+				\begin{equation*}
+					\sometimes \always \phi
+				\end{equation*}
+				Once in time, a property \(\phi\) becomes true forever (but not necessarily is at the start).
+			% end
 		% end
 
-		\section{Formal Languages} % 6.33
-			\todo{Content}
+		\section{Formal Languages}
+			\definition{Formal Languages}{Given a finite alphabet \(\Sigma\), a word \( w \in \Sigma^\ast \) is a finite sequence \( w = a_0 \cdots a_n \) with \( a_i \in \Sigma \), \( i \in \{\, 0, \cdots, n \,\} \). The subset \( \mathcal{L} \subseteq \Sigma^\ast \) is called a \textit{language} over \(\Sigma\).}
+			
+			\definition{Formal \(\omega\)-Languages}{Given a finite alphabet \(\Sigma\), an \(\omega\)-word \( w \in \Sigma^\omega \) is an infinite sequence \( w = a_0 \cdots a_k \cdots \) with \( a_i \in \Sigma \), \( i \in \mathbb{N} \). The subset \( \mathcal{L} \subseteq \Sigma^\omega \) is called an \(\omega\)-language over \(\Sigma\).}
 
-			\subsection{Büchi Automaton} % 6.34, 6.35
-				\todo{Content}
+			\subsection{Büchi Automaton}
+				\definition{Büchi Automaton}{
+					A (non-deterministic) Büchi automaton over an alphabet \(\Sigma\) consists of a
+					\begin{itemize}
+						\item finite, non-empty set of \textit{locations} (or \textit{states}) \(Q\),
+						\item non-empty set of \textit{initial}/\textit{start} locations \( I \subseteq Q \),
+						\item set of \textit{accepting}/\textit{final} locations \( F = \{\, F_1, \cdots, F_n \,\} \subseteq Q \) and
+						\item transition relation \( \delta \subseteq Q \times \Sigma \times Q \).
+					\end{itemize}
+				}
+			
+				\definition{Run and Accepted Run}{
+					An infinite word \( w = a_0 \cdots a_k \cdots \in \Sigma^\omega \) is a \textit{run} of a Büchi automaton if \( q_{i + 1} \in \delta(q_i, a_i) \) for all \( i \geq 0 \) and some initial location \( q_0 \in I \).
+					
+					A Büchi automaton \textit{accepts} a run \( w \in \Sigma^\omega \), if some accepting location \( f \in F \) is infinitely often visited during \(w\).
+				}
 
-				\subsubsection{\(\omega\)-Regular Expressions} % 6.36, 6.38
-					\todo{Content}
+				\subsubsection{\(\omega\)-Regular Expressions}
+					\(\omega\)-regular expressions are like standard regular expressions but with one additional rule, see table~\ref{tab:omegaRegEx}.
+					
+					\begin{table}
+						\centering
+						\begin{tabular}{rl}
+							      \( ab \) & \(a\) then \(b\)                      \\
+							   \( a + b \) & \(a\) or \(b\)                        \\
+							  \( a^\ast \) & arbitrarily, but finitely often \(a\) \\
+							\( a^\omega \) & infinitely often \(a\)
+						\end{tabular}
+						\caption{\(\omega\)-Regular Expressions}
+						\label{tab:omegaRegEx}
+					\end{table}
 				% end
 
-				\subsubsection{LTL \(\leftrightarrow\) Büchi Automaton} % 6.40, 6.41, 6.42, 6.43
-					\todo{Content}
+				\subsubsection{LTL and Büchi Automaton}
+					\begin{itemize}
+						\item LTL and Büchi automata are connected.
+						\item A run of the transition system is an infinite sequence of interpretations \(\mathcal{I}\).
+						\item Given an LTL formula \(\phi\), a Büchi automaton can be constructed accepting exactly those runs (infinite sequences of interpretations) that satisfy \(\phi\).
+						\item Given a set \(\mathcal{P}\) of propositional variables, the alphabet \(\Sigma\) of the Büchi automaton has to contain all interpretations over \(\mathcal{P}\), i.e. \(\Sigma = 2^\mathcal{P}\) (the power set of \(\mathcal{P})\).
+						\item Sadly, the transitions \(\delta\) have to be constructed manually\dots
+					\end{itemize}
 				% end
 			% end
 		% end
 
-		\section{Decidability, Closure Properties} % 6.37
-			\todo{Content}
+		\section{Decidability, Closure Properties}
+			Many properties for regular finite automata also hold for Büchi automata while the latter being strictly more expressive (deterministic automata cannot accept all \(\omega\)-regular expressions).
+			
+			\paragraph{Decidability}
+				It is decidable whether the accepted Language \( \mathcal{L}^\omega(\mathcal{B}) \) of a Büchi automaton is empty.
+			% end
+			
+			\paragraph{Closure Properties}
+				The set of \(\omega\)-regular languages is closed w.r.t. intersection, union and complement:
+				\begin{itemize}
+					\item If \(\mathcal{L}_1\), \(\mathcal{L}_2\) are \(\omega\)-regular, then \( \mathcal{L}_1 \cap \mathcal{L}_2 \) and \( \mathcal{L}_1 \cup \mathcal{L}_2 \) are also \(\omega\)-regular.
+					\item If \(\mathcal{L}\) is regular then \( \Sigma^\omega \setminus \mathcal{L} \) is also \(\omega\)-regular.
+				\end{itemize}
+			% end
 		% end
 	% end
 
@@ -1661,6 +1907,33 @@ assert(clientID == _pid)
 
 			\subsection{Model Search} % 14.31, 14.32, 14.33, 14.34
 				\todo{Content}
+			% end
+		% end
+	% end
+	
+	
+	\appendix
+	
+	\chapter{Vocabulary and Terminology}
+		\section{Translations}
+			\subsection{English \(\to\) German}
+				\begin{table}[H]
+					\centering
+					\begin{tabular}{l|l}
+						\textbf{English} & \textbf{German} \\ \hline
+						\input{tmp-vocabulary-en.tex}
+					\end{tabular}
+				\end{table}
+			% end
+			
+			\subsection{German \(\to\) English}
+				\begin{table}[H]
+					\centering
+					\begin{tabular}{l|l}
+						\textbf{German} & \textbf{English} \\ \hline
+						\input{tmp-vocabulary-de.tex}
+					\end{tabular}
+				\end{table}
 			% end
 		% end
 	% end

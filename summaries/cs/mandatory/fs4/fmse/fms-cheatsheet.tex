@@ -854,57 +854,226 @@ active proctype Q() { /* analogous */ }
 			% end
 		% end
 
-		\section{Distributed Systems} % 5.2, 5.3
+		\section{Distributed Systems}
 			\label{sec:distributed}
 		
-			\todo{Content}
+			\info{"You know you have a distributed system when the crash of a computer you've never heard of stops you from getting any work done." (Leslie Lamport)}
+			
+			Distributed systems consist of
+			\begin{itemize}
+				\item \textit{nodes} that are connected by
+				\item \textit{communication channels} with
+				\item \textit{protocols} controlling the data flow among nodes.
+			\end{itemize}
+			Models of distributed systems try to abstract away from details of network/protocols/nodes. In PROMELA,
+			\begin{itemize}
+				\item nodes are modeled by processes,
+				\item communication channels are modeled with PROMELA channels and
+				\item protocols are modeled by algorithms distributed over the processes.
+			\end{itemize}
 
-			\subsection{Channels} % 5.4, 5.5, 5.6
-				\todo{Content}
+			\subsection{Channels}
+				\begin{itemize}
+					\item The data type \inlinePromela{chan} (short for channel) has two operations for sending and receiving data.
+					\item A variable of type channel is declared with the initialization \\ \inlinePromela{chan name = [ capacity ] of \{ type1, ..., typeN \}}
+						\begin{description}[leftmargin = 2.5cm]
+							\item[\texttt{name}]     The name of the channel variable.
+							\item[\texttt{capacity}] The capacity of a channel (how many values can be stored). Iff zero, the channel is a \textit{rendezvous channel}. Otherwise a \textit{buffered channel}. Must always be non-negative.
+							\item[\texttt{typeI}]    PROMELA data types. Messages that are communicated via the channel are tuples \( \in \texttt{type1} \times \cdots \times \texttt{typeN} \).
+						\end{description}
+					\item Example: \inlinePromela{chan ch = [2] of \{ mtype, byte, bool \}}
+						\begin{itemize}
+							\item Creates a channel, a reference to it is stored in \inlinePromela{ch}.
+							\item Messages communicated via \inlinePromela{ch} are triples \( \in \texttt{\textcolor{lstkeywords}{mtype}} \times \texttt{\textcolor{lstkeywords}{byte}} \times \texttt{\textcolor{lstkeywords}{bool}} \)
+							\item Given some \inlinePromela{mtype = \{ red, yellow, green \}}, an example message might be: \inlinePromela{(green, 20, false)}
+							\item \inlinePromela{ch} is a buffered channel, buffering up to 2 messages.
+						\end{itemize}
+				\end{itemize}
 
-				\subsubsection{Sending/Receiving} % 5.7, 5.12, 5.30
-					\todo{Content}
+				\subsubsection{Sending/Receiving}
+					The \textit{send statement} has the form:
+					\begin{center}
+						\inlinePromela{name ! expr1, ..., exprN}
+					\end{center}
+					where
+					\begin{itemize}
+						\item \inlinePromela{name} is the channel variable and
+						\item \inlinePromela{expr1, ..., exprN} is a sequence of expressions whose numbers and types have to match the declaration of the channel.
+						\item This sends the values or \inlinePromela{expr1, ..., exprN} as a single message over the channel.
+						\item Example: \inlinePromela{ch ! green, 20, false}
+					\end{itemize}
+				
+					The \textit{receive statement} has the form:
+					\begin{center}
+						\inlinePromela{name ? var1, ..., varN}
+					\end{center}
+					where
+					\begin{itemize}
+						\item \inlinePromela{name} is the channel variable and
+						\item \inlinePromela{var1, ..., varN} is a sequence of variables whose numbers and types have to match the declaration of the channel.
+						\item This assigns the values of a single message to the variables \inlinePromela{var1, ..., varN} and removes the message from the channel.
+						\item Example: \inlinePromela{ch ? color, time, flash}
+						\item An alternative syntax is \inlinePromela{name ? var1(var2, ..., varN)}.
+						\item For copying a message without removing it, the variable names have to be wrapped in \inlinePromela{< >}, e.g. \inlinePromela{ch ? <color, time, flash>}
+					\end{itemize}
+				
+					The executability table for channels is shown in table~\ref{tab:promelaExecCh}.
+					
+					\begin{table}[h]
+						\centering
+						\begin{tabular}{c | c}
+							        \textbf{Statement Type}         & \textbf{Executable}                                                 \\ \hline
+							\inlinePromela{name ! msg} (rendezvous) & iff some process wants to receive from the channel                  \\
+							\inlinePromela{name ? msg} (rendezvous) & iff a message is available in the channel                           \\
+							 \inlinePromela{name ! msg} (buffered)  & iff the message queue is not full, i.e. \( n < \textrm{capacity} \) \\
+							 \inlinePromela{name ? msg} (buffered)  & iff the channel is not empty, i.e. \( n > 0 \)
+						\end{tabular}
+						\caption{Executability of Send/Receive in PROMELA}
+						\label{tab:promelaExecCh}
+					\end{table}
 
-					\paragraph{Pattern Matching} % 5.31, 5.32, 5.33, 5.34
-						\todo{Content}
+					\paragraph{Pattern Matching}
+						It is also possible to pass values to the receive command:
+						\begin{center}
+							\inlinePromela{ch ? exp1, ..., expN}
+						\end{center}
+						\begin{itemize}
+							\item Each expression is either a variable or a value and the types of all expressions must comply to the type of \inlinePromela{ch}.
+							\item Each expression \inlinePromela{expI} is then matched against the message \inlinePromela{msgI} returned from \inlinePromela{ch}:
+								\begin{itemize}
+									\item If \inlinePromela{expI} is a value, then \inlinePromela{expI = msgI} must hold.
+									\item If \inlinePromela{expI} is a variable, then \inlinePromela{msgI} is assigned to \inlinePromela{expI}.
+									\item Otherwise, matching fails.
+								\end{itemize}
+							\item The receive statement is only executable iff matching succeeds.
+						\end{itemize}
 					% end
 
-					\paragraph{Random Receive} % 5.35
-						\todo{Content}
-					% end
-
-					\paragraph{Prefix Syntax} % 5.36
-						\todo{Content}
+					\paragraph{Random Receive}
+						For a buffered channel, the syntax
+						\begin{center}
+							\inlinePromela{ch ?? exp1, ..., expN}
+						\end{center}
+						can be used. It is executable iff a matching message exists somewhere in the channel, not necessarily in the front of the queue.
+						\begin{itemize}
+							\item If executed, the first matching message is removed from the channel.
+							\item Can be used to transmit messages with different purposes over one channel.
+							\item The name "random receive" is confusing - the matching is executed deterministically!
+						\end{itemize}
 					% end
 				% end
 
-				\subsubsection{Scope} % 5.8
-					\todo{Content}
+				\subsubsection{Scope}
+					\begin{itemize}
+						\item \textit{Global channel}
+							\begin{itemize}
+								\item Standard case, channels are typically declared globally.
+								\item All processes can send/receive messages.
+							\end{itemize}
+						\item \textit{Local channel}
+							\begin{itemize}
+								\item Less often used.
+								\item Dies with its process.
+								\item Can be useful for modeling security issues.
+								\item A reference to a local channel may be passed through a global channel.
+							\end{itemize}
+					\end{itemize}
 				% end
 
-				\subsubsection{Rendezvous} % 5.14, 5.16, 5.17, 5.25
-					\todo{Content}
+				\subsubsection{Rendezvous}
+					Because of the executability rules of rendezvous channels, the transfer of a message from sender to receiver is synchronous, i.e. in a single operation. There are only two possibility for the execution of send/receive through a rendezvous channel:
+					\begin{enumerate}
+						\item The sender arrives first.
+							\begin{enumerate}
+								\item The location counter of the sender process is at send ("offer to engage in rendezvous").
+								\item The location counter of the receiver process is at receive ("rendezvous can be accepted").
+							\end{enumerate}
+						\item The receiver arrives first.
+							\begin{enumerate}
+								\item The location counter of the receiver process is at receive ("offer to engage in rendezvous").
+								\item The location counter of the sender process is at send ("rendezvous can be accepted").
+							\end{enumerate}
+					\end{enumerate}
+					In either case, the location counter both processes is incremented at once. This is the only place in PROMELA where processes are executed synchronously!
+					
+					\paragraph{Drawbacks}
+						Rendezvous are too restrictive for many application.
+						\begin{itemize}
+							\item Servers and clients block each other too much.
+							\item It is difficult to manage uneven workload (small number of servers service thousands of clients).
+							\item Make the channel types as small as possible (this also holds for buffered channels).
+						\end{itemize}
+					% end
 				% end
 
-				\subsubsection{Buffered} % 5.26, 5.27, 5.28, 5.29, 5.37
-					\todo{Content}
+				\subsubsection{Buffered}
+					Buffered channels queue messages, so that requests/services do not immediately block clients/servers. Buffered channels with capacity \texttt{cap}\dots
+					\begin{itemize}
+						\item \dots can hold up to \texttt{cap} messages.
+						\item \dots are FIFO (first-in-first-out) data structures: the oldest message is retrieved by receive.
+						\item The receive statements by default reads and removes a message.
+						\item Sending/receiving from/to buffered channels is asynchronous, so interleaving may occur between sending and receiving.
+						\item The executability is shown in table~\ref{tab:promelaExecCh}.
+						\item With the SPIN option \texttt{-m} it is possible to prescribe a different sending semantics: send to a full channel does not block, but the message is lost instead.
+					\end{itemize}
+				
+					\paragraph{Checking Channels for being Full/Empty}
+						In order to prevent blocking, it is possible to check the state of a channel \inlinePromela{ch}:
+						\begin{itemize}
+							\item \inlinePromela{full(ch)}   \tabto{2cm} Checks whether \inlinePromela{ch} is full.
+							\item \inlinePromela{nfull(ch)}  \tabto{2cm} Checks whether \inlinePromela{ch} is not full.
+							\item \inlinePromela{empty(ch)}  \tabto{2cm} Checks whether \inlinePromela{ch} is empty.
+							\item \inlinePromela{nempty(ch)} \tabto{2cm} Checks whether \inlinePromela{ch} is not empty.
+						\end{itemize}
+						
+						These guards cannot be negated and thus shall not be combined with \inlinePromela{else} (this is an implicit negation), which can result in unintuitive blocking behavior.
+					% end
+					
+					\paragraph{Drawbacks}
+						Buffered channels are part of the state which enlarges the state space that has to be traversed during verification a lot!
+						
+						\begin{itemize}
+							\item Do not use buffered channels unless they are needed.
+							\item Set the capacity as low as possible.
+							\item Make the channel types as small as possible (this also holds for rendezvous channels).
+						\end{itemize}
+					% end
 				% end
 			% end
 
-			\subsection{Client-Server Model} % 5.9, 5.10, 5.18, 5.19
-				\todo{Content}
+			\subsection{Client-Server Model}
+				\lstinputlisting[caption = { Client-Server Model in PROMELA }, label = lst:promelaClientServer, language = PROMELA]{code/promela/client-server.pml}
+			
+				The basic code for the client-server Model is shown in listing~\ref{lst:promelaClientServer}. Because of interleaving, the order of sending is non-deterministic. The execution
+				\outputlisting{code/promela/client-server.pml.out}
+				produced a timeout in the server as not further messages are sent by the clients and the server blocks forever.
 
-				\subsubsection{Reply Channels} % 5.20, 5.21
-					\todo{Content}
+				\subsubsection{Reply Channels}
+					\lstinputlisting[caption = { Client-Server Model with Replys in PROMELA }, label = lst:promelaClientServerReply, language = PROMELA]{code/promela/client-server-reply.pml}
+				
+					The above client-server model does not yet have replies which is not very useful. A second channel can be used to reply for the clients. The listing~\ref{lst:promelaClientServerReply} shows a slightly different example where the client sends a message and the server is asked to respond with the same message.
+					
+					This protocol has the problem that interleaving may occur and the wrong response is sent (if more than one server is used).
 				% end
-			% end
 
-			\subsection{Sending Channels via Channels} % 5.22, 5.23
-				\todo{Content}
-			% end
+				\subsubsection{Sending Channels via Channels}
+					\lstinputlisting[caption = { Client-Server Model with Sending Channels in PROMELA }, label = lst:promelaClientServerCh, language = PROMELA]{code/promela/client-server-ch.pml}
+				
+					One way to fix the protocol is that the clients declare local reply channels that are then send to the server, as shown in listing~\ref{lst:promelaClientServerCh}.
+				% end
+	
+				\subsubsection{Sending Process IDs}
+					The above examples used fixed constants for client identification (\inlinePromela{nice}, \inlinePromela{rude}). This is inflexible, produces brittle code and does not scale for lots of clients. An improvement is to use process IDs, \inlinePromela{\_pid}, for identification. The code in listing~\ref{lst:promelaClientServerPid} shows the client code for that process.
+				
+					\begin{lstlisting}[caption = { Client-Server Model with PID in PROMELA }, label = lst:promelaClientServerPid, language = PROMELA]
+byte serverID, clientID;
+chan reply = [0] of { byte, byte };
+request ! reply, _pid;
+reply ? serverID, clientID;
 
-			\subsection{Sending Process IDs} % 5.24
-				\todo{Content}
+assert(clientID == _pid)
+					\end{lstlisting}
+				% end
 			% end
 		% end
 	% end

@@ -16,6 +16,7 @@ graphs:
 
 
 code_clean:
+	rm -f pan*
 	find code -type f -name '*.out' -delete
 
 code: code_clean
@@ -24,3 +25,4 @@ code: code_clean
 	./spin.sh code/promela/repetition.pml -p -l
 	./spin.sh code/promela/jumps.pml
 	./spin.sh code/promela/multiple-processes.pml
+	./spin.sh code/promela/client-server.pml

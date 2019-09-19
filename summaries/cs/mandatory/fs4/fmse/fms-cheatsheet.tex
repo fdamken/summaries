@@ -87,6 +87,7 @@
 \newcommand{\inlinePromela}[1]{\lstinline[language = PROMELA]|#1|}
 \newcommand{\forwhich}{\ensuremath{\,\vert\,}}
 \newcommand{\pFor}{\ensuremath{\textit{For}_0}}
+\newcommand{\btlFor}{\ensuremath{\textit{For}_\textit{BTL}}}
 \newcommand{\eqv}{\leftrightarrow}
 \newcommand{\true}{\textbf{true}}
 \newcommand{\false}{\textbf{false}}
@@ -1392,10 +1393,8 @@ assert(clientID == _pid)
 		% end
 	% end
 
-	\chapter{SPIN} % 3.2
+	\chapter{SPIN}
 		\label{c:spin}
-	
-		\todo{Content}
 		
 		\begin{itemize}
 			\item The main goal of SPIN model checking is to fight design flaws by offering a model-based methodology for improving the design and to exhibit the defects of concurrent and distributed software systems.
@@ -1426,13 +1425,63 @@ assert(clientID == _pid)
 					\item \textit{richness}, a model must be rich enough to encompass defects the real system could have and
 					\item \textit{simplicity}, a model must be simple enough to be checkable, both theoretically and in practice.
 				\end{itemize}
+			\item Verify the property the system should have, not a property the system already has!
 		\end{itemize}
+	
+		\paragraph{The general usage scenario for PROMELA}
+		\begin{enumerate}
+			\item Model the essential features of a system in PROMELA.
+				\begin{itemize}
+					\item Abstract away from complex (numerical) computations (make use of non-deterministic choices of the outcome).
+					\item Replace unbounded data structures with fixed approximations.
+					\item Assume a fair process scheduler.
+				\end{itemize}
+			\item Identify and select the properties that the model must satisfy.
+				\begin{itemize}
+					\item Mutual exclusion
+					\item Absence of deadlock
+					\item Absence of starvation
+					\item Event sequences (e.g. system responsiveness)
+				\end{itemize}
+			\item Verify that all possible runs satisfy these properties.
+				\begin{itemize}
+					\item Typically several iterations are needed to get the model and the system properties right.
+					\item Failed verification attempts provide feedback in the form of counter examples.
+				\end{itemize}
+		\end{enumerate}
 
-		\section{Model Checking} % 2.3, 3.4, 3.6, 3.7, 3.8, 4.7, 4.8, 6.45, 6.46, 6.47, 7.2
-			\todo{Content}
+		\section{Model Checking}
+			\begin{itemize}
+				\item A model checker is designed to proof the designer wrong. Thus it does not try to proof correctness, but the opposite!
+				\item Tuned to find counter examples to a correctness property.
+				\item On the other hand, this can lead to proofing correctness: The absence of counter examples proofs that the validated properties are correct.
+				\item The counter example search is exhaustive. That is, non-determinism is resolved in every possible way.
+			\end{itemize}
+		
+			\subsection{SPIN}
+				\begin{itemize}
+					\item SPIN, an abbreviation for "Simple Promela Interpreter", can simulate a model (randomly/interactively/guided) and can generate a verifier.
+					\item This generated verifier is a C program that than performs the model checking:
+						\begin{itemize}
+							\item Exhaustively checks the PROMELA model against correctness properties.
+							\item In the case the check is negative: Generates a failing run of the model that can be simulated by SPIN.
+						\end{itemize}
+				\end{itemize}
+			% end
+			
+			\subsection{LTL Properties}
+				Given a transition system \(\mathcal{T}\) (e.g. derived from a PROMELA program), the verification task is to check whether an LTL formula \(\phi\) is satisfied in all runs of \(\mathcal{T}\), i.e. \( \mathcal{T} \models \phi \). The process has the following steps steps:
+				\begin{enumerate}
+					\item Represent the transition system \(\mathcal{T}\) as a Büchi automaton \( \mathcal{B}_\mathcal{T} \) such that \( \mathcal{B}_\mathcal{T} \) accepts exactly those runs corresponding to runs through \( \mathcal{T} \).
+					\item Construct a Büchi automaton \( \mathcal{B}_{\lnot\phi} \) for the negation of formula \(\phi\).
+					\item If \( \mathcal{L}^\omega(\mathcal{B}_\mathcal{T}) \cap \mathcal{L}^\omega(\mathcal{B}_{\lnot\phi}) = \emptyset \), then \(\phi\) holds. Otherwise a counterexample was found. To calculate \( \mathcal{L}^\omega(\mathcal{B}_\mathcal{T}) \cap \mathcal{L}^\omega(\mathcal{B}_{\lnot\phi}) \), construct an intersection automaton and search for cycles through accepting states.
+				\end{enumerate}
+			% end
 		% end
 
 		\section{Workflow} % 3.9, 3.10, 3.11, 3.18, 3.19, 3.20, 3.26
+			\label{sec:spinWorkflow}
+		
 			\todo{Content}
 
 			\subsection{Guided Simulation} % 3.21, 3.22
@@ -1444,50 +1493,229 @@ assert(clientID == _pid)
 			% end
 		% end
 
-		\section{Preliminaries} % 7.4
-			\todo{Content}
-
-			\subsection{Acceptance Cycles} % 7.5
-				\todo{Content}
-			% end
-
-			\subsection{Fairness} % 7.6, 7.24, 7.27
-				\todo{Content}
-			% end
+		\section{Fairness}
+			\definition{Weak Fairness}{A run is \textit{weakly fair} iff the following holds: Each continuously executable statement is executed eventually.}
 		% end
 
-		\section{Correctness Properties} % 3.12, 3.13, 7.3
-			\todo{Content}
+		\section{Correctness Properties}
+			Given a PROMELA model \(M\) and correctness properties \( C_1, \cdots, C_n \) and assume there is a check whether a PROMELA run \(R\) satisfies property \(C\).
+			
+			\definition{Correctness of model relative to property}{
+				Let \(R_M\) be the set of all possible runs of a PROMELA model \(M\). Then
+				\begin{itemize}
+					\item For each correctness property \(C_i\), \(R_{M, C_i}\) is the set of all runs of \(M\) satisfying \(C_i\) (clearly \( R_{M, C_i} \subseteq R_M \)).
+					\item \(M\) is correct relative to \( C_1, \cdots, C_n \) iff \( R_M = (R_{M, C_1} \cap \cdots \cap R_{M, C_n}) \).
+					\item If \(M\) is not correct, then each \( r \in \big( R_M \setminus (R_{M, C_1} \cap \cdots \cap R_{M, C_n}) \big) \) is a counter example.
+				\end{itemize}
+			}
+		
+			These correctness properties can be formulated within or outside of a PROMELA model:
+			\begin{itemize}
+				\item Stating properties \textit{within} of the model.
+					\begin{itemize}
+						\item Assertion statements (section \ref{sec:assert})
+						\item Meta labels
+							\begin{itemize}
+								\item \texttt{end} labels (section~\ref{sec:labelEnd})
+								\item \texttt{accept} labels (section~\ref{sec:labelAccept})
+								\item \texttt{progress} labels (not covered) % TODO: Are progress labels really not covered=
+							\end{itemize}
+					\end{itemize}
+				\item Stating properties \textit{outside} of the model.
+					\begin{itemize}
+						\item Never claims (section~\ref{sec:neverclaim})
+						\item Temporal logic formulas (section~\ref{sec:temporalProp})
+					\end{itemize}
+			\end{itemize}
 
-			\subsection{Assertions} % 3.14, 3.15, 3.16, 3.17
+			\subsection{Assertions}
+				\label{sec:assert}
+			
+				\definition{Assertion Statement}{
+					Assertion statements in PROMELA have the form/syntax
+					\begin{center}
+						\inlinePromela{assert(expr)}
+					\end{center}
+					where \inlinePromela{expr} is any PROMELA expression.
+				}
+			
+				\begin{itemize}
+					\item Typically, but not necessarily, the expression evaluates to a boolean value (type \inlinePromela{bool}).
+					\item The assert statement can take any statement position.
+					\item Effects (in both simulation and model checking mode):
+						\begin{itemize}
+							\item No effect iff the expression evaluates to some non-true value.
+							\item Triggers an error iff the expression evaluates to zero.
+						\end{itemize}
+					\item The workflow for performing model checking is described in section~\ref{sec:spinWorkflow}.
+					\item Notice that assertions cannot express full function verification as quantification is not possible. But they can perform sanity checks/partial verification.
+				\end{itemize}
+			
 				\todo{Content}
 			% end
-
-			\subsection{Valid End States} % 3.30, 3.31, 3.32, 3.33
-				\todo{Content}
+			
+			\subsection{Valid End States}
+				\label{sec:labelEnd}
+				
+				\begin{itemize}
+					\item A blocking process is legal, as long as other processes can proceed.
+					\item Blocking for letting other processes proceed is useful and required, e.g. for concurrent and distributed models.
+					\item But it is an error if a process blocks while no other process can proceed \(\implies\) Deadlock.
+				\end{itemize}
+			
+				\definition{Valid End State}{An end state of a run is valid iff the location counter of each process is at an end location.}
+				
+				\definition{End Location}{
+					\textit{End locations} of a process \(P\) are:
+					\begin{itemize}
+						\item The textual end of \(P\) (i.e. the end of the process, the last closing brace).
+						\item Any location marked with an \textit{end label} of the form \inlinePromela{endXXX:}.
+					\end{itemize}
+				}
+			% end
+			
+			\subsection{Acceptance Labels/Cycles}
+				\label{sec:labelAccept}
+			
+				\definition{Acceptance Location}{A location that is marked with an \textit{acceptance label} of the form \inlinePromela{acceptXXX:} is called an \textit{accept location}.}
+				
+				\definition{Acceptance Cycle}{A run that passes an acceptance label infinitely often is called an \textit{acceptance cycle}.}
+				
+				Acceptance cycles are mainly used in never claims (see \ref{sec:neverclaim}) to define forbidden infinite behavior.
 			% end
 
-			\subsection{Temporal Properties} % 7.7, 7.8, 7.9, 7.19
-				\todo{Content}
-
-				\subsubsection{Boolean Temporal Logic} % 7.10, 7.11, 7.12
-					\todo{Content}
+			\subsection{Temporal Properties}
+				\begin{itemize}
+					\item Lots of correctness properties are not expressible by assertions:
+						\begin{itemize}
+							\item All properties involving state changes.
+							\item Properties that depend on the scheduling of two processes.
+						\end{itemize}
+					\item Temporal logic can be used to increase the expressiveness of specifications.
+					\item Notice: Even temporal logic is not expressive enough to cover all properties of a PROMELA model, but in practice it is often sufficient.
+				\end{itemize}
+			
+				\paragraph{Drawbacks of Assertions}
+					\begin{itemize}
+						\item They only specify about the state at their location in the code.
+						\item No separation of concerns (model vs. correctness property, the model is mixed with the validation).
+						\item Changing assertions is prone to cause errors, especially if they were copied to lots of locations.
+						\item It is easy to forget assertions, some correctness properties might be violated at unexpected locations.
+						\item At the biggest drawback: Many properties are not expressible via assertions!
+					\end{itemize}
 				% end
 
-				\subsubsection{Safety Properties} % 7.14, 7.15
-					\todo{Content}
-
-					\paragraph{Never Claims} % 7.16, 7.17, 7.18
-						\todo{Content}
+				\subsubsection{Boolean Temporal Logic}
+					\begin{itemize}
+						\item LTL only knows propositional formulas including only propositional variables.
+						\item But expressions like \inlinePromela{0 <= i <= len - 1} contain numeric variables.
+						\item So a slight generalization of LTL is required.
+						\item In \textit{Boolean Temporal Logic}, the atomic building blocks are boolean expressions over PROMELA variables rather than propositional variables.
+					\end{itemize}
+			
+					\definition{Boolean Temporal Logic Formulas}{
+						The set of \textit{boolean temporal formulas} \(\btlFor\) is inductively defined as
+						\begin{itemize}
+							\item All global PROMELA variables and constants of type \inlinePromela{bool}/\inlinePromela{bit} are formulas.
+							\item If \inlinePromela{e1} and \inlinePromela{e2} are numerical PROMELA expressions, then all the following are formulas:
+						\end{itemize}
+						\begin{center}
+							\inlinePromela{e1 == e2}, \quad \inlinePromela{e1 != e2}, \quad \inlinePromela{e1 < e2}, \quad \inlinePromela{e1 <= e2}, \quad \inlinePromela{e1 > e2}, \quad \inlinePromela{e1 >= e2}
+						\end{center}
+						\begin{itemize}
+							\item If \inlinePromela{P} is a process and \inlinePromela{l} is a label in \inlinePromela{P}, then \inlinePromela{P\@l} is a formula (read as "\inlinePromela{P} is at \inlinePromela{l}").
+							\item If \(\phi\) and \(\psi\) are formulas, then all the following are formulas:
+						\end{itemize}
+						\begin{center}
+							\texttt{!\(\phi\)}, \quad \texttt{\(\phi\) \&\& \(\psi\)}, \quad \texttt{\(\phi\) || \(\psi\)}, \quad \texttt{\(\phi\) -> \(\psi\)}, \quad \texttt{\(\phi\) <-> \(\psi\)}, \quad \texttt{[]\(\phi\)}, \quad \texttt{<>\(\phi\)}, \quad \texttt{\(\phi\)U\(\psi\)}
+						\end{center}
+						\begin{itemize}
+							\item[] where the latter three represent the LTL formulas \( \always \phi \), \( \sometimes \phi \) and \( \phi \until \psi \).
+						\end{itemize}
+					}
+				
+					\paragraph{Semantics}
+						A run \(\sigma\) through a PROMELA model \(M\) is a chain of states \( s_1 s_2 \cdots \) with the state tuple \( s_i = (\mathcal{L}_i, \mathcal{I}_i) \):
+						\begin{itemize}
+							\item \( \mathcal{L}_i \) maps each running process to its current location counter.
+							\item From \( \mathcal{L}_i \) to \( \mathcal{L}_{i + 1} \), only one of the location counters can advance (exception: channel rendezvous).
+							\item \( \mathcal{I}_i \) maps each variable in \(M\) to its current (possible non-boolean) value.
+						\end{itemize}
+					
+						Arithmetic and relation expressions are then interpreted in the states as expected, e.g. \( \mathcal{L}_j, \mathcal{I}_j \models \texttt{x < y} \) iff \( \mathcal{I}_j(\texttt{x}) < \mathcal{I}_j(\texttt{y}) \). Label expressions are evaluated as: \( \mathcal{L}_j, \mathcal{I}_j \models \texttt{P\@l} \) iff \( \mathcal{L}_j(\texttt{P}) \) is at the location labeled with \texttt{l}.
+					% end
+				% end
+				
+				\subsubsection{Model Checking a Temporal Property}
+					\label{sec:temporalProp}
+				
+					The general form for the definition of a TL formula is:
+					\begin{center}
+						\inlinePromela{ltl <claim name> \{ <TL formula> \}}
+					\end{center}
+					where
+					\begin{description}
+						\item[\texttt{<claim name>}] is the name of the claim (if more than one formula is defined).
+						\item[\texttt{<TL formula>}] the formula itself.
+					\end{description}
+				
+					It is possible to define more than one LTL formula in the PROMELA file, but it is not possible to verify more than one LTL formula at once!
+				% end
+				
+				\subsubsection{Never Claims}
+					\label{sec:neverclaim}
+				
+					\begin{itemize}
+						\item Disproving \( \sometimes \phi \) needs a representation of an infinite computation.
+							\begin{enumerate}
+								\item Negated TL formula is translated to specific PROMELA process.
+								\item That so-called "never claim" process tries to show the user is wrong.
+								\item A Büchi automaton is derived from the "never claim" process.
+							\end{enumerate}
+						\item Never claims are translated into special a PROMELA process with accept labels.
+							\begin{itemize}
+								\item Of one of those is reached infinitely often, the claim is disproved.
+								\item Can be viewed as a game between SPIN and the user:
+									\begin{itemize}
+										\item SPIN makes a forward move in the never claim process with accept labels.
+										\item The user makes a forward move in the PROMELA program under verification.
+										\item If an accept label is reached infinitely many often, the user lost and verification fails.
+									\end{itemize}
+								\item Finiteness is guaranteed by cyclicity check.
+							\end{itemize}
+					\end{itemize}
+				
+					\paragraph{Example}
+						\begin{lstlisting}[caption = { Never Claim PROMELA Process }, label = lst:promelaNeverClaim, language = PROMELA]
+never {  /* !(<>q) */
+	accept_init:
+	TO_init:
+	if
+	:: (!q) -> goto TO_init
+	fi
+}
+						\end{lstlisting}
+					
+						Given some PROMELA program \(P\) over a variable \(q\) and the attempt to prove \( P \models \sometimes q \), a never claim process similar to listing~\ref{lst:promelaNeverClaim} is generated. The following is possible:
+						\begin{itemize}
+							\item If \(q\) becomes true, SPIN is blocked at that point and "loses".
+							\item If \(q\) never becomes true, SPIN loops infinitely often over the accept label resulting in an acceptance cycle.
+						\end{itemize}
+					
+						PROMELA has a specific construct only for never claim process. Some never claims are not expressible in temporal logic!
 					% end
 				% end
 
-				\subsubsection{Liveness Properties} % 7.21, 7.22, 7.23, 7.25, 7.29
+				\subsubsection{Liveness Properties} % 7.21, 7.22, 7.23, 7.25, 7.27, 7.29
 					\todo{Content}
 				% end
 
-				\subsubsection{Label Checking} % 7.28, 7.29
-					\todo{Content}
+				\subsubsection{Label Checking}
+					\begin{itemize}
+						\item With label checking it is possible to verify things like mutual exclusion without the usage of ghost variables.
+						\item E.g. all critical sections can be marked with the label \texttt{cs:} and be verified with an LTL formula \texttt{ []!(P\@cs \&\& Q\@cs) } (\texttt{P} and \texttt{Q} are never in the CS at the same time).
+						\item Labels expressions can often remove the need for ghost variables, not only for ME validation.
+					\end{itemize}
 				% end
 			% end
 		% end

@@ -2,16 +2,16 @@
 
 ## Slides
 
-Done/Structured/Total (Slides): 192/559/559; 34%/100%/100%
+Done/Structured/Total (Slides): 309/559/559; 55%/100%/100%
 
 * [x] Chapter  1: Introduction (Slides: 41)
 * [X] Chapter  2: Introduction to PROMELA (Slides: 45)
-* [x] Chapter  3: Verification with SPIN (Slides: 35)
+* [X] Chapter  3: Verification with SPIN (Slides: 35)
 * [X] Chapter  4: Modeling Concurrency (Slides: 51)
 * [X] Chapter  5: Modeling Distributed Systems (Slides: 38)
 * [X] Chapter  6: Specification with Linear Temporal Logic (Slides: 58)
-* [x] Chapter  7: Model Checking with Temporal Logic (Slides: 30)
-* [x] Chapter  8: Deduction in First-Order Logic (Slides: 52)
+* [X] Chapter  7: Model Checking with Temporal Logic (Slides: 30)
+* [X] Chapter  8: Deduction in First-Order Logic (Slides: 52)
 * [x] Chapter  9: Java Modeling Language (Slides: 41)
 * [x] Chapter 10: Java Modeling Language (Slides: 36)
 * [x] Chapter 11: Dynamic Logic (Slides: 32)

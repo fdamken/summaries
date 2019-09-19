@@ -101,6 +101,12 @@
 \newcommand{\BIG}{\bBigg@{4}}
 \newcommand{\BIGG}{\bBigg@{5}}
 \makeatother
+\DeclareMathOperator{\TSym}{TSym}
+\DeclareMathOperator{\FSym}{FSym}
+\DeclareMathOperator{\PSym}{PSym}
+\DeclareMathOperator{\VSym}{VSym}
+\DeclareMathOperator{\Trm}{Trm}
+\DeclareMathOperator{\Fml}{Fml}
 
 \newcommand{\subsubparagraph}[1]{\hspace{1cm} \textbf{#1:}}
 
@@ -108,6 +114,12 @@
 	\begin{figure}[H]
 		\centering
 		\fbox{\parbox[c]{0.9\textwidth}{\subparagraph{Definition (#1)} #2}}
+	\end{figure}
+}
+\newcommand{\theorem}[2]{
+	\begin{figure}[H]
+		\centering
+		\fbox{\parbox[c]{0.9\textwidth}{\subparagraph{Theorem (#1)} #2}}
 	\end{figure}
 }
 
@@ -1379,17 +1391,15 @@ assert(clientID == _pid)
 		\section{Decidability, Closure Properties}
 			Many properties for regular finite automata also hold for Büchi automata while the latter being strictly more expressive (deterministic automata cannot accept all \(\omega\)-regular expressions).
 			
-			\paragraph{Decidability}
-				It is decidable whether the accepted Language \( \mathcal{L}^\omega(\mathcal{B}) \) of a Büchi automaton is empty.
-			% end
-			
-			\paragraph{Closure Properties}
+			\theorem{Decidability}{It is decidable whether the accepted Language \( \mathcal{L}^\omega(\mathcal{B}) \) of a Büchi automaton is empty.}
+
+			\theorem{Closure Properties}{
 				The set of \(\omega\)-regular languages is closed w.r.t. intersection, union and complement:
 				\begin{itemize}
 					\item If \(\mathcal{L}_1\), \(\mathcal{L}_2\) are \(\omega\)-regular, then \( \mathcal{L}_1 \cap \mathcal{L}_2 \) and \( \mathcal{L}_1 \cup \mathcal{L}_2 \) are also \(\omega\)-regular.
 					\item If \(\mathcal{L}\) is regular then \( \Sigma^\omega \setminus \mathcal{L} \) is also \(\omega\)-regular.
 				\end{itemize}
-			% end
+			}
 		% end
 	% end
 
@@ -1724,95 +1734,344 @@ never {  /* !(<>q) */
 		% TODO: Finding Deadlocks; 4.41
 	% end
 
-	\chapter{First-Order Logic (FOL)} % 8.2, 8.3
-		\todo{Content}
+	\chapter{First-Order Logic (FOL)}
+		\begin{itemize}
+			\item Java programs will be specified with the Java Modeling Language (JML), see chapter \ref{c:jml}.
+			\item JML combines Java expressions and First-Order Logic (FOL).
+			\item Java programs will be verified using Dynamic Logic (DL), see chapter \ref{c:dl}.
+			\item DL combined First-Order Logic (FOL) and Java programs,
+		\end{itemize}
+	
+		\section{Syntax}
+			\definition{First-Order Signature}{
+				The first-order \textit{signature} \( \Sigma = (\FSym, \PSym, \VSym) \) over a set \(\TSym\) of types consists of:
+				\begin{itemize}
+					\item A set \(\FSym\) of typed function symbols, declared \( f : A_1 \times \cdots \times A_n \to A \) with \(n\) argument types \( A_i \in \TSym \) and return type \( A \in \TSym \).
+					\item A set \(\PSym\) of typed predicate symbols, declared \( p(A_1, \cdots, A_n) \) with \(n\) argument types \( A_i \in \TSym \).
+					\item A set \(\VSym\) of typed variable symbols, declared \( v : A \) with type \( A \in \TSym \).
+				\end{itemize}
+			}
+		
+			\definition{Constants}{A function symbol \( f \in \FSym \) with \(0\) arguments is called a \textit{constant}.}
+			
+			\definition{Propositional Variable}{A predicate symbol \( p \in \PSym \) with \(0\) arguments is called a \textit{propositional variable}.}
 
-		\section{Syntax} % N/A
-			\todo{Content}
-
-			\subsection{Signature} % 8.4, 8.5, 8.6, 8.7
-				\todo{Content}
+			\subsection{Terms}
+				\definition{First-Order Terms}{
+					The set of first-order terms \( \Trm_A \) for a type \(A\) is inductively defined as
+					\begin{itemize}
+						\item The variable symbols \( \VSym \) of type \(A\) are terms.
+						\item The function \( f(t_1, \cdots, t_n) \) where \( t \in \FSym, t : A_1 \times \cdots \times A_n \to A \) and each \(t_i\) is a term of type \(A_i\).
+					\end{itemize}
+					First-order terms are like side effect-free expressions in programs.
+				}
 			% end
 
-			\subsection{Terms} % 8.8, 8.9, 8.10
-				\todo{Content}
-			% end
-
-			\subsection{Atomic Formulas} % 8.11, 8.12, 8.13
-				\todo{Content}
-			% end
-
-			\subsection{General Formulas} % 8.14, 8.15, 8.16
-				\todo{Content}
+			\subsection{Formulas}
+				\definition{First-Order Formulas}{
+					The set of first-order formulas \( \Fml \) is inductively defined as
+					\begin{itemize}
+						\item All of the following \textit{atomic formulas} are formulas:
+							\begin{itemize}
+								\item \(\true\)
+								\item \(\false\)
+								\item \( t_1 \doteq t_2 \) ("equality")
+								\item \( p(t_1, \cdots, t_n) \) ("predicate") where \( p \in \PSym \) is declared \( p(A_1, \cdots, A_n) \) and each \( t_i \) is a term of type \( A_i \).
+							\end{itemize}
+						\item If \(\phi\) and \(\psi\) are first-order formulas and \(x\) a variable of type \(A\), then all of the following are also formulas:
+					\end{itemize}
+					\begin{equation*}
+						\lnot\phi, \quad \phi \land \psi, \quad \phi \lor \psi, \quad \phi \to \psi, \quad \phi \eqv \psi, \quad \forall x; \phi, \quad \exists x; \phi
+					\end{equation*}
+					\begin{itemize}
+						\item[] In \( \forall x; \phi \) and \( \exists x; \phi \), the variable \(x\) occurs \textit{bound} (i.e. \textit{not free}). Formulas with no free variables are called \textit{closed}.
+					\end{itemize}
+				}
 			% end
 		% end
 
-		\section{Semantics} % 8.18, 8.19, 8.20, 8.21, 8.22, 8.23, 8.24
-			\todo{Content}
-
-			\subsection{Variable Assignments} % 8.25
-				\todo{Content}
+		\section{Semantics}
+			\begin{itemize}
+				\item In propositional logic, an interpretation of variables with \( \{\, \lt,\, \lf \,\} \) works out.
+				\item In first-order logic a meaning must be assigned to:
+					\begin{itemize}
+						\item Variables bound in quantifiers.
+						\item Constant and function symbols.
+						\item Predicate symbols.
+					\end{itemize}
+				\item Each variable or function may denote a different object.
+				\item Typing must be respected: Different types must denote different objects.
+				\item A first-order formula must be interpreted relative to a signature \(\Sigma\):
+					\begin{enumerate}
+						\item A types universe (domain) of objects.
+						\item A mapping from variables to objects of suitable types.
+						\item A mapping from function arguments to function values.
+						\item The set of argument tuples where a predicate is true.
+					\end{enumerate}
+			\end{itemize}
+		
+			\paragraph{1: First-Order Domains/Universes}
+				\definition{First-Order Universe/Domain}{A non-empty set \(\mathcal{D}\) is a \textit{universe} or \textit{domain}. Each element of \(\mathcal{D}\) has a fixed given by \( \delta : \mathcal{D} \to \TSym \).}
+				
+				\begin{itemize}
+					\item Notation for the domain elements of type \( A \in \TSym \): \( \mathcal{D}^A = \{\, d \in \mathcal{D} : \delta(d) = A \,\} \)
+					\item Obviously, \( \mathcal{D} = \bigcup\limits_{ A \,\in\, \TSym } \mathcal{D}^A \) and if \( A \neq B \) then \( \mathcal{D}^A \cap \mathcal{D}^B = \emptyset \).
+					\item Each type must "contain" at least one domain element, i.e. \( \mathcal{D}^A \neq \emptyset \) for all \( A \in \TSym \).
+				\end{itemize}
+			
+				Warning:
+				\begin{itemize}
+					\item Domain elements differ from the terms representing them.
+					\item First-order formulas and terms do not have access to the domain!
+						\begin{itemize}
+							\item \( \mathcal{D} \), \( \delta \), \( \mathcal{D}^\mathcal{T} \) are not part of the FOL signature.
+							\item Compare to language (e.g. Java) without access to the heap representation.
+						\end{itemize}
+				\end{itemize}
+			% end
+			
+			\paragraph{2: Variable Assignments}
+				Think of variable assignments as an environment for storage of local variables.
+				
+				\definition{Variable Assignment}{
+					A \textit{variable assignment} \( \beta : \VSym \to \mathcal{D} \) maps variables to domain elements while respecting the variable type. That is, if \(x\) has type \(A\) then \( \beta(x) \in \mathcal{D}^A \).
+				}
+			
+				\definition{Modified Variable Assignment}{
+					 Let \(y\) be a variable of type \(A\), \(\beta\) a variable assignment and \( d \in \mathcal{D}^A \). Then the \textit{modified variable assignment} is:
+					 \begin{equation*}
+						 \beta_y^d(x) \coloneqq
+						 	\begin{cases}
+						 		\beta(x) & \textrm{iff } x \neq y \\
+						 		d        & \textrm{iff } x = y
+						 	\end{cases}
+					 \end{equation*}
+				}
+			% end
+			
+			\paragraph{3/4: First-Order States/Models}
+				\definition{First-Order State/Model}{
+					Let \( \mathcal{D} \) be a domain with the typing function \( \delta \).
+					\begin{itemize}
+						\item If \( f \in \FSym \) is declared as \( f : A_1 \times \cdots \times A_n \to A \), then an interpretation of \(f\) is a function \( \mathcal{I}(f) : \mathcal{D}^{A_1} \times \cdots \times \mathcal{D}^{A_n} \to \mathcal{D}^A \).
+						\item If \( p \in \PSym \) is declared as \( p(A_1, \cdots, A_n) \), then an interpretation of \(p\) is a predicate \( \mathcal{I}(p) \subseteq \mathcal{D}^{A_1} \times \cdots \times \mathcal{D}^{A_n} \).
+					\end{itemize}
+					Then \( s = (\mathcal{D}, \delta, \mathcal{I}) \) is a \textit{first-order state} (or \textit{model}).
+				}
+			% end
+			
+			\paragraph{Semantics of Equality}
+				\definition{First-Order Equality}{
+					The \textit{equality} symbol \(\doteq\) is declared as \( \doteq(A, A) \) for any type \( A \in \TSym \).
+					
+					The interpretation is fixed as \( \mathcal{I}(\doteq) = \{\, (d, d) : d \in \mathcal{D} \,\} \) ("referential equality", holds if arguments refer to identical objects).
+				}
 			% end
 
-			\subsection{Semantic Evaluation} % N/A
-				\todo{Content}
-
-				\subsubsection{Terms} % 8.26, 8.27, 8.28
-					\todo{Content}
-				% end
-
-				\subsubsection{Formulas} % 8.29, 8.30, 8.31
-					\todo{Content}
-				% end
+			\subsection{Semantic Evaluation}
+				Given a first-order state (model) \(s\) and a variable assignment \(\beta\), it is possible to evaluate first-order terms under \(s\) and \(\beta\).
+			
+				\definition{Valuation Function for First-Order Terms}{
+					The valuation function \( \val_{s, \beta} : \Trm_A \to \mathcal{D}^A \) for terms is defined inductively for each \( A \in \TSym \):
+					\begin{align*}
+						\val_{s, \beta}(x) &\coloneqq \beta(x) \\
+						\val_{s, \beta}\big( f(t_1, \cdots, t_r) \big) &\coloneqq \mathcal{I}(f) \big( \val_{s, \beta}(t_1), \cdots, \val_{s, \beta}(t_r) \big)
+					\end{align*}
+					Since \( \Trm = \bigcup\limits_{ A \,\in\, \TSym } \Trm_a \), \( \val_{s, \beta} \) is defined for all \( t \in \Trm \).
+				}
+			
+				\definition{Valuation Function for First-Order Formulas}{
+					The valuation function \( \val_{s, \beta} : \Fml \to \{\, \lt,\, \lf \,\} \) for formulas is defined inductively:
+					\begin{align*}
+						\val_{s, \beta}\big( p(t_1, \cdots, t_r) \big) &\coloneqq
+							\begin{cases}
+								\lt & \textrm{iff } \big( \val_{s, \beta}(t_1), \cdots, \val_{s, \beta}(t_r) \big) \in \mathcal{I}(p)     \\
+								\lf & \textrm{otherwise}
+							\end{cases} \\
+						\val_{s, \beta}(\lnot \phi)                    &\coloneqq
+							\begin{cases}
+								\lt & \textrm{iff } \val_{s, \beta}(\phi) = \lf                                                           \\
+								\lf & \textrm{otherwise}
+							\end{cases} \\
+						\val_{s, \beta}(\phi \land \psi)               &\coloneqq
+							\begin{cases}
+								\lt & \textrm{iff } \val_{s, \beta}(\phi) = \lt \textrm{ and } \val_{s, \beta}(\psi) = \lt                \\
+								\lf & \textrm{otherwise}
+							\end{cases} \\
+						\val_{s, \beta}(\phi \lor \psi)                &\coloneqq
+							\begin{cases}
+								\lt & \textrm{iff } \val_{s, \beta}(\phi) = \lt \textrm{ or } \val_{s, \beta}(\psi) = \lt                 \\
+								\lf & \textrm{otherwise}
+							\end{cases} \\
+						\val_{s, \beta}(\phi \to \psi)                 &\coloneqq
+							\begin{cases}
+								\lt & \textrm{iff } \val_{s, \beta}(\phi) = \lf \textrm{ or } \val_{s, \beta}(\psi) = \lt                 \\
+								\lf & \textrm{otherwise}
+							\end{cases} \\
+						\val_{s, \beta}(\forall x; \phi)               &\coloneqq
+							\begin{cases}
+								\lt & \textrm{iff } \val_{s, \beta_x^d}(\phi) = \lt \textrm{ for all } d \in \mathcal{D}^A, x : A         \\
+								\lf & \textrm{otherwise}
+							\end{cases} \\
+						\val_{s, \beta}(\forall x; \phi)               &\coloneqq
+							\begin{cases}
+								\lt & \textrm{iff } \val_{s, \beta_x^d}(\phi) = \lt \textrm{ for at least one } d \in \mathcal{D}^A, x : A\\
+								\lf & \textrm{otherwise}
+							\end{cases}
+					\end{align*}
+				}
 			% end
 
-			\subsection{Semantic Notions} % 8.32
-				\todo{Content}
-			% end
-
-			\subsection{Impracticality and Reasoning by Syntactic Transformation} % 8.33, 8.34
-				\todo{Content}
+			\subsection{Semantic Concepts}
+				\definition{Satisfiability, Truth, Validity}{
+					\begin{itemize}
+						\item A formula \(\phi\) is \textit{satisfiable} iff \( \val_{s, \beta}(\phi) \) for at least one state/model.
+						\item A formula \(\phi\) is \textit{true} (write \( s \models \phi \)) iff for all \(\beta\) it holds that \( \val_{s, \beta}(\phi) = \lt \).
+						\item A formula \(\phi\) is \textit{valid} (write \( \models \phi \)) iff for all \(s\) it holds that \( s \models \phi \).
+					\end{itemize}
+				}
+			
+				Notice: Closed formulas that are satisfiable are also true.
 			% end
 		% end
 
-		\section{Sequent Calculus} % 8.35, 8.36
-			\todo{Content}
-
-			\paragraph{Propositional Calculus Rules} % 8.38
-				\todo{Content}
+		\section{Sequent Calculus} % 8.34, 8.35, 8.36
+			Showing the validity of a FO formula by computation is impractical:
+			\begin{itemize}
+				\item There are uncountably many FO states.
+				\item Even a single state may have an infinite domain,
+				\item Even when when the domain is finite: recursion leads to an exponential number of cases.
+			\end{itemize}
+			So there is a need for a \textit{syntactical} proof method using only symbols that occur already in the formula and avoiding recursive evaluation whenever possible.
+			
+			The idea is to proof the validity of \(\phi\) by \textit{syntactic transformations} of \(\phi\).
+			
+			\paragraph{Notation for Sequent}
+				Sequent calculus is based on the notion of a \textit{sequent}:
+				\begin{equation*}
+					\underbrace{\psi_1, \cdots, \psi_m}_\textrm{Antecedent} \implies \underbrace{\phi_1, \cdots, \phi_n}_\textrm{Succedent}
+				\end{equation*}
+				which has the same meaning as
+				\begin{equation*}
+					(\psi_1 \land \cdots \land \psi_m) \to (\phi_1 \lor \cdots \lor \phi_n)
+				\end{equation*}
+				
+				The antecedent/succedent can be considered as (possibly empty) sets of formulas.
+				
+				\definition{Schema Variables, Schema Sequents}{
+					Let \( \phi_i, \psi_j, \cdots \) match formulas and \( \Gamma, \Delta, \cdots \) match sets of formulas. Then infinitely many sequents can be characterized by the single \textit{schematic sequent}
+					\begin{equation*}
+						\Gamma \implies \phi \land \psi, \Gamma
+					\end{equation*}
+					that matches all sequents with a top-level occurrence of a conjunction in the succedent.
+					
+					\( \phi \land \psi \) is called the \textit{main formula} and \( \Gamma, \Delta \) \textit{side formulas} of a sequent.
+				}
+			% end
+			
+			\paragraph{Notation for Rules}
+				\textit{Rules} define a syntactic transformation schema for sequents that precisely reflects semantics of connectives. The general notation for such a rule with name \textit{RuleName} is:
+				\begin{equation*}
+					\prftree[l]
+						{ RuleName }
+						{ \overbrace{\Gamma_1 \implies \Delta_1 \quad\cdots\quad \Gamma_r \implies \Delta_r}^\textrm{Premises} }
+						{ \underbrace{\Gamma \implies \Delta}_\textrm{Conclusion} }
+				\end{equation*}
+				Meaning: To proof the conclusion, it is sufficient to proof all premises.
 			% end
 
-			\paragraph{First-Order Calculus Rules} % 8.42, 8.43, 8.44, 8.45, 8.47, 8.49, 8.50
-				\todo{Content}
+			\subsection{Overview: Calculus Rules}
+				\paragraph{Propositional Calculus Rules}
+					\begin{gather*}
+						\begin{array}{lcl}
+							\prftree[l]{notLeft}{\Gamma \implies \phi, \Delta}{\Gamma, \lnot\phi \implies \Delta} &\quad\quad\quad\quad& \prftree[l]{notRight}{\Gamma, \phi \implies \Delta}{\Gamma \implies \lnot\phi, \Delta} \\
+							\prftree[l]{andLeft}{\Gamma, \phi, \psi \implies \Delta}{\Gamma, \phi \land \psi \implies \Delta} && \prftree[l]{andRight}{\Gamma \implies \phi, \Delta}{\Gamma \implies \psi, \Delta}{\Gamma \implies \phi \land \psi, \Delta} \\
+							\prftree[l]{orLeft}{\Gamma, \phi \implies \Delta}{\Gamma, \psi \implies \Delta}{\Gamma, \phi \lor \psi \implies \Delta} && \prftree[l]{orRight}{\Gamma \implies \phi, \psi, \Delta}{\Gamma \implies \phi \lor \psi, \Delta} \\
+							\prftree[l]{impLeft}{\Gamma \implies \phi, \Delta}{\Gamma, \psi \implies \Delta}{\Gamma, \phi \to \psi \implies \Delta} && \prftree[l]{impRight}{\Gamma, \phi \implies \psi, \Delta}{\Gamma \implies \phi \to \psi, \Delta}
+						\end{array} \\\\
+						\prftree[l]{close}{\Gamma, \phi \implies \phi, \Delta} \quad\quad\quad\quad \prftree[l]{true}{\Gamma \implies \true, \Delta} \quad\quad\quad\quad \prftree[l]{false}{\Gamma, \false \implies \Delta}
+					\end{gather*}
+				% end
+	
+				\paragraph{First-Order Calculus Rules}
+					\begin{gather*}
+						\begin{array}{lcl}
+							\prftree[l]{notLeft}{\Gamma \implies \phi, \Delta}{\Gamma, \lnot\phi \implies \Delta} &\quad\quad\quad\quad& \prftree[l]{notRight}{\Gamma, \phi \implies \Delta}{\Gamma \implies \lnot\phi, \Delta} \\
+							\prftree[l]{andLeft}{\Gamma, \phi, \psi \implies \Delta}{\Gamma, \phi \land \psi \implies \Delta} && \prftree[l]{andRight}{\Gamma \implies \phi, \Delta}{\Gamma \implies \psi, \Delta}{\Gamma \implies \phi \land \psi, \Delta} \\
+							\prftree[l]{orLeft}{\Gamma, \phi \implies \Delta}{\Gamma, \psi \implies \Delta}{\Gamma, \phi \lor \psi \implies \Delta} && \prftree[l]{orRight}{\Gamma \implies \phi, \psi, \Delta}{\Gamma \implies \phi \lor \psi, \Delta} \\
+							\prftree[l]{impLeft}{\Gamma \implies \phi, \Delta}{\Gamma, \psi \implies \Delta}{\Gamma, \phi \to \psi \implies \Delta} && \prftree[l]{impRight}{\Gamma, \phi \implies \psi, \Delta}{\Gamma \implies \phi \to \psi, \Delta} \\
+							\prftree[l]{allLeft}{\Gamma, \forall x; \phi, [x/t']\phi \implies \Delta}{\Gamma, \forall x; \phi \implies \Delta} && \prftree[l]{allRight}{\Gamma \implies [x/c]\phi, \Delta}{\Gamma \implies \forall x; \phi, \Delta} \\
+							\prftree[l]{exLeft}{\Gamma, [x/c]\phi \implies \Delta}{\Gamma, \exists x; \phi \implies \Delta} && \prftree[l]{exRight}{\Gamma \implies [x/t']\phi, \exists x; \phi, \Delta}{\Gamma \implies \exists x; \phi, \Delta} \\
+							\prftree[l]{applyEqL}{\Gamma, t \doteq t', [t/t']\phi \implies \Delta}{\Gamma, t \doteq t', \phi \implies \Delta} && \prftree[l]{applyEqR}{\Gamma, t \doteq t' \implies [t/t']\phi, \Delta}{\Gamma, t \doteq t' \implies \phi, \Delta}
+						\end{array} \\\\
+						\prftree[l]{close}{\Gamma, \phi \implies \phi, \Delta} \quad\quad\quad\quad \prftree[l]{true}{\Gamma \implies \true, \Delta} \quad\quad\quad\quad \prftree[l]{false}{\Gamma, \false \implies \Delta} \\
+						\prftree[l]{eqClose}{\Gamma \implies t \doteq t, \Delta}
+					\end{gather*}
+					\begin{itemize}
+						\item \( [t/t']\phi \) is the result of replacing every occurrence of \(t\) in \(\phi\) with \(t'\).
+						\item \( t, t' \) are arbitrary variable-free terms of same type.
+						\item \( c \) is a new constant of same type as \(x\) (that is not yet used on the current proof branch!).
+						\item Equations can be reversed by symmetry.
+					\end{itemize}
+				% end
 			% end
 
-			\subsection{Proofing} % 8.39, 8.49
-				\todo{Content}
+			\subsection{Proofing}
+				The goal to proof: \( \mathcal{G} = \psi_1, \cdots, \psi_m \implies \phi_1, \cdots, \phi_n \).
+				\begin{itemize}
+					\item Find a rule \( \mathcal{R} \) whose conclusion matches \( \mathcal{G} \).
+					\item Instantiate \( \mathcal{R} \) such that the conclusion is identical to \( \mathcal{G} \).
+					\item Recursively find proofs for the resulting premises \( \mathcal{G}_1, \cdots, \mathcal{G}_r \).
+					\item The result is a tree structure with the goal as the root.
+					\item Close a proof branch when a rule without a premise is encountered.
+				\end{itemize}
 
-				\subsubsection{Examples} % N/A
-					\todo{Content}
-
-					\paragraph{Propositional} % 8.40
-						\todo{Content}
+				\subsubsection{Examples}
+					\paragraph{Propositional}
+						\begin{equation*}
+							\prftree[l]{impRight}
+								{ \prftree[l]{andLeft}
+									{ \prftree[l]{impLeft}
+										{ \prftree[l]{close}
+											{p \implies q, p} }
+										{ \prftree[l]{close}
+											{p, q \implies q} }
+										{p, p \to q \implies q} }
+									{p \land (p \to q) \implies q} }
+								{\implies \big(p \land (p \to q)\big) \to q}
+						\end{equation*}
 					% end
 
-					\paragraph{First-Order} % 8.46
-						\todo{Content}
-					% end
-
-					\paragraph{First-Order with Equality} % 8.48
-						\todo{Content}
+					\paragraph{First-Order}
+						\begin{equation*}
+							\prftree[l]{exLeft}
+								{ \prftree[l]{allRight}
+									{ \prftree[l]{allLeft}
+										{ \prftree[l]{exRight}
+											{ \prftree[l]{close}{p(c, d), \forall y; p(c, y) \implies p(c, d), \exists x; p(x, y)} }
+												{p(c, d), \forall y; p(c, y) \implies \exists x; p(x, d)} }
+										{\forall y; p(c, y) \implies \exists x; p(x, d)} }
+									{\forall y; p(c, y) \implies \forall y; \exists x; p(x, y)} }
+								{\exists x; \forall y; p(x, y) \implies \forall y; \exists x; p(x, y)}
+						\end{equation*}
 					% end
 				% end
 			% end
 
-			\subsection{Soundness and Completeness} % 8.37, 8.41
-				\todo{Content}
-			% end
+			\subsection{Soundness and Completeness}
+				\definition{Sound Sequent Rule}{A rule is \textit{sound} (correct) iff the validity of its premises implies the validity of its conclusion.}
+				
+				\definition{Soundness of Sequent Calculus}{A sequent calculus is \textit{sound} iff a closed proof implies the validity of the formula corresponding to its root sequent.}
+				
+				\definition{Completeness of Sequent Calculus}{A sequent calculus is \textit{complete} iff for any valid formula \(\phi\) a closed proof with root sequent \( \implies \phi \) exists.}
+				
+				\theorem{Soundness, Completeness}{The \textit{sequent calculus} introduced above is sound and complete.}
 		% end
 	% end
 
 	\chapter{Java Modeling Language (JML)} % 9.2
+		\label{c:jml}
+	
 		\todo{Content}
 
 		\section{Running Examples} % N/A
@@ -1949,6 +2208,8 @@ never {  /* !(<>q) */
 	% end
 
 	\chapter{Dynamic Logic (DL)} % 11.2, 11.4, 11.5, 11.6, 11.10, 11.11, 11.12, 12.2, 12.37, 13.21
+		\label{c:dl}
+	
 		\todo{Content}
 
 		\section{Type Hierarchy} % 11.7, 11.8, 11.9, 12.17

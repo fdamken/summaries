@@ -1,7 +1,4 @@
-clean:
-	find . -type f -name 'tmp-*' -delete
-
-all: clean code
+all: clean graphs code
 	./vocabulary.sh de
 	./vocabulary.sh en
 	pdflatex fms-cheatsheet.tex
@@ -9,6 +6,9 @@ all: clean code
 	pdflatex fms-cheatsheet.tex
 	pdflatex fms-cheatsheet.tex
 	pdflatex fms-cheatsheet.tex
+
+clean:
+	find . -type f -name 'tmp-*' -delete
 
 
 graphs:
@@ -18,10 +18,6 @@ graphs:
 	dot -T pdf ltl-kripkestruct.dot -o tmp-ltl-kripkestruct.pdf
 
 
-code_clean:
-	rm -f pan*
-	find code -type f -name '*.out' -delete
-
 code: code_clean
 	./spin.sh code/promela/hello-world.pml
 	./spin.sh code/promela/selection.pml -v
@@ -29,3 +25,7 @@ code: code_clean
 	./spin.sh code/promela/jumps.pml
 	./spin.sh code/promela/multiple-processes.pml
 	./spin.sh code/promela/client-server.pml
+
+code_clean:
+	rm -f pan*
+	find code -type f -name '*.out' -delete

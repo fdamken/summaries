@@ -2,7 +2,7 @@
 
 ## Slides
 
-Done/Structured/Total (Slides): 309/559/559; 55%/100%/100%
+Done/Structured/Total (Slides): 386/559/559; 69%/100%/100%
 
 * [x] Chapter  1: Introduction (Slides: 41)
 * [X] Chapter  2: Introduction to PROMELA (Slides: 45)
@@ -12,8 +12,8 @@ Done/Structured/Total (Slides): 309/559/559; 55%/100%/100%
 * [X] Chapter  6: Specification with Linear Temporal Logic (Slides: 58)
 * [X] Chapter  7: Model Checking with Temporal Logic (Slides: 30)
 * [X] Chapter  8: Deduction in First-Order Logic (Slides: 52)
-* [x] Chapter  9: Java Modeling Language (Slides: 41)
-* [x] Chapter 10: Java Modeling Language (Slides: 36)
+* [X] Chapter  9: Java Modeling Language (Slides: 41)
+* [X] Chapter 10: Java Modeling Language (Slides: 36)
 * [x] Chapter 11: Dynamic Logic (Slides: 32)
 * [x] Chapter 12: Dynamic Logic Calculus (Slides: 38)
 * [x] Chapter 13: Method Calls and Contracts (Slides: 23)

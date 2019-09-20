@@ -85,6 +85,7 @@
 
 \newcommand{\outputlisting}[1]{\lstinputlisting[numbers = none]{#1}}
 \newcommand{\inlinePromela}[1]{\lstinline[language = PROMELA]|#1|}
+\newcommand{\inlineJava}[1]{\lstinline[language = Java]|#1|}
 \newcommand{\forwhich}{\ensuremath{\,\vert\,}}
 \newcommand{\pFor}{\ensuremath{\textit{For}_0}}
 \newcommand{\btlFor}{\ensuremath{\textit{For}_\textit{BTL}}}
@@ -494,7 +495,7 @@ active proctype P() {
 					\item This process is often declared implicitly using the keyword \inlinePromela{active} in the process definition (this process is ran once the program is started).
 					\item The initial process can also be explicitly declared with the keyword \inlinePromela{init}, as shown in listing~\ref{lst:promelaInit}. This programs spawns three processes, one instance of \inlinePromela{P} and two of \inlinePromela{Q}.
 					\item Another process is started with the keyword \inlinePromela{run}. This invocation does not wait until the process is ready, thus the code in process \inlinePromela{Q} may be executed even before the first execution of an instance of process \inlinePromela{P}.
-					\item It is also possible to wrap the invocations of \inlinePromela{run} into an \inlinePromela{atomic { ... }} block, causing the process to execute only after all processes are created. The keyword \inlinePromela{atomic} is discussed in detail in section \ref{sec:atomic}.
+					\item It is also possible to wrap the invocations of \inlinePromela{run} into an \inlinePromela{atomic \{ ... \}} block, causing the process to execute only after all processes are created. The keyword \inlinePromela{atomic} is discussed in detail in section \ref{sec:atomic}.
 				\end{itemize}
 			
 				\subsubsection{Parameters}
@@ -700,16 +701,15 @@ atomic {
 				\begin{table}
 					\centering
 					\begin{tabular}{c | c}
-						               \textbf{Statement Type}                & \textbf{Executable}                                            \\ \hline
-						                     Assignments                      & always                                                         \\
-						                     Assertions                       & always                                                         \\
-						                  Print Statements                    & always                                                         \\
-						                Expression Statements                 & iff value not \inlinePromela{0}/\inlinePromela{false}          \\
-						   \inlinePromela{atomic}, \inlinePromela{d\_step}    & iff the guard is executable                                    \\
-						       \inlinePromela{if}, \inlinePromela{do}         & iff any alternative is executable                              \\
-						alternative of \inlinePromela{if}, \inlinePromela{do} & iff the guard is executable                                    \\
+						               \textbf{Statement Type}                & \textbf{Executable}                                   \\ \hline
+						                     Assignments                      & always                                                \\
+						                     Assertions                       & always                                                \\
+						                  Print Statements                    & always                                                \\
+						                Expression Statements                 & iff value not \inlinePromela{0}/\inlinePromela{false} \\
+						   \inlinePromela{atomic}, \inlinePromela{d\_step}    & iff the guard is executable                           \\
+						       \inlinePromela{if}, \inlinePromela{do}         & iff any alternative is executable                     \\
+						alternative of \inlinePromela{if}, \inlinePromela{do} & iff the guard is executable                           \\
 						                 \inlinePromela{for}                  & always (body can block)
-						% TODO: Send/Receive statements?
 					\end{tabular}
 					\caption{Basic Executability in PROMELA}
 					\label{tab:promelaExec}
@@ -2069,140 +2069,427 @@ never {  /* !(<>q) */
 		% end
 	% end
 
-	\chapter{Java Modeling Language (JML)} % 9.2
+	\chapter{Java Modeling Language (JML)}
 		\label{c:jml}
+		
+		This chapter covers deductive verification of Java source code:
+		\begin{enumerate}
+			\item Formally specifying Java programs and
+			\item proving Java programs are correct.
+		\end{enumerate}
+
+		\section{Running Examples}
+			\subsection{ATM}
+				\begin{lstlisting}[caption = { Running Example for JML 1 }, label = lst:atm, language = Java]
+public class ATM {
+	private BankCard insertedCard = null;
+	private int wrongPinCounter = 0;
+	private boolean customerAuthenticated = false;
 	
-		\todo{Content}
+	public void insertCard(BankCard card) { ... }
+	public void enterPin(int pin) { ... }
+	public int accountBalance() { ... }
+	public int withdraw(int amount) { ... }
+	public void ejectCard() { ... }
+}
 
-		\section{Running Examples} % N/A
-			\todo{Content}
-
-			\subsection{\texttt{ATM}} % 9.8
-				\todo{Content}
+public class BankCard {
+	private final int correctPin;
+	private boolean invalid = false;
+}
+				\end{lstlisting}
+				
+				Listing~\ref{lst:atm} shows the code of the running "ATM"-Example.
 			% end
 
-			\subsection{\texttt{LimitedIntegerSet}} % 10.2, 10.3
-				\todo{Content}
+			\subsection{Limited Integer Set}
+				\begin{lstlisting}[caption = { Running Example for JML 2 }, label = lst:lis, language = Java]
+public class LimitedIntegerSet {
+	public final int limit;
+	private /*@ spec_public @*/ int a[];
+	private /*@ spec_public @*/ int size = 0;
+	
+	public LimitedIntegerSet(int limit) {
+		this.limit = limit;
+		this.a = new int[this.limit];
+	}
+	
+	public boolean add(int elem) { ... }
+	public void remove(int elem) { ... }
+	public /* pure @*/ boolean contains(int elem) { ... }
+}
+				\end{lstlisting}
+				
+				Listing~\ref{lst:lis} shows the code of the running "Limited Integer Set"-Example (with added specification modifiers that are explained later on).
 			% end
 		% end
 
-		\section{Specification} % 9.3, 9.4, 9.5, 9.6, 9.7
-			\todo{Content}
-
-			\subsection{Informal Specification} % 9.9
-				\todo{Content}
+		\section{Specification}
+			\begin{itemize}
+				\item Specification target
+					\begin{itemize}
+						\item System level specifications (requirement analysis, GUI, use cases) are important, but not subject of this document!
+						\item This focuses on \textit{unit specification} -- contracts between implementors on various levels:
+							\begin{itemize}
+								\item Application level \(\leftrightarrow\) Application level
+								\item Application level \(\leftrightarrow\) Library level
+								\item Library level \(\leftrightarrow\) Library level
+							\end{itemize}
+					\end{itemize}
+				\item Units in OOP settings are interfaces, classes and their methods.
+				\item Focusing on methods, a specification must compromise the following aspects:
+					\begin{itemize}
+						\item Result value
+						\item Initial values of formal parameters
+						\item Accessible part of pre- and post-state
+					\end{itemize}
+			\end{itemize}
+		
+			\subsection{Specifications as Contracts}
+				A useful analogy to stress the different roles in a specification, view a specification as a \textit{contract} between the method implementor and the user, between the caller and the callee: The callee guarantee a certain outcome provided that the caller guarantees some prerequisites.
 			% end
 
-			\subsection{Specification as Contract} % 9.10, 9.11
-				\todo{Content}
+			\subsection{Informal Specification (ATM Example, \texttt{enterPin})}
+				"Enter the PIN that belongs to the currently inserted bank card into the ATM. If a wrong PIN is entered three times in a row, the card is confiscated. After having entered the correct PIN, the customer is regarded as authenticated."
 			% end
 
-			\subsection{Formal Specification} % 9.12
-				\todo{Content}
+			\subsection{Specification as Contract}
+				The contract states what is guaranteed under which conditions.
+				\begin{itemize}
+					\item[]
+						\begin{description}
+							\item[precondition] Card is inserted, user not yet authenticated, card is valid, PIN is correct.
+							\item[postcondition] User is authenticated.
+						\end{description}
+					\item[]
+						\begin{description}
+							\item[precondition] Card is inserted, user not yet authenticated, \texttt{wrongPinCounter < 2}, PIN is incorrect.
+							\item[postcondition] \texttt{wrongPinCounter} is increased by \texttt{1}, user is not authenticated.
+						\end{description}
+					\item[]
+						\begin{description}
+							\item[precondition] Card is inserted, user not yet authenticated, \texttt{wrongPinCounter >= 2}, PIN is incorrect.
+							\item[postcondition] Card is confiscated, card is made invalid, user is not authenticated.
+						\end{description}
+				\end{itemize}
+			
+				\definition{Satisfying Implementation}{
+					A pre-/post-condition pair for a method \(m\) is \textit{satisfied by the implementation} of \(m\) iff: When \(m\) is called in any state that satisfies the precondition, then any terminating state of \(m\) satisfies the postconditions.
+				}
+			
+				Remarks:
+				\begin{itemize}
+					\item No guarantee for anything if the precondition is not satisfied.
+					\item Termination may or may not be guaranteed.
+					\item Terminating state may be reached by normal or abrupt termination (e.g. exception).
+				\end{itemize}
+			% end
+
+			\subsection{Formal Specification}
+				Natural language specifications are very important and widely used, but this document focuses on formal specification where contracts are described with mathematical rigor.
+				\begin{itemize}
+					\item High degree of precision
+						\begin{itemize}
+							\item formalization often exhibits omissions and inconsistencies
+							\item avoid ambiguities inherent to natural language
+						\end{itemize}
+					\item Potential for automation of program analysis
+						\begin{itemize}
+							\item run-time assertion checking
+							\item test case generated
+							\item program verification
+						\end{itemize}
+				\end{itemize}
 			% end
 		% end
 
-		\section{Introduction to JML} % 9.13, 9.14, 9.15
-			\todo{Content}
+		\section{Introduction to JML}
+			JML (the \textit{Java Modeling Language}) is a specification language that is tailored to Java and follows the philosophy to integrate specification and implementation in one single language. That is, JML is not external to Java, but an extension of the language, written in annotation-like comments.
+			
+			JML annotations include:
+			\begin{itemize}
+				\item Preconditions (section~\ref{sec:precond})
+				\item Postconditions (section~\ref{sec:postcond1} and~\ref{sec:postcond2})
+				\item Class invariants (section~\ref{sec:classinv})
+				\item Additional modifiers (section~\ref{sec:additionalmod})
+				\item "Specification-only" fields (not covered)
+				\item "Specification-only" methods (not covered)
+				\item Loop invariants (section~\ref{sec:loopinv})
+			\end{itemize}
 
-			\subsection{JML as Java Comments} % 9.16, 9.17
-				\todo{Content}
+			\subsection{JML Integration}
+				\begin{itemize}
+					\item JML annotations are attached directly to Java programs by writing them directly into the source code files.
+					\item To ensure compatibility with the Java compiler, JML annotations are written inside special Java comments, thus are ignored by the standard Java compiler but recognized by JML tools.
+					\item These special comments have to start with an \texttt{\@} and everything following will be parsed by JML tools.
+				\end{itemize}
+			
+				\warning{There must not be a space between the start of the comment and the at! So only \inlineJava{/*@ ... */} and \inlineJava{//@ ...} will be recognized as JML annotations!}
 			% end
 		% end
 
-		\section{Specification Case} % 9.23
-			\todo{Content}
+		\section{Specification Case}
+			Specifications cases for a method must be directly in front of the method and have the form shown in listing~\ref{lst:jmlSpecCase} (using the ATM example). Multiple specification cases have to be connected using the keyword \inlineJava{also} where it is not necessary iff only one specification case is defined.
+			
+			\begin{lstlisting}[caption = { Specification Cases in JML }, label = lst:jmlSpecCase, language = Java]
+/*@
+  @ <specification case one>
+  @
+  @ also
+  @
+  @ <specification case two>
+  @
+  @ ...
+  @*/
+public void enterPin(int pin) { ... }
+			\end{lstlisting}
+			
+			A single specification case has the form shown in listing~\ref{lst:jmlSingleSpecCase} (using the ATM example). The details of the specification case components are covered in the following sections.
+			
+			\begin{lstlisting}[caption = { Single Specification Case in JML }, label = lst:jmlSingleSpecCase, language = Java]
+/*@ public normal_behavior
+  @ requires !customerAuthenticated;
+  @ requires !insertedCard.invalid;
+  @ requires pin == insertedCard.correctPin;
+  @ ensures customerAuthenticated;
+  @*/
+public void enterPin(int pin) { ... }
+			\end{lstlisting}
 
-			\subsection{Public} % 9.18
-				\todo{Content}
+			\subsection{Public Modifier}
+				A \inlineJava{public} specification case:
+				\begin{itemize}
+					\item is accessible from all classes and interfaces and
+					\item can only refer to \inlineJava{public} fields/methods of the class (to reference also private fields, they must be annotated with the JML modifier \inlineJava{spec\_public} that is covered in section~\ref{sec:specpub}).
+				\end{itemize}
+			% end
+			
+			\subsection{Preconditions}
+				\label{sec:precond}
+			
+				A specification case contains postcondition clauses of the form
+				\begin{center}
+					\inlineJava{requires b;}
+				\end{center}
+				where \texttt{b} is a boolean JML expression. If multiple clauses are given, the precondition is a conjunction of all clauses. In the pre-state, the preconditions must be true to guarantee the postconditions (or exceptional behavior).
 			% end
 
-			\subsection{Normal Behavior} % 9.19, 10.23
-				\todo{Content}
+			\subsection{Normal Behavior}
+				Each keyword that is ending in \inlineJava{behavior} opens a specification case. For the \inlineJava{normal\_behavior} specification case, the called method guarantees to not throw an exception if the caller guarantees all preconditions of the specification case.
+				
+				\subsubsection{Postconditions}
+					\label{sec:postcond1}
+				
+					A normal specification case have multiple postcondition clauses of the form
+					\begin{center}
+						\inlineJava{ensures b;}
+					\end{center}
+					where \texttt{b} is a boolean JML expression. If multiple clauses are given, the postcondition is a conjunction of all clauses.
+					
+					If the preconditions of the specification case hold in the pre-state, the postconditions must hold in the post-state.
+				% end
 			% end
 
-			\subsection{Exceptional Behavior} % 10.22, 10.23, 10.24
-				\todo{Content}
+			\subsection{Exceptional Behavior}
+				For an \inlineJava{exceptional\_behavior} specification case, assuming the preconditions are fulfilled, it requires the method to throw an exception iff the pre-state satisfies the preconditions.
+				\begin{itemize}
+					\item The keyword \inlineJava{signals} specifies the post-state, depending on the type of the thrown exception.
+					\item The keyword \inlineJava{signals\_only} specified the type of the thrown exception.
+				\end{itemize}
+				JML specifications must fully separate normal/exceptional specification cases by suitable and disjoint preconditions!
 
-				\subsubsection{\texttt{signals}} % 10.25
-					\todo{Content}
+				\subsubsection{Exception Types}
+					An exceptional specification case can have at most one clause of the form
+					\begin{center}
+						\inlineJava{signals\_only E1, ..., EN;}
+					\end{center}
+					where \texttt{E1} to \texttt{EN} are the exception types. The thrown exception must have one of these types.
 				% end
 
-				\subsubsection{\texttt{signals\_only} } % 10.26
-					\todo{Content}
+				\subsubsection{Postconditions}
+					\label{sec:postcond2}
+				
+					An exceptional specification case can have several clauses of the form
+					\begin{center}
+						\inlineJava{signals (E) b;}
+					\end{center}
+					where \texttt{E} is an exception type and \texttt{b} is a boolean JML expression. If an exception of type \texttt{E} is thrown, then \texttt{b} must hold.
 				% end
 			% end
 
-			\subsection{Non-Termination} % 10.27
-				\todo{Content}
+			\subsection{Non-Termination}
+				By default, both normal and exceptional specifications enforce termination. Non-termination can be allowed by the clause
+				\begin{center}
+					\inlineJava{diverges true;}
+				\end{center}
+				in the specification. If the precondition of the specification case holds in the pre-state, then the method may or may not terminate.
 			% end
 		% end
 
-		\section{Preconditions} % 9.20, 9.21
-			\todo{Content}
+		\section{Assignable}
+			An assignable clause is a clause of the form
+			\begin{center}
+				\inlineJava{assignable loc1, ..., locN;}
+			\end{center}
+			where \texttt{loc1} to \texttt{locN} are locations (e.g. class variables) that can be modified by the specified method. That is, no other values are allowed to change and must have the same value in the post-state as in the pre-state (but they may change temporarily during the execution of the method).
+			
+			Some special values are \inlineJava{\\nothing} and \inlineJava{\\everything} where the first allows no modifications and the latter allows all modifications (default).
+			
+			Specifying as less locations as possible makes validating the program more efficient and reduces the amount of specification in the postcondition.
 		% end
 
-		\section{Postconditions} % 9.22
-			\todo{Content}
-		% end
-
-		\section{Assignable} % 9.25, 9.26, 9.27
-			\todo{Content}
-		% end
-
-		\section{Modifiers} % 9.29
-			\todo{Content}
-
-			\subsection{\texttt{spec\_public}} % 9.30
-				\todo{Content}
+		\section{Modifiers}
+			\label{sec:additionalmod}
+		
+			JML extends the Java modifiers. Those modifiers have to be written between the "normal" modifiers, e.g. \inlineJava{private /*@ spec\_public @*/ int foo;}.
+		
+			\subsection{\texttt{spec\_public}}
+				\label{sec:specpub}
+			
+				\begin{itemize}
+					\item Public specifications are not able to access class fields that are not public.
+					\item It is not desirable to make every fields public (encapsulation, etc.).
+					\item The visibility of such fields can be increased with the modifier \inlineJava{spec\_public} which keeps the Java visibility but, if necessary, rises the specification visibility to public.
+					\item A different solution that is not covered here is to use specification-only fields.
+				\end{itemize}
 			% end
 
-			\subsection{\texttt{pure}} % 9.31, 9.32
-				\todo{Content}
+			\subsection{\texttt{pure}}
+				\definition{Pure Method}{A Java method is called \textit{pure} iff it has no side effects and always terminates. Specifically, it may create no new objects.}
+			
+				JML expressions are allowed pure methods. Those methods are annotated by the modifier \inlineJava{pure}, e.g. the \texttt{contains} method in the limited integer set example (see listing~\ref{lst:lis}).
+				
+				\begin{itemize}
+					\item \inlineJava{pure} puts obligation on the implementor to not cause side effects.
+					\item It is possible to formally verify that a method is pure by writing a contract that expresses it and verifying it.
+					\item \inlineJava{pure} implies \inlineJava{assignable \\nothing;}.
+					\item Assignable clauses are more fine-grained and can be local to specification cases where \inlineJava{pure} always effects the whole method.
+				\end{itemize}
 			% end
 
-			\subsection{\texttt{nullable}, \texttt{non\_null}} % 10.28, 10.29, 10.30, 10.31, 10.32
-				\todo{Content}
-			% end
-		% end
-
-		\section{JML Expressions} % 9.33, 9.34
-			\todo{Content}
-
-			\subsection{Access of Prestate} % 9.24
-				\todo{Content}
-			% end
-
-			\subsection{Quantifier} % 9.35, 9.36, 9.37, 9.38, 9.39
-				\todo{Content}
-			% end
-
-			\subsection{Result Values} % 10.4
-				\todo{Content}
-			% end
-		% end
-
-		\section{State Constraints} % 10.10, 10.11, 10.12, 10.13, 10.14, 10.15
-			\todo{Content}
-
-			\subsection{Class Invariants} % 10.16, 10.17, 10.18, 10.19, 10.20, 10.21
-				\todo{Content}
+			\subsection{\texttt{nullable}, \texttt{non\_null}}
+				Class fields, method parameters and returns types may be annotated with
+				\begin{itemize}
+					\item \inlineJava{nullable} -- May or may not be \inlineJava{null}.
+					\item \inlineJava{non\_null}  -- Must not be \inlineJava{null} (default).
+				\end{itemize}
+				
+				\warning{The default \inlineJava{non\_null} only applies in JML since 2008! Old JML tutorials/articles might use \inlineJava{nullable}-by-default semantics!}
+				
+				These modifiers are converted into class invariants by JML, see section~\ref{sec:classinv}.
 			% end
 		% end
 
-		\section{Inheritance} % 10.33
-			\todo{Content}
+		\section{JML Expressions}
+			\begin{itemize}
+				\item Each side effect-free Java expression is a JML expression (every method call must be a pure method).
+				\item If \inlineJava{E} is a side effect-free Java expression, then \inlineJava{\\old(E)} is a JML expression referring to the value of \inlineJava{E} before method execution (useful in postconditions).
+				\item If \inlineJava{a} and \inlineJava{b} are \inlineJava{boolean} JML expression, then all of the following are also \inlineJava{boolean} JML expressions:
+			\end{itemize}
+			\begin{center}
+				\inlineJava{!a}, \quad \inlineJava{a \&\& b}, \quad \inlineJava{a \|\| b}, \quad \inlineJava{a ==> b}, \quad \inlineJava{a <==> b}
+			\end{center}
+			\begin{itemize}
+				\item[] with the semantics negation, conjunction, disjunction, implication and equivalence.
+				\item For a type \inlineJava{t} and \inlineJava{boolean} JML expressions \inlineJava{a} and \inlineJava{b}, all of the following are also \inlineJava{boolean} JML expressions:
+			\end{itemize}
+			\begin{center}
+				\inlineJava{(\\forall t x; b)}, \quad \inlineJava{(\\exists t x; b)}, \quad \inlineJava{(\\forall t x; a; b)}, \quad \inlineJava{(\\exists t x; a; b)}
+			\end{center}
+			\begin{itemize}
+				\item[] with the semantics (in order):
+					\begin{itemize}
+						\item For all \texttt{x} of type \texttt{t}, \texttt{b} is true.
+						\item There exists an \texttt{x} of type \texttt{t} such that \texttt{b} is true.
+						\item For all \texttt{x} of type \texttt{t} fulfilling \texttt{a}, \texttt{b} is true.
+						\item There exists an \texttt{x} of type \texttt{t} fulfilling \texttt{a} such that \texttt{b} is true.
+					\end{itemize}
+					The \inlineJava{boolean} \texttt{a} is called \textit{range predicate} and is syntactic sugar for standard FOL quantifiers.
+			\end{itemize}
+		
+			\textbf{Notes:}
+			\begin{itemize}
+				\item Quantified JML expressions over nontrivial types also range over non-created objects which can be restricted with the expressions \inlineJava{\\created(b1)} where \texttt{b1} is a bound variable.
+				\item In postconditions, the return value (result value) of the method can be accessed via \inlineJava{\\result}.
+			\end{itemize}
 		% end
 
-		\section{Loop Invariants} % 14.18, 14.19
-			\todo{Content}
+		\section{State Constraints}
+			JML can also be used to specify constraints on the state of a class, e.g.:
+			\begin{itemize}
+				\item Consistency of redundant data representations (e.g. caching).
+				\item Restrictions for efficiency (e.g. maintaining sortedness).
+			\end{itemize}
+			The constraints are global, i.e. all methods must preserve them.
+
+			\subsection{Class Invariants}
+				\label{sec:classinv}
+			
+				Such constraints can be formulated as \textit{class constraints} that are written anywhere in the class in the following form:
+				\begin{center}
+					\inlineJava{public invariant b;}
+				\end{center}
+				where \texttt{b} is a \inlineJava{boolean} JML expression. Technically, these constraints can be written anywhere in the class but it is common to write them in front of the affected properties. Multiply invariants per class are joined in a conjunction.
+				
+				Invariant types:
+				\begin{itemize}
+					\item Instance invariants
+						\begin{itemize}
+							\item Can refer to static fields.
+							\item Can refer to instance fields via quantifying over an explicit reference, e.g. \inlineJava{o.size}.
+							\item Can refer to instance fields of \inlineJava{this} object (qualified or unqualified).
+							\item Syntax: \inlineJava{instance invariant}
+						\end{itemize}
+					\item Static invariants
+						\begin{itemize}
+							\item Can refer to static fields.
+							\item Can refer to instance fields via quantifying over an explicit reference, e.g. \inlineJava{o.size}.
+							\item Cannot refer to instance fields of the object.
+							\item Syntax: \inlineJava{static invariant}
+						\end{itemize}
+				\end{itemize}
+				In classes, instance is default and static is default in interfaces.
+				
+				\paragraph{Semantics/Intuition}
+					The class invariants are added as another pre- and postcondition to all methods of a class, so they do need to hold before and after the method call, but not necessarily during the execution.
+				% end
+			% end
 		% end
 
-		\section{Loop Termination} % 14.20, 14.21, 14.22
-			\todo{Content}
+		\section{Inheritance}
+			All JML contracts (specification cases, class invariants) are inherited from superclasses to subclasses (a class must fulfill all contracts of its superclasses). Subclasses may also add specification cases to those of the superclasses, see listing~\ref{lst:jmlInherit}.
+			
+			\begin{lstlisting}[caption = { Inheritance in JML }, label = lst:jmlInherit, language = Java]
+/*@ also
+  @ <specification case specific to subclass>
+  @*/
+public void method() { ... }
+			\end{lstlisting}
+		% end
 
-			\subsection{Example: GCD} % 14.23, 14.24, 14.25, 14.26, 14.27
-				\todo{Content}
+		\section{Loops}
+			This section only covers the syntax for proofing loop correctness in JML. For a more detailed dive into the formal backbone, lookup section~\ref{sec:dlLoopInv}.
+		
+			\subsection{Loop Invariants}
+				\label{sec:loopinv}
+			
+				\begin{lstlisting}[caption = { Loop Invariants in JML }, label = lst:jmlLoopInv, language = Java]
+/*@ loop_invariant <expr>;
+  @ assignable <assign>;
+  @*/
+				\end{lstlisting}
+			
+				A \textit{loop invariant} is a statement that is true before and after every loop iteration. It is specified in JML as in listing~\ref{lst:jmlLoopInv} where the expression has to be a \inlineJava{boolean} JML expression and the assign statement is assumed (so it must be true, e.g. with \inlineJava{assignable \\nothing;} it is possible to proof nonsense if its not true). KeY generates a proof obligation that ensures the correctness of the assignable clause.
+			% end
+	
+			\subsection{Loop Termination}
+				If a loop does not terminate, it is possible to proof its correctness as the initial, preserved and use case are immediately closable. This can lead to nonsense proofs.
+				
+				Thus a way is needed to proof the termination of a loop based on an expression called \textit{variant} that is getting smaller w.r.t. \( \mathbb{N} \) is each iteration (it is not possible to decrease infinitely many often in the natural numbers). This decreasing gets added to the \inlineJava{loop\_invariant} annotation with the following syntax:
+				\begin{center}
+					\inlineJava{decreasing v;}
+				\end{center}
+				where \texttt{v} is the decreasing term and \( \texttt{v} \geq 0 \) is ensures by the loop body as well as \texttt{v} is strictly decreased by the loop body. This way, KeY can proof the termination of the loop.
 			% end
 		% end
 	% end
@@ -2380,6 +2667,8 @@ never {  /* !(<>q) */
 			% end
 
 			\subsection{Loop Invariants} % 14.4, 14.5, 14.8
+				\label{sec:dlLoopInv}
+			
 				\todo{Content}
 
 				\subsubsection{Deriving Loop Invariants} % 14.9, 14.10, 14.11, 14.29, 14.30

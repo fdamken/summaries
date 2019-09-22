@@ -2,7 +2,7 @@
 
 ## Slides
 
-Done/Structured/Total (Slides): 386/559/559; 69%/100%/100%
+Done/Structured/Total (Slides): 479/559/559; 86%/100%/100%
 
 * [x] Chapter  1: Introduction (Slides: 41)
 * [X] Chapter  2: Introduction to PROMELA (Slides: 45)
@@ -14,9 +14,9 @@ Done/Structured/Total (Slides): 386/559/559; 69%/100%/100%
 * [X] Chapter  8: Deduction in First-Order Logic (Slides: 52)
 * [X] Chapter  9: Java Modeling Language (Slides: 41)
 * [X] Chapter 10: Java Modeling Language (Slides: 36)
-* [x] Chapter 11: Dynamic Logic (Slides: 32)
-* [x] Chapter 12: Dynamic Logic Calculus (Slides: 38)
-* [x] Chapter 13: Method Calls and Contracts (Slides: 23)
+* [X] Chapter 11: Dynamic Logic (Slides: 32)
+* [X] Chapter 12: Dynamic Logic Calculus (Slides: 38)
+* [X] Chapter 13: Method Calls and Contracts (Slides: 23)
 * [x] Chapter 14: Programs with Loops (Slides: 39)
 
 

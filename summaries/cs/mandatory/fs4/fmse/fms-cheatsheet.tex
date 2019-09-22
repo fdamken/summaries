@@ -98,6 +98,9 @@
 \newcommand{\always}{\square}
 \newcommand{\sometimes}{\lozenge}
 \newcommand{\until}{\mathcal{U}}
+\newcommand{\tempty}{\perp}
+\newcommand{\tuni}{\top}
+\newcommand{\subof}{\sqsubseteq}
 \makeatletter
 \newcommand{\BIG}{\bBigg@{4}}
 \newcommand{\BIGG}{\bBigg@{5}}
@@ -106,8 +109,10 @@
 \DeclareMathOperator{\FSym}{FSym}
 \DeclareMathOperator{\PSym}{PSym}
 \DeclareMathOperator{\VSym}{VSym}
+\DeclareMathOperator{\ProgVSym}{ProgVSym}
 \DeclareMathOperator{\Trm}{Trm}
 \DeclareMathOperator{\Fml}{Fml}
+\DeclareMathOperator{\Program}{Program}
 
 \newcommand{\subsubparagraph}[1]{\hspace{1cm} \textbf{#1:}}
 
@@ -2494,60 +2499,213 @@ public void method() { ... }
 		% end
 	% end
 
-	\chapter{Dynamic Logic (DL)} % 11.2, 11.4, 11.5, 11.6, 11.10, 11.11, 11.12, 12.2, 12.37, 13.21
+	\chapter{Dynamic Logic (DL)}
 		\label{c:dl}
-	
-		\todo{Content}
+		
+		Note: Most of the following uses KeY pretty-printing format for heap access, see section~\ref{sec:keyPP}.
+		
+		\begin{itemize}
+			\item A logic and calculus that allows the expressions if properties like "if \dots, then \dots and afterwards \dots" where some state can be modified by the formula itself is needed.
+			\item One such \textit{program logic} is \textit{dynamic logic} (DL), combining first-order logic (FOL) with programs.
+			\item In typed FOL, only static properties can be expressed, e.g. values of fields in a certain range. These properties consider only one program state at a time.
+			\item The goal is to express the behavior of a program in terms of \textit{state changes}, like in the property above. This yields the following requirements for such a logic (that are all satisfied by DL):
+				\begin{itemize}
+					\item Can relate between different program states, i.e. before and after execution, within a single formula.
+					\item Program variables are represented by constant symbols that depend on the current program state.
+				\end{itemize}
+		\end{itemize}
 
-		\section{Type Hierarchy} % 11.7, 11.8, 11.9, 12.17
-			\todo{Content}
+		\section{Type Hierarchy}
+			\definition{Type Hierarchy}{
+				\begin{itemize}
+					\item Let \(\TSym\) be a set of \textit{type} symbols.
+					\item Let \( \subof \subseteq \TSym \times \TSym \) be the \textit{subtype relation} that is reflexive and transitive.
+					\item It has an empty type \( \tempty  \) and a universal type \( \tuni \) with
+				\end{itemize}
+				\begin{equation*}
+					\tempty \subof A \subof \tuni
+				\end{equation*}
+				\begin{itemize}
+					\item[] for all \( A \in \TSym \). Terms of type \( \tempty \) are not allowed!
+				\end{itemize}
+				Then \( \mathcal{T} = (\TSym, \subof) \) is a \textit{type hierarchy}.
+			}
+		
+			The Java type hierarchy is shown in figure~\ref{fig:javaTypeHierarchy} (not all primitive types listed) where each interface and class in the API and in the target program becomes a type with an appropriate subtype relation.
+			
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[->, every node/.style = { draw, rectangle }]
+					\node (Universal) {\( \tuni \)};
+					\node [below = of Universal] (Heap) {Heap};
+					\node [right = of Heap] (Field) {Field};
+					\node [left = of Heap] (Any) {Any};
+					\node [below = of Any] (Object) {\inlineJava{Object}};
+					\node [left = of Object] (boolean) {\inlineJava{boolean}};
+					\node [left = of boolean] (int) {\inlineJava{int}};
+					\node [below = of Object] (classes) {Java Classes};
+					\node [below = of classes] (Null) {Null};
+					\node [below = of Null] (Empty) {\( \tempty \)};
+					
+					\draw (Empty) to[bend left = 40] (int);
+					\draw (Empty) to[bend left = 20] (boolean);
+					\draw (Empty) -- (Null);
+					\draw (Empty) to[bend right = 15] (Heap);
+					\draw (Empty) to[bend right = 30] (Field);
+					\draw (Null) -- (classes);
+					\draw (classes) -- (Object);
+					\draw (int) to[bend left = 15] (Any);
+					\draw (boolean) to[bend left = 10] (Any);
+					\draw (Object) -- (Any);
+					\draw (Any) to[bend left = 20] (Universal);
+					\draw (Heap) -- (Universal);
+					\draw (Field) to[bend right = 20] (Universal);
+				\end{tikzpicture}
+				\caption{Java Type Hierarchy}
+				\label{fig:javaTypeHierarchy}
+			\end{figure}
 		% end
 
-		\section{Syntax} % 11.15
-			\todo{Content}
+		\section{Syntax}
+			\definition{Signature of Dynamic Logic}{
+				The signature is given as \( \Sigma = (\PSym, \FSym, \VSym, \ProgVSym) \) with \( \FSym \cap \ProgVSym = \emptyset \).
+				\begin{itemize}
+					\item \( \PSym \)     \tabto{2cm} Predicate symbols (rigid),    \tabto{7cm} e.g. \( \PSym = \{\, \texttt{>},\, \texttt{>=},\, \cdots \,\} \)
+					\item \( \FSym \)     \tabto{2cm} Function symbols (rigid),     \tabto{7cm} e.g. \( \FSym = \{\, \texttt{+},\, \texttt{-},\, \texttt{*},\, \texttt{0},\, \texttt{1},\, \cdots \,\} \)
+					\item \( \ProgVSym \) \tabto{2cm} Program variables (flexible), \tabto{7cm} e.g. \( \ProgVSym = \{\, \texttt{i},\, \texttt{j},\, \texttt{k},\, \cdots \,\} \)
+				\end{itemize}
+			}
 
-			\subsection{Variables} % 11.13, 11.14, 11.17
-				\todo{Content}
+			\subsection{Variables}
+				Program variables cannot be first-order variables and are state-dependent constant symbols where the value is changeable by a program (state-dependent = non-rigid = flexible).
+				
+				\begin{itemize}
+					\item The signature of dynamic logic is defined like in FOL, but with additional program variables for each type.
+					\item Rigid signature symbols have the same interpretation in all program states (first-order variables and builtin functions and predicates).
+						\begin{itemize}
+							\item These occur in quantifiers and similar.
+							\item Must not occur in programs!
+						\end{itemize}
+					\item Non-rigid (flexible) symbols depend on the state, i.e. the interpretation differs from state to state (program variables).
+						\begin{itemize}
+							\item Cannot be quantified.
+							\item May occur in programs and formulas.
+							\item Can be declared in the code inside a DL formula or outside in the KeY file.
+						\end{itemize}
+					\item Any term that contains at least one flexible symbol is also flexible.
+				\end{itemize}
 			% end
 
-			\subsection{Terms} % 11.18
-				\todo{Content}
+			\subsection{Terms}
+				\definition{Dynamic Logic Terms}{The typed first-order terms are defined as in FOL. In addition, a program variable \texttt{v} of type \(A\) is a term in \( \Trm_A \).}
 			% end
 
-			\subsection{Programs} % 11.19
-				\todo{Content}
+			\subsection{Modalities}
+				Dynamic logic extends FOL with two additional operations:
+				\begin{itemize}
+					\item \( \langle \texttt{p} \rangle \phi \) (diamond)
+					\item \( [\texttt{p}] \phi \) (box)
+				\end{itemize}
+				with a program \texttt{p} and another DL formula \(\phi\).
+				
+				Intuitive meaning:
+				\begin{itemize}
+					\item \( \langle \texttt{p} \rangle \phi \): \texttt{p} terminates and formula \(\phi\) holds in the final state (total correctness).
+					\item \( [\texttt{p}] \phi \): If \texttt{p} terminates, then formula \(\phi\) holds in the final state (partial correctness).
+				\end{itemize}
+				As Java programs are deterministic, if a Java program terminates, then exactly one state is reached from a given initial state.
 			% end
 
-			\subsection{Modalities} % 11.20
-				\todo{Content}
-			% end
-
-			\subsection{Formulas} % 11.23, 11.24
-				\todo{Content}
+			\subsection{Formulas}
+				\definition{Dynamic Logic Formulas}{
+					Dynamic logic formulas are given by the following inductive definition:
+					\begin{itemize}
+						\item Each FOL formula is also a DL formula.
+						\item If \texttt{p} is a program and \(\phi\) is a DL formula, then all of the following are also DL formulas:
+					\end{itemize}
+					\begin{equation*}
+						\langle \texttt{p} \rangle \phi, \quad [\texttt{p}] \phi
+					\end{equation*}
+					\begin{itemize}
+						\item DL formulas are closed under FOL quantifiers and connectives.
+					\end{itemize}
+				}
 			% end
 		% end
 
-		\section{Semantics} % 11.25
-			\todo{Content}
+		\section{Semantics}
+			\begin{itemize}
+				\item A first-order state (model) is considered as a program state.
+				\item In dynamic logic, the interpretation of flexible program variable differs from one program state to another.
+				\item The interpretation of rigid symbols is the same in all states.
+			\end{itemize}
+		
+			\definition{Program State}{
+				A \textit{program state} \(s\) is a specific first-order state \( (\mathcal{D}, \delta, \mathcal{I}) \).
+				
+				For a fixed \( \mathcal{D} \), \( \delta \) the set \( \mathcal{S} \) denotes the set of all program states such that any two states \( s_1, s_2 \in \mathcal{S} \):
+				\begin{itemize}
+					\item Coincide on \( \mathcal{D}, \delta \) and
+					\item may only differ in the interpretation \( \mathcal{I} \) of flexible program variables. Thus, \( \mathcal{I} \) only records the values of \( \texttt{v} \in \ProgVSym \).
+				\end{itemize}
+			}
 
-			\subsection{Kripke Structure} % 11.26, 11.27, 11.28
-				\todo{Content}
+			\subsection{Kripke Structure}
+				\definition{First-Order Kripke Structure}{
+					A \textit{Kripke structure} or \textit{labeled transition system} \( \mathcal{K} = (\mathcal{S}, \rho) \) consists of:
+					\begin{itemize}
+						\item States (first-order models) \( s = (\mathcal{D}, \delta, \mathcal{I}) \in \mathcal{S} \) and
+						\item Transition relation \( \rho : \Program \rightarrow (\mathcal{S} \rightharpoonup \mathcal{S}) \) with \( \rho(\texttt{p})(s_1) = s_2 \) iff the program \texttt{p}, executed in state \(s_1\), terminates normally and its final state is \(s_2\). Otherwise, the transition is undefined.
+					\end{itemize}
+				}
+			
+				\begin{itemize}
+					\item \(\rho\) is the formal semantics of programs \( \texttt{p} \in \Program \).
+					\item \( \rho(\texttt{p})(s) \) may be undefined (denoted by \( \rightharpoonup \)), \texttt{p} might not terminate when started in some state \(s\).
+					\item Java programs are deterministic (unlike PROMELA), thus \( \rho(\texttt{p}) \) has at most one value.
+					\item First-order Kripke structures are infinite (one transition for each program with infinitely many programs).
+					\item The states only differ in the interpretation of the program variables (rigid symbols have the same interpretation in all states).
+				\end{itemize}
 			% end
 
-			\subsection{Semantic Evaluation} % N/A
-				\todo{Content}
-
-				\subsubsection{Formulas} % 11.29, 11.30
-					\todo{Content}
+			\subsection{Semantic Evaluation}
+				\subsubsection{Formulas}
+					\definition{Validity Relation of DL Formulas}{
+						Let \( \mathcal{K} \) be a Kripke structure, \( s \in \mathcal{S} \) a state, \(\beta\) a variable assignment, \( \texttt{p} \in \Program \) a program, \( \phi \) and DL formula and \( \psi \) and FOL formula. Then the validity relation is defined as:
+						\begin{equation*}
+							\begin{array}{lcl}
+								(\mathcal{K}, s, \beta) \models \langle \texttt{p} \rangle \phi & \iff & p(\texttt{p})(s) \textrm{ is defined and } \big(\mathcal{K}, \rho(\texttt{p})(s), \beta\big) \models \phi            \\
+								(\mathcal{K}, s, \beta) \models [\texttt{p}] \phi               & \iff & \big(\mathcal{K}, \rho(\texttt{p})(s), \beta\big) \models \phi \textrm{ when } p(\texttt{p})(s) \textrm{ is defined} \\
+								(\mathcal{K}, s, \beta) \models \psi                            & \iff & \val_{s, \beta}(\psi) = \lt
+							\end{array}
+						\end{equation*}
+					}
+				
+					\begin{itemize}
+						\item Duality:     \( \langle \texttt{p} \rangle \phi \iff \lnot [\texttt{p}] \lnot \phi \)
+						\item Implication: \( \langle \texttt{p} \rangle \phi \implies [\texttt{p}] \phi \) \\ Total correctness implies partial correctness, holds only for deterministic programs.
+					\end{itemize}
 				% end
 
-				\subsubsection{Programs} % 11.31
-					\todo{Content}
+				\subsubsection{Programs}
+					In a Kripke structure \( \mathcal{K} = (\mathcal{S}, \rho) \), \(\rho\) defines the semantics of programs \( \texttt{p} \in \Program \). It is a verify tedious task to define \(\rho\) for Java and thus it is not done here.
+				% end
 			% end
-				% end
 
-			\subsection{Sequents} % 12.4
-				\todo{Content}
+			\subsection{Sequents}
+				\definition{DL Sequent}{
+					Let \( \Gamma = \{\, \phi_1,\, \cdots,\, \phi_n \,\} \) and \( \Delta = \{\, \psi_1,\, \cdots,\, \psi_m \,\} \) be sets of DL formulas where all first-order variables are bound and let \( s \in \mathcal{S} \) be a program state. Then
+					\begin{equation*}
+						(\mathcal{K}, s) \models (\Gamma \implies \Delta) \quad\textrm{ iff }\quad (\mathcal{K}, ) \models (\phi_1 \land \cdots \land \phi_n) \to (\psi_1 \lor \cdots \lor \psi_m)
+					\end{equation*}
+					like in propositional logic and FOL sequents.
+				}
+			
+				\definition{Validity of DL Sequents}{
+					A sequent \( \Gamma \implies \Delta \) over DL formulas is valid iff \[ (\mathcal{K}, s) \models (\Gamma \implies \Delta) \] in all states \(s \in \mathcal{S}\) and Kripke structures \(\mathcal{K}\).
+					
+					Note that the initial value of program variables can be any domain value!
+				}
 			% end
 		% end
 
@@ -2555,133 +2713,578 @@ public void method() { ... }
 			\todo{Content}
 		% end
 
-		\section{Modeling} % N/A
-			\todo{Content}
-
-			\subsection{Heap} % 12.18, 12.19, 12.20
-				\todo{Content}
-
-				\subsubsection{Field Updates} % 12.21
-					\todo{Content}
-				% end
-
-				\subsubsection{Field Access} % 12.22
-					\todo{Content}
-				% end
-
-				\subsubsection{Pretty Printing} % 12.23
-					\todo{Content}
-				% end
-			% end
-
-			\subsection{Static Fields} % 12.30
-				\todo{Content}
-			% end
-
-			\subsection{Abrupt Termination} % 12.25, 12.26, 12.27
-				\todo{Content}
-			% end
-
-			\subsection{Aliasing} % 12.28, 12.29
-				\todo{Content}
-			% end
-
-			\subsection{\texttt{this} and \texttt{self}} % 12.31
-				\todo{Content}
-			% end
-
-			\subsection{Arrays} % 12.33
-				\todo{Content}
-			% end
-
-			\subsection{Complex Expressions} % 12.34
-				\todo{Content}
-			% end
-
-			\subsection{Method Calls} % 13.4, 13.6
-				\todo{Content}
-
-				\subsubsection{Object Initialization} % 12.32, 13.7
-					\todo{Content}
-				% end
-			% end
-		% end
-
-		\section{Symbolic Execution} % 12.5, 12.6, 14.3
-			\todo{Content}
-
-			\subsection{Rules} % 12.7, 12.12, 12.21, 12.35, 13.5, 13.9, 13.11, 13.15, 13.16, 13.19, 14.4, 14.5, 14.7, 14.12, 14.15
-				\todo{Content}
-			% end
-
-			\subsection{Updates} % 12.8, 12.9, 12.10
-				\todo{Content}
-
-				\subsubsection{Effects} % 12.11
-					\todo{Content}
-				% end
-
-				\subsubsection{Assignment Rule} % 12.12
-					\todo{Content}
-				% end
-
-				\subsubsection{Composition} % 12.13
-					\todo{Content}
-				% end
-
-				\subsubsection{Parallel Updates} % 12.14, 12.15
-					\todo{Content}
-				% end
-
-				\subsubsection{Quantifier} % 12.16
-					\todo{Content}
-				% end
-
-				\subsubsection{Keeping the Context: Anonymising} % 13.12, 13.13, 13.14, 14.14
-					\todo{Content}
-				% end
-			% end
-
-			\subsection{Abrupt Termination} % 12.36
-				\todo{Content}
-			% end
-
-			\subsection{Complex Expressions} % 12.35
-				\todo{Content}
-			% end
-
-			\subsection{Method Calls} % 13.5
-				\todo{Content}
-
-				\subsubsection{Limitations of Inlining} % 13.8
-					\todo{Content}
-				% end
-
-				\subsubsection{Method Contract Rule} % 13.9, 13.10, 13.11, 13.15, 13.16
-					\todo{Content}
-				% end
-
-				\subsubsection{Proofing Correctness of Method Contracts} % 13.19
-					\todo{Content}
-				% end
-			% end
-
-			\subsection{Loop Invariants} % 14.4, 14.5, 14.8
-				\label{sec:dlLoopInv}
+		\section{Symbolic Execution} % TODO: 14.3
+			\begin{itemize}
+				\item In DL symbolic execution, the natural control flow of a program is followed.
+				\item Values of some variables unknown: represent symbolic state.
+				\item The general form of rule conclusion in symbolic calculus is
+			\end{itemize}
+			\begin{equation*}
+				\langle \texttt{stmt; rest} \rangle \phi, \quad [\texttt{stmt; rest}] \phi
+			\end{equation*}
+			\begin{itemize}
+				\item[] where the rules symbolically execute the first statement \texttt{stmt} (called \textit{active statement}).
+				\item Repeated application of such rules corresponds to \textit{symbolic program execution}.
+			\end{itemize}
+	
+			\subsection{Rules} % 14.4, 14.5, 14.7, 14.12, 14.15
+				\paragraph{Conditional} %12.7
+				\begin{equation*}
+					\prftree[l, r]
+						{\texttt{b} simple}
+						{if}
+						{\Gamma, \texttt{b} \doteq \texttt{true} \implies \langle \texttt{p; rest} \rangle \phi, \Delta}
+						{\qquad}
+						{\Gamma, \texttt{b} \doteq \texttt{false} \implies \langle \texttt{q; rest} \rangle \phi, \Delta}
+						{\Gamma \implies \langle \texttt{if (b) \{ p \} else \{ q \}; rest} \rangle \phi, \Delta}
+				\end{equation*}
+				
+				\paragraph{Loops: Unwind} %12.7
+				\begin{equation*}
+					\prftree[l]
+						{unwindLoop}
+						{\Gamma \implies \langle \texttt{if (b) \{ p; while (b) \{ p \} \}; rest} \rangle \phi, \Delta}
+						{\Gamma \implies \langle \texttt{while (b) \{ p \}; rest} \rangle \phi, \Delta}
+				\end{equation*}
+				
+				\paragraph{Assignment} %12.12
+				\begin{equation*}
+					\prftree[l,r]
+						{\texttt{t} simple}
+						{assign}
+						{\Gamma \implies \{\, \texttt{x} \coloneqq \texttt{t} \,\} \langle \texttt{rest} \rangle \phi, \Delta}
+						{\Gamma \implies \langle \texttt{x = t; rest} \rangle \phi, \Delta}
+				\end{equation*}
+				
+				\paragraph{Field Assignment} %12.21
+				\begin{equation*}
+					\prftree[l,r]
+						{\texttt{t} simple}
+						{assign}
+						{\Gamma \implies \{\, \textrm{heap} \coloneqq \textrm{store}(\textrm{heap}, \texttt{o}, \texttt{f}, t) \,\} \langle \texttt{rest} \rangle \phi, \Delta }
+						{\Gamma \implies \langle \texttt{o.f = t; rest} \rangle \phi, \Delta}
+				\end{equation*}
+				
+				\paragraph{Local Code Transformation} %12.35
+				\begin{equation*}
+					\prftree[l, r]
+						{\texttt{t} simple}
+						{evalOrderIteratedAssgnmt}
+						{\Gamma \implies \langle \texttt{y = t; x = y; } \omega \rangle \phi, \Delta}
+						{\Gamma \implies \langle \texttt{x = y = t; } \omega \rangle \phi, \Delta}
+				\end{equation*}
+				
+				\paragraph{Complex Conditional} %12.35
+				\begin{equation*}
+					\prftree[l, r]
+						{\texttt{b} complex}
+						{ifEval}
+						{\Gamma \implies \langle \texttt{boolean v0; v0 = b; if (v0) p; } \omega \rangle \phi, \Delta}
+						{\Gamma \implies \langle \texttt{if (b) p; } \omega \rangle \phi, \Delta}
+				\end{equation*}
+				
+				\paragraph{Try-Catch} %12.36
+				{ \footnotesize \begin{equation*}
+					\prftree[l]
+						{tryThrow}
+						{\Gamma \implies \langle \pi \texttt{ if (e instanceof T) \{ try \{ x = e; q \} finally \{ r \} \} else \{ r; throw e; \} } \omega \rangle \phi, \Delta}
+						{\Gamma \implies \langle \pi \texttt{ try \{ throw e; p \} catch (T x) \{ q \} finally \{ r \} } \omega \rangle \phi, \Delta}
+				\end{equation*} }
+			
+				\paragraph{Method Call: Inlining, Void} %13.5
+				\begin{equation*}
+					\prftree[l]
+						{methodBodyExpand}
+						{\Gamma \implies \langle \pi \texttt{ method-frame(source=C, this=C):\{ body \} } \omega \rangle \phi, \Delta}
+						{\Gamma \implies \langle \pi \texttt{ c.m(p\#1, ..., p\#N)@C; } \omega\rangle \phi, \Delta}
+				\end{equation*}
+				
+				\paragraph{Method Call: Contract, Void} %13.16
+				\begin{equation*}
+					\prftree[l]
+						{methodContract}
+						{\let\scriptstyle\textstyle \substack{
+						 \Gamma \implies \mathcal{U} \mathcal{F}(\texttt{preExc}), \Delta \\
+						 \Gamma \implies \mathcal{U} \nu_\texttt{normal} \big( \mathcal{F}(\texttt{postNormal}) \to \langle \pi \texttt{ p } \omega \rangle \phi \big), \Delta \\
+						 \Gamma \implies \mathcal{U} \nu_\texttt{exc} \Big( \big( \texttt{exc} \not\doteq \texttt{null} \land \mathcal{F}(\texttt{postExc}) \big) \to \langle \pi \texttt{ throw exc; p } \omega \rangle \phi \Big), \Delta}}
+						{\Gamma \implies \mathcal{U} \langle \pi \texttt{ result = m(arg1, ..., argN); p } \omega \rangle \phi, \Delta}
+				\end{equation*}
 			
 				\todo{Content}
-
-				\subsubsection{Deriving Loop Invariants} % 14.9, 14.10, 14.11, 14.29, 14.30
-					\todo{Content}
-				% end
-
-				\subsubsection{Context Loss} % 14.12, 14.14, 14.15
-					\todo{Content}
 			% end
 		% end
 
-		\section{Understanding Unclosed Proofs} % 13.20
+		\section{Updates}
+			\definition{Syntax of Updates, Updated Terms/Formulas}{
+				Let \texttt{v} be a program variable, \(t\) a FOL term that is type-conformant to \texttt{v}, \(t'\) any FOL term and \(\phi\) any DL formula, then:
+				\begin{itemize}
+					\item \( \{\, \texttt{v} \coloneqq t \,\} \) is an update (of \texttt{v} to \(t\)),
+					\item \( \{\, \texttt{v} \coloneqq t \,\} t' \) a DL term and
+					\item \( \{\, \texttt{v} \coloneqq t \,\} \phi \) a DL formula.
+				\end{itemize}
+			}
+			
+			\definition{Semantics of Updates}{
+				Let a state \(s\) interpret the program variable \texttt{v} with \( \mathcal{I}_s(\texttt{v}) \) and let \(\beta\) be a variable assignment for free first-order variables in \(t\). Then the semantics \(\rho\) of an update is defined as:
+				\begin{equation*}
+				\rho\big( \{\, \texttt{v} \coloneqq t \,\} \big)(s) = s'
+				\end{equation*}
+				where \(s'\) is identical to \(s\) except \( \mathcal{I}_{s'}(\texttt{v}) = \val_{s,\beta}(t) \).
+			}
+		
+			\begin{itemize}
+				\item Update semantics are almost identical to those of the assignment statement.
+				\item The value of an update depends on \(s\) and on first-order variables in \(t\).
+				\item Updates are not assignments! Assignments may have side-effects, updates do not.
+				\item Updates are not equations, they change the value of \texttt{v}.
+			\end{itemize}
+	
+			\subsection{Effects}
+				The computations of an update on a program \texttt{p} are delayed until it is symbolically executed. The rewrite rules for an update followed by\dots
+				\begin{itemize}
+					\item program variable:
+				\end{itemize}
+				\begin{equation*}
+					\begin{cases}
+						\{\, \texttt{x} \coloneqq t \,\} y \leadsto \texttt{y} & \texttt{x} \neq \texttt{y} \\
+						\{\, \texttt{x} \coloneqq t \,\} x \leadsto t          & \textrm{update happens}
+					\end{cases}
+				\end{equation*}
+				\begin{itemize}
+					\item logical variable:
+				\end{itemize}
+				\begin{equation*}
+					\{\, \texttt{x} \coloneqq t \,\} w \leadsto w
+				\end{equation*}
+				\begin{itemize}
+					\item complex term (\( f \in \FSym \)):
+				\end{itemize}
+				\begin{equation*}
+					\{\, \texttt{x} \coloneqq t \,\} f(t_1, \cdots, t_n) \leadsto f\big( \{\, \texttt{x} \coloneqq t \,\} t_1, \cdots, \{\, \texttt{x} \coloneqq t \,\} t_n \big)
+				\end{equation*}
+				\begin{itemize}
+					\item FOL formula:
+				\end{itemize}
+				\begin{equation*}
+					\begin{cases}
+						\{\, \texttt{x} \coloneqq t \,\} (\phi \,\&\, \psi) \leadsto \{\, \texttt{x} \coloneqq t \,\} \phi \,\&\, \{\, \texttt{x} \coloneqq t \,\} \psi \\
+						\quad\cdots \\
+						\{\, \texttt{x} \coloneqq t \,\} (\forall y; \phi) \leadsto \forall y; \big( \{\, \texttt{x} \coloneqq t \,\} \phi \big)
+					\end{cases}
+				\end{equation*}
+				\begin{itemize}
+					\item program formula: no rewrite needed!
+				\end{itemize}
+			% end
+
+			\subsection{Assignment Rule}
+				\begin{equation*}
+					\prftree[l]
+						{assign}
+						{\Gamma \implies \{\, \texttt{x} \coloneqq \texttt{t} \,\} \langle \texttt{rest} \rangle \phi, \Delta}
+						{\Gamma \implies \langle \texttt{x = t; rest} \rangle \phi, \Delta}
+				\end{equation*}
+				
+				\begin{itemize}
+					\item Simple, not variable renaming or similar.
+					\item Works as long as \(t\) does not have any side effects.
+					\item Special case is needed for calculations in the assignment etc.
+				\end{itemize}
+			% end
+
+			\subsection{Parallel Updates}
+				If a variable is assigned multiple times, those several sequential updates have to be composed into a parallel update.
+				
+				\definition{Parallel Update}{
+					A \textit{parallel update} is an expression of the form \( \{\, \texttt{v}_1 \coloneqq r_1 \,\Vert\, \cdots \,\Vert\, \texttt{v}_n \coloneqq r_n \,\} \) where each \( \{\, \texttt{v}_i \coloneqq r_i \,\} \) is a simple update.
+					\begin{itemize}
+						\item All \(r_i\) are computed in the old state before the update is applied.
+						\item All updates of the program variables \( \texttt{v}_i \) are executed simultaneously.
+						\item Upon conflict \( \texttt{v}_i = \texttt{v}_j \), \( r_i \neq r_j \), the later update (\( \max \{\, i,\, j \,\} \)) wins.
+					\end{itemize}
+				}
+			
+				% TODO: Definition Sequential --> Parallel / Conflict Resolution (12.14)
+			% end
+
+			\subsection{Quantifier}
+				Quantifying over a program variable is not possible, but it is possible to quantify over a FOL variable and then update the program variable accordingly:
+				\begin{equation*}
+					\forall i_0; \{\, \texttt{i} \coloneqq i_0 \,\} \langle \cdots \texttt{i} \cdots \rangle \phi
+				\end{equation*}
+			% end
+
+			\subsection{Anonymising Updates}
+				\label{sec:anonUpdate}
+			
+				Given some assignable clause
+				\begin{center}
+					\inlineJava{assignable modified;}
+				\end{center}
+				the part of the prestate \(\mathcal{U}\) that is unmodified by the execution should be kept. The assignable clause tells what could possibly be modified.
+				
+				An \textit{anonymising update} \( \nu \) eases all information about the modified locations
+				\begin{equation*}
+					\nu_\textrm{modified} = \{\, \texttt{l}_1 \coloneqq \texttt{c}_1 \,\Vert\, \cdots \,\Vert\, \texttt{l}_n \coloneqq \texttt{c}_n \,\}
+				\end{equation*}
+				and sets them to a new constant symbol \( \texttt{c}_i \) for each location \( \texttt{l}_i \) in the assignable clause (\texttt{modified}).
+				
+				\paragraph{Anonymising Heap Locations}
+					It must also be possible to erase some heap values without throwing everything away, e.g. for the assignable clause
+					\begin{center}
+						\inlineJava{assignable o.a, this.*;}
+					\end{center}
+				
+					\definition{Anonymising Function}{
+						Let \( \textrm{anon} : \textrm{Heap} \times \textrm{LocSet} \times \textrm{Heap} \to \textrm{Heap} \) be a function that returns the heap that coincided with the first heap argument on all locations except those specified in the location set. The latter attain their value specified by the second heap argument.
+					}
+				
+					Let \textit{ls} of type LocSet be a set of location key \( \subseteq \textrm{Object} \times \textrm{Field} \):
+					\begin{equation*}
+						\textrm{select}(\textrm{anon}(h_1, \textit{ls}, h_2), o, f) =
+							\begin{cases}
+								\textrm{select}(h_2, o, f) & \textrm{iff } \big( (o, f) \in \textit{ls} \land f \neq \texttt{<created>} \big) \lor (o, f) \in \textit{freshLocs}(h_1) \\
+								\textrm{select}(h_1, o, f) & \textrm{otherwise}
+							\end{cases}
+					\end{equation*}
+				% end
+			% end
+		% end
+		
+		\section{Modeling the Heap}
+			In Java, values of reference types live on the heap.
+			\begin{itemize}
+				\item Can change dynamic during symbolic program execution.
+				\item In each program state, the heap associated objects, fields, values.
+			\end{itemize}
+			
+			\subsection{Modeling Fields}
+				\begin{itemize}
+					\item For every Java reference type \(C\), there is a FOL type \(C\), e.g. \texttt{Person}.
+					\item For each field \(f\) there is a unique constant \( f \in \FSym \) of type Field, e.g. \texttt{age}.
+					\item The type domain of all possible objects of a reference type \(C\) is \( \mathcal{D}^C \), e.g. \( \mathcal{D}^\texttt{Person} \).
+					\item A heap relates objects and fields to values.
+				\end{itemize}
+				
+				\paragraph{Reading Fields}
+					Signature in DL: \texttt{Any select(Heap, Object, Field)}
+					\begin{itemize}
+						\item The return type is \texttt{Any}, so a cast to the appropriate type is needed.
+						\item For casting, use \texttt{type :: select(Heap, Object, Field)}
+						\item It is possible that a field with the same name exists in different classes. Thus, prepend the class name to the field name, e.g. \texttt{Person::\$age}.
+					\end{itemize}
+					
+					Example:
+					\begin{description}
+						\item[Java] \texttt{p.age >= 0}
+						\item[FOL]  \texttt{int ::select(heap, p, Person::\$age) >= 0}
+						\item[KeY]  \texttt{p.age >= 0} (using pretty-printing)
+					\end{description}
+				% end
+				
+				\paragraph{Writing to Fields}
+					Signature in DL: \texttt{Heap store(Heap, Object, Field, Any)}
+					
+					Example:
+					\begin{description}
+						\item[Java] \texttt{p.age = 42}
+						\item[FOL]  \texttt{store(heap, p, Person::\$age, 42)}
+						\item[KeY]  \texttt{p.age := 42} (using pretty-printing)
+					\end{description}
+				% end
+			% end
+			
+			\subsection{Field Updates}
+				DL has a reserved flexible constant \( \textrm{Heap} \textrm{heap} \) that stores the Java heap under verification for read/write field access.
+				
+				\begin{equation*}
+					\prftree[l]
+						{assign}
+						{\Gamma \implies \{\, \textrm{heap} \coloneqq \textrm{store}(\textrm{heap}, \texttt{o}, \texttt{f}, t) \,\} \langle \texttt{rest} \rangle \phi, \Delta }
+						{\Gamma \implies \langle \texttt{o.f = t; rest} \rangle \phi, \Delta}
+				\end{equation*}
+			% end
+			
+			\subsection{Field Access}
+				To compute the value of a field \(f\) of an object \(o\) of type \(A\) in a given heap, perform a lookup in the heap using the pair \( (o, f) \) as key/index.
+			% end
+			
+			\subsection{Pretty-Printing}
+				\label{sec:keyPP}
+			
+				\begin{description}
+					\item[Reading] \texttt{A :: select(heap, o, f)} is shown as \texttt{ o.f }
+					\item[Modifying] \texttt{select(store(heap, o, f, 17), u, f)} is shown as \texttt{u.f@heap[o.f := 17]}
+				\end{description}
+			% end
+			
+			\section{Aliasing}
+				Naive reference aliasing causes a proof split (on \( o \doteq u \)) at each access
+				\begin{equation*}
+					\implies \texttt{o.age} \doteq 1 \,\texttt{->}\, \langle \texttt{u.age = 2;} \rangle \texttt{o.age} \doteq \texttt{u.age}
+				\end{equation*}
+				To avoid case distinction on \( o \doteq u \) in the proof, delayed state computation until until it is clear what is required is required as well as simplification of heap terms.
+			% end
+			
+			\subsection{Static Fields}
+				\paragraph{No Compile-Time Constant}
+					For each class \(C\) with a static field \(f\) of type \(A\) that is not a compile-time constant, there is:
+					\begin{itemize}
+						\item A unique constant \( C.f \) of type Field,
+						\item whose value \texttt{v} is stored on the heap as \texttt{store(heap, null, C.f, v)}
+						\item where \(C\) is the fully qualified class name.
+					\end{itemize}
+					So static values are also stored on the heap!
+				% end
+				
+				\subsubsection{Compile-Time Constant}
+					For each class \(C\) with a final static field \(f\) of type \(A\) that is a compile-time constant, there is
+					\begin{itemize}
+						\item a constant \(C.f\) of type \(A\) whose interpretation \( \mathcal{I}_s(C.f) \) is the same for all states s.
+					\end{itemize}
+					So static compile-time constants are not stored on the heap!
+				% end
+			% end
+			
+			\subsection{\texttt{this} and \texttt{self}}
+				Reserved name for the object whose Java code is currently executed:
+				\begin{description}
+					\item[Java] \texttt{Object this;}
+					\item[JML]  \texttt{Object this;}
+					\item[KeY]  Arbitrary, but by convention often \texttt{Object self;}. The name is arbitrary as long as it is unique: only a flexible constant.
+				\end{description}
+				The default assumption in JML-KeY translation is \texttt{self != null}.
+			% end
+			
+			\subsection{Arrays}
+				\begin{itemize}
+					\item The Java type hierarchy includes array types that occur in the current program (only for finiteness).
+					\item Types are ordered according to Java subtyping rules.
+					\item Value of an entry in an array \texttt{T[] a;} defined in class \(C\) depends on the reference \texttt{a} to the array in \(C\) and the index.
+					\item A flexible function \( \texttt{arr} : \texttt{int} \to \textrm{Field} \) is an injective mapping from indices to fields (an array entry is modeled as a field).
+					\item Array elements are stored on the heap, e.g. the value of \texttt{a[i]} on the heap \texttt{store(heap, a, arr(i), 17)} is 17.
+					\item Arrays \texttt{a} and \texttt{b} can refer to the same object (aliases).
+					\item KeY implements simplification and evaluation rules for array locations.
+				\end{itemize}
+			% end
+		% end
+		
+		\section{Abrupt Termination}
+			Abrupt termination does not count as a normal termination, so a distinction between normal and exceptional termination is needed. This can be done by extending the definition of the two DL modalities:
+			\begin{itemize}
+				\item \( \langle \texttt{p} \rangle \phi \): \texttt{p} terminated \textit{normally} and formula \(\phi\) holds in the final state (total correctness).
+				\item \( [\texttt{p}] \phi \): If \texttt{p} terminates \textit{normally}, then formula \(\phi\) holds in the final state (partial correctness).
+			\end{itemize}
+		
+			\subsection{Null Pointers}
+				There are no "exceptions" in FOL, so a possibility that \( o \doteq \texttt{null} \) has to be modeled in the term \texttt{o.f}:
+				\begin{itemize}
+					\item KeY branches over \texttt{o != null} on each field acces.
+					\item The value of the term \texttt{null.f} is defined, but unknown.
+					\item It is possible to proof \( \texttt{null.f} \doteq \texttt{null.f} \).
+				\end{itemize}
+			% end
+			
+			\subsection{Try-Catch}
+				{ \footnotesize \begin{equation*}
+					\prftree[l]
+						{tryThrow}
+						{\Gamma \implies \langle \pi \texttt{ if (e instanceof T) \{ try \{ x = e; q \} finally \{ r \} \} else \{ r; throw e; \} } \omega \rangle \phi, \Delta}
+						{\Gamma \implies \langle \pi \texttt{ try \{ throw e; p \} catch (T x) \{ q \} finally \{ r \} } \omega \rangle \phi, \Delta}
+				\end{equation*} }
+			% end
+		% end
+
+		\section{Complex Expressions}
+			\begin{itemize}
+				\item Java expressions may contain assignment operators with a side effects.
+				\item Java expressions can be complex, nested, contain method calls, etc.
+				\item FOL terms have not side effect on the state.
+				\item Idea: Simplify complex expression with side effects to side effect-free, simple expressions before translation to FOL.
+			\end{itemize}
+		
+			Local code transformation:
+			\begin{equation*}
+				\prftree[l, r]
+					{\texttt{t} simple}
+					{evalOrderIteratedAssgnmt}
+					{\Gamma \implies \langle \texttt{y = t; x = y; } \omega \rangle \phi, \Delta}
+					{\Gamma \implies \langle \texttt{x = y = t; } \omega \rangle \phi, \Delta}
+			\end{equation*}
+			
+			Temporary variables tore the result of evaluated subexpressions:
+			\begin{equation*}
+				\prftree[l, r]
+					{\texttt{b} complex}
+					{ifEval}
+					{\Gamma \implies \langle \texttt{boolean v0; v0 = b; if (v0) p; } \omega \rangle \phi, \Delta}
+					{\Gamma \implies \langle \texttt{if (b) p; } \omega \rangle \phi, \Delta}
+			\end{equation*}
+			
+			Guards if conditionals/loops are always evaluated before condition/unwind rules are applied.
+		% end
+
+		\section{Method Calls}
+			The syntax of a method call with actual (symbol) parameters \( \texttt{arg1}, \cdots, \texttt{argN} \) is:
+			\begin{equation*}
+				\{\, \texttt{c} \coloneqq t \,\} \langle \texttt{c.m(arg1, ..., argN)} \rangle \phi
+			\end{equation*}
+			where \texttt{m} is declared as \texttt{void m(A1 p1, ..., AN pN)}.
+			
+			Action of the DL rule \textit{methodCall} (type conformance of \texttt{argI} to \texttt{AI} is guaranteed by the Java compiler):
+			\begin{enumerate}
+				\item For each formal parameter \texttt{pI} of \texttt{m}: Declare and initialize a new local variable \texttt{AI p\#i = argI;}
+				\item Lookup the implementation class \(C\) of \texttt{m} and split the proof when more than one compile-time implementation is possible (necessitated by dynamic dispatch in general).
+				\item Create a statically resolved method invocation \texttt{c.m(p\#1, ..., p\#N)@C}.
+			\end{enumerate}
+			The proof splits are required as Java has complex rules for localization of fields and method implementations (polymorphism, late binding, scoping, visibility, \dots).
+		
+			\subsection{Method Execution by Inlining (void Methods)}
+				\begin{enumerate}
+					\item Execute code binding actual to formal parameters \texttt{AI p\#i = argI;}
+					\item Call DL rule \textit{methodBodyExpand}
+						\begin{enumerate}
+							\item Rename each occurrence of \texttt{pI} in body into \texttt{p\#i}.
+							\item Replace method invocation by the method frame and method body.
+						\end{enumerate}
+				\end{enumerate}
+			
+				\begin{equation*}
+					\prftree[l]
+						{methodBodyExpand}
+						{\Gamma \implies \langle \pi \texttt{ method-frame(source=C, this=C):\{ body \} } \omega \rangle \phi, \Delta}
+						{\Gamma \implies \langle \pi \texttt{ c.m(p\#1, ..., p\#N)@C; } \omega\rangle \phi, \Delta}
+				\end{equation*}
+				
+				\subsubsection{Limitations of Inlining}
+					\label{sec:methodContractMotivation}
+				
+					\begin{itemize}
+						\item Source code might not be available (e.g. for commercial APIs or OS-specific methods).
+						\item Method is invoked multiple times in a program:
+							\begin{itemize}
+								\item \(n\) nested methods with 2 calls each result in \(2^n\) inlined method bodies.
+								\item Avoid multiple symbolic execution of identical code!
+							\end{itemize}
+						\item Cannot handle unbounded recursion.
+					\end{itemize}
+				
+					A solution to this is to use contracts instead of the method implementation. Steps:
+					\begin{enumerate}
+						\item Show that the requires clause is satisfied.
+						\item Obtain the postcondition from the ensures clause.
+						\item Delete updates to assignable locations from symbolic state.
+					\end{enumerate}
+					This subject is continued in section~\ref{sec:methodContract}.
+				% end
+			% end
+			
+			\subsection{Object Initialization}
+				Assume that the domain \(\mathcal{D}\) is the same in all states of \( \mathcal{K} = (\mathcal{S}, \rho) \), i.e. object creation with \inlineJava{new} does not change the domain! One consequence is that the validity of rigid FOL formulas is unaffected by programs containing \inlineJava{new}.
+				
+				Realizing constant domain assumption:
+				\begin{itemize}
+					\item Implicitly declare a flexible function \texttt{boolean <created>(Object);} that returns \texttt{true} iff the argument object has been created.
+					\item Initialized as \( \mathcal{I}(\texttt{<created>})(o) = \lf \) for all \( o \in \mathcal{D} \).
+					\item Object creation is modeled as an update \( \{\, \texttt{heap} \coloneqq \texttt{create(heap), o} \,\} \) for the next "free" \texttt{o}. This essentially sets \texttt{<created>} to \texttt{true}.
+				\end{itemize}
+				
+				Java has complex rules for object initialization, e.g. the chain of constructors calls up until Object, implicit \inlineJava{super} call, visibility issues, initialization sequence, etc. These initialization rules are coded in methods \texttt{<createObject>()}, \texttt{<init>()}, \dots which themselves are symbolically executed.
+			% end
+
+			\subsection{Method Contract Rule}
+				\label{sec:methodContract}
+				
+				See section~\ref{sec:methodContractMotivation} for the motivation for using method contracts.
+				
+				\begin{lstlisting}[caption = { Method Contract Rule Specification Example }, label = lst:methodContract, language = Java]
+/*@ public normal_behavior
+  @ requires   preNormal;
+  @ ensures    postNormal;
+  @ assignable modified;
+  @
+  @ also
+  @
+  @ public exceptional_behavior
+  @ requires   preExc;
+  @ signals    (Exception exc) postExc;
+  @ assignable modified;
+  @*
+				\end{lstlisting}
+				
+				Given the generic specification in listing~\ref{lst:methodContract}, the method contract rule for the normal behavior case is given as
+				\begin{equation*}
+					\prftree[l]
+						{methodContractNormal}
+						{\let\scriptstyle\textstyle \substack{
+						 \Gamma \implies \mathcal{U} \mathcal{F}(\texttt{preNormal}), \Delta \\
+						 \Gamma \implies \mathcal{U} \nu_\texttt{modified} \big( \mathcal{F}(\texttt{postNormal}) \to \langle \pi \texttt{ p } \omega \rangle \phi \big), \Delta}}
+						{\Gamma \implies \mathcal{U} \langle \pi \texttt{ result = m(arg1, ..., argN); p } \omega \rangle \phi, \Delta}
+				\end{equation*}
+				where \( \mathcal{F}(\cdot) \) denotes the translation from JML to DL and \( \nu_\texttt{modified} \) is the anonymising update (see section~\ref{sec:anonUpdate}).
+				
+				The method contract rule for the exceptional behavior case is given as:
+				\begin{equation*}
+					\prftree[l]
+						{methodContractExc}
+						{\let\scriptstyle\textstyle \substack{
+						 \Gamma \implies \mathcal{U} \mathcal{F}(\texttt{preExc}), \Delta \\
+					     \Gamma \implies \mathcal{U} \nu_\texttt{modified} \Big( \big( \texttt{exc} \not\doteq \texttt{null} \land \mathcal{F}(\texttt{postExc}) \big) \to \langle \pi \texttt{ throw exc; p } \omega \rangle \phi \Big), \Delta}}
+						{\Gamma \implies \mathcal{U} \langle \pi \texttt{ result = m(arg1, ..., argN); p } \omega \rangle \phi, \Delta}
+				\end{equation*}
+				
+				Combined they yield the rule \textit{methodContract}:
+				\begin{equation*}
+					\prftree[l]
+						{methodContract}
+						{\let\scriptstyle\textstyle \substack{
+						 \Gamma \implies \mathcal{U} \mathcal{F}(\texttt{preExc}), \Delta \\
+						 \Gamma \implies \mathcal{U} \nu_\texttt{normal} \big( \mathcal{F}(\texttt{postNormal}) \to \langle \pi \texttt{ p } \omega \rangle \phi \big), \Delta \\
+						 \Gamma \implies \mathcal{U} \nu_\texttt{exc} \Big( \big( \texttt{exc} \not\doteq \texttt{null} \land \mathcal{F}(\texttt{postExc}) \big) \to \langle \pi \texttt{ throw exc; p } \omega \rangle \phi \Big), \Delta}}
+						{\Gamma \implies \mathcal{U} \langle \pi \texttt{ result = m(arg1, ..., argN); p } \omega \rangle \phi, \Delta}
+				\end{equation*}
+			% end
+
+			\subsection{Proofing Correctness of Method Contracts}
+				The usage of the contract rule depends on the correctness of the contract. The correctness of a (normal behavior) JML contract can be shown by proofing
+				\begin{align*}
+					&\mathcal{F}(\texttt{preNormal}) \to \\
+					&\qquad\qquad \Big\langle { \let\scriptstyle\textstyle \substack{\texttt{exc = null;} \\ \texttt{try \{ o.m(); \} catch(Exception e) \{ exc = e; \}}} } \Big\rangle \\
+					&\qquad\qquad\qquad\qquad \big( \texttt{exc} \not\doteq \texttt{null} \,\land\, \mathcal{F}(\texttt{postNormal}) \,\land\, \textit{assignableCorrect} \big)
+				\end{align*}
+			% end
+		% end
+
+		\section{Loop Invariants} % 14.4, 14.5, 14.8
+			\label{sec:dlLoopInv}
+		
 			\todo{Content}
+
+			\subsection{Deriving Loop Invariants} % 14.9, 14.10, 14.11, 14.29, 14.30
+				\todo{Content}
+			% end
+
+			\subsection{Context Loss} % 14.12, 14.14, 14.15
+				\todo{Content}
+		% end
+
+		\section{Understanding Unclosed Proofs}
+			Reasons why a proof may not close:
+			\begin{itemize}
+				\item Buggy or incomplete specification
+				\item Bug in program
+				\item Maximal number of steps reached; restart or increase number of steps
+				\item Automatic proof search fails; manual rule application necessary
+			\end{itemize}
+		
+			Understanding open proof goals:
+			\begin{itemize}
+				\item Follow the control flow from the proof root to the open goal
+				\item Branch labels give useful hints
+				\item Identify unprovable part of post condition or invariant
+				\item Sequent remains always in "pre-state" \\ Constraints on program variables refer to the value at the start of a program (except the formula is behind update or modality).
+				\item NB: \( \Gamma \implies \texttt{o} \doteq \texttt{null}, \Delta \) is equivalent to \( \Gamma, \texttt{o} \not\doteq \texttt{null} \implies \Delta \).
+			\end{itemize}
 
 			\subsection{Model Search} % 14.31, 14.32, 14.33, 14.34
 				\todo{Content}

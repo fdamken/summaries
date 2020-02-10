@@ -5,12 +5,14 @@
 \usepackage[utf8]{inputenc}
 \usepackage[ngerman]{babel}
 % Other packages.
+\usepackage{caption}
 \usepackage{csquotes}
 \usepackage{enumitem}
 \usepackage[mathcal]{euscript} % Get readable mathcal font.
 \usepackage{float}
 \usepackage{hyperref}
 \usepackage{mathtools}
+\usepackage{siunitx}
 \usepackage{stmaryrd}
 \usepackage{tabto}
 \usepackage{tikz}
@@ -31,6 +33,19 @@
 \tikzstyle{every path} = [ very thick ]
 
 % New commands.
+\DeclareMathOperator{\total}{d}
+\newcommand{\dif}[1]{\,\total#1}
+% Matrix/Vector notation.
+\newcommand{\mat}[1]{\boldsymbol{\mathbf{#1}}}
+\renewcommand{\vec}[1]{\boldsymbol{\mathbf{#1}}}
+% Abbreviations.
+\renewcommand{\dh}{d.\,h.~}
+\newcommand{\bzw}{bzw.~}
+\newcommand{\bspw}{bspw.~}
+\newcommand{\bzgl}{bzgl.~}
+\newcommand{\zB}{z.\,B.~}
+\newcommand{\iA}{i.\,A.~}
+\newcommand{\ggf}{ggf.~}
 
 % https://tex.stackexchange.com/a/333383
 \makeatletter
@@ -47,7 +62,7 @@
 
 	\chapter{Einleitung} % 1.8
 		\todo{Content}
-
+		
 		\section{Was ist ein Roboter?} % 1.9, 1.10, 1.11, 1.12, 1.13, 1.14
 			\todo{Content}
 		% end
@@ -689,56 +704,233 @@
 	% end
 
 	\chapter{Antriebssysteme} % 6.6
-		\todo{Content}
-
-		\section{Gebräuchliche Antriebssysteme} % 6.6
-			\todo{Content}
-
-			\subsection{Hydraulische Antriebe} % 6.7
-				\todo{Content}
+		\section{Gebräuchliche Antriebssysteme}
+			\subsection{Hydraulische Antriebe}
+				Hydraulische Antriebe nutzen Öl und Druckveränderungen dieses Öls in einer Kammer zur Bewegung.
+				
+				\begin{itemize}
+					\item \textbf{Vorteile:}
+						\begin{itemize}
+							\item Können hohe Lasten tragen.
+							\item Gutes Verhältnis von Leistung zu Gewicht.
+							\item Durch die Inkompressibilität von Öl kann der Antrieb gut in einer Stellung fixiert werden.
+							\item Der Antrieb schmiert und kühlt sich selbstständig.
+							\item Schnelle Reaktionszeit.
+							\item Sicher in Umgebungen mit brennbaren Gasen (da keine Funken entstehen).
+							\item Flüssige Bewegungen sind auch bei langsamer Geschwindigkeit möglich.
+						\end{itemize}
+					\item \textbf{Nachteile:}
+						\begin{itemize}
+							\item Teuer.
+							\item Die Dichtungen müssen gut gewartet werden, sonst entstehen Lecks.
+							\item Stark limitierte Geschwindigkeiten.
+							\item Benötigen eine Rückführleitung.
+							\item Können aufgrund der hohen Leitungsdrücke und -flüsse schlecht klein gebaut werden (Miniaturisierung).
+							\item Großer Platzbedarf für externe Leistungsversorgung.
+							\item Das Regel- und Positionierverhalten ist Temperaturabhängig.
+						\end{itemize}
+				\end{itemize}
+			
+				Daher gibt es nur wenige mobile hydraulisch aktuierte Roboter (\zB Atlas und BigDog von Boston Dynamics).
 			% end
 
-			\subsection{Pneumatische Antriebe} % 6.8
-				\todo{Content}
+			\subsection{Pneumatische Antriebe}
+				Pneumatische Antriebe nutzen Pressluft und Veränderungen des Drucks zur Bewegung.
+				
+				\begin{itemize}
+					\item \textbf{Vorteile:}
+						\begin{itemize}
+							\item Preiswert.
+							\item Pressluft ist in der Industrie überall verfügbar.
+							\item Hohe Geschwindigkeiten sind möglich.
+							\item Keine Verunreinigung durch auslaufende Flüssigkeiten (wie Öl).
+							\item Reine Rückführleitungen nötig.
+							\item Aufgrund der Kompressibilität von Luft gibt der Antrieb auf natürliche Weise nach: vorteilhaft für Interaktionen mit Menschen.
+						\end{itemize}
+					\item \textbf{Nachteile:}
+						\begin{itemize}
+							\item Die Kompressibilität der Luft beschränkt die Regel- und Positionierbarkeit (der Roboter kann nicht gut in einer Position fixiert werden).
+							\item Die entweichende Luft erzeugt Lärm.
+							\item Zusätzliches Trocknen/Filtern der Luft kann erforderlich sein.
+							\item Das hochheben von Lasten und Druckabfälle in der Leitung erschweren die Regelung.
+							\item Ungeeignet für mobile Anwendung, da ein Kompressor benötigt wird.
+						\end{itemize}
+				\end{itemize}
 			% end
 
-			\subsection{Elektrische Antriebe} % 6.9
-				\todo{Content}
+			\subsection{Elektrische Antriebe}
+				\begin{itemize}
+					\item \textbf{Vorteile:}
+						\begin{itemize}
+							\item Schnelligkeit und Genauigkeit.
+							\item Es sind ausgefeilte Regelungsmethoden anwendbar.
+							\item Preiswert.
+							\item Neue Motortypen werden schnell entwickelt, \bzw können schnell entwickelt werden.
+						\end{itemize}
+					\item \textbf{Nachteile:}
+						\begin{itemize}
+							\item Typischerweise haben die Motoren hohe Geschwindigkeiten bei niedrigem Drehmoment, \dh es sind Getriebe notwendig.
+							\item Das Getriebespiel beschränkt die erreichbare Genauigkeit.
+							\item Elektrische Lichtbögen (Funken, Blitze) sind problematisch bei entzündlicher Atmosphäre (\zB innerhalb von entzündlichen Gasen).
+							\item Im Dauereinsatz ist eine Überhitzung möglich.
+							\item Es sind Bremsen notwendig, um eine Position dauerhaft zu fixieren.
+						\end{itemize}
+				\end{itemize}
 			% end
 		% end
 
-		\section{DC-Motoren} % 6.10, 6.11, 6.12, 6.13
-			\todo{Content}
+		\section{DC-Bürsten-Motoren}
+			Durch das anlegen einer Spannung an den \emph{Bürsten}, die den \emph{Kollektor} berühren, wird eine Spannung induziert. Durch die Rotorwicklung wird ein magnetisches Felds erzeugt, was das magnetische Fels des Permanentmagneten verzerrt. Das hieraus resultierende Drehmoment führt zur Bewegung des Kollektors. Durch das Reiben der Bürsten an dem Kollektor entstehen Funken, die in einer entzündlichen Umgebung zu Bränden führen können.
+			
+			Abbildung~\ref{fig:dc_brush_engine_circuit} zeigt den elektrischen Stromkreis eines DC-Bürsten-Motors mit allen relevanten elektrischen Größen. Mit der Drehzahlkonstante \(k_v\) sowie der Drehmomentkonstante \(k_t\) und den mechanischen Größen des Motordrehmoments \(\tau_r\) und der Motorgeschwindigkeit \(\dot{\theta}_r\) wird der Stromkreis durch folgende ()Differential-) Gleichungen beschrieben:
+			\begin{align*}
+				u_C            & = R_a i_a + L_a \frac{\total i_A}{\total t} + u_\mathit{ind} \tag{Ankerstromkreis}     \\
+				u_\mathit{ind} & = \dot{\theta}_r k_v                                         \tag{Induzierte Spannung} \\
+				\tau_r         & = i_a k_t                                                    \tag{Motordrehmoment}
+			\end{align*}
+			
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}
+					\node [draw, circle] (a) at (0, 0) {};
+					\node [draw, circle] (b) at (0, -2) {};
+					\node [draw, circle] (c) at (7, -1) {M};
+					
+					\draw (a.north)
+						to (0, 1)
+						to (1.5, 1);
+						
+					% Resistor.
+					\draw (1.5, 1)
+						to (1.5, 1.25)
+						to (3, 1.25)
+						to (3, 0.75)
+						to (1.5, 0.75)
+						to cycle;
+					
+					\draw (3, 1) to (4, 1);
+					
+					% Coil.
+					\draw[fill = black] (4, 1)
+						to (4, 1.25)
+						to (5.5, 1.25)
+						to (5.5, 0.75)
+						to (4, 0.75)
+						to cycle;
+					
+					\draw (5.5, 1) -| (c.north);
+					
+					\draw (c.south)
+						to (7, -3)
+						to (0, -3)
+						to (b.south);
+					
+					\draw [->] (1.5, 1.5) to node[label = above:{\( u_R \)}, yshift = -5pt]{} (3, 1.5);
+					\draw [->] (4, 1.5) to node[label = above:{\( u_L \)}, yshift = -5pt]{} (5.5, 1.5);
+					
+					\path (1.5, 0.5) to node[label = below:{\( R_a \)}, yshift = 11pt]{} (3, 0.5);
+					\path (4, 0.5) to node[label = below:{\( L_a \)}, yshift = 11pt]{} (5.5, 0.5);
+					
+					\coordinate [xshift = 0.6cm] (C1) at (c.north);
+					\coordinate [xshift = 0.6cm] (C2) at (c.south);
+					\draw [->] (C1) to node[label = right:{\( u_\mathit{ind} \)}]{} (C2);
+					
+					\coordinate [yshift = -0.1cm] (A) at (a.south);
+					\coordinate [yshift = 0.1cm] (B) at (b.north);
+					\draw [->] (A) to node[label = left:{\( u_C \)}, xshift = 5pt]{} (B);
+					
+					\draw [->] (7, 1) to node[label = right:{\( i_a \)}, xshift = -5pt]{} (7, 0.25);
+				\end{tikzpicture}
+				\caption{Stromkreis eines DC-Bürsten-Motors mit dem Widerstand der Spule \(R_a\), der Induktivität der Spule \(L_a\), dem Ankerstrom \(i_a\), der angelegten Spannung \(u_a\) und der induzierten Spannung \(u_\mathit{ind}\).}
+				\label{fig:dc_brush_engine_circuit}
+			\end{figure}
 		% end
 
-		\section{Getriebe} % 6.14, 6.15, 6.16
-			\todo{Content}
+		\section{Getriebe}
+			Direkte Elektrische Antriebe produzieren hohe Geschwindigkeiten bei geringen Drehmomenten. Daher ist ein \emph{Getriebe} zur Übersetzung notwendig, wenn hohe Drehmomente gewünscht sind (dies ist meistens der Fall, \bspw wenn schwere Lasten gehoben werden sollen). Zu den gebräuchlichsten Getriebe-Bauarten zählen Gewinde, Riemen-, Ketten oder Seilzug-Getriebe sowie Rädergetriebe. Diese werden in den folgenden Abschnitten detaillierter behandelt.
+			
+			Die \emph{Getriebeübersetzung} bezeichnet im Allgemeinen das Verhältnis von Eingangs- zu Austrittsgeschwindigkeit aus dem Getriebe. Dieses ist dabei gleich dem Verhältnis von Ausgangs- zu Eingangsdrehmoment:
+			\begin{equation*}
+				\text{Getriebeübersetzung} \coloneqq \frac{\text{Eingangsgeschwindigkeit}}{\text{Ausgangsgeschwindigkeit}} = \frac{\text{Ausgangsdrehmoment}}{\text{Eingangsdrehmoment}}
+			\end{equation*}
+			Bei elektrischen Antrieben werden vor allem \emph{Getriebeuntersetzungen} verwendet, die die Ausgangsdrehgeschwindigkeit reduzieren und das Ausgangsdrehmoment erhöhen.
 
-			\subsection{Gewinde} % 6.17
-				\todo{Content}
+			\subsection{Gewinde}
+				Ein \emph{Gewinde} funktioniert wie eine "inverse Schraube", \dh eine Schraube mit Gewinde wird durch eine Platte bewegt, die sich daraufhin linear bewegt. Dies führt zu einer großen Geschwindigkeitsreduktion und damit zu einer starken Momenterhöhung. Durch die hohe Steifigkeit des Systems sind außerdem hohe Traglasten möglich.
 			% end
 
-			\subsection{Riemen-/Seilzug-Getriebe} % 6.18
-				\todo{Content}
+			\subsection{Riemen-/Seilzug-Getriebe}
+				Bei einem \emph{Riemen-} oder auch \emph{Seilzug-Gewinde} bestehen aus zwei unterschiedlich großen Rädern (\zB Zahnrädern) mit den Radien \(r_1\) und \(r_2\), die über einen Riemen verbunden sind (dabei ist \(r_1\) der Eingang, \dh dieses Rad wird von dem Motor gedreht.). Problematisch sind hier die auftretenden Elastizitäten im Riemen. Zur Vermeidung dieser muss der Riemen durchgehend gespannt bleiben.
+				
+				Die Getriebeübersetzung gleich dem Quotient der beiden Radien:
+				\begin{equation*}
+					\text{Getriebeübersetzung} = \frac{r_2}{r_1}
+				\end{equation*}
 			% end
 
-			\subsection{Rädergetriebe} % 6.19
-				\todo{Content}
+			\subsection{Rädergetriebe}
+				Bei Zahnrädern treten einige elementare Probleme auf:
+				\begin{itemize}
+					\item (Verdreh-) Spiel (\emph{Backslash}) durch ungenaue Verzahnung (\dh die Räder können ein bisschen hin und her gewackelt werden).
+					\item Reibung zwischen den Rädern.
+					\item Durch eine enge Verzahnung kann das Spiel verringert werden, dies führt aber zu einer höheren Reibung.
+				\end{itemize}
+			
+				Gängige Typen von Zahnradgetrieben sind
+				\begin{itemize}
+					\item Stirnradgetriebe,
+					\item Planetengetriebe und
+					\item Harmonic Drive Getriebe.
+				\end{itemize}
+				Diese werden in den kommenden Abschnitten näher betrachtet.
 
-				\subsubsection{Stirnradgetriebe} % 6.20
-					\todo{Content}
+				\subsubsection{Stirnradgetriebe}
+					Ein \emph{Stirnradgetriebe} besteht aus ein oder mehreren Paarungen von Zahnrädern, wobei das erste Zahnrad direkt auf der Motorwelle moniert ist. Diese Getriebe sind preisgünstig und eignen sich für kleine Drehmomente.
 				% end
 
-				\subsubsection{Planetengetriebe} % 6.21, 6.22, 6.23, 6.24
-					\todo{Content}
+				\subsubsection{Planetengetriebe}
+					Ein \emph{Planetengetriebe} besteht aus einem zentralen \emph{Sonnenrad}, welches von mehreren \emph{Planetenrädern}, die auf einem Planetenradträger montiert sind, umkreist wird. Um diese liegt wiederum das \emph{Hohlrad}, welches mit allen Planetenrädern verzahnt wird. Das Getriebe hat drei Wellen (Sonnenrad, Planetenradträger, Hohlrad), wodurch sechs Übersetzungsmöglichkeiten existieren. Die üblichsten sind:
+					\begin{enumerate}
+						\item Sonnenrad angetrieben, Hohlrad festgehalten, Planetenradträger als (langsamere) Abtriebswelle
+						\item Sonnenrad angetrieben, Planetenradträger festgehalten, Hohlrad als (langsamere) Abtriebswelle (rückwärts)
+						\item Hohlrad angetrieben, Sonnenrad festgehalten, Planetenrad als (langsamere) Abtriebswelle
+						\item Sonnenrad und Hohlrad mit gleicher Drehzahl angetrieben, Planetenradträger als (gleich schnelle) Abtriebswelle
+					\end{enumerate}
+					
+					\begin{figure}
+						\centering
+						\includegraphics[width = 0.9\textwidth]{epicyclicgear}
+						\caption{Planetengetriebe mit Sonnenrad (gelb), Planetenrädern (blau), Planetenradträger (grün) sowie Hohlrad (rot). Das rechte Bild zeigt die relative Verschiebung von Sonnenrad und Planetenradträger, nachdem letzterer um \ang{45} rotiert wurde. Quelle:~\url{https://commons.wikimedia.org/wiki/File:Epicyclic_gear_ratios.png}}
+					\end{figure}
 				% end
 
-				\subsubsection{Harmonic Drive Getriebe} % 6.25, 6.26, 6.27, 6.28
-					\todo{Content}
-				% end
-
-				\subsubsection{Wittenstein Galaxie Getriebe} % 6.29
-					\todo{Content}
+				\subsubsection{Harmonic Drive Getriebe}
+					Ein \emph{Harmonic Drive Getriebe} besteht aus:
+					\begin{itemize}
+						\item Elliptischer \emph{Wave Generator} \\ Elliptische Stahlscheibe mit zentrischer Nabe sowie aufgezogenem elliptisch Verformbaren Kugellager.
+						\item \emph{Flexspline} \\ Zylindrische, verformbare Stahlbüchse mit Außenverzahnung.
+						\item \emph{Circular Spline} \\ Zylindrischer Ring mit Innenverzahnung.
+					\end{itemize}
+				
+					Dabei wir der elliptische Wave Generator angetrieben und verformt über das Kugellager den Flexspline. Dieser befinet sich gegenüber der großen Ellipsenachse mit dem Circular Spline im Eingriff. Drehen des Wave Generators führt zu einer Verlagerung der großen Ellipsenachse und damit zu einer Verlagerung  des Zahneingriffsbereichs von Flexspline und Circular Spline. Eine halbe Umdrehung des Wave Generators führt dann zu einer Relativbewegung zwischen Flexspline und Circular Spline um einen Zahn.
+					
+					\begin{itemize}
+						\item \textbf{Vorteile:}
+							\begin{itemize}
+								\item Spielfreiheit (\dh es existiert kein Spiel).
+								\item Sehr genaue Positionier- und Wiederholgenauigkeit
+								\item Kompakte Bauweise.
+								\item Hohe Drehmomentkapazität.
+								\item Hoher Wirkungsgrad.
+								\item Hohe Torsionssteifigkeit (\dh das Getriebe ist sehr resistent gegenüber Verformungen).
+								\item Hohe Zuverlässigkeit und lange Lebensdauer.
+							\end{itemize}
+						\item \textbf{Nachteile:}
+							\begin{itemize}
+								\item Teuer.
+								\item War bislang nicht beliebig klein realisierbar, neue Entwicklungen ermöglichen aber auch kleine Varianten.
+							\end{itemize}
+					\end{itemize}
 				% end
 			% end
 		% end
@@ -758,8 +950,39 @@
 				\todo{Content}
 			% end
 
-			\subsection{Elastische Antriebskonzepte} % 6.43, 6.44, 6.45
-				\todo{Content}
+			\subsection{Elastische Antriebskonzepte} % 6.45
+				Die Grundidee ist die Kombination elektrischer Antriebe mit mechanischer (potentiell verstellbarer) Elastizität.
+				
+				\begin{itemize}
+					\item Seriell-Elastische Antriebe (SEA):
+						\begin{itemize}
+							\item \textbf{Stärken:}
+								\begin{itemize}
+									\item Energiespeicherung reduziert die benötigte Leistungsspitze des Motors und den Energieverbrauch.
+									\item Die Entkopplung von Antrieb und Abtrieb liefert Stoßkompensation.
+									\item Sicherheitspotential.
+								\end{itemize}
+							\item \textbf{Schwächen:}
+								\begin{itemize}
+									\item Erhöhte Masse des Antriebssystems.
+									\item Erhöhte Komplexität der mechanischen Konstruktion.
+									\item Erhöhte Komplexität der Regelung.
+								\end{itemize}
+						\end{itemize}
+					\item Parallel-Elastische Antriebe (PAE):
+						\begin{itemize}
+							\item \textbf{Stärken:}
+								\begin{itemize}
+									\item Energiespeicherung reduziert die benötigte Leistungsspitze des Motors und den Energieverbrauch, allerdings potentiell auch das Motordrehmoment bei SPitzen.
+								\end{itemize}
+							\item \textbf{Schwächen:}
+								\begin{itemize}
+									\item Erhöhte Masse des Antriebssystems.
+									\item Erhöhte Komplexität der mechanischen Konstruktion.
+									\item Erhöhte Komplexität der Regelung.
+								\end{itemize}
+						\end{itemize}
+				\end{itemize}
 
 				\subsubsection{Variable Stiffness Actuator} % 6.46
 					\todo{Content}
@@ -776,184 +999,810 @@
 		% end
 	% end
 
-	\chapter{Sensoren} % 6.54, 8.1
-		\todo{Content}
+	\chapter{Sensoren}
+		Ein \emph{Sensor} ist ein technisches System, welches eine physikalische (analoge) Größe (\zB Position) und gegebenenfalls deren Änderung (\zB Geschwindigkeit) in geeignete (unsicherheitsbehaftete) elektronische (digitale) Signale transformiert.
+		
+		Ein \emph{internen Sensor} ("proprioceptive sensor") erfasst dabei die Roboter-internen Zustände, wobei ein \emph{externer Sensor} ("exteroceptive sensor") Informationen über den Zustand der Umwelt sammelt.
+	
+		\section{Interne Sensoren}
+			Interne Sensoren können grob in die Kategorien
+			\begin{itemize}
+				\item Positionssensoren
+				\item Geschwindigkeitssensoren
+				\item Beschleunigungssensoren
+				\item Inertial Navigation System (INS)
+				\item Kraft-Momenten-Sensoren
+			\end{itemize}
+			unterteilt werden.
 
-		\section{Interne Sensoren} % 6.54, 6.55, 6.56
-			\todo{Content}
-
-			\subsection{Positionssensoren} % 6.56
-				\todo{Content}
-
-				\subsubsection{Potentiometer} % 6.57
-					\todo{Content}
+			\subsection{Positionssensoren}
+				\subsubsection{Potentiometer}
+					Ein \emph{Potentiometer} besteht aus einem \emph{Widerstandselement} mit darüber verlaufender Spannung und einem gleitendem Kontakt (\emph{Wischer}, "wiper"), der sich Über das Widerstandselement bewegt. Dabei kann sich entweder der Wischer oder das Widerstandselement bewegen. Abbildung~\ref{fig:potentiometer} zeigt ein lineares und ein rotatorisches Potentiometer.
+					
+					Die Spannung im Kontakt ist dann abhängig von der Position auf dem Widerstandselement und damit proportional zur Gelenkposition, womit die Position gemessen werden kann. Die Genauigkeit liegt (unter der Voraussetzung einer stabilen Spannungsquelle) bei ca. \SI{0.5}{\percent}.
+					
+					\begin{figure}
+						\centering
+						\begin{tikzpicture}
+							\node [minimum width = 0.8cm] (a) {+\si{\volt}};
+							\node [minimum width = 0.8cm, below = 2 of a] (b) {\SI{0}{\volt}};
+							
+							\draw [fill = tud2b, color = tud2b] (a.south east) -- (b.north east) -- (b.north west) -- (a.south west) -- cycle;
+							
+							\path (a.east) to coordinate(c) (b.east);
+							\node [right = 1.6 of c] (A) {\(\si{\volt}_\text{aus}\)};
+							\coordinate [right = 0.1 of c] (B);
+							\draw [->, color = tud7b, line width = 4pt, > = { Latex[length = 4mm] }] (A) -- (B);
+						\end{tikzpicture}
+						\hspace{1cm}
+						\begin{tikzpicture}[xscale = 0.8, yscale = 0.8]
+							\node at (0.65, 0.1) {+\si{\volt}};
+							\node at (0.5, -0.9) {\SI{0}{\volt}};
+							
+							\draw [line width = 0.4cm, color = tud2b] (0, 0) arc (0:340:2cm);
+							
+							\draw [->, color = tud7b, line width = 4pt, > = { Latex[length = 4mm] }] (-2cm, 0) to node[above, color = black, yshift = -1pt]{\(\si{\volt}_\text{aus}\)} (-0.3cm, 0);
+							
+							\draw [fill = black] (-2cm, 0) circle (0.15cm);
+						\end{tikzpicture}
+						\caption{Lineares (links) und rotatorisches (rechts) Potentiometer mit Widerstandselement (blau) und Kontakt (orange).}
+						\label{fig:potentiometer}
+					\end{figure}
 				% end
 
-				\subsubsection{Optische Codierer} % 6.58
-					\todo{Content}
+				\subsubsection{Optische Codierer}
+					Auf einer Scheibe wird ein kodiertes Muster angebracht, welches den Strahl einer Lichtquelle periodisch unterbricht, wobei diese Quelle auf einen Photodetektor ausgerichtet ist. Durch Messung der Unterbrechung kann die Position gemessen werden. Dabei werden zwei Arten von optischen Kodierern unterschieden:
+					\begin{itemize}
+						\item Inkrementelle Codierer
+						\item Absolute Codierer
+					\end{itemize}
 
-					\paragraph{Inkrementell} % 6.59, 6.60
-						\todo{Content}
+					\paragraph{Inkrementell}
+						Die Empfangseinheit zählt die Inkremente (die durch die periodischen Unterbrechungen erzeugt werden) und zählt diese (daher der Name \emph{inkrementeller Codierer}). Daraus kann anschließend die Position berechnet werden. Einer großer Nachteil dieser Methode ist, dass die Startposition unbekannt ist, \dh der Zähler muss zunächst Kalibriert werden.
+						
+						Durch mehrspurige Codierer können durch die Verschiebung der Inkremente mehr Daten gemessen werden:
+						\begin{itemize}
+							\item 1-spuriger Codierer: Winkel
+							\item 2-spuriger Codierer: Winkel und Richtung
+							\item 3-spuriger Codierer: Winkel, Richtung, Anfang/Ende
+						\end{itemize}
 					% end
 
-					\paragraph{Absolut} % 6.61, 6.62
-						\todo{Content}
+					\paragraph{Absolut}
+						Im Gegensatz zum inkrementellen wird beim \emph{absoluten Codierer} jeder Achsenposition ein individuelles Wortmuster zugeteilt, welches anschließend gemessen wird. Dadurch ist ein direktes Ablesen der Gelenkposition möglich und somit keine Kalibrierung notwendig. Allerdings ist die Konstruktion sehr aufwendig.
+						
+						Mit dem Gray-Code unterscheidet sich der Code an jeder Stelle nur um ein Bit, wodurch große Fehler vermieden werden.
 					% end
 				% end
 
 				\subsubsection{Resolver} % 6.63
 					\todo{Content}
+					
+					Resolver sind robust, störungssicher und haben eine hohe Lebensdauer, weshalb sie oft bei Industrierobotern eingesetzt werden.
 				% end
 			% end
 
-			\subsection{Geschwindigkeitssensoren} % 6.64
-				\todo{Content}
+			\subsection{Geschwindigkeitssensoren}
+				Geschwindigkeitssensoren lassen sich \bspw durch Differentiation und Filterung aus mit hoher Frequenz abgetasteten Positionswerten erstellen (\dh die Geschwindigkeit wird indirekt gemessen).
 			% end
 
-			\subsection{Beschleunigungssensoren} % 6.65
-				\todo{Content}
-
-				\subsubsection{Silizium-Beschleunigungssensor} % 6.66
-					\todo{Content}
-				% end
+			\subsection{Beschleunigungssensoren (Silizium-Beschleunigungssensor)}
+				In einem \emph{Silizium-Beschleunigungssensor} befindet sich eine träge Masse in einem "Siliziumbad", wobei Auslenkungen der Aufhängung die mechanischen Spannungen ändern, wodurch der piezoresistive Widerstandswert geändert wird. Dieser Wert ist messtechnisch erfassbar, wodurch Beschleunigungen erkannt werden können. Allerdings ist eine Erfassung von Richtung und Betrag der Gravitation nötig, um diese herausrechnen zu können. Durch die Verwendung von drei 1D-Sensoren lässt sich ein 3D-Beschleunigungssensor konstruieren (indem diese orthogonal zueinander angebracht werden).
 			% end
 
 			\subsection{Inertial Navigation System (INS)} % 6.67, 6.71
-				\todo{Content}
+				Die Aufgabe eines \emph{Inertial Navigation Systems} (INS) ist die Bestimmung der Orientierung relativ zu einem Inertialsystem. Dazu lassen sich \bspw folgende Sensoren einsetzen:
+				\begin{itemize}
+					\item Kompass
+					\item Lagesensor
+						\begin{itemize}
+							\item Hierbei wird eine elektrisch leitfähige Flüssigkeit in einem versiegeltem Glas mit drei Elektronen platziert.
+							\item Eine Lageänderung verursacht eine ungleiche Flüssigkeitsverteilung und damit ungleiche Widerstände relativ zum Winkel.
+							\item Daraus kann anschließend die Position berechnet werden.
+						\end{itemize}
+					\item Gyroskop (mechanisch oder mikromechanisch)
+				\end{itemize}
 
-				\subsubsection{Gyroskop} % 6.68, 6.69, 6.70
-					\todo{Content}
+				\subsubsection{Mechanisches Gyroskop}
+					Ein \emph{Gyroskop} ist ein schnell rotierender, semi-kardanisch aufgehängter Kreisel. Durch die Erdrotation wird ein Drehmoment in Richtung des Medians verursacht, wodurch eine Richtungsanzeige möglich wird.
+					
+					Angewendet werden Gyroskope an vielen Stellen:
+					\begin{itemize}
+						\item Linienflugzeug (ca. \num{12} Gyroskope)
+						\item Raumstation MIR (\num{11} Gyroskope zur Orientierungshaltung zur Sonne)
+						\item Häufig werden 3D-Beschleunigungssensoren für die lineare Beschleunigung und Gyroskope für die 3D-Winkelgeschwindigkeiten verwendet. Die Integration über die Geschwindigkeiten ergibt die zurückgelegte Bewegung (\emph{Odometrie}). Durch Filtern der Messwerte können Fehler und Drifts kompensiert werden.
+						\item Ein normales Flugzeug-Gyroskop hat pro Betriebsstunde einen Drift von ca. \SI{1.85}{\kilo\meter}, "High-End"-Gyroskope kommen auf einen Drift von weniger als \SI{0.1}{\percent} der zurückgelegten Distanz.
+					\end{itemize}
 				% end
 
-				\subsubsection{Mikromechanische Gyroskope} % 6.72
-					\todo{Content}
-				% end
-
-				\subsubsection{Drift- und Fehlerkompension} % 6.73
-					\todo{Content}
+				\subsubsection{Mikromechanische Gyroskope}
+					Bei mikromechanischen Gyroskopen wird die Rotation durch schwingende, mechanische Elemente registriert. Sie werden \zB als "Stimmgabel" realisiert:
+					\begin{itemize}
+						\item Zwei Zinken mit unterschiedlichen, festen Schwingfrequenzen.
+						\item Bei einer Rotation verursacht die Corioliskraft eine differentielle, sinusförmige Kraft orthogonal zur Hauptschwingung in jedem Zinken.
+						\item Durch die differentielle Verbiegungen der Zinken oder die Torsionsschwingung am Stamm der Stimmgabel kann diese Kraft detektiert werden.
+						\item Die Anregung der Resonanzfrequenz der Zinken kann elektrostatisch, elektromagnetisch oder piezoresistiv erfolgen
+						\item Die durch die Corioliskraft verursachten Schwingungen können kapazitiv, piezoresistiv oder piezoelektrisch detektiert werden.
+						\item Eine optische Detektion ist auch möglich, ist \iA allerdings sehr teuer.
+					\end{itemize}
 				% end
 			% end
 
-			\subsection{Kraft-Momenten-Sensor} % 6.74, 6.75, 6.76, 6.77, 6.78
-				\todo{Content}
+			\subsection{Kraft-Momenten-Sensoren}
+				Zeil von \emph{Kraft-Momenten-Sensoren} ist die Messung der Kräfte und Momente zwischen Effektor und Objekt. Oft wird hierfür eine sogenannte \emph{Kraftmessdose} verwendet, die eine Kombination aus mehreren Messapparaturen darstellt. Typische Apparaturen sind hierbei:
+				\begin{itemize}
+					\item Dehnungsmessstreifen (DMS)
+					\item Piezokristalle
+					\item Optische Effekte
+				\end{itemize}
+				Die Dose wird dabei zwischen Effektor und Roboterhand und -fuß angebracht.
+				
+				Oft haben Kraft-Momenten-Sensoren eine Speichenradform, wobei auf den Speichen/Stegen Dehnungsmessstreifen angebracht sind. Wirkt eine Kraft auf die Dose, so ändert sich die Länge er Stege. Auf den Dehnungsmessstreifen ist eine dünne Metallfolie in Matrixform angebracht, die bei Änderung der Länge ihren Widerstand ändert. Durch Messung dieser Änderung kann die Krafteinwirkung gemessen werden.
 			% end
 		% end
 
-		\section{Externe und intelligente Sensoren} % 8.1, 8.2, 8.3, 8.4, 8.5
-			\todo{Content}
+		\section{Externe und intelligente Sensoren}
+			Abbildung~\ref{fig:sensorsystem_structure} zeigt die typische Struktur eines (externen) Sensorsystems.
+			
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[->, every node/.style = { minimum width = 6cm, minimum height = 0.8cm, draw, rectangle }]
+					\node [fill = tud2a] (a) {Umwelt};
+					\node [fill = tud8a, below = 0.5 of a] (b) {Sensortechnologie};
+					\node [fill = tud8a, below = 0.5 of b] (c) {Aufbereitung/Vorverarbeitung};
+					\node [fill = tud8a, below = 0.5 of c] (d) {Verarbeitung/Auswertung};
+					\node [fill = tud2a, below = 0.5 of d] (e) {Weltmodellierung/Steuerung/\dots};
+					
+					\draw (a) -- (b);
+					\draw (b) -- (c);
+					\draw (c) -- (d);
+					\draw (d) -- (e);
+				\end{tikzpicture}
+				\caption{Typische Struktur eines Sensorsystems, wobei die blau hinterlegten Schritte (größtenteils) analog und die orange hinterlegten Schritte (größtenteils) digital ablaufen.}
+				\label{fig:sensorsystem_structure}
+			\end{figure}
+		
+			Externe Sensoren können grob in die Kategorien
+			\begin{itemize}
+				\item Taktile Sensoren
+				\item Näherungssensoren
+				\item Abstandssensoren
+				\item Positionssensoren
+				\item Visuelle Sensoren
+			\end{itemize}
+			unterteilt werden.
 
-			\subsection{Abstandssensoren} % 8.6, 8.7
-				\todo{Content}
+			\subsection{Abstandssensoren}
+				\emph{Abstandssensoren} messen den Abstand zwischen dem Sensor und einem Gegenstand. Diese Sensoren sind geeignet zur Erfassung von geometrischen Umweltinformation. Außerdem haben sie eine größere Reichweite als Näherungssensoren.
+				
+				Es werden drei grundlegende Typen von Abstandssensoren unterschieden:
+				\begin{itemize}
+					\item Optisch (Nutzung von sichtbaren, elektromagnetischen Wellen)
+					\item Radar (elektromagnetische Wellen mit sehr kurzen Längen)
+					\item Akustisch (mechanische Wellen)
+				\end{itemize}
 
-				\subsubsection{Akustische Abstandssensoren} % 8.8, 8.17
-					\todo{Content}
+				\subsubsection{Akustische Abstandssensoren}
+					\emph{Schall} ist ein an Materie gebundener Energie- und Impulstransport, wobei eine \emph{Schallwelle} die wellenförmige Ausbreitung der periodischen Anregung eines Übertragungsmediums beschreibt. Der hörbare Schall liegt dabei zwischen \SI{16}{\hertz} und \SI{16}{\kilo\hertz}, wobei alles darunter als \emph{Infraschall} und alles darüber als \emph{Ultraschall} bezeichnet wird.
+					
+					In den 1980er und 1990er sind Ultraschallsensoren die wichtigsten Sensoren zur Erdfassung der Umwelt. Seit Ende der 1990 werden jedoch vermehrt Laserscanner kombiniert mit Farbkameras eingesetzt. Im Nahbereich sind Ultraschallsensoren jedoch auch noch heute nützlich (Kollisionsdetektion, \bzw -vermeidung), sowie in Bereichen wo weder Laserscanner noch Kameras einsetzbar sind (\zB in Gebäuden mit Rauch).
 
-					\paragraph{Ultraschall} % 8.9, 8.10, 8.11
-						\todo{Content}
+					\paragraph{Ultraschall}
+						Die Messung von Abständen mittels Ultraschall heißt \emph{sonar} ("sound navigation and ranging"). In der Natur wird diese Art der Navigation häufig eingesetzt, \zB von Delfinen und Fledermäusen.
+						
+						Zur Erzeugung von Ultraschall wird eine schwingende Folie eingesetzt, die im Sende-Modus durch die elektrostatische Kraft, ausgelöst von einer geladenen Aluplatte, vibriert. Im Empfangs-Modus bewegt der Klangdruck die Folie, wodurch sich die Kapazität des Kondensators ändern (elektrostatisches Mikrofon).
+						
+						Im Normalbetrieb sendet ein Sensor \SI{1}{\milli\second} bis \SI{1.2}{\milli\second} langes "Zwitschern" pro \SI{200}{\milli\second}. Dieses Zwitschern wird aufgrund der unterschiedlichen Materialbeschaffenheit und deren unterschiedlichen Reflexionseigenschaften in unterschiedlichen Frequenzen gesendet.
 					% end
 
-					\paragraph{Messsituationen} % 8.12, 8.13
-						\todo{Content}
+					\paragraph{Messsituationen}
+						\begin{itemize}
+							\item Im Idealzustand ist die Achse der Schallkeule orthogonal zu einem flachen Objekt. In diesem Fall wird ein genauer Abstand gemessen.
+							\item Befindet sich ein kleines Objekt vor der Wand, so wird der Abstand weiterhin genau gemessen, die Querposition ist jedoch ungenau.
+							\item Steht der Sender rotiert zur Wand, so ist der gemessene Abstand vom Rand der Schallkeule zu kurz (Unterschätzung). Die Unsicherheit des Abstands ist eine Funktion des Rotationswinkels und des Keulenöffnungswinkels.
+							\item Ist die Rotation größer als der Keulenöffnungswinkel, so ist die Wand unsicherbar.
+							\item Eine Kante ist ebenfalls unsichtbar, solange die Ecke nicht ein wenig abgerundet ist.
+							\item Mehrfachreflexionen (wie in einer Ecke) bewirkt eine Starke Überschätzung des Abstands.
+						\end{itemize}
 					% end
 
-					\paragraph{Abhilfe der Schwierigkeiten} % 8.14
-						\todo{Content}
+					\paragraph{Abhilfe der Schwierigkeiten}
+						Bei nur einem Empfänger darf die Umweltszene nur ein Objekt innerhalb der Schallkeule enthalten der reflektierende Objektteil muss orthogonal zur Strahlrichtung stehen.
+						
+						Gebräuchliche Abhilfen sind die Verwendung von mehreren Ultraschallsensoren und algorithmische Verfahren wie Peilverfahren: Die Position wird aus den Laufzeitunterschieden, \zB mit Triangulationsverfahren (ähnlich wie bei GPS), berechnet.
 					% end
 
-					\paragraph{Natur} % 8.15, 8.16
-						\todo{Content}
+					\paragraph{Natur}
+						Fledermäuse haben sehr unterschiedliche Ultraschalle (enge Schallkeulen, weite Schallkeulen, Zwitschern mit fester/veränderlicher Frequenz, \dots). Der aktuelle Stand der Ultraschallerzeugung ist vergleichbar mit dem Ultraschall von Fledermäusen, allerdings liegen die technischen Fähigkeiten zur Verarbeitung noch weiter hinter jenen von Fledermäusen.
 					% end
 				% end
 
-				\subsubsection{Optische Abstandssensoren} % 8.18, 8.19
-					\todo{Content}
+				\subsubsection{Optische Abstandssensoren}
+					Der Aufbau von optischen Abstandssensoren besteht aus einem Emitter (LED, Laserdioden) und einem Empfänger (Fototransistor). Optische Sensoren liefern sehr genaue Entfernungsmessungen und sind stabil gegen viele Fremdeinflüsse.
+					
+					Es gibt verschiedene Messverfahren:
+					\begin{itemize}
+						\item Ermittlung der Flugzeit (Laufzeit)
+						\item aktive Triangulation
+						\item Interferometrie (Phasenverschiebung)
+						\item Stereoskopie
+					\end{itemize}
 
-					\paragraph{Laufzeitermittlung} % 8.20, 8.21
-						\todo{Content}
+					\paragraph{Laufzeitermittlung}
+						Bei der \emph{Laufzeitermittlung} wird die Hin- und Rücklaufzeit eines Impulses (\zB Lichtimpuls) gemessen. Wurde zwischen Aussenden und Empfangen die Zeit \( \Delta t \) gemessen, so berechnet sich die Entfernund \(d\) wie folgt:
+						\begin{equation*}
+							d = \frac{c \cdot \Delta t}{2}
+						\end{equation*}
+						Es muss die Hälfte genommen werden, da der Lichtstrahl zum Objekt hin und zurück verläuft.
+						
+						Typische Probleme sind die Absorption des Strahls vom Objekt, Wegreflexion (\zB bei einem Spiegel) sowie Mehrfachreflexion (wodurch der Weg verlängert wird).
 					% end
 
-					\paragraph{2D-Laserscanner} % 8.22, 8.23, 8.24, 8.25
-						\todo{Content}
+					\paragraph{2D-Laserscanner}
+						In einem \emph{Laserscanner} wird ein gepulster Laserstrahl, abgelenkt durch einen beweglichen Spiegel, ausgesandt. Durch diesen Drehspiegel wird die Umgebung fächerförmig abgetastet. Trifft der Impuls auf ein Objekt, so wird er reflektiert und die Entfernung kann mittels Laufzeitermittlung berechnet werden. Durch die Abfolge der empfangenen Impulse kann die Entfernung, Lage und Kontur eines Objekts berechnet werden.
+						
+						Bei der \emph{Kartografierung} werden alle gescannten Szenen (gescannt mit einem mobilen System) zu einer Karte zusammengefasst.
 					% end
 				% end
 			% end
 
-			\subsection{Visuelle Sensoren} % 8.26, 8.27, 8.28, 8.29, 8.30, 8.31
-				\todo{Content}
+			\subsection{Visuelle Sensoren}
+				\begin{itemize}
+					\item Visuelle Wahrnehmung ("visual perception")
+						\begin{itemize}
+							\item Aufnahme und Verarbeitung von visuelle Reizen
+							\item Auge und Gehirn extrahieren relevante Informationen
+							\item Erkennen von Elementen und deren Interpretation und Abgleich mit Erinnerungen
+						\end{itemize}
+					\item Maschinelles Sehen ("machine vision")
+						\begin{itemize}
+							\item Digitale Bildverarbeitung und Mustererkennung
+							\item Eingesetzt \zB bei Prüfverfahren in der industriellen Fertigung
+						\end{itemize}
+					\item Bildverstehen ("computer vision")
+						\begin{itemize}
+							\item Extraktion komplexer Interpretationen und Schlüsse aus 2D-Abbildungen realer 3D-Szenen
+							\item Viele langfristig orientierte Grundlagenforschungsfragen
+						\end{itemize}
+					\item Robotersehen ("robot vision")
+						\begin{itemize}
+							\item Maschinelles Sehen und Bildverstehen unter den Echtzeitbedingungen eines Roboters
+							\item Begrenze Rechenleistung und schnelle Reaktionszeiten
+						\end{itemize}
+				\end{itemize}
+			
+				Voraussetzungen für maschinelles Sehen sind:
+				\begin{enumerate}
+					\item "Technisches Auge", \dh ein Kamerachip mit Optik
+					\item "Intelligente", bildverarbeitende Algorithmen
+					\item Ausreichende Strukturierung (Material, Merkmale der relevanten Objekte, \dots) der Szene
+					\item Ausreichende Beleuchtung (Helligkeit, Lampen-Lichtspektrum, Reflexionen, \dots) der Szene
+				\end{enumerate}
+				Je nach Aufgabe ist eine Abstimmung dieser vier Voraussetzungen nötig, \dh es gibt keine allgemeine Lösung.
+				
+				Die klassische Hierarchie der Bildverarbeitungsoperationen ist in Abbildung~\ref{fig:image_processing_hierarchy} aufgezeigt.
+				
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}[block/.style = { draw, rectangle, minimum height = 0.8cm, align = center }, minwidth/.style = { minimum width = 7cm }]
+						\node [block, minimum width = 2cm] (a) {Szene};
+						\node [block, minwidth, below = 0.5 of a] (b) {\textbf{Bilderzeugung}};
+						\node [block, minwidth, below = 0.5 of b] (c) {\textbf{Bildvorverarbeitung} \\ Rauschunterdrückung};
+						\node [block, minwidth, below = 0.5 of c] (d) {\textbf{Bildverarbeitung} \\ Segmentierung (Partitionierung)};
+						\node [block, minwidth, below = 0.5 of d] (e) {\textbf{Bildbeschreibung} \\ Merkmalsextraktionen: \\ räumlich (Größe, Form) oder spektral};
+						\node [block, minwidth, below = 0.5 of e] (f) {\textbf{Objekterkennung}};
+						\node [block, minwidth, below = 0.5 of f] (g) {\textbf{Bildanalyse} \\ Interpretation der Szene \\ durch symbolische Beschreibung};
+						\coordinate [below = 0.5 of g.south east] (h);
+						
+						\node [left = 0 of b] {Pixel};
+						\node [left = 0 of d] {Kanten};
+						\node [left = 0 of e] {Konturen};
+						\node [left = 0 of f] {Objekte};
+						\node [left = 0 of g] {Semantik};
+						
+						\path (b.south east) to coordinate(B) (c.north east);
+						\path (c.south east) to coordinate(C) (d.north east);
+						\path (d.south east) to coordinate(D) (e.north east);
+						\path (e.south east) to coordinate(E) (f.north east);
+						\path (g.south east) to coordinate(G) (h.north east);
+						
+						\node [right = 0 of B] {Rohbild (degradiert)};
+						\node [right = 0 of C] {Fertigbild (korrigiert)};
+						\node [right = 0 of D] {Segmentiertes Bild};
+						\node [right = 0 of E] {Merkmale, \ggf auch 3D};
+						\node [right = 0 of G] {Relevante Aussage};
+						
+						\draw [->] (a) -- (b);
+						\draw [->] (b) -- (c);
+						\draw [->] (c) -- (d);
+						\draw [->] (d) -- (e);
+						\draw [->] (e) -- (f);
+						\draw [->] (f) -- (g);
+					\end{tikzpicture}
+					\caption{Klassische Hierarchie der Bildverarbeitung. Dabei findet alles bis zur Bildverarbeitung numerisch und alles ab der Bildbeschreibung symbolisch statt.}
+					\label{fig:image_processing_hierarchy}
+				\end{figure}
 
-				\subsubsection{Bilderzeugung} % 8.32, 8.33, 8.34, 8.35
-					\todo{Content}
+				\subsubsection{Bilderzeugung}
+					Die \emph{Kameramatrix} beschreibt die Projektionsabbildung von 3D-Punkten durch eine Lochkamera auf 2D-Punkte der Bildebene. Dadurch können spezifische Verzerrungseffekte der Kameralinse berücksichtigt werden.
+					
+					Zur Bilderzeugung gibt es mehrere grundlegende Methoden von Bildwandlersystemen (Kamerachip):
+					\begin{itemize}
+						\item Binäre fotoelektrische Zellen \\ Der Chip besteht aus einzelnen Fotodioden, wobei die Bildpunkte entweder \num{1} oder \num{0} wahrnehmen (hell oder dunkel).
+						\item Zeilen von Fotodioden (Linearkamera) \\ Die fotoelektrischen Zellen sind entlang einer Geraden angeordnet.
+						\item Felder von Fotoelementen (Matrixkamera) \\ Die Zellen sind zweidimensional Angeordnet.
+						\item CCD-Fernsehkameras \\ Fernsehnorm, vorgeschaltete Kameraoptik, \dots
+					\end{itemize}
 				% end
 
-				\subsubsection{Grundlagen} % 8.38, 8.39, 8.40, 8.41, 8.42, 8.43
-					\todo{Content}
+				\subsubsection{Grundlagen}
+					Die \emph{Lichtintensitätsfunktion} \( f^\ast \), die für einen Pixel \( (x, y) \) die Lichtintensität \( [f^\ast] = \si{\candela} \) angibt, kann in ein Produkt
+					\begin{equation*}
+						f^\ast(x, y) = i(x, y) \cdot r(x, y)
+					\end{equation*}
+					aufgespalten werden mit der Illuminationsfunktion \( i(x, y) \) und der Reflexionsfunktion \( 0 < r(x, y) < 1 \). Dabei hat die Illuminationsfunktion die Einheit \( [i] = \si{\candela} \) (Candela) und die Reflexion ist einheitenlos. Beispielhafte Werte für die Illumination \(i\) und die Reflexion \(r\) sind in den Tabellen~\ref{tab:example_illumination} und~\ref{tab:example_reflexion} gegeben.
+					
+					Die Absorptionsfunktion
+					\begin{equation*}
+						a(x, y) \coloneqq 1 - r(x, y)
+					\end{equation*}
+					beschreibt, wie viel Licht an einem Pixel \( (x, y) \) absorbiert wird/wurde.
+					
+					\begin{table}
+						\centering
+						\begin{tabular}{l|l}
+							Ort          & Illumination \(i\)   \\ \hline
+							Sonne        & \SI{10000}{\candela} \\
+							Wolken       & \SI{1000}{\candela}  \\
+							Arbeitsplatz & \SI{100}{\candela}
+						\end{tabular}
+						\caption{Beispielhafte Werte der Illumination \(i\).}
+						\label{tab:example_illumination}
+					\end{table}
+					\begin{table}
+						\centering
+						\begin{tabular}{l|l}
+							Material       & Reflexion \(r\) \\ \hline
+							Schwarzer Samt & \num{0.01}      \\
+							Edelstahl      & \num{0.65}      \\
+							Weiße Wand     & \num{0.80}      \\
+							Spiegel        & \num{0.90}      \\
+							Schnee         & \num{0.93}
+						\end{tabular}
+						\caption{Beispielhafte Werte der Reflexion \(r\).}
+						\label{tab:example_reflexion}
+					\end{table}
+				
+					Zusammengefasst ergibt sich die \emph{Bildmatrix} \( f = (f_{i, j}) \)
+					\begin{equation*}
+						f =
+							\begin{bmatrix}
+								f_{0, 0}     & f_{0, 1}     & \cdots & f_{0, N - 1}     \\
+								\vdots       & \vdots       & \ddots & \vdots           \\
+								f_{M - 1, 0} & f_{M - 1, 1} & \cdots & f_{M - 1, N - 1}
+							\end{bmatrix}
+					\end{equation*}
+					mit den Elementen als Werten der Lichtintensitätsfunktion. Typische Formate \( M \times N \) sind
+					\begin{itemize}
+						\item PAL:  \tabto{1.5cm} \( N = \num{768} \),  \tabto{3.5cm} \( M = \num{576} \)  \tabto{5.5cm} (576i50)
+						\item NTSC: \tabto{1.5cm} \( N = \num{640} \),  \tabto{3.5cm} \( M = \num{480} \)  \tabto{5.5cm} (480i60)
+						\item HDTV: \tabto{1.5cm} \( N = \num{1280} \), \tabto{3.5cm} \( M = \num{720} \)  \tabto{5.5cm} (720p50, WXGA)
+						\item HDTV: \tabto{1.5cm} \( N = \num{1920} \), \tabto{3.5cm} \( M = \num{1080} \) \tabto{5.5cm} (1080i50, Full HD)
+					\end{itemize}
+					Bei einer monochromen Kamera wird pro Bild eine Matrix verwendet, bei einer polychromen Kamera drei Matrizen. Für diese drei Matrizen können unterschiedliche Farbmodelle verwendet werden, z.\,B.:
+					\begin{itemize}
+						\item RGB (Red, Green, Blue) \\ Speziell für Monitore relevant, da diese meistens die drei Farben Rot, Grün und Blau anzeigen können.
+						\item HSI/HSV (Hue, Saturation, Intensity/Value) \\ Speziell für die Bildverarbeitung, da Segmentierung leicht ist.
+					\end{itemize}
+					Das RGB-Farbmodell mit \num{8} Bit je Farbe hat damit \( \num{256} \cdot \num{256} \cdot \num{256} = \num{16777216}\text{ mögliche Farben} \).
+					
+					Eine alternative zum RGB-Modell ist das HSI/HSV-Modell, welches aus den Komponenten
+					\begin{itemize}
+						\item Hue (Farbwellenlänge)
+						\item Saturation (Sättigung, Reinheit der Farbe)
+						\item Intensity/Value (Intensität, Helligkeit)
+					\end{itemize}
+					besteht. Das RGB-Modell mit den Anteilen \(R\), \(G\) und \(B\) lässt sich wie folgt in das HSI/HSV-Modell umrechnen:
+					\begin{align*}
+						\cos H & = \frac{2R - G - B}{2\sqrt{(R - G)^2 + (R - B)(G - B)}} \\
+						S      & = 1 - \frac{3}{R + G + B} \min \{\, R, G, B \,\}        \\
+						V = I  & = \frac{1}{3} (R + G + B)
+					\end{align*}
+					Ein Vorteil des HSI/HSV-Modells ist, dass die Farbmanipulation sehr ähnlich zur menschlichen Wahrnehmung ist.
 				% end
 
-				\subsubsection{Bildvorverarbeitung} % 8.44, 8.45, 8.46
-					\todo{Content}
+				\subsubsection{Bildvorverarbeitung}
+					Es gibt zwei Klassen von \emph{Bildvorverarbeitungsverfahren}:
+					\begin{enumerate}
+						\item \emph{Ortsbereichsverfahren}
+							\begin{itemize}
+								\item Die Manipulation findet direkt auf der Pixelebene statt.
+								\item Die allgemeine Berechnungsformel lautet \( \vec{g}(x, y) = \vec{h}\big(\vec{f}(x, y)\big) \), wobei \(\vec{g}\) die neuen und \(\vec{f}\) die alten Bildintensitäten darstellt. \(\vec{h}\) ist ein Operator, der die Intensität transformiert (\bspw durch Nachbarschaftsbeziehungen).
+								\item Aufgrund der geringen Rechenzeit vor allem für Roboter relevant (aufgrund der Echtzeitanforderungen).
+							\end{itemize}
+						\item \emph{Frequenzbereichsverfahren}
+							\begin{itemize}
+								\item Es wird zunächst eine Bildtransformation (diskrete Fouriertransformation, Wavelets, \dots) in den Frequenzraum durchgeführt.
+								\item Anschließend wird ein Verfahren im Frequenzraum angewandt und das Bild anschließend zurück transformiert.
+								\item Wird \bspw bei der Offline-Auswertung von Satellitenbildern eingesetzt.
+								\item Aufgrund der hohen Rechenzeit werden diese Verfahren in der Robotik selten eingesetzt.
+							\end{itemize}
+					\end{enumerate}
 
-					\paragraph{Nachbarschaftsbildverarbeitung} % 8.47, 8.48, 8.49, 8.50
-						\todo{Content}
+					\paragraph{Nachbarschaftsbildverarbeitung}
+						Mit der \( n \times n \)-Nachbarschaft eines Pixels \( (x, y) \) wird die Matrix (\bzw die Pixel)
+						\begin{equation*}
+							\begin{bmatrix}
+								(x - \lfloor n/2 \rfloor, y - \lfloor n/2 \rfloor) & \cdots & (x - \lfloor n/2 \rfloor, y) & \cdots & (x - \lfloor n/2 \rfloor, y + \lfloor n/2 \rfloor) \\
+								\vdots                                             & \ddots & \vdots                       & \ddots & \vdots                                             \\
+								(x, y - \lfloor n/2 \rfloor)                       & \cdots & (x, y)                       & \cdots & (x, y + \lfloor n/2 \rfloor)                       \\
+								\vdots                                             & \ddots & \vdots                       & \ddots & \vdots                                             \\
+								(x + \lfloor n/2 \rfloor, y - \lfloor n/2 \rfloor) & \cdots & (x - \lfloor n/2 \rfloor, y) & \cdots & (x + \lfloor n/2 \rfloor, y + \lfloor n/2 \rfloor)
+							\end{bmatrix}
+						\end{equation*}
+						bezeichnet, wobei die \(y\)-Achse von links nach rechts und die \(x\)-Achse von oben nach unten wächst. Dies ergibt beispielhaft für die \( 3 \times 3 \)-Nachbarschaft von \( (x, y) \):
+						\begin{equation*}
+							\begin{bmatrix}
+								(x - 1, y - 1) & (x - 1, y) & (x - 1, y + 1) \\
+								(x, y - 1)     & (x, y)     & (x, y + 1)     \\
+								(x + 1, y - 1) & (x + 1, y) & (x + 1, y + 1)
+							\end{bmatrix}
+						\end{equation*}
+						
+						In der \emph{Nachbarschaftsbildverarbeitung} wird nun ein solcher Bildausschnitt bezüglich eines Pixels \( (x, y) \) betrachtet und \zB mittels \emph{Nachbarschaftsdurchschnittsbildung} eine neue Intensität des Pixels berechnet. Der folgende Teil beschränkt sich auf \( 3 \times 3 \)-Nachbarschaften, theoretisch sind alle Verfahren aber auch mit größeren Nachbarschaften möglich.
+						
+						Bei der Nachbarschaftsdurchschnittsbildung wird jeder Pixels eines Bildausschnitts
+						\begin{equation*}
+							\begin{bmatrix}
+								f_1 & f_2 & f_3 \\
+								f_4 & f_5 & f_6 \\
+								f_7 & f_8 & f_9
+							\end{bmatrix}
+						\end{equation*}
+						mit einem Gewicht \( \omega_1, \cdots, \omega_9 \) (wobei \( \sum_{k = 1}^{9} \omega_k = 1 \) gelten muss) multipliziert, was sogenannte \emph{Gewichtsmaske} darstellt. Diese wird häufig auch durch eine Matrix
+						\begin{equation*}
+							\mat{\omega} =
+								\begin{bmatrix}
+									\omega_1 & \omega_2 & \omega_3 \\
+									\omega_4 & \omega_5 & \omega_6 \\
+									\omega_7 & \omega_8 & \omega_9
+								\end{bmatrix}
+						\end{equation*}
+						dargestellt. Die neue Intensität \( g_5 \) des zentralen Pixels wird dann durch
+						\begin{equation*}
+							g_5 = \sum_{k = 1}^{9} \omega_k f_k
+						\end{equation*}
+						oder Allgemein
+						\begin{equation*}
+							g = \sum_{k = 1}^{n^2} \omega_k f_k
+						\end{equation*}
+						berechnet.
+						
+						Beispiele für Nachbarschaftsfilter:
+						\begin{itemize}
+							\item Mittelwertbildung:
+						\end{itemize}
+						\begin{equation*}
+							\mat{\omega} =
+								\begin{bmatrix}
+									1/9 & 1/9 & 1/9 \\
+									1/9 & 1/9 & 1/9 \\
+									1/9 & 1/9 & 1/9
+								\end{bmatrix}
+						\end{equation*}
+						\begin{itemize}
+							\item Detektion isolierter Ausreißer (\zB bei konstant weißem Hintergrund):
+						\end{itemize}
+						\begin{equation*}
+							\mat{\omega} =
+								\begin{bmatrix}
+									-1 & -1 & -1 \\
+									-1 &  8 & -1 \\
+									-1 & -1 & -1
+								\end{bmatrix}
+						\end{equation*}
+						
+						Ein prinzipielles Problem bei Nachbarschaftsdurchschnittsbildung ist, dass scharfe Bilddetails (\zB Ecken und Kanten) unscharf werden. Eine Abhilfe ist, einen \emph{Median-Filter} zu verwenden. Dabei berechnet sich die neue Intensität \(g\) eines Pixels durch den Medianwert der Intensitäten der Nachbarschaft, \dh ist Intensitäten werden sortiert und es wird der mittlere Wert (der Median) als neue Intensität genutzt.
 					% end
 				% end
 
-				\subsubsection{Bildverarbeitung} % 8.51, 8.52, 8.53
-					\todo{Content}
+				\subsubsection{Bildverarbeitung}
+					Die zentralen Bildverarbeitungsschritte sind \emph{Kantendetektion} (als Voraussetzung für viele Objekterkennungsalgorithmen) und \emph{Segmentierung} (die Zerlegung des Bildes in Komponenten ober Objekte). Dabei werden die zentralen Prinzipien der Unstetigkeiten (zur Kanten- und Konturerkennung) sowie Ähnlichkeit (Schwellwertverfahren, Bereichswachstum) verwendet.
 
-					\paragraph{Kantendetektion} % 8.54, 8.55, 8.56, 8.57
-						\todo{Content}
+					\paragraph{Kantendetektion}
+						Bei der \emph{Kantendetektion} wird verwendet, dass starke, lokale Änderungen der Intensitätsfunktion häufig Projektionen von Kanten der Szene sind. Allerdings entsprechen nicht alle Änderungen der Intensität von tatsächlichen Objektbegrenzungen und nicht alle Begrenzungen führen zu einer starken Änderung der Intensität. Das allgemeine Vorgehen bei der Kantendetektion besteht aus zwei Schritten:
+						\begin{enumerate}
+							\item Extraktion von Kandidaten für Kantenelemente
+							\item Kombination der Elemente zu längeren Strukturen
+						\end{enumerate}
+					
+						Die allgemeine Idee ist, die Größe der ersten Ableitung zur Detektion von Kantenelementen und die Größe der zweiten Ableitung zur Interpretation der Lage der Pixel (negative zweite Ableitung \(\to\) Pixel liegt auf der dunklen, positive zweite Ableitung \(\to\) Pixel liegt auf der hellen Seite der Kante).
+						
+						Der Gradient einer kontinuierlichen Funktion, differenzierbaren Funktion \( f(x, y) \) ist
+						\begin{equation*}
+							\nabla f(x, y) =
+								\begin{bmatrix}
+									\frac{\partial f}{\partial x} \\
+									\frac{\partial f}{\partial y}
+								\end{bmatrix}
+						\end{equation*}
+						Problem: \( f(x, y) \), \(x\) und \(y\) stammen aus einem diskreten (ganzzahligen) Wertebereich. Daher muss der Gradient durch den Differenzenquotienten angenähert werden. Dabei können entweder die Vorwärtsdifferenzen
+						\begin{equation*}
+							\frac{\partial f}{\partial x} = \lim\limits_{h \to 0} \frac{f(x + h, y) - f(x, y)}{h} \approx f(x + 1, y) - f(x, y)
+						\end{equation*}
+						oder die zentrale Differenzen
+						\begin{equation*}
+							\frac{\partial f}{\partial x} = \lim\limits_{h \to 0} \frac{f(x + h, y) - f(x - h, y)}{2h} \approx \frac{1}{2} \big( f(x + 1, y) - f(x - 1, y) \big)
+						\end{equation*}
+						verwendet werden (analog für \( \partial f / \partial y \)). Aufgrund des Mittlungseffekts eignen sich die zentralen Differenzen hier mehr.
 
 						\subparagraph{Prewitt-Operator} % 8.58, 8.59, 8.60, 8.61
-							\todo{Content}
+							Der \emph{Prewitt-Operator} ist Zusammengesetz auf zwei Filtern: Das Prewitt-X Filter und das \emph{Prewitt-Y Filter}. Ersteres findet Kanten über die \(x\)-Achse, letzterer über die \(y\)-Achse. Diskretisiert ergeben sich folgende Gewichtsmasken:
+							\begin{gather*}
+								\begin{bmatrix}
+									-1 & -1 & -1 \\
+									0  & 0  & 0  \\
+									1  & 1  & 1
+								\end{bmatrix} \tag{Prewitt-X Filter} \\
+								\begin{bmatrix}
+									-1 & 0 & 1 \\
+									-1 & 0 & 1 \\
+									-1 & 0 & 1
+								\end{bmatrix} \tag{Prewitt-Y Filter}
+							\end{gather*}
+							Daraus ergeben sich die gefilterten Bilder \(p_x\) (Prewitt-X Filter) und \(p_y\) (Prewitt-Y Filter).
+							
+							Zusammengesetzt ergibt sich der Prewitt-Operator (\bzw das Graustufenbild)
+							\begin{equation*}
+								M \approx \sqrt{p_x^2 + p_y^2}
+							\end{equation*}
 						% end
 
-						\subparagraph{Zusammenfassung} % 8.62, 8.63
-							\todo{Content}
+						\subparagraph{Andere Operatoren} % 8.62, 8.63
+							Andere Operatoren zur Kantendetektion sind \bspw der Sobel-Operator und das Roberts-Filter. Zusammengefasst lauten diese:
+							\begin{itemize}
+								\item Prewitt-Operator:
+							\end{itemize}
+							\begin{equation*}
+								M \approx \sqrt{p_x^2 + p_y^2} \quad\quad\quad\quad
+								p_x = \begin{bmatrix}
+									-1 & -1 & -1 \\
+									0  & 0  & 0  \\
+									1  & 1  & 1
+								\end{bmatrix} \quad\quad\quad\quad
+								p_y = \begin{bmatrix}
+									-1 & 0 & 1 \\
+									-1 & 0 & 1 \\
+									-1 & 0 & 1
+								\end{bmatrix}
+							\end{equation*}
+							\begin{itemize}
+								\item Sobel-Operator:
+							\end{itemize}
+							\begin{equation*}
+								M \approx \sqrt{p_x^2 + p_y^2} \quad\quad\quad\quad
+								p_x = \begin{bmatrix}
+									-1 & -2 & -1 \\
+									0  & 0  & 0  \\
+									1  & 2  & 1
+								\end{bmatrix} \quad\quad\quad\quad
+								p_y = \begin{bmatrix}
+									-1 & 0 & 1 \\
+									-2 & 0 & 2 \\
+									-1 & 0 & 1
+								\end{bmatrix}
+							\end{equation*}
+							\begin{itemize}
+								\item Roberts-Filter:
+							\end{itemize}
+							\begin{equation*}
+								R = \lvert r_x \rvert + \lvert r_y \rvert \quad\quad\quad\quad
+								r_x = \begin{bmatrix}
+									-1 & 0 \\
+									0  & 1
+								\end{bmatrix} \quad\quad\quad\quad
+								r_y = \begin{bmatrix}
+									0 & -1 \\
+									1 & 0
+								\end{bmatrix}
+							\end{equation*}
 						% end
 					% end
 
-					\paragraph{Konturerkennung} % 8.64
-						\todo{Content}
-
-						\subparagraph{Lokale Analyse} % 8.65, 8.66
-							\todo{Content}
+					\paragraph{Konturerkennung}
+						\subparagraph{Lokale Analyse}
+							Es wird die lokale Nachbarschaft eines Pixels \( (x, y) \) untersucht. Außerdem werden regelbasierte Verbindungen von Kandidaten für Kantenelemente durchgeführt:
+							\begin{itemize}
+								\item Wenn \( \big\lvert \nabla f(x, y) - \nabla f(\tilde{x}, \tilde{y}) \big\rvert \leq T \), \( T > 0 \) (die Gradienten sind Betragsmäßig ähnlich) \\ und \( \big\lvert \alpha(x, y) - \alpha(\tilde{x}, \tilde{y}) \big\rvert < A \), \( A > 0 \) (die Winkel der Gradientenvektoren sind ähnlich), dann:
+								\item Verbinde \( (x, y) \) mit \( (\tilde{x}, \tilde{y}) \) und kennzeichne diese Verbindung (\zB durch einen bestimmten Grauwert/eine bestimme Farbe oder ein Symbol).
+							\end{itemize}
+							Dabei ist
+							\begin{equation*}
+								\alpha(x, y) \coloneqq \arctan \frac{\partial f / \partial y}{\partial f / \partial x}
+							\end{equation*}
+							der Winkel des Gradientenvektors.
 						% end
 
-						\subparagraph{Globale Analyse} % 8.67, 8.68, 8.69, 8.70
-							\todo{Content}
+						\subparagraph{Globale Analyse und Hough-Transformation}
+							Die globale Analyse geschieht durch eine sogenannte \emph{Hough-Transformation}. Dabei werden mehrere Punkte verbunden, sofern diese auf einer vorgegebenen Kurve (\zB eine Gerade oder eine Parabel) liegen. Im folgende wird Beispielhaft die Hough-Transformation \bzgl einer Geraden betrachtet, prinzipiell kann sie aber für jede durch eine Gleichung
+							\begin{equation*}
+								g(x, y, c_1, c_2, c_3) = 0
+							\end{equation*}
+							gegebene Kurve durchgeführt werden (\zB für einen Kreis \( (x - c_1)^2 + (y - c_2)^2 - c_3^2 = 0 \) mit Radius \( c_3 \)).
+							
+							Liegen Punkte \( (x_i, y_i) \) auf einer Geraden, so erfüllen diese die Gleichung \( y_i = ax_i + b \) mit den Parametern \(a, b\). Diese Gleichung kann mit
+							\begin{equation*}
+								y_i = ax_i + b \quad\iff\quad b = -x_ia + y_i
+							\end{equation*}
+							zu einer Geradengleichung im Parameterraum \( (a, b) \) umgeformt werden. Bei der Hough-Transformation wird nun jeder Punkt \( (x_i, y_i) \) einer Geraden in der \( (a, b) \)-Ebene zugeordnet. Liegen zwei Punkte \( (x_i, y_i) \) und \( (x_j, y_j) \) auf einer Geraden, so schneiden sich die Hough-Transformierten in einem Punkt. Dieser Schnittpunkt \( (a^\ast, b^\ast) \) entspricht den Parameter der Geraden, auf der die zwei Punkte liegen, \dh es gilt:
+							\begin{equation*}
+								y_i = a^\ast x_i + b^\ast \quad\quad\text{und}\quad\quad y_j = a^\ast x_j + b^\ast
+							\end{equation*}
+							Schneiden sich drei Graden in einem Punkt, so liegen alle entsprechenden Punkte auf einer Geraden.
+							
+							In der Praxis ist die Darstellung \( y = ax + b \) der Geraden problematisch, da vertikale Geraden nicht dargestellt werden. Es wird daher eher die Parametrisierung \( x \cos\theta + y \sin\theta = \rho \) verwendet, da hier das Problem nicht auftritt.
+							
+							% TODO: Hough-Transformation: Beispiel.
 						% end
 					% end
 
-					\paragraph{Segmentierung} % 8.71, 8.72
-						\todo{Content}
+					\paragraph{Segmentierung}
+						Ziel der \emph{Segmentierung} ist, das Bild \(B\) ein flächige \emph{Zusammenhangkomponenten} \( S_1, \cdots, S_n \) zu zerlegen, wobei diese paarweise disjunkt sind und \( S_1 \cup \cdots \cup S_n = B \) gilt. Dazu müssen die Grenzen von Objektflächen gefunden werden, die für die weitere Interpretation von Bedeutung sind.
 
-						\subparagraph{Schwellwertabfrage} % 8.73, 8.74
-							\todo{Content}
+						\subparagraph{Schwellwertabfrage}
+							Dieses Verfahren wird häufig verwendet und ist insbesondere im HSI/HSV-Farbraum sehr nützlich. Bezogen auf die Intensität \( f(x, y) \) werden zwei Schwellwerte \( \tau_1, \tau_2 \) festgelegt, wodurch sich über
+							\begin{equation*}
+								g(x, y) \coloneqq
+									\begin{cases*}
+										0 & \text{falls } \( f(x, y) < \tau_1 \) \\
+										1 & \text{falls } \( \tau_1 < f(x, y) < \tau_2 \) \\
+										2 & \text{falls } \( \tau_2 < f(x, y) \)
+									\end{cases*}
+							\end{equation*}
+							ein trinäres Schwellwertbild ergibt.
+							
+							Dieses Verfahren wirft allerdings Probleme auf, da die Intensitätsfunktion stark von der aktuellen Beleuchtung abhängig ist, welche von Bild zu Bild variieren kann. Eine automatische Adaption der Schwellwerte erfordert eine robuste Minimum-Suche, wobei die Minima abhängig sind von Beleuchtung, Lager der Objekte, \dots.
 						% end
 
-						\subparagraph{Bereichswachstum} % 8.75
-							\todo{Content}
+						\subparagraph{Bereichswachstum}
+							\begin{itemize}
+								\item Es wird mit einem oder mehreren geeigneten "Saat"-Punkten ("seed points") gestartet und die direkten Nachbarpixel überprüft.
+								\item Ein untersuchter Pixel wird zu dem Bereich des Startpixels hinzugefügt, wenn dieser dem Startpixel ähnlich ist (\zB gleicher Grauwert, Farbe, Textur, \dots).
+								\item Unterscheidet sich der Pixel stark, so wird ein neuer Bereich eröffnet.
+								\item Anschließend wird das Bild rekursiv weiter untersucht.
+								\item Weitere Operationen können \zB das Aufteilen und Verbindungen von Bereichen sein.
+							\end{itemize}
 						% end
 					% end
 				% end
 
-				\subsubsection{Merkmalsextraktion} % 8.76, 8.77, 8.78, 8.79
-					\todo{Content}
+				\subsubsection{Merkmalsextraktion}
+					Bisher wurden Objekte Bildhaft durch diskrete Bildfunktionen beschrieben. Die \emph{Merkmalsextraktion} beschäftigt sich nun mit der Charakterisierung von Objekten durch einen Vektor von Merkmalen sowie eventuell Beziehungen zwischen Objekten (Relationstupel) wie Nachbarschaft und Größe. Ausgangspunkt ist dabei das durch Segmentierung und Bildvorverarbeitung entstandene Binärbild \( g(x, y) \). Ziel ist die Extraktion der Merkmale, die ein Segment beschreiben.
+					
+					Merkmale können \zB sein:
+					\begin{itemize}
+						\item \(m_1\): Objektumfang \( m_1 = \int_\text{Kontur} \! g(x, y) \dif{s} \approx \sum_\text{Kontur} g(x, y) \)
+						\item \(m_2\): Objektfläche \( m_2 = \iint \! g(x, y) \dif{x} \dif{y} \approx \sum_x \sum_y g(x, y) \)
+						\item \(m_3\): Anzahl der "Löcher"
+						\item \(m_4\): Farbe
+						\item \dots
+					\end{itemize}
+					Solche Merkmale sollten möglichst (weitgehend)
+					\begin{itemize}
+						\item invariant gegen Skalierung, Rotation sowie Translation,
+						\item robust (gegen Rauschen), signifikant, diskriminierend (unterscheidbar) sowie
+						\item schnell berechenbar sein.
+					\end{itemize}
 				% end
 
-				\subsubsection{Objektklassifikation} % 8.80, 8.81, 8.82, 8.83, 8.84, 8.85, 8.86, 8.87, 8.88, 8.89, 8.90, 8.91, 8.92
+				\subsubsection{Objektklassifikation}
+					\begin{itemize}
+						\item Klassische Ansätze zur Objektklassifikation:
+							\begin{itemize}
+								\item Bildvergleich im Merkmalsraum
+								\item Template Matching
+							\end{itemize}
+						\item In den letzten Jahren wurden große Fortschritte durch Deep Learning erzielt.
+						\item Deep Learning Systeme scheitern allerdings noch an einem echten Verstehen der Objekte.
+					\end{itemize}
+				% end
+				
+				\subsubsection{Bildverstehen} % 8.87, 8.88, 8.89, 8.90, 8.91, 8.92
 					\todo{Content}
 				% end
 			% end
 
-			\subsection{3D-Sensoren und Perzeption} % 8.93, 8.94, 8.95, 8.96
-				\todo{Content}
+			\subsection{3D-Sensoren und Perzeption}
+				Bei einem einzelnen RGB-Pixel eines 2D-Farbbildes fließen viele Faktoren ein:
+				\begin{itemize}
+					\item Lichtquelle (Anzahl, Helligkeit, Farbspektrum)
+					\item Objekte (Farbe, physikalische Eigenschaften wie Transparenz und Reflexion)
+					\item Szene (Schattenwurf)
+					\item Projektion (Perspektivische Verzerrung)
+					\item Sensorqualität
+				\end{itemize}
+				Ein Mensch ist extrem gut darin, aus einem einzelnen Bild Tiefeninformationen zu extrahieren, wobei dies im Bereich Computer Vision noch immer eine große Herausforderung ist.
+				
+				Werden zwei Farbbilder (leicht versetzt) verwendet, so wird dies als \emph{Stereo Vision} (oder in der Biologie auch "binokulares Sehen") bezeichnet. Dies erlaubt eine passive Tiefenschätzung. Andere Spezies wie Fledermäuse haben sogar eine aktive Tiefenschätzung (Sonar).
+				
+				Distanzinformationen sind extrem wichtig:
+				\begin{itemize}
+					\item 3D-Navigation
+					\item Interaktion
+					\item Kollisionsvermeidung
+					\item Objekterkennung
+					\item Gestenerkennung
+					\item Virtual/Augmented Reality
+					\item \dots
+				\end{itemize}
 
-				\subsubsection{Bildbasierte 3D-Sensoren} % 8.97, 8.98
-					\todo{Content}
+				\subsubsection{Bildbasierte 3D-Sensoren}
+					\paragraph{Stereo Vision}
+						\emph{Stereo Vision} basiert auf der Triangulation von Bildpunkten durch die Verwendung von zwei Bildern.
+						
+						Basierend auf Abbildung~\ref{fig:stereo_triangulation} kann die Distanz \(Z\) wie folgt berechnet werden:
+						\begin{equation*}
+							\frac{Z - f}{B - (x - x')} = \frac{Z}{B} \quad\iff\quad BZ - Bf = BZ - Z(x - x') \quad\iff\quad Z = \frac{Bf}{x - x'}
+						\end{equation*}
+						
+						\begin{figure}
+							\centering
+							\begin{tikzpicture}
+								\node [fill = black, draw, circle, label = above:{\(X\)}] (X) at (0, 0) {};
+								\node [fill = black, draw, circle] (x) at (-3, -6) {};
+								\node [fill = black, draw, circle] (xPrime) at (3, -6) {};
+								\node [fill = black, draw, circle, label = below:{\(O\)}] (o) at (-4, -8) {};
+								\node [fill = black, draw, circle, label = below:{\(O'\)}] (oPrime) at (4, -8) {};
+								
+								\path let \p1 = (o), \p2 = (x) in coordinate (f) at (\x1, \y2);
+								\path let \p1 = (oPrime), \p2 = (xPrime) in coordinate (fPrime) at (\x1, \y2);
 
-					\paragraph{Stereo Vision} % 8.99, 8.100, 8.101, 8.102, 8.103, 8.104, 8.105, 8.106
-						\todo{Content}
+								\coordinate [above = 0.1 of x] (xShift);
+								\coordinate [above = 0.1 of xPrime] (xPrimeShift);
+								
+								\path let \p1 = (xShift), \p2 = (f) in coordinate (fShift) at (\x2, \y1);
+								\path let \p1 = (xPrimeShift), \p2 = (fPrime) in coordinate (fPrimeShift) at (\x2, \y1);
+								
+								\coordinate [left = 2 of x] (xShiftLeft);
+								\coordinate [right = 0.2 of x] (xShiftRight);
+								\coordinate [left = 0.2 of xPrime] (xPrimeShiftLeft);
+								\coordinate [right = 2 of xPrime] (xPrimeShiftRight);
+								
+								\path (o) to coordinate(oCenter) (oPrime);
+								
+								\draw (o) to node[below]{Baseline \(B\)} (oPrime);
+								\draw [->] (o) to node[left]{\(f\)} (f);
+								\draw [->] (oPrime) to node[left]{\(f\)} (fPrime);
+								\draw [->] (fShift) to node[above]{\(x\)} (xShift);
+								\draw [->] (fPrimeShift) to node[above]{\(x'\)} (xPrimeShift);
+								\draw (xShiftLeft) to (xShiftRight);
+								\draw (xPrimeShiftRight) to (xPrimeShiftLeft);
+								\draw (o) to (X);
+								\draw (oPrime) to (X);
+								\draw [->] (oCenter) to node[right]{\(Z\)} (X);
+							\end{tikzpicture}
+							\caption{Triangulation der Distanz \(Z\) eines Objekts \(X\) durch zwei Kameras \(O\) und \(O'\).}
+							\label{fig:stereo_triangulation}
+						\end{figure}
+					
+						Diese Art der Berechnung wirft das Problem auf, dass detektiert werden muss, welche Pixel das selbe Objekt abbilden.
+						
+						\begin{itemize}
+							\item \textbf{Vorteile:}
+								\begin{itemize}
+									\item Nur zwei Kameras nötig.
+									\item Entspricht dem menschlichen Vorbild (binokulares Sehen).
+									\item Farbinformationen sind für jeden Punkt verfügbar.
+									\item Hohe Bildraten möglich.
+								\end{itemize}
+							\item \textbf{Nachteile:}
+								\begin{itemize}
+									\item Benötigt komplizierte Algorithmen, um die Pixel zuzuordnen.
+									\item Erfordert viel CPU Leistung.
+									\item Angewiesen auf texturierte Oberflächen (zur Pixelzuordnung).
+									\item Sensitiv gegenüber Hintergrundbeleuchtung.
+								\end{itemize}
+						\end{itemize}
 					% end
 
 					\paragraph{Structured Light Kamera} % 8.107, 8.108, 8.109, 8.110, 8.111, 8.112, 8.113, 8.114
@@ -964,37 +1813,154 @@
 						\todo{Content}
 					% end
 
-					\paragraph{Time-of-Flight (ToF) Kamera} % 8.118, 8.119, 8.120, 8.121, 8.122, 8.123, 8.124, 8.125
-						\todo{Content}
+					\paragraph{Time-of-Flight (ToF) Kamera}
+						Eine \emph{Time-of-Flight} (ToF) Kamera sendet Lichtimpulse (meist Infrarot) und misst die Reflexionen. Hierzu gibt es drei grundlegende Techniken:
+						\begin{itemize}
+							\item Direct Time-of-Flight Imagers/Flash Lidar
+								\begin{itemize}
+									\item Direkte Zeitmessung der Lichtstrecke
+									\item Benötigt starke Signalflanken (\zB Laserdioden)
+								\end{itemize}
+							\item Carrier Wave Modulation (Phasenvergleichsverfahren)
+								\begin{itemize}
+									\item Es wird die Phasenverschiebung des reflektierten Lichtsignals gemessen.
+								\end{itemize}
+							\item Ranged Gated Imagers ("Shutter")
+								\begin{itemize}
+									\item Er Shutter öffnet sich in der gleichen Frequenz, in der die Lichtimpulse ausgesendet werden.
+									\item Ein reflektierter Impuls wird teilweise vom Shutter blockiert, was einen Rückschluss auf die zurückgelegte Lichtstrecke zulässt.
+								\end{itemize}
+						\end{itemize}
+					
+						\begin{itemize}
+							\item \textbf{Vorteile:}
+								\begin{itemize}
+									\item Hohe Bildrate (bis zu \num{160} FPS üblich), daher geeignet für Echtzeitanwendungen
+									\item Sehr wenig CPU Leistung nötig.
+									\item Musterunabhängig, \dh es werden keine strukturierten/texturierten Oberflächen benötigt.
+								\end{itemize}
+							\item \textbf{Nachteile:}
+								\begin{itemize}
+									\item Geringe Auflösung, es sind nur große Pixel realisierbar.
+									\item Sensitiv gegenüber Hintergrundbeleuchtung.
+									\item Interferenzen zwischen mehreren ToF Kameras.
+									\item Mehrfachreflexionen durch großflächige Bestrahlung von Oberflächen.
+								\end{itemize}
+						\end{itemize}
 					% end
 				% end
 
-				\subsubsection{Laserbasierte 3D-Sensoren} % 8.126, 8.127, 8.128, 8.129
-					\todo{Content}
+				\subsubsection{Laserbasierte 3D-Sensoren}
+					Es ist auch möglich, Tiefeninformationen ohne Kamerabilder zu generieren. Ein Beispiel hierfür sind Laserscanner. Diese können aus mehreren Lasern (Mehrfach-Lasersysteme) zusammengesetzt sein oder dreh-/schwenkbar sein (Mono-Lasersystem). Es ist ebenfalls möglich, Laserscanner und Kamerabilder zu kombinieren, um ein detaillierteres Weltbild zu erhalten.
 				% end
 
-				\subsubsection{Datenstrukturen und -Repräsentation} % 8.130, 8.131
-					\todo{Content}
+				\subsubsection{Datenstrukturen und -Repräsentation}
+					Eine klassische, unkomprimierte Punktwolke ("point cloud") benötigt sehr viel Speicherplatz, \dh es werden effektiver Datenrepräsentationen/-strukturen benötigt:
+					\begin{itemize}
+						\item Reduktion des Speicherbedarfs.
+						\item Reduktion des Rechenaufwands bei der Verarbeitung.
+						\item Effiziente Aggregation von 3D-Punkten.
+						\item Effizienter Zugriff auf einzelne Punkte (\zB Nachbarschaftsinformationen).
+					\end{itemize}
 
-					\paragraph{kd-Baum} % 8.132, 8.133
-						\todo{Content}
+					\paragraph{KD-Baum}
+						Ein \emph{KD-Baum} ist eine verallgemeinerte Version eines Binärbaums (KD steht für \(k\)-dimensional). Die geometrische Idee ist eine rekursive Aufteilung der Daten mit Hyperebenen.
+						
+						\begin{itemize}
+							\item \textbf{Vorteile:}
+								\begin{itemize}
+									\item Anwendung der "Branch-and-Bound" Methode: Die Lage des Suchpunktes relativ zum aktuell betrachteten Knoten des Baums verrät, in welchem Unterteilbaum ein potentiell besserer (näherer) Knoten liegt.
+									\item Es gibt Algorithmen, die \( \mathcal{O}(\log n) \) garantieren.
+									\item Einfach erweiterbar auf \(k\)-nearest Search.
+								\end{itemize}
+							\item \textbf{Nachteile:}
+								\begin{itemize}
+									\item Das Einfügen und Entfernen von Punkten ist kompliziert (\ggf Rebalancierung des Baums notwendig).
+									\item Keine Datenkompression und Aggregation.
+								\end{itemize}
+						\end{itemize}
 					% end
 
-					\paragraph{Octree} % 8.134, 8.135, 8.136
-						\todo{Content}
+					\paragraph{Octree}
+						Ein \emph{Octree} unterteilt den Raum rekursiv-hierarchisch in \emph{Oktanten}. Er ist dabei ein gewurzelter Baum, indem jeder Knoten entweder acht oder keine Nachfolger hat.
+						
+						\begin{itemize}
+							\item \textbf{Vorteile:}
+								\begin{itemize}
+									\item Leicht zu Implementieren.
+									\item Geringer Speicherplatzbedarf bei dünnbesetzten Punktwolken.
+									\item Mehrere Punkte können in einem Oktanten zusammengefasst werden.
+									\item Einfaches Einfügen und Entfernen von Punkten.
+									\item Effizienter Zugriff, da die Baumtiefe beschränkt ist.
+									\item Raycasting-Algorithmen effizient umsetzbar.
+								\end{itemize}
+							\item \textbf{Nachteile:}
+								\begin{itemize}
+									\item Ineffiziente Nachbarschaftssuche.
+									\item Kubische Datenrepräsentation vs. Längliche Umweltgeometrien.
+									\item Auflösung beschränkt, da die Umwelt in ein festes Voxelgitter eingeteilt wird.
+								\end{itemize}
+						\end{itemize}
 					% end
 
-					\paragraph{Truncated Signed Distance Fields (TSDF)} % 8.137, 8.138
-						\todo{Content}
+					\paragraph{Truncated Signed Distance Fields (TSDF)}
+						\begin{itemize}
+							\item \texttt{Truncated Signed Distance Fields} (TSDFs) werden als Voxelgitter gespeichert.
+							\item Jede Zelle speichert dabei den Abstand zur nächsten Oberfläche.
+							\item Zellen mit einem Wert nahe Null repräsentieren die \emph{Isolinie} der Oberfläche.
+							\item Zellen fern von Oberflächen werden "gelöscht" (truncated).
+							\item \textbf{Vorteile:}
+								\begin{itemize}
+									\item Oberflächen können annähernd beliebig genau erfasst werden.
+									\item Mesh-Rekonstruktion ist "inklusive".
+								\end{itemize}
+							\item \textbf{Nachteile:}
+								\begin{itemize}
+									\item Voxelgitter benötigen enorm viel Speicherplatz (Lösung: Hashed TSDF).
+									\item Updates sind rechenintensiv (häufig werden diese auf der GPU berechnet).
+								\end{itemize}
+						\end{itemize}
 					% end
 				% end
 
-				\subsubsection{Point-Cloud Processing} % 8.139, 8.140, 8.141, 8.142, 8.143, 8.144, 8.145, 8.146, 8.147
-					\todo{Content}
+				\subsubsection{Point-Cloud Processing}
+					\emph{Point Cloud Library} (PCL) eine eine umfangreiche Bibliothek zur Verarbeitung von 3D-Daten und ist die meist genutzte Bibliothek zur 3D-Datenverarbeitung (analog zu OpenCV in der 2D-Bildverarbeitung).
+					
+					\begin{itemize}
+						\item Datenaufbesserung: Statistical Outlier Removal
+							\begin{itemize}
+								\item Viele Verfahren benötigen dichte Punktwolken.
+								\item Daher ist eine Entfernung von Ausreißern notwendig.
+								\item Analyse des mittleren Abstands zu den \(k\)-nächsten Nachbarn: Wird der Abstand zu groß, wird der Punkt entfernt.
+							\end{itemize}
+						\item Datenaufbesserung: Glättung (Smoothing)
+							\begin{itemize}
+								\item Oftmals sind 3D-Daten verrauscht, in Gebäuden gibt es jedoch oftmals glatte Oberflächen.
+								\item Polynomial Reconstruction: Lokale Approximation mit Polynomen \(n\)-ter Ordnung approximiert.
+								\item Resampling: Das Polynom wird verwendet, um den Punkt auf das ermittelte Polygon zu verschieben.
+								\item Durch dieses Verfahren können auch Oberflächen rekonstruiert werden.
+							\end{itemize}
+						\item Informationsextraktion: Surface Normal Estimation
+							\begin{itemize}
+								\item Oberflächenkonstruktion ist häufig auf Oberflächennormale angewiesen.
+								\item Eine Schätzung ist \bspw mittels Principal Component Analysis (PCA) möglich.
+								\item Durch eine Singulärwertzerlegung werden die Eigenvektoren der Punkte gefunden.
+								\item Der kleinste Eigenvektor entspricht dann der geschätzten Oberflächennormale.
+							\end{itemize}
+						\item Informationsextraktion: Plane Segmentation
+					\end{itemize}
 				% end
 
-				\subsubsection{Point-Cloud Registration} % 8.148, 8.149, 8.150, 8.151, 8.152, 8.153, 8.154
-					\todo{Content}
+				\subsubsection{Point-Cloud Registration}
+					Iterative Closest Point (ICP):
+					\begin{itemize}
+						\item Bestimmt den Versatz zweier Teilmengen von Punktwolken.
+						\item Ansatz: Ist die korrekte Übereinstimmung der Punkte bekannt, so lässt sich die relative Transformation bestimmen.
+						\item Dabei wird angenommen, dass die jeweils zueinander nächsten Punkte zueinander gehören (korrespondieren).
+						\item Dann wird eine Transformation gesucht, die den quadratischen Fehler minimiert.
+						\item Anschließend wir die Eingangspunktwolke basierend auf der Transformation verschoben.
+						\item Dies wird so lange wiederholt, bis der Fehler konvergiert.
+					\end{itemize}
 				% end
 			% end
 		% end

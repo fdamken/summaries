@@ -5,6 +5,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[ngerman]{babel}
 % Other packages.
+\usepackage[german, ruled, vlined, linesnumbered]{algorithm2e}
 \usepackage{caption}
 \usepackage{csquotes}
 \usepackage{enumitem}
@@ -13,6 +14,7 @@
 \usepackage{hyperref}
 \usepackage{mathtools}
 \usepackage{siunitx}
+\usepackage{qtree}
 \usepackage{stmaryrd}
 \usepackage{tabto}
 \usepackage{tikz}
@@ -53,6 +55,24 @@
 \newcommand{\zB}{z.\,B.~}
 \newcommand{\iA}{i.\,A.~}
 \newcommand{\ggf}{ggf.~}
+\newcommand{\mglw}{mglw.~}
+
+% Quadtree.
+\newcommand{\grayBox}{%
+	\begin{tikzpicture}
+	\draw [fill = gray] (0, 0) -- (0, 0.5) -- (0.5, 0.5) -- (0.5, 0) -- cycle;
+	\end{tikzpicture}
+}
+\newcommand{\whiteBox}{%
+	\begin{tikzpicture}
+	\draw [fill = white] (0, 0) -- (0, 0.5) -- (0.5, 0.5) -- (0.5, 0) -- cycle;
+	\end{tikzpicture}
+}
+\newcommand{\blackBox}{%
+	\begin{tikzpicture}
+	\draw [fill = black] (0, 0) -- (0, 0.5) -- (0.5, 0.5) -- (0.5, 0) -- cycle;
+	\end{tikzpicture}
+}
 
 % https://tex.stackexchange.com/a/333383
 \makeatletter
@@ -2690,98 +2710,966 @@
 		% end
 	% end
 
-	\chapter{Bahnplanung} % 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8
-		\todo{Content}
+	\chapter{Bahnplanung}
+		Abbildung~\ref{fig:job_processing_and_planning} zeigt den typischen hierarchischen Aufbau der Auftragsbearbeitung und Planung, wobei sich dieses Kapitel auf die topologische, geometrische, kinematische und kinetische Planung bezieht.
+		
+		Die \emph{Bahnplanung} ist eine wichtige Mindestanforderung an "autonome", mobile Roboter und beinhaltet die Planung und Umsetzung eigener Bewegungen. Benötigt werden dazu
+		\begin{itemize}
+			\item Die Start- und Ziel-RAN,
+			\item eine geeignete, interne Repräsentation der "Welt", \dh der Umwelt und des Roboters sowie
+			\item Algorithmen, um sinnvolle Schlussfolgerungen/Planungen zu ermöglichen.
+		\end{itemize}
+		Die interne Repräsentation des Raumes (als Teil der Umwelt) beinhaltet dabei die Darstellung des frei befahrbaren Raumes und das Erkennen von Bereichen/Position und Objekten in der Umgebung. Diese Repräsentationen können in zwei Klassen eingeteilt werden:
+		\begin{itemize}
+			\item Topologisch (abstrakte Wege)
+			\item Metrisch (geometrische Bahnen und Trajektorien)
+		\end{itemize}
+		Für die folgenden Betrachtungen seien zunächst einige Begriffe definiert:
+		\begin{itemize}
+			\item \emph{Weg} \\ Benannte Verbindung zwischen zwei Punkten, wobei die konkrete Bewegung entlang des Weges nicht berücksichtigt wird.
+			\item \emph{Bahn/Pfad} \\ Kontinuierliche Punktfolge mit Position und Orientierung, \bspw bewegen sich Planeten auf einer Bahn.
+			\item \emph{Trajektorie} \\ Bahn mit zeitlichen Verlaufsinformationen, \dh Positions-, Geschwindigkeits und \ggf Beschleunigungswerte. Bahnen/Trajektorien gibt es dabei im \(n\)-dimensionalen Gelenkraum (Konfigurationsraum) sowie im \num{3}-dimensionalen Weltkoordinatensystem (Arbeitsraum).
+			\item \emph{Bahn-/Trajektorien-Planungsproblem} \\ Die Bestimmung einer Bahn/Trajektorie von Anfangs-RAN zu End-RAN (in der Regel im Konfigurationsraum), sodass der Roboter nicht mit Hindernissen kolidiert und die geplante Bewegung möglichst konsistent mit den kinematischen und kinetischen Beschränkungen des Roboters ist.
+		\end{itemize}
+		Meistens sind viele, alternative Bahnen von Start zum Ziel möglich. Die Auswahl einer optimalen Bahn kann zum Beispiel durch die Minimierung von Kosten (\zB Verfahrzeit, Bahnlänge, Energieaufwand, \dots) unter der Berücksichtigung von Beschränkungen (Kollisionsvermeidung, Sicherheit, Möglichkeit guter Sensordatenaufnahme, \dots) bestimmt werden. Ideal sind hierzu "Anytime"-Algorithmen, in der Realität erfordert die (optimale) Bahnplanung jedoch hohe Rechenzeiten. Daher werden oft Heuristiken verwendet, um die Echtzeitanforderungen einzuhalten.
+		
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[every node/.style = { draw, rectangle, align = center, minimum width = 5cm }]
+				\node (a) {Auftragseingang};
+				\node [below = 1 of a] (b) {Aufgabenplanung};
+				\node [below = 1 of b] (c) {Topologische Wegplanung};
+				\node [below = 1 of c] (d) {Geometrische Wegplanung};
+				\node [below = 1 of d] (e) {Kinematische \\ Trajektorienplanung};
+				\node [below = 1 of e] (f) {Kinetische \\ Trajektorienplanung};
+				\node [below = 1 of f] (g) {Bahnfolgeregelung};
+				\node [right = 1 of g] (h) {Externe Sensordaten: \\ Aufnahme und Verarbeitung};
+				\node [right = 1 of d] (i) {Weltmodell(e)};
+				\coordinate [left = 0.5 of i] (j);
+				\node [left = 1 of f] (k) {
+					\begin{minipage}{5.2cm}
+						Kollisionsvermeidung, z.\,B.:
+						\begin{enumerate}
+							\item Kollisionsdetektion
+							\item Konsequenzen, z.\,B.:
+								\begin{itemize}
+									\item Sofort Anhalten
+									\item Hindernis umfahren
+									\item Weg versperrt
+								\end{itemize}
+						\end{enumerate}
+					\end{minipage}
+				};
+				\coordinate (l) at (-4.3, -9.55);
+				\path (k) -- coordinate(m) (f);
+				\path let \p1 = (l), \p2 = (m) in coordinate (n) at (\x2, \y1);
+				
+				\draw [->] (a) -- (b);
+				\draw [->] (b) -- (c);
+				\draw [->] (c) -- (d);
+				\draw [->] (d) -- (e);
+				\draw [->] (e) -- (f);
+				\draw [->] (f) -- (g);
+				\draw [->] (g) -- (h);
+				\draw [->] (h) -- (i);
+				\draw [->] (i) -- (j) |- (c);
+				\draw [->] (i) -- (j) |- (d);
+				\draw [->] (i) -- (j) |- (e);
+				\draw [->] (i) -- (j) |- (f);
+				\draw [->] (l) -- (n) |- (g);
+				\draw [->] (k) |- (c);
+				\draw [->] (k) |- (d);
+				\draw [->, dashed] (i) to[bend right, in = 205, out = 10] (k);
+				\draw [->, dashed] (h) to[bend left, in = 160, out = 10] (k.south east);
+			\end{tikzpicture}
+			\caption{Hierarchische Auftragsbearbeitung und Planung.}
+			\label{fig:job_processing_and_planning}
+		\end{figure}
 
-		\section{Bahnplanungsarten} % 7.9, 7.10
-			\todo{Content}
+		\section{Bahnplanungsarten}
+			Tabelle~\ref{tab:path_planning_types} zeigt die unterschiedlichen Arten der Bahnplanung auf. Dabei ist zu beachten, dass viele der im Folgenden betrachteten Verfahren ein (nahezu) perfektes Weltmodell voraussetzen. In der Praxis sind jedoch zusätzlich die Unsicherheiten und Eigenschaften der Sensorik sowie die Echtzeitanforderungen eine große Rolle.
+			
+			\begin{table}
+				\centering
+				\begin{tabular}{l|p{6cm}|p{4cm}}
+					\textbf{Art/Ebene der Bahnplanung} & \textbf{Umweltmodell}                                           & \textbf{Robotermodell}      \\ \hline
+					Topologische Wegplanung            & Global (2D): Graph                                              & Punkt                       \\ \hline
+					Geometrische Bahnplanung           & Global (2D, 3D): Zellzerlegung, Voronoi-Diagramm, Potentialfeld & Punkt, \ggf mit Ausdehnung  \\ \hline
+					Kinematische Trajektorienplanung   & Lokal (3D, 4D): \newline Nichtlineare Optimierung               & Kinematisches Robotermodell \\ \hline
+					Kinetische Trajektorienplanung     & Lokal (4D): \newline Dynamische Optimierung                     & Kinetisches Robotermodell
+				\end{tabular}
+				\caption{Arten der Bahnplanung, wobei die Verfahren absteigend von globalen und grob granularen zu lokalen und fein granularen Verfahren sortiert sind.}
+				\label{tab:path_planning_types}
+			\end{table}
 		% end
 
-		\section{Topologische Wegplanung} % 7.11, 7.12, 7.13, 7.14
-			\todo{Content}
+		\section{Topologische Wegplanung}
+			Die \emph{topologischen Wegplanung} basiert auf einer Abstraktion der Umgebung in Form diskreter Orte mit verbindenden Kanten. Oftmals wird dies als kantengewichteter (\ggf gerichteter) Graph dargestellt.
+			
+			Zur Wegplanung wird ein Startknoten \(K_1\) und ein Zielknoten \(K_\text{Ziel}\) angegeben und der günstigste Weg vom Start- zum Zielknoten bestimmt (\zB mit dem Dijkstra- oder A*-Algorithmus). Eine größeres Kantengewicht bedeutet z.\,B., dass
+			\begin{itemize}
+				\item die Passage schwieriger zu passieren ist,
+				\item die Durchfahrt mehr Zeit benötigt (\zB da sie länger ist oder hoch frequentiert) oder
+				\item die Kante häufig versperrt ist.
+			\end{itemize}
+			Es ist möglich, die Kantengewichte adaptiv aus den Erfahrungswerten des Roboters anzupassen.
 		% end
 
-		\section{Konfigurationsraum} % 7.15, 7.16, 7.17, 7.18, 7.19, 7.20, 7.21, 7.22, 7.23, 7.24
-			\todo{Content}
+		\section{Bahnplanung im Arbeitsraum vs. Bahnplanung im Konfigurationsraum}
+			Der Arbeitsraum eines Roboters ist eine Teilmenge des 2- oder 3-dimensionalen kartesischen Raums, wobei Hindernisse durch einfache Hüllen (Kugel, Ellipsoide, Polygone, \dots) approximiert werden. Dabei werden Hindernisse oftmals virtuell vergrößert, sodass die Ausdehnung des Roboters auf einen Punkt reduziert werden kann (dies erleichtert die Bahnplanung, kann jedoch einige Bahnen anscheinend unmöglich machen, auch wenn diese möglich wären).
+			\begin{itemize}
+				\item \textbf{Vorteil:} Der kartesische Arbeitsraum ist intuitiv verständlich.
+				\item \textbf{Nachteile:}
+					\begin{itemize}
+						\item Unerreichbare Zwischenpunkte der geplanten Bahn sind schwerer zu detektieren (die gesamte Bahn muss im erreichbaren Arbeitsraum liegen).
+						\item In der Nähe kinematischer Singularitäten werden hohe Geschwindigkeiten geplant, was bei Gelenkbeschränkungen zu Bahnabweichungen führt.
+						\item Möglicherweise sind Start- oder Ziel-RAN mit unterschiedlichen Gelenkstellungen erreichbar.
+					\end{itemize}
+			\end{itemize}
+			Aufgrund dieser vielen Nachteile wird Bahnplanung und -interpolation im Konfigurationsraum (Gelenkraum) präferiert. Dies führt bei mehr als drei DOF jedoch zu einem hochdimensionalen Planungsraum.
+			
+			Definition: Der \emph{Konfigurationsraum} bezeichnet die Abbildung des (erreichbaren) Arbeitsraum in den Raum aller möglichen Gelenkkonfigurationen unter Berücksichtigung der
+			\begin{itemize}
+				\item Arbeitsraumsituation (Hindernisse, Begrenzungen, \dots),
+				\item räumlicher Ausdehnung des Roboters und
+				\item Kinematikmodell des Roboters.
+			\end{itemize}
+			Für mobile Roboter sind häufig Teilmengen des Arbeits- und Konfigurationsraumes identisch (\zB in der 2-dimensionalen Ebene).
 		% end
 
-		\section{Geometrische Bahnplanung} % 7.25, 7.26, 7.27
-			\todo{Content}
-
-			\subsection{Metrische Darstellung} % 7.28, 7.29
-				\todo{Content}
+		\section{Geometrische Bahnplanung}
+			\subsection{Metrische Darstellung}
+				Die geometrische Bahnplanung basiert auf einer metrischen Darstellung des Raumes. Dies sind diskrete, räumliche Zerlegung des Raumes selbst anstelle der Objekte im Raum. Dieser metrische Raum ist dabei aus elementaren geometrischen 2- oder 3-dimensionalen Körpern (Punkte, Polygone, Kreise; Würfel, Ellipsoide) aufgebaut.
+				
+				Eigenschaften:
+				\begin{itemize}
+					\item Menge von elementaren Grundkörpern zur Beschreibung der Objekte verwendet.
+					\item Menge von Zusammensetzungs- und Verformungsoperatoren zur Manipulation von Objekten.
+				\end{itemize}
+			
+				Probleme:
+				\begin{itemize}
+					\item Stabilität: Kleine Variationen in der Eingabe können zu einer drastischen Veränderung der Darstellung führen. Daher müssen Methoden zur Dämpfung von Schwankungen eingesetzt werden.
+					\item Eindeutigkeit: Verschiedene Umgebungen können die gleiche geometrische Darstellung haben.
+					\item Darstellungsmöglichkeiten: Besondere Eigenschaften der Umwelt sind \mglw nur mangelhaft darstellbar.
+				\end{itemize}
 			% end
 
-			\subsection{Roadmap-Verfahren} % 7.30, 7.31
-				\todo{Content}
+			\subsection{Roadmap-Verfahren} 
+				Bei \emph{Roadmap-Verfahren} werden Verbindungen zwischen Freiräumen im Konfigurationsraum dargestellt (durch ein Netzwerk von eindimensionalen Kurven), was eine "Straßenkarte" \(R\) produziert. Die Bahnplanung erfordert dann die
+				\begin{itemize}
+					\item Identifikation der Anfangs- und Endkonfiguration mit Knoten in \(R\) sowie das
+					\item Suchen eines geeigneten Verbindungspfades in \(R\).
+				\end{itemize}
+				
+				Es gibt verschiedene Verfahren zur Erzeugung von \(R\):
+				\begin{itemize}
+					\item Sichtbarkeitsgraphen
+					\item Tangentengraphen
+					\item Voronoi-Diagramme
+					\item Sonstige: Freeway Nets, Silhouettes
+				\end{itemize}
 
-				\subsubsection{Sichtbarkeitsgraph} % 7.32, 7.33
-					\todo{Content}
+				\subsubsection{Sichtbarkeitsgraph}
+					\textbf{Ansatz:} Der Sichtbarkeitsgraph wird erzeugt aus der Verbindung zwischen allen Eckpunkten der Hindernisse sowie von Start- und Endkonfiguration, wobei die Verbindungen im freien Konfigurationsraum liegen müssen. \\
+					\textbf{Bahnplanung:} Bestimmung des kürzesten Verbindungsweges vom Start- zum Zielknoten.
+					
+					Abbildung~\ref{fig:visibility_graph} zeigt einen beispielhaften Sichtbarkeitsgraph im Konfigurationsraum.
+					
+					\begin{figure}
+						\centering
+						\begin{tikzpicture}
+							\node [fill = black, draw, circle, label = left:Start] (S) at (-1, 0) {};
+							\node [fill = black, draw, circle, label = right:Ziel] (G) at (9, -3) {};
+							
+							\coordinate (a1) at (1, -1);
+							\coordinate (a2) at (2, 1);
+							\coordinate (a3) at (3.5, -1.5);
+							
+							\coordinate (b1) at (4, -4);
+							\coordinate (b2) at (6, 0);
+							\coordinate (b3) at (6.5, -3);
+							
+							\coordinate (c1) at (4, 2);
+							\coordinate (c2) at (4.5, 3);
+							\coordinate (c3) at (6, 2.9);
+							\coordinate (c4) at (5.5, 2.2);
+							
+							\coordinate (d1) at (-3, 4);
+							\coordinate (d2) at (12, 4);
+							\coordinate (d3) at (11, -5);
+							\coordinate (d4) at (-4, -5);
+							
+							\draw [fill = black] (a1) -- (a2) -- (a3) -- cycle;
+							\draw [fill = black] (b1) -- (b2) -- (b3) -- cycle;
+							\draw [fill = black] (c1) -- (c2) -- (c3) -- (c4) -- cycle;
+							
+							\draw [line width = 4pt] (d1) -- (d2) -- (d3) -- (d4) -- cycle;
+							
+							\draw (a1) -- (b1);
+							\draw (a2) -- (b2);
+							\draw (a2) -- (c1);
+							\draw (a2) -- (c2);
+							\draw (a2) -- (c4);
+							\draw (a3) -- (b1);
+							\draw (a3) -- (b2);
+							\draw (a3) -- (c1);
+							\draw (a3) -- (c4);
+							
+							\draw (b1) -- (c1);
+							\draw (b1) -- (c3);
+							\draw (b1) -- (c4);
+							\draw (b2) -- (c1);
+							\draw (b2) -- (c3);
+							\draw (b2) -- (c4);
+							
+							\draw [dashed] (S) -- (a1);
+							\draw [dashed] (S) -- (a2);
+							\draw [dashed] (S) -- (b1);
+							\draw [dashed] (S) -- (c1);
+							\draw [dashed] (S) -- (c2);
+							
+							\draw [dashed] (G) -- (b1);
+							\draw [dashed] (G) -- (b2);
+							\draw [dashed] (G) -- (b3);
+							\draw [dashed] (G) -- (c3);
+							\draw [dashed] (G) -- (c4);
+						\end{tikzpicture}
+						\caption{Sichtbarkeitsgraph mit Start- und Zielknoten im beschränkten Konfigurationsraum, wobei die schwarzen Flächen Hindernisse darstellen. Zur Vereinfachung wurden die Verbindungen zum Konfigurationsraumrand weggelassen.}
+						\label{fig:visibility_graph}
+					\end{figure}
 				% end
 
-				\subsubsection{Tangentengraph} % 7.34, 7.35
-					\todo{Content}
+				\subsubsection{Tangentengraph}
+					Der Sichtbarkeitsgraph enthält sehr viel mehr Informationen, als nötig sind (für je zwei Hindernisse sind nur die kotangenten Verbindungen zwischen vier Eckpunkten relevant). Bei einem \emph{Tangentengraph} werden nur diese Verbindungen betrachtet, \dh der Sichtbarkeitsgraph wird auf diese reduziert.
 				% end
 
-				\subsubsection{Voronoi-Diagramme} % 7.36, 7.37, 7.38
-					\todo{Content}
+				\subsubsection{Voronoi-Diagramme}
+					Eine Schwierigkeit bei Sichtbarkeitsgraphen ist, dass resultierende Bahnen meistens nahe an Hindernissen vorbei gehen, diese sogar berühren können. Daher sind die durch Sichtbarkeitsgraphen generierten Bahnen nur "semi-frei". Einen alternativen Ansatz verfolgen \emph{Voronoi-Diagramme}, bei denen die Bahnen so weit wie möglich von den nächsten Hindernissen entfernt liegen. Diese werden konstruiert, indem die Wege entlang der Punkte gelegt werden, die den gleichen Abstand zu den nächsten Hindernissen haben (wobei der Rand des Arbeitsbereichs als Hindernis zählt). Dadurch haben die Bahnen immer den maximalen Abstand zu den festen Hindernissen.
+					
+					\textbf{Bahnplanung:} Für die Bahnplanung bewegt sich der Roboter zunächst orthogonal zum Voronoi-Diagramm auf dieses zu und bewegt sich anschließend entlang dem Diagramm zum "Absprungpunkt" zum Ziel. Dieser liegt so, dass der Roboter wieder orthogonal zum Diagramm auf das Ziel zubewegt.
+					
+					\textbf{Nachteile:}
+					\begin{itemize}
+						\item Die berechneten Bahnen sind im Vergleich zum Sichtbarkeitsgraphen sehr lang.
+						\item Eckige Bahnen, die nur mit Korrekturen in einer kontinuierlichen Bewegung umsetzbar sind.
+					\end{itemize}
 				% end
 			% end
 
-			\subsection{Exakte Zellzerlegung} % 7.39, 7.40, 7.41, 7.42, 7.43, 7.44, 7.45
-				\todo{Content}
+			\subsection{Exakte Zellzerlegung}
+				\textbf{Ansatz:} Zerlegung des freien Konfigurationsraums in eine Menge an nicht überlappenden, konvexen Gebieten (Zellen), deren Vereinigung genau den freien Konfigurationsraum ergibt. Über die benachbarten Zellen wird dann der Verbindungsgraph (Freiraumgraph) konstruiert. Abbildung~\ref{fig:connection_graph} zeigt eine solche Zellzerlegung. \\
+				\textbf{Bahnplanung:} Zur Bahnplanung wird ein \emph{Kanal} von der Zelle mit Start zur Zelle mit Ziel konstruiert. Aus diesem Kanal wird anschließend eine Bahn konstruiert, \bspw durch Verbinden der Mittelpunkte der Ränder von benachbarten Zellen.
+				
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}
+						\node [fill = black, draw, circle, label = left:Start] (S) at (-1, 0) {};
+						\node [fill = black, draw, circle, label = right:Ziel] (G) at (9, -3) {};
+						
+						\coordinate (a1) at (1, -1);
+						\coordinate (a2) at (2, 1);
+						\coordinate (a3) at (3.5, -1.5);
+						
+						\coordinate (b1) at (4, -4);
+						\coordinate (b2) at (6, 0);
+						\coordinate (b3) at (6.5, -3);
+						
+						\coordinate (c1) at (4, 2);
+						\coordinate (c2) at (4.5, 3);
+						\coordinate (c3) at (6, 2.9);
+						\coordinate (c4) at (5.5, 2.2);
+						
+						\coordinate (d1) at (-3, 4);
+						\coordinate (d2) at (12, 4);
+						\coordinate (d3) at (11, -5);
+						\coordinate (d4) at (-4, -5);
+						
+						\draw [fill = black] (a1) -- (a2) -- (a3) -- cycle;
+						\draw [fill = black] (b1) -- (b2) -- (b3) -- cycle;
+						\draw [fill = black] (c1) -- (c2) -- (c3) -- (c4) -- cycle;
+						
+						\draw [line width = 4pt] (d1) -- (d2) -- (d3) -- (d4) -- cycle;
+						
+						\draw (a1) -- (d4);
+						\draw (a2) -- (d1);
+						\draw (a2) -- (c1);
+						\draw (a3) -- (b1);
+						\draw (a3) -- (b2);
+						\draw (a3) -- (c4);
+						
+						\draw (b1) -- (d3);
+						\draw (b1) -- (d4);
+						\draw (b2) -- (c4);
+						\draw (b2) -- (d2);
+						\draw (b3) -- (d3);
+						
+						\draw (c2) -- (d1);
+						\draw (c3) -- (d2);
+					\end{tikzpicture}
+					\caption{Zellzerlegung mit Start- und Zielknoten im beschränkten Konfigurationsraum, wobei die schwarzen Flächen Hindernisse darstellen.}
+					\label{fig:connection_graph}
+				\end{figure}
+			
+				\subsubsection{Trapez-Zerlegung}
+					Der Aufwand einer solchen konvexen, optimalen Zellzerlegung ist mindestens polynomial in der Anzahl der Polygonecken der Zerlegung. Eine einfachere Variante stellt die \emph{Trapez-Zerlegung} dar.
+					
+					Dabei wird eine vertikale Linie (\bzw Hyper-Ebene) von links nach rechts durch den Konfigurationsraum geschoben. Schneidet sich die Linie mit einem Eckpunkt, so wird eine Gerade vom Schnittpunkt zum Rand, \bzw bis zum nächsten Hindernis erzeugt. Dies führt zu einer Zerlegung in trapezförmige oder dreieckige Zellen.
+					
+					Die Bahnplanung funktioniert dann wie bei einer optimalen Zellzerlegung.
+					
+					\begin{figure}
+						\centering
+						\begin{tikzpicture}
+							\node [fill = black, draw, circle, label = left:Start] (S) at (-1, 0) {};
+							\node [fill = black, draw, circle, label = right:Ziel] (G) at (9, -3) {};
+							
+							\coordinate (a1) at (1, -1);
+							\coordinate (a2) at (2, 1);
+							\coordinate (a3) at (3.5, -1.5);
+							
+							\coordinate (b1) at (4, -4);
+							\coordinate (b2) at (6, 0);
+							\coordinate (b3) at (6.5, -3);
+							
+							\coordinate (c1) at (4, 2);
+							\coordinate (c2) at (4.5, 3);
+							\coordinate (c3) at (6, 2.9);
+							\coordinate (c4) at (5.5, 2.2);
+							
+							\coordinate (d1) at (-3, 4);
+							\coordinate (d2) at (12, 4);
+							\coordinate (d3) at (11, -5);
+							\coordinate (d4) at (-4, -5);
+							
+							\draw [fill = black] (a1) -- (a2) -- (a3) -- cycle;
+							\draw [fill = black] (b1) -- (b2) -- (b3) -- cycle;
+							\draw [fill = black] (c1) -- (c2) -- (c3) -- (c4) -- cycle;
+							
+							\draw [line width = 4pt] (d1) -- (d2) -- (d3) -- (d4) -- cycle;
+							
+							\draw (-3, 4) -- (-3, -5);
+							\draw (1, 4) -- (1, -5);
+							\draw (2, 4) -- (2, 1);
+							\draw (3.5, 4) -- (3.5, -5);
+							\draw (4, 4) -- (4, -5);
+							\draw (4.5, 4) -- (4.5, 3);
+							\draw (6, 4) -- (6, 0);
+							\draw (6.5, 4) -- (6.5, -5);
+							\draw (11, 4) -- (11, -5);
+						\end{tikzpicture}
+						\caption{Trapez-Zerlegung mit Start- und Zielknoten im beschränkten Konfigurationsraum, wobei die schwarzen Flächen Hindernisse darstellen.}
+						\label{fig:connection_graph_trapeze}
+					\end{figure}
+				% end
 			% end
 
-			\subsection{Approximative Zellzerlegung} % 7.46, 7.47, 7.48, 7.49
-				\todo{Content}
+			\subsection{Approximative Zellzerlegung}
+				Ein Vorteil der Zellzerlegung liegt darin, dass lokale Änderungen der Umwelt nur lokale Änderungen der Repräsentation (im Unterschied zum Roadmap-Verfahren). Bei der exakten Zellzerlegung ergibt die Vereinigung der Zellen exakt den Freiraum. Eine approximative Zellzerlegung
+				\begin{itemize}
+					\item verwendet nur Zellen fester, vorgegebener Größe(n),
+					\item die Vereinigung der Zellen ist eine Teilmenge des Freiraums und
+					\item der Rand einer Zelle hat meistens keine physikalische Bedeutung.
+				\end{itemize}
+				Wie in Abbildung~\ref{fig:approx_cell_decomposition} wird der Raum rekursiv in immer vier gleich Große Zellen zerlegt. Daraus kann ein Quadtree erstellt werden, dessen Knoten die folgenden Werte haben können:
+				\begin{itemize}
+					\item Nur Freiraum:  \tabto{3cm} \whiteBox
+					\item Nur Hindernis: \tabto{3cm} \blackBox
+					\item Gemischt:      \tabto{3cm} \grayBox
+				\end{itemize}
+				Der Raum wird solange weiter zerlegt, bis die maximale Auflösung erreicht wurde. Die Knoten werden dabei in der Reihenfolge
+				\begin{table}[H]
+					\centering
+					\begin{tabular}{|c|c|}
+						\hline
+						\num{1} & \num{2} \\ \hline
+						\num{3} & \num{4} \\ \hline
+					\end{tabular}
+				\end{table}
+				von links nach rechts gelistet. Abbildung~\ref{fig:approx_cell_decomposition_quadtree} zeigt den Quadtree des vierten Quadranten der approximativen Zerlegung aus Abbildung~\ref{fig:approx_cell_decomposition}.
+				
+				Das Verfahren lässt sich analog auf einen 3- oder \(n\)-dimensionalen Raum anwenden.
+			
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}
+						\coordinate (a1) at (1, -1);
+						\coordinate (a2) at (2, 1);
+						\coordinate (a3) at (3.5, -1.5);
+						
+						\coordinate (b1) at (4, -4);
+						\coordinate (b15) at (5, 0);
+						\coordinate (b2) at (6.5, 1);
+						\coordinate (b3) at (6.5, -3);
+						
+						\coordinate (c1) at (4, 2);
+						\coordinate (c2) at (4.5, 3);
+						\coordinate (c3) at (6, 2.9);
+						\coordinate (c4) at (5.5, 2.2);
+						
+						\coordinate (d1) at (-1, 5);
+						\coordinate (d2) at (9, 5);
+						\coordinate (d3) at (9, -5);
+						\coordinate (d4) at (-1, -5);
+						
+						\draw [fill = black] (a1) -- (a2) -- (a3) -- cycle;
+						\draw [fill = black] (b1) -- (b15) -- (b2) -- (b3) -- cycle;
+						\draw [fill = black] (c1) -- (c2) -- (c3) -- (c4) -- cycle;
+						
+						\draw [line width = 4pt] (d1) -- (d2) -- (d3) -- (d4) -- cycle;
+						
+						\draw [color = tud3b, line width = 3pt, step = 5, xshift = -1cm] (d1) grid +(10, -10);
+						\draw [color = tud3b, line width = 2pt, step = 2.5, xshift = -1cm] (d1) grid +(10, -10);
+						\draw [color = tud3b, line width = 1pt] (0.25, 0) -- (0.25, -2.5);
+						\draw [color = tud3b, line width = 1pt] (2.75, 2.5) -- (2.75, -2.5);
+						\draw [color = tud3b, line width = 1pt] (5.25, 5) -- (5.25, -5);
+						\draw [color = tud3b, line width = 1pt] (-1, -1.25) -- (6.5, -1.25);
+						\draw [color = tud3b, line width = 1pt] (4, -3.75) -- (6.5, -3.75);
+						\draw [color = tud3b, line width = 1pt] (1.5, 1.25) -- (6.5, 1.25);
+						\draw [color = tud3b, line width = 1pt] (4, 3.75) -- (6.5, 3.75);
+					\end{tikzpicture}
+					\caption{Approximative Zellzerlegung im beschränkten Konfigurationsraum, wobei die schwarzen Flächen Hindernisse darstellen.}
+					\label{fig:approx_cell_decomposition}
+				\end{figure}
+			
+				\begin{figure}
+					\Tree[.{\grayBox}
+						[.{\grayBox}
+							{\grayBox}
+							{\blackBox}
+							{\grayBox}
+							{\blackBox}
+						]
+						{\whiteBox}
+						[.{\grayBox}
+							{\grayBox}
+							{\grayBox}
+							{\grayBox}
+							{\whiteBox}
+						]
+						{\whiteBox}
+					]
+					\caption{Quadtree des vierten Quadranten der approximativen Zerlegung aus Abbildung~\ref{fig:approx_cell_decomposition}.}
+					\label{fig:approx_cell_decomposition_quadtree}
+				\end{figure}
 			% end
 
 			\subsection{Potentialfeld-Methoden} % 7.50, 7.51, 7.52, 7.53, 7.54, 7.55, 7.56
-				\todo{Content}
+				Zerlegungs-Verfahren beruhen auf der Suche in einem diskreten (\bzw diskretisierten) Raum. Eine alternative sind Heuristiken zur (lokalen) Suche in einem kontinuierlichem Raum.
+				
+				Bei \emph{Potentialfeld-Methoden} werden Objekte als geladene, punktförmige Teilchen betrachtet, wobei das
+				\begin{itemize}
+					\item Ziel \( \vec{q}_\text{Ziel} \) ein anziehendes Potential \( U_\text{Ziel} \) hat und
+					\item Hindernisse ein abstoßendes Potential \( U_\text{Hindernis} \) haben.
+				\end{itemize}
+				Daraus ergibt für jede Konfiguration \( \vec{q} \) ein Potential \(U\):
+				\begin{equation*}
+					U(\vec{q}) = U_\text{Ziel}(\vec{q}) + \sum U_\text{Hindernis}(\vec{q})
+				\end{equation*}
+				Auf den Roboter wirkt dann eine fiktive Anziehungskraft als Gradient des Potentialfelds:
+				\begin{equation*}
+					\vec{F}(\vec{q}) = -\vec{\nabla} U(\vec{q}) =
+						- \begin{bmatrix}
+							\partial U / \partial q_1 \\
+							\vdots \\
+							\partial U / \partial q_n
+						\end{bmatrix}
+				\end{equation*}
+				Dies entspricht dem Verfahren des steilsten Abstiegs (Steepest Descent) zur Minimierung des Gesamtpotentials.
+				
+				\paragraph{Berechnung}
+					Es sind viele verschiedene Definitionen der Potentiale möglich, z.\,B.:
+					\begin{align*}
+						U_\text{Ziel}(\vec{q}) &\coloneqq \alpha \cdot \text{dist}(\vec{q}, \text{Ziel})^2 \\
+						U_\text{Hindernis}(\vec{q}) &\coloneqq \frac{\beta}{\beta_0 + \text{dist}(\vec{q}, \text{Hindernis})}
+					\end{align*}
+					mit geeigneten zu wählenden Parametern \( \alpha, \beta, \beta_0 > 0 \), wobei \( \beta_0 \) die Potentialhöhe der Hindernisse festlegt (\( \beta_0 = 0 \) entspricht einem unendlichen Potential, \dh einer Barriere). \( \text{dist}(\vec{q}, \text{Hindernis}) \) entspricht dem minimalen Abstand des Punktes zum Hindernis, wobei "Null" bedeutet, dass der Punkt im Hindernis liegt.
+					
+					Für \( U_\text{Hindernis}(\vec{q}) \) gibt es unterschiedliche Berechnungsvarianten, z.\,B.:
+					\begin{itemize}
+						\item nur zum nächsten Hindernis oder
+						\item summiert über alle Hindernisse (in der Nähe).
+					\end{itemize}
+				% end
+				
+				\paragraph{Diskussion}
+					\begin{itemize}
+						\item \textbf{Vorteile:}
+							\begin{itemize}
+								\item Einfache Algorithmen.
+								\item Glatte Bahnformen.
+								\item Online einsetzbar, \dh die Planung mit aktuellen Sensordaten ist in Echtzeit mit der Regelung koppelbar.
+							\end{itemize}
+						\item \textbf{Nachteil:}
+							\begin{itemize}
+								\item Die Gefahr, in lokalen Minima hängen zu bleiben, ist groß.
+							\end{itemize}
+					\end{itemize}
+				
+					Abhilfen \bzgl der lokalen Minima sind z.\,B.:
+					\begin{itemize}
+						\item Konstruktion eines Potentials ohne lokales Minima, \zB über Strömungsmodelle (hohe Rechenzeiten).
+						\item Erhöhung des Abstoßungspotentials in einer Region, in der ein lokales Minima erkannt wurde (dieses als Hindernis markieren).
+						\item Kopplung der lokalen Potentialfeld-Methode mit einem globalen Verfahren:
+							\begin{itemize}
+								\item Randomisierte Bahnplaner (entkommen aus den Minima durch stochastische Suche).
+								\item Verwendung von globalen Zellzerlegungs-Verfahren zur Generierung einer Ausgangsbahn.
+							\end{itemize}
+					\end{itemize}
+				% end
 			% end
 
-			\subsection{Komplexität} % 7.57, 7.58, 7.59
-				\todo{Content}
+			\subsection{Komplexität der geometrischen Bahnplanung}
+				Eine obere Schranke der Komplexität der (globalen) Bahnplanung im Konfigurationsraum wurde von Schwartz und Sharir im Jahre 1983 gefunden:
+				\begin{itemize}
+					\item Die Komplexität des Problems wächst (vermutlich immer) exponentiell in der Anzahl der Roboterfreiheitsgrade.
+					\item Wenn es schnellere Algorithmen geben sollte, so benötigen diese mindestens polynomiale Zeit \bzgl \(n\).
+				\end{itemize}
+			
+				Anmerkungen:
+				\begin{itemize}
+					\item In Spezialfällen mit besonderen Geometrien kann die Komplexität niedriger sein.
+					\item Im Allgemeinen wächst die Komplexität weiter an, wenn sich die Hindernisse bewegen und/oder Unsicherheiten berücksichtigt werden.
+					\item Alle gängigen Bahnplanungsverfahren sind "unvollständig" \bzw beruhen auf Heuristiken oder Diskretisierungen.
+				\end{itemize}
 			% end
 
-			\subsection{Stichprobenverfahren} % 7.61, 7.62, 7.63, 7.64, 7.65
-				\todo{Content}
+			\subsection{Stichprobenverfahren}
+				Ein Stichprobenverfahren zur Erstellung einer \emph{Probabilistic Roadmap} (PRM) besteht aus folgenden Schritten:
+				\begin{enumerate}
+					\item Generieren von zufälligen Stichproben von Konfigurationen (Abbildung~\ref{fig:prm_step1}).
+					\item Entfernen von Stichproben im verbotenem Bereich (Abbildung~\ref{fig:prm_step2}).
+					\item Verbinden jeder Stichproben mit den \(k\) nächsten (noch nicht verbundenen) Nachbarn (Abbildung~\ref{fig:prm_step3}).
+					\item Entfernen von allen Verbindungen, die durch eine verbotene Region gehen (Abbildung~\ref{fig:prm_step4}).
+				\end{enumerate}
+				Der daraus entstehende (\mglw nicht-planare) Graph ist eine "probabilistische Straßenkarte" (Probabilistic Roadmap, PRM) (Abbildung~\ref{fig:prm_step5}). Die Bahnplanung kann dann unter Verwendung von Graphenalgorithmen (\zB A*) stattfinden.
+
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}
+						\coordinate (a1) at (1, -1);
+						\coordinate (a2) at (2, 1);
+						\coordinate (a3) at (3.5, -1.5);
+						
+						\coordinate (b1) at (4, -4);
+						\coordinate (b2) at (6, 0);
+						\coordinate (b3) at (6.5, -3);
+						
+						\coordinate (c1) at (4, 2);
+						\coordinate (c2) at (4.5, 3);
+						\coordinate (c3) at (6, 2.9);
+						\coordinate (c4) at (5.5, 2.2);
+						
+						\coordinate (d1) at (-1, 4);
+						\coordinate (d2) at (9, 4);
+						\coordinate (d3) at (9, -5);
+						\coordinate (d4) at (-1, -5);
+						
+						\draw [fill = black] (a1) -- (a2) -- (a3) -- cycle;
+						\draw [fill = black] (b1) -- (b2) -- (b3) -- cycle;
+						\draw [fill = black] (c1) -- (c2) -- (c3) -- (c4) -- cycle;
+						
+						\draw [line width = 4pt] (d1) -- (d2) -- (d3) -- (d4) -- cycle;
+						
+						\node [draw, circle, fill = white] (a) at (0, 1) {};
+						\node [draw, circle, fill = white] (b) at (4, 2) {};
+						\node [draw, circle, fill = white] (c) at (7, -4) {};
+						\node [draw, circle, fill = white] (d) at (5, 2) {};
+						\node [draw, circle, fill = white] (e) at (3, 1) {};
+						\node [draw, circle, fill = white] (f) at (3, -2) {};
+						\node [draw, circle, fill = white] (g) at (7, -5) {};
+						\node [draw, circle, fill = white] (h) at (4, -2) {};
+						\node [draw, circle, fill = white] (i) at (8, -5) {};
+						\node [draw, circle, fill = white] (j) at (9, -4) {};
+						\node [draw, circle, fill = white] (k) at (1, -4) {};
+						\node [draw, circle, fill = white] (l) at (9, 0) {};
+						\node [draw, circle, fill = white] (m) at (5, 0) {};
+						\node [draw, circle, fill = white] (n) at (8, -4) {};
+						\node [draw, circle, fill = white] (o) at (5, 4) {};
+						\node [draw, circle, fill = white] (p) at (7, 1) {};
+						\node [draw, circle, fill = white] (q) at (1, 3) {};
+						\node [draw, circle, fill = white] (r) at (1, -3) {};
+						\node [draw, circle, fill = white] (s) at (5, 3) {};
+						\node [draw, circle, fill = white] (t) at (3, -5) {};
+					\end{tikzpicture}
+					\caption{Probabilistic Roadmap, Schritt 1: Zufällige Stichproben von Konfigurationen.}
+					\label{fig:prm_step1}
+				\end{figure}
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}
+						\coordinate (a1) at (1, -1);
+						\coordinate (a2) at (2, 1);
+						\coordinate (a3) at (3.5, -1.5);
+						
+						\coordinate (b1) at (4, -4);
+						\coordinate (b2) at (6, 0);
+						\coordinate (b3) at (6.5, -3);
+						
+						\coordinate (c1) at (4, 2);
+						\coordinate (c2) at (4.5, 3);
+						\coordinate (c3) at (6, 2.9);
+						\coordinate (c4) at (5.5, 2.2);
+						
+						\coordinate (d1) at (-1, 4);
+						\coordinate (d2) at (9, 4);
+						\coordinate (d3) at (9, -5);
+						\coordinate (d4) at (-1, -5);
+						
+						\draw [fill = black] (a1) -- (a2) -- (a3) -- cycle;
+						\draw [fill = black] (b1) -- (b2) -- (b3) -- cycle;
+						\draw [fill = black] (c1) -- (c2) -- (c3) -- (c4) -- cycle;
+						
+						\draw [line width = 4pt] (d1) -- (d2) -- (d3) -- (d4) -- cycle;
+						
+						\node [draw, circle, fill = white] (a) at (0, 1) {};
+						\node [draw, circle, fill = white] (c) at (7, -4) {};
+						\node [draw, circle, fill = white] (e) at (3, 1) {};
+						\node [draw, circle, fill = white] (f) at (3, -2) {};
+						\node [draw, circle, fill = white] (h) at (4, -2) {};
+						\node [draw, circle, fill = white] (k) at (1, -4) {};
+						\node [draw, circle, fill = white] (m) at (5, 0) {};
+						\node [draw, circle, fill = white] (n) at (8, -4) {};
+						\node [draw, circle, fill = white] (p) at (7, 1) {};
+						\node [draw, circle, fill = white] (q) at (1, 3) {};
+						\node [draw, circle, fill = white] (r) at (1, -3) {};
+						\node [draw, circle, fill = tud9b] (b) at (4, 2) {};
+						\node [draw, circle, fill = tud9b] (d) at (5, 2) {};
+						\node [draw, circle, fill = tud9b] (g) at (7, -5) {};
+						\node [draw, circle, fill = tud9b] (i) at (8, -5) {};
+						\node [draw, circle, fill = tud9b] (j) at (9, -4) {};
+						\node [draw, circle, fill = tud9b] (l) at (9, 0) {};
+						\node [draw, circle, fill = tud9b] (o) at (5, 4) {};
+						\node [draw, circle, fill = tud9b] (s) at (5, 3) {};
+						\node [draw, circle, fill = tud9b] (t) at (3, -5) {};
+					\end{tikzpicture}
+					\caption{Probabilistic Roadmap, Schritt 2: Entfernung der "verbotenen" Stichproben.}
+					\label{fig:prm_step2}
+				\end{figure}
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}
+						\coordinate (a1) at (1, -1);
+						\coordinate (a2) at (2, 1);
+						\coordinate (a3) at (3.5, -1.5);
+						
+						\coordinate (b1) at (4, -4);
+						\coordinate (b2) at (6, 0);
+						\coordinate (b3) at (6.5, -3);
+						
+						\coordinate (c1) at (4, 2);
+						\coordinate (c2) at (4.5, 3);
+						\coordinate (c3) at (6, 2.9);
+						\coordinate (c4) at (5.5, 2.2);
+						
+						\coordinate (d1) at (-1, 4);
+						\coordinate (d2) at (9, 4);
+						\coordinate (d3) at (9, -5);
+						\coordinate (d4) at (-1, -5);
+						
+						\draw [fill = black] (a1) -- (a2) -- (a3) -- cycle;
+						\draw [fill = black] (b1) -- (b2) -- (b3) -- cycle;
+						\draw [fill = black] (c1) -- (c2) -- (c3) -- (c4) -- cycle;
+						
+						\draw [line width = 4pt] (d1) -- (d2) -- (d3) -- (d4) -- cycle;
+						
+						\node [draw, circle, fill = white] (a) at (0, 1) {a};
+						\node [draw, circle, fill = white] (b) at (1, 3) {b};
+						\node [draw, circle, fill = white] (c) at (1, -3) {c};
+						\node [draw, circle, fill = white] (d) at (1, -4) {d};
+						\node [draw, circle, fill = white] (e) at (3, 1) {e};
+						\node [draw, circle, fill = white] (f) at (3, -2) {f};
+						\node [draw, circle, fill = white] (g) at (4, -2) {g};
+						\node [draw, circle, fill = white] (h) at (5, 0) {h};
+						\node [draw, circle, fill = white] (i) at (7, -4) {i};
+						\node [draw, circle, fill = white] (j) at (7, 1) {j};
+						\node [draw, circle, fill = white] (k) at (8, -4) {k};
+						
+						\draw (a) -- (b);
+						\draw (a) -- (e);
+					\end{tikzpicture}
+					\caption{Probabilistic Roadmap, Schritt 3: Verbinden jeder gültigen Stichprobe mit den \( k = 2 \) nächsten Nachbar.}
+					\label{fig:prm_step3}
+				\end{figure}
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}
+						\coordinate (a1) at (1, -1);
+						\coordinate (a2) at (2, 1);
+						\coordinate (a3) at (3.5, -1.5);
+						
+						\coordinate (b1) at (4, -4);
+						\coordinate (b2) at (6, 0);
+						\coordinate (b3) at (6.5, -3);
+						
+						\coordinate (c1) at (4, 2);
+						\coordinate (c2) at (4.5, 3);
+						\coordinate (c3) at (6, 2.9);
+						\coordinate (c4) at (5.5, 2.2);
+						
+						\coordinate (d1) at (-1, 4);
+						\coordinate (d2) at (9, 4);
+						\coordinate (d3) at (9, -5);
+						\coordinate (d4) at (-1, -5);
+						
+						\draw [fill = black] (a1) -- (a2) -- (a3) -- cycle;
+						\draw [fill = black] (b1) -- (b2) -- (b3) -- cycle;
+						\draw [fill = black] (c1) -- (c2) -- (c3) -- (c4) -- cycle;
+						
+						\draw [line width = 4pt] (d1) -- (d2) -- (d3) -- (d4) -- cycle;
+						
+						\node [draw, circle, fill = white] (a) at (0, 1) {a};
+						\node [draw, circle, fill = white] (b) at (1, 3) {b};
+						\node [draw, circle, fill = white] (c) at (1, -3) {c};
+						\node [draw, circle, fill = white] (d) at (1, -4) {d};
+						\node [draw, circle, fill = white] (e) at (3, 1) {e};
+						\node [draw, circle, fill = white] (f) at (3, -2) {f};
+						\node [draw, circle, fill = white] (g) at (4, -2) {g};
+						\node [draw, circle, fill = white] (h) at (5, 0) {h};
+						\node [draw, circle, fill = white] (i) at (7, -4) {i};
+						\node [draw, circle, fill = white] (j) at (7, 1) {j};
+						\node [draw, circle, fill = white] (k) at (8, -4) {k};
+						
+						\draw (a) -- (b);
+						\draw [color = tud9b] (a) -- (e);
+						
+						\draw (b) -- (e);
+						\draw (b) -- (h);
+						
+						\draw (c) -- (d);
+						\draw (c) -- (f);
+						
+						\draw (d) -- (f);
+						\draw (d) -- (g);
+						
+						\draw (e) -- (h);
+						\draw [color = tud9b] (e) -- (f);
+						
+						\draw (f) -- (g);
+						\draw [color = tud9b] (f) -- (h);
+						
+						\draw [color = tud9b] (g) -- (i);
+						\draw [color = tud9b] (g) -- (j);
+						
+						\draw (h) -- (g);
+						\draw (h) -- (j);
+						
+						\draw (i) -- (k);
+						\draw (i) -- (j);
+						
+						\draw (j) -- (e);
+						\draw (j) -- (f);
+						
+						\draw [color = tud9b] (k) -- (g);
+						\draw [color = tud9b] (k) -- (h);
+					\end{tikzpicture}
+					\caption{Probabilistic Roadmap, Schritt 4: Entfernen der "verbotenen" Verbindungen.}
+					\label{fig:prm_step4}
+				\end{figure}
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}
+						\coordinate (a1) at (1, -1);
+						\coordinate (a2) at (2, 1);
+						\coordinate (a3) at (3.5, -1.5);
+						
+						\coordinate (b1) at (4, -4);
+						\coordinate (b2) at (6, 0);
+						\coordinate (b3) at (6.5, -3);
+						
+						\coordinate (c1) at (4, 2);
+						\coordinate (c2) at (4.5, 3);
+						\coordinate (c3) at (6, 2.9);
+						\coordinate (c4) at (5.5, 2.2);
+						
+						\coordinate (d1) at (-1, 4);
+						\coordinate (d2) at (9, 4);
+						\coordinate (d3) at (9, -5);
+						\coordinate (d4) at (-1, -5);
+						
+						\draw [fill = black] (a1) -- (a2) -- (a3) -- cycle;
+						\draw [fill = black] (b1) -- (b2) -- (b3) -- cycle;
+						\draw [fill = black] (c1) -- (c2) -- (c3) -- (c4) -- cycle;
+						
+						\draw [line width = 4pt] (d1) -- (d2) -- (d3) -- (d4) -- cycle;
+						
+						\node [draw, circle, fill = white] (a) at (0, 1) {a};
+						\node [draw, circle, fill = white] (b) at (1, 3) {b};
+						\node [draw, circle, fill = white] (c) at (1, -3) {c};
+						\node [draw, circle, fill = white] (d) at (1, -4) {d};
+						\node [draw, circle, fill = white] (e) at (3, 1) {e};
+						\node [draw, circle, fill = white] (f) at (3, -2) {f};
+						\node [draw, circle, fill = white] (g) at (4, -2) {g};
+						\node [draw, circle, fill = white] (h) at (5, 0) {h};
+						\node [draw, circle, fill = white] (i) at (7, -4) {i};
+						\node [draw, circle, fill = white] (j) at (7, 1) {j};
+						\node [draw, circle, fill = white] (k) at (8, -4) {k};
+						
+						\draw (a) -- (b);
+						
+						\draw (b) -- (e);
+						\draw (b) -- (h);
+						
+						\draw (c) -- (d);
+						\draw (c) -- (f);
+						
+						\draw (d) -- (f);
+						\draw (d) -- (g);
+						
+						\draw (e) -- (h);
+						
+						\draw (f) -- (g);
+						
+						\draw (h) -- (g);
+						\draw (h) -- (j);
+						
+						\draw (i) -- (k);
+						\draw (i) -- (j);
+						
+						\draw (j) -- (e);
+						\draw (j) -- (f);
+					\end{tikzpicture}
+					\caption{Probabilistic Roadmap, Ergebnis: Der resultierende (nicht-planare) Graph ist die Probabilistic Roadmap (PRM)}
+					\label{fig:prm_step5}
+				\end{figure}
+			
+				\paragraph{Allgemeines Vorgehen}
+					Das allgemeine Vorgehen von Stichprobenverfahren ist erst die Diskretisierung durch Stichproben und anschließende Graphensuche. Dabei gibt es zwei Kategorien von Graphbasierten Verfahren:
+					\begin{itemize}
+						\item Informiertes (heuristisches) Suchen
+						\item Uninformiertes (blindes) Suchen
+					\end{itemize}
+					Es ist wichtig, dass die Stichproben "gut" gewählt werden, z.\,B.:
+					\begin{itemize}
+						\item Gleichförmige Stichprobenverteilung
+						\item mehr Stichproben bei Punkten mit wenigen Nachbarn
+						\item mehr Stichproben bei Hindernissen
+					\end{itemize}
+				
+					Durch korrekte (zulässige) Heuristiken kann eine enorme Performanzverbesserung erzielt werden. In der Praxis ist die Auswahl solcher Heuristiken jedoch kompliziert\dots
+				% end
 			% end
 
-			\subsection{Rapidly Exploring Random Trees (RRTs)} % 7.66
-				\todo{Content}
+			\subsection{Rapidly Exploring Random Trees (RRTs)}
+				Siehe Algorithmus~\ref{alg:rrt}.
+				
+				\begin{algorithm}
+					\KwData{\( x_\mathit{init} \), \( K \), \( \Delta t \)}
+					\Begin{
+						\(\mathcal{T}.\text{init}(x_\mathit{init}) \) \;
+						\For{\( k = 1 \) to \( K \)}{
+							\( x_\mathit{rand} \gets \text{RANDOM\_STATE}() \) \;
+							\( x_\mathit{near} \gets \text{NEAREST\_NEIGHBOR}(x_\mathit{rand}, \mathcal{T}) \) \;
+							\( u \gets \text{SELECT\_INPUT}(x_\mathit{rand}, x_\mathit{near}) \) \;
+							\( x_\mathit{new} \gets \text{NEW\_STATE}(x_\mathit{near}, u, \Delta t) \) \;
+							\( \mathcal{T}.\text{add\_vertex}(x_\mathit{new}) \) \;
+							\( \mathcal{T}.\text{add\_edge}(x_\mathit{near}, x_\mathit{new}, u) \) \;
+						}
+						\Return \(\mathcal{T}\) \;
+					}
+					\caption{Rapidly Exploring Random Trees}
+					\label{alg:rrt}
+				\end{algorithm}
 			% end
 
-			\subsection{Beispiele} % 7.67, 7.68, 7.69
-				\todo{Content}
+			\subsection{Beispiel: MINERVA}
+				MINERVA ist ein Museumstourführungsroboter.
+				
+				\subsubsection{Umweltmodell: Belegungskarte}
+					\begin{itemize}
+						\item Die Umgebungskarte wird eingeteilt in ein Netz aus quadratischen Zellen, wobei freie Stellen hell und Hindernisse dunkel markiert werden.
+						\item Diese \emph{Belegungskarte} erlernt der Roboter selbstständig (durch Herumfahren).
+						\item Die Verknüpfung der beiden Problemstellungen (Aufbau einer Karte und Bestimmung der Position/Orientierung) wird als \emph{SLAM} (Self Localization and Mapping) bezeichnet.
+						\item Die Bewegungskarte wird dabei in zwei Schritten aufgebaut:
+							\begin{enumerate}
+								\item Erfassung von Laser-, Sonar und Odometriedaten.
+								\item Fusion der Sensordaten zur Berechnung der Umgebungskarte und der Position/Orientierung des Roboters.
+							\end{enumerate}
+						\item Die Bahnplanung (mittels Kostenminimierung) erfolgt anschließend auf Basis der Belegungskarte, wobei diese während der Fahrt bei Bedarf neu berechnet wird.
+						\item Schwierigkeiten:
+							\begin{itemize}
+								\item Kürzeste-Wege-Planer sind prinzipiell einsetzbar, allerdings ist in weiten, offenen Umgebung das Versagen der externen Distanzsensoren möglich.
+								\item Eine Abhilfe ist, bei der Bahnplanung die für Sensoren günstigen Positionen zu berücksichtigen (\zB nahe am Rand).
+							\end{itemize}
+					\end{itemize}
+				% end
 
-				\subsubsection{MINERVA} % 7.70
-					\todo{Content}
+				\subsubsection{"Küstennahe" Bahnplanung}
+					Bei der "küstennahen" Bahnplanung wird versucht, den Roboter möglichst nah an Wänden (\bzw Allgemein dem Rand der Karte) zu fahren.
+				% end
 
-					\paragraph{Umweltmodell: Belegungskarte} % 7.71, 7.72, 7.73, 7.74
-						\todo{Content}
-					% end
-
-					\paragraph{"Küstennahe" Bahnplanung} % 7.75
-						\todo{Content}
-					% end
-
-					\paragraph{Kollisionsvermeidung} % 7.76, 7.77
-						\todo{Content}
-					% end
+				\subsubsection{Kollisionsvermeidung (MINERVA)}
+					\begin{itemize}
+						\item Das Kollisionsvermeidungs-Modul steuert sowohl die momentane Bewegungsrichtung als auch die Geschwindigkeit.
+						\item Dabei wird die Roboterkinematik und -dynamik berücksichtigt (Masseträgheiten, maximale und minimale Drehmomente der Radantriebe).
+						\item \(\mu\text{DWA}\) (Dynamic Window Algorithm):
+							\begin{itemize}
+								\item Eingabe: Rohe Abstandsmesswerte (sowohl gemessene als auch simulierte) und Zielposition.
+								\item Ausgabe: Sollwert für die lineare und Drehwinkel-Geschwindigkeit.
+								\item Berücksichtigung von: harten Beschränkungen (der Roboter muss immer vor dem Aufprall auf ein Hindernis zum Stehen) kommen müssen sowie von weichen Beschränkungen (maximale/minimale Momente, Abstand zum Ziel verringern, Abstand zu Hindernissen groß halten (unterschiedlich Gewichtet)).
+							\end{itemize}
+					\end{itemize}
 				% end
 			% end
 		% end
 
-		\section{Kinematische und dynamische Trajektorienplanung} % 7.78, 7.79, 7.80, 7.81, 7.82
-			\todo{Content}
+		\section{Kinematische und dynamische Trajektorienplanung}
+			Bei der kinematischen und dynamischen (kinetischen) Trajektorienplanung werden zusätzlich zu den geometrischen Anforderungen auch die kinematischen \bzw kinetischen Anforderungen des Robotermodells berücksichtigt.
 
-			\subsection{Allgemeine Formulierung} % 7.83, 7.84, 7.85
-				\todo{Content}
-			% end
-
-			\subsection{Beispiel: Industrieroboter} % 7.86, 7.87, 7.88
-				\todo{Content}
+			\subsection{Allgemeine Formulierung}
+				Es ist die Systemdynamik
+				\begin{equation*}
+					\dot{\vec{x}}(t) = \vec{f}\big(\vec{x}(t), \vec{u}(t), t\big) =
+						\begin{bmatrix}
+							f_1\big(\vec{x}(t), \vec{u}(t), t\big) \\
+							\vdots \\
+							f_m\big(\vec{x}(t), \vec{u}(t), t\big)
+						\end{bmatrix}
+				\end{equation*}
+				mit den Zustandsvariablen \( \vec{x}(t) = \begin{bmatrix} x_1(t) & \cdots & x_m(t) \end{bmatrix}^T \) und den Steuergrößen \( \vec{u}(t) = \begin{bmatrix} u_1(t) & \cdots & u_l(t) \end{bmatrix}^T \), die bestimmten Steuerbeschränkungen
+				\begin{equation*}
+					\vec{u}(t) \leq \vec{u}_\mathit{max} \quad\iff\quad
+						\begin{matrix}
+							u_1(t) \leq u_{1, \mathit{max}} \\
+							\vdots \\
+							u_l(t) \leq u_{l, \mathit{max}}
+						\end{matrix}
+				\end{equation*}
+				unterliegen. Für Anfangswerte \( \vec{x}(0) \) und Endwerte \( \vec{x}(t_f) \) unterliegt das gesamte System im Zeitraum \( 0 \leq t \leq t_f \) außerdem bestimmten Zustandsbeschränkungen:
+				\begin{equation*}
+					\vec{g}\big(\vec{x}(t), \vec{u}(t), t\big) \geq \vec{0} \quad\iff\quad
+						\begin{matrix}
+							g_1\big(\vec{x}(t), \vec{u}(t), t\big) \geq 0 \\
+							\vdots \\
+							g_n\big(\vec{x}(t), \vec{u}(t), t\big) \geq 0
+						\end{matrix}
+				\end{equation*}
+				
+				Das \emph{optimale Steuerungsproblem} (Optimal Control Problem) lässt sich nun durch ein Gütekriterium/eine Kostenfunktion wie folgt definieren
+				\begin{equation*}
+					\min_{\vec{u}} \> J(\vec{x}, \vec{u}) = \Phi\big(\vec{x}(t_f), t_f\big) + \int_{0}^{t_f} \! L\big(\vec{x}(t), \vec{u}(t), t\big) \dif{t}
+				\end{equation*}
+				wobei die Kostenfunktion \( J(\vec{x}, \vec{u}) \) in zwei Funktionen \( \Phi \) und \( L \) aufgespalten wird. Beispielhafte Gütekriterien sind:
+				\begin{itemize}
+					\item Zeitminimalität (\(t_f\) frei):
+				\end{itemize}
+				\begin{gather*}
+					\Phi = t_f,\quad L = 0 \quad\implies\quad \min_{\vec{u}} \> J_t(\vec{x}, \vec{u}) = t_f
+				\end{gather*}
+				\begin{itemize}
+					\item Energieminimalität (\(t_f\) vorgegeben):
+				\end{itemize}
+				\begin{equation*}
+					\Phi = 0,\quad L = \sum_{i = 1}^{l} u_i^2 (t) \quad\implies\quad \min_{\vec{u}} \> J_e(\vec{x}, \vec{u}) = \int_{0}^{t_f} \! \sum_{i = 1}^{l} u_i^2 (t) \dif{t}
+				\end{equation*}
+				\begin{itemize}
+					\item Kombiniertes Kriterium (\(t_f\) frei):
+				\end{itemize}
+				\begin{equation*}
+					\min_{\vec{u}} \> J(\vec{x}, \vec{u}) = \rho_1 \cdot J_t(\vec{x}, \vec{u}) + \rho_2 \cdot J_e(\vec{x}, \vec{u}),\quad \rho_1, \rho_2 > 0
+				\end{equation*}
+				
+				Siehe auch Vorlesung "Optimierung statischer und dynamischer Systeme".
 			% end
 		% end
 	% end

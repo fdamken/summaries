@@ -2,7 +2,7 @@
 
 ## Folien/Kapitel
 
-Fertig/Strukturiert/Gesamt: 0/1246/1246; 0%/100%/100%
+Fertig/Strukturiert/Gesamt: 154/1246/1246; 12%/100%/100%
 
 - [x] Kapitel  1: Einleitung, Übersicht (Folien: 128; Skript: 10)
 - [x] Kapitel  2: Räumliche Darstellung und Transformationen (Skript: 17; Folien: 43)
@@ -11,7 +11,7 @@ Fertig/Strukturiert/Gesamt: 0/1246/1246; 0%/100%/100%
 - [x] Kapitel  5: Roboterdynamik (Skript: 65; Folien: 164)
 - [x] Kapitel  6: Roboterregelungen und interne Sensoren (Folien: 259; Skript: 11)
 - [x] Kapitel  7: Bahnplanung (Folien: 89)
-- [x] Kapitel  8: Externe und intelligente Sensoren (Folien: 154)
+- [X] Kapitel  8: Externe und intelligente Sensoren (Folien: 154)
 - [x] Kapitel  9: Navigation mobiler Roboter (Folien: 113)
 - [x] Kapitel 10: Middleware und Simulation (Folien: 41)
 - [x] Kapitel 11: Steuerung autonomer Roboter (Folien: 50)

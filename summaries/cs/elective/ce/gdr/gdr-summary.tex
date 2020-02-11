@@ -32,12 +32,19 @@
 \tikzset{> = { Latex[length = 2.5mm] }}
 \tikzstyle{every path} = [ very thick ]
 
+\MakeOuterQuote{"}
+
 % New commands.
 \DeclareMathOperator{\total}{d}
 \newcommand{\dif}[1]{\,\total#1}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
 % Matrix/Vector notation.
-\newcommand{\mat}[1]{\boldsymbol{\mathbf{#1}}}
-\renewcommand{\vec}[1]{\boldsymbol{\mathbf{#1}}}
+\makeatletter
+\newcommand{\mat}[1]{\boldsymbol{#1}\@ifnextchar({}{\@ifnextchar[{}{\@ifnextchar\{{}{\!}}}}
+\renewcommand{\vec}[1]{\boldsymbol{#1}\@ifnextchar({}{\@ifnextchar[{}{\@ifnextchar\{{}{\!}}}}
+\makeatother
 % Abbreviations.
 \renewcommand{\dh}{d.\,h.~}
 \newcommand{\bzw}{bzw.~}
@@ -1966,112 +1973,597 @@
 		% end
 	% end
 
-	\chapter{Regelung} % 6.1, S.158, S.159, S.160
-		\todo{Content}
+	\chapter{Regelung} % S.158, S.159, S.160
+		\section{Lineare Regelung}
+			Bei einer "normalen" Steuerung (Abbildung~\ref{fig:feedforward_control}) findet keine Rückkopplung der tatsächlich durchgeführten Aktion statt, während bei einer Regelung (Abbildung~\ref{fig:feedback_control}) die Aktion gemessen wird und in das nächste Steuerungssignal eingerechnet wird.
+			
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[every node/.style = { align = center }]
+					\node [draw, rectangle, minimum width = 5cm] (regelstrecke) {Roboter \\ (Regelstrecke)};
+					\coordinate [left = 1 of regelstrecke, yshift = 2pt] (a);
+					\coordinate [right = 1 of regelstrecke, yshift = 2pt] (b);
+					\coordinate [left = 2 of regelstrecke] (A);
+					\coordinate [right = 2 of regelstrecke] (B);
+					\node [above = 1 of a] (eingangsgroesse) {Eingangsgröße: \\ Steuerungen der Antriebe \\ (Stellgröße)};
+					\node [above = 1 of b] (ausgangsgroesse) {Ausgangsgröße: \\ Roboterbewegung \\ (in Raum und Zeit)};
+					\node [above = 1 of regelstrecke] (stoergroesse) {Störgröße};
+					
+					\draw [->] (A) -- (regelstrecke);
+					\draw [->] (regelstrecke) -- (B);
+					\draw [->] (eingangsgroesse) -- (a);
+					\draw [->] (ausgangsgroesse) -- (b);
+					\draw [->] (stoergroesse) -- (regelstrecke);
+				\end{tikzpicture}
+				\caption{Blockschaltbild einer normalen Steuerung (Feedforward Control).}
+				\label{fig:feedforward_control}
+			\end{figure}
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[every node/.style = { align = center }]
+					\node [draw, rectangle, minimum width = 5cm] (regelstrecke) {Roboter \\ (Regelstrecke)};
+					\coordinate [left = 1 of regelstrecke, yshift = 2pt] (a);
+					\coordinate [right = 1 of regelstrecke, yshift = 2pt] (b);
+					\coordinate [right = 1 of regelstrecke] (c);
+					\node [draw, rectangle, left = 2 of regelstrecke] (A) {Regler \\ (Berechnungsverfahren)};
+					\coordinate [right = 2 of regelstrecke] (B);
+					\node [above = 1 of a] (eingangsgroesse) {Eingangsgröße: \\ Steuerungen der Antriebe \\ (Stellgröße)};
+					\node [above = 1 of b] (ausgangsgroesse) {Ausgangsgröße: \\ Roboterbewegung \\ (in Raum und Zeit)};
+					\node [above = 1 of regelstrecke] (stoergroesse) {Störgröße};
+					\node [draw, rectangle, below = 1 of regelstrecke] (sensoren) {Sensoren};
+					\node [draw, circle, left = 1 of A, label = above:Fehler] (fehler) {\(\Sigma\)};
+					\coordinate [left = 1 of fehler] (d);
+					
+					\draw [->] (A) -- (regelstrecke);
+					\draw [->] (regelstrecke) -- (B);
+					\draw [->] (eingangsgroesse) -- (a);
+					\draw [->] (ausgangsgroesse) -- (b);
+					\draw [->] (stoergroesse) -- (regelstrecke);
+					\draw [->] (c) |- (sensoren);
+					\draw [->] (sensoren) -| (fehler) node[right, yshift = -0.5cm]{\(-\)};
+					\draw [->] (fehler) -- (A);
+					\draw [->] (d) -- (fehler) node[above, xshift = -0.5cm]{\(+\)};
+				\end{tikzpicture}
+				\caption{Blockschaltbild einer Regelung (Feedback Control).}
+				\label{fig:feedback_control}
+			\end{figure}
 
-		\section{Lineare Regelung} % 6.1, 6.2, 6.3, 6.4, 6.5, 6.79, 6.85, 6.86, 6.87, S.160
-			\todo{Content}
+			\subsection{Begriffe}
+				Eine Steuerung wird auch als Open-Loop oder Feedforward Control bezeichnet, eine Regelung als Closed-Loop oder Feedback Control.
+				
+				Im folgenden wird folgende Notation verwendet:
+				\begin{itemize}
+					\item Sollwert:    \tabto{2.5cm} \( x_d(t) \)
+					\item Regelgröße:  \tabto{2.5cm} \( x(t) \)
+					\item Messgröße:   \tabto{2.5cm} \( \tilde{x}(t) \)
+					\item Regelfehler: \tabto{2.5cm} \( e(t) \)
+					\item Stellgröße:  \tabto{2.5cm} \( u(t) \)
+					\item Störung:     \tabto{2.5cm} \( s(t) \)
+				\end{itemize}
+				Abbildung~\ref{fig:control_notation} zeigt einen normalen Regelkreis mit den entsprechenden Größen.
+				
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}
+						\node [draw, rectangle] (regelstrecke) {Regelstrecke};
+						\coordinate [right = 1 of regelstrecke] (c);
+						\node [draw, rectangle, left = 1 of regelstrecke] (A) {Regler};
+						\coordinate [right = 2 of regelstrecke] (B);
+						\coordinate [above = 1 of regelstrecke] (stoergroesse);
+						\node [draw, rectangle, below = 1 of regelstrecke] (sensoren) {Sensoren};
+						\node [draw, circle, left = 1 of A] (fehler) {\(\Sigma\)};
+						\coordinate [left = 1 of fehler] (d);
+						
+						\draw [->] (A) to node[above]{\(u(t)\)} (regelstrecke);
+						\draw [->] (regelstrecke) to node[above]{\(x(t)\)} (B);
+						\draw [->] (stoergroesse) to node[left]{\(s(t)\)} (regelstrecke);
+						\draw [->] (c) |- node[below]{\(x(t)\)} (sensoren);
+						\draw [->] (sensoren) -| node[below]{\(\tilde{x}(t)\)} (fehler) node[right, yshift = -0.5cm]{\(-\)};
+						\draw [->] (fehler) to node[above]{\(e(t)\)} (A);
+						\draw [->] (d) to node[above]{\(x_d(t)\)} (fehler);
+					\end{tikzpicture}
+					\caption{Die dynamischen Größen eines Regelkreises.}
+					\label{fig:control_notation}
+				\end{figure}
+			
+				Des weiteren seien folgende Begriffe definiert:
+				\begin{itemize}
+					\item \emph{Regelungstechnik:} Lehre der
+						\begin{itemize}
+							\item mathematischen Beschreibung und
+							\item gezielten Beeinflussung
+							\item dynamischer Prozesse
+							\item in Technik, Biologie, Ökologie, Soziologie, \dots
+						\end{itemize}
+					\item \emph{Aufgabe der Regelung}
+						\begin{itemize}
+							\item Konstant halten oder gezieltes Ändern
+							\item von einer oder mehreren Regel(ungs)größen
+							\item unter Einwirkung von Störgrößen auf einen Prozess.
+						\end{itemize}
+					\item \emph{Führungsgröße} (Soll-Wert)
+						\begin{itemize}
+							\item Wenn konstant \(\to\) \emph{Festwertregelung}
+							\item Wenn veränderlich (zeit- und/oder zustandsabhängig) \(\to\) \emph{Folgeregelung}
+						\end{itemize}
+					\item \emph{Regeln}
+						\begin{itemize}
+							\item Herstellen und Bewahren einer wünschenswerten Situation.
+						\end{itemize}
+					\item \emph{Steuerung}
+						\begin{itemize}
+							\item Nachstellen einer \emph{Stellgröße} nach gegebenen Kennlinien (Open-Loop Control, Feedforward Control).
+						\end{itemize}
+					\item \emph{Regelung}
+						\begin{itemize}
+							\item Nachstellen aufgrund laufender Messungen der Regelgrößen (Closed-Loop Control, Feedback Control).
+						\end{itemize}
+					\item \emph{Vermaschte Regelung}
+						\begin{itemize}
+							\item Mindestens zwei sich wechselseitig beeinflussende Regelkreise.
+						\end{itemize}
+					\item \emph{Kaskadenregelung}
+						\begin{itemize}
+							\item (Hierarchisch) überlagerte Regelkreise.
+						\end{itemize}
+					\item \emph{Stabilitätsproblem}
+						\begin{itemize}
+							\item Eine sprungartige Verstellung des Sollwerts führt zu einem verzögertem Einschwingvorgang der Regelgröße und einer verzögerten Ankunft des Korrektursignals.
+							\item Eine kleine Regelabweichung soll ausreichen, um die Stellgröße zu steuern (über Kreisverstärkung in einem geschlossenem Regelkreis).
+							\item Zeitverzug und Signalverstärkung führen zu Instabilität (\dh Schwingung um den Sollwert).
+						\end{itemize}
+				\end{itemize}
+			% end
 
-				\subsubsection{Begriffe} % 6.80, 6.81, 6.82, 6.83, 6.84, 6.88, 6.89, 6.90
-					\todo{Content}
+			\subsection{Lineare Systemdynamik und Feder-Masse-System} % S.161
+				Im folgenden wird ein Feder-Masse-System mit der Masse \( m > 0 \), der Federsteifigkeit \( k > 0 \) und dem Reibungskoeffizienten \( b > 0 \) sowie einer Antriebs- oder Bremskraft \( f(t) \) betrachtet. Der Wert \( x \) beschreibt dabei die lineare Verschiebung der Masse \bzgl der Ruhelage um \( x_\text{stat}(t) = 0 \). Die Bewegungsgleichung lautet
+				\begin{equation*}
+					m\ddot{x}(t) + b\dot{x}(t) + kx(t) = f(t)
+				\end{equation*}
+				und ist eine lineare, inhomogene, gewöhnliche Differentialgleichung zweiter Ordnung mit konstanten Koeffizienten.
+
+				\subsubsection{Untersuchung des Bewegungsverhaltens} % S.161, S.162, S.163
+					Mit einer gegebenen Anfangsposition \( x(0) \) und einer gegebenen Anfangsgeschwindigkeit \( \dot{x}(0) \) sowie einem Antriebskraftverlauf \( f(t) \) kann der zeitliche Bewegungsverlauf der Masse aus der Bewegungsgleichung bestimmt werden.
+					
+					\paragraph{Erwartetes Bewegungsverhalten}
+						Wird angenommen, dass \( f(t) = 0 \) gilt sowie \( x_\text{stat}(t) = 0 \) die Ruhelage darstellt, so lassen sich folgende Bewegungsmuster erkennen:
+						\begin{itemize}
+							\item Schwache Feder (\(k\) klein), große Reibungskraft (\(b\) groß): Die Masse wird aus einer Anfangsauslenkung \( x(0) \neq x_\text{stat} \) langsam in den stationären Zustand zurückkehren.
+							\item Starke Feder (\(k\) groß), schwache Reibungskraft (\(b\) klein): Die Masse wird aus einer Anfangsauslenkung \( x(0) \neq x_\text{stat} \) mehrmals schnell hin und her schwingen (oszillieren), bis sie in den stationären Zustand zurückkehrt.
+						\end{itemize}
+					
+						Unter der Annahme \( f(t) = 0 \) kann die Differentialgleichung mit dem Lösungsansatz \( x(t) = ce^{\lambda t} \) explizit gelöst werden, wodurch sich das charakteristische Polynom
+						\begin{equation*}
+							\lambda^2 + \frac{b}{m} \lambda + \frac{k}{m} = 0
+						\end{equation*}
+						mit den Nullstellen (den \emph{Polen})
+						\begin{equation*}
+							\lambda_{1, 2} = -\frac{b}{2m} \pm \frac{\sqrt{b^2} - 2mk}{2m}
+						\end{equation*}
+						ergibt. Diese Pole bestimmen das Lösungsverhalten und damit das Bewegungsverhalten der Masse.
+						
+						\subparagraph{Überkritisch Gedämpftes Verhalten}
+							\( \lambda_{1, 2} \) sind einfache, reelle Nullstellen, wenn
+							\begin{equation*}
+								b^2 - 4mk > 0 \quad\iff\quad b^2 > 4mk
+							\end{equation*}
+							wodurch auch \( \lambda_{1, 2} < 0 \) gilt. Dieser Fall wird \emph{überkritisch gedämpft} genannt.
+							
+							Die Lösung ist in diesem Fall gegeben durch
+							\begin{equation*}
+								x(t) = c_1 e^{\lambda_1 t} + c_2 e^{\lambda_2 t}
+							\end{equation*}
+							wobei die Konstanten \( c_1, c_2 \) durch die Anfangsbedingungen festgelegt werden.
+						% end
+						
+						\subparagraph{Kritisch Gedämpftes Verhalten}
+							\( \lambda \) ist eine doppelte, reelle Nullstelle, wenn
+							\begin{equation*}
+								b^2 - 4mk = 0 \quad\iff\quad b^2 = 4mk
+							\end{equation*}
+							wodurch auch \( \lambda < 0 \) gilt. Dieser Fall wird \emph{kritisch gedämpft} genannt.
+							
+							Die Lösung ist in diesem Fall gegeben durch
+							\begin{equation*}
+								x(t) = c_1 e^{\lambda t} + c_2 t e^{\lambda t}
+							\end{equation*}
+							wobei die Konstanten \( c_1, c_2 \) durch die Anfangsbedingungen festgelegt werden.
+						% end
+						
+						\subparagraph{Unterkritisch Gedämpftes Verhalten}
+							\( \lambda_{1, 2} \) sind einfache, komplexe Nullstellen (mit \( \lambda_1 = \bar{\lambda}_2 \)), wenn
+							\begin{equation*}
+								b^2 - 4mk < 0 \quad\iff\quad b^2 < 4mk
+							\end{equation*}
+							wodurch mit \( \lambda_{1, 2} \eqqcolon \lambda_r \pm i \lambda_i \) auch \( \lambda_r < 0 \) gilt. Dieser Fall wird \emph{unterkritisch gedämpft} genannt.
+							
+							Die Lösung ist in diesem Fall gegeben durch
+							\begin{equation*}
+								c_1 e^{\lambda_r t} \cos(\lambda_i t) + c_2 e^{\lambda_r t} \sin(\lambda_i t)
+							\end{equation*}
+							wobei die Konstanten \( c_1, c_2 \) durch die Anfangsbedingungen festgelegt werden.
+						% end
+					% end
+
+					\paragraph{Gewünschtes Bewegungsverhalten}
+						Wünschenswert ist oftmals die kritische Dämpfung, da
+						\begin{itemize}
+							\item das System dabei aus einer Anfangsauslenkung \( x(0) \neq x_\text{stat} \) schnellstmöglich in die stationäre Lage zurückkehrt und
+							\item keine Oszillationen oder Überschwingungen auftreten.
+						\end{itemize}
+					
+						In der Regelungstechnik wird üblicherweise nicht im Zeitbereich gearbeitet, sondern die Laplace-Transformation zur Definition von Übertragungsfunktionen und der Untersuchung der Pole eingesetzt. Dies wird hier aber nicht weiter behandelt\dots
+					% end
 				% end
 			% end
 
-			\subsection{Lineare Systemdynamik und Feder-Masse-System} % 6.91, 6.92, S.161
-				\todo{Content}
+			\subsection{PD-Regelung linearer Systeme 2. Ordnung} % S.163, S.164
+				Die Aufgabe der Regelung ist nun, ein gewünschtes Bewegungsverhalten durch geeignete Wahl der Steuerung zu erreichen.
 
-				\subsubsection{Untersuchung des Bewegungsverhaltens} % 6.93, S.161, S.162, S.163
-					\todo{Content}
-
-					\paragraph{Erwartetes Bewegungsverhalten} % 6.94, 6.95, 6.96, 6.97, 6.98
-						\todo{Content}
+				\subsubsection{Beispiel: Feder-Masse-System} % 6.103, 6.104, 6.105, 6.106
+					Mit Hilfe von Sensoren zur Messung der Position \( x \) sowie der Geschwindigkeit \( \dot{x} \) und der Verwendung einer Antriebskraft \(f\) (Steuerung) und einem geeigneten Regelgesetz zur Bestimmung von \(f\) soll das Bewegungsverhalten so modifiziert werden, dass eine kritische Dämpfung eintritt. Der Ansatz für die erzeugte Kraft ist dabei die Funktion
+					\begin{equation*}
+						f(t) = -k_v \dot{x}(t) - k_p x(t)
+					\end{equation*}
+					mit den Regelparametern/Verstärkungsfaktoren \( k_v \) (Differentialanteil) und \( k_p \) (Proportionalanteil). Abbildung~\ref{fig:pd_control} zeigt das Blockschaltbild für eine solche Regelung.
+					
+					\begin{figure}
+						\centering
+						\begin{tikzpicture}
+							\node [draw, rectangle, align = center, minimum height = 2cm] (regelstrecke) {System \\ \enquote{Regelstrecke}};
+							\coordinate [above = 0.5 of regelstrecke.east] (x);
+							\coordinate [below = 0.5 of regelstrecke.east] (xDot);
+							\coordinate [right = 1.5 of x] (xPathA);
+							\coordinate [right = 1 of xDot] (xDotPathA);
+							\coordinate [below = 2 of xDot] (xDotPath);
+							\coordinate [below = 0.5 of xDotPath] (xPath);
+							\node [draw, circle, left = 2 of regelstrecke] (pd) {\(\Sigma\)};
+							\node [draw, rectangle, below right = of pd, xshift = -1cm] (kv) {\(k_v\)};
+							\node [draw, rectangle, below left = of pd, xshift = 1cm] (kp) {\(k_p\)};
+							\node [above right = 0 of x] {\(x\)};
+							\node [above right = 0 of xDot] {\(\dot{x}\)};
+							
+							\draw [->] (x) -- (xPathA) |- (xPath) -| (kp);
+							\draw [->] (xDot) -- (xDotPathA) |- (xDotPath) -| (kv);
+							\draw [->] (kp) -- (pd) node[left, xshift = -0.2cm, yshift = -0.5cm]{\(-\)};
+							\draw [->] (kv) -- (pd) node[right, xshift = 0.2cm, yshift = -0.5cm]{\(-\)};
+							\draw [->] (pd) -- node[above]{\(f\)} (regelstrecke);
+						\end{tikzpicture}
+						\caption{Blockschaltbild einer PD-Regelung mit den Soll-Werten \( x_d, \dot{x}_d \).}
+						\label{fig:pd_control}
+					\end{figure}
+				
+					Wird das Regelgesetz auf die Bewegungsgleichung angewandt, so ergibt sich:
+					\begin{align*}
+						     &  & m\ddot{x}(t) + b\dot{x}(t) + kx(t)                                                                 & = f(t)                       &  \\
+						\iff &  & m\ddot{x}(t) + b\dot{x}(t) + kx(t)                                                                 & = -k_v \dot{x}(t) - k_p x(t) &  \\
+						\iff &  & m\ddot{x}(t) + \underbrace{(b + k_v)}_{\hat{b}} \dot{x}(t) + \underbrace{(k + k_p)}_{\hat{k}} x(t) & = 0                          &
+					\end{align*}
+					Die Pole des geregelten Systems entsprechen den Nullstellen des charakteristischen Polynoms:
+					\begin{equation*}
+						\lambda_{1, 2} = -\frac{\hat{b}}{2m} \pm \frac{\sqrt{\hat{b}^2 - 4m\hat{k}}}{2m}
+					\end{equation*}
+					Durch geeignete Wahl der Regelparameter \( k_v, k_p \) kann also das gewünschte Bewegungsverhalten der kritischen Dämpfung erreicht werden.
+					
+					Neben der Bedingung \( \hat{b}^2 = 2m\hat{k} \) muss (da diese noch nicht ausreichend ist für eine kritische Dämpfung, da \( k_v \) und \( k_p \) positiv oder negativ gewählt werden können) unter anderem \( \hat{b} > 0 \) sichergestellt werden, da Regelfehler sonst die Instabilität verstärken statt dämpfen würde.
+					
+					\begin{itemize}
+						\item Auf diese Weise kann das System auf einen konstanten Sollwert \( x_d \) geregelt werden (Festpunktregelung).
+						\item Analog dazu kann die Regelung auch auf eine gegebene Sollwerttrajektorie \( x_d(t) \) erweitert werden.
+						\item Ebenfalls kann das System auf mehrdimensionale und nichtlineare Systeme erweitert werden.
+					\end{itemize}
+				
+					\paragraph{Gewünschte Polplatzierung}
+						Damit das geregelte System stabil ist, müssen die Pole des Systems in der linken Hälfte der komplexen Ebene liegen (\dh der Realteil muss negativ sein).
 					% end
-
-					\paragraph{Gewünschtes Bewegungsverhalten} % 6.99
-						\todo{Content}
-					% end
-				% end
-			% end
-
-			\subsection{PD-Regelung linearer Systeme 2. Ordnung} % 6.100, 6.101, 6.102, S.163, S.164
-				\todo{Content}
-
-				\subsubsection{Feder-Masse-System} % 6.103, 6.104, 6.105, 6.106
-					\todo{Content}
 				% end
 			% end
 
 			\subsection{Partitionierung des Regelgesetzes durch Feedback-Linearisierung} % 6.107, 6.108, S.165, S.166
 				\todo{Content}
+			% end
 
 			\subsection{Sollwerttrajektorien-Folgeregelung} % 6.109, 6.110, S.166, S.167
 				\todo{Content}
 			% end
 
-			\subsection{PID-Regelung linearer Systeme} % 6.111, 6.112, 6.115, S.167, S.168
-				\todo{Content}
-
-				\subsubsection{Windup-Effekt} % 6.113, 6.114
-					\todo{Content}
+			\subsection{PID-Regelung linearer Systeme} % 6.115, S.167, S.168
+				Mit den Sollwerten \( x_d, \dot{x}_d \) für Position und Geschwindigkeit lautet das PID-Regelgesetz
+				\begin{equation*}
+					f = k_v \underbrace{(\dot{x}_d - \dot{x})}_{\dot{e}} + k_p \underbrace{(x_d - x)}_{e} + k_i \int \! \underbrace{(k_d - x)}_{e} \dif{t}
+				\end{equation*}
+				wobei \( e \coloneqq x_d - x \) und \( \dot{e} \coloneqq \dot{x}_d - \dot{x} \) den Positions- und Geschwindigkeitsfehler darstellen. Das Blockschaltbild der PID-Regelung ist in Abbildung~\ref{fig:pid_control} gegeben. Die Wirkung der drei Terme (Differential, Proportional und Integral) haben folgende intuitive Effekte:
+				\begin{itemize}
+					\item Der Differentialteil "schaut in die Zukunft" und führt zu einer vorausschauenden Regelung,
+					\item der Proportionalteil "schaut auf die Gegenwart" und führt zu einer akuten Regelung und
+					\item der Integralteil "schaut in die Vergangenheit" und korrigiert (regelt) Fehler raus, die in der Vergangenheit gemacht wurden.
+				\end{itemize}
+			
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}
+						\node [draw, rectangle, align = center, minimum height = 2cm] (regelstrecke) {System \\ \enquote{Regelstrecke}};
+						\coordinate [above = 0.5 of regelstrecke.east] (x);
+						\coordinate [below = 0.5 of regelstrecke.east] (xDot);
+						\coordinate [right = 1.5 of x] (xPathA);
+						\coordinate [right = 1 of xDot] (xDotPathA);
+						\coordinate [below = 2 of xDot] (xDotPath);
+						\coordinate [below = 0.5 of xDotPath] (xPath);
+						\node [above right = 0 of x] {\(x\)};
+						\node [above right = 0 of xDot] {\(\dot{x}\)};
+						
+						\node [draw, circle, left = 2 of regelstrecke] (add1) {};
+						\coordinate [below = 0.5 of add1] (a);
+						\node [draw, circle, left = 1 of a] (add2) {};
+						\node [draw, rectangle, below left = of add2, yshift = 0.8cm] (kv) {\(k_v\)};
+						\node [draw, rectangle, above left = of add2, yshift = -0.8cm] (kp) {\(k_p\)};
+						
+						\coordinate [above = 1 of add1] (b);
+						\node [draw, rectangle, left = 1.5 of b] (ki) {\(k_i\)};
+						\node [draw, rectangle, left = 0.1 of ki] (integral) {\(\int\)};
+						
+						\coordinate [left = 0.5 of kv] (c);
+						\path let \p1 = (c), \p2 = (xDotPath) in node [draw, circle] (e) at (\x1, \y2) {};
+						\coordinate [left = 0.5 of e] (f);
+						\path let \p1 = (f), \p2 = (xPath) in node [draw, circle] (g) at (\x1, \y2) {};
+						\node [left = 0.5 of g] (xd) {\(x_d\)};
+						\path let \p1 = (xd), \p2 = (e) in node (xDotd) at (\x1, \y2) {\(\dot{x}_d\)};
+						
+						\draw [->] (x) -- (xPathA) |- (xPath) -- (g) node[below, xshift = 0.5cm, yshift = 0.05cm]{\(-\)};
+						\draw [->] (xDot) -- (xDotPathA) |- (xDotPath) -- (e) node[above, xshift = 0.5cm, yshift = -0.05cm]{\(-\)};
+						\draw [->] (add1) -- node[above]{\(f\)} (regelstrecke);
+						\draw [->] (kv) -| (add2);
+						\draw [->] (kp) -| (add2);
+						\draw [->] (add2) -| (add1);
+						\draw [->] (integral) -- (ki) -| (add1);
+						\draw [->] (g) |- coordinate[label = left:\(e\)](h) (kp);
+						\draw [->] (e) |- node[left]{\(\dot{e}\)} (kv);
+						\draw [->] (h) |- (integral);
+						\draw [->] (xd) -- (g);
+						\draw [->] (xDotd) -- (e);
+					\end{tikzpicture}
+					\caption{Blockschaltbild eines PID-Reglers mit den Sollwerten \( x_d, \dot{x}_d \).}
+					\label{fig:pid_control}
+				\end{figure}
+			
+				\subsubsection{Windup-Effekt}
+					Üblicherweise ist die maximale Stellleistung endlich, \dh jede Stellgröße \(f\) ist auf einen maximalen Wertebereich \( \big[ -f_\text{max},\, f_\text{max} \big] \) begrenzt.
+					
+					Problem: Der I-Anteil des Reglers integriert auch nach Erreichen der Sättigung der Stellgröße die Regelabweichung weiter auf, obwohl der Reglerausgang keinen Einfluss mehr auf die Regelstrecke hat. Beim Erreichen der Zielvorgabe kann \( \lvert f \rvert \) dadurch deutlich größer als \( f_\text{max} \) sein, wodurch dieser Überschuss zunächst wieder abgebaut werden muss. Dieser Effekt wird als \emph{Windup-Effekt} bezeichnet und verschlechtert das Regelverhalten (Überschwingen).
+					
+					Zur "Schadensbegrenzung" müssen Anti-Windup-Maßnahmen eingesetzt werden, \bspw die Begrenzung des I-Anteils bei Auftreten der Sättigung. Dazu wird die Differenz \( \tilde{f} - f \) zwischen Stellgröße \(f\) und begrenzter Stellgröße \( \tilde{f} \) über ein P-Glied mit Verstärkung \( k_\text{aw} \) zurück gekoppelt. Diese Rückkopplung hat keinen Einfluss, wenn \( f \in \big[ -f_\text{max},\, f_\text{max} \big] \) gilt. Abbildung~\ref{fig:pid_control_anti_windup} zeigt das Blockschaltbild einer solchen Anti-Windup-Strategie.
+					
+					\begin{figure}
+						\centering
+						\begin{tikzpicture}
+						\node [draw, rectangle, align = center, minimum height = 2cm] (regelstrecke) {System \\ \enquote{Regelstrecke}};
+						\node [draw, rectangle, align = center, left = 1 of regelstrecke] (stellgliedbegrenzung) {Stellgliedbegrenzung};
+						\coordinate [above = 0.5 of regelstrecke.east] (x);
+						\coordinate [below = 0.5 of regelstrecke.east] (xDot);
+						\coordinate [right = 1.5 of x] (xPathA);
+						\coordinate [right = 1 of xDot] (xDotPathA);
+						\coordinate [below = 2 of xDot] (xDotPath);
+						\coordinate [below = 0.5 of xDotPath] (xPath);
+						\node [above right = 0 of x] {\(x\)};
+						\node [above right = 0 of xDot] {\(\dot{x}\)};
+						
+						\node [draw, circle, left = 1 of stellgliedbegrenzung] (add1) {};
+						\coordinate [below = 0.5 of add1] (a);
+						\node [draw, circle, left = 1 of a] (add2) {};
+						\node [draw, rectangle, below left = of add2, yshift = 0.8cm] (kv) {\(k_v\)};
+						\node [draw, rectangle, above left = of add2, yshift = -0.8cm] (kp) {\(k_p\)};
+						
+						\coordinate [above = 1 of add1] (b);
+						\node [draw, rectangle, left = 1.5 of b] (ki) {\(k_i\)};
+						\node [draw, rectangle, left = 0.1 of ki] (integral) {\(\int\)};
+						
+						\coordinate [left = 0.5 of kv] (c);
+						\path let \p1 = (c), \p2 = (xDotPath) in node [draw, circle] (e) at (\x1, \y2) {};
+						\coordinate [left = 0.5 of e] (f);
+						\path let \p1 = (f), \p2 = (xPath) in node [draw, circle] (g) at (\x1, \y2) {};
+						\node [left = 0.5 of g] (xd) {\(x_d\)};
+						\path let \p1 = (xd), \p2 = (e) in node (xDotd) at (\x1, \y2) {\(\dot{x}_d\)};
+						
+						\path (add1) -- coordinate(i) (stellgliedbegrenzung);
+						\path (stellgliedbegrenzung) -- coordinate(j) (regelstrecke);
+						\node [draw, circle, above = 2 of i] (k) {};
+						\node [draw, rectangle, left = 2 of k] (l) {\(k_\text{aw}\)};
+						\path let \p1 = (integral), \p2 = (g) in node [draw, circle] (m) at (\x2, \y1) {};
+						
+						\draw [->] (x) -- (xPathA) |- (xPath) -- (g) node[below, xshift = 0.5cm, yshift = 0.05cm]{\(-\)};
+						\draw [->] (xDot) -- (xDotPathA) |- (xDotPath) -- (e) node[above, xshift = 0.5cm, yshift = -0.05cm]{\(-\)};
+						\draw [->] (add1) -- node[below]{\(f\)} (stellgliedbegrenzung);
+						\draw [->] (stellgliedbegrenzung) -- node[below]{\(\tilde{f}\)} (regelstrecke);
+						\draw [->] (kv) -| (add2);
+						\draw [->] (kp) -| (add2);
+						\draw [->] (add2) -| (add1);
+						\draw [->] (integral) -- (ki) -| (add1);
+						\draw [->] (g) |- coordinate[label = left:\(e\)](h) (kp);
+						\draw [->] (e) |- node[left]{\(\dot{e}\)} (kv);
+						\draw [->] (h) -- (m);
+						\draw [->] (m) -- (integral);
+						\draw [->] (xd) -- (g);
+						\draw [->] (xDotd) -- (e);
+						\draw [->] (i) -- (k) node[right, yshift = -0.4cm]{\(-\)};
+						\draw [->] (j) |- (k);
+						\draw [->] (k) -- (l);
+						\draw [->] (l) -| (m);
+						\end{tikzpicture}
+						\caption{Blockschaltbild eines PID-Reglers mit Anti-Windup-Teil.}
+						\label{fig:pid_control_anti_windup}
+					\end{figure}
 				% end
 			% end
 
-			\subsection{Kaskadenregelung} % 6.116, 6.117, 6.118, 6.119, 6.120
-				\todo{Content}
+			\subsection{Kaskadenregelung}
+				Bei einer \emph{Kaskadenregelung} werden mehrere Regler hintereinander geschaltet (siehe Abbildung~\ref{fig:cascade_control}), wobei die Führungsgröße des "inneren" Reglers von einem "äußeren" Regler eingestellt wird. Dadurch können \bspw verschiedene Taktraten umgesetzt werden (\zB eine geringere Taktrate zur Berechnung der Gelenkstellungen und eine hohe Taktrate zur individuellen PID-Gelenkreglung).
+				
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}[->, every node/.style = { align = center }]
+						\coordinate (a);
+						\node [draw, circle, right = 1 of a] (b) {};
+						\node [draw, rectangle, right = 1 of b] (c) {Regler A \\ \enquote{Außen}};
+						\node [draw, circle, right = 1 of c] (d) {};
+						\node [draw, rectangle, right = 1 of d] (e) {Regler I \\ \enquote{Innen}};
+						\node [draw, rectangle, right = 1 of e] (f) {System I \\ \enquote{Innen}};
+						\coordinate [right = 1 of f] (g);
+						\node [draw, rectangle, right = 1 of g] (h) {System A \\ \enquote{Außen}};
+						\coordinate [right = 1 of h] (i);
+						
+						\coordinate [below = 1 of g] (j);
+						\coordinate [below = 1.5 of i] (k);
+						
+						\draw (a) -- node[above]{Soll A} (b);
+						\draw (b) -- (c);
+						\draw (c) -- node[above]{Soll I} (d);
+						\draw (d) -- (e);
+						\draw (e) -- (f);
+						\draw (f) -- node[above]{Ist I} (g) -- (h);
+						\draw (g) -- (j) -| (d) node[right, yshift = -0.4cm]{\(-\)};
+						\draw (h) -- node[above]{Ist A} (i) -- (k) -| (b) node[right, yshift = -0.4cm]{\(-\)};
+					\end{tikzpicture}
+					\caption{Blockschaltbild einer allgemeinen Kaskadenregelung.}
+					\label{fig:cascade_control}
+				\end{figure}
+			% end
 
-				\subsubsection{PID-Bahnregelung eines Servomotors} % 6.121, 6.122
-					\todo{Content}
-				% end
+			\subsection{Stabilität als Sprungantwortverhalten und PID-Parameter}
+				Wird der Sollwert \( x_d(t) \) als Sprung/Stufe gegeben, so hängt die Reaktion des Reglers (\bzw der rückgekoppelten Werte) von dem Dämpfungsgrad des Systems ab. Möglich sind dabei folgende Verhaltensweisen:
+				\begin{enumerate}
+					\item Hunting: Oszillation um den Sollwert (ohne diesen zu erreichen).
+					\item Ringing: Überschwingen, aber konvergieren gegen den Sollwert.
+					\item Overshoot (underdamped): Unterkritische Dämpfung, Überschießen. Die Kontrollparameter sind zu hoch, es besteht Gefahr für Beschädigungen bei Greif- und Transportaufgaben.
+					\item Overdamped: Überkritische Dämpfung, der Sollwert wird nur langsam erreicht (ohne Überschießen).
+					\item Critically Damped: Kritische Dämpfung, der Sollwert wird bei minimaler Verzögerung ohne Überschießen erreicht. Dies ist das ideale Verhalten.
+				\end{enumerate}
+			
+				Schwierigkeiten bei der Regelung:
+				\begin{itemize}
+					\item Einstellung der Regelparameter und Regelstruktur.
+					\item Nichtlineare Roboterdynamik
+					\item Veränderung der Parameter im Laufe der Zeit (\zB durch Veränderung der Nutzlast oder durch Verschleiß).
+				\end{itemize}
 
-				\subsubsection{Laufbewegungen} % 6.123, 6.124, 6.125, 6.126, 6.127, 6.128, 6.129, 6.130
-					\todo{Content}
+				\subsubsection{Einstellung der PID-Parameter}
+					Für die Einstellung der Parameter, \bzw deren Analyse und Auswertung, sind folgende Metriken relevant:
+					\begin{itemize}
+						\item \emph{Ausregelzeit} \\ Die Zeitspanne, bis der Sollwerttoleranzbereich dauerhaft erreicht wird.
+						\item \emph{Anregelzeit} \\ Die Zeitspanne von Sprungeingabe bis zum erstmaligen Erreichen des Sollwerttoleranzbereichs.
+						\item \emph{Überschwingweite} \\ Prozentualer Wert des Überschwingens des Endwertes bei der ersten Oszillation.
+					\end{itemize}
+				
+					Zur Einstellung der PID-Parameter kommen zwei grundlegende Verfahren in Frage:
+					\begin{enumerate}
+						\item Bei einem bekanntem mathematischen Modell der Prozessdynamik (Transferfunktion) können analytische Methoden angewendet werden, um die Parameter zu bestimmen (und damit die transienten und stationären Spezifikationen zu erfüllen).
+						\item Ist die Systemdynamik nicht ausreichend bekannt, so müssen die Parameter experimentell eingestellt werden, \zB nach dem verfahren nach Ziegler-Nichols:
+							\begin{itemize}
+								\item Der Regelkreis wird mit einem einfachen P-Regler durch Vergrößerung von \(k_p\) an die Stabilitätsgrenze (der Wert, bis zu dem ungedämpfte Schwingungen auftreten) \( k_p = K \) gebracht.
+								\item Sei \(P\) die Schwingungsdauer, dann können die restlichen Parameter wie folgt bestimmt werden (Heuristik!):
+									\begin{itemize}
+										\item Für P-Regler:   \tabto{3cm} \( k_p = 0.5K \)
+										\item Für PI-Regler:  \tabto{3cm} \( k_p = 0.45K \) \tabto{5.5cm} \( k_i = 1.2 / P \)
+										\item Für PID-Regler: \tabto{3cm} \( k_p = 0.6K \)  \tabto{5.5cm} \( k_i = 2.0 / P \) \tabto{8cm} \( k_v = P / 8.0 \)
+									\end{itemize}
+							\end{itemize}
+					\end{enumerate}
 				% end
 			% end
 
-			\subsection{Stabilität als Sprungantwortverhalten und PID-Parameter} % 6.131, 6.132, 6.133
-				\todo{Content}
-
-				\subsubsection{Drehmotor} % 6.134, 6.135, 6.136, 6.137, 6.138, 6.139, 6.140, 6.141
-					\todo{Content}
-				% end
-
-				\subsubsection{Einstellung der PID-Parameter} % 6.142, 6.143
-					\todo{Content}
-				% end
-			% end
-
-			\subsection{Digitale Implementierung eines PID-Reglers} % 6.144, 6.145
-				\todo{Content}
+			\subsection{Digitale Implementierung eines PID-Reglers und Diskretisierung}
+				Wird ein PID-Regler digital implementiert, so müssen die I- und D-Terme diskret approximiert werden. Für ein Zeitintervall der Länge \num{1} heißt das:
+				\begin{itemize}
+					\item P-Term: \tabto{2cm} \( e_i = q_d - q \) zur Zeit \(i\)
+					\item I-Term: \tabto{2cm} \( \sum_{i = 0}^{i = \text{jetzt}} e_i \)
+					\item D-Term: \tabto{2cm} \( e_i - e_{i - 1} \)
+				\end{itemize}
+				Diese Diskretisierung kann das Systemverhalten stark beeinflussen! Ist die Abtastrate \( F_\text{abtast} \) nicht hoch genug, so können Aliasing-Effekte auftreten (\dh bestimmte Muster werden nicht erkannt, die Frequenz erscheint nach der Abtastung geringer als sie tatsächlich ist). Nach dem Nyquist-Shannon-Abtasttheorem muss die Abtastrate zur Vermeidung von Alias-Effekten größer als das doppelte der Analogen Frequenz \( F_\text{analog} \) sein:
+				\begin{equation*}
+					F_\text{abtast} > 2 F_\text{analog}
+				\end{equation*}
+				In der Praxis ist eine typische Wahl für die Abtastfrequenz \( 1/5 \) bis \( 1/10 \) der Anregelzeit.
 			% end
 		% end
 
-		\section{Nichtlineare Regelung} % 6.147, 6.148
-			\todo{Content}
-
-			\subsection{Systemlinearisierung} % 6.149
-				\todo{Content}
+		\section{Nichtlineare Regelung}
+			Im Gegensatz zu dem Feder-Masse-System ist die Roboterdynamik \iA nichtlinear, mehrdimensional und in allen Gelenken verkoppelt. Die allgemeine Form einer Systemdynamik erster Ordnung\footnote{alle Dynamiken lassen sich auf ein solchen System zurückführen} lautet:
+			\begin{equation*}
+				\dot{\vec{x}}(t) =
+					\begin{bmatrix}
+						\dot{x}_1(t) \\
+						\vdots \\
+						\dot{x}_m(t)
+					\end{bmatrix}
+				=
+					\begin{bmatrix}
+						f_1\big(\vec{x}(t), \vec{u}(t)\big) \\
+						\vdots \\
+						f_m\big(\vec{x}(t), \vec{u}(t)\big)
+					\end{bmatrix}
+				= \vec{f}\big(\vec{x}(t), \vec{u}(t)\big)
+			\end{equation*}
+			mit dem Zustandsvektor \( \vec{x}(t) = \begin{bmatrix} x_1(t) & \cdots & x_m(t) \end{bmatrix}^T \) und den Steuerungsgrößen \( \vec{u}(t) = \begin{bmatrix} u_1(t) & \cdots & u_l(t) \end{bmatrix}^T \).
+			
+			\subsection{Systemlinearisierung}
+				Eine lineare Systemdynamik hat die Form \( \vec{f}\big(\vec{x}(t), \vec{u}(t)\big) = \mat{A} \vec{x}(t) + \mat{B} \vec{u}(t) \) mit zwei konstanten Matrizen \( A \in \R^{m \times m} \) und \( B \in \R^{m \times l} \). Ein nichtlineares System \( \vec{f}\big(\vec{x}(t), \vec{u}(t)\big) \) kann lokal um einen Arbeitspunkt (\bspw die Ruhelage) \( (\vec{x}_0, \vec{u}_0) \) durch die Taylorentwicklung
+				\begin{equation*}
+					\dot{\vec{x}}_0 + \Delta\dot{\vec{x}}(t) = \vec{f}(\vec{x}_0, \vec{u}_0) + \mat{J}_{\vec{x}}(\vec{x}_0, \vec{u}_0) \cdot \Delta\vec{x}(t) + \mat{J}_{\vec{u}}(\vec{x}_0, \vec{u}_0) \cdot \Delta\vec{u}(t) + \vec{\xi}(t)
+				\end{equation*}
+				linearisiert werden, indem das Restglied \(\vec{\xi}(t)\) entfernt wird. Dadurch ergibt sich folgendes linearisiertes System:
+				\begin{equation*}
+					\Delta\dot{\vec{x}}(t) = \mat{J}_{\vec{x}}(\vec{x}_0, \vec{u}_0) \cdot \Delta\vec{x}(t) + \mat{J}_{\vec{u}}(\vec{x}_0, \vec{u}_0) \cdot \Delta\vec{u}(t)
+				\end{equation*}
+				mit \( \Delta\vec{x}(t) = \vec{x}(t) - \vec{x}_0 \) und \( \Delta\vec{u}(t) = \vec{u}(t) - \vec{u}_0 \) sowie den Jacobi-Matrizen \( \mat{J}_{\vec{x}}(\vec{x}_0, \vec{u}_0) \) und \( \mat{J}_{\vec{u}}(\vec{x}_0, \vec{u}_0) \) ausgewertet am Arbeitspunkt \( (\vec{x}_0, \vec{u}_0) \).
+				
+				Achtung: Dieses linearisierte Systems gilt nur approximativ um den Arbeitspunkt und kann nicht global verwendet werden!
 			% end
 
-			\subsection{Modellbasierte Manipulatorregelung} % 6.150, 6.151, 6.152
-				\todo{Content}
+			\subsection{Modellbasierte Manipulatorregelung}
+				Zur Systemlinearisierung gibt es drei Grundlegende Ansätze:
+				\begin{enumerate}
+					\item Lokale Linearisierung um einen Arbeitspunkt \\ Problem: Ein Roboter bewegt sich ständig über unterschiedliche Bereiche und keine Linearisierung kann überall gültig sein.
+					\item Verwendung vieler Linearisierungen und Verschiebung des Arbeitspunktes mit der Bewegung des Roboters \\ Problem: Wenig praktikabel, da hoher Rechenaufwand.
+					\item Verwendung der inversen Roboterdynamik
+				\end{enumerate}
+				\begin{equation*}
+					\vec{\tau} = \mat{M}(\vec{q}) \ddot{\vec{q}} + \vec{C}(\vec{q}, \dot{\vec{q}}) + \vec{G}(\vec{q}) + \vec{F}(\vec{q}, \dot{\vec{q}})
+				\end{equation*}
+				\begin{enumerate}
+					\item[] und Partitionierung der Reglerstruktur:
+				\end{enumerate}
+				\vspace{-0.5cm}
+				\begin{align*}
+					\vec{\tau}       & = \mat{M}(\vec{q})\hat{\vec{\tau}} + \vec{C}(\vec{q}, \dot{\vec{q}}) + \vec{G}(\vec{q}) + \vec{F}(\vec{q}, \dot{\vec{q}}) \\
+					\hat{\vec{\tau}} & = \ddot{\vec{q}}_d + \mat{K}_v \dot{\vec{e}} + \mat{K}_p \vec{e}                                                          \\
+					\vec{e}          & = \vec{q}_d - \vec{q}
+				\end{align*}
+				Dadurch werden die \(n\) Gleichungen entkoppelt und das Regelgesetz "linearisiert" (entkoppelt).
+				
+				\begin{itemize}
+					\item Diese für allgemeine Regelstrecken anwendbare, modellbasierte Regelungsmethode ("feedback linearization") wird auch als "inverse dynamics control" bezeichnet und ist eng verwandt mit "computed torque control".
+					\item Die Realisierung setzt voraus, dass die Gelenkregelung zentral (\dh nicht wie bei einer Kaskadenregelung) geschieht. Bei den meisten Industrierobotern ist dies nicht möglich, \bzw technisch nicht vorgesehen.
+					\item Der der Praxis muss die Roboterdynamik in Echtzeit berechnet werden, weshalb die Gleichungen entweder "von Hand" optimiert werden müssen oder sehr leistungsfähige Mikroprozessoren notwendig sind.
+					\item Die Parameter der Dynamik müssen ausreichend bekannt sein (gute Reibungsmodelle sind \iA schwierig, Trägheit und Massen, Unsicherheiten, \dots).
+					\item Vorteil: Es sind hohe Genauigkeiten und Geschwindigkeiten in der Bewegung erreichbar.
+				\end{itemize}
 			% end
 
-			\subsection{Adaptive Manipulatorregelung} % 6.153
-				\todo{Content}
+			\subsection{Adaptive Manipulatorregelung}
+				Bei der adaptiven Regelung wieder die modellbasierte Regelung mit Dynamikmodell kombiniert mit einem Adaptionsverfahren, um die Modellparameter durch Vergleich von berechneter und gemessener Zustände anzupassen (\bspw mittels Gaussian Process Regression).
 			% end
 
-			\subsection{Bahnreglung in Weltkoordinaten} % 6.154
-				\todo{Content}
+			\subsection{Bahnreglung in Weltkoordinaten}
+				Die Bahnregelung kann direkt (naiv) durch Nutzung der (inversen) Kinematik und der (inversen) Jacobi-Formulieren in Weltkoordinaten genutzt werden. Besser ist allerdings eine direkte Messung der Position in Weltkoordinaten als die (aufwendige und Fehlerbehaftete) Umrechnung.
 			% end
 		% end
 
-		\section{Kraft-/Momenten-Regelung} % 6.155, 6.156, 6.157, 6.158, 6.159, 6.160, 6.161, 6.162
+		\section{Kraft-/Momenten-Regelung} % 6.158, 6.159, 6.160, 6.161, 6.162
+			Manipulationsaufgaben erfordern den gezielten Umgang mit dem physikalischen Kontakt des Roboters mit der Umwelt. Bei einer reinen Positionsregelung können kleine Variationen der Positionen extrem große Kontaktkräfte hervorrufen. Dadurch können Schäden hervorgerufen werden, \bspw beim hantieren mit Glas. Somit ist ebenfalls eine Messung sowie Regelung der Kontaktkräfte und -momente nötig.
+			
 			\todo{Content}
 		% end
 
-		\section{Bahn-/Kraft-Regelung} % 6.163
-			\todo{Content}
-
+		\section{Bahn-/Kraft-Regelung}
 			\subsection{Hybride Regelung} % 6.163, 6.164, 6.165
 				\todo{Content}
 			% end

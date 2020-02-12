@@ -57,6 +57,7 @@
 \newcommand{\iA}{i.\,A.~}
 \newcommand{\ggf}{ggf.~}
 \newcommand{\mglw}{mglw.~}
+\newcommand{\vs}{vs.~}
 
 % Quadtree.
 \newcommand{\grayBox}{%
@@ -4352,50 +4353,183 @@
 		% end
 	% end
 
-	\chapter{Middleware und Simulation} % 10.1, 10.2, 10.3, 10.4, 10.5, 10.6
-		\todo{Content}
-
-		\section{Szenarien, Eigenschaften und Herausforderungen} % 10.7, 10.8, 10.9, 10.10, 10.11
-			\todo{Content}
+	\chapter{Middleware und Simulation}
+		\paragraph{Voraussetzungen für intelligente Roboter}
+			\begin{itemize}
+				\item Forschung
+					\begin{itemize}
+						\item Seit circa 40 Jahre, sehr stark steigende Anzahl an Konferenzen und Publikationen pro Jahr.
+						\item Die Robotics and Automation Society ist die größte und am schnellsten wachsende Fachgesellschaft der IEEE.
+					\end{itemize}
+				\item Technologie
+					\begin{itemize}
+						\item Enorm steigende Rechenleistung und Speicherkapazitäten.
+						\item Stark steigende Leistungsfähigkeit von Sensortechnologien (\zB LIDAR, Farb-Tiefbild-Kameras wie Kinect und Intel RealSense).
+						\item Kontinuierlich steigende Leistungsfähigkeit von Antriebstechnologien, insbesondere von elektrischen Antrieben.
+					\end{itemize}
+			\end{itemize}
 		% end
 
-		\section{Middleware} % 10.12, 10.13, 10.14, 10.15
-			\todo{Content}
+		\section{Szenarien, Eigenschaften und Herausforderungen}
+			Roboter können für die unterschiedlichsten Aufgaben eingesetzt werden. Ständig steigende Komplexität und sich schnell ändernde Hardware erschweren dabei die effiziente Programmierung für solche Einsätze. Wie kann eine "korrekte" und "zuverlässige" Funktionsweise sichergestellt werden?
+			
+			In Robotern kommen werden viele verschiedene Algorithmen aus verschiedenen Bereichen integriert (Sensordaten Verarbeitung, Objekterkennung, Filterung, Modellierung, Lokalisierung, Kartografierung, Vorhersage, Verhaltensentscheidung, Bewegungssteuerung, \dots). All diese Algorithmen müssen in ein Gesamtsystem integriert und auf dieses und den jeweiligen Roboter angepasst werden. Diese Integration erfordert einen hohen Aufwand.
+			
+			Gewünschte Software Engineering Kriterien für die Hard-/Software-Komponenten sind dabei:
+			\begin{itemize}
+				\item Modularität (lose Kopplung zwischen den Komponenten, einfacher Austausch/einfache Änderung der Komponenten)
+				\item Wiederverwendbarkeit (auf anderen Robotern, in anderen Szenarien)
+				\item Flexibilität (schnelle Anpassung an sich ändernde Hardware, geänderte Aufgabenstellungen)
+				\item Korrektheit
+				\item Zuverlässigkeit
+			\end{itemize}
+		% end
 
-			\subsection{Nachrichtenbasierte Kommunikation} % 10.16, 10.17
-				\todo{Content}
+		\section{Middleware}
+			Roboter-Middleware bildet eine Zwischenschicht zwischen der Hardware und dem Sense -- Plan -- Act Zyklus. Ein weltweit akzeptierter Standard für ein solches System ist ROS, das "Robot Operating System" (wobei es eigentlich kein Betriebssystem ist, sondern eine Middleware, die auf einem Betriebssystem, \zB einem Echtzeit-Linux, eingesetzt wird).
+			
+			Die Middleware ist dabei der "Kleber" zwischen den Komponenten und sorgt für
+			\begin{itemize}
+				\item Separation der Komponenten
+				\item Standardisierte Mechanismen zur Kommunikation
+				\item Interfaces definiert durch die ausgetauschten Daten.
+			\end{itemize}
+			Dabei gibt es unterschiedliche Ansätze:
+			\begin{itemize}
+				\item Kommunikations-Orientiert (RPC, Java RMI, Web Service)
+				\item Applikation-Orientiert (CORBA, J2EE, .NET)
+				\item Nachrichten-Orientiert (JSM, RoboFrame, ROS)
+			\end{itemize}
+
+			\subsection{Nachrichtenbasierte Kommunikation}
+				\begin{itemize}
+					\item Gängige Paradigmen
+						\begin{itemize}
+							\item Point-to-Point
+							\item Fan-Out
+							\item Request-Response
+							\item Publish/Subscribe
+						\end{itemize}
+					\item Synchron \vs Asynchron
+					\item Lokal \vs Remote
+					\item Zusätzliche Komponente: "Message Broker" \\ Führt zu einem erhöhten Aufwand und zusätzlichem Overhead, aber einer erheblich einfacheren Struktur.
+				\end{itemize}
 			% end
 
-			\subsection{Laufzeit-Effizienz} % 10.18, 10.19
-				\todo{Content}
+			\subsection{Laufzeit-Effizienz}
+				Insbesondere bei mobilen Robotern ist die Laufzeit-Effizienz enorm wichtig (es werden oftmals tausende Nachrichten pro Sekunde ausgetauscht). Bei jeder Nachricht muss diese dabei serialisiert, in den Speicher kopiert und deserialisiert werden. Diese Übertragung benötigt (auch lokal) Zeit.
+				
+				Bei einer einzelnen Nachricht in die Latenz gering, aber in der Summe signifikant. Bei einem Echtzeit-Betriebssystem ist dabei nicht unbedingt schnell, aber das Zeitverhalten ist definiert (\dh die Dauer einer Operation ist exakt definiert).
 			% end
 		% end
 
-		\section{Sicherstellung von Korrektheit und Zuverlässigkeit} % 10.20, 10.21, 10.22, 10.25, 10.26
-			\todo{Content}
+		\section{Sicherstellung von Korrektheit und Zuverlässigkeit}
+			\begin{itemize}
+				\item Aufgrund der Komplexität der Software ist eine formale Verifikation nicht praktikabel (zusätzlich gibt es unendlich viele, nichtlineare und stochastische Einflüsse).
+				\item Alternative: Viel testen.
+					\begin{itemize}
+						\item Korrektheit und Zuverlässigkeit werden anhand einer vordefinierten Menge an Situationen überprüft.
+						\item Tritt hierbei kein Fehler auf, so bedeutet das nicht nicht, dass das System "korrekt" ist.
+					\end{itemize}
+				\item Ansätze im Software Engineering:
+					\begin{itemize}
+						\item Unit-Tests
+						\item Regression-Tests
+						\item Integration-Tests
+							\begin{itemize}
+								\item Durchlaufen möglichst einfach und dennoch repräsentativer Szenarien (Roboter muss Ball finden, zum Ball laufen, ins Tor schießen, \dots).
+								\item Ausführen auf dem Roboter ist dabei zeitintensiv (Vorbereitung) und ressourcenintensiv (Verschleiß).
+								\item Sofern es möglich ist, sollte die Evaluation in der Simulation stattfinden (Software-in-the-Loop).
+							\end{itemize}
+						\item Komponenten-Tests
+							\begin{itemize}
+								\item Abdecken der "low-level" Funktionalität.
+								\item Dies ist sinnvoll für einfache Komponenten mit geringer Anzahl an möglichen Eingaben.
+								\item Allerdings nicht sinnvoll für das "high-level" Verhalten oder ungenaue und verrauschte Eingangsdaten.
+								\item Anwendbar \zB für die Infrastruktur der Middleware (Weiterleitung von Nachrichten, Funktion unter Last, \dots).
+							\end{itemize}
+					\end{itemize}
+			\end{itemize}
 
-			\subsection{Simulation} % 10.27
-				\todo{Content}
+			\subsection{Simulation}
+				Die Anforderungen an einen Simulator sind sehr unterschiedlich, z.\,B.:
+				\begin{itemize}
+					\item Testen von Laufbewegungen:
+						\begin{itemize}
+							\item Ein genaues Dynamikmodell ist unabdingbar.
+							\item Hoher Rechenaufwand.
+							\item Nur eine kleine Anzahl an Robotern simulierbar.
+						\end{itemize}
+					\item Testen von Teamverhalten:
+						\begin{itemize}
+							\item Ein einfaches Kinematikmodell ist ausreichend.
+							\item Geringer Rechenaufwand.
+							\item Auch mehrere Roboter gleichzeitig simulierbar.
+						\end{itemize}
+				\end{itemize}
+				Ein guter Simulator ermöglicht dementsprechend eine Auswahl von Simulationsmodellen mit unterschiedlichen Abstraktionsebenen und Detaillierungsgraden.
 			% end
 
-			\subsection{Automatisierte Testabläufe} % 10.30, 10.31, 10.32
-				\todo{Content}
+			\subsection{Automatisierte Testabläufe}
+				\begin{itemize}
+					\item Die manuelle Durchführung von Testszenarien ist zeitaufwendig und fehleranfällig.
+					\item Die Tests können \zB durch Skript automatisiert werden.
+						\begin{itemize}
+							\item Ein Skript initialisiert das Szenario, positioniert alle Objekte (Roboter, Ball, Hindernisse) in der Szene.
+							\item Für jedes Szenario werden Abbruchbedingungen und -zeiten definiert.
+							\item Das passende Verhalten zum Szenario wird gestartet.
+							\item Die Ergebnisse werden automatisiert erfasst und ausgewertet.
+						\end{itemize}
+					\item Durch Continuous Integration ist ein zeitnahes Feedback und schnell Eingrenzung von Fehler möglich. Außerdem gibt es eine kontinuierliche Statistik über die Entwicklung der Performanz.
+					\item Dadurch wird eine einfache Reproduktion von Problemfällen möglich.
+						\begin{itemize}
+							\item Nutzung von "ground-truth" Daten zur Vereinfachung, \zB Umgehung der Bildverarbeitung oder Lokalisierung durch die Simulation und nicht mit dem eigentlichen Verfahren.
+							\item Dennoch sind die Tests nicht vollständig deterministisch.
+						\end{itemize}
+					\item Automatisierte Untersuchung auf Regressionen (aufgrund der Komplexität können Seiteneffekte durch Änderungen nicht ausgeschlossen werden).
+					\item Das Beheben von Problem ist allerdings noch immer schwierig (die Ursachen für "falsches" Verhalten sind nicht direkt offensichtlich, es sind viele Komponenten beteiligt).
+				\end{itemize}
 			% end
 
-			\subsection{Monitoring} % 10.33
-				\todo{Content}
+			\subsection{Monitoring}
+				\begin{itemize}
+					\item Eine Fehlersuche durch reines "Anschauen des Roboters" ist aufgrund der Komplexität unmöglich.
+					\item Daher muss "in den Roboter hinein" geschaut werden.
+					\item Dies geschieht \bspw mit einer (grafischen) Benutzerschnittstelle, um intrinsische Daten zu visualisieren.
+				\end{itemize}
 			% end
 
-			\subsection{Visuelles Debuggen} % 10.34, 10.35
-				\todo{Content}
+			\subsection{Visuelles Debuggen}
+				\begin{itemize}
+					\item Durch Visualisierung einiger Algorithmen können Fehler schnell erkannt werden.
+					\item Beispielsweise kann die Trajektorie des Roboterschwerpunktes visualisiert werden.
+					\item Es ist wünschenswert, dass jeder Algorithmus/jedes Modell passende Visualisierungen oder Parametrisierungen zur Verfügung stellt.
+				\end{itemize}
 			% end
 
-			\subsection{Offline Analyse} % 10.36, 10.37
-				\todo{Content}
+			\subsection{Offline Analyse}
+				\begin{itemize}
+					\item Die Situation und die intrinsischen Daten eines Roboters ändern sich unter Umständen sehr schnell, sodass sie \ggf unmöglich sind online nachzuverfolgen.
+					\item Im Fehlerfall ist \mglw kein Monitoring aktiv, eine nachträgliche Analyse soll jedoch trotzdem möglich sein.
+					\item Daher sollten alle ausgetauschten Nachrichten aufgezeichnet werden.
+						\begin{itemize}
+							\item Mit Nachrichten-basierter Kommunikation ist dies prinzipiell einfach möglich.
+							\item Die Aufzeichnung muss jedoch dezentral auf jedem Roboter erfolgen (die Bandbreite/Verfügbarkeit von externen Systemen ist limitiert; externe Kommunikation ist während eines Wettkampfs \mglw durch die Regeln untersagt).
+							\item Je nach Menge der Daten reicht die Schreibrate eventuell nicht aus.
+						\end{itemize}
+					\item Die aufgezeichneten Daten können anschließend abgespielt und analysiert werden.
+						\begin{itemize}
+							\item Dabei kann die Situation Schritt für Schritt nachvollzogen werden.
+						\end{itemize}
+				\end{itemize}
 			% end
 
-			\subsection{Kooperierendes Verhalten} % 10.38, 10.39, 10.40
-				\todo{Content}
+			\subsection{Kooperierendes Verhalten}
+				\begin{itemize}
+					\item Die Analyse eines einzelnen Roboters ist meistens ungenügend, es müssen alle Informationen aller Teammitglieder betrachtet werden. Dazu müssen die dezentral aufgenommenen Daten synchronisiert werden.
+					\item Häufig ist die Spielsituation im Nachhinein unklar, weshalb externe Informationsquellen berücksichtigt werden sollten (\zB ein externes Video des Spielfelds).
+					\item Es ist ein synchrones Abspielen von Videos sowie aufgenommenen Daten zur Analyse nötig.
+				\end{itemize}
 			% end
 		% end
 	% end
@@ -4464,34 +4598,6 @@
 		% end
 	% end
 
-	\chapter{Verantwortung der Informatik und der Ingenieurwissenschaften} % 12.1
-		\todo{Content}
-
-		\section{Zivilklausel der TU Darmstadt} % 12.2
-			\todo{Content}
-		% end
-
-		\section{Beispiele} % N/A
-			\todo{Content}
-
-			\subsection{Kugelschreiber} % 12.3
-				\todo{Content}
-			% end
-
-			\subsection{DARPA Robotics Challenge} % 12.4, 12.5, 12.6, 12.7, 12.8
-				\todo{Content}
-			% end
-
-			\subsection{Roboter und Arbeitsplätze} % 12.9, 12.10, 12.11, 12.12, 12.13
-				\todo{Content}
-			% end
-		% end
-
-		\section{Sonstiges} % 12.14, 12.15, 12.16, 12.17
-			\todo{Content}
-		% end
-	% end
-
 
 
 
@@ -4509,7 +4615,7 @@
 			\todo{Content}
 		% end
 
-		\section{Umrechnung: Quaternionen \(\leftrightarrow\) Rotationsmatrizen} % S.177
+		\section{Umrechnung: Quaternionen zu Rotationsmatrizen und zurück} % S.177
 			\todo{Content}
 		% end
 
@@ -4529,11 +4635,11 @@
 	\chapter{Zusammenhang zwischen Rotationsmatrix, Drehvektor und Drehwinkel} % S.179
 		\todo{Content}
 
-		\section{Drehvektor und Drehwinkel \(\to\) Rotationsmatrix} % S.179
+		\section{Umwandlung von Drehvektor und Drehwinkel zu Rotationsmatrix} % S.179
 			\todo{Content}
 		% end
 
-		\section{Rotationsmatrix \(\to\) Drehvektor und Drehwinkel} % S.179, S.180, S.181
+		\section{Umwandlung von Rotationsmatrix zu Drehvektor und Drehwinkel} % S.179, S.180, S.181
 			\todo{Content}
 		% end
 	% end

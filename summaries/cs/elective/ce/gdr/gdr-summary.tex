@@ -4534,65 +4534,257 @@
 		% end
 	% end
 
-	\chapter{Steuerung autonomer Roboter} % 11.1, 11.2
-		\todo{Content}
+	\chapter{Steuerung autonomer Roboter}
+		\section{Steuerungsarchitekturen}
+			Es existieren drei grundlegende Paradigmen der Steuerungsarchitektur von autonomen Robotern:
+			\begin{enumerate}
+				\item Hierarchisch
+				\item Reaktiv
+				\item Hybris Deliberativ-Reaktiv
+			\end{enumerate}
+			Die Basisfunktionalitäten autonomer Roboter sind in Tabelle~\ref{tab:basic_functionalities_of_autonomous_robots} abgebildet.
+			
+			\begin{table}
+				\centering
+				\begin{tabular}{l|ll}
+					\textbf{Basisfunktionalität} & \textbf{Eingabe}                    & \textbf{Ausgabe}          \\ \hline
+					\textbf{Sense}               & Sensordaten                         & Informationen (Sinne)     \\
+					\textbf{Plan}/\textbf{Think} & Information (Sinne oder Erkenntnis) & Handlungsanweisungen      \\
+					\textbf{Act}                 & Sinne oder Handlungsanweisungen     & Steuerbefehle an Antriebe
+				\end{tabular}
+				\caption{Basisfunktionalitäten von autonomen Robotern.}
+				\label{tab:basic_functionalities_of_autonomous_robots}
+			\end{table}
 
-		\section{Steuerungsarchitekturen} % 11.3
-			\todo{Content}
-
-			\subsection{Hierarchisches Steuerungsparadigma} % 11.4, 11.5, 11.6
-				\todo{Content}
+			\subsection{Hierarchisches Steuerungsparadigma}
+				Die Steuerung wird hier hierarchisch Zerlegt (deliberativ) und verfolgt damit den Ansatz "erst denken, dann handeln", siehe Abbildung~\ref{fig:autonomous_hierarchy}.
+				
+				\begin{itemize}
+					\item Über dieses Paradigma wurden die ersten autonomen, mobilen Roboter erstellt.
+					\item Kritik in den 80er Jahren:
+						\begin{itemize}
+							\item Der Ausfall eines Moduls führt zu dem Ausfall des Gesamtsystems, \bzw zu drastischer Performanz-Reduktion.
+							\item Die Planung basiert allein auf dem Weltmodell, nicht direkt auf den Sensordaten. Dadurch werden \bspw Objekte übersehen, die zwar in den Sensordaten auftauchen, im Weltmodell aber nicht berücksichtigt worden sind.
+							\item Ein zu detailliertes Weltmodell führt zu langen Rechenzeiten und langsamen Reaktionszeiten.
+							\item Während das Weltmodell aufgebaut wird, ändert sich die Umweltsituation bereits.
+						\end{itemize}
+				\end{itemize}
+				
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}[->, every node/.style = { align = center, minimum width = 5cm }]
+						\node (0) {Sensoren};
+						\node [draw, rectangle, below = 0.5 of 0] (a) {Wahrnehmung};
+						\node [draw, rectangle, below = 0.5 of a] (b) {(Welt-)~Modellierung};
+						\node [draw, rectangle, below = 0.5 of b] (c) {Planung \\ (Handlungen, Trajektorien)};
+						\node [draw, rectangle, below = 0.5 of c] (d) {Ausführung \\ (Handlungen, Trajektorien)};
+						\node [draw, rectangle, below = 0.5 of d] (e) {Antriebssteuerung};
+						\node [below = 0.5 of e] (1) {Antriebe};
+						
+						\draw (0) -- (a);
+						\draw (a) -- (b);
+						\draw (b) -- (c);
+						\draw (c) -- (d);
+						\draw (d) -- (e);
+						\draw (e) -- (1);
+					\end{tikzpicture}
+					\caption{Aufbau eines hierarchischen Steuerungsparadigma eines autonomen Roboters.}
+					\label{fig:autonomous_hierarchy}
+				\end{figure}
 			% end
 
-			\subsection{Reaktives Steuerungsparadigma} % 11.7, 11.8
-				\todo{Content}
+			\subsection{Reaktives Steuerungsparadigma}
+				Das reaktive Paradigma wurde als "Antwort" auf das hierarchische Paradigma, \bzw die Kritik an diesem, erstellt. Dabei greifen Sense und Act ineinander und der Plan-Schritt fällt weg ("handeln ohne zu denken"), siehe Abbildung~\ref{fig:autonomous_reactive}.
+				
+				Vor- und Nachteil dieses Systems ist die Entfernung aller Planungskomponenten. Dadurch werden zwar schnelle Reaktionszeiten erreicht und das System ist robust gegen Modulausfälle, aber das Verhalten ist schwer vorherzusagen und nicht planbar.
+				
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}[->, block/.style = { draw, rectangle, align = center, minimum width = 8cm }]
+						\node [block](a) {Schließen über Verhalten anderer Objekte};
+						\node [block, below = 0 of a] (b) {Aufbau von Karten};
+						\node [block, below = 0 of b] (c) {Objektidentifikation};
+						\node [block, below = 0 of c] (d) {Exploration der Umgebung};
+						\node [block, below = 0 of d] (e) {Bewegung};
+						\node [block, below = 0 of e] (f) {Kollisionsvermeidung};
+						\path (a.north west) -- coordinate(A) (f.south west);
+						\path (a.north east) -- coordinate(B) (f.south east);
+						\node [left = 1 of A] (0) {Sensoren};
+						\node [right = 1 of B] (1) {Antriebe};
+						
+						\draw (a.east) -- (1);
+						\draw (b.east) -- (1);
+						\draw (c.east) -- (1);
+						\draw (d.east) -- (1);
+						\draw (e.east) -- (1);
+						\draw (f.east) -- (1);
+						
+						\draw (0) -- (a.west);
+						\draw (0) -- (b.west);
+						\draw (0) -- (c.west);
+						\draw (0) -- (d.west);
+						\draw (0) -- (e.west);
+						\draw (0) -- (f.west);
+					\end{tikzpicture}
+					\caption{Aufbau eines reaktiven Steuerungsparadigmas eines autonomen Roboters.}
+					\label{fig:autonomous_reactive}
+				\end{figure}
 			% end
 
-			\subsection{Hybrid deliberativ-reaktives Steuerungsparadigma} % 11.9, 11.10, 11.11
-				\todo{Content}
+			\subsection{Hybrid deliberativ-reaktives Steuerungsparadigma}
+				Bei dem hybriden Paradigma
+				\begin{enumerate}
+					\item plant (deliberativ) der Roboter die beste Unterteilung einer Aufgabe in Teilaufgaben und
+					\item wählt geeignete (Elementar-)~Verhalten zur Lösung der Teilaufgaben aus einer Menge möglicher Verhalten aus.
+					\item Dieser Verhalten arbeiten dann gemäß einem reaktiven Paradigma.
+				\end{enumerate}
+				Dabei verschwimmen die effektiven Unterschiede zwischen deliberativer und reaktiver Steuerungsarchitektur, wenn die Durchlauf- und Verarbeitungszeit in der Taktfrequenz der wichtigsten Sensoren erfolgt.
 			% end
 
-			\subsection{Beispiel: Subsumption Architecture} % 11.12, 11.13, 11.14, 11.18
-				\todo{Content}
+			\subsection{Beispiel: Subsumption Architecture}
+				Anforderungen an die Steuerungsarchitektur:
+				\begin{enumerate}
+					\item Mehrere, unterschiedliche Aufgabenziele:
+						\begin{itemize}
+							\item Z.\,B.~ einerseits die Zielpunkte erreichen, andererseits Hindernisse vermeiden.
+							\item Die Priorität des Ziels ist relativ und kontextabhängig.
+							\item Ziele mit einer höheren Priorität müssen erreicht werden, aber auch niedrigere Aufgaben müssen erfüllt werden.
+						\end{itemize}
+					\item Mehrere, unterschiedliche Sensoren:
+						\begin{itemize}
+							\item Fehlerbehaftete Sensordaten.
+							\item Komplexe Beziehungen zwischen Rohdaten und interpretierten Daten.
+							\item Dateninkonsistenz bei konkurrierenden Sensoren (klein -- groß).
+							\item Sensorausfälle.
+						\end{itemize}
+					\item Robustheit:
+						\begin{itemize}
+							\item Die Aufgabenausführung sollte auch beim Ausfall von Sensoren oder anderer Hardware fortgeführt werden.
+							\item Drastische Umgebungsänderungen müssen bewältigt werden.
+						\end{itemize}
+					\item Erweiterbarkeit
+						\begin{itemize}
+							\item Bzgl.~ Sensoren, Fähigkeiten, Rechenleistung, \dots
+						\end{itemize}
+				\end{enumerate}
+			
+				Einige grundlegende Annahmen hinter der Subsumption Architecture sind:
+				\begin{itemize}
+					\item Der Aufbau eines komplexen Verhaltens setzt sich aus einfachen Verhaltensweisen zusammen.
+					\item KI: Autonomie und Insektenfähigkeiten als Voraussetzung für intelligentes Verhalten.
+					\item Keine künstliche Umgebung, keine externe Kalibrierung.
+				\end{itemize}
+			
+				In der Subsumption Architecture wird die Robotersteuerung in mehrere, übereinanderliegende Schichten von Kompetenzebenen strukturiert, wobei keine ein explizites Weltmodell aufweist. Dabei benötigt jede Schicht Sensoren und Aktuatoren und jede Schicht beinhaltet die Fähigkeiten der niedrigeren Ebenen. Die Berechnung der Verhaltensweisen findet dann auf allen Ebenen parallel statt, wobei die anzuwendende Verhaltensweise (\bzw Ebene) abhängig von der kontextabhängigen Priorität ausgewählt wird.
+				
+				Beispielhafte Kompetenzebenen:
+				\begin{enumerate}
+					\setcounter{enumi}{-1}
+					\item Kollisionsvermeidung mit (stationären und beweglichen) Objekten
+					\item Ziellos Herumfahren (unter Vermeidung von Kollisionen)
+					\item Erforschen der Umwelt (durch Anfahren entfernter Orte)
+					\item Erstellen einer Landkarte und Planen von Routen
+					\item Erkennen von Änderungen der statischen Umwelt
+					\item "Nachdenken" über die Welt in Bezug auf identifizierbare Objekte und Aufgaben \bzgl dieser Objekte
+					\item Pläne, die Umwelt in sinnvoller Weise zu verändern, formulieren und ausführen
+					\item "Nachdenken" über das Verhalten von Objekten in der Umwelt und Berücksichtigung in der Planung
+				\end{enumerate}
+			
+				\begin{itemize}
+					\item \textbf{Vorteile:}
+						\begin{itemize}
+							\item Schnelle, immer vorhandene Reaktion.
+							\item Im Wesentlichen die Welt selbst als Weltmodell.
+						\end{itemize}
+					\item \textbf{Nachteile:}
+						\begin{itemize}
+							\item Kein explizites internes Weltmodell, daher im Wesentlichen und reaktives Verhalten.
+							\item Keine "Evolution" von intelligentem Verhalten.
+						\end{itemize}
+				\end{itemize}
 
-				\subsubsection{Schicht 0} % 11.15
-					\todo{Content}
+				\subsubsection{Schicht 0}
+					Kollisionsvermeidung.
+						
+					\begin{itemize}
+						\item Erzeugung einer momentanen Umgebungskarte aus Ultraschallsensoren.
+						\item Erzeugung einer "gefühlten", abstoßenden Kraft durch Summierung simulierter, abstoßender Kräfte von Hindernissen.
+					\end{itemize}
+					
+					Hindernisvermeidung durch zwei Taktiken:
+					\begin{itemize}
+						\item \emph{Collide:} Das Hindernis ist direkt vor dem Roboter, der Roboter bleibt stehen.
+						\item \emph{Runaway:} Wegbewegung von Hindernissen gemäß der (simulierten) Abstoßungskraft.
+					\end{itemize}
 				% end
 
-				\subsubsection{Schicht 1} % 11.16
-					\todo{Content}
+				\subsubsection{Schicht 1}
+					Zielloses Herumfahren durch die Welt mit Heuristik zur vorausschauenden Kollisionsvermeidung.
+					
+					\begin{itemize}
+						\item \emph{Wander:} Zufällige Bewegungsrichtungen.
+						\item \emph{Avoid:} Ermittlung der tatsächlichen Bewegungsrichtung unter Berücksichtigung der simulierten Abstoßungskraft.
+					\end{itemize}
 				% end
 
-				\subsubsection{Schicht 2} % 11.17
-					\todo{Content}
+				\subsubsection{Schicht 2}
+					Exploration der Umwelt.
+					
+					\begin{itemize}
+						\item Auswahl und
+						\item Anfahren
+					\end{itemize}
+					interessanter Orte.
 				% end
 			% end
 		% end
 
-		\section{Programmierung von Verhalten} % 11.19, 11.20, 11.21, 11.22, 11.23
-			\todo{Content}
+		\section{Programmierung von Verhalten}
+			"Konventionelle", wissenschaftliche Programmierung arbeitet nur mit Variablen, die in der Regel nur im Computer existieren. Ebenso ist die Ausführungszeit häufig unkritisch. Bei der Roboterprogrammierung wird jedoch direkt mit dreidimensionalen, physikalischen Objekten gearbeitet. Außerdem sind die Ausführungszeiten kritisch (harte und weiche Echtzeitbeschränkungen, in ereignisbezogenen Takten, \dots). Außerdem sind die Daten \iA stark unsicherheitsbehaftet.
+			
+			Zu den Aufgaben von Roboterprogrammiersprachen gehören:
+			\begin{itemize}
+				\item Formulierung der durchzuführenden Aufgaben sowie die
+				\item Steuerung des Roboters bei der Durchführung.
+			\end{itemize}
+		
+			Einige solcher Programmiersprachen sind:
+			\begin{itemize}
+				\item COLBERT
+				\item Task Description Language
+				\item Behavior Language
+				\item XABSL (basierend auf hierarchischen Zustandsautomaten)
+				\item Petrinetze
+				\item Reactive Plan Language
+				\item FlexBE (basierend auf hierarchischen Zustandsautomaten)
+			\end{itemize}
 
-			\subsection{XABSL} % 11.24, 11.25, 11.26, 11.27, 11.28, 11.29, 11.30
-				\todo{Content}
+			\subsection{XABSL}
+				\begin{itemize}
+					\item Die Aufgaben sind eingebettet in entsprechendes Verhalten.
+					\item Das Roboterverhalten wird durch einen getakteten, hierarchischen, endlichen Zustandsautomaten beschrieben.
+					\item Die Agentenverhalten werden in Teilverhalten,  Teilverhalten wiederum in Basisverhalten zerlegt, die physikalischen Aktionen entsprechen.
+					\item Der dem Automaten entsprechende Graph kann visualisiert werden, was die Überwachung und Fehlersuche vereinfacht.
+					\item Während der Ausführung des Zustandsautomaten ist der aktuelle Zustand definiert als die Teilmenge der aktivierten Optionen entlang dem gerichteten Graphen ausgehend von der Wurzeloption und den entsprechenden Zuständen.
+					\item Der Baum/Pfad der aktiven Optionen ist der Aktivierungsbaum/Aktivierungspfad.
+					\item Die Verhaltenssteuerung interagiert mit der umgebenden Software über eine Reihe von Symbolen:
+						\begin{itemize}
+							\item Eingabesymbole sind \zB Sensordaten, Weltmodelldaten oder Nachrichten von Teammitgliedern.
+							\item Ausgabesymbole sind \zB Motorsteuerbefehle oder Nachrichten an andere Agenten.
+						\end{itemize}
+				\end{itemize}
 			% end
 
-			\subsection{FlexBE} % 11.31, 11.32
-				\todo{Content}
+			\subsection{FlexBE}
+				XABSL unterstützt weder ROS, noch eine Interaktion mit dem Operator oder adaptive Level der Autonomie. Die Bibliothek FlexBE (basierend auch SMACH) fügt ebendiese Roboter-Operator Kollaboration hinzu.
 
-				\subsubsection{Autonomy Level} % 11.33
-					\todo{Content}
-				% end
-
-				\subsubsection{Beispiel: TurtleBot3} % N/A
-					\todo{Content}
-
-					\paragraph{Move Arm} % 11.34, 11.35, 11.36, 11.37, 11.38, 11.39, 11.40, 11.41, 11.42, 11.43, 11.44, 11.45
-						\todo{Content}
-					% end
-
-					\paragraph{Move Base} % 11.46, 11.47, 11.48
-						\todo{Content}
-					% end
+				\subsubsection{Autonomy Level}
+					Jedes Verhalten läuft mit einem expliziten Autonomie-Level, das während der Ausführung geändert werden kann. Die Ausgangswerte eines Zustands definieren dabei die erforderliche Autonomie:
+					\begin{itemize}
+						\item Autonomie hoch genug \(\to\) autonome Ausführung.
+						\item Autonomie zu niedrig \(\to\) der Operator muss die Ausführung bestätigen.
+					\end{itemize}
+					Dadurch kann der Operator die Ausführung jederzeit steuern.
 				% end
 			% end
 		% end

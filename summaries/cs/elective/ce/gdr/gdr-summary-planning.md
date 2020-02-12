@@ -2,7 +2,7 @@
 
 ## Folien/Kapitel
 
-* Folien: Fertig/Strukturiert/Gesamt: 419+154/1078/1078: 53%/100%/100%
+* Folien: Fertig/Strukturiert/Gesamt: 469+154/1069/1069: 58%/100%/100%
 * Skript: Fertig/Strukturiert/Gesamt: 0/177/177: 0%/100%/100%
 
 - [x] Kapitel  1: Einleitung, Übersicht (Folien: 128; Skript: 10)
@@ -15,7 +15,7 @@
 - [X] Kapitel  8: Externe und intelligente Sensoren (Folien: 154)
 - [X] Kapitel  9: Navigation mobiler Roboter (Folien: 113)
 - [X] Kapitel 10: Middleware und Simulation (Folien: 41)
-- [x] Kapitel 11: Steuerung autonomer Roboter (Folien: 50)
+- [X] Kapitel 11: Steuerung autonomer Roboter (Folien: 50)
 - [X] Kapitel 12: Verantwortung der Informatik und der Ingenieurwissenschaften (Folien: 22)
 - [x] Anhang: Quaternionen, Notationen (Skript: 9)
 

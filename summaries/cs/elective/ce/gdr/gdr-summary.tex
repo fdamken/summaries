@@ -42,10 +42,11 @@
 \newcommand{\N}{\ensuremath{\mathbb{N}}}
 \newcommand{\R}{\ensuremath{\mathbb{R}}}
 \newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\given}{\,\vert\,}
 % Matrix/Vector notation.
 \makeatletter
-\newcommand{\mat}[1]{\boldsymbol{#1}\@ifnextchar({}{\@ifnextchar[{}{\@ifnextchar\{{}{\!}}}}
-\renewcommand{\vec}[1]{\boldsymbol{#1}\@ifnextchar({}{\@ifnextchar[{}{\@ifnextchar\{{}{\!}}}}
+\newcommand{\mat}[1]{\boldsymbol{#1} \ifthenelse{\equal{#1}{A}}{}{\@ifnextchar({}{\@ifnextchar[{}{\@ifnextchar\{{}{\@ifnextchar\,{}{\!}}}}}}
+\renewcommand{\vec}[1]{\boldsymbol{#1} \ifthenelse{\equal{#1}{A}}{}{\@ifnextchar({}{\@ifnextchar[{}{\@ifnextchar\{{}{\@ifnextchar\,{}{\!}}}}}}
 \makeatother
 % Abbreviations.
 \renewcommand{\dh}{d.\,h.~}
@@ -730,7 +731,7 @@
 		% end
 	% end
 
-	\chapter{Antriebssysteme} % 6.6
+	\chapter{Antriebssysteme}
 		\section{Gebräuchliche Antriebssysteme}
 			\subsection{Hydraulische Antriebe}
 				Hydraulische Antriebe nutzen Öl und Druckveränderungen dieses Öls in einer Kammer zur Bewegung.
@@ -2711,6 +2712,8 @@
 	% end
 
 	\chapter{Bahnplanung}
+		\label{c:bahnplanung}
+	
 		Abbildung~\ref{fig:job_processing_and_planning} zeigt den typischen hierarchischen Aufbau der Auftragsbearbeitung und Planung, wobei sich dieses Kapitel auf die topologische, geometrische, kinematische und kinetische Planung bezieht.
 		
 		Die \emph{Bahnplanung} ist eine wichtige Mindestanforderung an "autonome", mobile Roboter und beinhaltet die Planung und Umsetzung eigener Bewegungen. Benötigt werden dazu
@@ -3579,7 +3582,7 @@
 					\begin{itemize}
 						\item Die Umgebungskarte wird eingeteilt in ein Netz aus quadratischen Zellen, wobei freie Stellen hell und Hindernisse dunkel markiert werden.
 						\item Diese \emph{Belegungskarte} erlernt der Roboter selbstständig (durch Herumfahren).
-						\item Die Verknüpfung der beiden Problemstellungen (Aufbau einer Karte und Bestimmung der Position/Orientierung) wird als \emph{SLAM} (Self Localization and Mapping) bezeichnet.
+						\item Die Verknüpfung der beiden Problemstellungen (Aufbau einer Karte und Bestimmung der Position/Orientierung) wird als \emph{SLAM} (Self Localization and Mapping) bezeichnet (siehe Abschnitt~\ref{sec:slam}).
 						\item Die Bewegungskarte wird dabei in zwei Schritten aufgebaut:
 							\begin{enumerate}
 								\item Erfassung von Laser-, Sonar und Odometriedaten.
@@ -3674,112 +3677,676 @@
 		% end
 	% end
 
-	\chapter{Navigation mobiler Roboter} % 9.1, 9.2, 9.3, 9.4
-		\todo{Content}
+	\chapter{Navigation mobiler Roboter}
+		\emph{Navigation} ist die Fähigkeit, den Kurs (die Fahrt) eines mobilen Roboters so zu bestimmen, dass die Umgebung (Land, Wasser, Luft) durchquert und das ziel erreicht ist. Die Aufgabe ist dementsprechend die Bestimmung sowie die Umsetzung einer Bahn (\bzw Trajektorie) vom Start \(S\) zum Ziel \(Z\). Die Navigation besteht dabei aus folgenden Teilaufgaben:
+		\begin{itemize}
+			\item "Wo bin ich?" \(\to\) dieses Kapitel.
+			\item "Wohin bewege ich mich gerade?" (Bahnumsetzung, Echtzeit-Steuerung und -Regelung, Kollisionsvermeidung)
+			\item "Wie soll ich zum Ziel gelangen?" (Bahnplanung) \(\to\) Kapitel~\ref{c:bahnplanung}.
+			\item "Wo komme ich her?" (Umweltmodelle, Karten) \(\to\) Kapitel~\ref{c:bahnplanung} und Abschnitt~\ref{sec:slam}.
+		\end{itemize}
 
-		\section{Lokalisierung und Positionierung} % 9.5
-			\todo{Content}
-
-			\subsection{Relative Positionsbestimmung} % 9.6
-				\todo{Content}
-			% end
-
-			\subsection{Absolute Positionsbestimmung} % 9.7, 9.8, 9.9
-				\todo{Content}
-
-				\subsubsection{Nichtlineare Ausgleichsrechnung} % 9.10
-					\todo{Content}
+		\section{Lokalisierung und Positionierung}
+			Die Positionsbestimmung kann relativ, absolut oder stochastisch erfolgen.
+			
+			\textbf{Relative Verfahren:}
+			\begin{enumerate}
+				\item \emph{Odometrie}
+					\begin{itemize}
+						\item Die Position wird durch "Aufsummieren" des zurückgelegten Weges von der Startposition anhand von Messwerten berechnet.
+						\item Vorteil: Rein intern-basiert, \dh es sind keine externen Sensoren nötig.
+						\item Nachteil: Ohne Korrekturen wächst der Positionsfehler sehr schnell.
+					\end{itemize}
+				\item \emph{Inertial-Navigation}
+					\begin{itemize}
+						\item Die Beschleunigungs- und Rotationsraten werden mit einem Gyroskop gemessen, die aktuelle Position wird durch zweifache Integration über die Messwerte bestimmt (ähnlich zur Odometrie).
+						\item Vorteil: Rein intern-basiert, \dh es sind keine externen Sensoren nötig.
+						\item Nachteil: Ohne Korrekturen wächst der Drift-Fehler sehr schnell.
+					\end{itemize}
+				\item[] Werden 1 und 2 kombiniert, so ergibt sich eine \emph{Koppelnavigation}.
+			\end{enumerate}
+		
+			\textbf{Absolute Verfahren:}
+			\begin{enumerate} \setcounter{enumi}{2}
+				\item \emph{Aktive "Leuchtfeuer"}
+					\begin{itemize}
+						\item Die Position wird aus Winkel- oder Abstandsmessung zu mindestens drei "Leuchtfeuern" (optisch/Funk) mit bekannten Positionen berechnet (GPS-artig).
+						\item Dabei entstehen mehr Messdaten als unbekannte Parameter \(\vec{p}\) (nichtlineares Ausgleichsproblem, siehe Abschnitt~\ref{sec:least_squares}).
+					\end{itemize}
+				\item \emph{Erkennung künstlicher Landmarken}
+					\begin{itemize}
+						\item Die Position wird durch die Erkennung von künstlichen "Grenzpfählen" (Formen, Flächen, Farben) an bekannten Positionen berechnet.
+					\end{itemize}
+				\item \emph{Erkennung natürlicher Landmarken}
+					\begin{itemize}
+						\item Die Position wird durch Ausnutzen besonderer Eigenschaften der Umwelt berechnet (wie die Erkennung mit künstlichen Landmarken, nur dass die Umwelt nicht modifiziert werden, aber bekannt sein muss).
+					\end{itemize}
+				\item \emph{Modellvergleich}
+					\begin{itemize}
+						\item Die aus Sensordaten aufgebaute Karte (Umweltmodell) wird mit einer Referenzkarte verglichen und daraus die Position bestimmt.
+					\end{itemize}
+			\end{enumerate}
+		
+			\textbf{Stochastische Verfahren:}
+			\begin{enumerate} \setcounter{enumi}{6}
+				\item \emph{Markov-Lokalisierung}
+					\begin{itemize}
+						\item Die Position wird als Aufenthaltswahrscheinlichkeit auf einem bekannten Umweltmodell modelliert, basierend auf den aktuellen Sensordaten.
+					\end{itemize}
+				\item \emph{Monte-Carlo-Lokalisierung}
+					\begin{itemize}
+						\item Die Position wird als Dichte von Partikeln betrachtet.
+						\item Es werden Beobachtungs- und Bewegungsmodelle verwendet:, 
+							\begin{itemize}
+								\item Das Beobachtungsmodell modelliert die Wahrscheinlichkeit der Aufnahme von Sensordaten an bestimmten Positionen.
+								\item Das Bewegungsmodell modelliert die Wahrscheinlichkeit von Bewegungen, die zu einer bestimmten, relativen RAN führen.
+							\end{itemize}
+					\end{itemize}
+			\end{enumerate}
+		
+			\subsection{Nichtlineare Ausgleichsrechnung}
+				\label{sec:least_squares}
+			
+				Bei der \emph{nichtlinearen Ausgleichsregelung} (auch als \emph{Methode der kleinsten Quadrate}, \emph{ninlinear least squares} bezeichnet) ist ein nichtlineares Minimierungsproblem
+				\begin{equation*}
+					\min_{\vec{p} \in \R^{n_p}} \> \varphi_2(\vec{p}),\quad \varphi_2 : \R^{n_p} \to \R
+				\end{equation*}
+				mit dem zu minimierenden Gütekriterium (Kostenfunktion)
+				\begin{equation*}
+					\varphi_2(\vec{p}) \coloneqq \frac{1}{2} \sum_{i = 1}^{n_r} \omega_i \big(r_i(\vec{p})\big)^2
+				\end{equation*}
+				mit den reellen Gewichten \( \omega_i \in \R^+ \) und einer Fehlerfunktion \( r_i : \R^{n_p} \to \R \).
+				
+				\paragraph{Beispiel}
+					In diesem Beispiel sind mehrere Randpunkte \( (x_i, y_i) \), \( i = 1, \cdots, n_r \) eines Balls gegeben und es soll der Mittelpunkt \( (x_K, y_K) \) sowie der Radius \( R_K \) des Balls gefunden werden, \dh Parameter \( \vec{p} = \begin{bmatrix} x_K & y_K & R_K \end{bmatrix} \in \R^3 \) (\( n_p = 3 \)), für die für alle \( (x_i, y_i) \) gilt:
+					\begin{equation*}
+						(x_i - x_K)^2 + (y_i - y_K)^2 = R_K^2 \tag{Kreisgleichung}
+					\end{equation*}
+					Da die Messwerte unsicherheitsbehaftet sind, ist eine exakte Bestimmung der Parameter nicht möglich, weshalb eine nichtlineare Ausgleichsregelung mit der Fehlerfunktion
+					\begin{equation}
+						r_i(x_K, y_K, R_K) = \sqrt{(x_i - x_K)^2 + (y_i - y_K)^2} - R_K \label{eqn:least_squares_example_good}
+					\end{equation}
+					verwendet wird.
+					
+					Im Gegensatz zu einer alternativen Fehlerfunktion
+					\begin{equation}
+						r_i(x_K, y_K, R_K) = \sqrt{(x_i - x_K)^2 + (y_i - y_K)^2 - R_K^2} \label{eqn:least_squares_example_bad}
+					\end{equation}
+					ist Funktion~\ref{eqn:least_squares_example_good} numerisch besser, da die Ableitung von~\ref{eqn:least_squares_example_bad} im Grenzfall nicht differenzierbar ist.
 				% end
-
-				\subsubsection{Erkennung künstlicher Landmarken} % 9.11, 9.12, 9.13, 9.14
-					\todo{Content}
-				% end
-
-			\subsection{Stochastische Positionsbestimmung} % 9.15, 9.15, 9.16
-				\todo{Content}
 			% end
 		% end
 
-		\section{Selbstlokalisierung und Navigation} % 9.17, 9.18, 9.19, 9.20
-			\todo{Content}
-
-			\subsection{Metrische Beschreibung des Aufenthaltsortes} % 9.21, 9.22
-				\todo{Content}
+		\section{Selbstlokalisierung und Navigation}
+			Das Ziel der \emph{Selbstlokalisierung} ist die Bestimmung des Aufenthaltsortes eines Roboters relativ zu einer Ausgangsposition oder absolut bezogen auf ein Weltkoordinatensystem. Für den Rest des Kapitels wird dabei angenommen, dass eine absolute Positionsbestimmung mit GPS oder ähnlichem nicht verfügbar ist (\zB innerhalb von Gebäuden oder Tunneln). In der Praxis ist eine Kombination der im folgenden untersuchten Methoden mit GPS natürlich möglich uns sinnvoll.
+			
+			Das allgemeine Vorgehen besteht aus zwei Schritten:
+			\begin{enumerate}
+				\item Messen der (Eigen-)~Bewegung des Roboters (Änderung des Aufenthaltsortes) sowie der Umgebung (mit externen Sensoren), was Hinweise auf die absolute Position liefert.
+				\item Verarbeitung der Messdaten zu einer (deterministischen oder probabilistischen) Vermutung (Hypothese) über den Aufenthaltsort.
+			\end{enumerate}
+			Dazu werden geeignete interne und externe Sensoren, Modelle der Sensoren und der Bewegung, geeignete Darstellung der Vermutung(en) über den Aufenthaltsort sowie geeignete Verfahren zur Sensordatenfusion benötigt.
+			
+			Die unterschiedlichen Verfahren können nach einigen Eigenschaften klassifiziert werden:
+			\begin{enumerate}
+				\item Verwendung einer Karte (bekannt oder nicht bekannt, metrisch oder topologisch)
+				\item Art und Anzahl der Hypothesen über den Aufenthaltsort/die RAN des Roboters.
+				\item Jeweilige Problemstellung (relative/absolute Bestimmung/Verfolgung der RAN).
+				\item Deterministisch oder nicht deterministisch (probabilistisch).
+				\item Verwendete/benötigte Sensoren.
+			\end{enumerate}
+		
+			\subsection{Metrische und Topologische Beschreibung des Aufenthaltsortes}
+				\paragraph{Metrische Beschreibung}
+					Bei der metrischen Beschreibung wird die RAN Allgemein durch einen Vektor \( \vec{x} \in \R^n \) beschrieben, wobei \(n\) die Dimension der RAN ist. Bei einem Fahrzeug in der Ebene ist diese \( n = 3 \) (Position und Winkel), bei einem Körper im Raum ist diese \( n = 6 \) (Position und Orientierung). Prinzipiell sind aber auch höhere Dimensionen denkbar, wenn der Roboterzustand genauer modelliert wird.
+				% end
+				
+				\paragraph{Topologische Beschreibung}
+					Bei der topologischen Beschreibung wird das Umgebungsmodell als Graph modelliert und der mobile Roboter befindet sich in einem der Knoten.
+				% end
+			% end
+			
+			\subsection{Messungenauigkeiten/-unsicherheiten}
+				Bei sowohl der metrischen als auch der topologischen Beschreibung tritt das Problem auf, dass keine genauen Daten der Roboterbewegung verfügbar sind:
+				\begin{itemize}
+					\item Ungenauigkeiten der Sensoren
+					\item Spiel und Elastizitäten (\zB in den Antrieben)
+					\item nicht im Kinematikmodell erfasstes, reales Roboterverhalten (\zB Rutschen, Kippen, Wackeln)
+				\end{itemize}
+				Eine Lösungsmöglichkeit ist die Modellierung der RAN/des aktuellen Knotens durch eine Wahrscheinlichkeitsverteilung über den verwendeten Raum/den verwendeten Graphen. Dabei bestimmt die Art der Modellierung der Wahrscheinlichkeitsverteilung wesentlich das verwendete Verfahren zur Selbstlokalisierung, \bzw Sensordatenfusion.
 			% end
 
-			\subsection{Topologische Beschreibung des Aufenthaltsortes} % 9.23
-				\todo{Content}
-			% end
+			\subsection{Lokalisierung mit einer Hypothese}
+				Bei der Lokalisierung mit einer Hypothese wird zu jedem Zeitpunkt mit genau einer Schätzung der RAN gearbeitet.
 
-			\subsection{Lokalisierung mit einer Hypothese} % 9.24, 9.25
-				\todo{Content}
-
-				\subsubsection{Koppelnavigation} % 9.26
-					\todo{Content}
+				\subsubsection{Koppelnavigation}
+					Bei der \emph{Koppelnavigation} wird die Roboterbewegung anhand interner Sensoren gemessen und durch Auswertung der Bewegungsgleichungen die Änderung von Position und Orientierung nach jeder erfassten Bewegung berechnet. Dabei erfolgt keine Messung der Umgebung, \dh es findet nur eine relative Bestimmung der RAN statt und Messfehler können weder erkannt noch korrigiert werden.
+					
+					Dies ist problematisch, da der Fehler der RAN-Schätzung so beliebig ansteigen kann. Daher ist eine Koppelnavigation nur für kurzzeitige Schätzungen geeignet.
 				% end
 
-				\subsubsection{(Erweitertes) Kalman-Filter} % 9.27, 9.28, 9.29, 9.30, 9.33, 9.37
-					\todo{Content}
+				\subsubsection{(Erweitertes) Kalman-Filter}
+					Das \emph{erweiterte Kalman-Filter} (EKF) erlaubt die Fusion der Messdaten von mehreren Sensoren (auch mit verschiedenen Messraten). Dabei wird die RAN-Schätzung als normalverteilte Zufallsvariable modelliert. Das Ergebnis ist eine statistisch optimale Schätzung des Systemzustands\footnote{Das Kalman-Filter ist ein Bayes'scher Minimum-Varianz-Schätzer für lineare stochastische Systeme in Zustandsraumdarstellung}.
+					
+					Sowohl das Robotersystem als auch die Messungen werden durch Modelle beschrieben. Das Mess- und Systemrauschen wird sowie Schätzung des Systemzustands werden dabei als ein Vektor normalverteilter Zufallsvariablen modelliert.
+					
+					Ausgehend von einer Startschätzung wird dann die RAN des Roboters verfolgt. Während der Laufzeit werden zwei Verarbeitungsschritte immer wieder ausgeführt:
+					\begin{itemize}
+						\item \emph{Time-Update} (Vorhersage) \\ Auf Basis des momentanen Zustands wird, unter Verwendung von Systemfunktionen (Bewegungsmodell), der Folgezustand geschätzt (a-priori Schätzung).
+						\item \emph{Measurement-Update} (Korrektur) \\ Die a-priori Schätzung wird mit Hilfe der neusten Messungen externer Sensoren korrigiert.
+					\end{itemize}
+				
+					\paragraph{Diskretisierung der Bewegungsdynamik}
+						Das allgemeine Roboterbewegungsmodell ist eine nichtlineare und zeitkontinuierliche Differentialgleichung
+						\begin{equation*}
+							\dot{\vec{x}}(t) = \vec{F}\big(\vec{x}(t), \vec{u}(t)\big)
+						\end{equation*}
+						mit dem Systemzustand \( \vec{x} \in \R^n \) und der Systemsteuerung \( \vec{u} \in \R^l \).
+						
+						Mit \( \vec{x}_k \coloneqq \vec{x}(t_k) \), \( \vec{u}_k \coloneqq \vec{u}(t_k) \), einer "Schrittweite" \( h_k \coloneqq t_{k + 1} - t_k \) und der Approximation
+						\begin{equation*}
+							\dot{\vec{x}}(t_{k + 1}) \approx \frac{1}{h_k} (\vec{x}_{k + 1} - \vec{x}_k) = \vec{F}(\vec{x}_k, \vec{u}_k)
+						\end{equation*}
+						kann daraus ein zeitdiskretes, dynamisches Modell ermittelt werden:
+						\begin{align*}
+							\vec{x}_{k + 1} =                       & \,\, \vec{f}(\vec{x}_k, \vec{u}_k)                 \\
+							\vec{f}(\vec{x}_k, \vec{u}_k) \coloneqq & \,\, \vec{x}_k + h_k \vec{F}(\vec{x}_k, \vec{u}_k)
+						\end{align*}
+						Im folgenden wird immer ein zeitdiskrete Modell vorausgesetzt. In der Praxis orientieren sich die Zeitschritte \( t_k \), \bzw \( h_k \), an den Taktraten der (schnellsten) Sensordaten.
+					% end
+					
+					\paragraph{Probabilistisches Systemmodell}
+						Mit dem Systemrauschen \( \vec{w} \in \R^n \), ein Vektor von mittelwertfreien, normalverteilten Zufallsvariablen mit Kovarianzmatrix \( \mat{Q} \in \R^{n \times n} \), wird das Systemmodell wie folgt erweitert:
+						\begin{equation*}
+							\vec{x}_k = \vec{f}(\vec{x}_{k - 1}, \vec{u}_{k - 1}) + \vec{w}_{k - 1}
+						\end{equation*}
+						Durch dieses Rauschen kann der Systemzustand nicht mehr deterministisch angegeben werden, da er von der Zufallsvariablen \( \vec{w} \) abhängt.
+						
+						Jedoch kann der Systemzustand nun als ein Vektor normalverteilter, unabhängiger Zufallsvariablen mit
+						\begin{itemize}
+							\item Mittelwert \( \hat{\vec{x}} \in \R^n \) und
+							\item Kovarianzmatrix \( \mat{P} \in \R^{n \times n} \)
+						\end{itemize}
+						geschätzt/betrachtet werden.
+					% end
+					
+					\paragraph{Probabilistisches Messmodell}
+						Mit dem Messrauschen \( \vec{v} \in \R^m \), ein Vektor von mittelwertfreien, normalverteilten Zufallsvariablen mit Kovarianzmatrix \( \mat{R} \in \R^{m \times m} \), lautet das Messmodell wie folgt:
+						\begin{equation*}
+							\vec{z}_k = \vec{h}(\vec{x}_k) + \vec{v}_k
+						\end{equation*}
+						Dabei ist \( \vec{x} \in \R^n \) der Systemzustand, \( \vec{z} \in \R^m \) der Messwert und \( \vec{h} : \R^n \to \R^m \) das Modell der Messung.
+					% end
 
-					\paragraph{Time-Update} % 9.31, 9.32
-						\todo{Content}
+					\paragraph{Time-Update}
+						Beim Time-Update wird, basierend auf
+						\begin{itemize}
+							\item der Schätzung des Systemzustands \( \hat{\vec{x}}_{k - 1} \) und der Kovarianzmatrix \( \mat{P}_{k - 1} \) zum Zeitpunkt \( k - 1 \) sowie
+							\item der Steuereingabe \( \hat{\vec{u}}_{k - 1} \) zum Zeitpunkt \( k - 1 \),
+						\end{itemize}
+						eine a-priori Schätzung \( \hat{\vec{x}}_k^- \), \( \mat{P}_k^{\,-} \) des Systemzustands zum Zeitpunkt \(k\) berechnet, \dh die Parameter des Priors \( p(\vec{x}_k) = \mathcal{N}\,\big(\hat{\vec{x}}_k^-, \mat{P}_k^{\,-}\big) \).
+						
+						Mit der gegebenen Kovarianzmatrix \( \mat{Q} \) des Systemrauschens sowie der Jacobi-Matrix
+						\begin{equation*}
+							\mat{A}_k \coloneqq \frac{\partial \vec{f}(\hat{\vec{x}}_k^-, \vec{u}_k)}{\partial \vec{x}}
+						\end{equation*}
+						der Systemfunktion ausgewertet an der a-priori Schätzung werden \( \hat{\vec{x}}_k^- \) und \( \mat{P}_k^{\,-} \) wie folgt berechnet:
+						\begin{align*}
+							\hat{\vec{x}}_k^- & = \vec{f}(\hat{\vec{x}}_{k - 1}, \vec{u}_{k - 1}) \\
+							\mat{P}_k^{\,-}       & = \mat{A}_k \mat{P}_{k - 1} \mat{A}_k^T + \mat{Q}
+						\end{align*}
+						Dabei wird die Schätzung ungenauer, wenn die Werte auf der Hauptdiagonalen vom \( \mat{P} \) ansteigen (\dh wenn die Varianz steigt).
 					% end
 
 					\paragraph{Measurement-Update} % 9.34, 9.35, 9.36
-						\todo{Content}
+						Beim Measurement-Update wird, basierend auf
+						\begin{itemize}
+							\item der a-priori Schätzung \( \hat{\vec{x}}_k^- \), \( \mat{P}_k^{\,-} \) des Systemzustands und der Kovarianzmatrix zum Zeitpunkt \(k\) und
+							\item den Messungen \( \vec{z}_k \) der externen Sensoren zum Zeitpunkt \(k\),
+						\end{itemize}
+						eine a-posteriori Schätzung \( \hat{\vec{x}}_k \), \( \mat{P}_k \) des Systemzustands und der Kovarianzmatrix zum Zeitpunkt \(k\) berechnet, \dh die Parameter des Posteriors \( p(\vec{x}_k \given \vec{z}_k, \cdots, \vec{z}_1) = \mathcal{N}\,\big(\hat{\vec{x}}_k, \mat{P}_k\big) \).
+						
+						Mit der gegebenen Kovarianzmatrix \( \mat{R} \) des Messrauschens sowie der Jacobi-Matrix
+						\begin{equation*}
+							\mat{H}_k \coloneqq \frac{\partial \vec{h}(\hat{\vec{x}}_k^-)}{\partial \vec{x}}
+						\end{equation*}
+						der Messfunktion ausgewertet an der a-priori Schätzung werden \( \mat{K}_k \) (die \emph{Kalmanverstärkung}), \( \hat{\vec{x}}_k \) und \( \mat{P}_k \) wie folgt berechnet:
+						\begin{align*}
+							\mat{K}_k &= \mat{P}_k^{\,-} \mat{H}_k^T \big( \mat{H}_k \mat{P}_k^{\,-} \mat{H}_k^T + \mat{R} \big)^{-1} \\
+							\hat{\vec{x}}_k &= \hat{\vec{x}}_k^- + \mat{K}_k \big( \vec{z}_k - \vec{h}(\hat{\vec{x}}_k^-) \big) \\
+							\mat{P}_k &= (\mat{E} - \mat{K}_k \mat{H}_k) \mat{P}_k^{\,-}
+						\end{align*}
+						Wobei \( \mat{E} \) die Einheitsmatrix darstellt.
+						
+						Die grundlegende Idee des Filter ist, zunächst die Kalmanverstärkung \( \mat{K} \) so zu berechnen, dass die Varianz der a-posteriori Schätzung minimal wird. Anschließend wird der Mittelwert der der (durch \( \mat{K} \) gewichteten) Abweichung der erwarteten Messung von der tatsächlichen Messung korrigiert.
+						
+						\begin{itemize}
+							\item In der Regel weicht die tatsächliche Messung \( \vec{z} \) von dem erwarteten Messwert \( \vec{h} \) ab (um das Residuum \( \vec{r}_k \coloneqq \vec{z}_k - \vec{h}(\hat{\vec{x}}_k^-) \)).
+							\item Die Fehlerkovarianzmatrix \( \mat{P} \) beschreibt insgesamt die Zuverlässigkeit der Zustandsschätzung.
+							\item Der Mahalanobis-Abstand \( d_k \coloneqq \vec{r}_k^T \mat{P}_k^{\,-1} \vec{r}_k \) kann als Maß für die Vertrauenswürdigkeit der Messungen genutzt werden. Dadurch können potentielle Ausreißer und falsche Messwerte anhand besonders großer \( d_k >> 0 \) erkannt werden.
+							\item Durch die Elimination von Ausreißern ist das Verfahren somit stabil gegenüber einzelnen Falschmessungen in Komponenten von \( \vec{z}_k \).
+						\end{itemize}
+					% end
+					
+					\paragraph{Vor- und Nachteile des EKF}
+						\begin{itemize}
+							\item \textbf{Vorteile:}
+								\begin{itemize}
+									\item Das EKF ist ein etabliertes Verfahren, vielfach implementiert und es ist viel Know-How vorhanden.
+									\item Es ermöglicht eine Plausibilitätsprüfung der Messwerte, \dh Ausreißer können erkannt und verworfen werden.
+								\end{itemize}
+							\item \textbf{Nachteile:}
+								\begin{itemize}
+									\item Mehrdeutigkeiten können nicht dargestellt werden (\dh es kann immer nur genau eine Hypothese verfolgt werden).
+									\item Die Bestimmung der Anfangsposition erfordert eine absolute Positionsbestimmung, \zB über Landkarten.
+									\item Die Normalverteilungen erlauben keine Abbildung von Hindernissen im Modell (\zB können keine Nebenbedingungen der Form \( g(\vec{x}) \geq 0 \) zur Kollisionsvermeidung berücksichtigt werden).
+									\item Das zeitkontinuierliche Modell wird linearisiert, \dh die Unsicherheiten müssen, relativ zu den Taktraten \( h_k \), klein sein.
+								\end{itemize}
+						\end{itemize}
 					% end
 				% end
 			% end
 
-			\subsection{Lokalisierung mit mehreren Hypothesen} % 9.41
-				\todo{Content}
+			\subsection{Lokalisierung mit mehreren Hypothesen}
+				\begin{itemize}
+					\item Verfahren mit nur einer Hypothese haben vielfältige Nachteile:
+						\begin{itemize}
+							\item Mehrdeutigkeiten können nicht modelliert werden.
+							\item Es ist eine eindeutige Zuordnung der Merkmale erforderlich.
+							\item Es ist eine Schätzung des Anfangszustandes nötig.
+							\item Es werden globale Merkmale benötigt, um den Zustand eines verirrten Roboters wiederzufinden.
+						\end{itemize}
+					\item Eine Abhilfe dieser Probleme ist die gleichzeitige Verfolgung mehrerer Hypothesen über den Systemzustand.
+				\end{itemize}
 
-				\subsubsection{Verwendung mehrerer Kalman-Filter} % 9.42, 9.43, 9.44, 9.45, 9.46, 9.47, 9.48, 9.49
-					\todo{Content}
+				\subsubsection{Verwendung mehrerer Kalman-Filter ("Multiple Hypothesis Tracking")}
+					\begin{itemize}
+						\item Bei der Verwendung mehrerer Kalman-Filter wird für jede Hypothese ein Kalman-Filter genutzt und die Time- und Measurement-Updates parallel auf allen Hypothesen durchgeführt.
+						\item Die Plausibilität der einzelnen Hypothesen wird auf Basis der vorliegenden Messwerte bewertet.
+						\item Sind Messwerte uneindeutig, so wird eine Hypothese in mehrere aufgespaltet.
+						\item Problem: Die Anzahl der Hypothesen kann exponentiell anwachsen.
+						\item Das Ziel ist somit das klein halten der Anzahl an Hypothesen. Dazu sind verschiedene Operationen nötig:
+							\begin{itemize}
+								\item Bewerten von Hypothesen
+								\item Erzeugen neuer Hypothesen
+								\item Verwerfen von Hypothesen
+								\item Vereinigen von Hypothesen
+							\end{itemize}
+					\end{itemize}
+				
+					Zunächst muss die Hypothesenmenge jedoch modelliert werden. Die \(i\)-te Hypothese (\( i \in \{\, 1, \cdots, N \,\} \)) zum Zeitpunkt \(k\) wird dabei dargestellt durch ein Tripel
+					\begin{equation*}
+						H_k^{(i)} \coloneqq \Big( \vec{x}_k^{(i)}, \mat{P}_k^{\,(i)}, p_k^{(i)} \Big)
+					\end{equation*}
+					mit dem Erwartungswert \( \vec{x}_k^{(i)} \), der Kovarianzmatrix \( \mat{P}_k^{\,(i)} \) und einer Gewichtung \( p_k^{(i)} \geq 0 \) (die Wahrscheinlichkeit, dass eine Hypothese gilt). Jede Hypothese wird dabei durch eine Normalverteilung \( p_k^{(i)} = \mathcal{N}\,\Big( \vec{x}_k^{(i)}, \mat{P}_k^{\,(i)} \Big) \) dargestellt.
+					
+					Außerdem muss dafür gesorgt werden, dass die Wahrscheinlichkeiten \( p_k^{(i)} \) normiert sind, \dh es muss
+					\begin{equation*}
+						p_k^{(0)} + \sum_{i = 1}^{N} p_k^{(i)} = 1
+					\end{equation*}
+					gelten, wobei \( p_k^{(i)} \) die Wahrscheinlichkeit ist, dass keine Hypothese gilt.
+					
+					\paragraph{Vorgehen}
+						\begin{enumerate}
+							\item \emph{Time-Update} \\ Für jede Hypothese wird ein normales Time-Update durchgeführt.
+							\item \emph{Measurement-Update} \\ Die Umgebungsdaten werden gemessen und ein Measurement-Update auf die Hypothesen angewandt, zu denen die Umgebungsdaten passen.
+							\item \emph{Neubewerten} der Wahrscheinlichkeiten der Hypothesen
+								\begin{itemize}
+									\item Die Wahrscheinlichkeit, dass der aktuelle Messwert \( \vec{z} \) bei Gültigkeit der Hypothese \( i \) gemessen wird, sei \( P\Big(\vec{z} \,\big\vert\, H_k^{(i)}\Big) \).
+									\item Mit dem Normierungsfaktor \(c\) werden nun alle Hypothesen neu bewertet:
+								\end{itemize}
+						\end{enumerate}
+						\begin{equation*}
+							p_k^{(i_\text{neu})} = c p_k^{(i)} P\Big(\vec{z} \,\big\vert\, H_k^{(i)}\Big)
+						\end{equation*}
+						
+						Eine Messung der Umgebung kann neue Hypothesen (sogenannte Kandidaten) über den Systemzustand produzieren. Diese Kandidaten werden unterteilt in
+						\begin{itemize}
+							\item solche, die in der Nähe einer bestehenden Hypothese liegen und dieser unterstützen \( \to \) Anwenden eines Measurement-Updates auf diese Hypothese.
+							\item solche, die keine bestehende Hypothese unterstützen \( \to \) Hinzufügen einer neuen Hypothese zur Hypothesenmenge.
+						\end{itemize}
+						Dabei muss beachtet werden, dass die Menge an Hypothesen nicht beliebig anwächst, \dh es müssen auch Hypothesen verworfen werden, \zB wenn
+						\begin{itemize}
+							\item die Wahrscheinlichkeit \( p_k^{(i)} \) unter einer bestimmten Schwelle liegt: \( p_k^{(i)} < p_\text{min} \),
+							\item die Hypothese "weit genug" außerhalb der Karte liegt (unter der Annahme, dass die Karte vollständig ist) oder
+							\item die Hypothese innerhalb von Hindernissen liegt.
+						\end{itemize}
+						Wurde eine Hypothese entfernt, so müssen die Wahrscheinlichkeiten danach neu normiert werden! Neben dem entfernen von Hypothesen können diese auch Zusammengefasst werden. Dies wird durchgeführt, wenn die Hypothesen dich beieinander liegen, \dh \( \big\lVert \vec{x}_k^{(i)} - \vec{x}_k^{(j)} \) klein ist. Die Wahrscheinlichkeit der neuen Hypothese entspricht dann der Summer der Ausgangshypothesen.
+					% end
+					
+					\paragraph{Vor- und Nachteile von Multiple Hypothesis Tracking}
+						\begin{itemize}
+							\item \textbf{Vorteile:}
+								\begin{itemize}
+									\item Es sind mehrere, konkurrierende Hypothesen möglich.
+									\item Der Rechenaufwand skaliert mit der Anzahl der Hypothesen.
+									\item Es ist eine aktive Lokalisierung möglich.
+										\begin{itemize}
+											\item Aktive Lokalisierungsverfahren steuern den Roboter so, dass der Lokalisierungsfehler/die Kosten für die Bewegung eines schlecht lokalisierten Roboters in einen gefährlichen Bereich, minimiert werden.
+											\item Passive Lokalisierungsverfahren beobachten nur den Roboter, der auf andere Weise gesteuert wird, aber nicht so, dass eine Lokalisierung vereinfacht wird.
+										\end{itemize}
+								\end{itemize}
+							\item \textbf{Nachteile:}
+								\begin{itemize}
+									\item Die geometrischen Umgebungsdaten können nicht direkt mit in die Hypothesen einbezogen werden.
+									\item Es wird angenommen, dass Störungen normalverteilt und statistisch unabhängig sind.
+									\item Das zeitkontinuierliche Modell wird linearisiert, \dh die Unsicherheiten müssen, relativ zu den Taktraten \( h_k \), klein sein.
+								\end{itemize}
+						\end{itemize}
+					% end
 				% end
 
-				\subsubsection{Diskretisierte Wahrscheinlichkeitsverteilung} % 9.50, 9.51, 9.52, 9.53, 9.54, 9.55, 9.56, 9.57, 9.58, 9.59, 9.60
-					\todo{Content}
+				\subsubsection{Diskretisierte Wahrscheinlichkeitsverteilung}
+					Die RAN eines Roboters wird durch einen \(n\)-dimensionalen Vektor beschrieben, wobei die genaue RAN nicht angegeben werden kann, sondern nur eine Wahrscheinlichkeitsverteilung über den metrischen Raum. Diese Verteilung kann sehr ungleichmäßig sein, speziell bei der Berücksichtigung von Hindernissen.
+					
+					\textbf{Ansatz:} Der metrische Raum wird diskretisiert (\zB durch eine Zellzerlegung im Konfigurationsraum) und es wird die Wahrscheinlichkeit
+					\begin{equation*}
+						P(\vec{x}),\quad \vec{x} \in \{\, \vec{x}_1, \cdots, \vec{x}_N \,\},\quad P(\vec{x}) \in [0, 1]
+					\end{equation*}
+					für jede RAN in einem Feld (Position Probability Grid) gespeichert (zu Anfang einer Gleichverteilung folgend). Bewegt der Roboter sich oder treffen neue Sensordaten ein, so erfolgt eine Neuberechnung der Wahrscheinlichkeiten.
+					
+					\paragraph{Motion-Update}
+						Eine Bewegung sei gegeben als Änderung \( \vec{\Delta} \) des Systemzustands \(\vec{x}\):
+						\begin{equation*}
+							\vec{x}_k = \vec{x}_{k - 1} + \vec{\Delta}
+						\end{equation*}
+						Des weiteren wird durch eine Weltmodell \(m\) eine Wahrscheinlichkeit \( P(\vec{x} \given m) \) vorgegeben, dass \(\vec{x}\) eingenommen werden kann.
+						
+						Bei einem solchen \emph{Motion-Update} wird die Wahrscheinlichkeitsverteilung wie folgt neu berechnet:
+						\begin{equation*}
+							P_\text{neu}(\vec{x}) =
+								\begin{cases*}
+									P(\vec{x} - \vec{\Delta}) \cdot P(\vec{x} \given m) & falls \( (\vec{x} - \vec{\Delta}) \) möglicher Ausgangsort \\
+									0 & sonst
+								\end{cases*}
+						\end{equation*}
+						Nach den Berechnungen muss \(p\) normiert werden. Durch dieses Aktualisieren der Wahrscheinlichkeitsverteilung werden Fehler in der Messung durch ein Glätten von \( p \) modelliert.
+					% end
+					
+					\paragraph{Measurement-Update}
+						Das Sensormodell und das Weltmodell \(m\) geben die Wahrscheinlichkeit
+						\begin{equation*}
+							P(\vec{x} \given \vec{x}, m)
+						\end{equation*}
+						an, dass \( \vec{z} \) bei der RAN \( \vec{x} \) gemessen wird.
+						
+						Dadurch wird die Berechnung der aktualisierten Wahrscheinlichkeit nach einer Messung \( \vec{z} \) (\emph{Measurement-Update}) möglich:
+						\begin{equation*}
+							P_\text{neu}(\vec{x}) = P(\vec{z} \given \vec{x}, m) \cdot P(\vec{x})
+						\end{equation*}
+						Somit werden aus der anfänglichen Gleichverteilung nach und nach die unwahrscheinlichen Hypothesen eliminiert.
+					% end
+					
+					\paragraph{Vor- und Nachteile des Position Probability Grids}
+						\begin{itemize}
+							\item \textbf{Vorteile:}
+								\begin{itemize}
+									\item Die Modellierung beliebig vieler Hypothesen verändert die Laufzeit nicht.
+									\item Es kann Wissen über die Umgebungsgeometrie einbezogen werden.
+									\item Es ist eine aktive Lokalisierung möglich.
+								\end{itemize}
+							\item \textbf{Nachteile:}
+								\begin{itemize}
+									\item Sehr rechenaufwändig.
+									\item Die Auflösung des Zustandsraums ist begrenzt.
+								\end{itemize}
+						\end{itemize}
+					% end
 				% end
 
-				\subsubsection{Monte-Carlo Lokalisierung} % 9.61, 9.62, 9.63, 9.64, 9.65, 9.66, 9.67, 9.68, 9.69, 9.70, 9.71, 9.72, 9.73
-					\todo{Content}
+				\subsubsection{Monte-Carlo Lokalisierung}
+					Bei der \emph{Monte-Carlo Lokalisierung} wird die Wahrscheinlichkeitsverteilung approximiert:
+					\begin{itemize}
+						\item Die Darstellung erfolgt durch eine Menge von Partikeln (samples).
+						\item Dabei beschreibt jeder Partikel eine mögliche RAN des Roboters.
+						\item Ein solcher Partikel kann eine RAN präzise wiedergeben (es ist keine Diskretisierung notwendig).
+					\end{itemize}
+					Bei einer Bewegung des Roboters wird die Lage der Partikel verändert, bei einer Sensormessung die Wahrscheinlichkeit der Partikel. Vorausgesetzt werden stochastische Modelle der Bewegung und der Sensorik.
+					
+					Die Wahrscheinlichkeitsverteilung wird durch \(N\) Partikel dargestellt, die jeweils durch ein Tupel aus Systemzustand \( \vec{x}_i \) und Wahrscheinlichkeit \( p_i \in [0, 1] \) beschrieben werden:
+					\begin{equation*}
+						S_i \coloneqq (\vec{x}_i, p_i)
+					\end{equation*}
+					Die Wahrscheinlichkeit über alle Partikel muss dabei normiert sein, \dh \( \sum_{i = 1}^{N} p_i = 1 \).
+					
+					\paragraph{Probabilistisches Bewegungsmodell}
+						Das probabilistische Bewegungsmodell
+						\begin{equation*}
+							P(\vec{x} \given \vec{x}', \vec{u})
+						\end{equation*}
+						beschreibt die Wahrscheinlichkeit eines Zustands \( \vec{x} \) nach der Ausführung einer Bewegung \( \vec{u} \) im Zustand \( \vec{x}' \).
+					% end
+					
+					\paragraph{Bewegungen}
+						Bewegt sich der Roboter, so wird eine neue Wahrscheinlichkeitsverteilung erzeugt:
+						\begin{enumerate}
+							\item Erzeugen einer neuen Verteilung
+								\begin{itemize}
+									\item \(N\)-maliges "Ziehen" aus der alten Verteilung unter Berücksichtigung der Wahrscheinlichkeiten.
+									\item Dadurch werden Partikel mit hoher Wahrscheinlichkeit vervielfacht und Partikel mit niedriger Wahrscheinlichkeit ausgedünnt.
+									\item Danach wird die Wahrscheinlichkeit aller neuen Partikel auf \( 1/N \) gesetzt.
+								\end{itemize}
+							\item Bewegen der Partikel
+								\begin{itemize}
+									\item Vorausgesetzt wird, dass die ausgeführte Bewegung \( \vec{u} \) bekannt ist.
+									\item Der in den Partikeln gespeicherte Systemzustand wird, entsprechend der Wahrscheinlichkeitsverteilung \( P(\vec{x} \given \vec{x}', \vec{u}) \), zufällig geändert.
+								\end{itemize}
+						\end{enumerate}
+					% end
+					
+					\paragraph{Messungen}
+						Der externe Sensorwert \( \vec{z} \) hängt von dem Systemzustand des Roboters ab, wobei das Verhalten der Messung als Wahrscheinlichkeitsverteilung
+						\begin{equation*}
+							\P(\vec{z} \given \vec{x})
+						\end{equation*}
+						beschrieben wird. Für jeden Systemzustand ist damit die Wahrscheinlichkeit jeder möglichen Messung gegeben.
+						
+						Das Ziel ist nun, die Wahrscheinlichkeiten der Partikel durch gemessene Sensordaten neu zu bewerten. Dazu werden alle Partikel neu gewichtet:
+						\begin{equation*}
+							p_{i_\text{neu}} = p_i P(\vec{z} \given \vec{x}_i)
+						\end{equation*}
+						Anschließend müssen die Wahrscheinlichkeiten wieder normiert werden.
+					% end
+					
+					\paragraph{Vor- und Nachteile der Monte-Carlo Lokalisierung}
+						\begin{itemize}
+							\item \textbf{Vorteile:}
+								\begin{itemize}
+									\item Es ist fast jede Wahrscheinlichkeitsverteilung annäherbar.
+									\item Einfach zu implementieren.
+									\item Die Anzahl der Partikel kann zur Laufzeit angepasst werden (Genauigkeit \(\leftrightarrow\) Rechenleistung).
+									\item Es kann Wissen über die Umgebungsgeometrie einbezogen werden.
+									\item Es ist eine aktive Lokalisierung möglich.
+									\item Effizienter als Position Probability Grid.
+								\end{itemize}
+							\item \textbf{Nachteile:}
+								\begin{itemize}
+									\item Für die Robustheit des Verfahrens wird eine Mindestanzahl an Partikeln benötigt.
+								\end{itemize}
+						\end{itemize}
+					% end
 				% end
 			% end
 
-			\subsection{Simultaneous Localization and Mapping (SLAM)} % 9.74, 9.75, 9.76, 9.77, 9.78, 9.79
-				\todo{Content}
+			\subsection{Simultaneous Localization and Mapping (SLAM)}
+				\label{sec:slam}
+			
+				Bisher wurde immer davon ausgegangen, dass ein Umweltmodell gegeben ist. Wird ein Roboter jedoch in einer unbekannten Umgebung eingesetzt, so müssen Selbstlokalisierung auf Aufbau der Karte simultan gelöst werden. Verfügbar sind dabei:
+				\begin{itemize}
+					\item Odometrie sowie Steuerungsdaten
+					\item Daten externer Sensoren
+				\end{itemize}
+				Zu ermitteln sind:
+				\begin{itemize}
+					\item Karte der Umgebung
+					\item Trajektorie des Roboters
+				\end{itemize}
+			
+				SLAM ist dabei ein klassisches Henne-Ei-Problem:
+				\begin{itemize}
+					\item Für die Lokalisierung ist eine Karte erforderlich,
+					\item für die Kartierung ist Lokalisierung erforderlich.
+				\end{itemize}
+				Beide Probleme allein sind dabei vergleichsweise einfach lösbar, die Kombination ist jedoch kompliziert:
+				\begin{itemize}
+					\item Im Allgemeinen sind nur Sensordaten relativ zum Roboter verfügbar und keine absoluten Daten.
+					\item Ein Fehler in der RAN-Schätzung erzeugt Fehler bei der Kartenerstellung.
+					\item Fehler können erst beim Schließen von Schleifen ("Loop Closing") erkannt und korrigiert werden.
+					\item Die Assoziation von Daten kann schwer sein (die Zuordnung von Sensordaten).
+				\end{itemize}
+			
+				Dabei gibt es zwei grundlegende Kartentypen:
+				\begin{itemize}
+					\item \emph{Merkmals-basierte Karten}
+						\begin{itemize}
+							\item Es werden Merkmale aus den Sensordaten extrahiert und eine Menge von Merkmalen bildet die Karte.
+							\item Die Karte kann nur so gut sein wie die gelieferten Merkmale.
+						\end{itemize}
+					\item \emph{Gitter-basierte Karten}
+						\begin{itemize}
+							\item Der Zustandsraum wird Diskretisiert und in Gitter aufgeteilt.
+							\item Pro Gitterzelle wird eine Schätzung der Belegungswahrscheinlichkeit durchgeführt.
+							\item Eine "dichte" Karte ist Vorteilhaft bei der Bahnplanung.
+							\item Sehr hoher Rechenbedarf für eine hohe Anzahl an Freiheitsgraden, daher fast nur für 2D-Karten eingesetzt.
+						\end{itemize}
+				\end{itemize}
 
-				\subsubsection{EKF SLAM} % 9.80, 9.81, 9.82, 9.83, 9.84
-					\todo{Content}
+				\subsubsection{EKF SLAM}
+					Es wird ein erweitertes Kalman-Filter eingesetzt:
+					\begin{itemize}
+						\item Erster erfolgreicher SLAM-Algorithmus.
+						\item Der geschätzte Zustand ist nicht nur die RAN des Roboters, sondern auch die Position der Landmarken.
+						\item Der Zustandsvektor vergrößert sich mit der Anzahl der Landmarken.
+						\item Die Anzahl der Elemente der beim Update zu invertierenden Matrix wächst quadratisch.
+						\item Eine einzige Kantenhypothesen.
+						\item Datenassoziation problematisch.
+					\end{itemize}
+				
+					\begin{itemize}
+						\item \textbf{Vorteile:}
+							\begin{itemize}
+								\item Eignet sich auch gut für die Schätzung einer 6-DoF-RAN.
+								\item Die Korrelation zwischen Landmarken wird mit geschätzt.
+							\end{itemize}
+						\item \textbf{Nachteile:}
+							\begin{itemize}
+								\item Nicht robust bei fehlerhafter Datenassoziation, was zu einer Divergenz des Filters und zum Verlust von Karte und Lokalisierung führen kann.
+								\item Aufgrund der in EKF zugrundeliegenden Linearisierung müssen Unsicherheiten klein bleiben.
+								\item Der Rechenaufwand steigt quadratisch mit Anzahl der Landmarken.
+								\item Ausschließlich merkmalsbasiert und daher stark anfällig von Qualität und Anzahl der Merkmale.
+							\end{itemize}
+					\end{itemize}
 				% end
 
-				\subsubsection{FastSLAM} % 9.85, 9.86, 9.87, 9.88
-					\todo{Content}
+				\subsubsection{FastSLAM}
+					Benutzung eines Rao-Blackwellize Particle Filters:
+					\begin{itemize}
+						\item Die RAN des Roboters wird mit Partikeln modelliert.
+						\item Jeder Partikel besitzt eine eigene Kantenhypothese.
+						\item Bei bekannter Robotertrajektorie sind die Merkmale stochastisch unabhängig voneinander.
+							\begin{itemize}
+								\item Ausnutzung dieser Tatsache, Schätzung mehrerer Robotertrajektorien und dazugehörige Kanten.
+								\item Kantenmerkmale können unabhängig voneinander geschätzt werden.
+							\end{itemize}
+						\item Es ist sowohl eine Merkmals- als auch Gitter-basierte Variante der Kartenrepräsentation möglich.
+					\end{itemize}
+				
+					\begin{itemize}
+						\item \textbf{Vorteile:}
+							\begin{itemize}
+								\item Robust durch Datenassoziation und Kartenschätzung pro Partikel.
+								\item Die Laufzeit und die Qualität sind über die Partikelanzahl skalierbar.
+							\end{itemize}
+						\item \textbf{Nachteile:}
+							\begin{itemize}
+								\item Je nach Kartenrepräsentation und Anzahl der Partikel hoher Speicher- und Rechenzeitbedarf.
+								\item Beim Schließen großer oder verschachtelter Schleifen treten Problem durch Partikelverarmung auf.
+								\item Skaliert schlecht mit der Erhöhung der geschätzten Freiheitsgrade der RAN.
+							\end{itemize}
+					\end{itemize}
 				% end
 
-				\subsubsection{Graph-basiertes SLAM} % 9.89
-					\todo{Content}
+				\subsubsection{Graph-basiertes SLAM}
+					SLAM-Problem als RAN-Graph-Optimierungsproblem:
+					\begin{itemize}
+						\item Aufeinanderfolgende Odometriedaten erzeugen Zwangsbedingungen zwischen mehreren RANs.
+						\item Die Beobachtung von Landmarken erzeugen Zwangsbedingungen zwischen RANs und Landmarken.
+						\item Optimierung über den gesamten Pfad des Roboters (hier sind eine Vielzahl unterschiedlicher Optimierungsverfahren und Implementierungsvarianten möglich).
+						\item Bisher hauptsächlich offline angewandt, mittlerweile aber auch verstärkt im Einsatz unter Echtzeitbedingungen.
+					\end{itemize}
 				% end
 
-				\subsubsection{Limitierungen} % 9.90, 9.91
-					\todo{Content}
+				\subsubsection{Limitierungen}
+					SLAM ist bereits für eine Vielzahl von Problemen gelöst, aber es gibt noch keine gleichzeitige Erfüllung aller Kriterien:
+					\begin{itemize}
+						\item Dreidimensionale Kartierung
+						\item Integration semantischer Informationen
+						\item Echtzeitfähigkeit
+						\item Robustheit
+						\item Skalierbarkeit
+						\item Einsetzbarkeit in beliebigem Terrain
+						\item Nicht-statische Karten
+					\end{itemize}
+				
+					Aktuelle Forschungsrichtungen:
+					\begin{itemize}
+						\item Semantic Mapping \\ Statt "nur" geometrische Informationen zu kartieren werden zusätzlich semantische Informationen (\zB Place Labeling (Flur, Büro, Schränke)) gespeichert. Dies ist notwendig für zielorientiertes Handeln des Roboters.
+						\item Life-long Map Learning \\ Es werden auch Veränderungen in der Umgebung des Roboters berücksichtigt.
+						\item Visual SLAM \\ Benutzung von Mono- oder Stereo-Kameras, auch zur 3D-Rekonstruktion der Umgebung.
+					\end{itemize}
 				% end
 
-				\subsubsection{Visual SLAM} % 9.92, 9.93, 9.94, 9.95
-					\todo{Content}
+				\subsubsection{Visual SLAM}
+					Feature-basierte Methoden (Detektion und Matching von eindeutigen Merkmalen):
+					\begin{itemize}
+						\item \textbf{Vorteile:}
+							\begin{itemize}
+								\item Effizient (Speicher und Rechenleistung)
+								\item Robust gegen Beleuchtungsänderungen, Modellfehler und Initialisierungsfehler
+							\end{itemize}
+						\item \textbf{Nachteile:}
+							\begin{itemize}
+								\item Sparse Geometrierekonstruktion
+								\item Erfordert Features in der Umgebung
+							\end{itemize}
+					\end{itemize}
+					
+					Direkte Methoden (Direktes Matching der Bildinformation):
+					\begin{itemize}
+						\item \textbf{Vorteile:}
+							\begin{itemize}
+								\item (Semi-)~Dichte Geometrierekonstruktion
+								\item Robuster bei wenigen Features durch Nutzung der gesamten Bildinformation
+							\end{itemize}
+						\item \textbf{Nachteile:}
+							\begin{itemize}
+								\item Erfordert gute Initialisierung
+								\item Weniger robust gegen Beleuchtungsänderungen und Modellfehler
+								\item Rechenintensiv (aber Parallelisierbar auf einer GPU)
+							\end{itemize}
+					\end{itemize}
 				% end
 
-				\subsubsection{Team HECTOR} % 9.96, 9.97, 9.98, 9.99, 9.100, 9.101, 9.102, 9.103
-					\todo{Content}
+				\subsubsection{Scan-Matching}
+					Schnelle Registrierung des aktuellsten Scans mit bisher erstellter Karte.
+					\begin{itemize}
+						\item Approximation der räumlichen Gradienten der Karte.
+						\item Interpolation zwischen den Gitterzellen, dadurch "Subpixel"-Genauigkeit.
+						\item Gauss-Newton Verfahren um Maximum-Likelihood Anordnung der Scan-Endpunkte in der Karte zu ermitteln.
+						\item Schätzen von Kovarianz der ermittelten Anordnung zur Bewertung der Qualität des Scan-Matchings.
+					\end{itemize}
 				% end
 
-				\subsubsection{Google Cartographer} % 9.104, 9.105, 9.106
-					\todo{Content}
-				% end
-
-				\subsubsection{3D SLAM} % 9.107, 9.108, 9.109, 9.110, 9.111, 9.112, 9.113
-					\todo{Content}
+				\subsubsection{3D SLAM -- Aktuelle Weiterentwicklungen}
+					\begin{itemize}
+						\item Integration TSDF (Truncated Signed Distance Function) Backend \\ Effiziente Echtzeit-Generierung von Gitternetzmodell.
+						\item SLAM unter schwierigen Umgebungsbedingungen (\zB Rauch) mit zusätzlichen Sensoren (\zB Radar, Ultraschall).
+						\item Semantisches SLAM
+							\begin{itemize}
+								\item CNN-basierte Instanzsegmentierung
+								\item TSDF Mapping
+							\end{itemize}
+					\end{itemize}
 				% end
 			% end
 		% end

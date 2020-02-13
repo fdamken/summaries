@@ -45,8 +45,10 @@
 \newcommand{\given}{\,\vert\,}
 % Matrix/Vector notation.
 \makeatletter
-\newcommand{\mat}[1]{\boldsymbol{#1} \ifthenelse{\equal{#1}{A}}{}{\@ifnextchar({}{\@ifnextchar[{}{\@ifnextchar\{{}{\@ifnextchar\,{}{\!}}}}}}
-\renewcommand{\vec}[1]{\boldsymbol{#1} \ifthenelse{\equal{#1}{A}}{}{\@ifnextchar({}{\@ifnextchar[{}{\@ifnextchar\{{}{\@ifnextchar\,{}{\!}}}}}}
+\newcommand{\matnospacing}[1]{\boldsymbol{#1}}
+\newcommand{\vecnospacing}[1]{\boldsymbol{#1}}
+\newcommand{\mat}[1]{\matnospacing{#1} \ifthenelse{\equal{#1}{A} \OR \equal{#1}{n} \OR \equal{#1}{m} \OR \equal{#1}{B} \OR \equal{#1}{q} \OR \equal{#1}{F} \OR \equal{#1}{J}}{}{\@ifnextchar({}{\@ifnextchar[{}{\@ifnextchar\{{}{\@ifnextchar\,{}{\!}}}}}}
+\renewcommand{\vec}[1]{\vecnospacing{#1} \ifthenelse{\equal{#1}{A} \OR \equal{#1}{n} \OR \equal{#1}{m} \OR \equal{#1}{B} \OR \equal{#1}{q} \OR \equal{#1}{F} \OR \equal{#1}{J}}{}{\@ifnextchar({}{\@ifnextchar[{}{\@ifnextchar\{{}{\@ifnextchar\,{}{\!}}}}}}
 \makeatother
 % Abbreviations.
 \renewcommand{\dh}{d.\,h.~}
@@ -2575,68 +2577,295 @@
 			% end
 
 			\subsection{Bahnreglung in Weltkoordinaten}
+				\label{sec:cartesian_control}
+			
 				Die Bahnregelung kann direkt (naiv) durch Nutzung der (inversen) Kinematik und der (inversen) Jacobi-Formulieren in Weltkoordinaten genutzt werden. Besser ist allerdings eine direkte Messung der Position in Weltkoordinaten als die (aufwendige und Fehlerbehaftete) Umrechnung.
 			% end
 		% end
 
-		\section{Kraft-/Momenten-Regelung} % 6.158, 6.159, 6.160, 6.161, 6.162
-			Manipulationsaufgaben erfordern den gezielten Umgang mit dem physikalischen Kontakt des Roboters mit der Umwelt. Bei einer reinen Positionsregelung können kleine Variationen der Positionen extrem große Kontaktkräfte hervorrufen. Dadurch können Schäden hervorgerufen werden, \bspw beim hantieren mit Glas. Somit ist ebenfalls eine Messung sowie Regelung der Kontaktkräfte und -momente nötig.
+		\section{Kraft-/Momenten-Regelung}
+			Manipulationsaufgaben erfordern den gezielten Umgang mit dem physikalischen Kontakt des Roboters mit der Umwelt. Bei einer reinen Positionsregelung können kleine Variationen der Positionen extrem große Kontaktkräfte hervorrufen. Dadurch können Schäden hervorgerufen werden, \bspw beim hantieren mit Glas oder generell bei eingeschränkten Aufgaben. Somit ist ebenfalls eine Messung sowie Regelung der Kontaktkräfte und -momente nötig.
 			
-			\todo{Content}
+			Im folgenden werden nur Systeme betrachtet, bei denen beide Objekte (\dh der Manipulator und das manipulierte Objekt) eine hohe Steifigkeit besitzen (\dh keine passiven, strukturellen Nachgiebigkeiten) und nur geringe Störungen (\zB durch Reibung) auftreten.
+			
+			Die Modellierung und Unterteilung der Manipulationsaufgabe wird in Teilaufgaben unterteilt. Dabei wird jede Teilaufgabe mit einer Anzahl an "natürlichen Beschränkungen" verbunden und für jede Teilaufgabe eine \emph{verallgemeinerte Fläche definiert}. Dabei gelten die Positions-/Geschwindigkeits-Beschränkungen entlang der Flächennormalen und die Kraft-/Momenten-Beschränkungen entlang der Flächentangenten. Dies ermöglicht eine Partitionierung der Freiheitsgrade in zwei "orthogonale" Mengen, die nach verschiedenen Methoden geregelt werden.
+			
+			Die \emph{Zusammensetzungsstrategie} ist eine geplante Abfolge künstlicher Beschränkungen zur Durchführung der Manipulationsaufgabe in einer bestimmten weise. Dazu werden Strategien zur Erkennung von Änderungen der Kontaktsituation und für unerwartete Situationen benötigt.
+			
+			\paragraph{Praxis}
+				\begin{itemize}
+					\item Industrielle Manipulatoren sind extrem steif in den Gelenken und Gliedern konstruiert, damit hohe Positionsgenauigkeiten bei hohen Geschwindigkeiten erreicht werden können.
+					\item Durch eine Kraft-/Momenten-Regelung kann (mit relativ hohem Regelungs- und Sensoraufwand) die Nachgiebigkeit am Endeffektor aktiv geregelt werden.
+					\item Alternativ kann durch die Konstruktion eines elastischen Gelenkantriebs (\zB über Feder- oder Dämpferelemente) eine passive Nachgiebigkeit realisiert werden.
+					\item Eine solche passive Nachgiebigkeit hat jedoch häufig den Nachteil, dass der Manipulator in der Regel nur noch für sehr spezielle Anwendungen einsetzbar ist und keine hohen Positionsgenauigkeiten mehr möglich sind (der Endeffektor "wackelt" zu sehr hin und her).
+					\item In der Praxis treten Kraft-/Momenten-Regelungsprobleme jedoch meistens nur in teilweise beschränkten Manipulationsaufgaben auf. \\ Daher sind hybride Bahn- und Kraft-Regelungsverfahren notwendig.
+					\item Anforderungen:
+						\begin{itemize}
+							\item Bahn-/Positions-Regelung entlang der Richtungen der natürlichen Kraftbeschränkungen.
+							\item Kraft-/Momenten-Regelung entlang der Richtungen von natürlicher Positionsbeschränkungen.
+							\item Außerdem wird eine Methode zur (beliebigen) Kombination dieser Modi entlang orthogonaler kartesischer Richtungen eines beliebigen Beschränkungs-Koordinatensystems gebraucht.
+						\end{itemize}
+					\item Konsequenz: Es sind kartesische Bahnregelungsverfahren notwendig (siehe Abschnitt~\ref{sec:cartesian_control}).
+				\end{itemize}
+			% end
 		% end
 
 		\section{Bahn-/Kraft-Regelung}
-			\subsection{Hybride Regelung} % 6.163, 6.164, 6.165
-				\todo{Content}
+			\subsection{Hybride Regelung}
+				Beispiel: Ein dreiachsiger, kartesischer Manipulator muss eine Fensterscheibe putzen, wobei \( y_w \)-Achse die Fensternormale darstellt. Dann ist eine Kraftregelung in \(y_w\)-Richtung und eine Positionsregelung in \(x_w\)- und \(z_w\)-Richtung nötig. Die Lösung ist hier eine Positionsregelung für zwei und eine Kraftregelung für eines der Gelenke (bei einer entsprechenden Roboterstruktur mit drei Schubgelenken).
+				
+				Abbildung~\ref{fig:hybrid_control} zeigt das Blockschaltbild einer verallgemeinerten hybriden Regelstruktur, wobei \( \mat{S} \) und \( \mat{S}' \) mit \( \mat{S} + \mat{S}' = \mat{E} \) (\(\mat{E}\) ist die Einheitsmatrix) die jeweiligen Komponenten ein-/ausblenden, die den jeweiligen kartesischen Richtungen des Koordinatensystems der Beschränkungen entsprechen. Im oben genannten Beispiel lauten diese Matrizen wie folgt:
+				\begin{equation*}
+					\mat{S} =
+						\begin{bmatrix}
+							1 & 0 & 0 \\
+							0 & 0 & 0 \\
+							0 & 0 & 1
+						\end{bmatrix}
+					\quad\quad\quad\quad
+					\mat{S}' =
+						\begin{bmatrix}
+							0 & 0 & 0 \\
+							0 & 1 & 0 \\
+							0 & 0 & 0
+						\end{bmatrix}
+				\end{equation*}
+				
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}[->, every node/.style = { align = center }]
+						\node [draw, rectangle, minimum height = 2cm, minimum width = 4cm] (arm) {Kartesischer Arm};
+						\node [draw, circle, left = 2 of regelstrecke] (sum) {};
+						\node [draw, circle, fill = black] [left = 2 of sum] (a) {};
+						\node [draw, rectangle, above = 1 of a, minimum width = 1cm, minimum height = 1cm] (S) {\( \mat{S} \)};
+						\node [draw, rectangle, below = 1 of a, minimum width = 1cm, minimum height = 1cm] (ES) {\( \mat{E} - \mat{S} \)};
+						\node [draw, rectangle, left = 1 of S, minimum width = 4cm] (positionControl) {Positionsregelung};
+						\node [draw, rectangle, left = 1 of ES, minimum width = 4cm] (forceControl) {Kraftregelung};
+						\node [left = 1 of positionControl] (b) {\( \prescript{0}{}{\matnospacing{T}\!}_{n, d} \) \\ \( \prescript{0}{}{\dot{\matnospacing{T}\!}}_{n, d} \) \\ \( \prescript{0}{}{\ddot{\matnospacing{T}\!}}_{n, d} \)};
+						\node [left = 1 of forceControl] (c) {\( \vec{n}_d \) \\ \( \vec{f}_d \)};
+						\node [left = 5 of a] (constraints) {Constraints};
+						
+						\coordinate [above = 1 of positionControl.north] (d1);
+						\coordinate [right = 1 of arm.east] (d2);
+						\coordinate [below = 1 of forceControl.south] (d3);
+						\path let \p1 = (d1), \p2 = (d2) in coordinate(A) at (\x2, \y1);
+						\path let \p1 = (d3), \p2 = (d2) in coordinate(B) at (\x2, \y1);
+						\coordinate [above = 0.5cm of arm.east] (C);
+						\coordinate [below = 0.5cm of arm.east] (D);
+						
+						\draw (b) -- (positionControl);
+						\draw (c) -- (forceControl);
+						\draw (constraints) -| (S);
+						\draw (constraints) -| (ES);
+						\draw (positionControl) -- (S);
+						\draw (forceControl) -- (ES);
+						\draw (S) to[out = 0, in = 90+45] (sum);
+						\draw (ES) to[out = 0, in = -90-45] (sum);
+						\draw (sum) -- node[above]{\( \vec{n} \), \( \vec{f} \)} (arm);
+						\draw (C) -| node[right]{\( \prescript{0}{}{\mat{T}}_n \)} (A) -| (positionControl.north);
+						\draw (D) -| node[right]{\( \vec{n} \), \( \vec{f} \)} (B) -| (forceControl.south);
+					\end{tikzpicture}
+					\caption{Blockschaltbild eines verallgemeinerten hybriden Bahn-/Kraft-Reglers mit den Sollwerten \( \prescript{0}{}{\matnospacing{T}}\!_{n, d} \), \( \prescript{0}{}{\dot{\matnospacing{T}\!}}_{n, d} \), \( \prescript{0}{}{\ddot{\matnospacing{T}\!}}_{n, d} \), \( \vecnospacing{n}_d \) und \( \vecnospacing{f}\!_d \).}
+					\label{fig:hybrid_control}
+				\end{figure}
 			% end
 
-			\subsection{Parallele Regelung} % 6.166, 6.167
-				\todo{Content}
+			\subsection{Parallele Regelung}
+				Bei der \emph{parallelen Regelung} wird die Interaktionskraft, \bzw die Position, direkt geregelt, wobei der Kraftregler in der Regel als dominierend ausgelegt wird.
+				
+				\begin{itemize}
+					\item \textbf{Stärken:}
+						\begin{itemize}
+							\item Kraft- und Positionsregelung sowie Sollwerttrajektorie-Folgereglung können unabhängig voneinander implementiert werden.
+							\item Robust gegenüber Unsicherheiten im Umgebungsmodell.
+						\end{itemize}
+					\item \textbf{Schwächen:}
+						\begin{itemize}
+							\item Es wird eine Erfassung der Drehmomente benötigt.
+							\item Es gibt (noch) keinen industriellen Standard.
+							\item Die Impedanz ist nicht wählbar.
+						\end{itemize}
+				\end{itemize}
+			% end
+			
+			\subsection{Diskussion}
+				\label{sec:control_hybrid_discussion}
+			
+				Der Aufgabenraum wird aufgeteilt in separate Positions-/Orientierungs- sowie Kraft-/Momenten-geregelte Teilräume.
+				\begin{itemize}
+					\item Entlang einer gegebenen Richtung kann dabei nur entweder Position oder Kraft geregelt werden, aber nicht beides gleichzeitig.
+					\item Die gewünschte Bewegung und die gewünschte Kontaktkraft müssen konsistent zu den Umgebungs- und Kontaktbeschränkungen formuliert werden (\dh die direkte Kraftregelung benötigt ein gutes explizites Modell der Aufgabe).
+					\item Die hybride Positions-/Kraft-Regelung berücksichtigt keine dynamischen Kopplungen und Interaktionen zwischen dem Manipulator und der Umgebung, sofern diese nicht vorab genau spezifiziert werden (können). Für diese Fälle ist die hybride Regelung dementsprechend keine gute Regelung.
+				\end{itemize}
 			% end
 		% end
 
-		\section{Nachgiebigkeitsregelung (Compliant Control)} % 6.168, 6.169, 6.170, 6.171
-			\todo{Content}
+		\section{Nachgiebigkeitsregelung (Compliant Control)}
+			Die sichere und reaktive Interaktion des Roboters mit der Umgebung bei direktem physikalischem Kontakt ermöglicht viele wichtige Anwendungen (\zB physikalische Mensch-Roboter-Interaktion) und feinfühlige Kontaktaufgabe. Durch die in Abschnitt~\ref{sec:control_hybrid_discussion} beschriebenen Nachteile der direkten hybriden Bahn-/Kraft-Regelung ist dies mit einer reinen solchen nicht möglich.
+			
+			Eine Idee zur Lösung ist die \emph{Impedanz-Regelung}:
+			\begin{itemize}
+				\item Die Interaktion im Kontakt mit der Umgebung verursacht Abweichungen der Endeffektor-Bewegung von der Soll-Bewegung.
+				\item Diese Abweichung wird zu Kontaktkräften und -momenten in eine dynamische Soll-Beziehung zwischen Position/Orientierung und Kraft/Moment in Form von \emph{mechanischer Impedanz} \bzw \emph{Admittanz} mit anpassbaren Parametern gesetzt.
+				\item Dadurch wird eine indirekte Kraft-/Momenten-Regelung ermöglicht.
+			\end{itemize}
 
-			\subsection{Verallgemeinerte Betrachtung nach Hogan} % 6.172, 6.173
-				\todo{Content}
+			\subsection{Verallgemeinerte Betrachtung nach Hogan}
+				In der verallgemeinerten Betrachtung nach Hogan wird ein Roboter als physikalisches System in einer physikalischen Umgebung angesehen. Entlang jedes Freiheitsgrades der Interaktion zwischen dem System und seiner Umgebung werden je zwei \emph{Leistungsvariablen} betrachtet:
+				\begin{itemize}
+					\item \emph{Effort} ("Anstrengung"): Kraft oder Moment
+					\item \emph{Flow} ("Fluss"): Lineare oder rotatorische Geschwindigkeit
+				\end{itemize}
+				Aus Sicht der Umgebung gibt es damit nur zwei Typen von physikalischen Systemen:
+				\begin{itemize}
+					\item \emph{Admittanzen}, welche Effort (Kraft, Moment) aufnehmen und Flow (Geschwindigkeit) ausgeben.
+					\item \emph{Impedanzen}, welche Flow (Geschwindigkeit) aufnehmen und Effort (Kraft, Moment) ausgeben.
+				\end{itemize}
+			
+				Bei der dynamischen Interaktion zweier physikalischer Systeme (Manipulator und seine Umgebung) müssen sich beide physikalisch entlang jedes Freiheitsgrades ergänzen, \dh falls der eine sich als Impedanz verhält, muss der andere sich als Admittanz verhalten und umgekehrt. Auf ein Objekt (mit Trägheit und kinematischen Beschränkungen) kann jedoch nicht immer eine Kraft (oder ein Moment) ausgeübt werden, es muss sich jedoch auch nicht immer bewegen. In solchen Fällen können die beschreibenden Gleichungen nicht in Impedanz-Form dargestellt werden, eine Admittanz-Form ist jedoch immer möglich.
+				
+				Damit ein Manipulator, der mechanisch an eine solche Umgebung gekoppelt ist, physikalisch kompatibel mit der Admittanz der Umgebung ist, sollte dieser ein Impedanz-Verhalten annehmen.
 			% end
 
-			\subsection{Impedanzregelung} % 6.174, 6.175
-				\todo{Content}
+			\subsection{Impedanzregelung}
+				Bei der \emph{Impedanzregelung} wird eine aktiv nachgiebige Bewegung erzeugt (ein Roboter mit Kraftregelung agiert, ein Roboter mit Impedanzregelung reagiert). Das Grundprinzip (\bzw das grundlegende Impedanzgesetz) lautet:
+				\begin{align*}
+					&\text{Erzeugte Kontaktkraft} \\
+						&\quad\quad\quad = (\text{aktive Federkonstante}) \,\cdot\, (\text{Regeldifferenz in Position und Orientierung}) \\
+						&\quad\quad\quad\quad\quad\quad + (\text{aktive Dämpungskonstante}) \,\cdot\, (\text{Regeldifferenz in linearer und Winkel-Geschwindigkeit})
+				\end{align*}
+				Ein weiterer Vorteil der Impedanzregelung ist, dass ein schneller und definierter Wechsel zwischen kontaktfreiem und kontaktbehaftetem Zustand möglich ist (\zB zum Abfangen von Stößen), sofern die Sensorik hinreichend schnell arbeitet.
+				
+				\textbf{Prinzip:}
+				\begin{itemize}
+					\item Indirekte Regelung der Interaktionskraft durch eine direkte Regelung des Interaktionsverhaltens als Impedanz mit (nahezu) beliebigen Dämpfungs- und Steifigkeitskoeffizienten.
+					\item Ermöglicht die Regelung von Steifigkeit und Dämpfung.
+					\item Durch die Parameterwahl kann eine gute Positionsfolge auf eine gute Kraftfolge abgestimmt werden.
+					\item Kann bei niedrigen Impedanzen angewandt werden.
+				\end{itemize}
+			
+				\begin{itemize}
+					\item \textbf{Vorteile:}
+						\begin{itemize}
+							\item Trajektorienfolge der Impedanz (nicht der Position oder der Kraft).
+							\item Bei dem Wegfall der inneren Rückführung auch ohne Gelenkdrehmomentmessung als open-loop implementierbar.
+						\end{itemize}
+					\item \textbf{Nachteile:}
+						\begin{itemize}
+							\item Benötigt Rückdrehbarkeit der Antriebe.
+							\item Es gibt (noch) keinen industriellen Standard.
+						\end{itemize}
+				\end{itemize}
+			% end
 
-				\subsubsection{Greifen} % 6.179, 6.180, 6.181, 6.182, 6.183, 6.184
+			\subsection{Admittanzregelung}
+				Für eine closed-loop Impedanzregelung ist eine Kraft-/Drehmomentmessung notwendig. Ideal ist eine direkte Messung mit spezifischer Sensorik in jedem Gelenk, was allerdings sehr kostenaufwendig und noch nicht standardmäßig verfügbar ist. Alternativ können die Gelenkdrehmomente über den Stromfluss geschätzt werden. Dies benötigt allerdings eine hinreichend genaue Stromflussmessung und ist noch weniger entwickelt und verfügbar.
+				
+				Alternativ können, zur Simulation, die Kräfte/Drehmomente gelenk-extern im Hand- oder Fußgelenk gemessen werden. Ein nachgiebiges Verhalten im kartesischen Raum ist simulierbar mit einer \emph{Admittanzregelung}.
+				
+				\textbf{Prinzip:}
+				\begin{itemize}
+					\item Indirekte Regelung der Interaktionskraft durch direkte Regelung des Interaktionsverhaltens als Admittanz mit (nahezu) beliebigen Dämpfungs- und Steifigkeitskoeffizienten.
+					\item Ermöglicht die Regelung der Nachgiebigkeit.
+					\item Durch die Parameterwahl kann eine gute Positionsfolge auf eine gute Kraftfolge abgestimmt werden.
+					\item Kann bei hohen Impedanzen angewandt werden.
+					\item Es existieren viele Varianten von Admittanzregelungen.
+				\end{itemize}
+			
+				\begin{itemize}
+					\item \textbf{Vorteile:}
+						\begin{itemize}
+							\item Robust gegenüber Modellfehlern und Reibung.
+							\item Keine Rückdrehbarkeit der Gelenkantriebe benötigt.
+							\item (Nahezu) Standard.
+							\item Es werden nur Kraft-/Moment-Sensoren am Endeffektor (und nicht in jedem Gelenk) benötigt.
+						\end{itemize}
+					\item \textbf{Nachteile:}
+						\begin{itemize}
+							\item Keine Impedanz-, nur Admittanz-Regelung.
+						\end{itemize}
+				\end{itemize}
+
+				\subsubsection{Implementierung} % 6.188, 6.189, 6.190
 					\todo{Content}
 				% end
 			% end
 
-			\subsection{Admittanzregelung} % 6.185, 6.186, 6.187, 6.188, 6.191, 6.192
-				\todo{Content}
-
-				\subsubsection{Implementierung} % 6.189, 6.190
-					\todo{Content}
-				% end
-			% end
-
-			\subsection{Aktiv-passive Konzepte für Impedanz/Admittanz} % 6.193, 6.194
-				\todo{Content}
+			\subsection{Aktiv-passive Konzepte für Impedanz/Admittanz}
+				\begin{itemize}
+					\item Passive (\bzw mechanische) Nachgiebigkeit
+						\begin{itemize}
+							\item Durch geeignete mechanische Elemente (\zB Federn), ohne externe Energiezuführung.
+							\item Viele unterschiedliche, aktuelle Entwicklungen bei VSA und deren Regelung.
+						\end{itemize}
+					\item Aktive (\bzw virtuelle) Nachgiebigkeit durch Regelung
+						\begin{itemize}
+							\item Hybride Kraft-/Positionsregelung.
+							\item Parallele Kraft-/Positionsregelung.
+							\item Impedanzregelung.
+							\item Admittanzregelung.
+						\end{itemize}
+					\item Kombination von passiver und aktiver Nachgiebigkeit
+						\begin{itemize}
+							\item Aktuelles Forschungsgebiet.
+							\item Unterschiedliche Ansätze.
+							\item Bisher wenig Vergleichbarkeit.
+						\end{itemize}
+				\end{itemize}
 			% end
 		% end
 
-		\section{Bildgeführte Regelung} % 6.195, 6.196, 6.197, 
-			\todo{Content}
+		\section{Bildgeführte Regelung}
+			Die Genauigkeit der "klassischen" Regelung ist unter anderem beschränkt durch die Genauigkeit der Roboterkinematik \bzw des kinematischen Modells. Abhilfe kann hier durch Messung der zu regelnder Größe durch externe Sensoren gewonnen werden.
+			
+			Bei der bildgeführten Regelung gibt es dabei zwei grundsätzlich verschiedene Strukturen:
+			\begin{enumerate}
+				\item Positionsbasierte, kamerageführte Regelung
+					\begin{itemize}
+						\item Extraktion von Informationen aus Kamerabildern zur Rekonstruktion der aktuellen RAN eines Objekts.
+						\item Zusammen mit dem Sollwert für die RAN: Berechnung der kartesischen Regelabweichung.
+						\item Die RAN wird dabei \bspw durch Bildverarbeitung gewonnen (maschinelles Sehen).
+					\end{itemize}
+				\item Bildbasiert, kamerageführte Regelung
+					\begin{itemize}
+						\item Direkte Berechnung der Regelabweichung durch Vergleich der aktuellen Werte eines Merkmalsvektors anhand des 2D-Kamerabildes und deren Sollwerten (ohne 3D Rekonstruktion).
+						\item Der Regler soll den Roboter so steuern, dass der aktuelle Bildmerkmalsvektor mit den gewünschten Werten übereinstimmt.
+					\end{itemize}
+			\end{enumerate}
 
-			\subsection{Positionsbasiert} % 6.198
-				\todo{Content}
-			% end
-
-			\subsection{Bildbasiert} % 6.199, 6.200
-				\todo{Content}
+			\subsection{Bildbasiert}
+				\textbf{Idee:}
+				\begin{itemize}
+					\item Das 2D-Kamerabild \( \mat{B}(\vec{q}) \) ist abhängig von der Konfiguration \( \vec{q} \).
+					\item Aus dem Kamerabild \( \mat{B} \) werden dan:
+						\begin{enumerate}
+							\item Merkmale \( \vec{m}(\mat{B}) \) extrahiert und
+							\item Merkmale Positionen zugeordnet.
+						\end{enumerate}
+				\end{itemize}
+			
+				\textbf{Aufgabe:}
+				Es soll eine Konfiguration \( \vec{q}_\text{Zielposition} \) gefunden werden, sodass
+				\begin{equation*}
+					\vec{F}\big(\vec{q}_\text{Zielposition}\big) = \vec{m}\Big(\!\mat{B}\big(\vec{q}_\text{Zielposition}\big)\Big) - \vec{m}\Big(\!\mat{B}\big(\vec{q}_\text{ist}\big)\Big) = \vec{0}
+				\end{equation*}
+				gilt, \bzw sodass
+				\begin{equation*}
+					\Big\lVert \vec{m}\Big(\!\mat{B}\big(\vec{q}_\text{Zielposition}\big)\Big) - \vec{m}\Big(\!\mat{B}\big(\vec{q}_\text{ist}\big)\Big) \Big\rVert_2^2
+				\end{equation*}
+				minimal wird.
+				
+				\textbf{Ansatz:}
+				Das Gauß-Newton-Verfahrens für nichtlineare Ausgleichsprobleme motiviert ein Iterations- und Bewegungsverfahren:
+				\begin{equation*}
+					\vec{q}_\text{neu} = \vec{q}_\text{ist} + \Delta\vec{q},\quad \Delta\vec{q} = \mat{J}\big(\vec{q}_\text{ist}\big)^{-1} \cdot \vec{F}\big(\vec{q}_\text{ist}\big)
+				\end{equation*}
+				mit der Jacobi-Matrix \( \mat{J} = \frac{\partial \vec{m}}{\partial \vec{q}} \) des Merkmalsvektors.
 			% end
 		% end
 
-		\section{Multimodale Regelung physikalischer Interaktionen} % 6.202, 6.203, 6.204, 6.205, 6.206
-			\todo{Content}
+		\section{Multimodale Regelung physikalischer Interaktionen}
+			Bei der multimodalen Interaktionsregelung werden \zB visuelle und Kontaktkraftregelung kombiniert (\zB visuelle Impedanz-Regelung und Posenschätzung mittels Vision und Kontaktkräften). Es ist auch möglich, weitere Modalitäten zu Kombinieren, \zB natürliche Sprache, künstliche Haut, \dots.
 		% end
 
 		\section{Regelung und Steuerung bei Mensch und Tier} % 6.207, 6.208, 6.228
@@ -2671,43 +2900,55 @@
 			% end
 		% end
 
-		\section{Elementare Roboterbewegungen} % 6.229
-			\todo{Content}
+		\section{Elementare Roboterbewegungen}
+			Definition: Eine \emph{elementare Bewegungsart} ist eine direkt programmierbare, "kleinste" Bewegungsmöglichkeit zwischen einer Anfangsposition und einer Endposition. Diese werden (bei einem Industrieroboter) meistens standardmäßig bereitgestellt. Die \emph{kürzeste Verfahrzeit} \(t_f\) ist dabei \iA nicht vom Benutzer wählbar, sondern ergibt sich aus der Bewegungsart.
+			
+			Elementare Bewegungsarten für Industrieroboter sind z.\,B.:
+			\begin{itemize}
+				\item Lineare Interpolation in Gelenkkoordinaten
+					\begin{itemize}
+						\item Bei der linearen Interpolation werden Start- und Endgelenkstellung einfach durch eine Gerade verbunden (mit der unabhängigen Variable \( 0 \leq s \leq 1 \)):
+					\end{itemize}
+			\end{itemize}
+			\begin{equation*}
+				\vec{q}(0) + s \cdot \Big( \vec{q}\big(t_f\big) - \vec{q}(0) \Big)
+			\end{equation*}
+			\begin{itemize}
+				\item[]
+					\begin{itemize}
+						\item Problem: Die lineare Interpolation benötigt unendlich hohe Ableitungen der Anfangsbeschleunigung zur Erlangung der der Steigung entsprechenden, konstanten Geschwindigkeit. Eine mögliche Lösung stellt das Anfahren und Abbremsen mit einer Parabel dar.
+					\end{itemize}
+				\item Lineare Interpolation in Weltkoordinaten
+			\end{itemize}
+			\begin{equation*}
+				\prescript{0}{}{\vec{r}}_E(0) + s \cdot \Big(\! \prescript{0}{}{\vec{r}}_E \big(t_f\big) - \prescript{0}{}{\vec{r}}_E(0) \Big),\quad 0 \leq s \leq 1
+			\end{equation*}
+			\begin{itemize}
+				\item Kreisbogen-Interpolation
+				\item Spline-Interpolation
+			\end{itemize}
 
-			\subsection{Elementare Bewegungsarten für Industrieroboter} % 6.230, 6.231
-				\todo{Content}
-
-				\subsubsection{Lineare Interpolation in Gelenkkoordinaten} % 6.232, 6.233, 6.234
-					\todo{Content}
-				% end
-
-				\subsubsection{Lineare Interpolation in Weltkoordinaten} % 6.235
-					\todo{Content}
-				% end
-
-				\subsubsection{Kreisbogen-Interpolation} % 6.236
-					\todo{Content}
-				% end
-
-				\subsubsection{Spline-Interpolation} % 6.236
-					\todo{Content}
-				% end
+			\subsection{Schwierigkeiten bei kartesischer Bahnvorgabe}
+				\begin{enumerate}
+					\item Unerreichbarkeit von Zwischenpunkten. \\ Auch wenn Anfangs- und Endpunkt innerhalb des Arbeitsbereichs sind, kann die Verbindungsstrecke Punkte außerhalb von diesem enthalten.
+					\item Hohe Gelenkgeschwindigkeiten in der Nähe von kinematischen Singularitäten. \\ Aufgrund von beschränkten Geschwindigkeiten kann es zu Bahnabweichungen kommen.
+					\item Anfangs- und/oder Endposition können mit verschiedenen Gelenkpositionen erreicht werden.
+				\end{enumerate}
+				Daher wird die Bahnplanung bevorzugt in Gelenkkoordinaten durchgeführt. Diese haben allerdings, bei mehr als drei Gelenken, eine höhere Dimension als der Planungsraum.
 			% end
 
-			\subsection{Schwierigkeiten bei kartesischer Bahnvorgabe} % 6.237, 6.238
-				\todo{Content}
+			\subsection{Programmierung einer Bahn als Folge elementarer Bewegungen}
+				Es werden Bahnpunkte (Positionen) und dazugehörige Attribute (Orientierung, Geschwindigkeit, \dots) definiert.
+				
+				"Überschleifen" mit "fly-by"-Zonen:
+				\begin{itemize}
+					\item Idee: Die einzelnen Positionen werden nur näherungsweise und nicht exakt angefahren.
+					\item Dadurch muss der Roboterarm bei Bahninterpolation nicht vollständig abgebremst werden und die reale Bahngeschwindigkeit kann erhöht werden.
+				\end{itemize}
 			% end
 
-			\subsection{Programmierung einer Bahn als Folge elementarer Bewegungen} % 6.239, 6.240, 6.241, 6.242, 6.243
-				\todo{Content}
-			% end
-
-			\subsection{Elementare Bewegungsarten für fahrende Roboter} % 6.244, 6.245, 6.246
-				\todo{Content}
-			% end
-
-			\subsection{Elementare Bewegungsarten für laufende Roboter} % 6.247, 6.248, 6.249, 6.250, 6.251, 6.252, 6.253, 6.254, 6.255, 6.256, 6.257, 6.258
-				\todo{Content}
+			\subsection{Elementare Bewegungsarten für fahrende Roboter}
+				Für die drei Freiheitsgrade eines punktförmigen Fahrzeuges (Position und Orientierung) sind ähnliche Elementbewegungen wie für Manipulationen implementierbar (lineare, kubische, Kreisbogen Interpolation).
 			% end
 		% end
 	% end

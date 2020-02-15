@@ -2,11 +2,11 @@
 
 ## Folien/Kapitel
 
-* Folien: Fertig/Strukturiert/Gesamt: 898/1069/1069: 84%/100%/100%
-* Skript: Fertig/Strukturiert/Gesamt: 65/177/177: 37%/100%/100%
+* Folien: Fertig/Strukturiert/Gesamt: 941/1069/1069: 88%/100%/100%
+* Skript: Fertig/Strukturiert/Gesamt: 159/177/177: 90%/100%/100%
 
 - [x] Kapitel  1: Einleitung, Übersicht (Folien: 128; Skript: 10)
-- [x] Kapitel  2: Räumliche Darstellung und Transformationen (Skript: 17; Folien: 43, vollständig redundant)
+- [X] Kapitel  2: Räumliche Darstellung und Transformationen (Skript: 17; Folien: 43, vollständig redundant)
 - [X] Kapitel  3: Manipulatorkinematik (Skript: 27)
 - [X] Kapitel  4: Geschwindigkeit, Jacobi-Matrix (Skript: 38; Folien: 6)
 - [X] Kapitel  5: Roboterdynamik (Skript: 65; Folien: 164)

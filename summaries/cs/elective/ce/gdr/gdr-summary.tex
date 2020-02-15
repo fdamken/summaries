@@ -51,7 +51,7 @@
 \makeatletter
 % TODO: This does not make all symbols bold (e.g. 'v').
 \newcommand{\mat}[1]{\boldsymbol{#1}}
-\renewcommand{\vec}[1]{\boldsymbol{#1}}
+\renewcommand{\vec}[1]{\boldsymbol{\mathbf{#1}}}
 \makeatother
 % Abbreviations.
 \renewcommand{\dh}{d.\,h.~}
@@ -2915,15 +2915,97 @@
 				% end
 			% end
 
-			\subsection{Partitionierung des Regelgesetzes durch Feedback-Linearisierung} % 6.107, 6.108, S.165, S.166
-				\todo{!!! Regelung: Partitionierung}
+			\subsection{Partitionierung des Regelgesetzes durch Feedback-Linearisierung}
+				\label{sec:feedback_linearization}
+			
+				In diesem Abschnitt wird wieder das Feder-Masse-System
+				\begin{equation*}
+					m\ddot{x}(t) + b\dot{x}(t) + kx(t) = f(t)
+				\end{equation*}
+				mit der Regelkraft \( f(t) \) betrachtet.
+			
+				Bei der Partitionierung des Regelgesetzes wird dieser in zwei Teile aufgebrochen:
+				\begin{enumerate}
+					\item Den ("inneren") \emph{modellbasierten Anteil}, der die Kenntnis über die Systemdynamik ausnutzt und
+					\item den ("äußeren") \emph{Servo-Anteil}, welcher die Servomesswerte zurück koppelt zur Anpassung des dynamischen Systemverhaltens.
+				\end{enumerate}
+				Durch (1) wird die Systemdynamik transformiert, sodass der Entwurf von (2) sehr viel einfacher wird.
+				
+				Für den modellbasierten Reglerteil wird der Ansatz
+				\begin{equation*}
+					f = \alpha \hat{f} + \beta
+				\end{equation*}
+				betrachtet, wobei \( \alpha \) und \( \beta \) Funktionen sind, die möglichst so zu wählen sind, dass die Systemdynamik für den Servo-Anteil \( \hat{f} \) in einem System mit Einheitsmasse und ohne Feder und Dämpfer resultiert, \dh es soll
+				\begin{equation*}
+					\ddot{x} = \hat{f}
+				\end{equation*}
+				gelten. Dieses Vorgehen wird \emph{Feedback-Linearisierung} genannt. Für das Feder-Masse-Dämpfer-System ergibt sich über die Beziehung
+				\begin{equation*}
+					\underbrace{m}_{\alpha \coloneqq}\ddot{x} + \underbrace{b\dot{x} + kx}_{\beta \coloneqq} = \alpha \hat{f} + \beta
+				\end{equation*}
+				der modellbasierte Anteil des Reglers:
+				\begin{equation*}
+					f = m \hat{f} + b\dot{x} + kx
+				\end{equation*}
+				
+				Der Servo-Anteil wird nun als PD-Regler für das sehr einfache System \( \ddot{x} = \hat{f} \) bestimmt:
+				\begin{equation*}
+					\hat{f} = -k_p x - k_v \dot{x}
+				\end{equation*}
+				Durch Anwendung des Regelgesetzes ergibt sich folgende Bedingung für eine kritische Dämpfung:
+				\begin{equation*}
+					k_v = 2 \sqrt{k_p}
+				\end{equation*}
+				
+				Durch dieses Vorgehen können viele komplizierte Systemdynamiken linearisiert werden.
+				
+				\paragraph{Beispiel}
+					Sei die nichtlineare Systemdynamik mit Regelkraft \(f\) gegeben:
+					\begin{equation*}
+						m\ddot{x} + kx^2 = f
+					\end{equation*}
+					Es wird wieder der Ansatz
+					\begin{equation*}
+						f = \alpha \hat{f} + \beta
+					\end{equation*}
+					betrachtet, wobei der Servo-Anteil \( \hat{f} \) für das einfache System \( \ddot{x} = \hat{f} \) eingesetzt werden soll. Ein Einsetzen dieser Gleichung ergibt:
+					\begin{equation*}
+						m\ddot{x} + kx^2 = \alpha \hat{f} + \beta \quad\implies\quad \alpha = m,\, \beta = kx^2
+					\end{equation*}
+					
+					Damit lautet das modellbasierte Regelgesetz
+					\begin{equation*}
+						f = m \hat{f} + kx^2
+					\end{equation*}
+					und für den Servo-Anteil kann wieder ein einfach PD-Regler
+					\begin{equation*}
+						\hat{f} = -k_p x - k_v \dot{x}
+					\end{equation*}
+					mit der Bedingung \( k_v = 2 \sqrt{k_p} \) für eine "kritische Dämpfung" verwendet werden.
+				% end
 			% end
 
-			\subsection{Sollwerttrajektorien-Folgeregelung} % 6.109, 6.110, S.166, S.167
-				\todo{!!! Regelung: Sollwerttrajektorien-Folgeregelung}
+			\subsection{Sollwerttrajektorien-Folgeregelung}
+				Im Gegensatz für Festwertregelung soll bei der Sollwerttrajektorien-Folgeregelung eine Trajektorie \( x_d(t) \), \( \dot{x}_d(t) \), \( \ddot{x}_d(t) \) verfolgt werden. Sei die Systemdynamik wie in~\ref{sec:feedback_linearization} auf das System
+				\begin{equation*}
+					\ddot{x} = \hat{f}
+				\end{equation*}
+				transformiert. Mit dem Ansatz
+				\begin{equation*}
+					\hat{f} = \ddot{x}_d + k_v \underbrace{(\dot{x}_d - \dot{x})}_{\dot{e} \coloneqq} + k_p \underbrace{(x_d - x)}_{e \coloneqq}
+				\end{equation*}
+				für das Regelgesetz lautet die Systemdynamik:
+				\begin{equation*}
+					\ddot{x} = \ddot{x}_d + k_v (\dot{x}_d - \dot{x}) + k_p (x_d - x) \quad\iff\quad 0 = \ddot{e} + k_v \dot{e} + k_p e
+				\end{equation*}
+				was einer linearen, homogenen Differentialgleichung im \emph{Fehlerraum} entspricht. Dieses System kann nun wieder als Feder-Masse-Dämpfer-System betrachtet werden. Somit ist \zB eine kritische Dämpfung durch die
+				\begin{equation*}
+					k_v = 2 \sqrt{k_p}
+				\end{equation*}
+				gegeben, sodass der Anfangsfehler \( e(0) \neq 0 \) möglichst schnell abklingt.
 			% end
 
-			\subsection{PID-Regelung linearer Systeme} % 6.115, S.167, S.168
+			\subsection{PID-Regelung linearer Systeme} \todo{!!! PID-Regelung und stationäre Zustände!} % 6.115, S.167, S.168
 				Mit den Sollwerten \( x_d, \dot{x}_d \) für Position und Geschwindigkeit lautet das PID-Regelgesetz
 				\begin{equation*}
 					f = k_v \underbrace{(\dot{x}_d - \dot{x})}_{\dot{e}} + k_p \underbrace{(x_d - x)}_{e} + k_i \int \! \underbrace{(k_d - x)}_{e} \dif{t}
@@ -3504,31 +3586,31 @@
 			\todo{Regelung: Mensch und Tier}
 
 			\subsection{Propriozeption} % 6.209
-				\todo{Regelung: Mensch und Tier}}
+				\todo{Regelung: Mensch und Tier}
 			% end
 
 			\subsection{Sensoren} % 6.210
-				\todo{Regelung: Mensch und Tier}}
+				\todo{Regelung: Mensch und Tier}
 			% end
 
 			\subsection{Zentrales Nervensystem} % 6.211, 6.212, 6.213, 6.214, 6.215, 6.216, 6.217
-				\todo{Regelung: Mensch und Tier}}
+				\todo{Regelung: Mensch und Tier}
 			% end
 
 			\subsection{Neurale Integration} % 6.218, 6.219
-				\todo{Regelung: Mensch und Tier}}
+				\todo{Regelung: Mensch und Tier}
 			% end
 
 			\subsection{Informationsverarbeitung} % 6.220
-				\todo{Regelung: Mensch und Tier}}
+				\todo{Regelung: Mensch und Tier}
 
 				\subsubsection{Reflexe} % 6.221, 6.222, 6.223
-					\todo{Regelung: Mensch und Tier}}
+					\todo{Regelung: Mensch und Tier}
 				% end
 			% end
 
 			\subsection{Sonstiges} % 6.224, 6.225, 6.226, 6.227
-				\todo{Regelung: Mensch und Tier}}
+				\todo{Regelung: Mensch und Tier}
 			% end
 		% end
 
@@ -5709,7 +5791,62 @@
 		% end
 	% end
 
-	\chapter{Notationen} % S.183, S.184
-		\todo{Notationen}
+	\chapter{Notationen}
+		Typische Symbole und ihre Bedeutung:
+		\begin{itemize}
+			\item Kleine und kursive Buchstaben bezeichnen skalare Größen, \zB \( t, x, f, g, h \).
+			\item Große, fettgedruckte und kursive Buchstaben bezeichnen Matrizen, \zB \( \mat{A}, \mat{B}, \mat{R}, \mat{T} \).
+			\item Fettgedruckte Buchstaben bezeichnen Vektoren, \zB \( \vec{x}, \vec{q}, \vec{F} \).
+		\end{itemize}
+		Tabelle~\ref{tab:notation} zeigt typische Buchstaben- und Symbolzuordnungen und Notationen.
+	
+		\begin{table}
+			\centering
+			\begin{tabular}{rl}
+				\multicolumn{2}{l}{\textbf{Allgemein}}                                                                       \\
+				                         \(f\), \(g\), \(h\) & (skalare) Funktionsnamen                                      \\
+				                                       \(t\) & Zeit                                                          \\
+				                            \(t_a\), \(t_s\) & Startzeitpunkt                                                \\
+				                            \(t_e\), \(t_f\) & Endzeitpunkt                                                  \\
+				                         \(x\), \(y\), \(z\) & Koordinatenachsen                                             \\
+				                         \(i\), \(j\), \(k\) & Laufindex                                                     \\
+				                                       \(l\) & Länge                                                         \\
+				                                       \(m\) & Masse                                                         \\
+				                                    \(\rho\) & Dichte                                                        \\
+				                                       \(g\) & Gravitationskonstante                                         \\
+				                                  \(\delta\) & kleiner Abstand                                               \\
+				     \( \frac{\total f}{\total x} = f'(x) \) & (totale) Ableitung nach der unabhängigen Variablen \(x\)      \\
+				\( \frac{\total f}{\total t} = \dot{x}(t) \) & (totale) Ableitung nach der unabhängigen Variablen Zeit \(t\) \\&\\
+			\multicolumn{2}{l}{\textbf{Räumliche Darstellungen und Transformationen}} \\
+				                \(\vec{p}\) & Koordinatenvektor eines Punktes \\
+				                 \(\theta\) & Winkel                          \\
+				\((\alpha, \beta, \gamma)\) & Winkeltripel                    \\
+				\((\psi, \theta, \varphi)\) & Winkeltripel                    \\
+				                \(\mat{E}\) & Einheitsmatrix                  \\
+				                \(\mat{R}\) & Rotationsmatrix                 \\
+				                \(\vec{r}\) & Translationsvektor              \\
+				                \(\mat{T}\) & homogene Transformationsmatrix \\&\\
+			\multicolumn{2}{l}{\textbf{Manipulatorkinematik}} \\
+				\(S\) & Koordinatensystem \\
+				\(n\) & Anzahl der Freiheitsgrade \\
+				\( \vec{q} = \begin{bmatrix} q_1 & \cdots & q_n \end{bmatrix}^T \) & Zustandsvektor der Gelenkvariablen \\&\\
+			\multicolumn{2}{l}{\textbf{Geschwindigkeit, Jacobi-Matrix und statische Kräfte}} \\
+				\(\vec{\omega}\) & Winkelgeschwindigkeitsvektor    \\
+				     \(\vec{v}\) & linearer Geschwindigkeitsvektor \\
+				     \(\mat{J}\) & Jacobi-Matrix \\&\\
+			\multicolumn{2}{l}{\textbf{Manipulatordynamik}} \\
+				             \(\mat{I}\) & Trägheitstensor                                      \\
+				            \(n\), \(N\) & (skalares) Drehmoment                                \\
+				            \(f\), \(F\) & (skalare) Kraft                                      \\
+				\(\tau\), \(\vec{\tau}\) & (skalare oder vektorielle) Kraft oder Drehmoment     \\
+				             \(\mat{M}\) & Massenmatrix                                         \\
+				             \(\vec{C}\) & Vektorfunktion der Zentrifugal- oder Coriolisanteile \\
+				             \(\vec{G}\) & Vektorfunktion der Gravitationsanteile               \\
+				                   \(K\) & kinetische Energie                                   \\
+				                   \(P\) & potentielle Energie
+			\end{tabular}
+			\caption{Notationen}
+			\label{tab:notation}
+		\end{table}
 	% end
 \end{document}

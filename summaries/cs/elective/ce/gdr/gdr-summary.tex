@@ -38,6 +38,9 @@
 
 % New commands.
 \DeclareMathOperator{\total}{d}
+\DeclareMathOperator{\Rang}{Rang}
+\DeclareMathOperator{\const}{const}
+\DeclareMathOperator{\sign}{sign}
 \newcommand{\dif}[1]{\,\total#1}
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\R}{\mathbb{R}}
@@ -50,7 +53,6 @@
 \newcommand{\mat}[1]{\boldsymbol{#1}}
 \renewcommand{\vec}[1]{\boldsymbol{#1}}
 \makeatother
-\DeclareMathOperator{\Rang}{Rang}
 % Abbreviations.
 \renewcommand{\dh}{d.\,h.~}
 \newcommand{\bzw}{bzw.~}
@@ -902,54 +904,164 @@
 			\todo{Content}
 		% end
 
-		\section{Berücksichtigung von Nichtstarrkörpereffekten} % S.137, 5.39
-			\todo{Content}
+		\section{Berücksichtigung von Nichtstarrkörpereffekten}
+			Bisher wurde, selbst bei der Dynamik, viele Vereinfachungen eingeführt, insbesondere wurden Reibung, Elastizitäten und Loser (Gelenkspiel) nicht berücksichtigt. In diesem Abschnitt sollen diese Effekte (vereinfacht) berücksichtigt werden.
 
-			\subsection{Reibung} % S.137, S.138, 5.40, 5.41
-				\todo{Content}
-
-				\subsubsection{Reibungsmodell} % 5.42
-					\todo{Content}
-
-					\paragraph{Haftung} % 5.43
-						\todo{Content}
+			\subsection{Reibung}
+				Berühren sich zwei Oberflächen, so sind die typischerweise nicht glatt, sodass auch tangentiale Kräfte wirken (die \emph{Reibung}). In der Regel können die Reibungskräfte und -momente, die in den Gelenken wirken, nicht vernachlässigt werden.
+				
+				Zur Berücksichtigung von Reibung wird den Bewegungsdifferentialgleichungen \INVDYN ein Vektor \( \vec{F} \) für Reibungs- und Dämpfungskräfte und -momente hinzugefügt:
+				\begin{equation*}
+					\vec{\tau} = \mat{M}(\vec{q}\!)\, \ddot{\vec{q}} + \vec{C}(\vec{q}, \dot{\vec{q}}\!) + \vec{G}(\vec{q}\!) + \vec{F}(\vec{q}, \dot{\vec{q}}\!)
+				\end{equation*}
+				
+				\subsubsection{Reibungsmodell}
+					Ein häufiges, einfaches Reibungsmodell (des \(i\)-ten Gelenks) ist
+					\begin{equation*}
+						F_i(\vec{q}, \dot{\vec{q}}\!) = \underbrace{\gamma_{C, i} \cdot \sign \dot{q}_i}_\text{Coulombsche Reibung} + \underbrace{\gamma_{v, i} \cdot \dot{q}_i}_\text{Viskose Gleitreibung}
+					\end{equation*}
+					mit \( \gamma_{C, i}, \gamma_{v, i} = \const \).
+					
+					Sobald die Zugkraft \(Z\) einen bestimmten Grenzwert überschreitet, wird die Haftung überwunden und die Oberflächen gleiten übereinander. Diese \emph{Coulombsche Reibung} wird mit \( \gamma_{C, i} \) beschrieben, welches nach Charles Augustine proportional zur Normalkraft \( N_i \) ist (mit dem \emph{Reibungskoeffizient} \( \mu_{R, i} \)):
+					\begin{equation*}
+						\gamma_{C, i} = \mu_{R, i} \cdot N_i
+					\end{equation*}
+					Der Grenzwert der Haftung \( \gamma_{s, i} \) ist mit dem \emph{Haftungskoeffizienten} \( \mu_{H, i} \) ebenfalls proportional zur Normalkraft:
+					\begin{equation*}
+						\gamma_{s, i} = \mu_{H, i} \cdot N_i
+					\end{equation*}
+					Dabei ist der Haftreibungskoeffizient typischerweise größer als der Reibungskoeffizient, was zu einem ruckartigen Gleiten (Losbrechen) \bzw Festsetzen führt. Das resultierende, klassische Reibungsmodell lautet:
+					\begin{equation*}
+						F_i(\vec{q}, \dot{\vec{q}}\!) =
+							\begin{cases*}
+								\gamma_{C, i} \cdot \sign \dot{q}_i + \gamma_{v, i} \cdot \dot{q}_i & falls \( \dot{q}_i \neq 0 \) \\
+								Z                                                                   & falls \( \dot{q}_i = 0 \) und \( \lvert Z \rvert \leq \gamma_{s, i} \) \\
+								\gamma_{s, i} \cdot \sign Z                                         & sonst
+							\end{cases*}
+					\end{equation*}
+					
+					Die \emph{viskose Gleitreibung} wird häufig proportional zur Geschwindigkeit modelliert und berücksichtigt hydromechanische Effekte (\zB Schmiermittel).
+					
+					\paragraph{Verfeinerungen}
+						Das bisherige Modell modelliert einen sprunghaften Übergang zwischen Haft- und Gleitreibung. Dies entspricht jedoch nur annähernd der Realität, wobei Reibung mit zunehmender Geschwindigkeit zunächst abnimmt. Dieser Übergang kann mit der Stribeck-Reibung beschrieben werden (dabei ist \( \dot{q}_\text{stribeck} \) die Geschwindigkeit, bei der die minimale Reibung auftritt):
+						\begin{equation*}
+							F_i(\vec{q}, \vec{q}\!) = \Bigg( \gamma_{C, i} + (\gamma_{s, i} - \gamma_{C, i}) \exp \bigg\{\! -\Big\lvert \frac{\dot{q}_i}{\dot{q}_{\text{stribeck}, i}} \Big\rvert \,\bigg\} \Bigg) \cdot \sign \dot{q}_i + \gamma_{v, i} \cdot \dot{q}_i
+						\end{equation*}
 					% end
-
-					\paragraph{Stribeck-Reibung} % 5.44
-						\todo{Content}
-					% end
-
-					\paragraph{Coloumbsche Reibung} % S.138
-						\todo{Content}
-					% end
-
-					\paragraph{Viskose Gleitreibung} % S.138, S.139
-						\todo{Content}
+					
+					\paragraph{Anmerkungen}
+						\begin{itemize}
+							\item Reibungsmodelle sind immer mit Unsicherheiten behaftet (Last-, Temperatur-, Winkelabhängigkeiten, \dots).
+							\item Es gibt zahlreiche unterschiedliche Ansätze zur Modellierung von Reibung.
+							\item Im Newton-Euler-Verfahren werden Reibungskräfte im letzten Schritt von NE.3 eingeführt:
+						\end{itemize}
+						\begin{equation*}
+							\tau_{i, \text{neu}} = \tau_i + F_i(\vec{q}, \dot{\vec{q}}\!)
+						\end{equation*}
 					% end
 				% end
 			% end
 
-			\subsection{Elastizität} % S.139, 5.45, 5.46
-				\todo{Content}
+			\subsection{Elastizität}
+				In der Industrie und der klassischen Robotik werden möglichst starre kinematische Ketten zur genauen und schnellen Manipulation schwerer Objekte konstruiert. In Leichtbaurobotern oder in der Mensch-Roboter-Interaktion können elastische Gelenke und Glieder jedoch von Vorteil sein. Zur exakten Positionsregelung ist hier die Betrachtung der Elastizitäten nötig.
 
-				\subsubsection{Grundlagen} % S.139, S.140, 5.47, 5.48, 5.49
-					\todo{Content}
+				\subsubsection{Grundlagen}
+					Ein elastischer Körper verformt sich dabei und Krafteinwirkung, speichert diese Kraft als potentielle Energie und gibt die bei Rückfederung wieder frei. Zur Charakterisierung wird die sogenannte \emph{Federsteifigkeit} eingeführt (lineare und rotatorisch):
+					\begin{equation*}
+						c = \frac{\Delta f}{\Delta s} \quad\quad\quad\quad c_\varphi = \frac{\Delta n}{\Delta \varphi}
+					\end{equation*}
+					Dabei beschreibt
+					\begin{itemize}
+						\item \( \Delta f \), \( \Delta n \) die Änderung der Kraft/des Drehmoments und
+						\item \( \Delta s \), \( \Delta \varphi \) die Änderung der Auslenkung/des Drehwinkels.
+					\end{itemize}
+					Werden Kraft/Moment und Auslenkung/Drehung gegeneinander aufgetragen, so ergibt sich die \emph{Federkennlinie}. Dabei werden drei Typen an Kennlinien unterschieden:
+					\begin{itemize}
+						\item Progressive Kennlinie: Die Federsteifigkeit nimmt mit der Zeit zu.
+						\item Degressive Kennlinie: Die Federsteifigkeit nimmt mit der Zeit ab.
+						\item Lineare/Hookesche Kennlinie: Die Federsteifigkeit bleibt konstant (\dh \( c = \const \)).
+					\end{itemize}
 				% end
 
-				\subsubsection{Elastizitäten in der Robotik} % S.141, S.142, S.143, S.144, 5.50, 5.51
-					\todo{Content}
+				\subsubsection{Elastizitäten in der Robotik} % S.141, S.142, S.143, S.144
+					In der Robotik können zwei Typen von Elastizitäten auftreten:
+					\begin{itemize}
+						\item Elastische Glieder \\ Die Deformation ist abhängig von der Gelenkwinkelstellung \(q_i\), der Gliedlänge \(r\) und der Temperatur \(T\).
+						\item Elastische Gelenke \\ Führ zu einem unterschied in der Gelenkposition: antriebsseitig \(\theta\), abtriebsseitig \(\theta_\text{El}\).
+					\end{itemize}
+					In der Regel werden diese Fälle getrennt betrachtet.
 
-					\paragraph{Ersatzmodell} % 5.52
-						\todo{Content}
-					% end
+					Im Ersatzmodell wird jedes Gelenk mit zwei Gelenkvariablen modelliert:
+					\begin{itemize}
+						\item[\(\theta_i\)] Die Position des starren Gelenkantriebs vor der Elastizität (antriebsseitig).
+						\item[\(q_i = \theta_{\text{El}, i}\)] Die tatsächliche Gelenkposition (abtriebsseitig).
+					\end{itemize}
+					Dadurch verdoppelt sich die Anzahl an Bewegungsgleichungen und es werden \(2n\) Gelenkvariablen zur Beschreibung der Bewegung benötigt.
 
-					\paragraph{Dynamikgleichungen} % 5.53, 5.54, 5.55, 5.56
-						\todo{Content}
-					% end
+					Die Dynamikgleichungen lassen sich am besten durch eine Modifikation des Lagrange-Formalismus herleiten. Dabei wird die potentielle Energie
+					\begin{equation*}
+						P(\vec{q}, \vec{\theta}\!) = P_G(\vec{q}\!) + P_\text{El}(\vec{q}, \vec{\theta}\!)
+					\end{equation*}
+					durch einen Term \( P_\text{El} \) der in Gelenkverformungen gespeicherten Energie ergänzt (\(P_G(\vec{q}\!)\) ist das Gravitationspotential, welches offensichtlich nur von den abtriebsseitigen Stellungen abhängt). Die potentielle Energie der Verformungen ist gegeben durch:
+					\begin{equation*}
+						P_\text{El}(\vec{q}, \vec{\theta}\!) = \frac{1}{2} \, (\vec{\theta} - \vec{q}\!)^T \mat{E}_S (\vec{\theta} - \vec{q}\!)
+					\end{equation*}
+					Mit der diagonalen Steifigkeitsmatrix \( \mat{E}_S \). Die kinetische Energie \( K_R(\vec{q}, \vec{\theta}, \dot{\vec{q}}, \dot{\vec{\theta}}\!) \) ist nun abhängig von den an- und abtriebsseitigen Positionen und Geschwindigkeiten. Mit den zusammengefassten verallgemeinerten Gelenkvariablen
+					\begin{equation*}
+						\vec{p} =
+							\begin{bmatrix}
+								\vec{q} \\
+								\vec{\theta}
+							\end{bmatrix}
+					\end{equation*}
+					hat die kinetische Energie die Form
+					\begin{equation*}
+						K_R(\vec{p}, \dot{\vec{p}}\!) = \frac{1}{2} \, \dot{\vec{p}}^T \mat{M}_R(\vec{p}\!) \dot{\vec{p}}
+					\end{equation*}
+					mit der erweiterten Trägheitsmatrix:
+					\begin{equation*}
+						\mat{M}_R(\vec{p}\!) =
+							\begin{bmatrix}
+								\mat{M}(\vec{q}\!)                 & \mat{S}(\vec{q}, \vec{\theta}\!) \\
+								\mat{S}^T(\vec{q}, \vec{\theta}\!) & \mat{J}_M(\vec{\theta}\!)
+							\end{bmatrix}
+					\end{equation*}
+					Die Teilmatrizen haben jeweils die Dimension \( (n \times n) \), wobei
+					\begin{itemize}
+						\item die Matrix \( \mat{M} \) der Massenmatrix des starren Roboters in Abhängigkeit von den abtriebsseitigen Position entspricht.
+						\item \( \mat{J}_M \) ist die Trägheitsmatrix der Motoren und theoretisch abhängig von der Motorposition. Meistens ist die Massenverteilung des Rotors jedoch symmetrisch und der Schwerpunkt liegt auf der Drehachse, wodurch die Matrix diagonal und konstant wird.
+						\item Die Matrix \( \mat{S} \) ist die Trägheitsverkopplung zwischen Rotoren und den Gliedern. Sie entsprechen der kinetischen Energie der Rotoren um andere Achsen als der Motorachse. Meistens wird die kinetische Energie jedoch hauptsächlich durch die Drehgeschwindigkeit um die Motorachse verursacht, wodurch \( \mat{S} = \mat{O} \) gilt, \dh die Matrix verschwindet.
+					\end{itemize}
+					Dadurch lässt sich die kinetische Energie schreiben als:
+					\begin{align*}
+						           &  & K_R                           & = K_A + K_M                                                       &  \\
+						\text{mit} &  & K_A(\vec{q}, \dot{\vec{q}}\!) & = \frac{1}{2} \, \dot{\vec{q}}^T \mat{M}(\vec{q}\!) \dot{\vec{q}} &  \\
+						           &  & K_M(\dot{\vec{\theta}}\!)     & = \frac{1}{2} \, \dot{\theta}^T \mat{J}_M \dot{\vec{\theta}}      &
+					\end{align*}
+					Wobei \( K_A \) die kinetische Energie in den Armgliedern und \( K_M \) die kinetische Energie in den rotierenden Motoren darstellt. Durch Lösen der Lagrange-Gleichungen ergibt sich ein gekoppeltes Differentialgleichungssystem:
+					\begin{align*}
+						\vec{\tau}_\text{El} & = \mat{M}(\vec{q}\!) \, \ddot{\vec{q}} + \vec{C}(\vec{q}, \dot{\vec{q}}\!) + \vec{G}(\vec{q}\!) \\
+						\vec{\tau}_m         & = \mat{J}_M \cdot \ddot{\vec{\theta}} + \vec{\tau}_\text{El}                                 \\
+						\vec{\tau}_\text{El} & = \mat{E}_S \cdot (\vec{\theta} - \vec{q}\!)  \label{eqn:elastic_tau}
+					\end{align*}
 				% end
 
-				\subsubsection{Berechnung von INV DYN bei Drehgelenkelastizitäten} % S.145, 5.57, 5.58
-					\todo{Content}
+				\subsubsection{Berechnung von \INVDYN bei Drehgelenkelastizitäten}
+					Zur Berechnung von \INVDYN werden die folgenden Schritte ausgeführt:
+					\begin{enumerate}
+						\item Berechnung der Drehmomente \( \vec{\tau}_\text{El} \) in den Gelenken mit dem starren Modell (\zB mit Newton-Euler).
+						\item Berechnung von \( \ddot{\vec{\theta}} \) durch zweifaches differenzieren und umstellen nach \( \ddot{\vec{\theta}} \) von \ref{eqn:elastic_tau}:
+					\end{enumerate}
+					\begin{equation*}
+						\ddot{\vec{\theta}} = \mat{E}_S^{-1} \cdot \ddot{\vec{\tau}}_\text{El} + \ddot{\vec{q}}
+					\end{equation*}
+					\begin{enumerate}
+						\setcounter{enumi}{2}
+						\item Berechnung der Motordrehmomente:
+					\end{enumerate}
+					\begin{equation*}
+						\tau_m = \mat{J}_M \cdot \ddot{\vec{\theta}} + \vec{\tau}_\text{El}
+					\end{equation*}
 				% end
 
 				\subsubsection{Elastizitäten in der Biologie} % S.146, 5.59, 5.60
@@ -1014,83 +1126,132 @@
 			% end
 		% end
 
-		\section{Spezielle Dynamikmodelle für zweibeinige, humanoide Roboter und deren Stabilitätsregelung} % S.147, 5.97, 5.98, 5.99
-			\todo{Content}
+		\section{Spezielle Dynamikmodelle für zweibeinige, humanoide Roboter und deren Stabilitätsregelung}
+			Heutige humanoide Roboter bestehen aus starren kinematischen Ketten mit steifen Drehgelenken (meistens sechs bis sieben Drehgelenke pro Bein), sind Kaskadengeregelt.
+			
+			Dabei beruht die posturale Stabilität auf dem \emph{Zero Moment Point}. Der Begriff von \emph{statisch stabilen Laufen} bezeichnet dabei, dass die Laufbewegung jederzeit gestoppt werden kann, ohne dass der Roboter umfällt. \emph{Dynamische Stabilität} ist hingegen gegeben, wenn der Roboter zwar nicht statisch stabil ist, aber trotzdem nicht umfällt.
 
-			\subsection{Stabilität zweibeiniges Laufen} % 5.100, 5.101, 5.102
-				\todo{Content}
+			\subsection{Zero-Moment-Point (ZMP)}
+				Es wird ein stabiler (rutschfester) Stand auf einem Bein mit starrer Sole in einem Weltkoordinatensystem so, dass der Roboter in \(x\)-Richtung läuft und \(z\) nach oben zeigt, angenommen. Daraus resultieren Bodenreaktionskräfte und -momente. Diese sind zusammengesetzt aus normalen Kräfte
+				\begin{equation*}
+					\vec{f}_{N_i} =
+						\begin{bmatrix}
+							f_{N_i, z}
+						\end{bmatrix}
+				\end{equation*}
+				und tangentialen Kräften
+				\begin{equation*}
+					\vec{f}_{t_i} =
+						\begin{bmatrix}
+							f_{t_i, x} \\
+							f_{t_i, y} \\
+							0
+						\end{bmatrix}
+				\end{equation*}
+				
+				Der \emph{Zero-Moment-Point} ist nun derjenige Punkt \(P\), in dem die resultierende normale Kraft \( \vec{F}_N = \sum_i \vec{f}_{N_i} \) wirkt:
+				\begin{equation*}
+					\vec{r}_\text{ZMP} \coloneqq \frac{\sum_i \vec{r}_{N_i} f_{N_i, z}}{\sum_i f_{N_i, z}}
+				\end{equation*}
+				Dabei ist \( \vec{r}_{N_i} \) der Angriffspunkt der Kraft \( \vec{f}_{N_i} \). Durch die tangentialen Kräfte kann \( \vec{N}_t \), der Vektor der Drehmomente am Punkt \(P\), bestimmt werden:
+				\begin{equation*}
+					\vec{N}_t = \sum_i \vec{d}_i \times \vec{f}_{t_i} =
+						\begin{bmatrix}
+							\ast \\
+							\ast \\
+							0
+						\end{bmatrix}
+					\times
+						\begin{bmatrix}
+							\ast \\
+							\ast \\
+							0
+						\end{bmatrix}
+					=
+						\begin{bmatrix}
+							0 \\
+							0 \\
+							\ast
+						\end{bmatrix}
+				\end{equation*}
+				Somit wirkt am Zero-Moment-Point zwar ein Moment, dieses führt aber nicht zum Kippen.
+				
+				Der Roboter kann nur dann kippen, wenn sich der ZMP am Rand der konvexen Hülle der Bodenkontaktpunkte liegt. Daher muss der ZMP strikt innerhalb der konvexen Hülle gehalten werden.
 			% end
 
-			\subsection{Dynamik im Roboterstandfuß} % 5.104, 5.105, 5.106, 5.107, 5.108
-				\todo{Content}
+			\subsection{Center of Pressure (CoP)}
+				Ein alternatives Stabilitätsmaß ist das \emph{Center of Pressure} (CoP). Dieser ist die resultierende Ersatzkraft aus allen Kräften, die auf die Sole des Fußes wirken und den Bodenreaktionskräften entgegen wirken.
+				
+				Achtung: ZMP und CoP beschreiben nicht das gleiche! Dies ist nur der Fall bei einem dynamisch ausbalancierten Laufroboter.
 			% end
 
-			\subsection{Zero-Moment-Point} % S.148, S.149, S.149, S.150, 5.109
-				\todo{Content}
+			\subsection{Inverses Pendel und Feder-Masse-Modell}
+				Für humanoide Roboter (mit oft mehr als \num{30} Gelenken) ist das aufstellen des inversen Dynamikmodells häufig zu komplex und damit die Berechnung nicht echtzeitfähig. Daher werden vereinfache Dynamikmodelle eingesetzt, \zB ein inverses Pendel.
+				
+				Die Energien eines seitwärts beschleunigten, inversen Pendels mit Länge \(l\) und Auslenkung \(\theta\) ergibt sich die (um die Nullauslenkung, \dh aufrechte Haltung) linearisierte Bewegungsgleichung
+				\begin{equation*}
+					l \ddot{\theta} - g \theta = -\ddot{x}
+				\end{equation*}
+				
+				Dieses Modell liefert nur gute Ergebnisse für langsames Gehen. Alternativ kann ein Feder-Masse-Modell mit
+				\begin{itemize}
+					\item Masse \(m\),
+					\item Ruhelänge \(l_0\),
+					\item Federkonstante \(k\) und
+					\item momentanem Zustand \( (r, \varphi) \) in Polarkoordinaten
+				\end{itemize}
+				verwendet werden. Die Bewegungsgleichungen lauten dann:
+				\begin{align*}
+					m\ddot{r} &= k(l_0 - r) + mr\dot{\varphi}^2 - mg\sin\varphi \\
+					r\ddot{\varphi} &= -2\dot{r}\dot{\varphi} - g\cos\varphi
+				\end{align*}
 			% end
-
-			\subsection{Center of Pressure (CoP)} % 5.110
-				\todo{Content}
-			% end
-
-			\subsection{ZMP Preview Walking} % 5.111, 5.112, 5.113, 5.114, 5.115, 5.116
-				\todo{Content}
-			% end
-
+			
 			\subsection{Globale Stabilitätsbegriffe} % S.156, S.157
 				\todo{Content}
 			% end
 
-			\subsection{Ausblicke} % N/A
-				\todo{Content}
-
-				\subsubsection{Capture Steps} % 5.117, 5.118
-					\todo{Content}
+			\subsection{Ausblicke}
+				\subsubsection{Capture Steps}
+					\begin{itemize}
+						\item Ein \emph{Capture Point} ist ein Punkt, auf dem der Roboter beim Betreten vollständig zum Stillstand kommen kann. Ist dieser Punkt erreichbar, so wird er auch \emph{Capture Step} genannt.
+						\item Capture Steps sind eine effektive Methode, um (harte) externe Stöße abzufangen.
+					\end{itemize}
 				% end
 
-				\subsubsection{Whole Body Control} % 5.119, 5.120, 5.121, 5.122
-					\todo{Content}
-				% end
-
-				\subsubsection{Unebenes Terrain} % 5.123
-					\todo{Content}
+				\subsubsection{Unebenes Terrain}
+					Auf unebenem Terrain gelten die vorherigen Annahmen für den ZMP nicht mehr, weshalb andere Ansätze notwendig sind.
 				% end
 			% end
 		% end
 
-		\section{Spezielle Dynamikmodelle für zweibeinige, nicht-humanoide Roboter und deren Stabilitätsregelung} % 5.125, 5.126
-			\todo{Content}
+		\section{Spezielle Dynamikmodelle für zweibeinige, nicht-humanoide Roboter und deren Stabilitätsregelung}
+			In diesem Abschnitt werden \zB hüpfende Roboter betrachtet.
 
-			\subsection{Inverses Pendel} % S.150, S.151, S.152, S.153, 5.127
-				\todo{Content}
-			% end
+			\subsection{Hüpfende Roboter mit Teleskop-Beinen}
+				Bei einem hüpfendem Roboter wird die absorbierte Energie beim Bodenkontakt durch Kompression zwischen den Sprüngen transferiert.
 
-			\subsection{Erweitertes Modell des menschlichen Gehens und Rennens} % S.153, 5.128, 5.129
-				\todo{Content}
-
-				\subsubsection{Feder-Masse-Modell (Rennen)} % S.153, S.154, S.155
-					\todo{Content}
-				% end
-
-				\subsubsection{Feder-Masse-Modell (Gehen)} % S.153, S.155
-					\todo{Content}
-				% end
-			% end
-
-			\subsection{Hüpfende Roboter mit Teleskop-Beinen} % 5.130, 5.131, 5.132, 5.138
-				\todo{Content}
-
-				\subsubsection{Ein Modell dynamischer Stabilität} % 5.134, 5.135, 5.136, 5.137
-					\todo{Content}
+				\subsubsection{Ein Modell dynamischer Stabilität}
+					Das Steuerungsproblem für Hüpfroboter kann in drei unabhängige, zeitabhängige Teilprobleme zerlegt werden:
+					\begin{enumerate}
+						\item Hüpfhöhe
+						\item Vorwärtsgeschwindigkeit
+						\item Haltung
+					\end{enumerate}
+					Diese Probleme können mit je einer Differentialgleichung modelliert werde, wobei die drei Steuerungen durch einen diskreten Zustandsautomaten für den Hüpfzyklus synchronisiert werden.
+					
+					Dieser hat fünft diskrete Zustände und Übergänge mit jeweils eigener, kontinuierlicher Systemdynamik (hybride diskret-kontinuierliche Systemdynamik). Dieses "Umschalten" von kontinuierlichen Systemdynamikmodell für die verschiedenen Phasen einer Gangart ist ein heute gängiges Vorgehen bei laufenden Robotern. Sensoren messen dabei die Zeitpunkte
+					\begin{itemize}
+						\item des Bodenkontakts,
+						\item wenn das Bein nahe voller Ausdehnung oder
+						\item wenn das Bein nahe voller Kompression ist.
+					\end{itemize}
+					Diese Steuerung kann ebenfalls auf mehrbeinige, hüpfende Roboter übertragen werden.
 				% end
 			% end
 
-			\subsection{Passive Dynamic Walkers} % 5.142, 5.143, 5.144, 5.145, 5.147, 5.148, 5.149
-				\todo{Content}
-			% end
-
-			\subsection{Elastische Roboter} % 5.150, 5.151, 5.152, 5.153, 5.154, 5.160, 5.164
-				\todo{Content}
+			\subsection{Passive Dynamic Walkers}
+				Passive Laufmaschinen haben keine Antriebe, kein Regelungssystem und sind rein durch die Gravitationskraft angetrieben (schiefe Ebene). Diese Art der Fortbewegung ist nur begrenzt auf zweibeinige Roboter übertragbar, da weder Bergauf-Gehen, Kurven-Gehen oder Manipulation von Lasten möglich ist.
 			% end
 		% end
 	% end

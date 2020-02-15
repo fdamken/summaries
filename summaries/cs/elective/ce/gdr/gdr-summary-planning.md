@@ -2,13 +2,13 @@
 
 ## Folien/Kapitel
 
-* Folien: Fertig/Strukturiert/Gesamt: 728/1069/1069: 68%/100%/100%
-* Skript: Fertig/Strukturiert/Gesamt: 0/177/177: 0%/100%/100%
+* Folien: Fertig/Strukturiert/Gesamt: 734/1069/1069: 69%/100%/100%
+* Skript: Fertig/Strukturiert/Gesamt: 65/177/177: 37%/100%/100%
 
 - [x] Kapitel  1: Einleitung, Übersicht (Folien: 128; Skript: 10)
-- [x] Kapitel  2: Räumliche Darstellung und Transformationen (Skript: 17; Folien: 43)
-- [x] Kapitel  3: Manipulatorkinematik (Skript: 27)
-- [x] Kapitel  4: Geschwindigkeit, Jacobi-Matrix (Skript: 38; Folien: 6)
+- [x] Kapitel  2: Räumliche Darstellung und Transformationen (Skript: 17; Folien: 43, vollständig redundant)
+- [X] Kapitel  3: Manipulatorkinematik (Skript: 27)
+- [X] Kapitel  4: Geschwindigkeit, Jacobi-Matrix (Skript: 38; Folien: 6)
 - [x] Kapitel  5: Roboterdynamik (Skript: 65; Folien: 164)
 - [X] Kapitel  6: Roboterregelungen und interne Sensoren (Folien: 259; Skript: 11)
 - [X] Kapitel  7: Bahnplanung (Folien: 89)

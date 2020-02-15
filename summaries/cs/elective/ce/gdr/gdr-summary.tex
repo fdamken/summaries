@@ -39,17 +39,18 @@
 % New commands.
 \DeclareMathOperator{\total}{d}
 \newcommand{\dif}[1]{\,\total#1}
-\newcommand{\N}{\ensuremath{\mathbb{N}}}
-\newcommand{\R}{\ensuremath{\mathbb{R}}}
-\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
 \newcommand{\given}{\,\vert\,}
+\newcommand{\inreferenceto}[2]{\prescript{#1}{}{#2}}
 % Matrix/Vector notation.
 \makeatletter
-\newcommand{\matnospacing}[1]{\boldsymbol{#1}}
-\newcommand{\vecnospacing}[1]{\boldsymbol{#1}}
-\newcommand{\mat}[1]{\matnospacing{#1} \ifthenelse{\equal{#1}{A} \OR \equal{#1}{n} \OR \equal{#1}{m} \OR \equal{#1}{B} \OR \equal{#1}{q} \OR \equal{#1}{F} \OR \equal{#1}{J}}{}{\@ifnextchar({}{\@ifnextchar[{}{\@ifnextchar\{{}{\@ifnextchar\,{}{\!}}}}}}
-\renewcommand{\vec}[1]{\vecnospacing{#1} \ifthenelse{\equal{#1}{A} \OR \equal{#1}{n} \OR \equal{#1}{m} \OR \equal{#1}{B} \OR \equal{#1}{q} \OR \equal{#1}{F} \OR \equal{#1}{J}}{}{\@ifnextchar({}{\@ifnextchar[{}{\@ifnextchar\{{}{\@ifnextchar\,{}{\!}}}}}}
+% TODO: This does not make all symbols bold (e.g. 'v').
+\newcommand{\mat}[1]{\boldsymbol{#1}}
+\renewcommand{\vec}[1]{\boldsymbol{#1}}
 \makeatother
+\DeclareMathOperator{\Rang}{Rang}
 % Abbreviations.
 \renewcommand{\dh}{d.\,h.~}
 \newcommand{\bzw}{bzw.~}
@@ -60,6 +61,12 @@
 \newcommand{\ggf}{ggf.~}
 \newcommand{\mglw}{mglw.~}
 \newcommand{\vs}{vs.~}
+\newcommand{\DIRKIN}{DIR\,KIN~}
+\newcommand{\INVKIN}{INV\,KIN~}
+\newcommand{\DIRJAC}{DIR\,JAC~}
+\newcommand{\INVJAC}{INV\,JAC~}
+\newcommand{\DIRDYN}{DIR\,DYN~}
+\newcommand{\INVDYN}{INV\,DYN~}
 
 % Quadtree.
 \newcommand{\grayBox}{%
@@ -201,10 +208,10 @@
 
 	\chapter{Räumliche Darstellungen und Transformationen} % S.11
 		\todo{Content}
-
+		
 		\section{Mathematische Grundlagen und Notation} % S.11, 2.1
 			\todo{Content}
-
+			
 			\subsection{Vektoren} % S.11, 2.2, 2.3
 				\todo{Content}
 			% end
@@ -267,143 +274,332 @@
 		% end
 	% end
 
-	\chapter{Roboterkinematik} % S.28
-		\todo{Content}
-
-		\section{Vorwärtskinematik} % S.28
-			\todo{Content}
-
-			\subsection{Kinematische Ketten} % S.28, S.29
-				\todo{Content}
+	\chapter{Roboterkinematik}
+		\section{Vorwärtskinematik}
+			Die Vorwärtskinematik \DIRKIN berechnet die Endeffektor-Position/-Orientierung aus den Gelenkstellungen.
+		
+			\subsection{Kinematische Ketten}
+				Der Roboter wird dabei als \emph{offene kinematische Kette} betrachtet, \dh die
+				\begin{itemize}
+					\item Schub- (mit Ausfahrweite \( d_i \)) und
+					\item Drehgelenke (mit Rotation \( \theta_i \))
+				\end{itemize}
+				als auch die Glieder werden als starr-, massen- sowie schleifenlos betrachtet.
+				
+				Dabei hat jedes Gelenk einen Freiheitsgrad (Degree of Freedom, DOF). Ein Manipulator mit \(n\) Gelenken hat somit \(n\) DOF, wobei
+				\begin{enumerate}
+					\item die Gelenke von \(1\) bis \(n\) nummeriert werden und
+					\item das Gelenk \(i\) die Glieder \(i - 1\) und \(i\) verbindet.
+				\end{enumerate}
+				Es gibt also \(n + 1\) Glieder wobei Glied \(0\) die Basis ist und Glied \(n\) den Endeffektor trägt.
 			% end
 
-			\subsection{Kinematische Modellbildung} % S.30, S.31
-				\todo{Content}
+			\subsection{Kinematische Modellbildung}
+				Mit jedem Glied \(i\) wird am Gelenk \(i + 1\) ein gliedfestes Koordinatensystem \(S_i\) befestigt, wobei zusätzlich das Basiskoordinatensystem \(S_0\) und das Endeffektorkoordinatensystem \(S_n\) definiert wird. Ein Manipulator wird also durch \( n + 1 \) Koordinatensysteme beschrieben.
+				
+				Ziel ist es nun, eine kinematische Modellstruktur
+				\begin{equation*}
+					\inreferenceto{0}{\mat{T}}_n = \inreferenceto{0}{\mat{T}}_1 \cdot \inreferenceto{1}{\mat{T}}_2 \cdots \inreferenceto{n - 2}{\mat{T}}_{n - 1} \cdot \inreferenceto{n - 1}{\mat{T}}_{n} = \prod_{i = 1}^{n} \inreferenceto{i - 1}{\mat{T}}_i
+				\end{equation*}
+				wobei die homogene Transformationsmatrix \( \inreferenceto{0}{\mat{T}}_n = \inreferenceto{0}{\mat{T}}_n(\vec{q}, \vec{f}) \) eine Funktion der verallgemeinerten Gelenkvariablen \( \vec{q} \) (mit \( q_i = \theta_i \) für ein Drehgelenk und \( q_i = d_i \) für ein Schubgelenk) und der geometrischen Parameter \( \vec{f} \) ist.
 			% end
 
-			\subsection{Denavit-Hartenberg (DH) Konventionen} % S.31, S.32, S.33, S.34, S.35
-				\todo{Content}
-
-				\subsubsection{Beispiel: SCARA-Manipulator} % S.36, S.37, S.38
-					\todo{Content}
-				% end
-
-				\subsubsection{Beispiel: 2-DOF-Schub-Drehgelenk-Arm} % S.38, S.39
-					\todo{Content}
+			\subsection{Denavit-Hartenberg (DH) Konventionen}
+				Die Denavit-Hartenberg Konventionen (DH-Konventionen) ist ein internationaler, formaler Standard zur Festlegung der Koordinatensysteme. Einige der Basiseigenschaften von per DH-Konvention festgelegten Koordinatensystemen sind:
+				\begin{itemize}
+					\item Die Koordinatensysteme liegen in den jeweiligen Bewegungsachsen.
+					\item Die \( z_{i - 1} \)-Achse liegt entlang der Bewegungsachse des \(i\)-ten Gelenks.
+					\item Die \(x_i\)-Achse steht senkrecht zur \(z_{i - 1}\)-Achse und zeigt von ihr weg.
+					\item Die \(x_i\)-Achse und die \(z_{i - 1}\)-Achse haben einen Schnittpunkt.
+				\end{itemize}
+			
+				\subsubsection{Pseudo-Algorithmus zur Festlegung der Koordinatensysteme}
+					Voraussetzung: Der Manipulator befindet sich in allen \(n\) Gelenken in Nullstellung (\zB ausgestreckt nach oben).
+					
+					Legt der folgende Algorithmus in einzelnen Schritten nicht eindeutig sein, so ist zuerst die Einhaltung der DH-Eigenschaften zu gewährleisten und ansonsten die Wahl einer Lösung mit möglichst geringer Komplexität der Transformationen zu bevorzugen.
+					
+					\paragraph{Schritt 1}
+						\subparagraph{Schritt 1a}
+						Nummerierung der Glieder von \(0\) (Basis) bis \(n\).
+						
+						\subparagraph{Schritt 1b (für \( i = 0, \cdots, n - 1 \))}
+						Festlegung der \(z_i\)-Achsen als koinzident mit der Bewegungsachse des \( (i + 1) \)-ten Gelenks:
+						\begin{itemize}
+							\item Bei Schubgelenken in Richtung weg von Gelenk \(i + 1\).
+							\item Bei Drehgelenken als Rotationsachse in Richtung positiver Drehwinkel (wird festgelegt).
+						\end{itemize}
+					% end
+					
+					\paragraph{Schritt 2}
+						Festlegung von \(S_0\) mit Ursprung auf der \(z_0\)-Achse, sodass sich ein Rechtskoordinatensystem ergibt (oft werden \(x_0\) und \(y_0\) parallel zum Welt-Koordinatensystem gewählt).
+					% end
+					
+					\paragraph{Schritt 3 (für \( i = 1, \cdots, n - 1 \))}
+						Festlegung des Ursprungs von \(S_i\):
+						\begin{itemize}
+							\item Falls \(z_{i - 1}\) und \(z_i\) sich schneiden: \\ Schnittpunkt wird der Ursprung.
+							\item Falls \(z_{i - 1}\) und \(z_i\) parallel sind: \\ Festlegung auf der \(z_i\)-Achse am Gelenk \(i + 1\).
+							\item Sonst (\(z_{i - 1}\) und \(z_i\) windschief): \\ Bilde eine gemeinsame Normale zu \(z_i\) und \(z_{i - 1}\), Schnittpunkt der Normalen mit \(z_i\) wird der Ursprung.
+						\end{itemize}
+					% end
+					
+					\paragraph{Schritt 4 (für \( i = 1, \cdots, n - 1 \))}
+						Festlegung der \(x_i\)-Achse:
+						\begin{itemize}
+							\item Falls \(z_{i - 1}\) und \(z_i\) sich schneiden: \\ \( x_i = z_{i - 1} \times z_i \) oder \( x_i = z_i \times z_{i - 1} \) (unter Berücksichtigung der DH-Eigenschaften!).
+							\item Sonst (\(z_{i - 1}\) und \(z_i\) parallel oder windschief): \\ \(x_i\)-Achse in Richtung der gemeinsamen Normalen von \(z_{i - 1}\) und \(z_i\), sodass sich \(x_i\) und \(z_{i - 1}\) schneiden.
+						\end{itemize}
+					% end
+					
+					\paragraph{Schritt 5 (für \( i = 1, \cdots, n - 1 \))}
+						Festlegung der \(y_i\)-Achse, sodass \( x_i, y_i, z_i \) ein Rechtskoordinatensystem bilden (\dh \( z_i = x_i \times z_i \), Rechte-Hand-Regel!).
+					% end
+					
+					\paragraph{Schritt 6}
+						Festlegung des Endeffektor-Koordinatensystems \(S_n\): Der Ursprung wird meistens in den Tool-Center-Point (TCP) gelegt.
+						\begin{itemize}
+							\item Liegen keine besonderen Bedingungen vor: \\ Erstellung einer möglichst einfachen Transformation (häufig eine reine Translation).
+							\item Ist der Endeffektor ein einfacher Greifer: \\ Meist eine solche Festlegung, dass Yaw-, Pitch- und Roll-Winkel verwendet werden können.
+						\end{itemize}
+					% end
+					
+					\paragraph{Schritt 7 (für \( i = 1, \cdots, n \))}
+						Erstellen einer Tabelle von Gliedparametern \( \theta_i, d_i, a_i, \alpha_i \):
+						\begin{itemize}
+							\item[\(\theta_i\)] Winkel zwischen \(x_{i - 1}\) und \(x_i\), gemessen um \(z_{i - 1}\). Variabel, falls \(i\) ein Drehgelenk ist.
+							\item[\(d_i\)] Entfernung vom \(S_{i - 1}\)-Ursprung entlang \(z_{i - 1}\) zum Schnittpunkt mit \(x_i\). Variablen, falls \(i\) ein Schubgelenk ist.
+							\item[\(a_i\)] Entfernung vom Schnittpunkt von \(z_{i - 1}\) und \(x_i\) entlang \(x_i\) zum \(S_i\)-Ursprung. Je nach Orientierung von \(x_i\) kann \(a_i\) auch negativ sein.
+							\item[\(\alpha_i\)] Winkel zwischen \( z_{i - 1} \) und \(z_i\), gemessen um \(x_i\).
+						\end{itemize}
+					
+						Kurzschreibweisen:
+						\begin{align*}
+							\theta_i & \coloneqq x_{i - 1} \,\angle_{z_{i - 1}}\, x_i                                     \\
+							d_i      & \coloneqq \big\lvert\, S_{i - 1} \to_{z_{i - 1}} (z_{i - 1} \cap x_i) \,\big\rvert \\
+							a_i      & \coloneqq \big\lvert\, (z_{i - 1} \cap x_i) \to_{x_i} S_i \,\big\rvert                   \\
+							\alpha_i & \coloneqq z_{i - 1} \,\angle_{x_i}\, z_i
+						\end{align*}
+					% end
+					
+					\paragraph{Schritt 8 (für \( i = 1, \cdots, n \))}
+						Bildung der homogenen Transformationsmatrizen:
+						\begin{equation*}
+							\inreferenceto{i - 1}{\mat{T}}_i =
+								\begin{bmatrix}
+									\cos\theta_i & -\sin\theta_i \cos\alpha_i & \sin\theta_i \sin\alpha_i  & a_i \cos\theta_i \\
+									\sin\theta_i & \cos\theta_i \cos\alpha_i  & -\cos\theta_i \sin\alpha_i & a_i \sin\theta_i \\
+									0            & \sin\alpha_i               & \cos\alpha_i               & d_i              \\
+									0            & 0                          & 0                          & 1
+								\end{bmatrix}
+						\end{equation*}
+					% end
+					
+					\paragraph{Schritt 9}
+						Berechnung von
+						\begin{equation*}
+							\inreferenceto{0}{\mat{T}}_n = \inreferenceto{0}{\mat{T}}_1 \cdot \inreferenceto{1}{\mat{T}}_2 \cdots \inreferenceto{n - 2}{\mat{T}}_{n - 1} \cdot \inreferenceto{n - 1}{\mat{T}}_{n} = \prod_{i = 1}^{n} \inreferenceto{i - 1}{\mat{T}}_i
+						\end{equation*}
+					% end
 				% end
 			% end
 		% end
 
-		\section{Rückwärtskinematik (Inverse Kinematik)} % S.40, S.41, S.42
-			\todo{Content}
+		\section{Rückwärtskinematik (Inverse Kinematik)}
+			Die Rückwärtskinematik \INVKIN berechnet die benötigten Gelenkstellungen für eine Endeffektor-Position/-Orientierung.
+			
+			Gegeben einer Endeffektor-Position/-Orientierung \( \inreferenceto{0}{\tilde{\mat{T}}}_E \) ist ein Vektor \( \vec{q} \in \R^n \) gesucht, sodass
+			\begin{equation*}
+				\inreferenceto{0}{\mat{T}}_E(\vec{q}) = \inreferenceto{0}{\tilde{\mat{T}}}_E
+			\end{equation*}
+			gilt. Dies liefert ein System von \(6\) unabhängigen, nichtlinearen, gekoppelten Gleichungen.
+			
+			Allgemein gilt: Wird eine RAN beliebig vorgegeben, so existiert
+			\begin{itemize}
+				\item für \( n < 6 \) Gelenkvariablen \iA keine Lösung (es dürfen maximal \(n\) Werte vorgegeben werden),
+				\item für \( n = 6 \) Gelenkvariablen \iA genau eine Lösung (dies ist der Fall für viele \num{6}-DOF Industrieroboter),
+				\item für \( n > 6 \) Gelenkvariablen \iA unendliche viele Lösungen.
+			\end{itemize}
+		
+			Definition: Der \emph{erreichbare Arbeitsraum} \(\mathcal{A} \subseteq \R^3\) ist der Raum, der von dem Manipulator in mindestens einer Stellung erreicht werden kann.
+			
+			Definition: Der \emph{vollmanipulierbare Arbeitsraum} die ist Teilmenge von \(\mathcal{A}\), die von dem Manipulator mit allen Orientierungen erreicht werden kann.
 
-			\subsection{Numerische Berechnung} % S.43, S.44
-				\todo{Content}
+			\subsection{Numerische Berechnung}
+				Es kann \bspw das klassische Newton-Verfahren zur Lösung nichtlinearer Gleichungssysteme eingesetzt werden (sofern \DIRKIN differenzierbar ist).
+				
+				\textbf{Nachteile:}
+				\begin{itemize}
+					\item Kein iteratives Verfahren kann alle Lösungen garantiert berechnen. Dies wird jedoch oftmals benötigt.
+					\item Iterative Berechnungsverfahren sind wesentliche langsamer als explizite, geschlossene Verfahren. Außerdem sind sie nicht mit den Echtzeitanforderungen vereinbar.
+					\item Das Konvergenzverhalten ist oftmals problematisch.
+				\end{itemize}
 			% end
 
-			\subsection{Analytische Lösung} % S.45, S.46
-				\todo{Content}
-
-				\subsubsection{Beispiel: Ebener SCARA-Manipulator} % S.46, S.47
-					\todo{Content}
+			\subsection{Analytische Lösung}
+				\begin{itemize}
+					\item \textbf{Vorteil:} Es können alle Lösungen in garantierter Berechnungszeit berechnet werden.
+					\item \textbf{Nachteil:} Aufwendig zu bestimmen.
+					\item Dennoch sollten, wenn möglich, explizite Lösungsformeln zumindest für einen Teil gefunden werden.
+				\end{itemize}
+			
+				\subsubsection{Algebraische Ermittlung}
+					Die Rückwärtslösung wird rein durch umformen von Gleichungen gefunden.
+				% end
+				
+				\subsubsection{Geometrische Lösung}
+					Die Rückwärtslösung wird durch geometrische (\bspw trigonometrische) Betrachtung des Roboters ermittelt, wobei das Problem in mehrere Teilprobleme zerlegt werden kann.
+				% end
+				
+				\subsubsection{Algorithmische Ermittlung}
+					\begin{itemize}
+						\item \textbf{Vorteil:} Falls eine Lösungsformel bestimmt werden kann schneller als iterative Verfahren.
+						\item \textbf{Nachteil:} Eine algorithmische Lösung garantiert nicht das finden einer Lösung, auch wenn eine solche existiert.
+					\end{itemize}
 				% end
 			% end
-
-			\subsection{Geometrische Ermittlung der analytischen Lösung} % S.48
-				\todo{Content}
-			% end
-
-			\subsection{Algorithmische Ermittlung der analytischen Lösung} % S.49
-				\todo{Content}
-			% end
 		% end
 
-		\section{Genauigkeit des kinematischen Modells} % S.50
-			\todo{Content}
-		% end
-
-		\section{Modellierung von Roboterbeinen und -armen} % S.51
-			\todo{Content}
-
-			\subsection{Dreigelenkiges Bein eines vierbeinigen Roboters} % S.51
-				\todo{Content}
-			% end
-
-			\subsection{Sechsgelenkiges Bein eines humanoiden Roboters} % S.52, S.53
-				\todo{Content}
-			% end
-
-			\subsection{Arm eines humanoiden Roboters} % S.54
-				\todo{Content}
-			% end
+		\section{Genauigkeit des kinematischen Modells}
+			Es wird zwischen mehreren, unterschiedlichen "Genauigkeiten" unterschieden:
+			\begin{itemize}
+				\item \emph{Positionsgenauigkeit} \\ Die Differenz zwischen tatsächlicher und vorgegebener RAN.
+				\item \emph{Wiederholungsgenauigkeit} \\ Die Variation der Positionsgenauigkeit bei mehrfacher Wiederholung.
+				\item \emph{Auflösungsgenauigkeit} \\ Die kleinstmögliche Distanz, über die der TCP garantiert bewegt werden kann.
+			\end{itemize}
+			Für die meisten Roboter sind Wiederholungsgenauigkeit und Auflösungsgenauigkeit viel besser als die Positionsgenauigkeit (\zB durch Unsicherheiten in den geometrischen Parametern und die Nichtberücksichtigung von Reibung, Spiel, temperaturabhängigen Ausdehnungen, \dots).
 		% end
 	% end
 
-	\chapter{Geschwindigkeit, Jacobi-Matrix und statische Kräfte} % S.55, S.56, S.57, S.58, S.59
-		\todo{Content}
+	\chapter{Geschwindigkeit, Jacobi-Matrix und statische Kräfte}
+		Bisher wurde ausschließlich die Positionen von Gelenken, Gliedern und dem Endeffektor untersucht. In diesem Kapitel werden die Geschwindigkeiten und Beschleunigungen untersucht.
 
-		\section{Schiefsymmetrische Matrizen, Vektoren der Winkelgeschwindigkeiten und -beschleunigungen} % S.60, S.61, S.62
-			\todo{Content}
+		\section{Vektor der Winkelgeschwindigkeiten}
+			Sei \( \mat{R}\big(\!\vec{q}(t)\big) \) eine Rotationsmatrix in impliziter Abhängigkeit von der Zeit. Dann gilt
+			\begin{equation*}
+				\frac{\total}{\total t} \Big(\!\mat{R}\big(\vec{q}(t)\big)\Big) = \mat{B}\big(\!\vec{\omega}(t)\big) \cdot \mat{R}\big(\vec{q}(t)\big)
+			\end{equation*}
+			mit der schiefsymmetrischen Matrix
+			\begin{equation*}
+				\mat{B}(\vec{\omega}) \coloneqq
+					\begin{bmatrix}
+						0         & -\omega_z & \omega_y  \\
+						\omega_z  & 0         & -\omega_x \\
+						-\omega_y & \omega_x  & 0
+					\end{bmatrix}
+			\end{equation*}
+			wobei \( \vec{\omega} = \begin{bmatrix} \omega_x & \omega_y & \omega_z \end{bmatrix}^T \) den Vektor der Winkelgeschwindigkeiten der Rotation darstellt.
+			
+			Über die Beziehung
+			\begin{equation*}
+				\mat{B}\Big(\!\vec{\omega}\big(\vec{q}(t), \dot{\vec{q}}(t)\big)\!\Big) = \Bigg( \sum_{i = 1}^{n} \frac{\partial \mat{R}\big(\vec{q}(t)\big)}{\partial q_i(t)} \cdot \dot{q}_i(t) \!\Bigg) \cdot \mat{R}\big(\vec{q}(t)\big)^T
+			\end{equation*}
+			kann damit die Winkelgeschwindigkeit der Rotation des Endeffektor bestimmt werden (durch Ablesen der Elemente von \(\mat{B}\)).
+		% end
 
-			\subsection{Relative Beschleunigung zwischen \(S_n\) und \(S_0\)} % S.63
-				\todo{Content}
+		\section{Jacobi-Matrix eines Manipulators}
+			\textbf{Achtung:} Die Jacobi-Matrix eines Manipulators darf nicht mit der Jacobi-Matrix einer Funktion mehrerer Veränderlicher verwechselt werden!
+			
+			\subsection{Verkettung von Rotationen}
+				Für verkettete Rotationen
+				\begin{equation*}
+					\inreferenceto{0}{\mat{R}}_n = \inreferenceto{0}{\mat{R}}_1 \cdot \inreferenceto{1}{\mat{R}}_2 \cdots \inreferenceto{n - 2}{\mat{R}}_{n - 1} \cdot \inreferenceto{n - 1}{\mat{R}}_n
+				\end{equation*}
+				gilt
+				\begin{equation*}
+					\frac{\total}{\total t} \Big( \inreferenceto{0}{\mat{R}}_n \Big) = \mat{B}\Big(\inreferenceto{0}{\vec{\omega}}_n\Big) \cdot \inreferenceto{0}{\mat{R}}_n
+				\end{equation*}
+				mit dem Winkelgeschwindigkeitsvektor
+				\begin{equation*}
+					\inreferenceto{0}{\vec{\omega}}_n = \inreferenceto{0}{\vec{\omega}}_1 + \inreferenceto{0}{\mat{R}}_1 \cdot \inreferenceto{1}{\vec{\omega}}_2 + \cdots + \inreferenceto{0}{\mat{R}}_{n - 1} \cdot \inreferenceto{n - 1}{\vec{\omega}}_n
+				\end{equation*}
+			% end
+
+			\subsection{Zusammenfassung}
+				\textbf{Das folgende gilt nur, wenn die Koordinatensysteme entsprechend der DH-Konvention platziert sind!}
+			
+				Für die Jacobi-Matrix \( \inreferenceto{0}{\mat{J}} \) gilt:
+				\begin{equation*}
+					\begin{bmatrix}
+						\inreferenceto{0}{\vec{v}}(t) \\
+						\inreferenceto{0}{\vec{\omega}}(t)
+					\end{bmatrix}
+					=
+					\inreferenceto{0}{\mat{J}}_n\big(\vec{q}(t)\big) \cdot \dot{\vec{q}}(t)
+				\end{equation*}
+				mit der Lineargeschwindigkeit \( \inreferenceto{0}{\vec{v}}(t) \) und Winkelgeschwindigkeit \( \inreferenceto{0}{\vec{\omega}}(t) \) des Endeffektors in Bezug auf das Basiskoordinatensystem.
+				
+				Die \(i\)-te Spalte \( \inreferenceto{0}{\vec{J}}_{n, i} \) der Manipulator-Jacobi-Matrix berechnet sich wie folgt. Ist Gelenk \(i\) ein
+				\begin{itemize}
+					\item Drehgelenk:
+				\end{itemize}
+				\begin{equation*}
+					\inreferenceto{0}{\vec{J}}_{n, i} =
+						\begin{bmatrix}
+							\inreferenceto{0}{\vec{e}}_{z_{i - 1}} \times \big(\! \inreferenceto{0}{\vec{r}}_n - \inreferenceto{0}{\vec{r}}_{i - 1} \big) \\
+							\inreferenceto{0}{\vec{e}}_{z_{i - 1}}
+						\end{bmatrix}
+				\end{equation*}
+				\begin{itemize}
+					\item Schubgelenk:
+				\end{itemize}
+				\begin{equation*}
+					\inreferenceto{0}{\vec{J}}_{n, i} =
+						\begin{bmatrix}
+							\inreferenceto{0}{\vec{e}}_{z_{i - 1}} \\
+							\vec{0}
+						\end{bmatrix}
+				\end{equation*}
+				Somit kann die Jacobi-Matrix direkt aus \DIRKIN berechnet werden.
+				
+				Anmerkung: Oft kann es (insbesondere bei der linearen Geschwindigkeit eines Drehgelenks) einfacher sein, \( \inreferenceto{0}{\vec{r}}_n \) direkt nach den Gelenkvariablen abzuleiten.
 			% end
 		% end
 
-		\section{Jacobi-Matrix eines Manipulators} % S.64
-			\todo{Content}
+		\section{Inverses Jacobi-Modell}
+			Das inverse Jacobi-Modell (\INVKIN) berechnet die benötigten Gelenkgeschwindigkeiten für eine Endeffektor-Geschwindigkeit.
 
-			\subsection{Addition von Winkelgeschwindigkeiten} % S.64, S.65
-				\todo{Content}
-			% end
+			Gegeben einer Linear- und Winkelgeschwindigkeit \( \inreferenceto{0}{\vec{v}}_n \), \( \inreferenceto{0}{\vec{\omega}}_n \) ist ein Vektor \( \dot{\vec{q}} \) gesucht, sodass
+			\begin{equation*}
+				\begin{bmatrix}
+					\inreferenceto{0}{\vec{v}}_n \\
+					\inreferenceto{0}{\vec{\omega}}_n
+				\end{bmatrix}
+				=
+				\inreferenceto{0}{\mat{J}}_n \cdot \dot{\vec{q}}
+			\end{equation*}
+			gilt. Dies liefert ein System von \(6\) unabhängigen, nichtlinearen, gekoppelten Gleichungen.
 
-			\subsection{Herleitung} % S.66
-				\todo{Content}
-
-				\subsubsection{Drehwinkelgeschwindigkeit} % S.67, S.68
-					\todo{Content}
-				% end
-
-				\subsubsection{Lineare Geschwindigkeit} % S.69, S.70, S.71
-					\todo{Content}
-				% end
-
-				\subsubsection{Zusammenfassung} % S.72
-					\todo{Content}
-				% end
-			% end
-
-			\subsection{Beispiel: Ebener SCARA-Manipulator} % S.73, S.74
-				\todo{Content}
-			% end
+			Allgemein gilt: Werden Geschwindigkeiten \( \inreferenceto{0}{\vec{v}}_n \), \( \inreferenceto{0}{\vec{\omega}}_n \) beliebig vorgegeben, so existiert
+			\begin{itemize}
+				\item für \( n < 6 \) Gelenkvariablen \iA keine Lösung (es dürfen maximal \(n\) Werte vorgegeben werden),
+				\item für \( n = 6 \) Gelenkvariablen \iA genau eine Lösung (dies ist der Fall für viele \num{6}-DOF Industrieroboter),
+				\item für \( n > 6 \) Gelenkvariablen \iA unendliche viele Lösungen.
+			\end{itemize}
+			Für solche "redundanten" Manipulatoren können die üblichen Freiheitsgrade \zB durch Hinzunahme von kinematischen Zwangsbedingungen oder durch die Maximierung eines Gütekriteriums, \zB des Manipulierbarkeitsmaßes nach Yoshikawa
+			\begin{equation*}
+				\mu(\vec{q}) = \sqrt{\det \big( \inreferenceto{0}{\mat{J}}_n \cdot \inreferenceto{0}{\mat{J}}_n^T \big)}
+			\end{equation*}
+			festgelegt werden.
 		% end
 
-		\section{Inverses Jacobi-Modell} % S.75
-			\todo{Content}
-
-			\subsection{Geschwindigkeitssteuerung} % S.75, S.76, S.77
-				\todo{Content}
-
-				\subsubsection{Beispiel: SCARA-Manipulator} % S.77, S.78, S.79
-					\todo{Content}
-				% end
-			% end
-		% end
-
-		\section{Kinematische Singularitäten} % S.79, S.80, S.83
-			\todo{Content}
-
-			\subsection{Beispiel: SCARA-Manipulator} % S.80, S.81
-				\todo{Content}
-			% end
-
-			\subsection{Beispiel: Typischer Industrieroboter mit 6 Drehgelenken} % S.81, S.82
-				\todo{Content}
-			% end
-
-			\subsection{Weitere Beispiele} % S.82
-				\todo{Content}
-			% end
+		\section{Kinematische Singularitäten}
+			Sei
+			\begin{equation*}
+				m \coloneqq \max_{\vec{q} \in \mathcal{A}} \> \Rang\big(\inreferenceto{0}{\mat{J}}_n(\vec{q})\big)
+			\end{equation*}
+			der maximale Rang der Jacobi-Matrix. Dann heißt jede Konfiguration \(\vec{q}_s\) mit
+			\begin{equation*}
+				\Rang\big(\inreferenceto{0}{\mat{J}}_n(\vec{q}_s)\big) < m
+			\end{equation*}
+			\emph{kinematische Singularität}.
+			
+			Bei einer solchen Singularität ist die Jacobi-Matrix singulär und es müssten unendliche hohe Geschwindigkeiten erreicht werden (ebenso nehmen die Geschwindigkeit bei der Annäherung an eine solche Singularität \iA zu).
+			
+			Zur Berechnung der kinematischen Singularitäten (\zB um diese bei der Bahnplanung zu vermeiden), ist folgendes vorgehen möglich: Zunächst wird die Jacobi-Matrix auf eine \( (m \times m) \)-Untermatrix \( \inreferenceto{0}{\hat{\mat{J}}}_n(\vec{q}) \) mit \( m = \Rang\big(\inreferenceto{0}{\hat{\mat{J}}}_n(\vec{q})\big) \) eingeschränkt. Dann ist eine Konfiguration \(\vec{q}_s\) genau dann singulär, wenn
+			\begin{equation*}
+				\det \inreferenceto{0}{\hat{\mat{J}}}_n(\vec{q}_s) = 0
+			\end{equation*}
+			gilt, \dh die singulären Konfigurationen können durch Nullsetzen der Determinante der eingeschränkten Jacobi-Matrix gefunden werden.
 
 			\subsection{Vermeidung} % S.82, S.83
 				\todo{Content}
@@ -443,55 +639,196 @@
 		% end
 	% end
 
-	\chapter{Roboterdynamik} % S.93, S.94, S.95
-		\todo{Content}
+	\chapter{Roboterdynamik}
+		Bisher wurden keine (statischen) Kräfte, sondern nur Positionen und Geschwindigkeiten betrachtet. Die inverse Dynamik/Kinetik \INVDYN berechnet für gegebene Kräfte (\zB die Gravitation) die Kräfte/Momente, die die Gelenke aufbringen müssen.
+		
+		Seien \( \tau_i \) die verallgemeinerten Kräfte/Drehmomente wobei
+		\begin{itemize}
+			\item \( \tau_i = n_i \) für ein Drehgelenk (Drehmoment) und
+			\item \( \tau_i = f_i \) für ein Schubgelenk (Kraft) gilt.
+		\end{itemize}
 
-		\section{Massenverteilung eines Starrkörpers} % S.96, S.97, S.98
-			\todo{Content}
+		\section{Massenverteilung eines Starrkörpers}
+			Die Massenverteilung eines Starrkörpers wird durch den symmetrischen Trägheitstensor
+			\begin{equation*}
+				\inreferenceto{a}{\mat{I}} \in \R^{3 \times 3} =
+					\begin{bmatrix}
+						\inreferenceto{a}{I}_{xx}  & -\inreferenceto{a}{I}_{xy} & -\inreferenceto{a}{I}_{xz} \\
+						-\inreferenceto{a}{I}_{xy} & \inreferenceto{a}{I}_{yy}  & -\inreferenceto{a}{I}_{yz} \\
+						-\inreferenceto{a}{I}_{xz} & -\inreferenceto{a}{I}_{yz} & \inreferenceto{a}{I}_{zz}
+					\end{bmatrix}
+			\end{equation*}
+			bezüglich eines körperfesten Koordinatensystems \(S_a\) beschrieben. Die Elemente der Hauptdiagonale heißen dabei \emph{Massenträgheitsmomente} und die restlichen \emph{Massenträgheitsprodukte}, die sich wie folgt berechnen (mit dem Volumen \(\mathcal{V}\), einem differentiellen Volumenelement \( \text{d}v \) und der Materialdichte \( \rho(x, y, z) \)):
+			\begin{align*}
+				\inreferenceto{a}{I}_{xx} &= \iiint_{\mathcal{V}} \! \big(y^2 + z^2\big) \,\rho(x, y, z) \dif{v} & \inreferenceto{a}{I}_{xy} &= \iiint_{\mathcal{V}} \! xy \,\rho(x, y, z) \dif{v} \\
+				\inreferenceto{a}{I}_{yy} &= \iiint_{\mathcal{V}} \! \big(x^2 + z^2\big) \,\rho(x, y, z) \dif{v} & \inreferenceto{a}{I}_{xz} &= \iiint_{\mathcal{V}} \! xz \,\rho(x, y, z) \dif{v} \\
+				\inreferenceto{a}{I}_{zz} &= \iiint_{\mathcal{V}} \! \big(x^2 + y^2\big) \,\rho(x, y, z) \dif{v} & \inreferenceto{a}{I}_{yz} &= \iiint_{\mathcal{V}} \! yz \,\rho(x, y, z) \dif{v}
+			\end{align*}
+			
+			Sind \(x_a\), \(y_a\) und \(z_a\) die Hauptträgheitsachsen, so verschwinden die die Massenträgheitsprodukte. Dies ist zum Beispiel der Fall, wenn die Achsen paarweise Symmetrieebenen des Körpers bilden (bilden zwei Achsen eine Symmetrieebene, so verschwinden die Trägheitsprodukte der dritten Achse).
+			
+			\subsection{Transformation von Trägheitstensoren}
+				\paragraph{(Reine) Rotation des Bezugssystems}
+				Ist das System \(S_b\) um \(\inreferenceto{a}{\mat{R}}_b\) zu \(S_a\) rotiert, so gilt:
+				\begin{equation*}
+					\inreferenceto{b}{\mat{I}} = \inreferenceto{b}{\mat{R}}_a \cdot \inreferenceto{a}{\mat{I}} \cdot \inreferenceto{a}{\mat{R}}_b
+				\end{equation*}
+				
+				\paragraph{Translation des Bezugssystems (Satz von Steiner)}
+				Liegt \(S_c\) im \emph{Schwerpunkt} des Körpers und das System \(S_b\) ist um \(\inreferenceto{c}{\vec{r}_b}\) zu \(S_c\) verschoben, aber nicht rotiert, so gilt:
+				\begin{equation*}
+					\inreferenceto{b}{\mat{I}} = \inreferenceto{c}{\mat{I}} + m \cdot \big( \inreferenceto{c}{\vec{r}}_b^T \cdot \inreferenceto{c}{\vec{r}}_b \cdot \mat{E} - \inreferenceto{c}{\vec{r}}_b \cdot \inreferenceto{c}{\vec{r}}_b^T \big)
+				\end{equation*}
+				
+				\paragraph{Zusammenfügen von Körpern}
+				Werden die Trägheitstensoren \( \mat{I}_1 \) und \( \mat{I}_2 \) von zwei Körpern, die verbunden werden, im gleichen Koordinatensystem dargestellt, so ergibt sich der Gesamtträgheitstensor des zusammengefügten Körpers:
+				\begin{equation*}
+					\mat{I} = \mat{I}_1 + \mat{I}_2
+				\end{equation*}
+			% end
 		% end
 
 		\section{Newton-Euler Formulierung der Roboterdynamik} % S.99, S.100, S.110, S.118, S.119
-			\todo{Content}
+			Seien für jedes Roboterglied \(i\) die folgenden Daten gegeben:
+			\begin{itemize}
+				\item Der Koordinatenvektor des Schwerpunkts
+					\begin{itemize}
+						\item bezüglich \(S_i\) als \( \inreferenceto{i}{\vec{r}}_{c_i} \),
+						\item bezüglich \(S_0\) als \( \inreferenceto{0}{\vec{r}}_{c_i} \) und
+						\item bezüglich \(S_{i - 1}\) als \( \inreferenceto{i - 1}{\vec{r}}_{c_i} \).
+					\end{itemize}
+				\item Die Gesamtmasse \(m_i\).
+				\item Der Trägheitstensor \( \inreferenceto{c_i}{\mat{I}}_i \) bezüglich \( S_{c_i} \).
+			\end{itemize}
+			Dabei sei \( S_{c_i} \) das Schwerpunktkoordinatensystem von Glied \(i\) mit der gleichen Orientierung wie \( S_i \).
+			
+			Weitere Notationen:
+			\begin{itemize}
+				\item \( \vec{\omega}_i \coloneqq \inreferenceto{i}{\mat{R}}_0 \cdot \inreferenceto{0}{\vec{\omega}}_i \) \\
+						Winkelgeschwindigkeit des \(i\)-ten Gelenks, gemessen in \(S_0\) und dargestellt in \(S_i\).
+				\item \( \dot{\vec{\omega}}_i \coloneqq \inreferenceto{i}{\mat{R}}_0 \cdot \inreferenceto{0}{\dot{\vec{\omega}}}_i \) \\
+						Winkelbeschleunigung des \(\)-ten Gelenks, gemessen in \(S_0\) und dargestellt in \(S_i\).
+				\item \( \vec{v}_i \coloneqq \inreferenceto{i}{\mat{R}}_0 \cdot \inreferenceto{0}{\vec{v}}_i \) \\
+						Linearer Geschwindigkeitsvektor des \(i\)-ten Glieds an Gelenk \(i + 1\), gemessen in \(S_0\) und dargestellt in \(S_i\).
+				\item \( \vec{\dot{v}}_i \coloneqq \inreferenceto{i}{\mat{R}}_0 \cdot \inreferenceto{0}{\dot{\vec{v}}}_i \) \\
+						Linearer Beschleunigungsvektor des \(i\)-ten Glieds an Gelenk \(i + 1\), gemessen in \(S_0\) und dargestellt in \(S_i\).
+			\end{itemize}
 
-			\subsection{Iterative Berechnung von INV DYN} % S.101, S.102, S.103, S.104, S.105, S.106, S.107, S.108, S.109
-				\todo{Content}
+			\subsection{Iterative Berechnung von INV\,DYN}
+				Für die Basis werden die Werte \( \vec{\omega}_0 \), \( \dot{\vec{\omega}}_0 \), \( \vec{v}_0 \) und \( \vec{\dot{v}}_0 \) vorgegeben (\zB \( \vec{\dot{v}}_0 = \vec{g} \) mit dem Gravitationsvektor \(\vec{g}\)). Des weiteren werden die Werte \( \vec{f}_{n + 1} \) und \( \vec{n}_{n + 1} \) für den Endeffektor vorgegeben (eine am Endeffektor sorgt dabei nicht für die Änderung dieser Werte, sondern für eine Änderung der Masse \(m_n\)).
+				
+				Sei außerdem
+				\begin{equation*}
+					\rho_i \coloneqq
+						\begin{cases*}
+							1 & falls \(i\) Drehgelenk \\
+							0 & falls \(i\) Schubgelenk
+						\end{cases*}
+				\end{equation*}
+				
+				\paragraph{Schritt NE.1 (für \( n = 1, \cdots, n \))}
+					Berechnung der Linear- und Winkelbeschleunigungen (von innen nach außen).
+					\begin{align*}
+						\vec{\omega}_i &= \inreferenceto{i}{\mat{R}}_{i - 1} \Big( \vec{\omega}_{i - 1} + \rho_i \big[ \inreferenceto{i - 1}{\vec{e}}_{z_{i - 1}} \dot{q}_i \big] \Big) \\
+						\dot{\vec{\omega}}_i &= \inreferenceto{i}{\mat{R}}_{i - 1} \Bigg( \dot{\vec{\omega}}_{i - 1} + \rho_i \bigg[ \inreferenceto{i - 1}{\vec{e}}_{z_{i - 1}} \ddot{q}_i + \vec{\omega}_{i - 1} \times \Big( \inreferenceto{i - 1}{\vec{e}}_{z_{i - 1}} \dot{q}_i \Big) \bigg] \Bigg) \\
+						\vec{v}_i &= \inreferenceto{i}{\mat{R}}_{i - 1} \vec{v}_{i - 1} + \vec{\omega}_i \times \Big( \inreferenceto{i}{\mat{R}}_{i - 1} \inreferenceto{i - 1}{\vec{r}}_i \Big) + (1 - \rho_i) \big[ \inreferenceto{i}{\vec{e}}_{z_{i - 1}} \dot{q}_i \big] \\
+						\vec{\dot{v}}_i &= \inreferenceto{i}{\mat{R}}_{i - 1} \vec{\dot{v}}_{i - 1} + \dot{\vec{\omega}}_i \times \big( \inreferenceto{i}{\mat{R}}_{i - 1} \inreferenceto{i - 1}{\vec{r}}_i \big) + \vec{\omega}_i \times \Big( \vec{\omega}_i \times \big( \inreferenceto{i}{\mat{R}}_{i - 1} \inreferenceto{i - 1}{\vec{r}}_i \big) \Big) + (1 - \rho_i) \, \Big[ 2\vec{\omega}_i \times \big( \inreferenceto{i}{\vec{e}}_{z_{i - 1}} \dot{q}_i \big) + \inreferenceto{i}{\vec{e}}_{z_{i - 1}} \ddot{q}_i \Big] \\
+						\vec{\dot{v}}_{c_i} &= \vec{\dot{v}}_i + \big(\dot{\vec{\omega}}_i \times \inreferenceto{i}{\vec{r}}_{c_i}\big) + \vec{\omega}_i \times \big( \vec{\omega}_i \times \inreferenceto{i}{\vec{r}}_{c_i} \big)
+					\end{align*}
+				% end
+				
+				\paragraph{Schritt NE.2 (für \( i = 1, \cdots, n \))}
+					Berechnung der am Schwerpunkt wirkenden Kräfte \( \vec{F}_i \) und Drehmomente \( \vec{N}_i \). Dieser Schritt kann auch in Schritt NE.1 integriert werden.
+					\begin{align*}
+						\vec{F}_i &=
+							\begin{cases*}
+								m_i \vec{\dot{v}}_{c_i} - m_i \vec{g}_i & falls der Einfluss der Gravitation im Schritt NE.2 berücksichtigt wird \\
+								m_i \vec{\dot{v}}_{c_i}                 & falls der Einfluss der Gravitation im Anfangswert \( \vec{\dot{v}}_0 = -\vec{g} \) berücksichtigt wird
+							\end{cases*} \\
+						\vec{N}_i &= \inreferenceto{c_i}{\mat{I}}_i \dot{\vec{\omega}}_i + \vec{\omega}_i \times \big( \inreferenceto{c_i}{\mat{I}}_i \vec{\omega}_i \big)
+					\end{align*}
+				% end
+				
+				\paragraph{Schritt NE.3 (für \( i = n, \cdots, 1 \))}
+					Berechnung der Kräfte und Drehmomente \( \tau_i \) am Gelenk jedes Roboterglieds (von außen nach innen).
+					\begin{align*}
+						\vec{f}_i &= \inreferenceto{i}{\mat{R}}_{i + 1} \vec{f}_{i + 1} + \vec{F}_i \\
+						\vec{n}_i &= \inreferenceto{i}{\mat{R}}_{i + 1} \vec{n}_{i + 1} + \big( \inreferenceto{i}{\mat{R}}_{i - 1} \inreferenceto{i - 1}{\vec{r}}_i + \inreferenceto{i}{\vec{r}}_{c_i} \big) \times \vec{F}_i + \big( \inreferenceto{i}{\mat{R}}_{i - 1} \inreferenceto{i - 1}{\vec{r}}_i \big) \times \big( \inreferenceto{i}{\mat{R}}_{i + 1} \vec{f}_{i + 1} \big) + \vec{N}_i \\
+						\tau_i &=
+							\begin{cases*}
+								\big( \inreferenceto{i}{\vec{e}}_{z_{i - 1}} \big)^T \vec{n}_i & falls \(i\) Drehgelenk \\
+								\big( \inreferenceto{i}{\vec{e}}_{z_{i - 1}} \big)^T \vec{f}_i & falls \(i\) Schubgelenk
+							\end{cases*}
+					\end{align*}
+				% end
 			% end
-
-			\subsection{Zusammenfassung} % S.109, S.110
-				\todo{Content}
-			% end
-
-			\subsection{Beispiel: SCARA-Manipulator} % S.111, S.112, S.113, S.114, S.115, S.116, S.117
-				\todo{Content}
+			
+			\subsection{Bemerkungen und DIR\,DYN}
+				Die inverse Dynamik \INVDYN kann immer in der Form
+				\begin{equation*}
+					\vec{\tau} = \mat{M}(\vec{q}\!)\, \ddot{\vec{q}} + \vec{C}(\vec{q}, \dot{\vec{q}}\!) + \vec{G}(\vec{q}\!)
+				\end{equation*}
+				mit der symmetrischen, positiv definiten Massenmatrix \( \mat{\vec{q}\!} \in \R^{n \times n} \), dem Vektor der Zentrifugal- und Coriolisanteile \( \vec{C}(\vec{q}, \dot{\vec{q}}\!) \) und dem Vektor der Gravitationsanteile \( \vec{G}(\vec{q}\!) \).
+				
+				Die direkte Dynamik \DIRDYN kann in Abhängigkeit von den Antriebsmomenten und -kräften \(\vec{\tau}\) formuliert werden
+				\begin{equation*}
+					\ddot{\vec{q}} = \mat{M}(\vec{q}\!)^{-1} \big( \vec{\tau} - \vec{C}(\vec{q}, \dot{\vec{q}}\!) - \vec{G}(\vec{q}\!) \big)
+				\end{equation*}
+				wobei die inverse der Massenmatrix in der Praxis nie direkt ausgerechnet, sondern stattdessen das lineare Gleichungssystem \( \mat{M} \ddot{\vec{q}} = \cdots \) gelöst wird.
 			% end
 		% end
 
-		\section{Lagrangesche Formulierung der Roboterdynamik} % S.120
-			\todo{Content}
-
-			\subsection{Kinetische und potentielle Energie, Lagrangefunktion} % S.120, S.122
-				\todo{Content}
-
-				\subsubsection{Kinetische Energie} % S.120
-					\todo{Content}
-				% end
-
-				\subsubsection{Potentielle Energie} % S.121
-					\todo{Content}
-				% end
-
-				\subsubsection{Lagrangefunktion} % S.121, S.122
-					\todo{Content}
-				% end
+		\section{Lagrangesche Formulierung der Roboterdynamik}
+			Die Lagrangesche Formulierung der Dynamik liefert am Ende die gleichen Bewegungsgleichungen, funktioniert aber grundlegend anders (Energie-basiert).
+			
+			\paragraph{Kinetische Energie}
+				Die kinetische Energie des \(i\)-ten Gliedes lautet:
+				\begin{equation*}
+					K_i(\vec{q}, \dot{\vec{q}}) = \frac{1}{2}\, \dot{\vec{q}}^T \Big( m_i \inreferenceto{0}{\mat{J}}_{c_i, v}^T \inreferenceto{0}{\mat{J}}_{c_i, v} + \inreferenceto{0}{\mat{J}}_{i, \omega}^T \inreferenceto{c_i}{\mat{I}}_i \inreferenceto{0}{\mat{J}}_{i, \omega} \Big)\, \dot{\vec{q}}
+				\end{equation*}
+				
+				Damit lautet die gesamte kinetische Energie des Manipulators:
+				\begin{align*}
+					K(\vec{q}, \dot{\vec{q}}) &= \sum_{i = 1}^{n} K_i(\vec{q}, \dot{\vec{q}}) \\
+						&= \frac{1}{2} \, \dot{\vec{q}}^T \Bigg( \sum_{i = 1}^{n} \underbrace{\Big( m_i \inreferenceto{0}{\mat{J}}_{c_i, v}^T \inreferenceto{0}{\mat{J}}_{c_i, v} + \inreferenceto{0}{\mat{J}}_{i, \omega}^T \inreferenceto{c_i}{\mat{I}}_i \inreferenceto{0}{\mat{J}}_{i, \omega} \Big)}_{\mat{M}(\vec{q}) \coloneqq} \! \Bigg)\, \dot{\vec{q}} \\
+						&= \frac{1}{2} \, \dot{\vec{q}}^T \mat{M}(\vec{q}\!)\, \dot{\vec{q}}
+				\end{align*}
+				Wobei \( \mat{M}(\vec{q}) \) Massenmatrix darstellt.
 			% end
-
-			\subsection{Beispiel: SCARA-Manipulator} % S.123, S.124, S.125, S.126, S.127, S.128, S.129
-				\todo{Content}
+			
+			\paragraph{Potentielle Energie}
+				Die potentielle Energie des \(i\)-ten Gliedes lautet
+				\begin{equation*}
+					P_i = -m_i \vec{g}^T \inreferenceto{0}{\vec{r}}_{c_i} + P_{\text{Ref}, i}
+				\end{equation*}
+				mit dem Gravitationsvektor \( \vec{g} \) und einer Konstante \( P_{\text{Ref}, i} \), die im späteren Verlauf der Ableitungen wieder verschwindet.
+				
+				Damit lautet die gesamte potentielle Energie des Manipulators:
+				\begin{equation*}
+					P(\vec{q}\!) = \sum_{i = 1}^{n} P_i
+				\end{equation*}
+			% end
+			
+			\paragraph{Lagrangefunktion und Lagrange-Gleichungen}
+				Die Lagrangefunktion ist definiert als:
+				\begin{equation*}
+					\mathcal{L}(\vec{q}, \dot{\vec{q}}\!) = K(\vec{q}, \dot{\vec{q}}\!) - P(\vec{q}\!)
+				\end{equation*}
+				
+				Nach dem Prinzip der kleinsten Wirkung (Hamiltonsches Prinzip) bewegt der Manipulator sich dann entsprechend der \(n\) Bewegungsgleichungen
+				\begin{equation*}
+					\frac{\total}{\total t} \frac{\partial \mathcal{L}}{\partial \dot{q}_i} - \frac{\partial \mathcal{L}}{\partial q_i} = \tau_i,\quad i = 1, \cdots, n
+				\end{equation*}
+				welche, werden sie symbolisch ausgerechnet, das inverse Dynamikmodell von der Form
+				\begin{equation*}
+					\vec{\tau} = \mat{M}(\vec{q}\!)\, \ddot{\vec{q}} + \vec{C}(\vec{q}, \dot{\vec{q}}\!) + \vec{G}(\vec{q}\!)
+				\end{equation*}
+				liefert.
 			% end
 		% end
 
-		\section{Numerische Aspekte} % S.130
-			\todo{Content}
+		\section{Numerische Aspekte}
+			Die Newton-Euler-Formulierung hat, wenn sie numerisch implementiert wird, deutlich weniger Rechenoperationen als die Lagrangesche Formulierung. Wird die inverse Dynamik jedoch symbolisch "von Hand" ausgerechnet, so ist die Lagrangesche Formulierung geeigneter.
 
 			\subsection{Modularität} % S.130
 				\todo{Content}
@@ -2641,7 +2978,7 @@
 						\node [draw, rectangle, below = 1 of a, minimum width = 1cm, minimum height = 1cm] (ES) {\( \mat{E} - \mat{S} \)};
 						\node [draw, rectangle, left = 1 of S, minimum width = 4cm] (positionControl) {Positionsregelung};
 						\node [draw, rectangle, left = 1 of ES, minimum width = 4cm] (forceControl) {Kraftregelung};
-						\node [left = 1 of positionControl] (b) {\( \prescript{0}{}{\matnospacing{T}\!}_{n, d} \) \\ \( \prescript{0}{}{\dot{\matnospacing{T}\!}}_{n, d} \) \\ \( \prescript{0}{}{\ddot{\matnospacing{T}\!}}_{n, d} \)};
+						\node [left = 1 of positionControl] (b) {\( \prescript{0}{}{\mat{T}\!}_{n, d} \) \\ \( \prescript{0}{}{\dot{\mat{T}\!}}_{n, d} \) \\ \( \prescript{0}{}{\ddot{\mat{T}\!}}_{n, d} \)};
 						\node [left = 1 of forceControl] (c) {\( \vec{n}_d \) \\ \( \vec{f}_d \)};
 						\node [left = 5 of a] (constraints) {Constraints};
 						
@@ -2665,7 +3002,7 @@
 						\draw (C) -| node[right]{\( \prescript{0}{}{\mat{T}}_n \)} (A) -| (positionControl.north);
 						\draw (D) -| node[right]{\( \vec{n} \), \( \vec{f} \)} (B) -| (forceControl.south);
 					\end{tikzpicture}
-					\caption{Blockschaltbild eines verallgemeinerten hybriden Bahn-/Kraft-Reglers mit den Sollwerten \( \prescript{0}{}{\matnospacing{T}}\!_{n, d} \), \( \prescript{0}{}{\dot{\matnospacing{T}\!}}_{n, d} \), \( \prescript{0}{}{\ddot{\matnospacing{T}\!}}_{n, d} \), \( \vecnospacing{n}_d \) und \( \vecnospacing{f}\!_d \).}
+					\caption{Blockschaltbild eines verallgemeinerten hybriden Bahn-/Kraft-Reglers mit den Sollwerten \( \prescript{0}{}{\mat{T}}\!_{n, d} \), \( \prescript{0}{}{\dot{\mat{T}\!}}_{n, d} \), \( \prescript{0}{}{\ddot{\mat{T}\!}}_{n, d} \), \( \vec{n}_d \) und \( \vec{f}\!_d \).}
 					\label{fig:hybrid_control}
 				\end{figure}
 			% end

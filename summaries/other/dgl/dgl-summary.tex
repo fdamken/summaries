@@ -1,0 +1,506 @@
+\documentclass[a4paper, 11pt, accentcolor = tud3b]{tudreport}
+
+% Core packages.
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+% Other packages.
+\usepackage[german, ruled, vlined, linesnumbered]{algorithm2e}
+\usepackage{amsthm}
+\usepackage{caption}
+\usepackage{csquotes}
+\usepackage{enumitem}
+\usepackage[mathcal]{euscript} % Get readable mathcal font.
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{mathtools}
+\usepackage{siunitx}
+\usepackage{qtree}
+\usepackage{stmaryrd}
+\usepackage{tabto}
+\usepackage{tikz}
+\usepackage[disable]{todonotes}
+\usetikzlibrary{arrows.meta, shapes, backgrounds, angles, calc, decorations.markings}
+
+% Basic information.
+\title{Gewöhnliche Differentialgleichungen}
+\subtitle{Zusammenfassung \\ Fabian Damken}
+\author{Fabian Damken}
+\date{\today}
+
+% Description-list styling.
+\SetLabelAlign{parright}{\parbox[t]{\labelwidth}{\raggedleft#1}}
+\setlist[description]{style = multiline, leftmargin = 4cm, align = parright}
+
+\tikzset{> = { Latex[length = 2.5mm] }}
+\tikzstyle{every path} = [ very thick ]
+
+\MakeOuterQuote{"}
+
+% Definitions, Theorems and Lemmata.
+\newtheorem{theorem}{Satz}[chapter]
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{lemma}[theorem]{Lemma}
+
+% New commands.
+\DeclareMathOperator{\total}{d}
+\DeclareMathOperator{\Rang}{Rang}
+\DeclareMathOperator{\const}{const}
+\DeclareMathOperator{\sign}{sign}
+\newcommand{\dif}[1]{\,\total#1}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\qef}{\hfill \( \square \)}
+% Matrix/Vector notation.
+\makeatletter
+% TODO: This does not make all symbols bold (e.g. 'v').
+\newcommand{\mat}[1]{\boldsymbol{#1}}
+% TODO: This adds crazy symbols for symbols that cannot be drawn bold (e.g. \dot{v} becomes \underline{v}).
+\renewcommand{\vec}[1]{\boldsymbol{\mathbf{#1}}}
+\makeatother
+% Abbreviations.
+
+% https://tex.stackexchange.com/a/333383
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+	\hskip -\arraycolsep
+	\let\@ifnextchar\new@ifnextchar
+	\array{#1}}
+\makeatother
+
+\begin{document}
+	\maketitle
+	\tableofcontents
+	\listoftodos
+
+	\chapter{Allgemeine Grundlagen}
+		Eine \emph{gewöhnliche Differentialgleichung} ist eine Gleichung der Gestalt
+		\begin{equation*}
+			y'(t) = f\big(t, y(t)\big)
+		\end{equation*}
+		oder allgemeiner
+		\begin{equation*}
+			y^{(n)}(t) = f\big(t, y(t), y'(t), \cdots, y^{(n - 1)}(t)\big)
+		\end{equation*}
+		Eine "ungewöhnliche" (\emph{partielle}) hängt, im Gegensatz zu den gewöhnlichen von mehr als einer Variablen (im Beispiel \(t\)) ab.
+
+		\section{Beispiele}
+			Diese Zusammenfassung enthält an vielen Stellen keine Beispiele. Diese sind im Skript der Veranstaltung ausreichend zu finden.
+		% end
+
+		\section{Typen gewöhnlicher Differentialgleichungen}
+			\subsection{Definition einer Differentialgleichung} % 6, 8
+				\begin{definition}[Explizite gewöhnliche DGL erster Ordnung]
+					Sei \( G \subseteq \R \times \R^n \) und \( f : G \to \R^n \). Dann heißt
+					\begin{equation}
+						y' = f(x, y)  \label{eqn:ode_definition}
+					\end{equation}
+					eine \emph{explizite gewöhnliche Differentialgleichung erster Ordnung}. Eine \emph{Lösung} von~\ref{eqn:ode_definition} ist eine differenzierbare Funktion \( \varphi : I \to \R^n \) auf einem Intervall \( I \subseteq \R \) mit
+					\begin{align*}
+						                     & \big(x, \varphi(x)\big) \in G                                        \\
+						\quad\text{und}\quad & \varphi'(x) = f\big(x, \varphi(x)\big) \quad\text{für alle } x \in I
+					\end{align*}
+				\end{definition}
+			
+				\begin{definition}[Explizite gewöhnliche DGL höherer Ordnung]
+					Seien \( n, N > 1 \), \( F \subseteq \R \times \big(\R^N\big)^n \) und \( f : G \to \R^N \). Dann heißt
+					\begin{equation}
+						y^{(n)} = f\big(x, y, y', \cdots, y^{(n - 1)}\big)  \label{eqn:higher_order_ode_definition}
+					\end{equation}
+					eine \emph{explizite gewöhnliche Differentialgleichung \(n\)-ter Ordnung}. Eine \emph{Lösung} von~\ref{eqn:higher_order_ode_definition} ist eine \(n\)-mail differenzierbare Funktion \( \varphi : I \to \R^N \) auf einem Intervall \( I \subseteq \R \) mit
+					\begin{align*}
+						                & \big(x, \varphi(x), \varphi'(x), \cdots, \varphi^{(n - 1)}(x)\big) \in G                                         \\
+						\text{und}\quad & \varphi^{(n)}(x) = f\big(x, \varphi(x), \varphi'(x), \cdots, \varphi^{(n - 1)}(x)\big) \quad\text{für alle } x \in I
+					\end{align*}
+				\end{definition}
+			
+				Oftmals werden die Komponenten \( y_1, \cdots, y_n \) von \(y\) getrennt betrachtet, wodurch aus \( y' = f(x, y) \) ein \emph{System von Differentialgleichungen erster Ordnung}
+				\begin{align*}
+					y_1' &= f_1(x, y_1, \cdots, y_n) \\
+					& \ddots \\
+					y_n' &= f_n(x, y_1, \cdots, y_n)
+				\end{align*}
+				entsteht.
+				
+				Eine \emph{implizite Differentialgleichung} hat die Gestalt
+				\begin{equation*}
+					F(x, y, y') = 0
+				\end{equation*}
+				mit einer Funktion \( F \) auf einer Teilmenge von \( \R \times \R^n \times \R^n \). Die Lösung solcher Differentialgleichungen ist im Allgemeinen schwerer als die Lösung von expliziten Differentialgleichungen.
+			% end
+
+			\subsection{Richtungsfelder}
+				Für \( n = 1 \) kann die Funktion \( f : G \to \R \) geometrisch als \emph{Richtungsfeld} interpretiert werden, indem jedem Punkt \( (x, y) \in G \) die Richtung des Geschwindigkeitsvektors \( \big(1, f(x, y)\big) \) zugeordnet wird und diese Richtungen in einer Ebene eingezeichnet werden.
+				
+				Daraus ist es möglich, eine Lösung zu erahnen und eine berechnete Lösung auf Plausibilität zu prüfen.
+			% end
+
+			\subsection{Zurückführen auf Differentialgleichungen erster Ordnung}
+				Jede Differentialgleichung \(n\)-ter Ordnung kann auf ein System von Differentialgleichungen erster Ordnung zurückgeführt werden. Sei hierzu die Differentialgleichung
+				\begin{equation}
+					y^{(n)} = f\big(x, y, y', \cdots, y^{(n  - 1)}\big) \quad\text{mit}\quad f : \R \times \big(\R^N\big)^n \supseteq G \to \R^N  \label{eqn:reduce_higher_oder_ode}
+				\end{equation}
+				gegeben. Dann kann~\ref{eqn:reduce_higher_oder_ode} mit \( y = (y_1, \cdots, y_n) \coloneqq \big(y, y', \cdots, y^{(n - 1)}\big) \) und
+				\begin{equation*}
+					F(x, y) \coloneqq
+						\begin{bmatrix}
+							y_2 \\
+							y_3 \\
+							\vdots \\
+							y_n \\
+							f\big(x, y_1, y_2, \cdots, y_n\big)
+						\end{bmatrix}
+				\end{equation*}
+				auf ein System erster Ordnung
+				\begin{equation}
+					y = F(x, y)  \label{eqn:reduce_ode_system}
+				\end{equation}
+				zurückgeführt werden.
+				
+				Ist \( \varphi : I \to \R^N \) eine Lösung von~\ref{eqn:reduce_higher_oder_ode}, so ist
+				\begin{equation*}
+					\Phi : I \to \big(\R^N\big)^n : x \mapsto
+						\begin{bmatrix}
+							\varphi(x) \\
+							\varphi'(x) \\
+							\vdots \\
+							\varphi^{(n - 1)}(x)
+						\end{bmatrix}
+				\end{equation*}
+				eine Lösung von~\ref{eqn:reduce_ode_system}. Ist umgekehrt \( \Phi : I \to \big(\R^N\big)^n \) eine Lösung von~\ref{eqn:reduce_ode_system}, so ist \( \varphi \coloneqq \Phi_1 : I \to \R^N \) eine Lösung von~\ref{eqn:reduce_higher_oder_ode}.
+			% end
+
+			\subsection{Zurückführen auf eine Integralgleichung}
+				Sei \( f \) stetig, so folgt aus \( \varphi'(x) = f\big(x, \varphi(x)\big) \), dass
+				\begin{equation}
+					\varphi(x) = \varphi(x_0) + \int_{x_0}^{x} \! f\big(\tau, \varphi(\tau)\big) \dif{\tau}  \label{eqn:integral_equation}
+				\end{equation}
+				Hierbei tritt \(\varphi\) auf beiden Seiten der Gleichung auf, sodass diese \emph{Integralgleichung} nicht direkt gelöst werden kann. Genügt andererseits die stetige Funktion \( \varphi : I \to \R^n \) der Integralgleichung~\ref{eqn:integral_equation}, so ist \( \varphi \) auch eine Lösung der Differentialgleichung~\ref{eqn:ode_definition}. Somit sind alle stetigen Lösungen von~\ref{eqn:integral_equation} genau die differenzierbaren Lösungen von~\ref{eqn:ode_definition}.
+			% end
+		% end
+
+		\section{Existenz und Eindeutigkeit von Lösungen}
+			\subsection{Lipschitzbedingung}
+				\begin{definition}
+					Sei \( G \subseteq \R \times \R^n \) offen und \( f : G \to \R^n \) stetig. Dann:
+					\begin{enumerate}
+						\item Genügt \(f\) einer Lipschitzbedingung auf \(G\) mit der Lipschitzkonstanten \(L\), wenn
+					\end{enumerate}
+					\begin{equation*}
+						\lVert f(x, y) - f(x, \tilde{y}) \rVert_2 \leq L \lVert y - \tilde{y} \rVert_2 \quad\text{für alle } (x, y), (x, \tilde{y}) \in G
+					\end{equation*}
+					\begin{enumerate}
+						\setcounter{enumi}{1}
+						\item Genügt \(f\) einer lokalen Lipschitzbedingung auf \(G\), wenn jeder Punkt in \(G\) eine offene Umgebung \( U \subseteq G \) besitzt, sodass \( f\vert_U \) auf \(U\) einer Lipschitzbedingung genügt.
+					\end{enumerate}
+				\end{definition}
+			
+				Die Funktion \(f\) genügt also einer Lipschitzbedingung, wenn \( y \mapsto f(x, y) \) Lipschitz-stetig ist und \(L\) unabhängig von \(x\) ist.
+				
+				\begin{theorem}
+					Sei \( G \subseteq \R \times \R^n \) offen und \( f : G \to \R^n \), \( (x, y) \mapsto f(x, y) \) eine stetige Funktion, die in \(y\) stetig partielle differenzierbar ist. Dann genügt \(f\) in \(G\) einer lokalen Lipschitzbedingung.
+				\end{theorem}
+			% end
+
+			\subsection{Eindeutigkeitssatz}
+				\begin{theorem}[Eindeutigkeitssatz]
+					Sei \( G \subseteq \R \times \R^n \) offen und \( f : G \to \R^n \) eine stetige Funktion, die in \(G\) einer lokalen Lipschitzbedingung genügt. Sind \( \varphi, \psi : I \to \R^n \) Lösungen der Differentialgleichung \( y' = f(x, y) \), die in einem Punkt des Intervalls übereinstimmen, so gilt \( \varphi(x) = \psi(x) \) für alle \( x \in I \).
+				\end{theorem}
+			% end
+
+			\subsection{Existenz- und Eindeutigkeitssatz von Picard-Lindelöff sowie Picard-Iteration}
+				\begin{theorem}[Existenz- und Eindeutigkeitssatz von Picard-Lindelöff]
+					Seien \( (x_0, y_0) \in \R \times \R^n \), \( r, R \in (0, \infty) \) und
+					\begin{equation*}
+						G \coloneqq \big\{\, (x, y) \in \R \times \R^n \,:\, \lvert x - x_0 \rvert \leq r,\, \lVert y - y_0 \rVert_2 \leq R \,\big\}
+					\end{equation*}
+					Weiter sei \( f : G \to \R^n \) stetig und es seien \( M, L \geq 0 \), sodass
+					\begin{equation*}
+						\lVert (x, y) \rVert_2 \leq M \quad\text{und}\quad \lvert f(x, y) - f(x, \tilde{y}) \rVert_2 \leq L \lVert y - \tilde{y} \rVert_2
+					\end{equation*}
+					für alle Punkte \( (x, y), (x, \tilde{y}) \in G \) gilt. Seien außerdem \( \varepsilon \coloneqq \min \big\{\, r,\, R/M \,\} \) und \( I \coloneqq [x_0 - \varepsilon,\, x_0 + \varepsilon] \).
+					
+					Dann gilt:
+					\begin{enumerate}
+						\item Auf \(I\) existiert eine eindeutige Lösung \(\varphi\) der Differentialgleichung \( y' = f(x, y) \) mit Anfangswert \( y(x_0) = y_0 \).
+						\item \emph{Picard-Iteration}: Diese Lösung lässt sich wie folgt berechnen. Die durch
+					\end{enumerate}
+					\begin{equation*}
+						\varphi_{k + 1} : I \to \R^n,\quad \varphi_{k + 1}(x) \coloneqq y_0 + \int_{x_0}^{x} \! f\big(\tau, \varphi_k(\tau)\big) \dif{\tau}
+					\end{equation*}
+					\begin{enumerate}
+						\setcounter{enumi}{2}
+						\item[] rekursiv definierte Funktion mit Anfangswert \( \varphi_0 : I \to \R^n : x \mapsto y_0 \) konvergiert auf \(I\) gleichmäßig gegen die Lösung \(\varphi\).
+						\item Es gilt die Fehlerabschätzung
+					\end{enumerate}
+					\begin{equation*}
+						\lVert \varphi - \varphi_n \rVert_\infty \leq \frac{(\varepsilon L)^n}{n!} e^{L \varepsilon} \lVert \varphi_1 - \varphi_0 \rVert_\infty
+					\end{equation*}
+				\end{theorem}
+			% end
+
+			\subsection{Fixpunktsatz von Banach-Weissinger}
+				\begin{theorem}[Fixpunktsatz von Banach-Weissinger]
+					Sei \( \big(X, \lVert \cdot \rVert\big) \) ein Banachraum und \(U\) eine nichtleere abgeschlossene Teilmenge von \(X\). Weiter seien \( a_n \geq 0 \) Zahlen, sodass die Reihe \( \sum_{n = 1}^{\infty} a_n \) konvergiert und \( A : U \to U \) eine Abbildung mit
+					\begin{equation*}
+						\lVert\, A^n u - A^n v \rVert \leq a_n \lVert u - v \rVert \quad\text{für alle } u, v \in U \text{ und alle } n \geq 1
+					\end{equation*}
+					Dann besitzt \(A\) genau einen Fixpunkt \( u \in U \). Dieser Fixpunkt ist der Grenzwert der Iterationsfolge \( \big(A^n u_9\big)_{n \geq 1} \), wobei der Startvektor \( v_0 \in U \) beliebig gewählt ist. Außerdem gilt die Fehlerabschätzung
+					\begin{equation*}
+						\lVert u - u_n \rVert \leq \lVert u_1 - u_0 \rVert \cdot \sum_{r = n}^{\infty} a_r \quad\text{mit } u_n \coloneqq A^n u_0
+					\end{equation*}
+					
+					\label{theorem:banach_weissinger_fixed_point_theorem}
+				\end{theorem}
+			
+				Ist \(A\) eine Kontraktion (d.\,h.~ es gibt ein \( \lambda < 1 \), mit \( \lVert\, Au - Av \rVert \leq \lambda \lVert u - v \rVert \) für alle \( u, v \in U \)), so ist
+				\begin{equation*}
+					\lVert\, A^2 u - A^2 v \rVert \leq \lambda \lVert\, Au - Av \rVert \leq \lambda^2 \lVert u - v \rVert
+				\end{equation*}
+				das heißt es kann \( a_1 = \lambda \), \( a_2 = \lambda^2 \) und allgemein \( a_n = \lambda^n \) gewählt werden. Da die Reihe \( \sum_{n = 1}^{\infty} \lambda^n \) konvergiert, ist der Banachsche Fixpunktsatz ein Spezialfall von Satz~\ref{theorem:banach_weissinger_fixed_point_theorem}.
+			% end
+
+			\subsection{Lokaler Existenzsatz von Picard-Lindelöff}
+				\begin{theorem}[Lokaler Existenzsatz von Picard-Lindelöff]
+					Sei \( G \subseteq \R \times \R^n \) offen und \( f : G \to \R^n \) eine stetige Funktion, die in \(G\) einer lokalen Lipschitzbedingung genügt. Dann gibt es zu jedem Punkt \( (x_0, y_0) \in G \) ein \( \varepsilon > 0 \), sodass die Differentialgleichung \( y' = f(x, y) \) mit der Anfangsbedingung \( y(x_0) = y_0 \) auf dem Intervall \( I = [x_0 - \varepsilon,\, x_0 + \varepsilon] \) eine eindeutig bestimmte Lösung \( \varphi : I \to \R^n \) hat.
+				\end{theorem}
+			% end
+
+			\subsection{Globaler Existenz- und Eindeutigkeitssatz}
+				\begin{definition}[Maximale Lösungen]
+					Eine Lösung \( \varphi : I \to \R^n \) der Differentialgleichung \( y' = f(x, y) \) auf der Menge \(G\) mit der Anfangsbedingung \( \varphi(x_0) = y_0 \) heißt \emph{maximal}, wenn \(I\) ein offenes Intervall ist und für alle anderen Lösungen \( \psi : J \to \R^n \) mit \( \psi(x_0) = y_0 \) auf einem offenen Intervall \( J \subseteq \R \) die Beziehung \( J \subseteq I \) gilt.
+				\end{definition}
+			
+				\begin{theorem}[Globaler Existenz- und Eindeutigkeitssatz]
+					Sei \( G \subseteq \R \times \R^n \) offen und \( f : G \to \R^n \) eine stetige Funktion, die in \(G\) einer lokalen Lipschitzbedingung genügt. Dann existiert zu jedem Punkt \( (x_0, y_0) \in G \) genau eine maximale Lösung \( \varphi : I \to \R^n \) der Differentialgleichung \( y' = f(x, y) \) mit \( \varphi(x_0) = y_0 \).
+				\end{theorem}
+			% end
+
+			\subsection{Existenz- und Eindeutigkeitssatz höherer Ordnung}
+				\begin{theorem}[Existenz- und Eindeutigkeitssatz höherer Ordnung]
+					Sei \( G \subseteq \R \times \big(\R^N\big)^n \) offen und \( f : G \to \R^N \) eine stetige Funktion, die in \(G\) einer lokalen Lipschitzbedingung genügt. Sind \( \varphi, \psi : I \to \R^N \) Lösungen der Differentialgleichung
+					\begin{equation}
+						y^{(n)} = f\big(x, y, y', \cdots, y^{(n - 1)}\big)  \label{eqn:existence_unique_higher_order}
+					\end{equation}
+					und gilt \( \varphi^{(k)}(a) = \psi^{(k)}(a) \) für einen Punkt \( a \in I \) und alle \( k \in \{\, 0, 1, \cdots, n - 1 \,\} \), so ist \( \varphi = \psi \).
+					
+					Ist umgekehrt ein Punkt \( (a, c_0, c_1, \cdots, c_{n - 1}) \in G \) gegeben, so existiert ein \( \varepsilon > 0 \) und genau eine Lösung \( \varphi : [a - \varepsilon,\, a + \varepsilon] \to \R^N \) der Differentialgleichung~\ref{eqn:existence_unique_higher_order} mit
+					\begin{equation*}
+						\varphi(a) = c_0,\quad \varphi'(a) = c_1,\quad \cdots,\quad \varphi^{(n - 1)}(a) = c_{n - 1}
+					\end{equation*}
+				\end{theorem}
+			
+				Dieser Satz geht direkt aus der Reduktion einer Differentialgleichung höherer Ordnung auf ein System erster Ordnung hervor.
+			% end
+
+			\subsection{Lokaler Existenzsatz von Peano}
+				\begin{theorem}[Lokaler Existenzsatz von Peano]
+					Sei \( G \subseteq \R \times \R^n \) offen und \( f : G \to \R^n \) eine stetige Funktion. Dann existiert zu jedem \( (x_0, y_0) \in G \) ein \( \varepsilon > 0 \) und eine Lösung \( \varphi : [x_0 - \varepsilon,\, x_0 + \varepsilon] \to \R^n \) der Differentialgleichung \( y' = f(x, y) \) mit \( \varphi(x_0) = y_0 \).
+				\end{theorem}
+			
+				Es reicht für die Existenz einer Lösung auf einer Umgebung des Anfangswerts also sogar bereits aus, wenn \(f\) stetig ist. Jedoch kann hier keine Aussage über die Eindeutigkeit getroffen werden und diese ist auch nicht immer gegeben.
+			% end
+		% end
+	% end
+
+	\chapter{Elementare Lösungsmethoden} % 21
+		\todo{Content}
+
+		\section{Differentialgleichungen mit getrennte Veränderliche} % 21
+			\todo{Content}
+		% end
+
+		\section{Lineare Differentialgleichung erster Ordnung} % 23
+			\todo{Content}
+
+			\subsection{Homogener Fall} % 23, 24
+				\todo{Content}
+			% end
+
+			\subsection{Inhomogener Fall} % 24, 25, 26
+				\todo{Content}
+			% end
+		% end
+
+		\section{Die Differentialgleichung \( y' = f(y / x) \)} % 26, 27
+			\todo{Content}
+		% end
+
+		\section{Die Differentialgleichung \( y'' = f(y) \)} % 27, 28, 29
+			\todo{Content}
+		% end
+	% end
+
+	\chapter{Lineare Differentialgleichungen} % 30
+		\todo{Content}
+
+		\section{Lineare Differentialgleichungen erster Ordnung} % 30
+			\todo{Content}
+		% end
+
+		\section{Die homogene lineare Differentialgleichung} % 31, 32
+			\todo{Content}
+
+			\subsection{Lösungsfundamentalsystem} % 32, 33
+				\todo{Content}
+			% end
+		% end
+
+		\section{Die inhomogene lineare Differentialgleichung} % 34
+			\todo{Content}
+
+			\subsection{Variation der Konstanten} % 34, 35
+				\todo{Content}
+			% end
+		% end
+
+		\section{Lineare Differentialgleichungen \(n\)-ter Ordnung} % 36, 37
+			\todo{Content}
+
+			\subsection{Ordnungsreduktion} % 37, 38
+				\todo{Content}
+			% end
+		% end
+	% end
+
+	\chapter{Lineare Differentialgleichungen mit konstanten Koeffizienten} % 39
+		\todo{Content}
+
+		\section{Die Exponentialfunktion für Matrizen} % 39, 40
+			\todo{Content}
+
+			\subsection{Diagonalmatrizen} % 40
+				\todo{Content}
+			% end
+
+			\subsection{Nebendiagonal-Einheitsmatrizen} % 41
+				\todo{Content}
+			% end
+
+			\subsection{Blockdiagonalmatrizen} % 41
+				\todo{Content}
+			% end
+
+			\subsection{Jordanblöcke} % 41, 42
+				\todo{Content}
+			% end
+
+			\subsection{Andere} % 42
+				\todo{Content}
+			% end
+		% end
+
+		\section{Systeme linearer Differentialgleichungen mit konstanten Koeffizienten} % 42
+			\todo{Content}
+
+			\subsection{Eigenschaften der Exponentialfunktion für Matrizen} % 42, 43
+				\todo{Content}
+			% end
+
+			\subsection{Homogener Fall} % 43
+				\todo{Content}
+			% end
+
+			\subsection{Inhomogener Fall} % 44
+				\todo{Content}
+			% end
+
+			\subsection{Phasenportäts} % 44
+				\todo{Content}
+
+				\subsubsection{Fall 1: Zwei relle Eigenwerte} % 44, 45, 46
+					\todo{Content}
+				% end
+
+				\subsubsection{Fall 2: Komplexe Eigenwerte} % 46, 47
+					\todo{Content}
+				% end
+
+				\subsubsection{Fall 3: Ein doppelter, reller Eigenwert} % 47, 48
+					\todo{Content}
+				% end
+			% end
+		% end
+
+		\section{Stabilitätstheorie autonomer Gleichungen} % 48, 49
+			\todo{Content}
+
+			\subsection{Stationäre Lösungen} % 49, 50, 51, 52
+				\todo{Content}
+			% end
+
+			\subsection{Lemma von Gronwall} % 52, 53
+				\todo{Content}
+			% end
+
+			\subsection{Linearisierung, (In-) Stabilitätssatz} % 53, 54
+				\todo{Content}
+			% end
+
+			\subsection{Prinzip der linearisierten Stabilität} % 56, 57
+				\todo{Content}
+			% end
+		% end
+
+		\section{Lyapunov-Stabilität} % 57, 58, 59, 60, 61
+			\todo{Content}
+
+			\subsection{Periodische Systeme} % 61, 62
+				\todo{Content}
+			% end
+		% end
+
+		\section{Lineare Differentialgleichungen höherer Ordnung mit konstanten Koeffizienten} % 63
+			\todo{Content}
+
+			\subsection{Polynome von Differentialoperatoren} % 63, 64, 65
+				\todo{Content}
+			% end
+
+			\subsection{Homogener Fall} % 66, 67, 68, 69, 70
+				\todo{Content}
+			% end
+
+			\subsection{Inhomogener Fall} % 70, 71
+				\todo{Content}
+
+				\subsubsection{1. Weg: Variation der Konstanten} % 71, 72, 73
+					\todo{Content}
+				% end
+
+				\subsubsection{2. Weg: Spezielle Ansätze bei speziellen rechten Seiten} % 73, 74, 75, 76, 77
+					\todo{Content}
+				% end
+			% end
+
+			\subsection{Eulersche Differentialgleichung} % 77, 78
+				\todo{Content}
+			% end
+		% end
+	% end
+
+	\chapter{Potenzreihenansatz und spezielle Funktionen} % 79
+		\todo{Content}
+
+		\section{Potenzreihenansatz} % 79, 80, 81, 82
+			\todo{Content}
+		% end
+
+		\section{Einige spezielle Differentialgleichungen} % 82
+			\todo{Content}
+
+			\subsection{Die Hermitesche Differentialgleichung} % 82, 83
+				\todo{Content}
+			% end
+
+			\subsection{Die Legendresche Differentialgleichung} % 83, 84
+				\todo{Content}
+			% end
+
+			\subsection{Die Besselsche Differentialgleichung} % 85, 86, 87, 88
+				\todo{Content}
+			% end
+		% end
+	% end
+\end{document}

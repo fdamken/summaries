@@ -315,16 +315,19 @@ Fertig/Strukturiert/Gesamt: 0/1218/1218: 0%/100%/100%
     - Balkendiagramm (1D) {11.68}
     - Liniendiagramm (Zeitreihe) {11.67, 11.68, 11.69}
         + placeholder; subsubsection
-            * Problem: Viele Zeitreihen {11.70, 11.71}
-            * Problem: Länge {11.72}
+            * placeholder; subsubsection
+                - Problem: Viele Zeitreihen {11.70, 11.71}
+                - Problem: Länge {11.72}
     - Scatterplot (2D, 3D) {11.74, 11.75}
         + placeholder; subsubsection
-            * Problem: Overplotting {11.76}
+            * placeholder; subsubsection
+                - Problem: Overplotting {11.76}
     - Scatterplotmatrix (nD) {11.79, 11.80, 11.81}
     - Parallele Koordinaten (3D, nD) {11.82, 11.83, 11.84, 11.85, 11.86, 11.87, 11.88}
         + placeholder; subsubsection
-            * Problem: Overplotting {11.89}
-            * Problem: Viele Dimensionen {11.90}
+            * placeholder; subsubsection
+                - Problem: Overplotting {11.89}
+                - Problem: Viele Dimensionen {11.90}
     - Node-Link-Diagramm (Hierarchien, Graphen) {11.92, 11.156}
         + placeholder; subsection
             * placeholder; subsubsection

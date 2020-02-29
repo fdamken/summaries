@@ -47,6 +47,7 @@
 \DeclareMathOperator{\Rang}{Rang}
 \DeclareMathOperator{\const}{const}
 \DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\sinc}{sinc}
 \newcommand{\dif}[1]{\,\total#1}
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\R}{\mathbb{R}}
@@ -750,110 +751,340 @@
 		% end
 	% end
 
-	\chapter{Fouriertheorie} % 4.1, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 4.10, 4.11
-		\todo{Content}
+	\chapter{Fouriertheorie}
+		Bei der Beugung an einem einfachen Spalt der breite \(a\) ergibt sich auf dem Schirm ein Beugungsmuster, welches im Zentrum ein Intensitätsmaximum und nach außen hin immer wieder Intensitätsminima und -maxima hat. Der Spalt kann durch eine Rechteckfunktion
+		\begin{equation*}
+			\text{Rect}(x) =
+				\begin{cases}
+					1 & -1 \leq x \leq 1 \\
+					0 & \text{sonst}
+				\end{cases}
+		\end{equation*}
+		beschrieben werden. Das sich ergebende Beugungsmuster, \bzw die zeitlich gemittelte Intensität \(I\), hat dann die Form
+		\begin{equation*}
+			I(\theta) = I_0 \, \Bigg( \frac{\sin(\theta)}{\theta} \Bigg)^2 = I_0 \cdot \sinc^2(\theta)
+		\end{equation*}
+		mit der \(\sinc\)-Funktion \( \sinc(\theta) = \sin(\theta) / \theta \). Dabei stellt \(\theta\) den Ausfallwinkel des Lichts aus dem Spalt hinaus dar.
+		
+		Dieser Zusammenhang zwischen der Gestalt des beugenden Objekts (hier der Spalt) und der Amplitudenfunktion \( I(\theta) \) ist durch eine \emph{Fourier-Transformation} gegeben.
 
-		\section{Mathematische Grundlagen} % 4.12
-			\todo{Content}
-
-			\subsection{Vektorraum} % 4.13, 4.14
-				\todo{Content}
+		\section{Mathematische Grundlagen}
+			\subsection{Vektorraum}
+				Ein \emph{Vektorraum} ist eine algebraische Struktur über einen Zahlenbereich mit Operationen wie Addition und Multiplikationen mit einem Skalar. Alle Operationen müssen dabei Elemente des Vektorraums wieder auf selbigen abbilden. Die Elemente eines solchen Raums sind \emph{Vektoren}.
+				
+				\subparagraph{Beispiel}
+					Ein Beispiel ist er euklidische Vektorraum über den reellen Zahlen. Dabei repräsentieren Vektoren Verschiebungen und es lassen sich Längen und Winkel messen (rechtwinkliges, kartesisches Koordinatensystem). Es ist außerdem ein Skalarprodukt definiert:
+					\begin{gather*}
+						\langle \vec{v}, \vec{w} \rangle = \sum_{i = 1}^{n} v_i w_i \in \R \\
+						\langle \vec{v}, \vec{w} \rangle = v_1 w_2 + v_2 w_2 = \lVert \vec{v} \rVert \cdot \lVert \vec{w} \rVert \cos \big( \angle(\vec{v}, \vec{w}) \big)
+					\end{gather*}
+					Die letztere Eigenschaft gilt nur für \( n = 2 \) (\iA lassen sich solche Winkel aber auch mit beliebigem \(n\) definieren). In der euklidischen Ebene \( \R^2 \) lassen sich Vektoren durch Ortsvektoren (Pfeile) darstellen.
+				% end
 			% end
 
-			\subsection{Basis eines Vektorraums} % 4.15
-				\todo{Content}
+			\subsection{Basis eines Vektorraums}
+				Jeder Satz (Menge) an linear unabhängigen Vektoren eines Vektorraums kann als Basis verwendet werden. Zwei Vektoren \(\vec{v}\), \(\vec{w}\) sind genau dann linear unabhängig, wenn \( \big\lvert \langle \vec{v}, \vec{w} \rangle \big\rvert < \lVert \vec{v} \rVert \cdot \lVert \vec{w} \rVert \) gilt.
+			
+				\subparagraph{Beispiel}
+					In der euklidischen Ebene \( \R^2 \) ist eine Basis durch
+					\begin{equation*}
+						\vec{e}_1 = \begin{bmatrix} 1 \\ 0 \end{bmatrix} \quad\quad \vec{e}_2 = \begin{bmatrix} 0 & 1 \end{bmatrix}
+					\end{equation*}
+					gegeben, wobei \(\vec{e}_1\) und \(\vec{e}_2\) orthogonal aufeinander stehen (\( \langle \vec{v}, \vec{w} \rangle = 0 \)) und somit linear unabhängig sind. Alle \( \vec{v} \in \R^2 \) lassen sich dann als \emph{Linearkombination} der Basisvektoren darstellen (mit geeigneten \( a_1, a_2 \in \R \)):
+					\begin{equation*}
+						\vec{v} = a_1 \vec{e}_1 + a_2 \vec{e}_2
+					\end{equation*}
+				% end
 			% end
 
-			\subsection{Krummlinige Koordinatensysteme} % 4.16, 4.17
-				\todo{Content}
+			\subsection{Krummlinige Koordinatensysteme}
+				Gerade in physikalischen Anwendungen kann es von Vorteil sein, keine kartesischen Koordinaten (mit \(x\)- und \(y\)-Wert) zu nutzen, sondern auf \emph{krummlinige Koordinaten} umzusteigen. Ein typisches krummliniges Koordinatensystem sind \zB Polarkoordinaten. Dabei wird ein Punkt in der Ebene durch den Abstand \(r\) vom Ursprung und durch den Winkel \(\varphi\) mit der \(x\)-Achse beschrieben. Die Koordinaten lassen sich durch
+				\begin{align*}
+					x(r, \varphi) &= r \cdot \cos(\varphi) \\
+					y(r, \varphi) &= r \cdot \sin(\varphi)
+				\end{align*}
+				in kartesische Koordinaten umrechnen.
+				
+				Weitere krummlinige Koordinatensysteme sind \zB Kugel- oder Zylinderkoordinaten.
 			% end
 
-			\subsection{Andere Räume} % 4.18
-				\todo{Content}
+			\subsection{Andere Räume}
+				Es ist auch möglich, dass die Elemente eines Vektorraums Funktionen sind (Funktionenräume). Auch kann ein Raum unendlich-dimensional sein.
+				
+				Die \emph{Fourier-Theorie} beschäftigt sich mit der Frage, ob es möglich ist, Basisfunktionen zu finden, mit denen sich beliebige Funktionen \bzgl dieser Basen darstellen lassen.
 			% end
 
 			\subsection{Komplexe Zahlen} % 4.20, 4.48
-				\todo{Content}
+				Komplexe Zahlen haben zwei Komponenten: Einen Real- und einen Imaginärteil. Dabei können sie als kartesische Koordinaten in einer zwei-dimensionalen Ebene (der komplexen Ebene) aufgefasst werden und entsprechen dargestellt werden (mit der imaginären Zahl \( i \) mit der Eigenschaft \( i^2 = -1 \)):
+				\begin{equation*}
+					z = a + bi
+				\end{equation*}
+				Oder als Polarkoordinaten (in einer zwei-dimensionalen Ebene) mit der Darstellung
+				\begin{equation*}
+					z = r e^{\varphi i}
+				\end{equation*}
+				wobei sich kartesische und Polardarstellung wie bei Polarkoordinaten ineinander umrechnen lassen.
+				
+				Die Äquivalenz der beiden Darstellung geht auf die Euler-Identität
+				\begin{equation*}
+					e^{i \varphi} = \cos(\varphi) + i \sin(\varphi)
+				\end{equation*}
+				zurück, wobei hier \( r = 1 \) gilt. Aus aus dieser folgt (für \( \lvert z \rvert = 1 \)) ebenfalls:
+				\begin{align}
+					a = \cos(\varphi) &= \frac{1}{2} \big( e^{i \varphi} + e^{-i \varphi} \big) \\
+					b = \sin(\varphi) &= \frac{1}{2i} \big( e^{i \varphi} - e^{-i \varphi} \big)
+				\end{align}
 			% end
 
-			\subsection{Gerade/Ungerade Funktionen} % 4.41
-				\todo{Content}
-			% end
-		% end
-
-		\section{Fourier-Reihe} % 4.19, 4.21
-			\todo{Content}
-
-			\subsection{Dirichlet-Bedingungen} % 4.22
-				\todo{Content}
-			% end
-
-			\subsection{\(2\pi\)-periodische Funktion} % 4.23
-				\todo{Content}
-			% end
-
-			\subsection{Skalarprodukt, Orthogonale Basis} % 4.24, 4.25, 4.26, 4.27, 4.28
-				\todo{Content}
-			% end
-
-			\subsection{Berechnung der Koeffizienten \(a_n\), \(b_n\)} % 4.29, 4.30, 4.31
-				\todo{Content}
-			% end
-
-			\subsection{Beispiel: Rechteck-Schwingung} % 4.32, 4.33, 4.34, 4.35, 4.36, 4.37, 4.38, 4.39, 4.40
-				\todo{Content}
-			% end
-		% end
-
-		\section{Fourier-Transformation} % 4.46, 4.47
-			\todo{Content}
-
-			\subsection{Mathematische Herleitung} % 4.49, 4.50, 4.51, 4.52
-				\todo{Content}
-			% end
-
-			\subsection{Zusammenfassung} % 4.53
-				\todo{Content}
-			% end
-
-			\subsection{Beispiel: Rechteckimpuls} % 4.54, 4.55
-				\todo{Content}
-			% end
-
-			\subsection{Fourier-Darstellung} % 4.56
-				\todo{Content}
-			% end
-
-			\subsection{Transformationspaare} % 4.57, 4.58, 4.59
-				\todo{Content}
+			\subsection{Gerade/Ungerade Funktionen}
+				Für eine gerade Funktion gilt
+				\begin{equation*}
+					f(x) = f(-x)
+				\end{equation*}
+				für eine ungerade Funktion gilt
+				\begin{equation*}
+					f(x) = -f(-x)
+				\end{equation*}
+				für jeweils alle \(x\).
 			% end
 		% end
 
-		\section{2D-Fourier-Transformation} % 5.56, 5.57, 5.58, 5.59, 5.60, 5.61
-			\todo{Content}
+		\section{Fourier-Reihe}
+			\subsection{Dirichlet-Bedingungen}
+				Jede Funktion, die die \emph{Dirichlet-Bedingungen} erfüllt:
+				\begin{enumerate}
+					\item Die Anzahl Unstetigkeiten innerhalb einer Periode ist endlich.
+					\item Die Anzahl Maxima und Minima innerhalb einer Periode ist endlich.
+					\item Die Funktion ist in jeder Periode integrierbar (\dh die Fläche unter dem Betrag der Funktion ist endlich).
+				\end{enumerate}
+				Kann durch eine Summe von Kosinus- und Sinusfunktionen dargestellt werden.
+			% end
+
+			\subsection{\(2\pi\)-periodische Funktion}
+				Ist \( f(x) \) eine periodische Funktion mit der Periodenlänge \( 2\pi \) (\dh die wiederholt sich alle \(2\pi\)), die die Dirichlet-Bedingungen erfüllt, so gilt
+				\begin{equation*}
+					f(x) = \sum_{n = 0}^{\infty} \big( a_n \cos(nx) + b_n \sin(nx) \big)
+				\end{equation*}
+				mit geeigneten \emph{Fourier-Koeffizienten} \( a_n \) und \( b_n \).
+			% end
+
+			\subsection{Skalarprodukt, Orthogonale Basis}
+				Sei \(H\) der Raum aller \(2\pi\)-periodischen reellen Funktionen, die die Dirichlet-Bedingungen erfüllen. Dann wird durch
+				\begin{equation*}
+					\langle f, g \rangle \coloneqq \int_{-\pi}^{\pi} \! f(\tau) g(\tau) \dif{\tau}
+				\end{equation*}
+				ein Skalarprodukt definiert.
+				
+				Die Funktionen
+				\begin{align*}
+					u_n(x) &= \cos(nx) \\
+					v_n(x) &= \sin(nx)
+				\end{align*}
+				bilden dann eine orthogonale Funktionenfolge in \(H\):
+				\begin{align*}
+					\langle u_n, u_m \rangle &=
+						\begin{cases}
+							0    & m \neq n  \\
+							2\pi & m = n = 0 \\
+							\pi  & m = n > 0
+						\end{cases} \\
+					\langle v_n, v_m \rangle &=
+						\begin{cases}
+							0   & m \neq n  \\
+							0   & m = n = 0 \\
+							\pi & m = n > 0
+						\end{cases} \\
+					\langle u_n, v_m \rangle = \langle v_m, u_n \rangle &= 0
+				\end{align*}
+				
+				Durch diese Darstellung kann die allgemeine Fourier-Reihe mit \( u_n = u_n(x) \) und \( v_n = v_n(x) \) auch geschrieben werden als:
+				\begin{equation*}
+					f(x) = \sum_{n = 0}^{\infty} \big( a_n u_n + b_n v_n \big)
+				\end{equation*}
+			% end
+
+			\subsection{Berechnung der Koeffizienten \(a_m\), \(b_m\)}
+				Um die Koeffizienten \( a_m \), \( m = 1, 2, \cdots \) zu bestimmen, wird das Skalarprodukt zwischen \(f\) und \( u_m \) gebildet:
+				\begin{equation*}
+					\langle f, u_m \rangle
+						= \Bigg\langle \sum_{n = 0}^{\infty} \big( a_n u_n + b_n v_n \big),\, u_m \Bigg\rangle
+						= \Big\langle \big( a_m u_m + b_m v_m \big),\, u_m \Big\rangle
+						= \langle a_m u_m,\, u_m \rangle
+						= a_m \langle u_m, u_m \rangle
+						= a_m \pi
+				\end{equation*}
+				Umstellen nach \( a_m \) liefert die Werte der Fourier-Koeffizienten:
+				\begin{equation*}
+					a_m = \frac{1}{\pi} \langle f, u_m \rangle = \frac{1}{\pi} \int_{-\pi}^{\pi} \! f(x) \cos(mx) \dif{x}
+				\end{equation*}
+				
+				Analog für \( a_0 \) mit \( u_0 \):
+				\begin{equation*}
+					\langle f, u_0 \rangle
+						= \Bigg\langle \sum_{n = 0}^{\infty} \big( a_n u_n + b_n v_n \big),\, u_0 \Bigg\rangle
+						= \Big\langle \big( a_0 u_0 + b_0 v_0 \big),\, u_0 \Big\rangle
+						= \langle a_0 u_0,\, u_0 \rangle
+						= a_0 \langle u_0, u_0 \rangle
+						= a_0 2\pi
+				\end{equation*}
+				Umstellen nach \( a_0 \):
+				\begin{equation*}
+					a_0 = \frac{1}{2\pi} \langle f, u_0 \rangle = \frac{1}{2\pi} \int_{-\pi}^{\pi} \! f(x) \cos(0x) \dif{x} = \frac{1}{2\pi} \int_{-\pi}^{\pi} f(x) \dif{x}
+				\end{equation*}
+				
+				Analog für \( b_m \), \( m = 1, 2, \cdots \):
+				\begin{equation*}
+					\langle f, v_m \rangle
+						= \Bigg\langle \sum_{n = 0}^{\infty} \big( a_n u_n + b_n v_n \big),\, v_m \Bigg\rangle
+						= \Big\langle \big( a_m u_m + b_m v_m \big),\, v_m \Big\rangle
+						= \langle b_m v_m, v_m \rangle
+						= b_m \langle v_m, v_m \rangle
+						= b_m \pi
+				\end{equation*}
+				Umstellen nach \( b_m \):
+				\begin{equation*}
+					b_m = \frac{1}{\pi} \langle f, v_m \rangle = \frac{1}{\pi} \int_{-\pi}^{\pi} \! f(x) \sin(mx) \dif{x}
+				\end{equation*}
+				Da \( \sin(0x) = \sin(0) = 0 \) ist, muss \( b_0 \) nicht berechnet werden.
+			% end
+
+			\subsection{Beispiel: Rechteck-Schwingung}
+				Sei eine Rechteck-Schwingung
+				\begin{equation*}
+					f(x) =
+						\begin{cases}
+							-k & -\pi < x < 0 \\
+							k  & 0 < x < \pi
+						\end{cases},\quad f(x) = f(x + 2\pi)
+				\end{equation*}
+				gegeben. Für diese lauten die Fourier-Koeffizienten:
+				\begin{align*}
+					a_0 &= 0 \\
+					a_n &= 0 \\
+					b_n &= \frac{4k}{n\pi} \text{ für ungerade } n
+				\end{align*}
+				Daraus ergibt sich die Fourier-Reihe:
+				\begin{equation*}
+					f(x) = \frac{4k}{\pi} \sum_{n = 0}^{\infty} \frac{1}{2k + 1} \sin\big((2k + 1) x\big)
+				\end{equation*}
+				
+				Die Rechteck-Schwingung ist dabei eine ungerade Funktion. Allgemein gilt:
+				\begin{itemize}
+					\item Für gerade Funktionen sind alle \( b_n = 0 \).
+					\item Für ungerade Funktionen sind all \( a_n = 0 \).
+				\end{itemize}
+			% end
 		% end
 
-		\section{Faltung} % 4.60, 4.63, 4.64, 4.65
-			\todo{Content}
+		\section{Fourier-Transformation}
+			Mit der Fourier-Transformation wird versucht, eine ähnliche Darstellung wie die Fourier-Reihe für Funktionen zu finden, die nicht \(2\pi\)-periodisch sind.
+			
+			Durch die Euler-Identität kann die allgemeine Fourier-Reihe umgeformt werden:
+			\begin{align*}
+				f(x)
+					&= a_0 + \sum_{n = 1}^{\infty} \big( a_n \cos(nx) + b_n \sin(nx) \big) \\
+					&= a_0 + \sum_{n = 1}^{\infty} \Bigg( a_n \frac{e^{inx} + e^{-inx}}{2} + b_n \frac{e^{inx} - e^{-inx}}{2i} \Bigg) \\
+					&= a_0 + \sum_{n = 1}^{\infty} \Bigg( a_n \frac{e^{inx} + e^{-inx}}{2} - b_n i \frac{e^{inx} - e^{-inx}}{2} \Bigg) \\
+					&= a_0 + \sum_{n = 1}^{\infty} \Bigg( \frac{a_n - ib_n}{2} e^{inx} + \frac{a_n + ib_n}{2} e^{-inx} \Bigg) \\
+					&= a_0 + \sum_{n = 1}^{\infty} \frac{a_n - ib_n}{2} e^{inx} + \sum_{n = 1}^{\infty} \frac{a_n + ib_n}{2} e^{-inx} \\
+					&= a_0 + \sum_{n = 1}^{\infty} \frac{a_n - ib_n}{2} e^{inx} + \sum_{n = -\infty}^{-1} \frac{a_{-n} + ib_{-n}}{2} e^{inx} \\
+					&= c_0 + \sum_{n = 1}^{\infty} c_n e^{inx} + \sum_{n = -\infty}^{-1} c_n e^{inx} \\
+					&= \sum_{n = -\infty}^{\infty} c_n e^{inx}
+			\end{align*}
+			woraus sich eine äquivalente Formulierung der Fourier-Reihe mit den komplexen Koeffizienten
+			\begin{equation*}
+				c_n = \frac{a_n - ib_n}{2} e^{inx}, \quad n = 1, 2, \cdots \quad\quad\quad\quad c_n = \frac{a_{-n} + ib_{-n}}{2}, \quad n = -1, -2, \cdots \quad\quad\quad\quad c_0 = a_0
+			\end{equation*}
+			ergibt. Nun werden zunächst Funktionen \( f_L(x) \) mit einer beliebigen Periode \( 2L \) betrachtet:
+			\begin{align*}
+				f_L(x) &= \sum_{n = -\infty}^{\infty} c_n e^{in \frac{2\pi}{2L} x} \\
+					 &= \sum_{n = -\infty}^{\infty} c_n e^{in \frac{\pi}{L} x} \\
+				\intertext{Einsetzen der Koeffizienten \(c_n\):}
+					&= \sum_{n = -\infty}^{\infty} \Bigg( \frac{1}{2L} \int_{-L}^{L} \! f(\tau) e^{-in \frac{\pi}{L} \tau} \dif{\tau} \Bigg) e^{in \frac{\pi}{L} x}
+			\end{align*}
+			Nun wird der Übergang \( L \to \infty \), \dh zu nicht-periodischen Funktionen, betrachtet:
+			\begin{align*}
+				\lim\limits_{L \to \infty} f(x)
+					&= \lim\limits_{L \to \infty} \sum_{n = -\infty}^{\infty} \Bigg( \frac{1}{2L} \int_{-L}^{L} \! f(\tau) e^{-in \frac{\pi}{L} \tau} \dif{\tau} \Bigg) e^{in \frac{\pi}{L} x} \\
+					&= \lim\limits_{L \to \infty} \sum_{n = -\infty}^{\infty} \frac{1}{2L} \int_{-L}^{L} \! f(\tau) e^{-in \frac{\pi}{L} (\tau - x)} \dif{\tau} \\
+					&= \lim\limits_{L \to \infty} \sum_{n = -\infty}^{\infty} \int_{-L}^{L} \! \frac{1}{2L} f(\tau) e^{-in \frac{\pi}{L} (\tau - x)} \dif{\tau} \\
+					&= \lim\limits_{L \to \infty} \int_{-L}^{L} \sum_{n = -\infty}^{\infty} \frac{1}{2L} f(\tau) e^{-in \frac{2\pi}{2L} (\tau - x)} \dif{\tau} \\
+					&= \lim\limits_{L \to \infty} \int_{-L}^{L} \! f(\tau) \int_{-\infty}^{\infty} \! e^{-2\pi i u (\tau - x)} \dif{u} \dif{\tau} \\
+					&= \int_{-\infty}^{\infty} \! f(\tau) \int_{-\infty}^{\infty} \! e^{-2\pi i u (\tau - x)} \dif{u} \dif{\tau}
+			\end{align*}
+			Dieser Übergang lässt sich als "Superposition" auffassen mit:
+			\begin{align*}
+				f(x) &= \int_{-\infty}^{\infty} \! F(u) e^{2\pi i u x} \dif{u} \\
+				F(x) &= \int_{-\infty}^{\infty} \! f(\tau) e^{-2\pi i u \tau} \dif{\tau}
+			\end{align*}
+			
+			Dabei heißt der Übergang \( f(x) \to F(u) \) \emph{Fourier-Transformation} und der Übergang \( F(u) \to f(x) \) \emph{Inverse Fourier-Transformation}. Dabei ist \(F(u)\) oft komplex und \(f(x)\) ist reell.
 
+			\subsection{Beispiel: Rechteckimpuls}
+				Für einen Rechteckimpuls
+				\begin{equation*}
+					f(x) =
+						\begin{cases}
+							1 & -1 < x < 1 \\
+							0 & \text{sonst}
+						\end{cases}
+				\end{equation*}
+				ergibt sich die Fourier-Transformation
+				\begin{equation*}
+					F(u) = \int_{-1}^{1} \! e^{-2\pi i u \tau} \dif{\tau} = \frac{1}{2\pi i u} \big[ e^{-2\pi i u \tau} \big]_{-1}^{1} = \frac{1}{\pi u} \cdot \frac{e^{2\pi i u} - e^{-2\pi i u}}{2i} = 2 \frac{\sin(2\pi u)}{2\pi u} = 2 \sinc(2\pi u)
+				\end{equation*}
+				wie erwartet ein Vielfaches der \( \sinc \)-Funktion.
+			% end
+
+			\subsection{Transformationspaare}
+				Die Fourier-Transformation zerlegt eine Funktion in ihre Frequenzbestandteile! Beispielhafte Fourier-Transformationspaare sind:
+				\begin{itemize}
+					\item \( \cos(0) = 1 \): \tabto{2.5cm} Delta-Funktion bei \( u = 0 \)
+					\item \( \cos(kx) \):    \tabto{2.5cm} Delta-Funktion bei \( u = \pm k \)
+					\item \( \sin(kx) \):    \tabto{2.5cm} Delta-Funktion bei \( u = \pm ik \)
+				\end{itemize}
+			% end
+		% end
+
+		\section{Faltung}
+			Werden zwei Funktionen \( F(u) \), \( G(u) \) im Frequenzraum multipliziert:
+			\begin{align*}
+				F(u) \cdot G(u)
+					&= \int_{-\infty}^{\infty} \! f(\tau) e^{-2\pi i u \tau} \dif{\tau} \cdot \int_{-\infty}^{\infty} \! g(t) e^{-2\pi i u t} \dif{t} \\
+					&= \int_{-\infty}^{\infty} \! f(\tau) e^{-2\pi i u \tau} \int_{-\infty}^{\infty} \! g(t - \tau) e^{-2\pi i u (t - \tau)} \dif{\tau} \dif{t} \\
+					&= \int_{-\infty}^{\infty} \! e^{-2\pi i u t} \underbrace{\int_{-\infty}^{\infty} \! f(\tau) g(t - \tau) \dif{\tau}}_{h(t) \coloneqq} \dif{t} \\
+					&= \int_{-\infty}^{\infty} \! h(t) e^{-2\pi i u t} \dif{t} \\
+					&= H(t)
+			\end{align*}
+			Das Integral \( h(t) = \int_{-\infty}^{\infty} \! h(t) e^{-2\pi i u t} \dif{t} \eqqcolon f(t) \ast g(t) \) ist das sogenannte \emph{Faltungsintegral} der Funktionen \(f\) und \(g\). Eine Faltung im Ortsraum entspricht somit einer Multiplikation im Frequenzraum!
+			
+			Eine Faltung \( f(t) \ast g(t) \) kann als Mittelwertbildung der Werte von \(f\) mit Gewichten \(g\) verstanden werden. So kann \bspw analytisch ein gleitender Durchschnitt (mit einer Kastenfunktion \(g\)) erstellt werden.
+			
 			\subsection{Anwendung: Filter} % 4.68
 				\todo{Content}
 			% end
 		% end
 
-		\section{Abtastung} % 4.69, 4.70, 4.71
-			\todo{Content}
+		\section{Abtastung}
+			Ist eine kontinuierliche Funktion, \bzw ein analoges Signal, gegeben, so muss dieses für eine diskrete Repräsentation \emph{abgetastet} werden, \dh es müssen Messungen an einzelnen Stellen durchgeführt werden. Eine solche diskrete Abtastung kann durch die Funktion
+			\begin{equation*}
+				\hat{f}(x) = f(x) \cdot \sum_{n = -\infty}^{\infty} \delta(x - n \cdot \Delta x)
+			\end{equation*}
+			\dh als Produkt einer Funktion \( f(x) \) und einer Kamm-Funktion beschrieben werden. Die Fourier-Transformierte \( \hat{F}(u) \) der abgetasteten Funktion entspricht dann der Fourier-Transformierten \( F(u) \) der nicht abgetasteten Funktion, wird aber periodisch mit der Periode \( 1/\Delta x \) wiederholt und mit \( 1/\Delta x \) skaliert.
 
-			\subsection{Diskrete Abtastung} % 4.72, 4.73
-				\todo{Content}
+			\subsection{Abtasttheorie}
+				Sei die Funktion \( f(x) \) bandbegrenzt durch eine Maximalfrequenz \( u_G \), \dh \( F(u) = 0 \) für \( \lvert u \rvert > u_G \).
+				
+				Gilt nun \( 2u_G < 1 / \Delta x \), so überlappen sich die Fouriertransformierten nicht, \dh die Spektren von \( F(u) \) und \( \hat{F}(u) \) stimmen auf dem Intervall \( [-u_G, u_G] \) (bis auf die Skalierung \( 1 / \Delta x \)) überein. Das Frequenzspektrum von \( F(u) \) kann somit vollständig aus dem Abtastsignal und den Abtastwerten berechnet werden.
+				
+				Gilt nun \( 2u_G > 1 / \Delta x \), so überlappen sich die Fouriertransformierten und in den Überschneidungsbereichen bilden sich Summen. Damit ist es unmöglich, das originale Frequenzspektrum von \( F(u) \) zu bestimmen (\emph{Aliasing}).
 			% end
 
-			\subsection{Abtasttheorie} % 4.74, 4.75
-				\todo{Content}
-			% end
-
-			\subsection{Abtasttheorem von Whittaker-Shannon} % 4.78
-				\todo{Content}
+			\subsection{Abtasttheorem von Whittaker-Shannon}
+				Aus den vorherigen Überlegungen ergibt sich das \emph{Abtasttheorem von Whittaker-Shannon}: Existiert für eine Funktion \( f(x) \) eine Grenzfrequenz \( u_G < \infty \), sodass \( F(u) = 0 \) für \( \lvert u \rvert > u_G \) gilt, dann ist \( f(x) \) fehlerfrei rekonstruierbar, sofern die Abtastfrequenz \( 1 / \Delta x \) mindestens doppelt so hoch wie \( u_G \) ist:
+				\begin{equation*}
+					\frac{1}{\Delta x} > 2 u_G
+				\end{equation*}
 			% end
 		% end
 	% end

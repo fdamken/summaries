@@ -12,6 +12,7 @@
 \usepackage{enumitem}
 \usepackage[mathcal]{euscript} % Get readable mathcal font.
 \usepackage{float}
+\usepackage{pgfplots}
 \usepackage{hyperref}
 \usepackage{mathtools}
 \usepackage{siunitx}
@@ -20,7 +21,7 @@
 \usepackage{tabto}
 \usepackage{tikz}
 \usepackage[disable]{todonotes}
-\usetikzlibrary{arrows.meta, shapes, backgrounds, angles, calc, decorations.markings}
+\usetikzlibrary{arrows.meta, shapes, backgrounds, angles, calc, decorations.markings, positioning}
 
 % Basic information.
 \title{Visual Computing}
@@ -32,6 +33,10 @@
 \SetLabelAlign{parright}{\parbox[t]{\labelwidth}{\raggedleft#1}}
 \setlist[description]{style = multiline, leftmargin = 4cm, align = parright}
 
+\colorlet{colorDensity}{tud1b}
+
+\tikzset{density/.style = { colorDensity, line width = 2pt }}
+\tikzset{declare function = { gaussian(\x,\m,\S) = 1/sqrt(2*pi*\S) * e^(-1/(2*\S) * (\x-\m)^2); }}
 \tikzset{> = { Latex[length = 2.5mm] }}
 \tikzstyle{every path} = [ very thick ]
 
@@ -47,6 +52,7 @@
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\qef}{\hfill \( \square \)}
+\newcommand{\given}{\,\vert\,}
 % Matrix/Vector notation.
 \makeatletter
 % TODO: This does not make all symbols bold (e.g. 'v').
@@ -521,87 +527,226 @@
 		% end
 	% end
 
-	\chapter{Objekterkennung und Bayes} % 3.1, 3.3, 3.4, 3.6
-		\todo{Content}
+	\chapter{Computer Vision: Objekterkennung und Bayes}
+		Die \emph{Computer Vision} beschäftigt sich mit dem maschinellen Sehen, \dh der Suche nach einem Modell des menschlichen Sehens. Anwendungsgebiete sind \bspw Autos, die Fußgänger erkennen, medizinische Bildverarbeitung, Überwachung, Unterhaltung, Computergraphik, \dots.
 
-		\section{Computer Vision} % 3.8
-			\todo{Content}
+		\section{Computer Vision}
+			Das einfachste Standardmodell einer Lochkamera ist ein Kasten mit einem kleinen Loch. Um ein digitales Bild eines solchen Kameramodells zu erhalten, wird das Bild rasterisiert. Demnach ist ein Graustufenbild eine Matrix an Pixeln mit jeweils einem Wert (die "Grauigkeit" des Pixels).
+			
+			Die Computer Vision beschäftigt sich nun damit, aus einem solchen Bild Informationen zu extrahieren. Bei der Objekterkennung ist es wichtig, eine gute lokale Beschreibung/Merkmale zu haben (\zB Augen, Mund, Nase) und eine globale Anordnung der lokalen Merkmale (\zB relative Positionen, relative Größen). Es ist aber auch eine schnelle Generierung guter Hypothesen, Segmentierung der Bildbereiche und kennen des Szenenkontextes wichtig.
+			
+			Nach Fischler und Elschlager hat das Modell eines Bildes zwei Komponenten: Teile (2D Bildfragmente) und den Aufbau (die Anordnung der Teile). Mit diesem abstrakten Modell lassen sich viele Dinge (\zB ein Gesicht) charakterisieren.
+		% end
 
-			\subsection{Lochkamera} % 3.9, 3.10, 3.11
-				\todo{Content}
+		\section{Bayesian Decision Theory}
+			Beispiel: Buchstabenerkennung. Es soll ein neu aufgenommener Buchstabe so klassifiziert werden, dass die Wahrscheinlichkeit der Fehlklassifikation minimiert wird.
+
+			\subsection{Konzepte und Bayes Theorem}
+				\paragraph{Vorbemerkung: Wahrscheinlichkeitsdichte und Wahrscheinlichkeit}
+					Ist \( p(x) \) eine Wahrscheinlichkeitsdichte, so ist die Wahrscheinlichkeit, dass \(x\) im Intervall \( (x_0, x_y) \) liegt, gegeben durch:
+					\begin{equation*}
+						P(x_0 < x < x_1) = \int_{x_0}^{x_1} \! p(\tau) \dif{\tau}
+					\end{equation*}
+					Da für die Wahrscheinlichkeit, dass \( x \) im Intervall \( (x, x + \Delta x) \) mit \( \Delta x \to 0 \) gilt:
+					\begin{equation*}
+						\lim\limits_{\Delta x \to 0} P(x) = \lim\limits_{\Delta x \to 0} P(x < t < x + \Delta x) = p(x) \cdot \Delta x
+					\end{equation*}
+					kann Wahrscheinlichkeitsdichte und Wahrscheinlichkeit in den meisten Fällen gegeneinander ausgetauscht werden.
+				% end
+			
+				\paragraph{1. Konzept: A-Priori Wahrscheinlichkeit (Prior)}
+					Die \emph{a-priori Wahrscheinlichkeit} (Prior) enthält die Information, wie wahrscheinlich eine beliebige Messung der Klasse zugehört (\dh die "Klassenhäufigkeit"). Ist \( C_k \) eine Klasse, so ist \( P(C_k) \) der Prior \bzgl der Klasse \( C_k \) (analog für \( p(C_k) \)).
+				% end
+				
+				\paragraph{2. Konzept: Bedingte Wahrscheinlichkeit (Likelihood)}
+					Ist \(\vec{x}\) der Merkmalsvektor (Feature), welcher Eigenschaften der Messung beschreibt (Anzahl schwarzer Pixel, Höhe/Breite, \dots) und \( C_k \) eine Klasse, so ist \( P(\vec{x} \given C_k) \) die \emph{Likelihood}, \dh die Wahrscheinlichkeit, dass \(\vec{x}\) für einen Buchstaben der Klasse \( C_k \) gemessen wird (analog für \( p(\vec{x} \given X_k) \)).
+				% end
+				
+				\paragraph{3. Konzept: A-Posteriori Wahrscheinlichkeit (Posterior), Bayes Theorem}
+					Die \emph{a-posteriori Wahrscheinlichkeit} (Posterior) ist die Wahrscheinlichkeit, dass ein Merkmalsvektor \(\vec{x}\) einer Klasse \( C_k \) angehört, \dh \( P(C_k \given \vec{x}) \). Dieser Posterior kann durch Bayes Theorem gefunden werden:
+					\begin{equation*}
+						P(C_k \given \vec{x}) = \frac{P(\vec{x} \given C_k) \cdot P(C_k)}{P(\vec{x})}
+					\end{equation*}
+					Oder Namentlich:
+					\begin{equation*}
+						\text{Posterior} = \frac{\text{Likelihood} \times \text{Prior}}{\text{Normalisierung}}
+					\end{equation*}
+				% end
 			% end
 
-			\subsection{Digitale Bilder} % 3.12, 3.13
-				\todo{Content}
+			\subsection{Problemstellung}
+				Abbildung~\ref{fig:likelihoodPriorPosterior} zeigt die Likelihood, Prior und den Posterior auf. Die Zielstellung eines Bayesian Classifier ist nun, die Wahrscheinlichkeit der Fehlklassifikation zu minimieren und somit eine Entscheidungsgrenze zu bestimmen. Die Wahrscheinlichkeit eines Fehlers ist gegeben durch:
+				\begin{align*}
+					P(\text{Fehler}) &= P(x \in R_2, C_1) + P(x \in R_1, C_2) \\
+						&= P(x \in R_2 \given C_1) P(C_1) + P(x \in R_1 \given C_2) P(C_2) \\
+						&= \int_{R_2} \! p(x \in R_2 \given C_1) P(C_1) \dif{x} + \int_{R_2} \! p(x \in R_2 \given C_2) P(X_2) \dif{x}
+				\end{align*}
+				Dabei ist \( P(x \in R_i, C_j) \) die Wahrscheinlichkeit, dass \(x\) zu Klasse \(R_i\) gehört, aber als Klasse \(C_j\) klassifiziert wurde (für \( i \neq j \) entspricht dies einer Fehlklassifikation).
+
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}
+						\begin{axis}[
+									name = likelihood,
+									domain = 0:15,
+									xmin = 0,
+									xmax = 15,
+									ymin = 0,
+									ymax = 0.5,
+									xlabel = \(x\),
+									width = 12cm,
+									height = 7cm,
+									legend style = { xshift = -0.5cm, yshift = -0.5cm },
+									xticklabels = {,,}
+								]
+							\addplot [density, tud9b, smooth] { gaussian(x, 5, 2) }; \addlegendentry{\( p(x \given a) \)};
+							\addplot [density, tud1b, smooth] { gaussian(x, 11, 2) }; \addlegendentry{\( p(x \given b) \)};
+						\end{axis}
+						\begin{axis}[
+									name = likelihoodPrior,
+									domain = 0:15,
+									xmin = 0,
+									xmax = 15,
+									ymin = 0,
+									ymax = 0.5,
+									xlabel = \(x\),
+									width = 12cm,
+									height = 7cm,
+									at = (likelihood.right of south east),
+									anchor = north,
+									xshift = -5.23cm,
+									yshift = -0.5cm,
+									legend style = { xshift = -0.5cm, yshift = -0.5cm },
+									xticklabels = {,,}
+								]
+							\addplot [density, tud9b, smooth] { gaussian(x, 5, 2) * 0.8 }; \addlegendentry{\( p(x \given a) p(a) \)};
+							\addplot [density, tud1b, smooth] { gaussian(x, 11, 2) * 0.2 }; \addlegendentry{\( p(x \given b) p(b) \)};
+						\end{axis}
+						\begin{axis}[
+									name = posterior,
+									domain = 0:15,
+									xmin = 0,
+									xmax = 15,
+									ymin = 0,
+									ymax = 1.1,
+									xlabel = \(x\),
+									width = 12cm,
+									height = 7cm,
+									at = (likelihoodPrior.right of south east),
+									anchor = north,
+									xshift = -5.23cm,
+									yshift = -0.5cm,
+									legend style = { xshift = -0.5cm, yshift = -0.5cm }
+								]
+							\addplot [density, tud9b, smooth] { (gaussian(x, 5, 2) * 0.8) / (gaussian(x, 5, 2) * 0.8 + gaussian(x, 11, 2) * 0.2) }; \addlegendentry{\( p(a \given x) \)};
+							\addplot [density, tud1b, smooth] { (gaussian(x, 11, 2) * 0.2) / (gaussian(x, 5, 2) * 0.8 + gaussian(x, 11, 2) * 0.2) }; \addlegendentry{\( p(b \given x) \)};
+						\end{axis}
+					\end{tikzpicture}
+					\caption{Likelihood, \( \text{Likelihood} \times \text{Prior} \) und Posterior.}
+					\label{fig:likelihoodPriorPosterior}
+				\end{figure}
 			% end
 
-			\subsection{Konfluenz} % 3.14
-				\todo{Content}
+			\subsection{Entscheidungsregel}
+				Durch die Minimierung des Erwartungswertes des Fehlers kann die Entscheidungsregel, wann \(x\) in eine Klasse einsortiert wird, hergeleitet werden. Dabei soll \(x\) genau dann in Klasse \(C_1\) sortiert werden, wenn
+				\begin{equation*}
+					P(C_1 \given x) > P(C_2 \given x)
+				\end{equation*}
+				Da die Posteriors im Allgemeinen nicht bekannt sind, werden die über Bayes Theorem berechnet:
+				\begin{align*}
+					               &  & P(C_1 \given x)                         & > P(C_2 \given x)                     &  \\
+					\quad\iff\quad &  & \frac{P(x \given C_1) P(C_1)}{P(x)}     & > \frac{P(c \given C_2) P(C_2)}{P(x)} &  \\
+					\quad\iff\quad &  & P(x \given C_1) P(C_1)                  & > P(c \given C_2) P(C_2)              &  \\
+					\quad\iff\quad &  & \frac{P(x \given C_1)}{P(x \given C_2)} & > \frac{P(C_1)}{P(C_2)}               &
+				\end{align*}
+				Dies wird auch \emph{Likelihood Ratio Test} genannt.
+				
+				Dieser Test kann sich für mehr als zwei Klassen verallgemeinern lassen: Wähle Klasse \( k \) genau dann, wenn
+				\begin{equation*}
+					P(C_k \given x) > P(C_j \given x) \quad\forall j \neq k
+				\end{equation*}
+				gilt. Äquivalent zu dem zwei-Klassen-Fall kann dies in einen Likelihood Ratio Test umgeformt werden:
+				\begin{equation*}
+					\frac{P(x \given C_k)}{P(x \given C_j)} > \frac{P(C_j)}{P(C_k)} \quad\forall j \neq k
+				\end{equation*}
 			% end
 
-			\subsection{Fallstudie} % 3.17 ff.
-				\todo{Content}
-			% end
-
-			\subsection{Intuitionen} % 3.31
-				\todo{Content}
-			% end
-
-			\subsection{Bildaufbau} % 3.33
-				\todo{Content}
+			\subsection{Naive Bayes Classifier}
+				Bei mehr als zwei Merkmalen (\zB Höhe und Breite) werden \( P(x_1, x_2 \given C_k) \) und \( P(x_1, x_2) \) mehrdimensional und eine Schätzung der Dichte ist nicht immer möglich. Daher nimmt ein \emph{Naive Bayes Classifier} an, dass die Merkmale statistisch unabhängig sind. Damit gilt:
+				\begin{align*}
+					P(x_1, x_2 \given C_k) & = P(x_1 \given C_k) P(x_2 \given C_k) \\
+					P(x_1, x_2)            & = P(x_1) P(x_2)
+				\end{align*}
+				In der Realität ist diese Annahme oft nicht korrekt, liefert aber häufig gute Ergebnisse und ist somit eine gute Basis zum Vergleich.
 			% end
 		% end
 
-		\section{Bayesian Decision Theory} % 3.36, 3.37
-			\todo{Content}
-
-			\subsection{Konzepte und Bayes Theorem} % 3.38, 3.39, 3.40, 3.44
-				\todo{Content}
-			% end
-
-			\subsection{Problemstellung} % 3.41, 3.42, 3.43, 3.45, 3.46
-				\todo{Content}
-			% end
-
-			\subsection{Entscheidungsregel} % 3.47, 3.48, 3.49, 3.50
-				\todo{Content}
-			% end
-
-			\subsection{Naive Bayes Classifier} % 3.51, 3.52, 3.53
-				\todo{Content}
-			% end
+		\section{Probability Density Estimation}
+			Bisher wurden die Wahrscheinlichkeiten \( P(x \given C_k) \) und \( P(C_k) \) als bekannt vorausgesetzt. In der Realität ist dies oft nicht der Fall, weshalb die Wahrscheinlichkeitsdichte geschätzt werden muss. Siehe hierzu auch Vorlesung \href{https://projects.frisp.org/documents/26}{Statistical Machine Learning}.
 		% end
 
-		\section{Probability Density Estimation} % 3.54, 3.55, 3.56, 3.57, 3.58, 3.59
-			\todo{Content}
-		% end
+		\section{Gesichtsdetektion}
+			Bei \emph{Appearance-Bases Methods} wird ein Erscheinungsmodell aus (üblicherweise) großen Mengen von Bildern gelernt. Dabei wird am häufigsten der Sliding Window Ansatz genutzt (siehe~\ref{sec:sliding_window}). Dabei sind vor allem drei Aspekte relevant:
+			\begin{enumerate}
+				\item Repräsentation des Objektes (lokale Merkmale, globale Anordnung)
+				\item Trainingsdaten (positive und negative Beispiele)
+				\item Klassifikator und Lernmethode
+			\end{enumerate}
 
-		\section{Gesichtsdetektion} % 3.60
-			\todo{Content}
-
-			\subsection{Appearance-Based Methods} % 3.61
-				\todo{Content}
+			\subsection{Sliding Window Ansatz}
+				\label{sec:sliding_window}
+				
+				Bei dem \emph{Sliding Window Ansatz} wird ein Bild in Ein-Pixel-Schritten horizontal und vertikal gescannt. Nach jedem Durchlauf wird das Bild immer wieder verkleinert, bis das Bild zu klein ist. So können auch mit einem Klassifikator, der nur Bilder einer Größe entgegen nehmen kann, große Bilder durchsucht werden.
 			% end
 
-			\subsection{Sliding Window Approach} % 3.62, 3.63
-				\todo{Content}
+			\subsection{Beispiel: Gesichtsdetektion}
+				\begin{enumerate}
+					\item Repräsentation des Objekts
+						\begin{itemize}
+							\item Die Bilder werden in Wavelets zerlegt, \dh die Gesichtsmerkmale werden mit Frequenzen und deren Ort und Orientierung dargestellt.
+							\item Lokale Merkmale: Wavelet Koeffizienten (Frequenzen von \zB Auge und Mund).
+							\item Globale Merkmale: Absolute Position der Frequenzen im Bild.
+						\end{itemize}
+					\item Trainingsdaten
+						\begin{itemize}
+							\item Positive Beispiele
+								\begin{itemize}
+									\item Möglichst vielfältig.
+									\item Jedes Bild eines Gesichts wird manuell an den Rändern abgeschnitten und auf eine Größe normalisiert.
+									\item Zusätzlich werden virtuelle Beispiele erstellt (\zB durch Spiegelung).
+								\end{itemize}
+							\item Negative Beispiele
+								\begin{itemize}
+									\item Beliebige Bilder, die keine Gesichter enthalten.
+									\item Teilbilder von großen Bildern.
+								\end{itemize}
+						\end{itemize}
+					\item Klassifikator und Lernmethode
+						\begin{itemize}
+							\item Naive Bayes Classifier
+							\item Merkmale \(x_i\): Wavelet Koeffizienten an einer bestimmten Position.
+							\item Zwei-Klasse-Problem:
+								\begin{itemize}
+									\item \(C_1\): Gesichter
+									\item \(C_2\): Alles andere (keine Gesichter)
+								\end{itemize}
+							\item Das "Lernen" entspricht dem Schätzen der Wahrscheinlichkeiten der Wavelet-Koeffizienten.
+							\item Durch Diskretisierung von Koeffizienten und Positionen gibt es eine diskrete und endliche Anzahl von \(x_i\).
+							\item Schätzen: Zählen, wie häufig jedes \(x_i\) in Bilder mit und ohne Gesichtern vorkommt.
+							\item Dann wird ein Likelihood Ration Test verwendet.
+						\end{itemize}
+				\end{enumerate}
+			
+				Um Bilder aus verschiedenen Perspektiven zu erkennen, wird für jede Ansicht ein eigener Detektor verwendet (jeder für eine Ansicht) und diese kombiniert.
 			% end
 
-			\subsection{Beispiel: Gesichtsdetektion} % 3.64, 3.65, 3.66, 3.67
-				\todo{Content}
+			\subsection{Erkennungsarten}
+				Eine Gesichtserkennung zählt zu den biometrischen Verfahren und werden \bspw in sicherheitstechnischen, kriminalistischen und forensischen Gebieten eingesetzt. Der Zweck ist dir Identifikation und Verifikation natürlicher Personen.
+				\begin{itemize}
+					\item Verifikation: Die Person muss dem System ihren Namen oder User-ID mitteilen und das System entscheidet, ob die Person dazu gehört.
+					\item Identifikation: Die Person offenbart ausschließlich ihre biometrischen Merkmale und das System ermittelt daraus den Namen oder die User-ID.
+				\end{itemize}
 			% end
-
-			\subsection{Naive Bayes Classifier} % 3.68, 3.69
-				\todo{Content}
-			% end
-
-			\subsection{Erkennungsarten} % 3.74, 3.75
-				\todo{Content}
-			% end
-		% end
-
-		\section{Diskussion und Ausblick} % 3.76, 3.77, 3.79
-			\todo{Content}
 		% end
 	% end
 

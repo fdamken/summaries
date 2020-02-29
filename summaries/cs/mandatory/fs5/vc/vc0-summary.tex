@@ -55,6 +55,22 @@
 \renewcommand{\vec}[1]{\boldsymbol{\mathbf{#1}}}
 \makeatother
 % Abbreviations.
+\renewcommand{\dh}{d.\,h.~}
+\newcommand{\bzw}{bzw.~}
+\newcommand{\ca}{ca.~}
+\newcommand{\bspw}{bspw.~}
+\newcommand{\bzgl}{bzgl.~}
+\newcommand{\zB}{z.\,B.~}
+\newcommand{\iA}{i.\,A.~}
+\newcommand{\ggf}{ggf.~}
+\newcommand{\mglw}{mglw.~}
+\newcommand{\vs}{vs.~}
+\newcommand{\DIRKIN}{DIR\,KIN~}
+\newcommand{\INVKIN}{INV\,KIN~}
+\newcommand{\DIRJAC}{DIR\,JAC~}
+\newcommand{\INVJAC}{INV\,JAC~}
+\newcommand{\DIRDYN}{DIR\,DYN~}
+\newcommand{\INVDYN}{INV\,DYN~}
 
 % https://tex.stackexchange.com/a/333383
 \makeatletter
@@ -99,63 +115,177 @@
 				\todo{Content}
 			% end
 
-			\subsection{Generative Modelling Language} % 1.62, 1.63, 1.64, 1.65, 1.66, 1.67
+			\subsection{Generative Modeling Language} % 1.62, 1.63, 1.64, 1.65, 1.66, 1.67
 				\todo{Content}
 			% end
 		% end
 	% end
 
-	\chapter{Wahrnehmung} % 2.1
-		\todo{Content}
-
-		\section{Human Computer Interaction} % 2.4, 2.5, 2.6, 2.7, 2.8, 2.9
-			\todo{Content}
+	\chapter{Wahrnehmung}
+		\section{Human-Computer-Interaction}
+			Abbildung~\ref{fig:hci} zeigt den klassischen Zyklus der \emph{Human-Computer-Interaction} (HCI), \dh der Interaktion zwischen Mensch und Maschine. Dabei dient insbesondere die visuelle Interaktion und Kommunikation über das Auge eine große Rolle.
+		
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[->, every node/.style = { align = center }]
+					\node [draw, rectangle] (human) {Human};
+					\node [draw, rectangle, right = 4 of human] (computer) {Computer};
+					
+					\draw (human) to[bend right] node[below]{Explizite Eingabe, \\ Implizite Interaktion} (computer);
+					\draw (computer) to[bend right] node[above]{Visuelle Ausgabe, \\ Andere Ausgabemodalitäten} (human);
+				\end{tikzpicture}
+				\caption{Klassischer Zyklus der Human-Computer-Interaction (HCI).}
+				\label{fig:hci}
+			\end{figure}
 		% end
 
-		\section{Überblick} % 2.10, 2.11, 2.12, 2.13
-			\todo{Content}
+		\section{Überblick}
+			Der Mensch hat fünf grundlegende Sinne: Sehen, Hören, Fühlen, Schmecken und Riechen, wobei das Sehen, Hören und Fühlen derzeit dominant sind. Der heute sicherlich relevanteste Sinn ist dabei das Sehen und das menschliche Auge. Da die meisten erzeugten Bilder der Kommunikation von und zum Menschen dienen sollen, ist es gut, das menschliche visuelle System zu kennen, um den Informationstransfer optimal zu gestalten (der Monitorausgang ist nicht das Ende des Informationsflusses).
+			
+			Hören und Fühlen sind dabei relevant für die Informationsaufnahme und Interaktion mit der realen Welt (außerhalb der Mensch-Maschine-Interaktion).
+			
+			Bei der Gestaltung von Kommunikation gibt es zwei große Probleme:
+			\begin{itemize}
+				\item Die Wahrnehmung ist nicht objektiv.
+				\item Das visuelle System ist stark nichtlinear (es ist keine einfache Interpolation oder Extrapolation von Versuchsergebnissen möglich).
+			\end{itemize}
 
-			\subsection{Menschliche Informationsverarbeitung} % 2.14, 2.15, 2.16, 2.20
-				\todo{Content}
+			\subsection{Menschliche Informationsverarbeitung}
+				Abbildung~\ref{fig:human_info_processing} zeigt die drei Stufen der menschlichen Informationsverarbeitung:
+				\begin{itemize}
+					\item \emph{Wahrnehmung} von Eindrücken durch die Sinne,
+					\item \emph{Entscheidung}sfindungs im Gehirn und
+					\item \emph{Reaktion} durch den Körper.
+				\end{itemize}
+				Dabei verhält sich die Ausführungszeit additiv und die Funktionen werden durch neurologisch getrennte Gehirnteile ausgeführt, die "elektronisch" verbunden sind.
+				
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}[->, every node/.style = { draw, rectangle, minimum height = 0.8cm, minimum width = 5cm }]
+						\node (a) {Wahrnehmung (Sensorik)};
+						\node [below = 0.5 of a] (b) {Entscheidung (Kognition)};
+						\node [below = 0.5 of b] (c) {Reaktion (Motorik)};
+						
+						\draw (a) -- (b);
+						\draw (b) -- (c);
+					\end{tikzpicture}
+					\caption{Modulares Drei-Stufenmodell der menschlichen Informationsverarbeitung.}
+					\label{fig:human_info_processing}
+				\end{figure}
+				
+				Dabei braucht jede Bearbeitung in den einzelnen Stufen unterschiedlich lange und die benötigten Zeiten können verwendet werden, um die Performanz abzuschätzen, \bzw vorherzusagen (\bspw für die Bildfrequenz von Filmen, die maximale Morserate, \dots). Typische Zeiten sind in Tabelle~\ref{fig:human_processing_times} abgebildet.
+				
+				\begin{table}
+					\centering
+					\begin{tabular}{l|l|l}
+						\textbf{Untersystem}     & \textbf{Durchschnitt}   & \textbf{Bereich}                 \\ \hline
+						Wahrnehmung (Perzeption) & \SI{100}{\milli\second} & \SIrange{50}{200}{\milli\second} \\
+						Entscheidung (Kognition) & \SI{70}{\milli\second}  & \SIrange{25}{170}{\milli\second} \\
+						Reaktion (Motorik)       & \SI{70}{\milli\second}  & \SIrange{30}{100}{\milli\second}
+					\end{tabular}
+					\caption{Typische Bearbeitungszeiten der Untersysteme der menschlichen Informationsverarbeitung.}
+					\label{fig:human_processing_times}
+				\end{table}
 
-				\subsubsection{Eingabe (Wahrnehmung)} % 2.15
-					\todo{Content}
-
-					\paragraph{Klangwahrnehmung} % 2.17
-						\todo{Content}
+				\subsubsection{Eingabe (Wahrnehmung)}
+					Die Untersysteme der Wahrnehmung,
+					\begin{itemize}
+						\item Visuell (Sehen)
+						\item Akustisch (Hören)
+						\item Haptisch (Fühlen)
+					\end{itemize}
+					können dabei (theoretisch) parallel arbeiten.
+				
+					\paragraph{Klangwahrnehmung}
+						Die Hauptkomponenten von Klängen sind
+						\begin{itemize}
+							\item Klangfarbe,
+							\item Tonlage und
+							\item Lautstärke.
+						\end{itemize}
+						Diese werden durch verschiedene Mechanismen wahrgenommen und Informationen (\zB der Ursprung eines Geräuschs) extrahiert.
 					% end
 
-					\paragraph{Brührungswahrnehmung} % 2.18
-						\todo{Content}
+					\paragraph{Berührungswahrnehmung}
+						Die Hauptkomponenten der Haptik sind
+						\begin{itemize}
+							\item Fühl- und Tastsinn (Temperatur, Schmerz, Druck, Oberflächen) und
+							\item Propriozeption (Wahrnehmung der Bewegung und Lage der eigenen Körperglieder).
+						\end{itemize}
+						Dabei interagiert die Haptik stark mit Sehen und Hören, was bei sich widersprechenden Informationen Illusionen hervorrufen kann. Ein User-Interface-Designer nutzt Illusionen dabei geziehlt aus, um bestimmte Informationen zu vermitteln.
 					% end
 				% end
 
-				\subsubsection{Ausgabe} % 2.15, 2.19
-					\todo{Content}
+				\subsubsection{Ausgabe (Reaktion)}
+					Die Untersysteme der Reaktion,
+					\begin{itemize}
+						\item Artikulation (Sprechen)
+						\item Motorisch (Bewegen)
+					\end{itemize}
+					können dabei (theoretisch) parallel arbeiten.
+					
+					Die motorische Ausgabe kann dabei auf verschiedene Weisen angewandt werden:
+					\begin{itemize}
+						\item Diskret (Schalter) oder
+						\item Kontinuierlich (Heben).
+					\end{itemize}
+					Sie ist dabei beschränkt durch Geschwindigkeit, Stärke, Koordinationsvermögen, Wendigkeit, \dots. Neurologisch ist die motorische Ausgabe dabei mit dem haptischen System verbunden (Reflexe).
+					
+					Das \emph{Muskelgedächtnis} hilft dabei, relevante Positionen im Raum (\zB die Gangschaltung im Auto) zu lernen.
 				% end
 			% end
 		% end
 
-		\section{Wahrnehmung} % 2.25
-			\todo{Content}
-
-			\subsection{Das Auge} % 2.25
-				\todo{Content}
-
-				\subsubsection{Reiz} % 2.26, 2.27, 2.28
-					\todo{Content}
+		\section{Wahrnehmung}
+			\subsection{Das Auge}
+				\subsubsection{Reiz und Licht}
+					Einer äußerer, visueller Reiz (Licht) erzeugt beim Menschen eine physikalische Rezeption des äußeren Reizes (Input). Dies geschieht durch einen Sensor (\bspw das Auge) und die Reizung produziert ein neuro-physiologisches Signal. Dieses wird anschließend verarbeitet und interpretiert.
+					
+					Physikalisch ist ein solcher Reiz elektromagnetische Strahlung. Dabei wird monochromatisches, \dh einfarbiges, Licht durch die Angabe der Frequenz \(v\), \bzw der Wellenlänge \(\lambda\), beschrieben. Diese beiden Größen sind durch die Beziehung
+					\begin{equation*}
+						v \lambda = c, \quad c \approx \SI{3e8}{\meter\per\second}
+					\end{equation*}
+					miteinander verknüpft, wobei \(c\) die Ausbreitungsgeschwindigkeit des Lichts ist.
+					
+					Das menschliche Auge kann dabei Frequenzen im Wellenlängenbereich \( \SIrange{380}{750}{\nano\meter} \) wahrnehmen. Kleinere Wellenlängen haben \zB Ultraviolett-Licht, Röntgen- und \(\gamma\)-Strahlung. Darüber liegende Wellenlängen haben \zB Infrarot-Licht und Rundfunk-Wellen.
 				% end
 
-				\subsubsection{Das visuelle System} % 2.29, 2.30, 2.31, 2.32, 2.33, 2.34
-					\todo{Content}
+				\subsubsection{Das visuelle System}
+					Das menschliche Auge ist aufgebaut aus:
+					\begin{itemize}
+						\item Hornhaut (Kornea)
+						\item Linse (zur Scharfstellung)
+						\item Iris (Blendenmechanismus)
+						\item Retina (Netzhaut)
+							\begin{itemize}
+								\item Blinder Fleck: Hier geht der Sehnerv ab.
+								\item Fovea Centralis (Gelber Fleck): Bereich mit der höchsten Auflösung.
+							\end{itemize}
+					\end{itemize}
 				% end
 
-				\subsubsection{Photorezeptoren} % 2.35, 2.36
-					\todo{Content}
+				\subsubsection{Photorezeptoren}
+					Die Photorezeptoren (welche auf der Retina platziert sind), bestehen aus:
+					\begin{itemize}
+						\item Stäbchen
+							\begin{itemize}
+								\item Hauptsächlich außerhalb der Fovea.
+								\item Das Empfindlichkeitsmaximum liegt bei \SI{498}{\nano\meter} ("grün").
+							\end{itemize}
+						\item Zapfen
+							\begin{itemize}
+								\item Vor allem in der Fovea platziert.
+								\item Es gibt drei Zapfentypen für Farbsehen.
+								\item Das Empfindlichkeitsmaximum dieser Zapfen liegt bei \SI{420}{\nano\meter} ("blau"), \SI{534}{\nano\meter} ("grün") und \SI{564}{\nano\meter} ("rot").
+							\end{itemize}
+					\end{itemize}
 				% end
 
-				\subsubsection{Skotopisches und Photopisches Sehen} % 2.37
-					\todo{Content}
+				\subsubsection{Skotopisches und Photopisches Sehen}
+					\begin{itemize}
+						\item Nachtsehen (skotopisch): Dominanz der Stäbchen.
+						\item Tagsehen (photopisch): Dominanz der Zapfen.
+					\end{itemize}
 				% end
 
 				\subsubsection{Zapfenverteilung} % 2.38, 2.39, 2.40, 2.41, 2.42, 2.43, 2.44
@@ -163,109 +293,173 @@
 				% end
 			% end
 
-			\subsection{Vorverarbeitung visueller Informationen} % 2.45, 2.46, 2.47
-				\todo{Content}
-
-				\subsubsection{Signalverarbeitung in der Retina} % 2.48
-					\todo{Content}
+			\subsection{Vorverarbeitung visueller Informationen}
+				\subsubsection{Signalverarbeitung in der Retina}
+					Neben den Photorezeptoren gibt es noch weitere Zellen zur Signalverarbeitung in der Retina:
+					\begin{itemize}
+						\item Horizontale Zellen \\ Kombination von mehreren Rezeptoren einer Region.
+						\item Amakrin-Zellen \\ Zeitliche Verarbeitung.
+						\item Bipolar-Zellen \\ Informationsfilter (Sammeln, Gewichten und Weiterleiten).
+						\item Ganglien-Zellen \\ Integration Informationen (\zB Kontrastwahrnehmung).
+					\end{itemize}
 				% end
 
-				\subsubsection{Optische Täuschungen} % N/A
-					\todo{Content}
+				\subsubsection{Helligkeit}
+					\begin{itemize}
+						\item \emph{Helligkeit} (\emph{brightness}) entspricht der wahrgenommenen Menge an Licht, das von einer selbstleuchtenden Lichtquelle ausgeht.
+						\item \emph{Helligkeit} (\emph{lightness}) entspricht der wahrgenommenen Menge an Licht, das von einer reflektierenden Oberfläche ausgeht.
+							\begin{itemize}
+								\item Dies ist keine absolute Wahrnehmungsgröße und abhängig von
+									\begin{itemize}
+										\item Reizstärke (Leuchtdichte)
+										\item Vorherige Leuchtdichte (Adaption)
+										\item Umgebungsleuchtdichte
+										\item Größe (Fläche) des Reizes
+									\end{itemize}
+								\item Somit subjektiv!
+							\end{itemize}
+						\item Dies wirft einige nicht so einfach zu beantwortende Fragen auf, z.\,B.: Was ist weiß? Was ist schwarz? Was ist mittelgrau?
+						\item Der Hell-Dunkel-Kontrast ist dabei eine wichtige Empfindungsgröße zum Form- und Objektsehen. Daher muss der Unterschied groß genug sein (für kleine Details mindestens \(3:1\), besser \(10:1\)).
+					\end{itemize}
 
-					\paragraph{Peripheral Drift} % 2.53
-						\todo{Content}
-					% end
-
-					\paragraph{Mach Bänder} % 2.55
-						\todo{Content}
-					% end
-
-					\paragraph{Chevreul Illusion} % 2.57
-						\todo{Content}
-					% end
-				% end
-
-				\subsubsection{Helligkeit} % 2.59, 2.66
-					\todo{Content}
-
-					\paragraph{Simultankontrast} % 2.60, 2.61, 2.62, 2.63
-						\todo{Content}
-					% end
-
-					\paragraph{Kontrast als Reizverhältnis} % 2.64, 2.65
-						\todo{Content}
-					% end
-				% end
-
-				\subsubsection{Erkennung von Details} % 2.67
-					\todo{Content}
-
-					\paragraph{Bildschärfenbestimmung} % 2.68
-						\todo{Content}
-					% end
-
-					\paragraph{Kontrastempfindlichkeit} % 2.69, 2.70, 2.71
-						\todo{Content}
+					\paragraph{Kontrast als Reizverhältnis}
+						Für den Kontrast gibt es verschiedene Definitionen, \zB (dabei ist \(L\) stets die Leuchtdichte):
+						\begin{equation*}
+							m = k = \frac{L_\text{max} - L_\text{min}}{L_\text{max} + L_\text{min}}
+						\end{equation*}
+						oder
+						\begin{equation*}
+							K = \frac{L_R - L_H}{L_H} = \frac{\delta L}{L_H}
+						\end{equation*}
+						wobei \( L_R \) die Leuchtdichte des Vordergrunds und \(L_H\) die Leuchtdichte des Hintergrunds darstellt.
+						
+						\todo{Weber-Fechnersches Gesetz, Stevensches Gesetz; 2.65}
 					% end
 				% end
 
-				\subsubsection{Frühe Wahrnehmung} % 2.73, 2.74, 2.75, 2.76, 2.77, 2.78, 2.79
-					\todo{Content}
+				\subsubsection{Erkennung von Details}
+					Die Erkennung kleiner Details ist begrenzt durch
+					\begin{itemize}
+						\item Optische Eigenschaften des Auges, \zB Beugungserscheinungen,
+						\item Abtastung durch Rezeptoren und
+						\item nervöse Verarbeitung.
+					\end{itemize}
+					Zwei mögliche Maße zur "Erkennbarkeit" sind:
+					\begin{itemize}
+						\item Kontrastempfindlichkeit
+						\item Schwellenkontrast
+					\end{itemize}
+
+					\paragraph{Kontrastempfindlichkeit}
+						Die Kontrastempfindlichkeit ist die Auflösung des menschlichen Auges im Frequenzraum. Veränderliche Intensität kann dabei mit Sinus-förmigen Mustern gemessen werden.
+					% end
+				% end
+
+				\subsubsection{Frühe Wahrnehmung}
+					Das Auge nimmt einige Veränderungen der Umgebung schneller wahr als andere. Um die Aufmerksamkeit auf etwas zu lenken, können beispielsweise
+					\begin{itemize}
+						\item Farbe,
+						\item Richtung,
+						\item Bewegung,
+						\item Größe,
+						\item Beleuchtung/Schattierung
+					\end{itemize}
+					variiert werden.
 				% end
 			% end
 
-			\subsection{Informationsextraktion} % 2.80, 2.81, 2.82
-				\todo{Content}
+			\subsection{Informationsextraktion}
+				Ein reiner Reiz ist noch keine \emph{Wahrnehmung}. Dazu kommen noch andere Faktoren wie Kontext, Erwartungen, Adaption. Das Messen der tatsächlichen Wahrnehmung ist leider sehr schwierig, weshalb häufig nur statistische Aussagen auf Basis von User-Tests getätigt werden können.
+				
+				Dabei wird erschwert, dass die Wahrnehmung nicht immer der Realität entspricht. Es wird hingegen das Bild durch einen Wahrnehmungsprozess im Gehirn produziert. Dabei wird die menschliche Wahrnehmung adaptiert, \bspw dreht sich das Bild bei einem Kopfstand.
 
-				\subsubsection{Raumwahrnehmung} % 2.83, 2.84, 2.85, 2.103, 2.104
-					\todo{Content}
+				\subsubsection{Raumwahrnehmung}
+					Die Wahrnehmung des Raums (Raumwahrnehmung) enthält unter anderem
+					\begin{itemize}
+						\item Tiefenwahrnehmung,
+						\item Entfernungs- und Distanzwahrnehmung und
+						\item Ausrichtung des Körpers im Raum.
+					\end{itemize}
+					Daran sind viele Wahrnehmungssysteme beteiligt:
+					\begin{itemize}
+						\item Vestibuläres System (im Innenohr)
+						\item Haptisch-somatisches System (Tasten und Berühren)
+						\item Auditives Sehen (Gehört)
+						\item Propriozeptives System (Eigenwahrnehmung)
+						\item Visuelles System
+					\end{itemize}
+				
+					Dabei ist die Raumwahrnehmung auch mit einem Auge (Monokular) möglich (tatsächlich sind \SIrange{5}{10}{\percent} aller Menschen stereoblind und \SI{20}{\percent} haben eine Stereo-Schwäche).
+					
+					Tatsächlich ist die Raumwahrnehmung ein sehr komplexer Prozess, der auch heute nur zu Teilen verstanden wird. Dabei fließen noch viele weitere Phänomene ein, \zB Größenkonstanz, Annahme starrer Körper oder Vektion. Letzteres ist dabei die scheinbare Eigenbewegung bei einem statischen Vordergrund als Referenzrahmen und einem bewegtem Hintergrund.
 				% end
 
-				\subsubsection{Depth Cue Theorie} % 2.86
-					\todo{Content}
+				\subsubsection{Depth Cue Theorie}
+					Die Annahme der \emph{Depth Cue Theorie} ist, dass die Raumwahrnehmung des visuellen Systems auf Hinweisreizen (sogenannten \emph{Depth Cues}) basiert. Diese werden in drei Kategorien eingeteilt:
+					\begin{enumerate}
+						\item Binokulare Depth Cues (mit zwei Augen)
+							\begin{itemize}
+								\item Disparität/Parallaxe
+								\item Akkomodation (Krümmung der Augenlinsen)
+								\item Konvergenz (die Augen nach innen drehen)
+							\end{itemize}
+						\item Pictoiral Depth Cues (mit einem Auge)
+							\begin{itemize}
+								\item Linearperspektive
+								\item Verdeckung
+								\item Texturgradient
+								\item Fokus und Blur
+								\item Atmosphärische Tiefe
+								\item Vertraute Größe
+								\item Höhe im Gesichtsfeld
+								\item Beleuchtung
+								\item Schattenwurf
+								\item Luminanzänderung
+								\item Transluzenz
+								\item Schattierung
+							\end{itemize}
+						\item Dynamische Depth Cues (Animation)
+							\begin{itemize}
+								\item Bewegungsparallaxe
+								\item Kinetischer Tiefeneffekt
+								\item Interposition
+								\item Bewegung von Highlights
+							\end{itemize}
+					\end{enumerate}
 
-					\paragraph{Stereoskopie} % 2.87, 2.88
-						\todo{Content}
+					\paragraph{Stereoskopie}
+						Bei der Stereoskopie nehmen beide Augen ein leicht unterschiedliches Bild wahr, woraus die Entfernung zu einem Objekt berechnet werden kann.
 					% end
 
-					\paragraph{Picorial Depth Cues} % 2.89
-						\todo{Content}
-
+					\paragraph{Pictorial Depth Cues}
 						\subparagraph{Linearperspektive} % 2.90
 							\todo{Content}
 						% end
 
-						\subparagraph{Texturgradient} % 2.91
-							\todo{Content}
+						\subparagraph{Texturgradient}
+							Sind als parallel angenommene Linien nicht mehr parallel, so ergibt sich eine scheinbare Tiefe (als wenn kariertes Papier um einen Ball gerollt und von oben betrachtet wird).
 						% end
 
-						\subparagraph{Fokus und Blur} % 2.92
-							\todo{Content}
+						\subparagraph{Fokus und Blur}
+							Das Auge fokussiert einen Punkt und produziert somit eine Tiefenschärfe. Daran kann erahnt werden, welche Objekte im Vorder- oder Hintergrund sind.
 						% end
 
-						\subparagraph{Atmosphärische Tiefe} % 2.93
-							\todo{Content}
+						\subparagraph{Atmosphärische Tiefe}
+							Anhand der Atmosphäre (\zB durch Nebel ausgelöst) wird erkannt, was vermutlich im Hintergrund liegt. So kann zum Beispiel bei einem Foto von einem Berg geschätzt werden, dass der Boden niedriger ist, wenn Wolken über diesem hängen.
 						% end
 
-						\subparagraph{Schattenwurf} % 2.94, 2.95
-							\todo{Content}
-						% end
-
-						\subparagraph{Vertraute Größen} % 2.96
-							\todo{Content}
+						\subparagraph{Schattenwurf}
+							Annahme: Beleuchtung von oben und Vorhandensein einer Grundebene. Dann kann durch den Abstand von Schatten zum Objekt erahnt werden, wie weit dieses vom Boden entfernt ist.
 						% end
 					% end
 
-					\paragraph{Dynamische Depth Cues} % 2.97
-						\todo{Content}
-
+					\paragraph{Dynamische Depth Cues}
 						\subparagraph{Motion Parallax} % 2.98
 							\todo{Content}
 						% end
 
-						\subparagraph{Raumwahrnehmung durch Bewegung} % 2.99
-							\todo{Content}
+						\subparagraph{Raumwahrnehmung durch Bewegung}
+							Wird \zB eine schaukelnde Vase von oben betrachtet, so bewegt sich die Öffnung charakteristisch, sodass eine Wahrnehmung der Tiefe entsteht.
 						% end
 
 						\subparagraph{Kinetic Depth Effect, Structure from Motion} % 2.100
@@ -273,30 +467,56 @@
 						% end
 					% end
 
-					\paragraph{Auswertung von Depth Cues} % 2.101
-						\todo{Content}
+					\paragraph{Auswertung von Depth Cues}
+						Unterschiedliche Depth Cues haben im Allgemeinen einen unterschiedliche Informationsgehalt. Dabei sind sie nicht redundant, sondern additiv. Durch ein kompliziertes Zusammenspiel (flexible Gewichtung, Dominanz eines Depth Cue) bildet sich das Gehirn ein Bild. Dabei bildet es sich allerdings kein tatsächliches 3D-Modell, sondern verwendet sie unterschiedlichen Cues für verschiedene Aufgaben. Diese können \zB sein:
+						\begin{itemize}
+							\item Einschätzen von Objektgrößen
+							\item Einschätzen von Entfernungen
+							\item Verfolgung von Pfaden
+							\item Navigation
+							\item Einschätzen der Eigenbewegung
+							\item Abschätzung der Kollisionszeit
+						\end{itemize}
 					% end
-				% end
-
-				\subsubsection{Mögliche Tasks} % 2.102
-					\todo{Content}
 				% end
 			% end
 		% end
 
-		\section{Aufmerksamkeit} % 2.105
-			\todo{Content}
-
-			\subsection{Veränderungsblindheit} % 2.106
-				\todo{Content}
+		\section{Aufmerksamkeit}
+			\subsection{Limitierung der Wahrnehmung}
+				Die initiale Reizaufnahme hat viele Limitieren, sodass nur ein Bruchteil des äußeren Reizes zur kognitiven Verarbeitung zur Verfügung steht, Dabei sind Aufmerksamkeit und externe Faktoren wichtige Einflüsse auf die tatsächliche Wahrnehmung. Die Wahrnehmung ist dabei eher eine partielle Hypothese, die auf Basis unvollständiger Informationen generiert wurde. Es wird dabei periodisch aktualisiert aufgrund von Beobachtungen, \dh die Hypothese wird gegen sensorische Daten getestet. Durch eine dynamische Suche des visuellen Systems wird nach der besten Hypothese/Interpretation/Modell gesucht.
 			% end
 
-			\subsection{Limitierung der Wahrnehmung} % 2.115
-				\todo{Content}
-			% end
-
-			\subsection{Das Gedächtnis und "Gateway to Memory"} % 2.116, 2.117, 2.118
-				\todo{Content}
+			\subsection{Das Gedächtnis und "Gateway to Memory"}
+				Das Gehirn kann sich auf bestimmte Dinge fokussieren und den Rest ignorieren. Dabei gibt es drei verschiedene Arten der Aufmerksamkeit:
+				\begin{itemize}
+					\item \emph{Gewählte Aufmerksamkeit} (selective): Zwischen mehreren Möglichkeiten wird eine zu fokussierende Sache aktiv ausgewählt.
+						\begin{itemize}
+							\item Das Auge folgt den Objekten von Interesse.
+							\item Der Kopf folgt den Klängen von Interesse.
+							\item Es gibt nur einen einzigen "Ort der Aufmerksamkeit".
+						\end{itemize}
+					\item \emph{Geteilte Aufmerksamkeit} (divided): Ein Versuch durch "Multitasking" mehrere Dinge zu fokussieren.
+						\begin{itemize}
+							\item Entweder "gleichzeitig" der durch schnelles Umschalte (time multiplexing).
+							\item Dies wirkt sich negativ auf die Verarbeitung aus, wenn die Aufgaben überfordernd sind.
+							\item Die Aufgaben beeinträchtigen sich gegenseitig.
+						\end{itemize}
+					\item \emph{Erfasste Aufmerksamkeit} (captured): Ein äußerer Reiz zieht alle Aufmerksamkeit auf sich.
+						\begin{itemize}
+							\item Im Gegensatz zur gewählten Aufmerksamkeit wird der "Ort" nicht aktiv ausgewählt.
+							\item Dies geschieht \zB wenn man von einem Tier angefallen wird.
+						\end{itemize}
+				\end{itemize}
+			
+				Das menschliche Gedächtnis ist in mehrere "Teilgedächtnisse" aufgeteilt. Voran steht das \emph{Arbeitsgedächtnis}, auf das ein schneller Zugriff (\ca \SI{70}{\milli\second}) möglich ist, welches aber einen schnellen Verfall hat (nach \ca \SI{200}{\milli\second}). Nach wenigen Sekunden wird der Inhalt jedoch an das Langzeitgedächtnis weitergegeben. Es stellt sozusagen das "Schmierblatt" des Gehirns da.
+				
+				Das Langzeitgedächtnis ist langsamer (\ca \SI{100}{\milli\second}), dafür aber auch sehr viel größer (die genaue Größe ist unbekannt). Das Langzeitgedächtnis hat dabei drei Hauptaufgaben:
+				\begin{itemize}
+					\item Informationen speichern und sich an diese erinnern,
+					\item Informationen abrufen und
+					\item Informationen vergessen.
+				\end{itemize}
 			% end
 		% end
 	% end
@@ -514,7 +734,7 @@
 					\todo{Content}
 				% end
 
-				\subsubsection{Graufensterung} % 5.23
+				\subsubsection{Graufenfensterung} % 5.23
 					\todo{Content}
 				% end
 			% end
@@ -586,7 +806,7 @@
 					\todo{Content}
 				% end
 
-				\subsubsection{Gaussscher Tiefpass-Filter} % 5.67, 5.68
+				\subsubsection{Gaußscher Tiefpass-Filter} % 5.67, 5.68
 					\todo{Content}
 				% end
 
@@ -674,7 +894,7 @@
 					\todo{Content}
 				% end
 
-				\subsubsection{Gaussscher Scale-Space} % 6.44, 6.45
+				\subsubsection{Gaußscher Scale-Space} % 6.44, 6.45
 					\todo{Content}
 				% end
 			% end
@@ -871,7 +1091,7 @@
 		\section{Geometrieverarbeitung} % N/A
 			\todo{Content}
 
-			\subsection{Modelltransformation (Ortientierung, Position)} % 7.62, 7.63
+			\subsection{Modelltransformation (Orientierung, Position)} % 7.62, 7.63
 				\todo{Content}
 			% end
 
@@ -1002,7 +1222,7 @@
 					\todo{Content}
 				% end
 
-				\subsubsection{Allgemeine perspektische Transformation} % 8.63
+				\subsubsection{Allgemeine perspektivische Transformation} % 8.63
 					\todo{Content}
 				% end
 			% end
@@ -1303,11 +1523,11 @@
 				\todo{Content}
 			% end
 
-			\subsection{Sepktrale Charaktertisierung des Auges} % 12.18, 12.19, 12.20, 12.21, 12.22
+			\subsection{Spektrale Charakterisierung des Auges} % 12.18, 12.19, 12.20, 12.21, 12.22
 				\todo{Content}
 			% end
 
-			\subsection{Sepktralwertfunktion} % 12.23, 12.24
+			\subsection{Spektralwertfunktion} % 12.23, 12.24
 				\todo{Content}
 			% end
 
@@ -1316,7 +1536,7 @@
 			% end
 		% end
 
-		\section{Objektfarben, Lichtmatrix under XIEXYZ-Farbraum} % 12.26, 12.27, 12.28, 12.29
+		\section{Objektfarben, Lichtmatrix und XIEXYZ-Farbraum} % 12.26, 12.27, 12.28, 12.29
 			\todo{Content}
 		% end
 
@@ -1559,7 +1779,7 @@
 				% end
 			% end
 
-			\subsection{GUI-Anwendungen und eventbasiertes Programmieren} % 13a.53, 13a.54
+			\subsection{GUI-Anwendungen und Event-basiertes Programmieren} % 13a.53, 13a.54
 				\todo{Content}
 
 				\subsubsection{Graphical User Interfaces (GUIs)} % 13a.55

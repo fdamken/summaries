@@ -2,10 +2,10 @@
 
 ## Foliensätze
 
-Fertig/Strukturiert/Gesamt: 0/1218/1218: 0%/100%/100%
+Fertig/Strukturiert/Gesamt: 120/1218/1218: 10%/100%/100%
 
 * [x] Kapitel 1: Einführung (92)
-* [x] Kapitel 2: Grundlagen der menschlichen Wahrnehmung (120)
+* [X] Kapitel 2: Grundlagen der menschlichen Wahrnehmung (120)
 * [x] Kapitel 3: Computer Vision, Erkennung (81)
 * [x] Kapitel 4: Fouriertheorie (82)
 * [x] Kapitel 5: Bilder (97)

@@ -67,6 +67,7 @@
 \newcommand{\ca}{ca.~}
 \newcommand{\bspw}{bspw.~}
 \newcommand{\bzgl}{bzgl.~}
+\newcommand{\gdw}{gdw.~}
 \newcommand{\zB}{z.\,B.~}
 \newcommand{\iA}{i.\,A.~}
 \newcommand{\ggf}{ggf.~}
@@ -2047,98 +2048,442 @@
 		% end
 	% end
 
-	\chapter{Transformationen} % 8.1
+	\chapter{Transformationen}
 		\label{c:transformations}
-	
-		\todo{Content}
-
-		\section{Affine Abbildungen} % 8.7, 8.8, 8.9, 8.12, 8.13
-			\todo{Content}
-
-			\subsection{Eigenschaften} % 8.14, 8.15, 8.16
-				\todo{Content}
-			% end
-
-			\subsection{Translation} % 8.17, 8.18
-				\todo{Content}
-			% end
-
-			\subsection{Homogene Koordinaten} % 8.19, 8.20
-				\todo{Content}
-
-				\subsubsection{Translation} % 8.21, 8.22, 8.23, 8.24, 8.25
-					\todo{Content}
-				% end
-			% end
-
-			\subsection{Matrizenschreibweise} % 8.26, 8.27
-				\todo{Content}
-			% end
-		% end
-
-		\section{Skalierung, Scherung, Rotation} % 8.28, 8.29, 8.30, 8.31
-			\todo{Content}
-
-			\subsection{Skalierung} % 8.34, 8.35, 8.36
-				\todo{Content}
-			% end
-
-			\subsection{Scherung} % 8.37, 8.38
-				\todo{Content}
-			% end
-
-			\subsection{Rotation} % 8.39, 8.40, 8.41, 8.42
-				\todo{Content}
-
-				\subsubsection{Rotation um beliebige Achse} % 8.43, 8.44, 8.45
-					\todo{Content}
-				% end
-
-				\subsubsection{Rotation um beliebige Raumachse} % 8.46, 8.47
-					\todo{Content}
-				% end
-			% end
-
-			\subsection{Nicht-Kommutativität von Transformationen} % 8.48
-				\todo{Content}
-			% end
-
-			\subsection{Rechenaufwand} % 8.49
-				\todo{Content}
-			% end
-		% end
-
-		\section{Projektion} % 8.50, 8.52, 8.53, 8.54
-			\label{sec:projection}
 		
-			\todo{Content}
+		Aus Sicht der Grafikpipeline gibt es viele unterschiedliche Koordinaten:
+		\begin{itemize}
+			\item Objektkoordinaten (Festlegung der lokalen Lage von 3D-Objekten)
+			\item Weltkoordinaten (Beschreibung der gesamten Szene in 3D)
+			\item Projektionskoordinaten (nach der Anwendung der Projektionstransformation)
+			\item Bildschirmkoordinaten (Darstellung der Szene in einem Fenster mit gewählter Position und Größe)
+		\end{itemize}
+		Abbildung~\ref{fig:pipeline_coordinates} zeigt die Umwandlung der Koordinaten innerhalb der Grafikpipeline.
+	
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[ every node/.style = { align = center }, block/.style = { draw, rectangle }]
+				\coordinate (a);
+				\node [block, right = 1.5 of a] (b) {Modell};
+				\node [block, right = 1 of b] (c) {Projektions- \\ Transformation};
+				\node [block, right = 1 of c] (d) {Normierung};
+				\node [block, right = 1 of d] (e) {Viewport \\ Transformation};
+				\coordinate [right = 1.5 of e] (f);
+				
+				\draw [->] (a) -- coordinate[label = above:Vertex](A) (b);
+				\draw [->] (b) -- coordinate(B) (c);
+				\draw [->] (c) -- coordinate(C) (d);
+				\draw [->] (d) -- coordinate(D) (e);
+				\draw [->] (e) -- coordinate(E) (f);
+				
+				\node [below = 2 of A] (aA) {Objekt- \\ koordinaten};
+				\node [below = 2 of B] (bB) {Welt- \\ koordinaten};
+				\node [below = 2 of C] (cC) {Projektions- \\ koordinaten};
+				\node [below = 2 of D] (dD) {Normierte \\ Koordinaten};
+				\node [below = 2 of E] (eE) {Bildschirm- \\ koordinaten};
+				
+				\draw [<-] (aA) -- (A);
+				\draw [<-] (bB) -- (B);
+				\draw [<-] (cC) -- (C);
+				\draw [<-] (dD) -- (D);
+				\draw [<-] (eE) -- (E);
+			\end{tikzpicture}
+			\caption{Änderung der Koordinaten innerhalb der Grafikpipeline.}
+			\label{fig:pipeline_coordinates}
+		\end{figure}
 
-			\subsection{Perspektive Projektion} % 8.55, 8.59, 8.60
-				\todo{Content}
-
-				\subsubsection{Kanonisches Sichtvolumen} % 8.61, 8.62
-					\todo{Content}
-				% end
-
-				\subsubsection{Allgemeine perspektivische Transformation} % 8.63
-					\todo{Content}
-				% end
+		\section{Affine Abbildungen}
+			\subsection{Eigenschaften}
+				\emph{Affine Abbildungen} (Translation, Rotation, Skalierung, Scherung) haben folgende Eigenschaften:
+				\begin{itemize}
+					\item Geraden werden auf Gerade abgebildet.
+					\item Beschränkte Objekte bleiben beschränkt.
+					\item Verhältnisse von Längen, Flächen, Volumen bleiben erhalten.
+					\item Parallele Objekte bleiben parallel.
+				\end{itemize}
+			
+				Mathematischer formuliert: Eine Abbildung \( \Phi : \R^n \to \R^n \) heißt \emph{affin}, \gdw \( \Phi \) in der Form
+				\begin{equation*}
+					\Phi(\vec{v}) = A(\vec{v}) + I(\vec{b})
+				\end{equation*}
+				mit einer linearen Abbildung \( A : \R^n \to \R^n \), der Identitätsabbildung \( I : \R^n \to \R^n \) und \( \vec{v}, \vec{b} \in \R^n \) darstellbar ist. Eine affine Abbildung setzt sich also aus einer linearen Abbildung und einer Translation zusammen.
+				
+				Eine Abbildung \( A : \R^n \to \R^n \) heißt \emph{linear}, \gdw
+				\begin{equation*}
+					A(\lambda \vec{u} + \mu \vec{v}) = \lambda \, A(\vec{u}) + \mu \, A(\vec{v})
+				\end{equation*}
+				für alle \( \vec{u}, \vec{v} \in \R^n \) und \( \lambda, \mu \in \R \) gilt.
 			% end
 
-			\subsection{Parallele Projektion} % 8.56
-				\todo{Content}
-			% end
-
-			\subsection{Ein-, Zwei- und Dreipunktperspektive} % 8.65
-				\todo{Content}
+			\subsection{Homogene Koordinaten}
+				Anstelle der aufwendigen Notation \( A\vec{v} + \vec{b} \) für affine Abbildungen können homogene Koordinaten verwendet werden (sei dazu im folgenden \( n = 3 \)). Dann wird eine Äquivalenzklasse nach \( \R^4 \) definiert durch:
+				\begin{equation*}
+					\begin{bmatrix}
+						x \\
+						y \\
+						z
+					\end{bmatrix}
+					\to
+					\begin{bmatrix}
+						x \\
+						y \\
+						z \\
+						1
+					\end{bmatrix}
+					\quad\quad\quad\quad
+					\begin{bmatrix}
+						x \\
+						y \\
+						z \\
+						w
+					\end{bmatrix}
+					\to
+					\begin{bmatrix}
+						x/w \\
+						y/w \\
+						z/w
+					\end{bmatrix}
+				\end{equation*}
+				Wobei \( w \neq 0 \) einen Skalierungsfaktor darstellt (dieser ist meistens \num{1}).
+				
+				Eine reine Translation kann dann in homogenen Koordinaten ausgedrückt werden als:
+				\begin{equation*}
+					\begin{bmatrix}
+						x' \\
+						y' \\
+						z' \\
+						1
+					\end{bmatrix}
+					=
+					\begin{bmatrix}
+						1 & 0 & 0 & x_0 \\
+						0 & 1 & 0 & y_0 \\
+						0 & 0 & 0 & z_0 \\
+						0 & 0 & 0 & 1
+					\end{bmatrix}
+					\cdot
+					\begin{bmatrix}
+						x \\
+						y \\
+						z \\
+						1
+					\end{bmatrix}
+					=
+					\begin{bmatrix}
+						x + x_0 \\
+						y + y_0 \\
+						z + z_0 \\
+						1
+					\end{bmatrix}
+				\end{equation*}
+				
+				Allgemein ergibt sich für homogene Koordinaten die Transformationsmatrix
+				\begin{equation*}
+					\begin{bmatrix}
+						a_{11} & a_{12} & a_{13} & x_0 \\
+						a_{21} & a_{22} & a_{23} & y_0 \\
+						a_{31} & a_{32} & a_{33} & z_0 \\
+						0      & 0      & 0      & 1
+					\end{bmatrix}
+				\end{equation*}
+				was einer Anwendung der Matrix \( \mat{A} \) und eine Translation um den Vektor \( \begin{bmatrix} x_0 & y_0 & z_0 \end{bmatrix}^T \) entspricht (dies ist leicht nachzurechnen).
+				
+				Diese einheitliche und kompakte Darstellung von Rotationen/Skalierungen/\dots und Translationen als eine Matrixmultiplikation erlaubt eine einfache Implementierung und eine Hintereinanderausführung mehrerer Operationen entspricht einer reinen Multiplikation von Matrizen.
 			% end
 		% end
 
-		\section{3D-Interaktion} % 8.68, 8.69, 8.70
-			\todo{Content}
+		\section{Skalierung, Scherung, Rotation}
+			Die affinen Abbildung der Skalierung, Scherung und Rotation lassen den Ursprung invariant, \dh der Vektor \( \begin{bmatrix} 0 & 0 & 0 \end{bmatrix}^T \) wird nicht verschoben. Hierfür während theoretisch normale \( (3 \times 3) \)-Matrizen ausreichend.
 
-			\subsection{Manipulatoren} % 8.71, 8.72, 8.73, 8.74
-				\todo{Content}
+			\subsection{Skalierung}
+				Eine Skalierung wird durch eine Diagonalmatrix
+				\begin{equation*}
+					\begin{bmatrix}
+						s_1 & 0   & 0   \\
+						0   & s_2 & 0   \\
+						0   & 0   & s_3
+					\end{bmatrix}
+					\to
+					\underbrace{
+						\begin{bmatrix}
+							s_1 & 0   & 0   & 0 \\
+							0   & s_2 & 0   & 0 \\
+							0   & 0   & s_3 & 0 \\
+							0   & 0   & 0   & 1
+						\end{bmatrix}
+					}_\text{Homogene Koordinaten}
+				\end{equation*}
+				beschrieben. Dabei wird die \(x\)-Achse um \(s_1\) skaliert, die \(y\)-Achse um \(s_2\) und die \(z\)-Achse um \(s_3\). Gilt \( s_1 = s_2 = s_3 \), so werden alle Koordinaten gleichermaßen skaliert.
+			% end
+
+			\subsection{Scherung}
+				Eine Scherung wird durch eine Matrix
+				\begin{equation*}
+					\begin{bmatrix}
+						1   & s_2 & s_5 \\
+						s_1 & 1   & s_6 \\
+						s_3 & s_4 & 1
+					\end{bmatrix}
+					\to
+					\underbrace{
+						\begin{bmatrix}
+							1   & s_2 & s_5 & 0 \\
+							s_1 & 1   & s_6 & 0 \\
+							s_3 & s_4 & 1   & 0 \\
+							0   & 0   & 0   & 1
+						\end{bmatrix}
+					}_\text{Homogene Koordinaten}
+				\end{equation*}
+				beschrieben.
+			% end
+
+			\subsection{Rotation}
+				Eine Basisrotation (um eine der Koordinatenachsen) wird durch folgende drei Matrizen beschrieben (von oben nach unten jeweils um die \(x\)-, \(y\)- und \(z\)-Achse):
+				\begin{align*}
+					\mat{R}(x; \alpha) &=
+						\begin{bmatrix}
+							1 & 0            & 0             \\
+							0 & \cos(\alpha) & -\sin(\alpha) \\
+							0 & \sin(\alpha) & \cos(\alpha)
+						\end{bmatrix} \\
+					\mat{R}(y; \alpha) &=
+						\begin{bmatrix}
+							\cos(\alpha)  & 0 & \sin(\alpha) \\
+							0             & 1 & 0            \\
+							-\sin(\alpha) & 0 & \cos(\alpha)
+						\end{bmatrix} \\
+					\mat{R}(z; \alpha) &=
+						\begin{bmatrix}
+							\cos(\alpha) & -\sin(\alpha) & 0 \\
+							\sin(\alpha) & \cos(\alpha)  & 0 \\
+							0            & 0             & 1
+						\end{bmatrix}
+				\end{align*}
+				Der Kompaktheit halber wurden hier die homogenen Formulierungen weg gelassen, sie werden aber analog zu denen der Skalierung und Scherung gebildet.
+
+				\subsubsection{Rotation um beliebige Achse}
+					Zur Rotation um einen beliebigen, normierten Vektor \( \vec{r} \) um den Winkel \(\alpha\) muss zunächst das körperfeste Koordinatensystem des zu rotierenden Körpers koinzident zu den Ursprungsachsen gedreht werden (durch eine Rotationsmatrix \( \mat{R} \)) und anschließend um eine der Achsen (\zB der \(x\)-Achse) rotiert werden und anschließend wieder zurück in das körperfeste Koordinatensystem gedreht werden:
+					\begin{equation*}
+						\mat{R}_{\vec{r}}(\alpha) = \mat{R}^{-1} \cdot \mat{R}(x; \alpha) \cdot \mat{R}
+					\end{equation*}
+					Dazu muss zunächst eine orthonormale Basis \( (\vec{r}, \vec{s}, \vec{t}) \) bestimmt werden. Der erste Basisvektor ist die Drehachse \(\vec{r}\), die anderen beiden Vektoren werden wie folgt berechnet:
+					\begin{align*}
+						\vec{s} &=
+							\begin{cases}
+								\frac{\vec{r} \times \vec{e}_y}{\lVert \vec{r} \times \vec{e}_y \rVert} & \text{falls } r \parallel \vec{e}_x \\
+								\frac{\vec{r} \times \vec{e}_x}{\lvert \vec{r} \times \vec{e}_x \rVert} & \text{sonst}
+							\end{cases} \\
+						\vec{t} = \vec{r} \times \vec{s}
+					\end{align*}
+					Daraus ergibt sich mit \( \mat{R} = \begin{bmatrix} \vec{r} & \vec{s} & \vec{t} \end{bmatrix} \) die benötigte Transformationsmatrix.
+				% end
+
+				\subsubsection{Rotation um beliebigen Punkt}
+					Soll ein Objekt um einen anderen Punkt als den Ursprung gedreht werden, so muss das Rotationszentrum zunächst in den Ursprung verschoben, dann die Rotation durchgeführt und anschließend das Rotationszentrum wieder zurückgeschoben werden.
+					
+					\subparagraph{Beispiel}
+					Es oll eine Transformationsmatrix erstellt werden, die eine Rotation um die \(i\)-Achse (\( i \in \{\, x, y, z \,\} \)) im Punkt beschrieben durch \( \vec{r} \) durchführt. Die Transformationsmatrix lautet dann allgemein:
+					\begin{equation*}
+						\mat{T} = \text{Trans}(\vec{r}) \cdot \text{Rot}(i; \alpha) \cdot \text{Trans}(-\vec{r})
+					\end{equation*}
+				% end
+			% end
+
+			\subsection{Nicht-Kommutativität von Transformationen}
+				Die Reihenfolge von Transformationen darf \iA nicht vertauscht werden (insbesondere ist die Matrixmultiplikation nicht kommutativ).
+			% end
+
+			\subsection{Rechenaufwand}
+				Bei vielen nacheinander ausgeführten Transformationen ist es sinnvoller, einmal die gesamte Transformationsmatrix zu berechnen, statt oftmals Matrix-Vektor-Multiplikationen durchzuführen.
+			% end
+		% end
+
+		\section{Projektion}
+			\label{sec:projection}
+			
+			Zur Projektion von 3D-Elementen gibt es viele unterschiedliche Möglichkeiten:
+			\begin{itemize}
+				\item Aufriss (Frontansicht)
+				\item Kabinett-/Kavallierperspektive
+				\item Allgemeine Parallelprojektion
+				\item Isometrische Perspektive
+				\item Zentralperspektive
+				\item Vogelperspektive
+			\end{itemize}
+		
+			Solche projektiven Abbildungen können durch homogene Transformationen beschrieben werden, wobei jedoch die Winkel verändert werden! Außerdem geht die Parallelität von Linien oft verloren (\dh Parallelen schneiden sich in Fluchtpunkten). Dies ist der allgemeine Unterschied zwischen perspektivischer und paralleler Projektion:
+			\begin{itemize}
+				\item Bei einer perspektivischen Projektion treffen sich die Strahlen im Augenpunkt (Projektionszentrum) und Winkel werden verändert.
+				\item Bei der parallelen Projektionen sind die Projektionsstrahlen parallel und die Winkel bleiben erhalten.
+			\end{itemize}
+
+			\subsection{Perspektive Projektion}
+				\begin{itemize}
+					\item Vergleichbar mit einem fotografischen System.
+					\item Entspricht der natürlichen Wahrnehmung.
+					\item Der Abstand zwischen Objekten und Projektionsebene geht ein.
+					\item Längenverhältnisse ändern sich.
+					\item Winkel ändern sich.
+					\item Parallele Geraden bleiben nicht parallel.
+				\end{itemize}
+			
+				Das heißt perspektivische Projektionen sind im allgemeinen keine affinen Abbildungen! Insbesondere werden vom Blickpunkt weiter entfernte Objekte kleiner dargestellt.
+				
+				Ist der zu projizierende Punkt \( P = (x, y) \) und der Augpunkt \( A = (-x_0, 0) \) gegeben, so gilt für den Bildpunkt \( B = (0, y_0) \):
+				\begin{equation*}
+					\frac{y_0}{y} = \frac{x_0}{x + x_0}
+				\end{equation*}
+				Allgemein lautet mit \( y_0 = y x_0 / (x + x_0) \) die Abbildung wie folgt:
+				\begin{equation*}
+					\begin{bmatrix}
+						x \\
+						y
+					\end{bmatrix}
+					\mapsto
+					\begin{bmatrix}
+						0 \\
+						\frac{y x_0}{x_0 + x}
+					\end{bmatrix}
+				\end{equation*}
+				Daraus ergibt sich die homogene \( (3 \times 3) \)-Matrix:
+				\begin{equation*}
+					\begin{bmatrix}
+						0 \\
+						\frac{y x_0}{x_0 + x} \\
+						1
+					\end{bmatrix}
+					\simeq
+					\begin{bmatrix}
+						0 \\
+						y x_0 \\
+						x_0 + x
+					\end{bmatrix}
+				\end{equation*}
+				Und somit die perspektivische Transformation:
+				\begin{equation*}
+					\begin{bmatrix}
+						x' \\
+						y' \\
+						1
+					\end{bmatrix}
+					=
+					\begin{bmatrix}
+						0 & 0   & 0   \\
+						0 & x_0 & 0   \\
+						1 & 0   & x_0
+					\end{bmatrix}
+					\cdot
+					\begin{bmatrix}
+						x \\
+						y \\
+						1
+					\end{bmatrix}
+					\quad\simeq\quad
+					\frac{1}{x_0}
+					\begin{bmatrix}
+						x' \\
+						y' \\
+						1
+					\end{bmatrix}
+					=
+					\begin{bmatrix}
+						0 & 0 & 0 \\
+						0 & 1 & 0 \\
+						1/x_0 & 0 & 1
+					\end{bmatrix}
+					\cdot
+					\begin{bmatrix}
+						x \\
+						y \\
+						1
+					\end{bmatrix}
+				\end{equation*}
+
+				\subsubsection{Allgemeine perspektivische Transformation}
+					Mit dem Fluchtpunkt in \( (x_0, y_0, z_0) \) wird eine allgemeine perspektivische Transformation beschrieben durch:
+					\begin{equation*}
+						\begin{bmatrix}
+							x' \\
+							y' \\
+							z' \\
+							w'
+						\end{bmatrix}
+						=
+						\begin{bmatrix}
+							1     & 0     & 0     & 0 \\
+							0     & 1     & 0     & 0 \\
+							0     & 0     & 0     & 1 \\
+							1/x_0 & 1/y_0 & 1/z_0 & 1
+						\end{bmatrix}
+						\cdot
+						\begin{bmatrix}
+							x \\
+							y \\
+							z \\
+							w
+						\end{bmatrix}
+					\end{equation*}
+				% end
+			% end
+
+			\subsection{Parallele Projektion}
+				\begin{itemize}
+					\item Ist weniger realistisch.
+					\item Winkel ändern sich \iA nicht.
+					\item Parallele Geraden bleiben parallel.
+				\end{itemize}
+			% end
+			
+			\subsection{Kanonisches Sichtvolumen}
+				Die perspektivische Projektion wird in zwei Abbildungen zerlegt:
+				\begin{itemize}
+					\item Die perspektivische Transformation und
+					\item eine anschließende Parallelprojektion.
+				\end{itemize}
+				Nach der perspektivischen Transformation ist das Sichtvolumen ein Würfel und durch eine Rotation in den Augpunkt wird erreicht, dass der Würfel achsenparallel wird:
+				\begin{equation*}
+					\underbrace{
+						\begin{bmatrix}
+						0     & 0 & 0 \\
+						0     & 1 & 0 \\
+						1/x_0 & 0 & 1
+						\end{bmatrix}
+					}_\text{Perspektivische Projektion}
+					=
+					\underbrace{
+						\begin{bmatrix}
+						0 & 0 & 0 \\
+						0 & 1 & 0 \\
+						0 & 0 & 1
+						\end{bmatrix}
+					}_\text{Parallelprojektion}
+					\cdot
+					\underbrace{
+						\begin{bmatrix}
+						1     & 0 & 0 \\
+						0     & 1 & 0 \\
+						1/x_0 & 0 & 1
+						\end{bmatrix}
+					}_\text{Perspektivische Transformation}
+				\end{equation*}
+				
+				Ist die Kamera im Unendlichen (Parallelprojektion), wird das Sichtvolumen ein Einheitswürfel. Bei einer perspektivischen Projektion ist das Sichtvolumen eine Pyramide, nach der perspektivischen Transformation hingegen wieder ein Würfel!
+			% end
+		% end
+
+		\section{3D-Interaktion}
+			Bei der 3D-Interaktion ist nicht immer klar, welche Bewegung der Nutzer ausgeführt haben möchte. Ansätze hierzu sind
+			\begin{itemize}
+				\item Desktop,
+				\item Multi-Window (Mehrfachauswahl),
+				\item Direktes 2D-Maus-Mapping oder
+				\item Manipulatoren.
+			\end{itemize}
+
+			\subsection{Manipulatoren}
+				Im zweidimensionalen werden Manipulatoren häufig eingesetzt (Manipulatoren sind dabei zum Beispiel kleine "Rädchen" um ein Objekt, mit welchen dieses gedreht werden kann). Auch werden \zB Kästchen eingesetzt, mit denen skaliert und verschoben werden kann (Drag-and-Drop). Dabei sind sie im zweidimensionalen sehr einfach zu implementieren, da eine Eins-zu-Eins Abbildung der Mauszeigerposition zum Manipulator erstellt werden kann. Außerdem gibt es keine Probleme bei der perspektivischen Abbildung.
+				
+				Immer häufiger werden Manipulatoren auch im dreidimensionalen, \zB zur Navigation der Kamera eingesetzt. Hier ist die Implementierung jedoch sehr viel schwieriger, da es unendliche viele Möglichkeiten gibt, eine Cursorposition auf einer geraden Linie im 3D-Raum abzubilden. Dennoch stellen Manipulatoren eines der besten momentan verfügbaren Werkzeuge zur 3D-Interaktion dar.
 			% end
 		% end
 	% end

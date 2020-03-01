@@ -1693,52 +1693,94 @@
 		% end
 	% end
 
-	\chapter{Grafikpipeline} % 7.1
-		\todo{Content}
-
-		\section{Hardware} % 7.8, 7.9, 7.14
-			\todo{Content}
-
-			\subsection{Large-Scale-Computing} % 7.10
-				\todo{Content}
+	\chapter{Grafikpipeline}
+		\section{Hardware}
+			Abbildung~\ref{fig:hardware_and_paradigms} zeigt einen Überblick über Computer-Paradigmen. Die Überschneidungen sind dabei Bereiche, in denen mehrere Paradigmen zusammenlaufen.
+		
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[->, every node/.style = { align = center }]
+					\node [draw, circle, minimum width = 5cm] (p1) at (0, 1) {P1: Large Scale};
+					\node [draw, circle, minimum width = 5cm] (p4) at (0, 4) {P4: Network};
+					\node [draw, circle, minimum width = 5cm] (p2) at (-2, 7) {P2: Personal};
+					\node [draw, circle, minimum width = 5cm] (p3) at (2, 7) {P3: Mobile};
+					
+					\path (p1) -- coordinate(a) (p4);
+					\path (p4) -- coordinate(b) (p2);
+					\path (p4) -- coordinate(c) (p3);
+					\path (p2) -- coordinate(d) (p3);
+					\coordinate (e) at (intersection of b--p3 and c--p2);
+					
+					\node [left  = 3 of b, yshift = -1cm] (B) {Public-Personal};
+					\node [right = 3 of c, yshift = -1cm] (C) {Virtual Reality, \\ Ambient, Invisible};
+					\node [above = 5 of e]                (E) {Collaborative, \\ Wearable, Uniquitous};
+					
+					\draw (B) -- (b);
+					\draw (C) -- (c);
+					\draw (E) -- (e);
+				\end{tikzpicture}
+				\caption{Hardware und Paradigmen}
+				\label{fig:hardware_and_paradigms}
+			\end{figure}
+		
+			\subsection{P1: Large-Scale-Computing}
+				Die ursprünglichen Mainframe-Computer waren sehr große Rechenmaschinen, die als Hosts angesteuert wurden. Der Zugriff auf diese fand über externe, mit Tastaturen ausgerüstete, alphanumerische, Terminals statt (Host- und Terminal-System).
 			% end
 
-			\subsection{Personal/Desktop Computing} % 7.11
-				\todo{Content}
+			\subsection{P2: Personal/Desktop Computing}
+				Computer stehen nun Zuhause und sind sehr viel kleiner.
 			% end
 
-			\subsection{Networked Computing} % 7.12
-				\todo{Content}
+			\subsection{P3: Networked Computing}
+				Computer kommunizieren untereinander.
 			% end
 
-			\subsection{Mobile Computing} % 7.13
-				\todo{Content}
+			\subsection{P4: Mobile Computing}
+				Es gibt viele verschiedene Arten von mobilen Geräten (Laptops, Tablets, Smartphones, \dots).
 			% end
 
-			\subsection{Collaborative Computing} % 7.15
-				\todo{Content}
+			\subsection{ZP1: Collaborative Computing}
+				Zum Beispiel Multi-Touch-Tables.
 			% end
 
-			\subsection{Virtual Reality} % 7.16
-				\todo{Content}
+			\subsection{ZP2: Virtual Reality}
+				Virtuelle Realität lässt den Menschen in virtuelle Welten eintauchen. Dabei gibt es zwei Arten:
+				\begin{itemize}
+					\item Nicht-immersive Umgebungen (Bildschirm- und Zeigerbasiert, 3D-Anzeige, \mglw haptisches Feedback).
+					\item Immersive Umgebungen (es wird tatsächlich der Eindruck erweckt, in einer Welt aus virtuellen Objekten zu sein).
+				\end{itemize}
 			% end
 
-			\subsection{Augmented Reality} % 7.18, 7.19, 7.20
-				\todo{Content}
+			\subsection{Augmented Reality}
+				Augmented Reality beschreibt die Integration von virtuellen und realen Objekten, wobei die Wahrnehmung des Benutzers erweitert und verbessert werden soll. Die Ein- und Ausgabegeräte sind \zB Heads-Up-Displays (HUDs) oder Head-Mounted-Displays (HMDs).
 			% end
 
-			\subsection{Ambient/Invisible} % 7.21
-				\todo{Content}
+			\subsection{Ambient/Invisible}
+				Zum Beispiel Freiraum-Gestenerkennung.
 			% end
 
-			\subsection{Wearable/Ubiquitous} % 7.22
-				\todo{Content}
+			\subsection{Wearable/Ubiquitous}
+				Die Geräte müssen nicht mehr explizit gehalten werden, sondern sie sind "anziehbar", \zB eine Smartwatch.
 			% end
 		% end
 
-		\section{Computergrafik} % 7.23, 7.24, 7.25
-			\todo{Content}
-
+		\section{Computergrafik}
+			Abbildung~\ref{fig:computer_graphics} zeigt eine stark vereinfachte Pipeline der Computergrafik.
+		
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[->, every node/.style = { draw, rectangle, align = center }]
+					\node (a) {3D-Objekte};
+					\node [right = 2 of a] (b) {3D-Modelle \\ (Szene, Geometrie, \\ Material, Beleuchtung) \\ Notwendig zur \\ Rasterisierung};
+					\node [right = 2 of b] (c) {Bilder \\ (Interaktion, \\ Animation)};
+					
+					\draw (a) -- (b);
+					\draw (b) -- (c);
+				\end{tikzpicture}
+				\caption{Einfache Pipeline der Computergrafik.}
+				\label{fig:computer_graphics}
+			\end{figure}
+		
 			\subsection{Geschichte} % N/A
 				\todo{Content}
 
@@ -1771,125 +1813,243 @@
 				% end
 			% end
 
-			\subsection{Virtuelle Charaktere} % 7.36, 7.37, 7.38, 7.39
-				\todo{Content}
+			\subsection{Uncanny Valley}
+				Das \emph{Uncanny Valley} beschreibt eine Beziehung zwischen der Ähnlichkeit eines Objekts zum Menschen und der emotionalen Reaktion darauf. Dabei tritt kurz vor einer absoluten Ähnlichkeit ein Tief auf, welches als Uncanny Valleys bezeichnet wird. In diesem Bereich werden Objekte besonders gruselig wahrgenommen (siehe \zB \href{fig:computer_graphics}{hier} für eine Demonstration dieses Effekts).
 			% end
 		% end
 
-		\section{Grafikpipeline} % 7.41, 7.42, 7.43, 7.61, 7.87, 7.98, 7.100
-			\todo{Content}
+		\section{Grafikpipeline}
+			Abbildung~\ref{fig:graphics_pipeline} zeigt die typische Grafikpipeline von der Anwendung zur Ausgabe. Dabei geschehen folgende Schritte:
+			\begin{itemize}
+				\item Anwendung \\ Dieser Schritt produziert eine Modellierung der Daten.
+				\item Geometrieverarbeitung \\ Dieser Schritt produziert 2D-Koordinaten und zusätzliche Daten (z-Buffer Werte, Farbwerte pro Knoten/Primitiv).
+				\item Rasterisierung \\ Dieser Schritt produziert ein Rasterbild (Bildspeicher).
+				\item Ausgabe \\ Speichern/Anzeigen des Bilds.
+			\end{itemize}
+		
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[block/.style = { draw, rectangle, minimum height = 1cm, minimum width = 3cm, align = center }]
+					\node [block, label = above:CPU] (a) {Anwendung};
+					\node [block, right = 1.5 of a] (b) {Geometrie- \\ verarbeitung};
+					\node [block, right = 1 of b] (c) {Rasterisierung};
+					\node [block, right = 1.5 of c, label = above:{\zB Monitor}] (d) {Ausgabe};
+					
+					\coordinate [above left  = 0.5 of b.north west] (A);
+					\coordinate [below left  = 0.5 of b.south west] (B);
+					\coordinate [below right = 0.5 of c.south east] (C);
+					\coordinate [above right = 0.5 of c.north east] (D);
+					\path (D) -- coordinate(X) (C);
+					\path (A) -- coordinate(Y) (B);
+					
+					\path (A) -- node[above]{GPU} (D);
+					
+					\draw (A) -| (C) -| cycle;
+					
+					\draw [->] (a) -- (Y);
+					\draw [->] (b) -- (c);
+					\draw [->] (X) -- (d);
+				\end{tikzpicture}
+				\caption{Typische Grafikpipeline}
+				\label{fig:graphics_pipeline}
+			\end{figure}
 		% end
 
-		\section{Eingabe grafischer Daten} % 7.44, 7.45, 7.46
-			\todo{Content}
-		% end
-
-		\section{Repräsentation von 3D-Daten} % N/A
-			\todo{Content}
-
-			\subsection{Grafische Primitive} % 7.47, 7.48, 7.49, 7.50
-				\todo{Content}
+		\section{Anwendung}
+			Die Anwendung beschäftigt sich mit der Eingabe von grafischen Daten sowie deren Repräsentation.
+		
+			\subsection{Eingabe grafischer Daten}
+				Grafische Daten können \bspw durch die Generierung von 3D-Modellen oder der Abtastung realer Objekte eingegeben werden.
 			% end
-
-			\subsection{Transformationen} % 7.51, 7.52
-				\todo{Content}
-			% end
-		% end
-
-		\section{Räumliche Datenstrukturen} % 7.53, 7.54, 7.55
-			\todo{Content}
-
-			\subsection{Hüllkörper (Bounding Volumes)} % 7.56
-				\todo{Content}
-			% end
-
-			\subsection{Hüllkörperhierarchien} % 7.57
-				\todo{Content}
-			% end
-
-			\subsection{Raumunterteilung} % N/A
-				\todo{Content}
-
-				\subsubsection{Achsenparallele Gitter (Grids)} % 7.58
-					\todo{Content}
+	
+			\subsection{Repräsentation von 3D-Daten}
+				\subsubsection{Grafische Primitive}
+					Grafische Primitive, aus denen ein größeres Modell zusammengesetzt werden kann, sind z.\,B.:
+					\begin{itemize}
+						\item Punkte
+						\item Linien
+						\item Dreiecke
+					\end{itemize}
 				% end
-
-				\subsubsection{Quadtree/Octree} % 7.59
-					\todo{Content}
+	
+				\subsubsection{Transformationen}
+					Siehe Kapitel~\ref{c:transformations}.
 				% end
+			% end
 
-				\subsubsection{Binary Space Partition} % 7.60
-					\todo{Content}
+			\subsection{Räumliche Datenstrukturen}
+				Räumliche Datenstrukturen werden \bspw zum View Frustum Cullung (feststellen der Sichtbarkeit eines Objekts im Sichtvolumen), Occlusion Culling/z-Buffer (Verdeckung) oder Kollisionserkennung genutzt. Sie werden in folgende Klassen eingeteilt:
+				\begin{itemize}
+					\item Hüllkörperhierarchie (\bspw Bounding Sphere Hierarchy)
+					\item Raumunterteilung (Gitter, Hierarchisch (k-d Tree, Quadtree, Octree, Binary Space Partition))
+				\end{itemize}
+	
+				\subsubsection{Hüllkörper/-hierarchien}
+					Ein \emph{Hüllkörper} ist eine einfache Form um den eigentlichen Körper herum, sodass sich Schnitttests mit anderen Primitiven einfach durchführen lassen. Typische Primitive sind \zB Kugeln, Rechtecke oder rotierte Rechtecke. Eine \emph{Hüllkörperhierarchie} wird dann aus mehreren solchen Hüllkörpern zusammengesetzt.
+				% end
+	
+				\subsubsection{Raumunterteilung}
+					\paragraph{Achsenparallele Gitter (Grids)}
+						Der Raum wird in ein Gitter eingeteilt, wobei Objekte in mehreren Zellen enthalten sein können (Redundanz). Die Aufteilung kann sich demnach nicht der Geometrie anpassen und ist sehr speicherintensiv. Dennoch ist sie sehr effizient traversierbar und es ist ein schneller Zugriff auf Nachbarn möglich.
+					% end
+	
+					\paragraph{Quadtree/Octree}
+						Bei einem \emph{Quadtree} wird der Raum in ein Gitter aufgeteilt und aus diesem ein Baum berechnet (siehe \href{https://projects.frisp.org/documents/29}{GdR Zusammenfassung}, Abschnitt "Approximative Zellzerlegung").
+						
+						Ein \emph{Octree} entspricht dann einem Quadtree im dreidimensionalen.
+					% end
+	
+					\paragraph{Binary Space Partition}
+						Bei einer \emph{Binary Space Partition} (BSP) wird der Raum binär unterteilt, wobei immer an den durch Polygone induzierten Ebenen geteilt wird. Dann entspricht jeder Knoten einer Unterteilungsebene, die den Raum in zwei Halbräume unterteilt.
+					% end
 				% end
 			% end
 		% end
 
-		\section{Geometrieverarbeitung} % N/A
-			\todo{Content}
-
+		\section{Geometrieverarbeitung}
 			\subsection{Modelltransformation (Orientierung, Position)} % 7.62, 7.63
 				\todo{Content}
 			% end
 
-			\subsection{Simulation der Beleuchtung} % 7.64, 7.65
-				\todo{Content}
+			\subsection{Simulation der Beleuchtung}
+				Um die Beleuchtung eines Objekts zu simulieren, müssen zunächst die Leuchtdichten eines Primitivs bestimmt werden (in der Praxis findet die Bestimmung der Leuchtdichte pro Pixel erst während der Rasterisierung statt). Zur Bestimmung der Beleuchtung gibt es unterschiedliche Ansätze:
+				\begin{itemize}
+					\item Flat Shading
+						\begin{itemize}
+							\item Die Normale des Primitivs ergibt eine einheitliche Helligkeit.
+						\end{itemize}
+					\item Gouraud Shading
+						\begin{itemize}
+							\item Die Normalen in den Eckpunkten ergeben die Helligkeitswerte für die Eckpunkte.
+							\item Die Helligkeitswerte der Eckpunkte werden linear interpoliert.
+						\end{itemize}
+					\item Phong Shading
+						\begin{itemize}
+							\item Die Normalen in den Eckpunkten werden für jeden Punkt linear interpoliert und normiert.
+							\item Der Helligkeitswert ergibt sich aus der interpolierten Normalen.
+						\end{itemize}
+				\end{itemize}
 
-				\subsubsection{Phong-Beleuchtungsmodell} % 7.66, 7.67
-					\todo{Content}
+				\subsubsection{Phong-Beleuchtungsmodell}
+					Im Phong-Beleuchtungsmodell setzt sich die Gesamtbeleuchtung
+					\begin{equation*}
+						I_\textit{total} = I_\textit{amb} + I_\textit{diff} + I_\textit{spec}
+					\end{equation*}
+					aus
+					\begin{itemize}
+						\item Ambienter Reflexion \( I_\textit{amb} \) (global modelliert),
+						\item Diffuser Reflexion \( I_\textit{diff} \) (lokal modelliert) und
+						\item Spiegelnder Reflexion \( I_\textit{spec} \) (lokal modelliert).
+					\end{itemize}
+					zusammen. Die ambiente Komponente ist richtungsunabhängig und abhängig von dem Umgebungslicht \(C\) sowie der Materialkonstanten \(k\):
+					\begin{equation*}
+						I_\textit{amb} = k_\textit{amb} C_\textit{amb}
+					\end{equation*}
+					Die diffuse Reflexion ist abhängig von der Richtung des Lichts, der Oberflächennormalen \( \vec{N} \) und der Richtung zum Licht \( \vec{L} \):
+					\begin{equation*}
+						I_\textit{diff} = k_\textit{diff} C_\textit{light} \big( \vec{N} \circ \vec{L} \big)
+					\end{equation*}
+					Die spiegelnde Reflexion ist abhängig von der Richtung der Reflexion \( \vec{R} \), der Betrachtungsrichtung \( \mat{V} \) und der "Rauheit" \(m\) des Materials:
+					\begin{equation*}
+						I_\textit{spec} = k_\textit{spec} C_\textit{light} \big( \vec{R} \circ \vec{V} \big)^m
+					\end{equation*}
 				% end
 			% end
 
-			\subsection{Perspektivische Transformation und Clipping (Abschneiden)} % 7.78, 7.79
-				\todo{Content}
+			\subsection{Perspektivische Transformation und Clipping (Abschneiden)}
+				Liegen mehrere Objekte voreinander, so ist der dem Auge nächste Punkt sichtbar (es sei denn, das Objekt ist transparent, dann wird auch der dahinterliegende Punkt sichtbar, usw.). \emph{Clipping} bezeichnet nun das Abschneiden von Objekten am Rand des gewünschten Bildausschnitts.
 
-				\subsubsection{Painters Algorithmus} % 7.80
-					\todo{Content}
+				\subsubsection{Painters Algorithmus}
+					Bei diesem Algorithmus werden die Primitive "wie von einem Maler" gezeichnet: Es wird mit dem tiefsten z-Wert begonnen und die Objekte mit aufsteigendem z-Wert darüber gezeichnet. So verdecken sich hintereinander liegende Polygone "automatisch". Jedoch sind transparente Objekte sowie "im Kreis überdeckende" Objekte nicht korrekt darstellbar.
 				% end
 			% end
 
-			\subsection{Culling (Verdeckungsrechnung im Objektraum)} % 7.81, 7.82, 8.83
-				\todo{Content}
+			\subsection{Culling (Verdeckungsrechnung im Objektraum)}
+				Üblicherweise machen die Rückseiten von Objekten \ca die Hälfte der vorkommenden Flächen aus, können aber nicht gesehen werden. Durch \emph{Culling} werden die Rückseiten berechnet und beim Rendering explizit ausgeschlossen, um Rechenleistung zu sparen.
+				
+				Eine Fläche ist immer dann eine Rückseite, wenn das Skalarprodukt von Sehstrahl \( \vec{s} \) und Normale \( \vec{n} \) positiv ist: \( \vec{n} \circ \vec{s} > 0 \).
 			% end
 
-			\subsection{Projektion} % 7.85, 7.86
-				\todo{Content}
+			\subsection{Projektion}
+				Siehe~\ref{sec:projection}.
 			% end
 		% end
 
-		\section{Rasterisierung} % 7.88
-			\todo{Content}
+		\section{Rasterisierung}
+			Bei der \emph{Rasterisierung} werden die Primitive (Linien, Polygone) in Pixel zerlegt und zusätzlich pro Pixel eine Verdeckungsrechnung und Shading durchgeführt.
 
-			\subsection{Scan-Konvertierung} % 7.89
-				\todo{Content}
-
-				\subsubsection{Rasterisierung von Linien (Bresenham-Algorithmus)} % 7.90, 7.91
-					\todo{Content}
+			\subsection{Scan-Konvertierung}
+				\subsubsection{Rasterisierung von Linien (Bresenham-Algorithmus)}
+					Der Bresenham-Algorithmus~\ref{alg:bresenham} ist ein Algorithmus zum Zeichnen von Linien von Anfangspunkt \( (x_1, y_1) \) mit Endpunkt \( (x_2, y_2) \). Mit \( \Delta x \coloneqq x_2 - x_1 \geq 0 \) und \( \Delta y \coloneqq y_2 - y_1 \geq 0 \) (die Bedingung \( \geq 0 \) kann durch geschickte Vertauschung immer eingehalten werden), muss der Algorithmus genau \( \max \big\{ \Delta x, \Delta y \big\} + 1 \) Pixel zeichnen.
+					
+					\begin{algorithm}
+						\DontPrintSemicolon
+						
+						\KwIn{Startpunkt \( (x_1, y_1) \), Endpunkt \( (x_2, y_2) \)}
+						
+						\( \delta x \gets x_2 - x_1 \)\;
+						\( \delta y \gets y_2 - y_1 \) \;
+						\( x \gets x_1 \) \;
+						\( y \gets y_1 \) \;
+						
+						
+						Setze Pixel \( (x, y) \) \;
+						\( \xi \gets \delta x / 2 \) \;
+						
+						\While{\( x < x_2 \)}{
+							\( x \gets x + 1 \) \;
+							\( \xi \gets \xi - \delta y \) \;
+							
+							\If{\( \xi < 0 \)}{
+								\( y \gets y + 1 \) \;
+								\( \xi \gets \xi + \delta x \)
+							}
+						
+							Setze Pixel \( (x, y) \);
+						}
+					
+						\caption{Bresenham-Algorithmus zum Rastern einer Linie.}
+						\label{alg:bresenham}
+					\end{algorithm}
 				% end
-
-				\subsubsection{Rasterisierung von Polygonen (Scanline Algorithmus)} % 7.92
-					\todo{Content}
+	
+				\subsubsection{Rasterisierung von Polygonen (Scanline Algorithmus)}
+					Polygone können \bspw mit dem \emph{Scanline Algorithmus} gerastert werden. Dieser scannt die Pixelebene von oben nach unten mit einer "Scan Line" durch und findet alle Schnittpunkte mit den Kanten des Polygons. Anschließend werden die Schnittpunkt nach \(x\)-Koordinaten sortiert und die Pixel zwischen Paaren aufeinanderfolgender Schnittpunkte gefüllt. Dabei wird eine Parität mitgeführt, die in jedem Schritt um Eins erhöht wird (beginnend von Null). Ist die Parität ungerade, wird der Pixel gesetzt, sonst nicht.
 				% end
 			% end
 
-			\subsection{Verdeckungsrechnung} % 7.93
-				\todo{Content}
-
-				\subsubsection{z-Buffer-Algorithmus} % 7.94, 7.95, 7.96, 7.97
-					\todo{Content}
+			\subsection{Verdeckungsrechnung}
+				\subsubsection{z-Buffer-Algorithmus}
+					\begin{itemize}
+						\item Zu jedem Bildpunkt wird noch ein z-Wert gespeichert.
+						\item Initialisierung: Der Bildspeicher wird auf die Hintergrundfarbe gesetzt, der z-Speicher auf den maximalen Wert.
+						\item Anschließend werden alle Objekte der Szene nacheinander gerastert, wobei keine besondere Reihenfolge notwendig ist: \\
+								Für jeden Punkt \( (x, y) \) eines Polygons wird \( z(x, y) \) berechnet. Aufgrund der perspektivischen Transformation ist eine lineare Interpolation nicht mehr einfach möglich! Ist \( z(x, y) \) kleiner als der bereits gespeicherte Wert, so wird \( z(x, y) \) gespeichert und der zugehörige Farbwert in den Bildspeicher geschrieben.
+						\item Nach der Behandlung aller Objekte steht im Objektspeicher das Bild der gewünschten (Teil-)~Flächen.
+					\end{itemize}
+				
+					\textbf{Vorteile:}
+					\begin{itemize}
+						\item Jede Szene mit jeder Art von Objekten kann behandelt werden.
+						\item Die Komplexität ist unabhängig von der Tiefenkomplexität.
+						\item In eine fertige Szene können nachträglich Objekte eingefügt werden.
+						\item Spezielle Objekte (\zB ein 3D-Cursor) können in der Szene mit korrekter Verdeckung dargestellt werden.
+						\item Leicht in Hardware zu realisieren.
+					\end{itemize}
+					\textbf{Nachteile:}
+					\begin{itemize}
+						\item Für jeden Bildpunkt wird nur ein Objekt gespeichert (dies führt zu Abtastfehlern).
+						\item Transparenz ist prinzipiell nicht realisierbar.
+						\item Die Genauigkeit des z-Buffers ist beschränkt (getrennte Objekte erhalten den selben z-Wert, die Farbe wird dann von der Objektreihenfolge bei der Rasterung bestimmt).
+					\end{itemize}
 				% end
 			% end
-		% end
-
-		\section{Ausgabe} % 7.99
-			\todo{Content}
-		% end
-
-		\section{Beispiele} % 7.101, 7.102, 7.103
-			\todo{Content}
 		% end
 	% end
 
 	\chapter{Transformationen} % 8.1
+		\label{c:transformations}
+	
 		\todo{Content}
 
 		\section{Affine Abbildungen} % 8.7, 8.8, 8.9, 8.12, 8.13
@@ -1949,6 +2109,8 @@
 		% end
 
 		\section{Projektion} % 8.50, 8.52, 8.53, 8.54
+			\label{sec:projection}
+		
 			\todo{Content}
 
 			\subsection{Perspektive Projektion} % 8.55, 8.59, 8.60

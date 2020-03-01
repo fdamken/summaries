@@ -1014,8 +1014,8 @@
 			\end{align*}
 			Dieser Übergang lässt sich als "Superposition" auffassen mit:
 			\begin{align*}
-				f(x) &= \int_{-\infty}^{\infty} \! F(u) e^{2\pi i u x} \dif{u} \\
-				F(x) &= \int_{-\infty}^{\infty} \! f(\tau) e^{-2\pi i u \tau} \dif{\tau}
+				f(x) &= \int_{-\infty}^{\infty} \! F(u) e^{ 2\pi i u x} \dif{u} \\
+				F(u) &= \int_{-\infty}^{\infty} \! f(x) e^{-2\pi i u x} \dif{x}
 			\end{align*}
 			
 			Dabei heißt der Übergang \( f(x) \to F(u) \) \emph{Fourier-Transformation} und der Übergang \( F(u) \to f(x) \) \emph{Inverse Fourier-Transformation}. Dabei ist \(F(u)\) oft komplex und \(f(x)\) ist reell.
@@ -1043,6 +1043,15 @@
 					\item \( \cos(kx) \):    \tabto{2.5cm} Delta-Funktion bei \( u = \pm k \)
 					\item \( \sin(kx) \):    \tabto{2.5cm} Delta-Funktion bei \( u = \pm ik \)
 				\end{itemize}
+			% end
+			
+			\subsection{2D-Fourier-Transformation}
+				Für eine zweidimensionale Funktion \( f(x, y) \) lautet die Fourier-Transformation:
+				\begin{align*}
+					f(u, v) &= \iint_{-\infty}^{\infty} \! f(x, y) e^{ 2\pi i (xu + vy)} \dif{u} \dif{v} \\
+					F(u, v) &= \iint_{-\infty}^{\infty} \! f(x, y) e^{-2\pi i (ux + vy)} \dif{x} \dif{y}
+				\end{align*}
+				Die Fourier-Transformierte ist entspricht also zweidimensionalen Funktionen (Real- und Imaginärteil), die als Graustufenbilder visualisiert werden können. Meistens wird dabei aber nur das sogenannte Amplituden-Spektrum betrachtet, welches die Amplituden der Fourier-Transformation visualisiert. Dabei entspricht der Pixelwert an der Stelle \( (u, v) \) der Amplitude, \dh dem Betrag, der Frequenzen \( \big\lvert F(u, v) \big\rvert \).
 			% end
 		% end
 
@@ -1089,145 +1098,391 @@
 		% end
 	% end
 
-	\chapter{Bilder} % 5.1, 5.3, 5.4
-		\todo{Content}
+	\chapter{Bilder}
+		\section{Bildverbesserung}
+			Bei der Bildverbesserung wird versucht, die Bildinformationen so aufzubereiten, dass die für den Betrachter verbessert sind/wirken. Dafür gibt es (leider) keine allgemeine Theorie, sondern die möglichen Verbesserungen sind sehr Anwendungsspezifisch und abhängig von Bild und Betrachter. Typische Anwendungen sind dabei der Ausgleich von nicht-Linearitäten der Kamera, Anpassung von Helligkeit und Kontrast und Hervorhebung von Bildbereichen.
+			
+			Es wird unterschieden zwischen Methoden im Ortsraum (die direkt Pixelwerte manipulieren) und Methoden im Frequenzraum, bei denen das Bild zunächst durch eine Fourier-Transformation in seine Frequenzen zerlegt, manipuliert und rücktransformiert wird.
 
-		\section{Bildverbesserung} % 5.8, 5.9, 5.10, 5.11
-			\todo{Content}
-
-			\subsection{Histogramm} % 5.14, 5.15, 5.16, 5.17, 5.18, 5.19
-				\todo{Content}
+			\subsection{Histogramm}
+				Das Histogramm eines Bildes ist die graphische Darstellung der Häufigkeitsverteilung von bestimmten Merkmalen (\zB von bestimmten Grauwerten). Histogramme von Bildern können viele Aussagen treffen, \zB über:
+				\begin{itemize}
+					\item Dynamik (Bereich reeller Lichtintensitäten, er auf der Grauwertskala abgebildet wird)
+					\item Kontrast (Bereich der Grauwertskala, der zur Darstellung ausgenutzt wird)
+					\item Helligkeit (Beleuchtungsstärke (der Grauwert))
+				\end{itemize}
+				Dabei entspricht die Helligkeit eines Grauwertbildes dem Mittelwert aller Grauwerte und der Bildkontrast der Varianz aller Grauwerte.
 			% end
 
-			\subsection{Pixeloperationen} % 5.12, 5.13, 5.20
-				\todo{Content}
+			\subsection{Pixeloperationen}
+				Bei Pixeloperationen wird ein Pixel unabhängig von seiner Nachbarschaft modifiziert. Beispiele für solche Operationen sind:
+				\begin{itemize}
+					\item Negativ
+					\item Binärisierung/Thresholding
+					\item Fensterung
+					\item Kontrastspreizung
+					\item Dynamikkompression
+					\item Gammakorrektur (Bildschirm)
+					\item Helligkeit
+					\item Histogrammausgleich
+					\item Differenz
+					\item Mittelung
+				\end{itemize}
 
-				\subsubsection{Bildnegativ} % 5.21
-					\todo{Content}
+				\subsubsection{Bildnegativ}
+					Bei einem Bildnegativ wird der Wert eines Pixels von der Maximal möglichen Intensität abgezogen und dieser Wert als neuer Pixelwert verwendet:
+					\begin{equation*}
+						g[m, n] = f_\text{max} - f[m, n]
+					\end{equation*}
 				% end
 
-				\subsubsection{Binärisierung/Thresholding} % 5.22
-					\todo{Content}
+				\subsubsection{Binärisierung/Thresholding}
+					Bei der Binärisierung wird ein Schwellwert \(\tau\) sowie zwei Werte \(f_\text{max}\) und \(f_\text{min}\) festgelegt und das Bild wie folgt manipuliert:
+					\begin{equation*}
+						g[m, n] =
+							\begin{cases}
+								f_\text{max} & f[m, n] > \tau \\
+								f_\text{min} & f[m, n] \leq \tau
+							\end{cases}
+					\end{equation*}
+					Für den Spezialfall der Binärisierung gilt \( f_\text{max} = 1 \) und \( g_\text{min} = 0 \).
 				% end
 
-				\subsubsection{Graufenfensterung} % 5.23
-					\todo{Content}
+				\subsubsection{Grauwertfensterung}
+					Bei der Grauwertfensterung wird ein bestimmtes Intensitätsintervall hervorgehoben (gespreizt) und alles andere wird auf einen fixen Wert gesetzt.
 				% end
-			% end
-
-			\subsection{Kontrastspreizung} % 5.24
-				\todo{Content}
-			% end
-
-			\subsection{Histogrammausgleich} % 5.25, 5.26, 5.27
-				\todo{Content}
-			% end
-
-			\subsection{Mittelung} % 5.28
-				\todo{Content}
-			% end
-		% end
-
-		\section{Bildfilterung} % 5.29, 5.30
-			\todo{Content}
-
-			\subsection{Ortsraum} % 5.31
-				\todo{Content}
-
-				\subsubsection{Lineare Filterung (Faltung)} % 5.32
-					\todo{Content}
+				
+				\subsection{Kontrastspreizung}
+					Bei der Kontrastspreizung wird der Grauwert auf eine neue Grauwertskala anhand einer einwertigen oder monotonen Funktion abgebildet.
 				% end
-
-				\subsubsection{Tiefpass-Filter} % 5.33
-					\todo{Content}
+				
+				\subsection{Histogrammausgleich}
+					Bei einem Histogrammausgleich wird die Grauwertskala anhand der Kurve der Summenwahrscheinlichkeiten, \dh anhand der kumulierten Wahrscheinlichkeiten bis zu einem bestimmten Wert, transformiert:
+					\begin{equation*}
+						p(g) = \max(\text{Intensität}) \cdot \sum_{i = 0}^{g} p(i)
+					\end{equation*}
+					Ein solcher Histogrammausgleich ist verlustbehaftet und nicht umkehrbar!
 				% end
-
-				\subsubsection{Mittelwert-Filter} % 5.34, 5.35
-					\todo{Content}
+				
+				\subsection{Mittelung}
+					Ein unkorreliertes Rauschen im Bild kann durch Mittelung über \(k\) Aufnahmen des gleichen Motivs unterdrückt werden:
+					\begin{equation*}
+						g[m, n] = \frac{1}{k} \sum_{i = 0}^{k - 1} f_i[m, n]
+					\end{equation*}
 				% end
-
-				\subsubsection{Gauss-Filter} % 5.36, 5.37, 5.38
-					\todo{Content}
-				% end
-
-				\subsubsection{Median-Filter} % 5.39
-					\todo{Content}
-				% end
-
-				\subsubsection{Hochpass-Filter} % 5.40
-					\todo{Content}
-				% end
-
-				\subsubsection{Diskretisierte Ableitungen} % 5.42, 5.43
-					\todo{Content}
-
-					\paragraph{Laplacian-Filter} % 5.44, 5.47, 5.48
-						\todo{Content}
-					% end
-
-					\paragraph{Laplacian of Gaussian Filter} % 5.45, 5.46
-						\todo{Content}
-					% end
-				% end
-
-				\subsubsection{Bilateral Filter} % 6.10
-					\todo{Content}
-				% end
-			% end
-
-			\subsection{Frequenzraum} % 5.51, 5.52, 5.62, 5.63, 5.64, 5.65
-				\todo{Content}
-
-				\subsubsection{Idealer Tiefpass-Filter} % 5.66
-					\todo{Content}
-				% end
-
-				\subsubsection{Gaußscher Tiefpass-Filter} % 5.67, 5.68
-					\todo{Content}
-				% end
-
-				\subsubsection{Idealer Hochpass-Filter} % 5.70
-					\todo{Content}
-				% end
-			% end
-
-			\subsection{Vergleich: Orts- und Frequenzraum-Filter} % 5.71
-				\todo{Content}
 			% end
 		% end
 
-		\section{Bildkompression} % 5.72, 5.73, 5.74, 5.75, 5.76, 5.77, 5.96
-			\todo{Content}
+		\section{Bildfilterung}
+			Zur Bildfilterung gibt es zwei grundlegende Vorgehensweise:
+			\begin{itemize}
+				\item Filterung im Ortsraum durch direkte Manipulation der Pixel und
+				\item Filterung im Frequenzraum durch vorherige Fourier-Transformation und Rücktransformation.
+			\end{itemize}
 
-			\subsection{Harmonische Transformation} % 5.78
-				\todo{Content}
+			\subsection{Ortsraum}
+				Filter im Ortsraum werden durch \emph{Filtermasken} beschrieben. Dabei wird ein Pixel in Abhängigkeit von seiner Nachbarschaft modifiziert. Eine Filtermaske wird durch eine \( k \times l \)-Matrix (mit \(k\), \(l\) ungerade) beschrieben, die die Gewichtung der umliegenden Pixel beschreibt. Dies entspricht einer linearen Filterung (Faltung) im Ortsraum:
+				\begin{equation*}
+					(f \ast w)[m, n] = \sum_{i = -\lfloor k/2 \rfloor}^{\lfloor k/2 \rfloor} \sum_{j = -\lfloor l/2 \rfloor}^{\lfloor l/2 \rfloor} w_{ij} f[m + i, n + j]
+				\end{equation*}
+				Dabei entspricht \( w \in \R^{k \times l} \) der Filtermaske.
 
-				\subsubsection{JPEG} % 5.79, 5.95
-					\todo{Content}
+				\subsubsection{Tiefpass-Filter}
+					\begin{itemize}
+						\item Die Koeffizienten (\dh die Einträge der Filtermaske) sind allesamt positiv und normalisiert, sodass die Summe \num{1} ergibt.
+						\item Dadurch werden nur positive Werte produziert.
+						\item Es kommt zu Randeffekten, da am Rand die Nachbarn eines Pixels nicht definiert sind.
+						\item Typische Vertreter dieser Kategorie sind Mittelwert- und Gauß-Filter.
+					\end{itemize}
 
-					\paragraph{Schritt 1: Umwandlung in den YCC-Farbraum} % 5.80
-						\todo{Content}
+					\paragraph{Mittelwert-Filter}
+						\( 3 \times 3 \)-Mittelwertfilter ("Boxfilter"):
+						\begin{equation*}
+							\frac{1}{9}
+							\begin{bmatrix}
+								1 & 1 & 1 \\
+								1 & 1 & 1 \\
+								1 & 1 & 1
+							\end{bmatrix}
+						\end{equation*}
+						\indent \( 5 \times 5 \)-Mittelwertfilter:
+						\begin{equation*}
+							\frac{1}{25}
+							\begin{bmatrix}
+								1 & 1 & 1 & 1 & 1 \\
+								1 & 1 & 1 & 1 & 1 \\
+								1 & 1 & 1 & 1 & 1 \\
+								1 & 1 & 1 & 1 & 1 \\
+								1 & 1 & 1 & 1 & 1
+							\end{bmatrix}
+						\end{equation*}
+						
+						Je größer der Filter gewählt wird, desto mehr wird das Bild "verwischt".
 					% end
-
-					\paragraph{Schritt 2: Farb-Subsampling} % 5.81
-						\todo{Content}
+	
+					\paragraph{Gauß-Filter}
+						Bei einem Gauß-Filter werden die umliegenden Pixel durch eine diskrete Approximation der Funktion
+						\begin{equation*}
+							G(x, y) = \frac{1}{2\pi\sigma^2} \exp \Bigg\{ -\frac{x^2 + y^2}{2\sigma^2} \Bigg\}
+						\end{equation*}
+						gewichtet. Für \( 3 \times 3 \) ("Binomialfilter") und \( 5 \times 5 \) (\( \sigma = 1 \)) ergeben such folgende Approximationen:
+						\begin{equation*}
+							\frac{1}{16}
+							\begin{bmatrix}
+								1 & 2 & 1 \\
+								2 & 4 & 2 \\
+								1 & 2 & 1
+							\end{bmatrix}
+							\quad\quad\quad\quad
+							\frac{1}{273}
+							\begin{bmatrix}
+								1 & 4  & 7  & 4  & 1 \\
+								4 & 16 & 26 & 16 & 4 \\
+								7 & 26 & 41 & 26 & 7 \\
+								4 & 16 & 26 & 16 & 4 \\
+								1 & 4  & 7  & 4  & 1
+							\end{bmatrix}
+						\end{equation*}
 					% end
-
-					\paragraph{Schritt 3: Diskrete Kosinustransformation} % 5.82, 5.83, 5.84
-						\todo{Content}
-					% end
-
-					\paragraph{Schritt 4: Quantisierung} % 5.85
-						\todo{Content}
-					% end
-
-					\paragraph{Schritt 5: Kodierung der Koeffizienten} % 5.86, 5.87
-						\todo{Content}
+	
+					\paragraph{Median-Filter}
+						Der Median-Filter ist ein nichtlinearer Filter und kann daher nicht durch eine Faltung ausgedrückt werden. Bei ihm wird jeder Pixel durch den Medianwert seiner Nachbarschaft ersetzt. Dadurch werden keine Grautöne interpoliert, isolierte Punkte und Rauschen wird minimiert und dir Schärfe der Kanten bleibt erhalten. Jedoch ist dieser Filter aufgrund der Sortierung sehr rechenintensiv.
 					% end
 				% end
 
-				\subsubsection{MH17} % 6.6, 6.8
-					\todo{Content}
+				\subsubsection{Hochpass-Filter}
+					\begin{itemize}
+						\item Die Koeffizienten können sowohl negativ und positiv sein und sind normalisiert, sodass die Summe \num{0} ergibt.
+						\item Dadurch werden positive und negative Werte produziert.
+						\item Typischer Vertreter dieser Kategorie sind Ableitungen und Differenzfilter.
+					\end{itemize}
+				
+					\paragraph{Diskretisierung von Ableitungen}
+						Eine Ableitung \( \partial f / \partial x \) einer Funktion kann durch Rückwärtsdifferenzen approximiert werden:
+						\begin{equation*}
+							\frac{\partial f}{\partial x}(x) = \lim\limits_{h \to 0} \frac{f(x) - f(x - h)}{h} \overset{\,h \,=\, 1\,}{\approx} \frac{f(x) - f(x - 1)}{1} = f(x) - f(x - 1)
+						\end{equation*}
+						Dies gilt ebenfalls für die zweite Ableitung \( \partial^2 f / \partial x^2 \) (diesmal durch Vorwärtsdifferenzen):
+						\begin{align*}
+							\frac{\partial^2 f}{\partial x^2}(x)
+								=&\, \lim\limits_{h \to 0} \frac{\frac{\partial f}{\partial x}(x + h) - \frac{\partial f}{\partial x}(x)}{h} \\
+								\approx&\, \lim\limits_{h \to 0} \frac{f(x + h) - f(x + h - 1) - f(x) + f(x - 1)}{h} \\
+								\approx&\, \frac{f(x + 1) - f(x) - f(x) + f(x - 1)}{1} \\
+								=&\, f(x + 1) - 2f(x) + f(x - 1)
+						\end{align*}
+					% end
+					
+					\paragraph{Laplacian-Filter}
+						Durch den Laplacian-Filter wird der Laplace-Operator
+						\begin{equation*}
+							\Delta f(x, y) = \nabla^2 f(x, y) = \frac{\partial^2 f(x, y)}{\partial x^2} + \frac{\partial^2 f(x, y)}{\partial y^2}
+						\end{equation*}
+						approximiert. Für \( 3 \times 3 \) ergibt sich \bspw die folgende diskrete Approximation:
+						\begin{equation*}
+							\begin{bmatrix}
+								0 & 1  & 0 \\
+								1 & -4 & 1 \\
+								0 & 1  & 0
+							\end{bmatrix}
+						\end{equation*}
+						
+						Eine alternative Approximation mit Parametern stellt
+						\begin{equation*}
+							\frac{1}{\beta}
+							\begin{bmatrix}
+								\alpha     & 1 - \alpha & \alpha     \\
+								1 - \alpha & -4         & 1 - \alpha \\
+								\alpha     & 1 - \alpha & \alpha
+							\end{bmatrix}
+						\end{equation*}
+						da, wobei
+						\begin{equation*}
+							\beta =
+								\begin{cases}
+									4             & 0 \leq \alpha \leq 1 \\
+									4(q - \alpha) & -1 \leq \alpha < 0
+								\end{cases}
+						\end{equation*}
+						gilt (der Parameter \( \alpha \) ist frei wählbar).
+					% end
+					
+					\paragraph{Laplacian of Gaussian Filter}
+						Oftmals wird zunächst ein Gauß- und danach ein Laplacian-Filter angewandt. Dieser Filter wird "Laplacian of Gaussian Filter", "Marr-Hildreth-Operator", "Mexican Hat Filter" oder "Sombrerofilter" genannt. Dabei wird die Funktion
+						\begin{equation*}
+							\Delta G(x, y) = \frac{\partial^2 G(x, y)}{\partial x^2} + \frac{\partial^2 G(x, y)}{\partial y^2},\quad G(x, y) = \frac{1}{2\pi\sigma^2} \exp \Bigg\{ -\frac{x^2 + y^2}{2\sigma^2} \Bigg\}
+						\end{equation*}
+						approximiert.
+					% end
+				% end
+				
+				\subsubsection{Bilaterale Filter}
+					Bei der bilateralen Filterung wird versucht, die Bilder weichzuzeichnen, aber scharfe Kanten zu erhalten. Dabei fließen Pixelfarben aus der Nachbarschaft nicht nur in Abhängigkeit von der Entfernung, sondern auch vom Farbabstand in die Berechnung ein.
+				% end
+			% end
+
+			\subsection{Frequenzraum}
+				Durch eine Multiplikation jeder Frequenz-Komponente \( F(u, v) \) anhand einer Gewichtungsfunktion (Filter), können bestimmte Komponenten erhöht oder verringert werden. Durch eine inverse Fouriertransformation werden die Veränderungen sichtbar. Eine solche selektive Beseitigung von Frequenz-Komponenten heißt \emph{Fourier-Filterung}. Filter werden \bspw eingesetzt, um den Einfluss von Datenfehlern oder Störsignalen zu verringern, hoch-/niederfrequente Signale zu trennen oder bestimmte Frequenzen hervorzuheben.
+				
+				Es werden dabei drei grundlegende Filtertypen unterschieden:
+				\begin{itemize}
+					\item Hochpass-Filter \\ Tiefe Frequenzen \( \lvert \omega \rvert < D_0 \) werden abgeschnitten und es können nur hohe Frequenzen passieren. Dadurch werden scharfe Übergange deutlicher.
+					\item Tiefpass-Filter \\ Hohe Frequenzen \( \lvert \omega \rvert > D_0 \) werden abgeschnitten und es können nur niedrige Frequenzen passieren. Dadurch wird Rauschen eliminiert, das Bild aber etwas unschärfer.
+					\item Bandpass-Filter \\ Es können nur Frequenzen aus dem Band \( D_0 < \omega < D_1 \) passieren.
+				\end{itemize}
+
+				\subsubsection{Idealer Tiefpass-Filter}
+					Bei einem idealen Tiefpass-Filter werden alle Frequenzen jenseits einer Grenzfrequenz \( D_0 \) abgeschnitten und der "Kegel" ist radialsymmetrisch zum Ursprung. Der Filter hat dann die Form
+					\begin{align*}
+						H(u, v) &=
+							\begin{cases}
+								1 & D \leq D_0 \\
+								0 & D > 0
+							\end{cases} \\
+						D(u, v) &= \sqrt{u^2 + v^2}
+					\end{align*}
+					Dieser Filter ist aber so physikalisch nicht realisierbar (dies liegt an der unendlich langen Impulsantwort, \zB bei einer Rechteck-Funktion)!
+				% end
+
+				\subsubsection{Gaußscher Tiefpass-Filter}
+					Stattdessen wird ein Gaußscher Tiefpass-Filter eingesetzt. Da die Fourier-Transformation einer Gauß-Glocke wieder eine Gauß-Glocke ist, ist dieser Filter realisierbar.
+				% end
+
+				\subsubsection{Idealer Hochpass-Filter}
+					Ein idealer Hochpass-Filter schneidet alle Frequenzen unter einer Grenzfrequenz \( D_0 \) ab:
+					\begin{align*}
+						H(u, v) &=
+							\begin{cases}
+								0 & D \leq D_0 \\
+								1 & D > 0
+							\end{cases} \\
+						D(u, v) &= \sqrt{u^2 + v^2}
+					\end{align*}
+					Ebenso wie der ideale Tiefpass-Filter ist auch dieser Filter physikalisch nicht realisierbar.
+				% end
+			% end
+
+			\subsection{Vergleich: Orts- und Frequenzraum-Filter}
+				\begin{itemize}
+					\item Frequenzraum-Filter können schnell berechnet werden (Fast Fourier-Transform), Ortsraumfilter sind meistens aber noch schneller.
+					\item Einfache Handhabung (Das Filterdesign im Frequenzraum ist intuitiv).
+					\item Ortsraumfilter sind nur eine Approximation der Frequenzraum-Filter (es sind keine unendlich breiten Filter möglich) und Abschneiden führt zu Artefakten.
+				\end{itemize}
+			% end
+		% end
+
+		\section{Bildkompression}
+			Die Rasterung und Abtastung einer Intensitätsfunktion von Licht erzeugt eine große Menge an Daten, was unpraktisch zur Speicherung und Übertragung ist. Es ist somit eine kompaktere Darstellung gewünscht (ohne oder mit zumutbarem Qualitätsverlust).
+			
+			Bildkompression versucht dabei die Menge an Daten zur Repräsentation zu reduzieren:
+			\begin{itemize}
+				\item Eliminierung redundanter Daten
+				\item Kodierungen
+				\item Nachbarschaftsbeziehungen (räumlich, zeitlich)
+				\item Psychovisuelle Effekte (Wahrnehmung des Menschen, Farbauflösung des Auges)
+			\end{itemize}
+			Die Kompressionsverfahren werden dabei in zwei Klassen eingeteilt:
+			\begin{itemize}
+				\item Verlustfreie Kompression, z.\,B.:
+					\begin{itemize}
+						\item Variable-Length-Coding (Huffman Code, Arithmesischer Code)
+						\item Bit-Plane Coding (Bit-PLane Slicing, Run-Length Coding)
+						\item Predictive Coding
+						\item Lempel-Ziv-Welch-Algorithmus (LZW; GIF, TIFF, Kombination von Variable-Length und Run-Length Coding)
+					\end{itemize}
+				\item Verlustbehaftete Kompression
+					\begin{itemize}
+						\item Die Bildinformationen werden so komprimiert, dass nicht alle Eigenschaften berücksichtigt werden und eine exakte Rekonstruktion \ggf nicht mehr möglich ist.
+						\item Viele Verfahren erlauben dem Anwender das Qualitäts-Kompressions-Verhältnis einzustellen (\zB JPEG oder PNG).
+						\item Häufig werden Modelle der menschlichen Wahrnehmung verwenden (zur Identifizierung von für den Betrachter irrelevanten Bildeigenschaften, die nicht kodiert werden müssen).
+					\end{itemize}
+			\end{itemize}
+		
+			Beispiele für Kompressionsverfahren:
+			\begin{itemize}
+				\item Audio
+					\begin{itemize}
+						\item Unkomprimiert: AIFF, WAV, \dots
+						\item Verlustlos: MPEG-4-ALC, Apple Lossless (ALAC), WMA Lossless, \dots
+						\item Verlustbehaftet: MP3, Ogg Vorbis, MPEG-Audio, AAC (iTunes), WMA, \dots
+					\end{itemize}
+				\item Bilder
+					\begin{itemize}
+						\item Unkomprimiert: BMP, RAW, \dots
+						\item Verlustlos: TIFF, GIF, PNG, \dots
+						\item Verlustbehaftet: JPEG, JPEG2000, \dots
+					\end{itemize}
+				\item Video
+					\begin{itemize}
+						\item Unkomprimiert: Nicht praktikabel.
+						\item Verlustlos: Nicht praktikabel.
+						\item Verlustbehaftet: H.264 (DivX, QuickTime), MPEG-4 part 2 (Xvid, DivX), WMV, \dots
+					\end{itemize}
+			\end{itemize}
+
+			\subsection{Harmonische Transformation}
+				Bei einer Kompression durch harmonische Transformation werden die Daten in verschiedene Frequenzanteile zerlegt, \zB durch Fourier-Transformation oder Wavelet-Transformation. Ein typischer Vertreter ist die das JPEG-Kompressionsverfahren.
+
+				\subsubsection{JPEG}
+					JPEG ist eine Familie von Algorithmen zur Kompression in Echtfarbqualität (dabei gibt es verlustfreie und verlustbehaftete Verfahren). Die verlustbehafteten Prozesse sind für fotografische Aufnahmen mit fließenden Farbübergängen optimiert und daher nicht so gut für Text oder ähnlichen Bilddaten mit harten Kontrasten geeignet.
+					
+					Durch JPEG sind Kompressionsraten bis zu \( 1:20 \) bis \( 1:35 \) erreichbar, wobei diese in den Hauptanwendungsgebieten verlustbehaftet sind. Dabei basiert JPEG auf einer diskreten Kosinustransformation.
+
+					\paragraph{Schritt 1: Umwandlung in den YCbCr-Farbraum}
+						Im ersten Schritt werden die Farben als
+						\begin{itemize}
+							\item \(Y\) Helligkeitswert
+							\item \(C_B\) Abweichung von Grau in Richtung Blau
+							\item \(C_R\) Abweichung von Grau in Richtung Rot
+						\end{itemize}
+						kodiert:
+						\begin{equation*}
+							\begin{bmatrix}
+								Y \\
+								C_B \\
+								C_R
+							\end{bmatrix}
+							\approx
+							\begin{bmatrix}
+								0 \\
+								128 \\
+								128
+							\end{bmatrix}
+							+
+							\begin{bmatrix}
+								0.299     & 0.587     & 0.114     \\
+								-0.168736 & -0.331264 & 0.5       \\
+								0.5       & -0.418688 & -0.081312
+							\end{bmatrix}
+							\cdot
+							\begin{bmatrix}
+								R \\
+								G \\
+								B
+							\end{bmatrix}
+						\end{equation*}
+					% end
+
+					\paragraph{Schritt 2: Farb-Subsampling}
+						Die Farben werden verlustbehaftet Komprimiert (dies ist aufgrund der höheren Genauigkeit des Auges im grünen Bereich möglich). Dabei wird für ein kleines Gebiet (üblicherweise \(2 \times 2\) Pixel) die Farbdifferenzwerte \(C_R\) und \(C_B\) gemittelt und für das gesamte Gebiet zusammen angegeben.
+					% end
+
+					\paragraph{Schritt 3: Diskrete Kosinustransformation}
+						In diesem Schritt werden die Bildinformationen in den Frequenzbereich zerlegt. Dazu wird zunächst jede Komponente \( (Y, C_B, C_R) \) in \( 8 \cdot 8 = 64 \) Bildblöcke gerastert und diese anschließend einer diskreten Fourier-Transformation unterzogen. Dabei wird nur der Kosinus-Teil berechnet, da dadurch die Berechnung einfacher wird.
+						
+						Das Ziel ist, die Informationen in eine Darstellung zu überführen, die besser für die folgenden Schritte geeignet ist.
+						
+						Vorteil: Wenn sich benachbarte Bildpunkte kaum unterscheiden, \dh das Bild keine scharfen Kanten hat, sind die meisten Koeffizienten gleich Null.
+					% end
+
+					\paragraph{Schritt 4: Quantisierung}
+						Bei der Quantisierung werden die Informationsanteile beseitigt, die das Auge nicht oder nur schlecht wahrnimmt.
+					% end
+
+					\paragraph{Schritt 5: Kodierung der Koeffizienten}
+						Aus den entstehenden Blöcken wird ein sequentieller Bitstrom erzeugt und die Koeffizienten werden als Differenzen zum vorhergehenden Koeffizienten kodiert (durch die Kohärenz ergeben sich hier kleine Werte). Die Koeffizienten werden dabei entlang einer Zick-Zack-Kurve kodiert (ähnliche wie bei Cantors Diagonalargument). Da hohe Frequenzen oft sehr klein sind, entsteht so eine für die Kompression günstige Reihenfolge.
+						
+						Bisher wurde noch nichts wirklich komprimiert, sondern nur grob Transformiert. Der entstehende Bitstrom kann nun aber durch typische Kompressionstechniken (Huffman-Algorithmus, Arithmetisches Kodieren) komprimiert werden.
+					% end
 				% end
 			% end
 		% end

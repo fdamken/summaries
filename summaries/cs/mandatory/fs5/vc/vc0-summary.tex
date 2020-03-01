@@ -1488,101 +1488,206 @@
 		% end
 	% end
 
-	\chapter{Bildverarbeitung} % 6.1, 6.90
-		\todo{Content}
+	\chapter{Bildverarbeitung, Deblurring}
+		Beim Deblurring wird versucht, eine vorhandene Verwischung (Blurring) eines Bildes zu entfernen.
+	
+		Sei bekannt, dass das Bild \(g\) die mit einer Faltung \(a\) verwischte Version (Blurring) eines Bildes \(f\) ist, \dh \( g = a(f) \) (oftmals ist \(a\) eine Gauß-Glocke). Im Fourier-Raum ergibt sich dann \( G = A \cdot F \) und die Rekonstruktion des Bildes \(f\), \bzw der Frequenzen \(F\), scheint mit \( F = A^{-1} \cdot G \) sehr einfach. Bei dieser Rekonstruktion treten jedoch mehrere Probleme auf:
+		\begin{enumerate}
+			\item Der Blurring-Kernel \(A\) kann unendlich klein werden, sodass es beinah zu einer Division durch Null kommt. Dadurch werden Rauschen und numerische Fehler verstärkt.
+			\item Es gibt immer Rauschen \(n\): \( g = a(f) + n \)
+		\end{enumerate}
+		Für das erste Problem kann verwendet werden, dass \(A\) \iA komplex ist. Es gilt dann mit der komplex konjugierten Matrix \( A^\ast \):
+		\begin{equation*}
+			G = A \cdot F \quad\implies\quad A^\ast \cdot A \cdot F = \lvert A \rvert^2 \cdot F
+		\end{equation*}
+		Und mit \( \lvert A \rvert^2 > 0 \) kann die Rekonstruktion umgeformt werden:
+		\begin{equation*}
+			F = \frac{1}{A} G = \frac{A^\ast}{A^\ast A} G = \frac{A^\ast}{\lvert A \rvert^2} G
+		\end{equation*}
+		Dadurch hat das rekonstruierte Bild nun keine reellen Zahlen mehr.
 
-		\section{Deblurring} % 6.13, 6.15, 6.41
-			\todo{Content}
+		\section{Korrekt gestellte Probleme}
+			Nach Jacques Hadamard ist ein mathematisches Modell \emph{korrekt gestellt}, wenn:
+			\begin{itemize}
+				\item Eine Lösung existiert,
+				\item diese eindeutig ist und
+				\item die Lösung in einer vernünftigen Topologie kontinuierlich von den Daten abhängt.
+			\end{itemize}
+			Ansonsten ist das Problem nicht korrekt gestellt.
+			
+			Als Konsequenz daraus folgt, dass Blurring korrekt gestellt, Deblurring aber nicht korrekt gestellt ist. Daher ist eine Regularisierung notwendig, \dh es werden zusätzliche Annahmen (Glätte, Informationen zum Rauschen) hinzugenommen.
+		% end
 
-			\subsection{Inverser Operator} % 6.19, 6.20
-				\todo{Content}
+		\section{Einschrittverfahren}
+			\subsection{Wiener Filter}
+				Das zweite Problem von Deblurring (Rauschen) kann durch eine Regularisierung des Filter im Fourierraum:
+				\begin{equation*}
+					F = \frac{A^\ast}{\lvert A \rvert^2 + R^2} G
+				\end{equation*}
+				reduziert werden (dies wird als \emph{Wieder Filter} bezeichnet). Dabei ist \(R\) das Verhältnis von Rauschen zum Signal. Der Parameter entscheidet dabei, das verstärkt wird.
+				\begin{itemize}
+					\item Ist \(R\) zu groß, so verhält sich der Filter wie ein Tiefpass-Filter, d.\,h.:
+						\begin{itemize}
+							\item Grobe Struktur bleibt erhalten.
+							\item Kanten werden verwischt.
+							\item Rauschen wird entfernt.
+						\end{itemize}
+					\item Ist \(R\) zu klein, so verhält sich der Filter wie ein Hochpass-Filter, d.\,h.:
+						\begin{itemize}
+							\item Grobe Strukturen werden entfernt.
+							\item Kanten werden entfernt.
+							\item Rauschen wird verstärkt.
+						\end{itemize}
+					\item Ist \(R\) optimal, so verhält sich der Filter wie ein Bandpass-Filter, d.\,h.:
+						\begin{itemize}
+							\item Grobe Struktur bleibt erhalten.
+							\item Kanten werden verstärkt.
+							\item Rauschen wird entfernt.
+						\end{itemize}
+				\end{itemize}
+			
+				\textbf{Vorteile:}
+				\begin{itemize}
+					\item Schnell
+					\item Häufig verwendet
+					\item Beliebt (dadurch viel Know-How vorhanden)
+					\item Leicht zu implementieren
+				\end{itemize}
+				\textbf{Nachteile:}
+				\begin{itemize}
+					\item Nur ein Filter für das gesamte Bild
+					\item Keine lokalen, spezifischen Verbesserungen
+					\item Nur ein Wert für \(R\)
+				\end{itemize}
+				Der Wiener-Filter kann \zB durch lokale Verfeinerungen (Mehrkomponentenverfahren) oder iterative Verfeinerungen (Mehrschrittverfahren) verbessert werden.
 			% end
 
-			\subsection{Rekonstruktion} % 6.17, 6.21
-				\todo{Content}
-			% end
-
-			\subsection{Rauschen} % 6.23, 6.26
-				\todo{Content}
-			% end
-
-			\subsection{Korrekt gestellte Probleme} % 6.27, 6.28, 5.29
-				\todo{Content}
+			\subsection{Mehrkomponentenverfahren}
+				\subsubsection{Scale-Space-Ansatz}
+					Zum Schärfen wird der Laplace-Operator, multipliziert mit einer unabhängigen Konstante \(t\), vom Bild abgezogen:
+					\begin{equation*}
+						L_\text{schärfer} = L_0 - t \underbrace{\big( L_{xx} + L_{yy} \big)}_{= \Delta L} = L_0 - t \cdot \Delta L
+					\end{equation*}
+					Durch Hinzufügen von zusätzlichen Termen (mit Ableitungen höherer Ordnung) kann das Ergebnis weiter verfeinert werden:
+					\begin{equation*}
+						L_\text{schärfer} = L_0 - t \big( L_{xx} + L_{yy} \big) + \frac{1}{2} t^2 \big( L_{xxxx} + 2L_{xxyy} + L_{yyyy} \big) - \frac{1}{6} t^3 \big( L_{xxxxxx} + 3L_{xxxxyy} + 3L_{xxyyyy} + L_{yyyyyy} \big)
+					\end{equation*}
+					Diese Sequenz ist eine Taylorreihe der partiellen Differentialgleichung
+					\begin{equation*}
+						\frac{\partial L}{\partial t} = \frac{\partial^2 L}{\partial x^2} + \frac{\partial^2 L}{\partial y^2}
+					\end{equation*}
+					in \(-t\). Die Veränderung in einem Bild über eine gewisse Zeit ist also durch eine partielle Differentialgleichung zweiter Ordnung definiert.
+				% end
 			% end
 		% end
 
-		\section{Einschrittverfahren} % 6.30, 6.41
-			\todo{Content}
-
-			\subsection{Wiener Filter} % 6.31, 6.32, 6.33, 6.34, 6.35, 6.36
-				\todo{Content}
+		\section{Mehrschrittverfahren (Iterative Methoden)}
+			\subsection{Energie und Variationsableitung}
+				Sei \(E\) die \emph{Energie} eines Bildes \(L\):
+				\begin{equation*}
+					E(L) = \frac{1}{2} \iint_{x, y} \! L^2 \dif{x} \dif{y}
+				\end{equation*}
+				Diese "Energie" sagt aus, wie viel Intensität in den Pixeln vorhanden ist. Eine Minimierung der Intensität führt dann zum optimalen Bild \bzgl der definierten Energie. Dieses Minimum kann durch Variationsrechnung oder iterative Prozesse gefunden werden.
+			
+				Die Variationsableitung \( \delta E(L) \) eine eine Verallgemeinerung der normalen Ableitung, wobei dieses Prinzip hier nicht näher beleuchtet werden soll. Für die Energie
+				\begin{equation*}
+					E(L) = \frac{1}{2} \iint_{x, y} \! L^2 \dif{x} \dif{y}
+				\end{equation*}
+				gilt \( \delta E(L) = L \) und das Minimum liegt bei \( \delta E(L) \overset{!}{=} 0 \). In diesem Fall liegt das Minimum also bei \( L = 0 \), \dh \( E(L) = 0 \).
+				
+				Für die Energie
+				\begin{equation*}
+					E(L) = \frac{1}{2} \iint_{x, y} \! L_x^2 + L_y^2 \dif{x} \dif{y}
+				\end{equation*}
+				folgt \( \delta E(L) = -\big( L_{xx} + L_{yy} \big) = -\Delta L \). Hier ist es weniger trivial das Minimum zu finden, weshalb das System in eine partielle Differentialgleichung
+				\begin{equation*}
+					L_t = -\delta E(L)
+				\end{equation*}
+				überführt wird und das Minimum iterativ gesucht wird.
 			% end
 
-			\subsection{Ansatz mit mehreren Komponenten} % 6.37
-				\todo{Content}
-
-				\subsubsection{Scale-Space-Ansatz} % 6.38, 6.39, 6.40, 6.43
-					\todo{Content}
-				% end
-
-				\subsubsection{Gaußscher Scale-Space} % 6.44, 6.45
-					\todo{Content}
-				% end
-			% end
-		% end
-
-		\section{Mehrschrittverfahren (Iterative Methoden)} % 6.47, 6.67
-			\todo{Content}
-
-			\subsection{Variationsableitung} % 6.48, 6.49, 6.50
-				\todo{Content}
-			% end
-
-			\subsection{Alternativen} % 6.53
-				\todo{Content}
+			\subsection{Alternativen}
+				Da mit den bisherigen Energien keine guten interessanten Bilder generiert werden können, gibt es noch andere Energien, z.\,B.:
+				\begin{itemize}
+					\item Perona-Malik
+						\begin{itemize}
+							\item Rauschen wird verwischt
+							\item Kanten werden verstärkt
+							\item Smart Energy Term und Stoppzeit
+						\end{itemize}
+					\item Totale Variation
+						\begin{itemize}
+							\item Rauschen wird verwischt
+							\item Kanten werden verstärkt
+							\item Smart Energy Term und Distance Penalty
+						\end{itemize}
+					\item uvm.
+				\end{itemize}
 			% end
 
-			\subsection{Perona-Malik} % 6.54
-				\todo{Content}
+			\subsection{Perona-Malik}
+				Die Heat-Equation \( L_t = L_{xx} + L_{yy} = \Delta L \) wird modifiziert zu
+				\begin{equation*}
+					\partial_t L = \nabla \circ \big( c \cdot \nabla L \big)
+				\end{equation*}
+				wobei \(c\) der \emph{Conductivity Coefficient} ist, durch den die Diffusion an lokale Bildstrukturen anpassbar ist (\dh \( c = c(L, L_x, L_xx, \cdots) \)). Mit \( c = 1 \) fällt die Methode zurück zum gaußschen Scale-Space.
 
-				\subsubsection{Nichtlineare Diffusionsgleichungen} % 6.55
-					\todo{Content}
+				\subsubsection{Die Perona-Malik-Gleichung}
+					Nach Perona und Malik ist \( c(\cdot) \) eine Funktion der Gradientenstärke, welche die Diffusion dort reduziert, wo Kanten sind (\(c\) nahe Null) und in flachen Bereichen erhöht. Dies eingesetzt ergibt:
+					\begin{equation*}
+						\partial_t L = \nabla \circ \Big( c\big( \lvert \nabla L \rvert^2 \big) \cdot \nabla L \Big)
+					\end{equation*}
+					Für \(c\) gibt es im Grunde zwei Möglichkeiten, die beide mehr oder weniger das gleiche Verhalten erzeugen:
+					\begin{equation*}
+						c_1 = \exp \Bigg\{ -\frac{\lvert \nabla L \rvert^2}{k^2} \Bigg\} \quad\quad\quad\quad c_2 = \Bigg( 1 + \frac{\lvert \nabla L \rvert^2}{k^2} \Bigg)^{-1}
+					\end{equation*}
+					Dabei bestimmt \(k\) den Einfluss der Kantenstärke. Bei einem großen \(k\) bleiben nur die größten Gradienten (starke Kanten) übrig, bei einem kleinen \(k\) bleiben (fast) alle Gradienten (Kanten, Rauschen) übrig.
 				% end
 
-				\subsubsection{Die Perona-Malik-Gleichung} % 6.56, 6.57, 6.58
-					\todo{Content}
+				\subsubsection{Implementierung}
+					Für die Lösung der Perona-Malik-Gleichung gibt es keine analytischen Methoden, weshalb eine iterative Methode eingesetzt wird:
+					\begin{equation*}
+						L^{(t + 1)} = L^{(t)} + \Delta t \cdot \bigg( \nabla \circ \Big( c\big(\lvert \nabla L \rvert^2\big) \cdot \nabla L \Big) \bigg)
+					\end{equation*}
+					dabei ist:
+					\begin{itemize}
+						\item \( L^{(0)} \) das originale Bild und
+						\item \( \Delta t \) ein kleiner Zeitschritt.
+					\end{itemize}
+					"Irgendwann" muss die Iteration beendet werden, \zB nach \(n\) Schritten oder wenn \( L^{(t + 1)} \) "gut aussieht".
 				% end
 
-				\subsubsection{Implementierung} % 6.59, 6.60
-					\todo{Content}
-				% end
-
-				\subsubsection{Einfluss und Wahl von \(k\)} % 6.61
-					\todo{Content}
-				% end
-
-				\subsubsection{Stoppzeit} % 6.62, 6.63, 6.64
-					\todo{Content}
+				\subsubsection{Stoppzeit}
+					Während der Iteration steige das Signal-Rausch-Verhältnis \iA an und fällt danach wieder ab (das Bild konvergiert gegen eine gleichmäßig graue Fläche). Das heißt die Iteration stoppt nicht bei der optimal Lösung und es wird eine \emph{Stoppzeit} benötigt.
 				% end
 			% end
 
-			\subsection{Eingeschränkte Evolution: Totale Variation} % 6.68, 6.69
-				\todo{Content}
+			\subsection{Eingeschränkte Evolution: Totale Variation}
+				Wird sichergestellt, dass die Iterationen gegen die optimale Lösung konvergieren, so ist keine benutzerdefinierte Stoppzeit nötigt. Daher wird versucht, eine klug gewählte Energie zu minimieren und ein \emph{Distance Penalty} hinzuzufügen.
 
-				\subsubsection{Distance Penalty} % 6.69, 6.70, 6.71
-					\todo{Content}
+				\subsubsection{Distance Penalty}
+					Bei einem Distance Penalty wird zusätzlich zum Modell des Bildes ein Rauschmodell angenommen (\zB gaußsches Zufallsrauschen), sodass es zusätzliche Bedingungen an die Lösung \(L\) gibt:
+					\begin{align*}
+						\iint_{x, y} \! \big( g - a(L) \big) \dif{x} \dif{y} &= 0 \\
+						\iint_{x, y} \! \big( g - a(L) \big)^2 \dif{x} \dif{y} &= \sigma^2
+					\end{align*}
+					Diese Beschränkungen können zur Energie hinzugefügt werden, um das Konvergenzverhalten zu verbessern.
 				% end
 
-				\subsubsection{Basisenergien} % 6.72
-					\todo{Content}
+				\subsubsection{Totale Variation}
+					Bei der Methode der totalen Variation wird die Energie
+					\begin{equation*}
+						E(L) = \iint_{x, y} \! \Big( \lvert \nabla L \rvert + \lambda\big( g - a(L) \big)^2 \Big) \dif{x} \dif{y}
+					\end{equation*}
+					minimiert, wobei \(\lambda\) ein vom Rauschen abhängiger Parameter ist. Da die totale Variation gegen die optimale Lösung konvergiert, wird keine Stoppzeit benötigt.
 				% end
 
-				\subsubsection{Totale Variation} % 6.73, 6.74
-					\todo{Content}
-				% end
-
-				\subsubsection{Erweiterungen} % 6.81
-					\todo{Content}
+				\subsubsection{Erweiterungen}
+					\begin{itemize}
+						\item Schwierigere Funktionen/Energien (Statistik, Niveaumengen für Segmentierung, \dots)
+						\item Andere Rauschstatistiken (\zB Multiplikatives Rauschen)
+						\item Andere Steuerungsmechanismen für den Conductive Coefficient \(c\) (\zB Kantenverstärkende Diffusion, Kohärenzverstärkende Diffusion, \dots)
+					\end{itemize}
 				% end
 			% end
 		% end

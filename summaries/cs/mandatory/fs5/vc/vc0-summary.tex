@@ -3718,51 +3718,46 @@
 		% end
 	% end
 
-	\chapter{Multimedia Information Retrieval} % 13b.1, 13b.7, 13b.8, 13b.64
-		\todo{Content}
+	\chapter{Multimedia Information Retrieval}
+		Musik, Bildern, 3D-Modellen, Videos, \dots haben einen riesigen Informationsgehalt, der klassischerweise über textuelle Annotationen erschlossen wird. Jedoch beinhalten automatisch erzeugte Annotationen meistens nur syntaktische Informationen (Dateigröße, Pixelanzahl, Dauer, Bildrate, \dots) und keine semantischen Annotationen (Aussehen, Funktion, Stil, Genre, \dots), welche manuell annotiert werden müssen. Dazu kommt das Problem, dass Sprache \iA ungenau ist.
 
-		\section{Inhaltsbasierte Suche} % 13b.10, 13b.11, 13b.14, 13b.17
-			\todo{Content}
+		\section{Inhaltsbasierte Suche}
+			Bei der inhaltsbasierten Suche wird versucht, Eigenschaften abzuleiten, die die Dokumente sinnvoll beschreiben. Dabei werden mathematische Deskriptoren aus dem Inhalt des Dokuments berechnet. Ein Distanzmaß über diese Deskriptoren erlaubt einen inhaltlichen Vergleich.
+			
+			Die Wahl eines Deskriptors sollte dabei abhängen sein von Problemstellung, Semantik der Objekte und den verfügbaren Daten.
 
-			\subsection{Mathematische Beschreibung} % 13b.15
-				\todo{Content}
+			\subsection{Distanzmaße}
+				Ein Distanzmaß soll die Ähnlichkeit der Featurevektoren von Dokumenten messen. Typische Distanzmaße (euklidische Distanz, City-Block) sind dabei Metriken.
+				
+				Sei \(S\) die Menge an Features. Dann ist eine Funktion \( d : S \times S \to \R \) genau dann, wenn gilt:
+				\begin{enumerate}
+					\item \( d(x, y) \geq 0 \) (Nicht-Negativität)
+					\item \( d(x, y) = 0 \iff x = y \) (Definitheit)
+					\item \( d(x, y) = d(y, x) \) (Symmetrie)
+					\item \( d(x, y) \leq d(x, z) + d(z, y) \) (Dreiecksungleichung)
+				\end{enumerate}
+				Eine Funktion ist eine Semi-Metrik, wenn nur 1, 2 und 3 erfüllt sind und eine Pseudo-Metrik, wenn nur 1, 4 und 4 erfüllt sind. Dabei entsprechen Symmetrie und die Dreiecksungleichung nicht (immer) der menschlichen Wahrnehmung.
 			% end
-
-			\subsection{Retrieval Ergebnis} % 13b.16
-				\todo{Content}
+	
+			\subsection{Query-Modalitäten}
+				\subsubsection{Text} 
+					Query-by-Text arbeitet (meistens) auf manuell annotierten Metadaten, die als Zeichenfolge dargestellt sind. Der "Text" kann auch Sprachlich eingegeben werden, wobei hier zunächst die einzelnen Wörter erkannt werden müssen (aber nur syntaktisch, nicht semantisch!).
+				% end
+	
+				\subsubsection{Example}
+					Bei Query-by-Example wird ein Beispielobjekt vorgegeben und es werden ähnliche Objekte gesucht (\zB über k-Nearest-Meighbors)).
+				% end
+	
+				\subsubsection{Sketch}
+					Bei Query-by-Sketch ist kein Beispielbild erforderlich, sondern der Nutzer hat nur eine Idee, was er sucht. Diese Idee stellt er durch eine Skizze (Sketch) dar.
+					
+					Problem: Die zeichnerischen Fähigkeiten haben großen Einfluss auf den (Miss-)~Erfolg.
+				% end
 			% end
 		% end
 
-		\section{Distanzmaße} % 13b.19, 13b.20, 13b.21, 13b.22, 13b.23, 13b.24
-			\todo{Content}
-		% end
-
-		\section{Query-Modalitäten} % 13b.25, 13b.30, 13b.31
-			\todo{Content}
-
-			\subsection{Text} % 13b.32, 13b.33, 13b.34, 13b.35, 13b.36, 13b.37
-				\todo{Content}
-			% end
-
-			\subsection{Example} % 13b.38, 13b.39, 13b.40, 13b.41, 13b.42
-				\todo{Content}
-			% end
-
-			\subsection{Example-Bilder} % 13b.43
-				\todo{Content}
-			% end
-
-			\subsection{Sketch} % 13b.44, 13b.45, 13b.46, 13b.47, 13b.48, 13b.49, 13b.50, 13b.51, 13b.52, 13b.53
-				\todo{Content}
-			% end
-		% end
-
-		\section{Explorative Suche} % 13b.54, 13b.55
-			\todo{Content}
-
-			\subsection{Research Data} % 13b.56, 13b.57, 13b.58, 13b.59, 13b.60
-				\todo{Content}
-			% end
+		\section{Explorative Suche}
+			Im Vergleich zum Querying (Retrieval) werden bei der explorativen Suche keine konkreten Suchanforderungen gestellt, \dh es sollten "interessante" Objekte gefunden werden.
 		% end
 	% end
 \end{document}

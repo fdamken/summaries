@@ -2935,111 +2935,196 @@
 		% end
 	% end
 
-	\chapter{Informationsvisualisierung} % 11.1, 11.2, 11.15, 11.16, 11.17, 11.18, 11.19, 11.20
-		\todo{Content}
+	\chapter{Informationsvisualisierung}
+		Bei der Informationsvisualisierung werden textuelle (oder andere) Daten visuell dargestellt, da das Gehirn im allgemeinen visuelle Informationen besser als textuelle Daten erfassen, Muster erkennen und diese Bewerten kann.
 
-		\section{Informationsdesign} % 11.23, 11.24, 11.25, 11.34, 11.56, 11.57
-			\todo{Content}
+		\section{Informationsdesign}
+			Abbildung~\ref{fig:reference_model_card} zeigt das Referenzmodell von Card zum Prozess der Visualisierung von Daten bis hin zur eigentlichen Visualisierung. Gute Visualisierungen sollten dabei:
+			\begin{itemize}
+				\item Die Daten nicht verzerren und Informationen beibehalten.
+				\item Typische Fehler vermeiden:
+					\begin{itemize}
+						\item Falsche/irreführende Skalierung
+						\item Verzerrung, Größenverhältnisse, Farben
+						\item Zu volle Darstellung
+						\item Keine Legende
+					\end{itemize}
+			\end{itemize}
+		
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[->, every node/.style = { align = center }, block/.style = { draw, rectangle, minimum width = 2.2cm, minimum height = 1.3cm }]
+					\node [block] (a) {Raw \\ Data};
+					\node [block, right = 1.5 of a] (b) {Data \\ Tables};
+					\node [block, right = 1.5 of b] (c) {Visual \\ Structures};
+					\node [block, right = 1.5 of c] (d) {View};
+					\node [right = 0.5 of d] (e) {Human};
+					
+					\draw (a) -- node[below, minimum height = 1.2cm, yshift = -0.7cm](A){Data \\ Transformations} (b);
+					\draw (b) -- node[below, minimum height = 1.2cm, yshift = -0.7cm](B){Visual \\ Mappings} (c);
+					\draw (c) -- node[below, minimum height = 1.2cm, yshift = -0.7cm](C){View \\ Transformations} (d);
+					
+					\coordinate [below = 0.7 of A] (X);
+					\coordinate [below = 0.7 of B] (Y);
+					\coordinate [below = 0.7 of C] (Z);
+					
+					\draw (e) |- (X) -- (A);
+					\draw (e) |- (Y) -- (B);
+					\draw (e) |- (Z) -- (C);
+					
+					\draw (b) to[out = 160, in = 140, looseness = 4] (b);
+					\draw (c) to[out = 160, in = 140, looseness = 4] (c);
+					\draw (d) to[out = 160, in = 140, looseness = 4] (d);
+				\end{tikzpicture}
+				\caption{Referenzmodell von Card}
+				\label{fig:reference_model_card}
+			\end{figure}
+		% end
 
-			\subsection{Referenzmodell von Card} % 11.26, 11.27, 11.28, 11.29, 11.30, 11.31, 11.32, 11.33
-				\todo{Content}
+		\section{Datentypen}
+			\subsection{1D-Daten, Zeitreihen}
+				\begin{itemize}
+					\item 1D-Daten haben nur eine Spalte mit Datenwerten (\zB Datenwerte über Objekte oder Verteilungen).
+					\item Zeitreihen sind dabei spezielle 1D-Daten, da jeweils ein Wert einer Zeit zugeordnet wird.
+				\end{itemize}
+			% end
+
+			\subsection{2D-Daten}
+				\begin{itemize}
+					\item zwei Spalten mit Datenwerten, \zB mehrere Datenwerte über Objekte.
+				\end{itemize}
+			% end
+
+			\subsection{mD-Daten (multidimensional)}
+				\begin{itemize}
+					\item Daten mit drei oder mehr Spalten.
+					\item Auch "multivariate Daten" genannt.
+					\item Zum Beispiel Befragungsdaten, Objektbeschreibungen, \dots
+				\end{itemize}
+			% end
+
+			\subsection{Hierarchien}
+				\begin{itemize}
+					\item Hierarchien sind ein natürlicher Weg, Daten zu strukturieren, \bspw Dateisystem, Unternehmensstruktur, \dots.
+				\end{itemize}
+			% end
+
+			\subsection{Graphen/Netzwerke}
+				\begin{itemize}
+					\item Graphen sind (nicht zwangsweise gerichtete) Beziehungen zwischen einzelnen Knoten.
+				\end{itemize}
 			% end
 		% end
 
-		\section{Datentypen} % N/A
-			\todo{Content}
-
-			\subsection{1D-Daten, Zeitreihen} % 11.62, 11.63
-				\todo{Content}
-			% end
-
-			\subsection{2D-Daten} % 11.73
-				\todo{Content}
-			% end
-
-			\subsection{mD-Daten (multidimensional)} % 11.77, 11.78
-				\todo{Content}
-			% end
-
-			\subsection{Hierarchien} % 11.91
-				\todo{Content}
-			% end
-
-			\subsection{Graphen/Netzwerke} % 11.155
-				\todo{Content}
-			% end
+		\section{Kuchendiagramm (1D)}
+			\begin{itemize}
+				\item Ein Kuchendiagramm ist beliebt für Anteildaten.
+				\item Werte werden als Größe abgebildet.
+				\item Objekte als Farben.
+				\item Problem: Kleine Wertunterschiede sind schlecht sichtbar.
+			\end{itemize}
 		% end
 
-		\section{Kuchendiagramm (1D)} % 11.64, 11.65
-			\todo{Content}
+		\section{Balkendiagramm (1D)}
+			\begin{itemize}
+				\item Werte werden als Größe abgebildet.
+				\item Gut geeignet, um Werte zu vergleichen und abzubilden.
+			\end{itemize}
 		% end
 
-		\section{Balkendiagramm (1D)} % 11.68
-			\todo{Content}
+		\section{Liniendiagramm (Zeitreihe)}
+			\begin{itemize}
+				\item Gut zur Visualisierung zeitbezogener Daten.
+				\item Werte werden auf die \(y\)-Positionen abgebildet und mit Linien verbunden.
+				\item Problem: Viele Zeitreihen
+					\begin{itemize}
+						\item Bei vielen Daten ist nicht mehr erkennbar, wo welche Linie langgeht.
+						\item Lösung: Wertfilter (nur bestimmte Linien anzeigen).
+					\end{itemize}
+				\item Problem: Länge bei langen Zeitreihen
+			\end{itemize}
 		% end
 
-		\section{Liniendiagramm (Zeitreihe)} % 11.67, 11.68, 11.69
-			\todo{Content}
-
-			\paragraph{Problem: Viele Zeitreihen} % 11.70, 11.71
-				\todo{Content}
-			% end
-
-			\paragraph{Problem: Länge} % 11.72
-				\todo{Content}
-			% end
+		\section{Scatterplot (2D, 3D)}
+			\begin{itemize}
+				\item Daten werden abgebildet auf \(x/y\)-Positionen, Größe, Farbe, \dots
+				\item Es können also viele Dimensionen abgebildet werden.
+				\item Ein Scatterplot ist intuitiv und leicht lesbar.
+				\item Problem: Overplotting; Es überschneiden sich zu viele Punkte.
+			\end{itemize}
 		% end
 
-		\section{Scatterplot (2D, 3D)} % 11.74, 11.75
-			\todo{Content}
-
-			\paragraph{Problem: Overplotting} % 11.76
-				\todo{Content}
-			% end
+		\section{Scatterplotmatrix (nD)}
+			\begin{itemize}
+				\item Alle Paare der Datenspalten werden jeweils einem Scatterplot zugeordnet (was eine Matrix an Scatterplots bildet).
+				\item Dies ist gut für paarweise Korrelationen und Abhängigkeiten.
+				\item Sehr beliebt.
+				\item Probleme:
+					\begin{itemize}
+						\item Viele Dimensionen sind unübersichtlich.
+						\item Limitierter Platz für jeden einzelnen Scatterplot.
+						\item Nur paarweise Abhängigkeiten sichtbar.
+					\end{itemize}
+			\end{itemize}
 		% end
 
-		\section{Scatterplotmatrix (nD)} % 11.79, 11.80, 11.81
-			\todo{Content}
+		\section{Parallele Koordinaten (3D, nD)}
+			\begin{itemize}
+				\item Die Koordinatenachsen der jeweiligen Eigenschaften werden parallel zueinander angeordnet.
+				\item Aus einem Punkt im Scatterplot wird dann eine Linie in parallelen Koordinaten.
+				\item Dadurch sind Abhängigkeiten über mehrere Dimensionen erkennbar.
+				\item Die Achsenanordnung ist wichtig! Schneiden sich an einer Achse zwei oder mehr Linien, so können diese danach nicht mehr unterschieden werden. Dies kann durch Umsortierung gelöst werden.
+				\item Problem: Overplotting
+					\begin{itemize}
+						\item Zu viele Linien sind unübersichtlich.
+						\item Lösung: Filter
+					\end{itemize}
+				\item Problem: Viele Dimensionen; Bei vielen Dimensionen wird der Plot zu lang.
+			\end{itemize}
 		% end
 
-		\section{Parallele Koordinaten (3D, nD)} % 11.82, 11.83, 11.84, 11.85, 11.86, 11.87, 11.88
-			\todo{Content}
-
-			\paragraph{Problem: Overplotting} % 11.89
-				\todo{Content}
-			% end
-
-			\paragraph{Problem: Viele Dimensionen} % 11.90
-				\todo{Content}
-			% end
+		\section{Node-Link-Diagramm (Hierarchien, Graphen)}
+			\begin{itemize}
+				\item Jeder Knoten wird ein Punkt.
+				\item Jede Eltern-Kind-Beziehung wird durch eine Linie dargestellt.
+				\item Dabei ist die Position der Knoten wichtig.
+				\item Problem: Layout
+					\begin{itemize}
+						\item Kanten sollten sich möglichst wenig überschneiden.
+						\item Bei Hierarchien sollten Elemente auf einer Ebene auf einer Ebene dargestellt werden.
+						\item Begrenzer Platz und Lesbarkeit.
+					\end{itemize}
+				\item Problem: Viele Knoten; Große Hierarchien/Graphen machen den Graph unübersichtlicht.
+			\end{itemize}
 		% end
 
-		\section{Node-Link-Diagramm (Hierarchien, Graphen)} % 11.92, 11.156
-			\todo{Content}
-
-			\paragraph{Problem: Layout} % 11.93, 11.157, 11.158
-				\todo{Content}
-			% end
-
-			\paragraph{Problem: Viele Knoten} % 11.94, 11.159
-				\todo{Content}
-			% end
+		\section{Treemap (Hierarchien)}
+			\begin{itemize}
+				\item Ein Kasten mit einer fixen Größe wird rekursiv aufgeteilt:
+					\begin{itemize}
+						\item Beginnend mit der Wurzel.
+						\item Der Kasten wird anhand der Teilbaumgröße geteilt.
+						\item Es wird zwischen horizontaler und vertikaler Aufteilung iteriert.
+					\end{itemize}
+				\item Problem: Überlappung; Eine Überlappung der Elemente führt zu schlechter Lesbarkeit.
+				\item Problem: Größendarstellung; Der Vergleich der Größen von Rechtecken mit unterschiedlichen Dimensionen ist schwierig.
+			\end{itemize}
 		% end
 
-		\section{Treemap (Hierarchien)} % 11.95, 11.96, 11.97, 11.98, 11.99, 11.100, 11.101, 11.102
-			\todo{Content}
-
-			\paragraph{Problem: Überlappung} % 11.105
-				\todo{Content}
-			% end
-
-			\paragraph{Problem: Größendarstellung} % 11.106, 11.107
-				\todo{Content}
-			% end
-		% end
-
-		\section{Zusammenfassung} % 11.160
-			\todo{Content}
+		\section{Zusammenfassung}
+			\begin{table}
+				\centering
+				\begin{tabular}{l|l}
+					\textbf{Datentyp}     & \textbf{Visualisierungstechniken}        \\ \hline
+					1D                    & Balkendiagramm, Kuchendiagramm           \\
+					Zeitreihe             & Liniendiagramm                           \\
+					2D                    & Scatterplot                              \\
+					3D                    & Scatterplot+, Parallele Koordinaten      \\
+					nD, wenig Dimensionen & Scatterplotmatrix, Parallele Koordinaten \\
+					Hierarchien           & Node-Link-Diagramm, Treemap              \\
+					Graphen/Netzwerke     & Node-Link-Diagramm
+				\end{tabular}
+			\end{table}
 		% end
 	% end
 

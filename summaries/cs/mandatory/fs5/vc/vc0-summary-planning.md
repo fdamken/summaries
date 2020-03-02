@@ -2,7 +2,7 @@
 
 ## Foliensätze
 
-Fertig/Strukturiert/Gesamt: 759/1218/1218: 62%/100%/100%
+Fertig/Strukturiert/Gesamt: 923/1218/1218: 76%/100%/100%
 
 * [x] Kapitel 1: Einführung (92)
 * [X] Kapitel 2: Grundlagen der menschlichen Wahrnehmung (120)
@@ -14,7 +14,7 @@ Fertig/Strukturiert/Gesamt: 759/1218/1218: 62%/100%/100%
 * [X] Kapitel 8: Transformationen (76)
 * [X] Kapitel 9: 3D-Visualisierung (65)
 * [X] Kapitel 10: X3DOM (41)
-* [x] Kapitel 11: Informationsvisualisierung (164)
+* [X] Kapitel 11: Informationsvisualisierung (164)
 * [x] Kapitel 12: Farbe (69)
 * [x] Kapitel 13a: User-Interfaces (65)
 * [x] Kapitel 13b: Multimedia Information Retrieval (69)

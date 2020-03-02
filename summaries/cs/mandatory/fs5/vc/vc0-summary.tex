@@ -2890,19 +2890,48 @@
 		% end
 	% end
 
-	\chapter{Szenengraphen am Beispiel X3DOM} % 10.1, 10.2, 10.3, 10.40
-		\todo{Content}
-
-		\section{Strukturierung von 3D-Szenendaten} % 10.4, 10.5, 10.6
-			\todo{Content}
+	\chapter{Szenengraphen am Beispiel X3DOM}
+		Zur Beschreibung einer 3D-Szene werden viele Informationen benötigt:
+		\begin{itemize}
+			\item Objekt-Geometrie (Säule, Ball, \dots)
+			\item Transformationen (Positionierung einer Säule, Rotation, \dots)
+			\item Materialien (Farbe, Textur, \dots)
+			\item Kameras (Ansichten, Kontrolle der Kamera, \dots)
+			\item Lichter (Art der Lichtquelle, Farben, \dots)
+			\item Spezialeffekte (Nebel, Schatten, Skyboxes, \dots)
+			\item uvm.
+		\end{itemize}
+		Dabei haben die Daten untereinander komplexe Beziehungen, \zB verwendet verschiedene Objekte das gleiche Material, das gleiche Objekt ist an mehreren Orten instantiiert, Objekte werden Gruppiert, \dots. Ein \emph{Szenengraphen} strukturieren diese Informationen.
+		
+		\section{Szenengraph}
+			Ein Szenengraph ist ein gerichteter, azyklischer Graph mit einem Wurzelknoten, der die gesamte Szene "zusammenhält". Zum Rendering wird der Graph durchlaufen (traversiert):
+			\begin{itemize}
+				\item Das Durchlaufen startet an der Wurzel und jeder Kindknoten wird rekursiv abgearbeitet.
+				\item Wurde der gesamte Graph traversiert, ist das Bild fertig (da keine Zyklen erlaubt sind, geschieht dies immer).
+				\item Die konkreten Operationen hängen vom Typ des jeweiligen Knotens ab:
+					\begin{itemize}
+						\item Gruppierungen: Ist die aktuelle Gruppe eingeschaltet, traversiere die Kindknoten. Wenn nicht, tue nichts.
+						\item Transformationen: Anwendung der hinterlegten Transformationsmatrix auf alle Kindknoten.
+						\item Objektdaten: Ein tatsächliches Objekt, welches gezeichnet wird (unter Anwendung aller vorherigen Transformationen).
+					\end{itemize}
+				\item Während der Traversierung werden die verschiedenen zustände jeweils geupdated.
+			\end{itemize}
+			Dieses Konzept hat viele Vorteile:
+			\begin{itemize}
+				\item Bereits definierte Objekte können wiederverwendet werden.
+				\item Objektdaten sind semantisch Gruppierbar.
+				\item Die Transformationshierarchie ermöglicht die Transformation kompletter Gruppen, ohne diese explizit ändern zu müssen.
+			\end{itemize}
 		% end
 
-		\section{Szenengraph} % 10.10, 10.11, 10.12, 10.14
-			\todo{Content}
-		% end
-
-		\section{X3DOM} % 10.16, 10.17, 10.19
-			\todo{Content}
+		\section{X3DOM}
+			X3DOM ist eine deklarative Szenengraph-API auf Basis von X3D im DOM:
+			\begin{itemize}
+				\item Deklarativ: Der Szenengraph wird durch ein strukturiertes Textformat (\zB XML) beschrieben.
+				\item X3D: Srenengraph-Standard, XML-basiert, Nachfolger von VRML; Benötigt traditionell sogenannte X3D-Player.
+				\item DOM: HTML Document Object Modell; Die Dokumenten-Baumstruktur und API in HTML/JavaScript.
+			\end{itemize}
+			X3DOM erlaubt dabei die Verwendung von X3D im DOM durch eine reine Implementierung in JavaScript (dadurch ist kein gesonderter X3D-Player nötigt), wobei als Rendering-Backend \zB WebGL verwendet wird. Bisher gibt es jedoch noch keine native Implementierung in den Browsers.
 		% end
 	% end
 

@@ -3128,134 +3128,342 @@
 		% end
 	% end
 
-	\chapter{Farbe} % 12.1, 12.2, 12.3, 12.6, 12.6
-		\todo{Content}
+	\chapter{Farbe}
+		Farbe ist ein wichtiger Bestandteil bei der Aufnahme, Verarbeitung, Kommunikation und Reproduktion von Bilder. Um Empfindungen aufzunehmen, zu verarbeiten und zu reproduzieren wird ein gutes Modell des menschlichen visuellen Systems, von Aufnahmegeräten und Wiedergabegeräten benötigt. Außerdem werden Algorithmen zur Transformation von Wahrnehmungskorrelate in Ansteuerungswerte und zur Transformation von Geräteantworten in Wahrnehmungskorrelate.
 
-		\section{Dimensionalität} % 12.8, 12.9
-			\todo{Content}
+		\section{Dimensionalität und Farbattribute}
+			Die Farbwahrnehmung hat dabei fünf Dimensionen:
+			\begin{itemize}
+				\item Helligkeit (Brightness) \\ Attribut der Fahrwahrnehmung, nach dem eine Fläche mehr oder weniger Licht auszustrahlen scheint.
+				\item Relative Helligkeit (Lightness) \\ Die Helligkeit einer Fläche relativ zur Helligkeit einer gleich beleuchteten Fläche, die weiß erscheint (nur für bezogene Farben).
+				\item Farbton (Hue) \\ Attribut, nach dem eine Fläche gleich Rot, Gelb, Grün oder Blau oder einer Kombination von zwei von ihnen erscheint. Eine \emph{achromatische Farbe} ist eine wahrgenommene Farbe ohne Farbton (\zB Schwarz oder Weiß).
+				\item Farbigkeit (Colorfulness) \\ Attribut, nach dem eine Fläche mehr oder weniger farbig empfunden wird.
+				\item Buntheit (Chroma) \\ Farbigkeit einer Fläche relativ zur Helligkeit einer gleich beleuchteten Fläche, die weiß erscheint (nur für bezogene Farben).
+			\end{itemize}
+			Die Sättigung kann durch Helligkeit und Farbigkeit beschrieben werden:
+			\begin{equation*}
+				\text{Sättigung} = \frac{\text{Farbigkeit}}{\text{Helligkeit}} = \frac{\text{Buntheit}}{\text{Relative Helligkeit}}
+			\end{equation*}
+			
+			Eine \emph{bezogene Farbe} wird dabei in Bezug zu anderen Farben wahrgenommen, \emph{unbezogene Farben} werden isoliert wahrgenommen.
+			
+			Buntheit und relative Helligkeit können wie folgt berechnet werden:
+			\begin{equation*}
+				\text{Buntheit} = \frac{\text{Farbigkeit}}{\text{Helligkeit von Weiß}} \quad\quad\quad\quad \text{Relative Helligkeit} = \frac{\text{Helligkeit}}{\text{Helligkeit von Weiß}}
+			\end{equation*}
 		% end
 
-		\section{Wahrnehmungskorrelate} % 12.10, 12.11, 12.12
-			\todo{Content}
-		% end
-
-		\section{Reproduktion} % 12.13
-			\todo{Content}
-		% end
-
-		\section{Berechnung von Farbattributen} % 12.14
-			\todo{Content}
-
+		\section{Berechnung von Farbattributen}
 			\subsection{Das Auge} % 12.15, 12.16, 12.17
 				\todo{Content}
 			% end
 
-			\subsection{Spektrale Charakterisierung des Auges} % 12.18, 12.19, 12.20, 12.21, 12.22
-				\todo{Content}
+			\subsection{Spektrale Charakterisierung des Auges}
+				Das Auge lässt sich durch
+				\begin{equation*}
+					y_i = \int_{\Lambda} \! x(\lambda) s_i(\lambda) \dif{\lambda},\quad i = 1, 2, \cdots
+				\end{equation*}
+				mit der \(i\)-ten Farbfrequenz \(y_i\), dem Farbreiz \(x(\lambda)\), der \(i\)-ten Spektralempfindlichkeit \(s_i(\lambda)\) und dem Sensitivitätsbereich \( \Lambda = [\SI{380}{\nano\meter}, \SI{730}{\nano\meter}] \) modellieren.
+				
+				Wir angenommen, dass es nur drei Fotorezeptoren gibt und das Auge ein lineares System ist, so kann das Modell mit
+				\begin{equation*}
+					\vec{y} = \mat{S} \vec{x}
+				\end{equation*}
+				diskretisiert werden (mit dem 3-dimensionalen Farbvalenzvektor \(\vec{y}\), dem \(N\)-dimensionalen Farbreizvektor \(\vec{x}\) und der \( (3 \times N) \)-dimensionalen Systemmatrix \( \mat{S} \)).
+				
+				Die Systemmatrix \(S\) kann dabei \zB durch ein Farbabgleichsexperiment gewonnen werden. Dabei sollen Probanden das Licht dreier linear unabhängiger Lichtquellen \( \vec{p}_1, \vec{p}_2, \vec{p}_3 \in \R^N \) durch Verstellung der Intensität \( \vec{a}_1, \vec{a}_2, \vec{a}_3 \in \R \) mit einer Testlichtquelle \( \vec{f} \in \R^N = \const \) abgleichen. Dieser Zusammenhang wird durch
+				\begin{equation*}
+					\mat{S} \vec{f} = \mat{S} \mat{P} \vec{a}
+				\end{equation*}
+				beschrieben, wobei \( \mat{P} = \begin{bmatrix} \vec{p}_1 & \vec{p}_2 & \vec{p}_3 \end{bmatrix} \) und \( a = \begin{bmatrix} a_1 & a_2 & a_3 \end{bmatrix}^T \) gelte. Ein Abgleich mit \(N\) monochromatischen Lichtquellen \( \vec{f} = \vec{e}_i \), \( i = 1, \cdots, N \) und abspeichern aller Einstellungen \( \vec{a}^i = \begin{bmatrix} a_1^i & a_2^i & a_3^i \end{bmatrix}^T \) resultiert mit einer Matrix \( \mat{A} = \begin{bmatrix} \vec{a}^1 & \cdots & \vec{a}^N \end{bmatrix} \) in der Gleichung
+				\begin{equation*}
+					\mat{S} \mat{I}_N = \mat{S} = \mat{S} \mat{P} \mat{A} \quad\iff\quad A = ( \mat{S} \mat{P} )^{-1} \mat{S}
+				\end{equation*}
+				wobei \( \mat{A} \) die \emph{Spektralwertmatrix} für dir Primärlichtarten \( \mat{P} \) ist. Dadurch kann die Matrix \( \mat{S} \) bestimmt werden.
 			% end
 
-			\subsection{Spektralwertfunktion} % 12.23, 12.24
-				\todo{Content}
+			\subsection{Spektralwertfunktion}
+				Erscheinen zwei Farbreize \( g, f \) gleich, so gilt:
+				\begin{equation*}
+					\mat{S} \vec{g} = \mat{S} \vec{f} \quad\iff\quad (\mat{S}\mat{P})^{-1} \mat{S} \vec{g} = (\mat{S} \mat{P})^{-1} \mat{S} \vec{f} \quad\iff\quad \mat{A} \vec{g} = \mat{A} \vec{f}
+				\end{equation*}
+				Die Zeilen von \( \mat{A} \) heißen \emph{Spektralwertfunktionen} (Color Matching Functions, CMF). Durch die Multiplikation mit einer regulären \( (3 \times 3) \)-Matrix werden neue CMFs erzeugt: \( \mat{B} = \mat{M} \mat{A} \).
+				
+				Hilfreiche Eigenschaften von CMFs sind:
+				\begin{itemize}
+					\item Die Funktionen sind positib.
+					\item Eine CMF ist die Helligkeitsempfindlichkeitsfunktion \( V(\lambda) \).
+					\item Viele Nullen (dadurch einfache Berechnungen).
+				\end{itemize}
 			% end
 
-			\subsection{Cone Fundamentals} % 12.25
-				\todo{Content}
-			% end
-		% end
-
-		\section{Objektfarben, Lichtmatrix und XIEXYZ-Farbraum} % 12.26, 12.27, 12.28, 12.29
-			\todo{Content}
-		% end
-
-		\section{Metamerie} % 12.30, 12.31, 12.32, 12.33
-			\todo{Content}
-		% end
-
-		\section{Gegenfarbtheorie} % 12.35
-			\todo{Content}
-		% end
-
-		\section{Stevenssche Potenzfunktion} % 12.36
-			\todo{Content}
-		% end
-
-		\section{CIELAB Farbraum} % 12.37, 12.38
-			\todo{Content}
-		% end
-
-		\section{Technische Farbräume} % 12.39
-			\todo{Content}
-
-			\subsection{Geräte RGB} % 12.40
-				\todo{Content}
-			% end
-
-			\subsection{Geräteunabhängige RGB} % 12.40
-				\todo{Content}
-			% end
-
-			\subsection{YCbCr} % 12.41
-				\todo{Content}
-			% end
-
-			\subsection{HSI/HSV/HSL} % 12.41
-				\todo{Content}
-			% end
-
-			\subsection{CMY/CMYK} % 12.42
-				\todo{Content}
+			\subsection{Cone Fundamentals}
+				\emph{Cone Fundamentals} sind die spektralen Empfindlichkeiten der Zapfen multipliziert mit der Transmission der Augenoptik.
 			% end
 		% end
 
-		\section{Komplexität von Farbe} % 12.43
-			\todo{Content}
+		\section{Objektfarben, Lichtmatrix und CIEXYZ-Farbraum}
+			Für eine Spektralwertmatrix \( \mat{A} \) wird die reflektionsbasierte Farbvalenz \( \vec{y} \) wie folgt berechnet:
+			\begin{equation*}
+				\vec{y} = \underbrace{\mat{A} \text{diag}(\vec{l})}_{L \coloneqq} \vec{r} = \mat{L} \vec{r}
+			\end{equation*}
+			Dabei ist
+			\begin{itemize}
+				\item \( \vec{l} \in \R^N \): Spektrale Dichteverteilung der Lichtart.
+				\item \( \vec{r} \in \R^N \): Reflektionsspektrum
+			\end{itemize}
+			Die Matrix \( \mat{L} \) wird \emph{Lichtmatrix} genannt.
+			
+			Die \emph{CIEXYZ-Farbkoordinaten} (Farbvalenzen) sind definiert als
+			\begin{equation*}
+				\begin{bmatrix}
+					X \\
+					Y \\
+					Z
+				\end{bmatrix}
+				=
+				\frac{100}{\bar{\vec{y}}^T \vec{l}} \mat{L} \vec{r}
+			\end{equation*}
+			wobei \( \mat{L} = \begin{bmatrix} \bar{\vec{x}} & \bar{\vec{y}} & \bar{\vec{z}} \end{bmatrix}^T \) die Lichtmatrix und \( \vec{r} \) das Reflektionszentrum ist. Diese Farbwerte heißen \emph{Normfarbwerte}.
+			
+			\subsection{Das CIE Chromaticity Diagramm}
+				Chromaticity-Koordinaten sind gegeben durch:
+				\begin{equation*}
+					x = \frac{X}{X + Y + Z} \quad\quad y = \frac{Y}{X + Y + Z} \quad\quad z = \frac{Z}{X + Y + Z}
+				\end{equation*}
+				Die \(x\)-\(y\)-Koordinaten der monochromatischen Farbreize erzeugen dabei die Spektralfarblinie. Die restlichen \(x\)-\(y\)-Chromaticity-Koordinaten mit einer additiven Mischung aus Farbreizen liegen alle innerhalb der konvexen Hülle der Chromaticity-Koordinaten der monochromatischen Farbreize (\dh der Spektralfarblinie).
+				
+				Der CIEXYZ-Farbraum ist dabei nicht wahrnehmungsgleichabständig, \dh der wahrgenommene Farbabstand \( \Delta V (\vec{q}, \vec{p}) \) ist nicht immer gleich dem Abstand im CIEXYZ-Farbraum:
+				\begin{equation*}
+					\exists \vec{q}, \vec{p} \in \text{CIEXYZ} : \big( \Delta V(\vec{q}, \vec{p}) \neq \lVert \vec{q} - \vec{p} \rVert_2 \big)
+				\end{equation*}
+				Außerdem modelliert das CIEXYZ-Modell nur die erste Phase des Farbsehens und erlaubt keinen einfachen Zugriff auf Farbattribute.
+			% end
+		% end
 
-			\subsection{Chromatische Adaptation} % 12.45, 12.46
-				\todo{Content}
+		\section{Metamerie}
+			\begin{itemize}
+				\item Metamerie: \\ Zwei Farbreize \( \vec{g} \neq \vec{f} \) heißen \emph{Metamere}, wenn \( \mat{A} \vec{g} = \mat{A} \vec{f} \) gilt.
+				\item Beleuchtungsmetamerie: \\ Zwei Reflektionsspektren \( \vec{r}_1 \neq \vec{r}_2 \) heißen \emph{metamere Reflektionsspektren} unter der Lichtart \( \vec{l} \), wenn \( \mat{L} \vec{r}_1 = \mat{L} \vec{r}_2 \) gilt.
+				\item Beobachtermetamerie: \\ Zwei Farbreize \( \vec{g} \neq \vec{f} \) erzeugen bei gleichen Betrachtungsbedingungen für eine Person die gleichen, für eine andere Person unterschiedliche Farbvalenzen, \dh \( \mat{A}_1 \vec{g} = \mat{A}_2 \vec{f} \), aber \( \mat{A}_2 \vec{g} = \mat{A}_2 \vec{f} \), wobei \( \mat{A}_i \) die Spektralwertmatrix für Person \(i\) ist.
+					\begin{itemize}
+						\item Einflussfaktoren sind \zB die Dichte der Linse, verursacht durch Alter, Ernährung, Ethnie, Rauchen, \dots
+						\item Außerdem variiert die maximale spektrale Empfindlichkeit zwischen Personen (um bis zu \SI{9}{\nano\meter}).
+					\end{itemize}
+			\end{itemize}
+		% end
 
-				\subsubsection{Modellbildung} % 12.47, 12.48
-					\todo{Content}
+		\section{Gegenfarbtheorie}
+			Nach der Gegenfarbtheorie sind die Gegenfarben gegeben durch
+			\begin{equation*}
+				\begin{bmatrix}
+					L \\
+					M \\
+					S
+				\end{bmatrix}
+				=
+				\begin{bmatrix}
+					\vec{l}^T \\
+					\vec{m}^T \\
+					\vec{s}^T
+				\end{bmatrix}
+				\vec{f}
+			\end{equation*}
+			wobei \( \vec{l}, \vec{m}, \vec{s} \) die Cone Fundamentals darstellen und \(\vec{f}\) ein Farbreiz ist.
+		% end
+
+		\section{Stevenssche Potenzfunktion}
+			Die \emph{Stevenssche Potenzfunktion}
+			\begin{equation*}
+				\psi = k(I - I_0)^n
+			\end{equation*}
+			beschreibt die Beziehung der Reizstärke zur Empfindungsstärke, wobei:
+			\begin{itemize}
+				\item \(\psi\): Wahrnehmungskorrelation
+				\item \(I\): Reiz
+				\item \(I_0\): Letzter gerade noch wahrnehmbarer Reiz
+				\item \(k\): Anpassbare Verstärkung
+				\item \(n\): Anpassbarer Exponent
+			\end{itemize}
+		% end
+
+		\section{CIELAB Farbraum}
+			Zur Umwandlung vom CIEXYZ-Farbraum in den CIELAB-Farbraum sind folgende Eingabedaten nötig:
+			\begin{itemize}
+				\item XYZ-Farbvalenz: \( (X, Y, Z) \)
+				\item XYZ-Farbvalenz des Weißpunkts: \( (X_n, Y_n, Z_n) \)
+			\end{itemize}
+			Für die Umrechnung gilt dann:
+			\begin{align*}
+				L^\ast &= 116 f(Y / Y_n) - 16 \\
+				a^\ast &= 500 \big( f(X / X_n) - f(Y / Y_n) \big) \\
+				b^\ast &= 200 \big( f(Y / Y_n) - f(Z / Z_n) \big) \\
+				f(\omega) &=
+					\begin{cases}
+						\sqrt[3]{\omega}     & \omega > 0.008856    \\
+						7.787\omega + 16/116 & \omega \leq 0.008856
+					\end{cases}
+			\end{align*}
+			wobei \( L^\ast \) die relative Helligkeit, \( a^\ast \) die Rot-Grün Komponente und \( b^\ast \) die Blau-Gelb Komponente darstellt.
+			
+			Eigenschaften des CIELAB-Farbraums:
+			\begin{itemize}
+				\item Gegenfarbraum
+				\item Es werden Nichtlinearitäten des visuellen Systems modelliert.
+				\item Nahezu wahrnehmungsgleichabständig, \dh \( \forall \vec{q}, \vec{p} \in \text{CIELAB} : \big( \Delta V (\vec{q}, \vec{p}) \approx \rVert \vec{q} - \vec{p} \lVert_2 \big) \).
+			\end{itemize}
+		
+			Durch die zylindrische Darstellung des CIELAB-Farbraums lässt sich der LCh-Farbraum ableiten mit der Buntheit \( C_{ab}^\ast = \sqrt{\big(a^\ast\big)^2 + \big(b^\ast\big)^2} \) und dem Farbton \( h_{ab} = \arctan\big( b^\ast / a^\ast \big) \).
+		% end
+
+		\section{Technische Farbräume}
+			\subsection{Geräte RGB}
+				Bestimmte Gräte verwenden meist eigene RGB-Standards.
+			% end
+
+			\subsection{Geräteunabhängige RGB}
+				Zum Beispiel sRGB und Adobe RGB.
+			% end
+
+			\subsection{YCbCr}
+				Der YCbCr-Farbraum ist ein Gegenfarbraum mit
+				\begin{itemize}
+					\item \(Y\): Luminanz
+					\item \(C_b\): Blau-Gelb
+					\item \(C_r\): Rot-Grün
+				\end{itemize}
+				und kann als lineare Transformation über den RGB-Farbraum definiert werden. Wird \bspw in JPEGs eingesetzt.
+			% end
+
+			\subsection{HSI/HSV/HSL}
+				Der HSI/HSV/HSL-Farbraum wird definiert durch
+				\begin{itemize}
+					\item \(H\): Hue (Farbton)
+					\item \(S\): Saturation (Sättigung)
+					\item \(I\)/\(V\)/\(L\): Intensity/Value/Lightness (Helligkeit)
+				\end{itemize}
+				und wird \bspw zur intuitiven Farbauswahl in Grafikprogrammen oder zum Thresholding eingesetzt.
+			% end
+
+			\subsection{CMY/CMYK}
+				Der CMY/CMYK-Farbraum wird definiert durch
+				\begin{itemize}
+					\item \(C\): Cyan
+					\item \(M\): Magenta
+					\item \(Y\): Yellow (Gelb)
+					\item \(K\): Black (Schwarz)
+				\end{itemize}
+				und wird \bspw für die Ansteuerungswerte zur Tintenauswahl bei Druckern verwendet.
+			% end
+		% end
+
+		\section{Komplexität von Farbe}
+			\subsection{Chromatische Adaptation}
+				\emph{Chromatische Adaption} beschreibt die weitgehend unabhängige Regulierung der Mechanismen beim Farbsehen. Häufig wird \zB die unabhängig Anpassung der Zapfenempfindlichkeit an den dominanten Farbreiz der Umgebung betrachtet.
+
+				\subsubsection{Von-Kries-Modell}
+					Unter den Hypothesen
+					\begin{enumerate}
+						\item Jeder Zapfen wird individuell adaptiert.
+						\item Lineare Transformation.
+					\end{enumerate}
+					wird das \emph{Von-Kries-Modell} der Adaption formuliert:
+					\begin{equation*}
+						\begin{bmatrix}
+							X_2 \\
+							Y_2 \\
+							Z_2
+						\end{bmatrix}
+						=
+						K^{-1}
+						\begin{bmatrix}
+							L_{w, 2} / L_{w, 1} & 0 & 0 \\
+							0 & M_{w, 2} / M_{w, 1} & 0 \\
+							0 & 0 & S_{w, 2} / S_{w, 2}
+						\end{bmatrix}
+						K
+						\begin{bmatrix}
+							X_1 \\
+							Y_2 \\
+							Z_1
+						\end{bmatrix}
+					\end{equation*}
+					wobei \( L_{w, 1}, M_{w, 1}, S_{w, 1} \) die Zapfenantwort bei Lichtart \( \vec{l}_1 \) und \( L_{w, 2}, M_{w, 2}, S_{w, 2} \) die Zapfenantwort bei Lichtart \(l_2\) ist sowie:
+					\begin{equation*}
+						\begin{bmatrix}
+							L \\
+							M \\
+							S
+						\end{bmatrix}
+						=
+						\underbrace{
+						\begin{bmatrix}
+							0.3897  & 0.6890 & -0.0787 \\
+							-0.2298 & 1.1834 & 0.0464  \\
+							0.0000  & 0.0000 & 1.0000
+						\end{bmatrix}
+						}_{K \coloneqq}
+						\begin{bmatrix}
+							X \\
+							Y \\
+							Z
+						\end{bmatrix}
+						= K
+						\begin{bmatrix}
+							X \\
+							Y \\
+							Z
+						\end{bmatrix}
+					\end{equation*}
+					Dieses Modell weist jedoch kleine Fehler von der tatsächlichen Adaption ab, primär da die Zapfenregulierung nicht der einzige Mechanismus der Adaption ist. Eine Optimierung der Matrix \(K\) kann führt aber zu spitzeren Zapfenantworten und besserer Vorhersagegenauigkeit.
 				% end
 			% end
 
-			\subsection{Farbwahrnehmungsphänomene} % 12.49
-				\todo{Content}
-
-				\subsubsection{Simultankontrast} % 12.49
-					\todo{Content}
+			\subsection{Farbwahrnehmungsphänomene}
+				\subsubsection{Simultankontrast}
+					Der Hintergrund, auf dem eine Farbe wahrgenommen wird, beeinflusst die wahrgenommene Farbe. Dabei folgt die Farbverschiebung der Gegenfarbtheorie:
+					\begin{itemize}
+						\item Ein Heller Hintergrund induziert dunklere Farbe und umgekehrt.
+						\item Rot induziert Grün und Grün induziert Rot.
+						\item Blau induziert Gelb und Gelb induziert Blau.
+					\end{itemize}
 				% end
 
-				\subsubsection{Crispening Effekt} % 12.50
-					\todo{Content}
+				\subsubsection{Crispening Effekt}
+					Der wahrgenommene Farbunterschied zweier Farbreize wird durch einen ähnlichen Hintergrund vergrößert.
 				% end
 
-				\subsubsection{Stevens Effekt} % 12.51
-					\todo{Content}
+				\subsubsection{Stevens Effekt}
+					Bei steigender Leichtdichte sehen dunkle Farben dunkler und helle Farben heller aus.
 				% end
 
-				\subsubsection{Hunt Effekt} % 12.52
-					\todo{Content}
-				% end
-			% end
-
-			\subsection{Farbwahrnehmungsmodelle} % 12.54
-				\todo{Content}
-
-				\subsubsection{CIECAM02} % 12.55, 12.56, 12.57
-					\todo{Content}
+				\subsubsection{Hunt Effekt}
+					Die Farbigkeit steigt mit der Leuchtdichte.
 				% end
 			% end
 
-			\subsection{Kontrastsensitivität} % 12.58, 12.59, 12.60
-				\todo{Content}
+			\subsection{Farbwahrnehmungsmodelle}
+				Da gleiche Farbreize unterschiedlichen Farben entsprechen können, werden akkurate Farbwahrnehmungsmodelle benötigt, um die Farbreize für den Farbabgleich bei unterschiedlichen Betrachtungsbedingungen anzupassen.
 
-				\subsubsection{S-CIELAB (Spacial-CIELAB)} % 12.61, 12.62, 12.63
-					\todo{Content}
+				\subsubsection{CIECAM02}
+					Das \emph{CIECAM02-Farbwahrnehmungsmodell} ist ein invertierbares Modell, welches eine vorhersage über den empfundenen Farbabstand zulässt. Dabei gibt es von den Betrachtungsbedingungen abhängige Nichtlinearitäten zur Relation der Leichtdichte mit der (relativen) Helligkeit.
+					
+					Vorgehen zur Farbanpassung:
+					\begin{enumerate}
+						\item Berechnung der Farbattribute mit dem CIECAM02-Modell für die erste Betrachtungsbedingung.
+						\item Berechnung der CIEXYZ-Werte mit dem inversen CIECAM02-Modell für die zweite Betrachtungsbedingung.
+					\end{enumerate}
 				% end
+			% end
 
-				\subsubsection{iCAM (Image Color Appearance Model)} % 12.64, 12.65, 12.66
-					\todo{Content}
-				% end
+			\subsection{Kontrastsensitivität}
+				Die achromatische Kontrastsensitivität ist größer bei höheren Ortsfrequenzen.
+				
+				Aufgrund der Kontrastsensitivität sind zusätzlich zu Farbwahrnehmungsmodellen auch Bildwahrnehmungsmodelle nötigt. Beispiele sind:
+				\begin{itemize}
+					\item S-CIELAB (Spacial-CIELAB)
+					\item iCAM (Image Color Appearance Model)
+				\end{itemize}
 			% end
 		% end
 	% end

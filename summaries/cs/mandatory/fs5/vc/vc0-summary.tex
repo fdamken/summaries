@@ -2488,134 +2488,404 @@
 		% end
 	% end
 
-	\chapter{3D-Visualisierung} % 9.1
-		\todo{Content}
+	\chapter{3D-Visualisierung}
+		\section{(Gewinnung) 3D-Daten}
+			Bei 3D-Daten werden die Messwerte dreidimensional im Raum verteilt und jeder Wert hat drei Koordinaten \( (x, y, z) \). Dabei können die Werte gleichmäßig oder unterschiedlich verteilt sein und ein Wert kann skalar oder höherdimensional sein (\zB ein Vektor in einem Strömungsfeld).
 
-		\section{3D-Daten} % 9.4
-			\todo{Content}
-
-			\paragraph{Terrain} % 9.5
-				\todo{Content}
+			\paragraph{Terrain}
+				Zum Scannen eines Terrains wird an beliebigen Positionen \( (x, y) \) die Höhe \(z\) gemessen, wodurch sich eine 3D-Position ergibt. Oberflächeninformationen (\zB Vegetation) können durch Satellitenbilder gewonnen werden.
 			% end
 
-			\paragraph{Laser Scanning} % 9.6
-				\todo{Content}
+			\paragraph{Laser Scanning}
+				Beim Laser Scanning wird ein Laserstrahl auf eine Oberfläche projiziert und das rückstrahlende Licht gemessen. Aus dem Abstand zwischen Laser und Kamera kann dann die Distanz durch Triangulation berechnet werden. Dies ergibt eine unstrukturierte Punktwolke.
 			% end
 
-			\paragraph{Range Images} % 9.7
-				\todo{Content}
+			\paragraph{Range Images}
+				Aus einem Range Image \( r(u, v) \) ergibt sich die Pixelinformation als 3D-Punkt \( \big(u, v, r(u, v)\big) \).
 			% end
 
-			\paragraph{Medizinische Bilddaten} % 9.8, 9.9
-				\todo{Content}
+			\paragraph{Medizinische Bilddaten}
+				In der Medizin werden viele bildgebende Geräte verwendet, um physikalische Eigenschaften zu messen (MRI, CT, Ultraschall, \dots). Diese produzieren einen "Stapel" von parallelen Scheiben (Slices), die jeweils einem regulären 2D-Gitter entsprechen. Ein solcher Scan produziert jedoch riesige Datenmengen!
 			% end
 
-			\paragraph{Schneiden} % 9.10
-				\todo{Content}
-			% end
-
-			\paragraph{Wetter} % 9.11
-				\todo{Content}
-			% end
-
-			\paragraph{Klimaforschung} % 9.12
-				\todo{Content}
+			\paragraph{Wetter}
+				Die Parameter des Wetters (\zB Temperatur, Druck, Niederschlag, Windrichtung, \dots) sind für bestimmte Regionen auf verschiedenen Höhen unterschiedlich und sowohl vektoriell als auch skalar. Zur Messung dieser Daten wird die Erde in viele Zellen einer bestimmten Größe (meist einige Kilometer) aufgeteilt.
 			% end
 		% end
 
-		\section{Triangulation von Punktwolken} % 9.13, 9.14
-			\todo{Content}
+		\section{Triangulation von Punktwolken}
+			Eine unstrukturierten Punktmenge \( s_i = (x_i, y_i, z_i) \) auf einer Oberflächen \(S\) wird als \emph{Punktwolke} bezeichnet. Für einfache Oberflächen (ohne Falten) können Punkte auf eine Ebene projiziert und in 2D trianguliert werden (planare Triangulation). Dieses 2D-Netz wird dann entsprechend der \(z_i\)-Werte deformiert.
 
-			\subsection{Ideal Triangulation} % 9.15
-				\todo{Content}
+			\subsection{Ideal Triangulation}
+				Bei einer idealen Triangulation haben alle Dreiecke die Innenwinkel \( (\SI{60}{\deg}, \SI{60}{\deg}, \SI{60}{\deg}) \), \dh die Dreiecke sind gleichschenklig. Dies führt zu einer numerischen Stabilität und vereinfacht das Post-Processing.
 			% end
 
-			\subsection{Voronoi-Diagramm und Delaunay-Triangulation} % 9.16, 9.17, 9.18
-				\todo{Content}
+			\subsection{Voronoi-Diagramm}
+				Statt einer idealen Triangulation, die schwer zu berechnen ist, kann ein Voronoi-Diagramm eingesetzt werden. Dabei wird für jeden (in 2D projizierten) Punkt \( \bar{s}_i \) eine \emph{Voronoi-Zelle} definiert, die alle Punkte enthält, die näher an \( \bar{s}_i \) als an allen anderen Orten (andere \( \bar{s}_j \)) liegt. Die Kante einer Voronoi-Zelle liegt dann auf den Punkten mit dem gleichen Abstand zu den zwei nächsten Orten und der Knoten einer Voronoi-Zelle auf einem Punkt, der den gleichen Abstand zu drei anderen Orten hat. Dadurch wird die 2D-Fläche "parkettiert".
 			% end
-		% end
-
-		\section{Indirekte Volumenvisualisierung} % 9.22, 9.25
-			\todo{Content}
-
-			\subsection{3D-Volumen und Nachbarschaft} % 9.23, 9.24
-				\todo{Content}
-			% end
-
-			\subsection{2D: Konturlinien} % 9.26
-				\todo{Content}
-			% end
-
-			\subsection{3D: Isoflächen} % 9.27, 9.28
-				\todo{Content}
-			% end
-
-			\subsection{2D: Marching Squares} % 9.29, 9.30
-				\todo{Content}
-			% end
-
-			\subsection{3D: Marching Cubes} % 9.31
-				\todo{Content}
-			% end
-
-			\subsection{Große Polygonmodelle und Performanz} % 9.33, 9.34
-				\todo{Content}
-
-				\subsubsection{Culling von Geometrie} % 9.35
-					\todo{Content}
-				% end
-
-				\subsubsection{Meshreduktion} % 9.36, 9.37
-					\todo{Content}
-				% end
-
-				\subsubsection{Mesh-Glättung} % 9.38, 9.39
-					\todo{Content}
-				% end
+			
+			\subsection{Delaunay-Triangulation}
+				Durch Betrachtung des dualen Graph zu einem Voronoi-Diagramm wird eine \emph{Delaunay-Triangulation} beschrieben (es sind jedoch \mglw Korrekturen nötig). Dabei ist ein Dreiecksnetz nur dann eine Delaunay-Triangulation, wenn alle Umkreise von allen Dreiecken leer sind, \dh es liegt kein Ort in ihnen. Dies kann durch das "Umdrehen" einer Kante korrigiert werden.
 			% end
 		% end
 
-		\section{Direkte Volumenvisualisierung} % 9.40, 9.41
-			\todo{Content}
+		\section{Indirekte Volumenvisualisierung}
+			Eine Menge von Volumendaten enthält viele Informationen, was das Rendering verlangsamt, obwohl vieles (\zB verdeckte) Elemente gar nicht angezeigt wird. Deshalb wird \iA nicht das gesamte Volumen, sondern nur ein Teil angezeigt.
 
-			\subsection{Density Emitter Model} % 9.42
-				\todo{Content}
+			\subsection{3D-Volumen und Nachbarschaft}
+				In einem normalen 3D-Raster wird ein Volumenelement (Würfel) als \emph{Voxel} bezeichnet. Die Dicke eines Slices (\dh die Breite eines Würfels) ist dabei oftmals größer als die Pixelabstände (anisotropische Volumen). Die Eine Rasterposition wird dabei durch einen Index \( (i, j, k) \) beschrieben.
+				
+				Ein Voxel ist dabei adjazent zu einem Referenzvoxel:
+				\begin{itemize}
+					\item Im zweidimensionalen sind dies über \num{4} Kanten und \num{4} Ecken insgesamt \num{8} Nachbarvoxel.
+					\item Im dreidimensional sind dies über \num{6} Flächen, \num{12} Kanten und \num{8} Ecken insgesamt \num{24} Nachbarvoxel.
+				\end{itemize}
 			% end
 
-			\subsection{Volumen-Rendering-Gleichung} % 9.43, 9.44
-				\todo{Content}
+			\subsection{2D: Konturlinien}
+				Eine \emph{Konturlinie} ist eine Linie entlang der selben Höhe, \dh der Wert ist entlang einer Konturlinie konstant (\dh ein Kontur-Diagramm entspricht einer Höhenkarte). Dabei ist die Ausrichtung des Gefälles orthogonal zu den Konturlinien.
+			% end
+
+			\subsection{3D: Isoflächen}
+				Eine Trennung zwischen verschiedenen Strukturen führt zu einer Eingrenzung von Strukturen, wodurch ebendiese Strukturen erkannt werden könne. Die Voxel an einer solchen Eingrenzung bilden, wenn die die gleiche Intensität haben, sogenannte \emph{Isoflächen}. Eine Isofläche ist dabei eine implizite Fläche
+				\begin{equation*}
+					i(x) = V(x) - \tau = 0
+				\end{equation*}
+				wobei \( V(x) \) der Voxelwert und \( \tau = \const \) ein festgesetzter Isowert ist. Die Datenmenge wird dann aufgeteilt in innen (\( i(x) > 0 \)) und außen (\( i(x) < 0 \)) liegende Flächen. Die Definition eines solchen Isowerts entspricht also einem Thresholding der Daten.
+			% end
+
+			\subsection{2D: Marching Squares}
+				Der \emph{Marching Squares Algorithmus} versucht, gegeben einem Fixen Isowert \( \tau \) die Isolinie \( s(x) = 0 \) zu finden, um so die Fläche in innen und außen zu unterteilen. Dabei sei jede Bildzelle durch ihre vier umgebenden Pixel definiert. Danach wird jede Bildzelle abgelaufen, um sie einem der in Abbildung~\ref{fig:marching_squares} aufgezeigten Fälle zuzuordnen und die Isolinie entsprechend zu ziehen. Ein Pixel hat dabei den "Set Pixel"-Zustand, wenn dieser größer oder gleich \( \tau \) ist.
+				
+				Werden Rotationen und Symmetrien beachtet, so reduzieren sich die Fälle auf fünf Fälle.
+				
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}[xscale = 1/2, yscale = 1/2, set/.style = { draw, circle, fill = black }, reset/.style = { draw, circle }, alt/.style = { dashed }]
+						\node [reset] (ref) {};
+						\node [reset, right = 0.5 of ref] (b) {};
+						\node [reset, below = 0.5 of b] (c) {};
+						\node [reset, left = 0.5 of c] (d) {};
+						\coordinate [right = 0.25 of ref] (A);
+						\coordinate [below = 0.25 of b] (B);
+						\coordinate [left = 0.25 of c] (C);
+						\coordinate [above = 0.25 of d] (D);
+						\path (c) -- node[below, yshift = -0.2cm]{Fall 0} (d);
+						\draw (ref) -- (b) -- (c) -- (d) -- (ref);
+						
+						\node [reset, right = 1 of b] (a) {};
+						\node [reset, right = 0.5 of a] (b) {};
+						\node [reset, below = 0.5 of b] (c) {};
+						\node [  set, left = 0.5 of c] (d) {};
+						\coordinate [right = 0.25 of a] (A);
+						\coordinate [below = 0.25 of b] (B);
+						\coordinate [left = 0.25 of c] (C);
+						\coordinate [above = 0.25 of d] (D);
+						\path (c) -- node[below, yshift = -0.2cm]{Fall 1} (d);
+						\draw (a) -- (b) -- (c) -- (d) -- (a);
+						\draw (C) -- (D);
+						
+						\node [reset, right = 1 of b] (a) {};
+						\node [reset, right = 0.5 of a] (b) {};
+						\node [  set, below = 0.5 of b] (c) {};
+						\node [reset, left = 0.5 of c] (d) {};
+						\coordinate [right = 0.25 of a] (A);
+						\coordinate [below = 0.25 of b] (B);
+						\coordinate [left = 0.25 of c] (C);
+						\coordinate [above = 0.25 of d] (D);
+						\path (c) -- node[below, yshift = -0.2cm]{Fall 2} (d);
+						\draw (a) -- (b) -- (c) -- (d) -- (a);
+						\draw (B) -- (C);
+						
+						\node [reset, right = 1 of b] (a) {};
+						\node [reset, right = 0.5 of a] (b) {};
+						\node [  set, below = 0.5 of b] (c) {};
+						\node [  set, left = 0.5 of c] (d) {};
+						\coordinate [right = 0.25 of a] (A);
+						\coordinate [below = 0.25 of b] (B);
+						\coordinate [left = 0.25 of c] (C);
+						\coordinate [above = 0.25 of d] (D);
+						\path (c) -- node[below, yshift = -0.2cm]{Fall 3} (d);
+						\draw (a) -- (b) -- (c) -- (d) -- (a);
+						\draw (B) -- (D);
+						
+						\node [reset, right = 1 of b] (a) {};
+						\node [  set, right = 0.5 of a] (b) {};
+						\node [reset, below = 0.5 of b] (c) {};
+						\node [reset, left = 0.5 of c] (d) {};
+						\coordinate [right = 0.25 of a] (A);
+						\coordinate [below = 0.25 of b] (B);
+						\coordinate [left = 0.25 of c] (C);
+						\coordinate [above = 0.25 of d] (D);
+						\path (c) -- node[below, yshift = -0.2cm]{Fall 4} (d);
+						\draw (a) -- (b) -- (c) -- (d) -- (a);
+						\draw (A) -- (B);
+						
+						\node [reset, right = 1 of b] (a) {};
+						\node [  set, right = 0.5 of a] (b) {};
+						\node [reset, below = 0.5 of b] (c) {};
+						\node [  set, left = 0.5 of c] (d) {};
+						\coordinate [right = 0.25 of a] (A);
+						\coordinate [below = 0.25 of b] (B);
+						\coordinate [left = 0.25 of c] (C);
+						\coordinate [above = 0.25 of d] (D);
+						\path (c) -- node[below, yshift = -0.2cm]{Fall 5} (d);
+						\draw (a) -- (b) -- (c) -- (d) -- (a);
+						\draw [alt] (A) -- (B);
+						\draw [alt] (C) -- (D);
+						\draw (A) -- (D);
+						\draw (B) -- (C);
+						
+						\node [reset, right = 1 of b] (a) {};
+						\node [  set, right = 0.5 of a] (b) {};
+						\node [  set, below = 0.5 of b] (c) {};
+						\node [reset, left = 0.5 of c] (d) {};
+						\coordinate [right = 0.25 of a] (A);
+						\coordinate [below = 0.25 of b] (B);
+						\coordinate [left = 0.25 of c] (C);
+						\coordinate [above = 0.25 of d] (D);
+						\path (c) -- node[below, yshift = -0.2cm]{Fall 6} (d);
+						\draw (a) -- (b) -- (c) -- (d) -- (a);
+						\draw (A) -- (C);
+						
+						\node [reset, right = 1 of b] (a) {};
+						\node [  set, right = 0.5 of a] (b) {};
+						\node [  set, below = 0.5 of b] (c) {};
+						\node [  set, left = 0.5 of c] (d) {};
+						\coordinate [right = 0.25 of a] (A);
+						\coordinate [below = 0.25 of b] (B);
+						\coordinate [left = 0.25 of c] (C);
+						\coordinate [above = 0.25 of d] (D);
+						\path (c) -- node[below, yshift = -0.2cm]{Fall 7} (d);
+						\draw (a) -- (b) -- (c) -- (d) -- (a);
+						\draw (A) -- (D);
+						
+						
+						\node [  set, below = 2 of ref] (a) {};
+						\node [reset, right = 0.5 of a] (b) {};
+						\node [reset, below = 0.5 of b] (c) {};
+						\node [reset, left = 0.5 of c] (d) {};
+						\coordinate [right = 0.25 of a] (A);
+						\coordinate [below = 0.25 of b] (B);
+						\coordinate [left = 0.25 of c] (C);
+						\coordinate [above = 0.25 of d] (D);
+						\path (c) -- node[below, yshift = -0.2cm]{Fall 8} (d);
+						\draw (a) -- (b) -- (c) -- (d) -- (a);
+						\draw (A) -- (D);
+						
+						\node [  set, right = 1 of b] (a) {};
+						\node [reset, right = 0.5 of a] (b) {};
+						\node [reset, below = 0.5 of b] (c) {};
+						\node [  set, left = 0.5 of c] (d) {};
+						\coordinate [right = 0.25 of a] (A);
+						\coordinate [below = 0.25 of b] (B);
+						\coordinate [left = 0.25 of c] (C);
+						\coordinate [above = 0.25 of d] (D);
+						\path (c) -- node[below, yshift = -0.2cm]{Fall 9} (d);
+						\draw (a) -- (b) -- (c) -- (d) -- (a);
+						\draw (A) -- (C);
+						
+						\node [  set, right = 1 of b] (a) {};
+						\node [reset, right = 0.5 of a] (b) {};
+						\node [  set, below = 0.5 of b] (c) {};
+						\node [reset, left = 0.5 of c] (d) {};
+						\coordinate [right = 0.25 of a] (A);
+						\coordinate [below = 0.25 of b] (B);
+						\coordinate [left = 0.25 of c] (C);
+						\coordinate [above = 0.25 of d] (D);
+						\path (c) -- node[below, yshift = -0.2cm]{Fall 10} (d);
+						\draw (a) -- (b) -- (c) -- (d) -- (a);
+						\draw [alt] (A) -- (D);
+						\draw [alt] (B) -- (C);
+						\draw (A) -- (B);
+						\draw (C) -- (D);
+						
+						\node [  set, right = 1 of b] (a) {};
+						\node [reset, right = 0.5 of a] (b) {};
+						\node [  set, below = 0.5 of b] (c) {};
+						\node [  set, left = 0.5 of c] (d) {};
+						\coordinate [right = 0.25 of a] (A);
+						\coordinate [below = 0.25 of b] (B);
+						\coordinate [left = 0.25 of c] (C);
+						\coordinate [above = 0.25 of d] (D);
+						\path (c) -- node[below, yshift = -0.2cm]{Fall 11} (d);
+						\draw (a) -- (b) -- (c) -- (d) -- (a);
+						\draw (A) -- (B);
+						
+						\node [  set, right = 1 of b] (a) {};
+						\node [  set, right = 0.5 of a] (b) {};
+						\node [reset, below = 0.5 of b] (c) {};
+						\node [reset, left = 0.5 of c] (d) {};
+						\coordinate [right = 0.25 of a] (A);
+						\coordinate [below = 0.25 of b] (B);
+						\coordinate [left = 0.25 of c] (C);
+						\coordinate [above = 0.25 of d] (D);
+						\path (c) -- node[below, yshift = -0.2cm]{Fall 12} (d);
+						\draw (a) -- (b) -- (c) -- (d) -- (a);
+						\draw (B) -- (D);
+						
+						\node [  set, right = 1 of b] (a) {};
+						\node [  set, right = 0.5 of a] (b) {};
+						\node [reset, below = 0.5 of b] (c) {};
+						\node [  set, left = 0.5 of c] (d) {};
+						\coordinate [right = 0.25 of a] (A);
+						\coordinate [below = 0.25 of b] (B);
+						\coordinate [left = 0.25 of c] (C);
+						\coordinate [above = 0.25 of d] (D);
+						\path (c) -- node[below, yshift = -0.2cm]{Fall 13} (d);
+						\draw (a) -- (b) -- (c) -- (d) -- (a);
+						\draw (B) -- (C);
+						
+						\node [  set, right = 1 of b] (a) {};
+						\node [  set, right = 0.5 of a] (b) {};
+						\node [  set, below = 0.5 of b] (c) {};
+						\node [reset, left = 0.5 of c] (d) {};
+						\coordinate [right = 0.25 of a] (A);
+						\coordinate [below = 0.25 of b] (B);
+						\coordinate [left = 0.25 of c] (C);
+						\coordinate [above = 0.25 of d] (D);
+						\path (c) -- node[below, yshift = -0.2cm]{Fall 14} (d);
+						\draw (a) -- (b) -- (c) -- (d) -- (a);
+						\draw (C) -- (D);
+						
+						\node [  set, right = 1 of b] (a) {};
+						\node [  set, right = 0.5 of a] (b) {};
+						\node [  set, below = 0.5 of b] (c) {};
+						\node [  set, left = 0.5 of c] (d) {};
+						\coordinate [right = 0.25 of a] (A);
+						\coordinate [below = 0.25 of b] (B);
+						\coordinate [left = 0.25 of c] (C);
+						\coordinate [above = 0.25 of d] (D);
+						\path (c) -- node[below, yshift = -0.2cm]{Fall 15} (d);
+						\draw (a) -- (b) -- (c) -- (d) -- (a);
+					\end{tikzpicture}
+					\caption{Möglichkeiten zur Isolinien-Legung in den Bildzellen beim Marching Squares Algorithmus. Dabei bedeutet ein schwarzer Pixel, dass der Pixel im Zustand "Set Pixel" ist, weiß bedeutet dementsprechend "Reset Pixel". In den Fällen \num{5} und \num{11} ist die Legung der Linie nicht eindeutig und es kann wahlweise die gestrichelte Version oder die durchgezogene Version gewählt werden.}
+					\label{fig:marching_squares}
+				\end{figure}
+			% end
+
+			\subsection{3D: Marching Cubes}
+				Der \emph{Marching Cubes Algorithmus} erweitert die Idee von Marching Squares auf drei Dimensionen, wobei eine Volumenzelle durch ihre acht umgebenden Voxel definiert ist. Es gibt, ohne Beachtung von Symmetrien, \num{256} verschiedene Kombination von "Set Pixel" und "Reset Pixel" Zuständen. Unter Einbeziehung von Symmetrien werden diese auf \num{15} Klassen reduziert.
+			% end
+
+			\subsection{Große Polygonmodelle und Performanz}
+				Der Marching Cubes Algorithmus erzeugt sehr viele Millionen Dreiecke, was zu einem hohen Berechnungsaufwand führt. Daher muss das entstehende Mesh vor dem Rendern noch reduziert werden.
+
+				\subsubsection{Culling von Geometrie}
+					Eine Möglichkeit stellt das Cullung von Geometrie dar, bei dem unsichtbare Polygone aus der Rendering-Pipeline entfernt werden:
+					\begin{itemize}
+						\item Backface-Culling: Rückseiten werden nicht gezeichnet.
+						\item View-Frustum-Culling: Polygone, die sich ganz oder teilweise außerhalb des View-Frustums befinden, werden nicht (oder nur teilweise) gezeichnet.
+						\item Occlusion-Culling: Polygone werden nach der tiefe sortiert und nur gerendert, wenn sie nicht vollständig verdeckt sind (Transparenz muss beachtet werden!).
+						\item uvm.
+					\end{itemize}
+				% end
+
+				\subsubsection{Meshreduktion}
+					Bei der Meshreduktion wird die Anzahl der Polygone verringert, wobei die "Größe" der Vereinfachung stark vom Szenario abhängt (Genauigkeit \vs Zeitbegrenzung).
+				% end
+
+				\subsubsection{Mesh-Glättung}
+					Das Ziel der Mesh-Glättung ist die Bereitstellung einer guten Visualisierung sowie der Artefakt-Reduzierung und Entfernung von "Löchern". Die Herausforderung ist hierbei, dass Volumen zu erhalten.
+					
+					Laplacian Glättung:
+					\begin{itemize}
+						\item Es wird eine "Regenschirm"-Region betrachtet (\dh ausgehend von einem Vertex alle durch eine Kante verbundenen Vertexe sowie deren Verbindungen).
+						\item Anschließend werden hochfrequente Oberflächeninformationen reduziert.
+						\item Dies sorgt für eine Reduktion von Krümmungen.
+					\end{itemize}
+				% end
 			% end
 		% end
 
-		\section{Volumen-Rendering-Pipeline} % 9.45
-			\todo{Content}
+		\section{Direkte Volumenvisualisierung}
+			Im Gegensatz zur indirekten Volumenvisualisierung, bei der zunächst eine Zwischendarstellung generiert wird und die Komplexität von der Anzahl an Polygonen abhängig ist, wird bei der direkten Volumenvisualisierung die Voxel direkt ohne Zwischendarstellung visualisiert. Dabei ist die Komplexität von der Anzahl der Voxel und der Auflösung der Anzeigefläche abhängig.
 
-			\subsection{Pipeline} % N/A
-				\todo{Content}
+			\subsection{Density Emitter Model}
+				\begin{itemize}
+					\item Es werden nur Emission und Absorption betrachtet.
+					\item Jeder Voxel in der Datenmenge ist eine kleine Lichtquelle.
+					\item Das Licht wird schwächer, wenn es durch die Volumendatenmenge wandert.
+					\item Das Medium ist eine homogene Dichtewolke.
+				\end{itemize}
+			
+				Dadurch wird die Bestrahlungsstärke \( I(s) \) eines Voxels \(s\) beschrieben durch:
+				\begin{equation}
+					I(s) = I_{s_0} \cdot \exp \Bigg\{ -\int_{s_0}^{s} \! \tau(t) \dif{t} \Bigg\} + \int_{s_0}^{s} \! Q(\tilde{s}) \cdot \exp \Bigg\{ -\int_{\tilde{s}}^{s} \tau(t) \dif{t} \Bigg\} \dif{\tilde{s}}  \label{eqn:volume_rendering}
+				\end{equation}
+				wobei \( I_{s_0} \) die Beleuchtungsstärke des Hintergrunds und \( Q(\tilde{s}) \) die aktive Emission des Voxels \( \tilde{s} \) ist. Mit \( t_i \coloneqq \exp\Big\{ -\tau(i \cdot \Delta t) \cdot \Delta t \Big\} \) kann die Volumen-Rendering-Gleichung~\ref{eqn:volume_rendering} diskretisiert werden:
+				\begin{equation}
+					I(s) = I_0 \prod_{k = 0}^{n - 1} t_k + \sum_{k = 0}^{n - 1} \Bigg( Q(k \cdot \Delta s) \cdot \Delta s \prod_{j = k + 1}^{n - 1} t_j \Bigg)  \label{eqn:volume_rendering_discrete}
+				\end{equation}
+			% end
 
-				\paragraph{Abtastung} % 9.46, 9.47, 9.48
-					\todo{Content}
+			\subsection{Volumen-Rendering-Pipeline}
+				In der Volumen-Rendering-Pipeline gibt es drei grundlegende Schritte:
+				\begin{enumerate}
+					\item Abtastung (Sampling)
+					\item Klassifizierung und Beleuchtung
+					\item Komposition
+				\end{enumerate}
+				Die nacheinander durchlaufen werden
+	
+				\paragraph{Abtastung}
+					Es werden Voxelwerte an bestimmten Orten angesammelt, wobei die Position dieser Orte durch die Abtastdistanz \( \Delta s \) festgelegt ist (diese sollte kleiner als die Hälfte der Rasterauflösung sein, Shannons Abtasttheorem). Dabei befinden sich die Abtastpositionen meistens zwischen den Rasterpostionen.
+					
+					Anschließend werden die Werte Interpoliert, \bspw mit Nearest Neighbor, Trilinear oder B-Spline Modellen.
 				% end
-
-				\paragraph{Klassifikation und Beleuchtung} % 9.50
-					\todo{Content}
+	
+				\paragraph{Klassifikation und Beleuchtung}
+					Für jeden Abtastpunkt wird nun der Anteil (Farbwert) \( Q_k = Q(k \cdot \Delta s) \) sowie der Abschwächungsfaktor (Transparenz) \( t_i \) bei jedem Abtastpunkt berechnet. Dadurch wird der beleuchtete Anteil berechnet, wobei Volumenabtastungen als gerichtete Lichtquellen betrachtet werden (Shading).
 				% end
-
-				\paragraph{Komposition} % 9.51
-					\todo{Content}
-
-					\subparagraph{Back-to-Front-Komposition} % 9.52
-						\todo{Content}
+	
+				\paragraph{Komposition}
+					Die abgetasteten, klassifizierten und beleuchteten Objekte werden nun zusammengeführt (akkumuliert), wobei die Volumen-Rendering-Gleichung numerisch approximiert wird (Gleichung~\ref{eqn:volume_rendering_discrete}). Diese Akkumulation wird in zwei Unterschritte geteilt:
+					\begin{enumerate}
+						\item Back-to-Front-Komposition
+						\item Front-to-Back-Komposition
+					\end{enumerate}
+	
+					\subparagraph{Back-to-Front-Komposition}
+						Bei der Back-to-Front-Komposition wird mit der Abtastposition am Ende des Volumens mit der Zusammensetzung begonnen und in die Richtung des Sichtpunktes fortgefahren. Dabei wird Iterativ die Farbe \( C_k \) sowie die Intensität \( T_k \) an der aktuellen Abtastposition \( k \) berechnet:
+						\begin{align*}
+							C_k &= Q(k \cdot \Delta s) \cdot \Delta s \\
+							I_k &= I_{k - 1} \cdot t_k + C_k
+						\end{align*}
 					% end
-
-					\subparagraph{Front-to-Back-Komposition} % 9.53, 9.54, 9.55
-						\todo{Content}
+	
+					\subparagraph{Front-to-Back-Komposition}
+						Es wird mit der Abtastposition am Anfang des Volumens begonnen und in Richtung des Endes fortgefahren. Dabei werden iterativ Intensität \( I_{k - 1} \), Transparenz \( \tau_{k - 1} \) berechnet:
+						\begin{align*}
+							I_{n - 1} &= C_{n - 1} \\
+							\tau_{n - 1} &= t_{n - 1} \\
+							I_{k - 1} &= T_k + C_k \cdot \tau_k \\
+							\tau_{k - 1} &= t_k \cdot \tau_k
+						\end{align*}
+						Es müssen immer zwei akkumulierte Werte (Intensität und Transparenz) berechnet werden, um \zB Nebel darzustellen (bei diesem sind Lichtquellen ab einem bestimmten Punkt irrelevant).
+						
+						Die Zusammensetzung wird gestoppt, sobald die akkumulierte Transparenz zu klein wird (Early Ray Termination). Dadurch müssen nicht alle Positionen entlang des Strahls betrachtet werden und die Rendering-Geschwindigkeit wird erhöht. Üblicherweise ist dies durch ein Transparenz-Threshold definiert.
 					% end
 				% end
-			% end
-
-			\subsection{Transferfunktion} % 9.56, 9.57, 9.58, 9.59, 9.60
-				\todo{Content}
+	
+				\subsubsection{Transferfunktion}
+					Die \emph{Transferfunktion} bildet gemessene und abgetastete Werte auf optische Eigenschaften ab (der Farbwert \(Q\) durch eine Farbtransferfunktion und die Transparenz \(t\) durch eine Opazitätstransferfunktion). Dabei bilden die Voxelwerte den Definitionsbereich und die optischen Eigenschaften den Bildbereich einer eindimensionalen Transferfunktion:
+					\begin{equation*}
+						\textit{tf}_i : V \to O_i
+					\end{equation*}
+					
+					Bei Grauwertabbildungen werden nur Grauwerte betrachtet und die Intensität wird gemäß den Abtastwerten zugewiesen (niedrigster Wert schwarz, höchster Wert weiß, die Werte dazwischen werten linear interpoliert). Dunklen Werten wird dabei eine geringe Opazität (Transparenz) zugewiesen.
+					
+					Spezifikation:
+					\begin{itemize}
+						\item Es kann \zB ein Histogramm verwendet werden.
+						\item Die Referenzeinstellungen für Opazität und Farbe werden für eine begrenze Anzahl von Werten im Definitionsbereich spezifiziert.
+						\item Zwischen den Werten wird dann linear interpoliert.
+						\item Oftmals werden Höchstwerte gewählt, um die Opazität zu erhöhen und die Farbe zu ändern.
+						\item Meistens sind fotorealistische Renderings das Ziel.
+						\item Den verschiedenen Strukturen werden demnach "echte" Farben zugewiesen.
+						\item Problem: Zwei Strukturen mit dem gleichen Grauwert haben \mglw verschiedene echte Farben.
+					\end{itemize}
+				% end
 			% end
 		% end
 	% end

@@ -61,6 +61,7 @@
 \RequirePackage{pgfgantt}
 \RequirePackage{pgfplots}
 \RequirePackage{physics}
+\RequirePackage{fancyvrb}
 \RequirePackage{prftree}
 \RequirePackage{qtree}
 \RequirePackage{rotating}
@@ -69,11 +70,13 @@
 \RequirePackage{subcaption}
 \RequirePackage{tabto}
 \RequirePackage{tikz}
+\RequirePackage{tikzpeople}
 \RequirePackage{xspace}
 \RequirePackage[\fdsummary@todoopts]{todonotes}
 \pgfplotsset{compat = newest}
 % Load TikZ libraries.
-\usetikzlibrary{arrows.meta, shapes, backgrounds, angles, calc, positioning, decorations.markings}
+%\usetikzlibrary{arrows.meta, shapes, backgrounds, angles, calc, positioning, decorations.markings}
+\usetikzlibrary{arrows.meta, shapes, backgrounds}
 
 
 % Document information.
@@ -96,6 +99,8 @@
 \colorlet{lstkeywords}{TUDa-9d}
 \colorlet{lstlinenumbers}{TUDa-0c}
 \colorlet{lststrings}{TUDa-2c}
+\colorlet{lerrorred}{TUDa-9b}
+\colorlet{changedpurple}{TUDa-11a}
 \colorlet{colorDensity}{TUDa-1b}
 
 % Description-list styling.
@@ -130,6 +135,10 @@
 \newcommand{\mat}[1]{\boldsymbol{\mathrm{#1}}}
 
 % Listings settings (use TUDa colors for highlighting).
+\lstdefinestyle{base}{
+    moredelim = **[is][\color{errorred}]{@@!}{@@@},
+    moredelim = **[is][\color{changedpurple}]{@@?}{@@@}
+}
 \lstset{
     backgroundcolor = \color{white},
     basicstyle = \ttfamily\scriptsize\color{black},
@@ -143,7 +152,8 @@
     numberstyle = \tiny\color{lstlinenumbers},
     showstringspaces = false,
     stringstyle = \color{lststrings},
-    tabsize = 4
+    tabsize = 4,
+    style = base
 }
 
 % Make it possible to include matplotlib plots with negative numbers.
@@ -155,6 +165,8 @@
 
 
 % ~ Commands. ~
+
+\newcommand{\HREF}[1]{\href{#1}{#1}}
 
 % We need to go deeper!
 \newcommand{\subsubparagraph}[1]{\hspace{1cm} \textbf{#1:}}
@@ -169,6 +181,9 @@
 \newcommand{\intuition}[1]{\subsubparagraph{Intuition} #1}
 \fdsummary@ifde{\newcommand{\answer}[1]{\subparagraph{Antwort} #1}}
 \fdsummary@ifen{\newcommand{\answer}[1]{\subparagraph{Answer} #1}}
+
+% Quad erat demonstrandum.
+\newcommand{\qed}{\hfill\( \Box \)}
 
 
 % Boxes surrounded by borders for information and warnings.

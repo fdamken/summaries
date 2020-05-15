@@ -14,7 +14,7 @@ If you found any issues, having suggestions, etc. [create an issue](https://gith
 * ✔ `mandatory/fs2/apl`
 * ✔ `mandatory/fs2/mathe2`
 * ✔ `mandatory/fs2/ro`
-* `mandatory/fs3/aer`
+* ✔ `mandatory/fs3/aer`
 * `mandatory/fs3/css-fischlin`
 * `mandatory/fs3/css-waidner`
 * `mandatory/fs3/moses`

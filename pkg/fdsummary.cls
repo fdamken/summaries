@@ -61,6 +61,7 @@
 \RequirePackage{pgfplots}
 \RequirePackage{physics}
 \RequirePackage{qtree}
+\RequirePackage{rotating}
 \RequirePackage{siunitx}
 \RequirePackage{stmaryrd}
 \RequirePackage{subcaption}

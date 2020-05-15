@@ -47,21 +47,22 @@
 \RequirePackage[ruled, vlined, linesnumbered]{algorithm2e}
 \RequirePackage{amssymb}
 \RequirePackage{attachfile}
+\RequirePackage{bytefield}
 \RequirePackage{caption}
 \RequirePackage{csquotes}
 \RequirePackage{enumitem}
-\RequirePackage{float}
+\RequirePackage{fancyvrb}
 \RequirePackage{float}
 \RequirePackage{hyperref}
 \RequirePackage{listings}
 \RequirePackage{makecell}
 \RequirePackage{mathtools}
 \RequirePackage{mdframed}
+\RequirePackage{multicol}
 \RequirePackage{newunicodechar}
 \RequirePackage{pgfgantt}
 \RequirePackage{pgfplots}
 \RequirePackage{physics}
-\RequirePackage{fancyvrb}
 \RequirePackage{prftree}
 \RequirePackage{qtree}
 \RequirePackage{rotating}
@@ -69,8 +70,8 @@
 \RequirePackage{stmaryrd}
 \RequirePackage{subcaption}
 \RequirePackage{tabto}
-\RequirePackage{tikz}
 \RequirePackage{tikzpeople}
+\RequirePackage{tikz}
 \RequirePackage{xspace}
 \RequirePackage[\fdsummary@todoopts]{todonotes}
 \pgfplotsset{compat = newest}
@@ -117,7 +118,7 @@
 \tikzset{declare function = { gaussian(\x,\m,\S) = 1/sqrt(2*pi*\S) * e^(-1/(2*\S) * (\x-\m)^2); }}
 
 % Make TikZ arrow longer and paths bigger.
-\tikzstyle{every path} = [ very thick ]
+%\tikzstyle{every path} = [ very thick ]
 \tikzset{> = { Latex[length = 2mm] }}
 
 % If somethis is quoted using "..", interpret it as \csquotes{..} for correct quotes.
@@ -167,6 +168,7 @@
 % ~ Commands. ~
 
 \newcommand{\HREF}[1]{\href{#1}{#1}}
+\newcommand\circled[1]{\tikz[baseline=(char.base)]{\node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
 
 % We need to go deeper!
 \newcommand{\subsubparagraph}[1]{\hspace{1cm} \textbf{#1:}}
@@ -200,6 +202,16 @@
     \end{figure}
 }
 
+% Network.
+\newcommand{\ciscoInternet}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/cloud}}}
+\newcommand{\ciscoModem}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/cable_modem}}}
+\newcommand{\ciscoRouter}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/router}}}
+\newcommand{\ciscoSwitch}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/workgroup_switch}}}
+\newcommand{\ciscoClient}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/pc}}}
+\newcommand{\ciscoFirewall}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/firewall}}}
+\newcommand{\ciscoServer}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/file_server}}}
+\newcommand{\ciscoIdP}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/key}}}
+
 
 % Abbreviations.
 \fdsummary@ifde{
@@ -222,13 +234,20 @@
 \newcommand{\INVDYN}{INV\,DYN\xspace}
 
 % Math operators.
+\fdsummary@ifde{\newcommand{\ggT}{\ensuremath{\textrm{ggT}}}}
 \DeclareMathOperator{\Bias}{Bias}
 \DeclareMathOperator{\const}{const}
 \DeclareMathOperator{\Cov}{Cov}
-\DeclareMathOperator{\E}{E}
+\DeclareMathOperator{\Dec}{Dec}
 \DeclareMathOperator{\emp}{emp}
+\DeclareMathOperator{\Enc}{Enc}
+\DeclareMathOperator{\E}{E}
+\DeclareMathOperator{\HMAC}{HMAC}
+\DeclareMathOperator{\MAC}{MAC}
 \DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\Sig}{Sig}
 \DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Vf}{Vf}
 
 % Other mathy stuff.
 % Numbers sets.

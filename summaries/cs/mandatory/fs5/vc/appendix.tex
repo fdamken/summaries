@@ -1,0 +1,486 @@
+\chapter{Übliche Fragen}
+	\section{Einführung}
+		\paragraph{Was sind zwei Anwendungen des 3D-Internets?}
+		\answer{3D-Navigation, Modellbildung, Spiele, Visualisierung von Produkten, Exploration von Orten, Training, \dots}
+
+		\paragraph{Was sind zwei Probleme des klassischen 3D-Laser-Scannens?}
+		\answer{Sehr zeitaufwendig, Oft ist Expertenwissen erforderlich, Massendigitalisierung ist nicht trivial umsetzbar}
+
+		\paragraph{Was ist der Unterschied zwischen Object Detection und Object Tracking? Wieso werden beide häufig in Kombination verwendet?}
+		\answer{Bei Object Detection wird ein Objekt auf einem Standbild erkannt, bei Object Tracking wird dieses innerhalb eines Videos verfolgt. Eine Kombination ist sinnvoll, um zunächst die Objekte zu finden und anschließend, wenn sie verloren wurden, wiederzufinden.}
+	% end
+
+	\section{Wahrnehmung}
+		\paragraph{Was ist die Hauptfunktion von Aufmerksamkeit?}
+		\answer{Das fokussieren auf eine einzelne Aufgabe und die Ausblendung der Umgebung (\zB zur Unterhaltung mit einer Einzelperson, wenn in der Umgebung ebenfalls alle reden).}
+
+		\paragraph{Was sind die drei Typen von Aufmerksamkeit?}
+		\answer{
+			\begin{itemize}
+				\item Gewählte Aufmerksamkeit: Der Fokus wird bewusst auf eine Sache gelenkt.
+				\item Geteilte Aufmerksamkeit: Es wird versucht, "Multitasking" umzusetzen und den Fokus auf mehrere Sachen zu lenken (meist nicht erfolgreich, \bzw die einzelnen Aufgaben leiden).
+				\item Erfasste Aufmerksamkeit: Es Ereignis in der Umgebung (\zB ein Raubtier) erfasst spontan die gesamte Aufmerksamkeit.
+			\end{itemize}
+		}
+
+		\paragraph{Wie heißt das Forschungsgebiet, welches sich mit der Beziehung zwischen mentalem Erleben und objektiven Reizen auseinandersetzt?}
+		\answer{Psychophysik}
+
+		\paragraph{Was sind drei Zellen (mit Ausnahme der Photorezeptorzelle), die an der Signalverarbeitung in der Retina beteiligt sind und was sind deren Aufgaben?}
+		\answer{
+			\begin{itemize}
+				\item Bipolarzellen: Informationsfilter (sammeln, gewichten, weiterleiten)
+				\item Horizontalzellen: Kombination mehrerer Rezeptoren einer Region
+				\item Amakrinzellen: Zeitliche Verarbeitung
+				\item Ganglienzellen: Integration von Informationen, \zB Kontrastwahrnehmung
+			\end{itemize}
+		}
+
+		\paragraph{In welchem Wellenlängenbereich werden Farben ungefähr wahrgenommen?}
+		\answer{Ungefähr \SIrange{400}{600}{\nano\meter}.}
+
+		\paragraph{Wieso werden bei Videoaufnahmen mittlerweile Greenscreens statt anderen Farben bevorzugt?}
+		\answer{Das menschliche Auge kann grüne Farben deutlich besser wahrnehmen, weshalb auch Kameras deutlich mehr Grün aufnehmen können (sie haben \iA doppelt so viele grüne Pixel wie blaue/rote). Dadurch sind zur Ersetzung des grünen Hintergrunds mehr Informationen verfügbar und es funktioniert besser.}
+
+		\paragraph{Was bedeutet "skotopisches" und "photopisches" Sehen?}
+		\answer{Das photopische Sehen findet Tags statt (Tagsehen), das skotopische Sehen Nachts (Nachsehen). Dabei sind bei ersterem besonders die Zapfen, bei letzterem besonders die Stäbchen aktiv.}
+
+		\paragraph{In welchem Bereich des Auges sind Stäbchen und in welchem Bereich Zapfen?}
+		\answer{Zapfen befinden sich vor allem in der Fovea, Stäbchen außerhalb der Fovea.}
+
+		\paragraph{Was sind die drei Kategorien von Depth Cues (jeweils mit Beispiel)?}
+		\answer{Pictorial Depth Cues (\zB Schattenwurf), Binokulare Depth Cues (\zB Parallaxe), Dynamic Depth Cues (\zB Vorder-/Hintergrundbewegung)}
+
+		\paragraph{Was sind zwei Elemente der frühen Wahrnehmung, um die Aufmerksamkeit visuell zu lenken?}
+		\answer{Farbe und Form (wenn sich diese von anderen Farben/Formen unterscheiden, fällt das schnell auf).}
+
+		\paragraph{Wieso ist bei Dunkelheit eine grün beleuchtete Oberfläche besser zu erkennen als eine blau beleuchtete Oberfläche und was hat das mit photopischem und skotopischem Sehen zu tun?}
+		\answer{Nachts (bei skotopischem Sehen) sind vor allem die Stäbchen aktiv, die grüne Reize am besten wahrnehmen. Daher können grüne Gegenstände am besten erkannt werden.}
+
+		\paragraph{Was sind zwei Pictorial Depth Cues (jeweils mit Beispiel)?}
+		\answer{Verdeckung, Schattenwurf (ein längerer Schatten bedeutet z.\,B., dass das Objekt vermutlich höher steht), Atmosphärische Tiefe (\zB erscheinen Berge im Hintergrund blauer)}
+
+		\paragraph{Kann das Fehlen eines Auges die Tiefenwahrnehmung beeinflussen?}
+		\answer{Es sind dann nur noch monokulare (Pictorial und Dynamic Depth Cues) auswertbar, \dh die Binokularen Depth Cues fallen weg. Es ist somit noch immer eine Tiefenwahrnehmung möglich, sie funktioniert aber schlechter.}
+	% end
+
+	\section{Objekterkennung}
+		\paragraph{Sei ein Klassifizierer gegeben, der für ein Bild mit fester Größe entscheidet, ob auf einem Bild ein Gesicht zu sehen ist oder nicht. Wie kann dieser Klassifizierer verwendet werden, um auch größere Bilder zu klassifizieren?}
+		\answer{Es kann der "Sliding Window Approach" genutzt werden. Bei diesem wird das gesamte Bild in Ein-Pixel-Schritten abgefahren, um jeden Ausschnitt einmal "durch den Klassifizierer zu jagen". Nachdem das Bild einmal vollständig abgesucht wurde, wird es verkleinert und erneut abgesucht. Das Verfahren ist beendet, wenn entweder ein Gesicht gefunden wurde (vorzeitiger Abbruch) oder alle Bereiche mit allen Skalierungen abgesucht wurden.}
+
+		\paragraph{Was sind zwei Merkmale von negativen Trainingsdaten bei einer Gesichtserkennung?}
+		\answer{Bilder ohne Gesichter, Teilbilder von großen Bildern}
+
+		\paragraph{Welche drei Schritte müssen durchgeführt werden, um einen Objekterkennungs-Detektion mit einem Erscheinungsmodell zu entwickeln? Was sind die wesentlichen Bestandteile?}
+		\answer{
+			\begin{enumerate}
+				\item Modellbildung (\bzw Auswahl der Features)
+				\item Anlernen des Modells mit positiven und negativen Trainingsdaten
+				\item Validieren des Modells
+			\end{enumerate}
+			Die wesentlichen Bestandteile sind der Klassifizierer (\zB ein Naive Bayes Klassifizierer) und die (positiven sowie negativen) Trainingsdaten.
+		}
+
+		\paragraph{Welchen der Situationen "Das Personal von Fraport darf den Flughafenbereich erst nach erfolgreichem Scan des Ausweises betreten." und "Bei einem Überfall könnte durch die Überwachungskameras das Gesicht des Täters gefilmt werden, wodurch die Polizei die Identität feststellen konnte." sollten die Begriffe "Identifikation" und "Verifikation" zugeordnet werden?}
+		\answer{Ersteres Verifikation (die Person gibt sowohl ihre biometrischen Merkmale als auch die zu prüfende Identität bekannt), zweiteres Identifikation (die Person gibt nur ihre biometrischen Merkmale bekannt und die Identität muss bestimmt werden).}
+	% end
+
+	\section{Bayesian Decision Theory}
+		\paragraph{Was nimmt der Naive Bayes Classifier bei mehreren Merkmalen an? Trifft diese Annahme immer zu?}
+		\answer{Er nimmt an, dass die Merkmale statistisch unabhängig sind. Dies ist oft nicht der Fall, führt jedoch oft zu guten Ergebnissen.}
+
+		\paragraph{Was ist die Entscheidungsregel, um einen Merkmalsvektor bei einem Zweiklassenproblem einer Klasse zuzuordnen?}
+		\answer{
+			Um eine Messung \(x\) der Klasse \(C_1\) statt der Klasse \(C_2\) zuzuordnen, muss der Posterior der ersten Klasse höher als der der zweiten Klasse sein:
+			\begin{equation*}
+				p(C_1 \given x) > p(C_2 \given x)
+					\quad\iff\quad \frac{p(x \given C_1) p(C_2)}{p(x)} > \frac{p(x \given C_2) p(C_2)}{p(x)}
+					\quad\iff\quad p(x \given C_1) p(C_2) > p(x \given C_2) p(C_2)
+					\quad\iff\quad \frac{p(x \given C_1)}{p(x \given C_2)} > \frac{p(C_2)}{p(C_1)}
+			\end{equation*}
+		}
+
+		\paragraph{Was bedeuten die Begriffe "Prior", "Likelihood" und "Posterior" und wie hängen diese zusammen?}
+		\answer{
+			Der Prior bezeichnet die Wahrscheinlichkeit~(-sverteilung) \( p(C_1) \), die Likelihood \( p(x \given C_1) \) und der Posterior die Wahrscheinlichkeit \( p(C_1 \given x) \). Diese Größen werden (zusammen mit der Normalisierung \( p(x) \)) durch Bayes Theorem verknüpft:
+			\begin{equation*}
+				p(C_1 \given x) = \frac{p(x \given C_1) p(C_1)}{p(x)}
+			\end{equation*}
+		}
+	% end
+
+	\section{Fouriertheorie}
+		\paragraph{Was charakterisiert die Fourier-Wellen im Ortsbereich und im Frequenzbereich?}
+		\answer{Im Ortsbereich ergibt sich jeder Funktionswert durch Überlagerung aller Wellen. Im Frequenzbereich werden alle Werte des Ortsbereichs bei der Berechnung jeder Welle berücksichtigt.}
+
+		\paragraph{Wodurch werden die Punkte in der Ebene bei Polarkoordinaten beschrieben?}
+		\answer{Durch den Abstand zum Ursprung und den Winkel mit der \(x\)-Achse.}
+
+		\paragraph{Was gilt für gerade/ungerade Funktionen \bzgl Fourier-Reihen?}
+		\answer{Für gerade Funktionen gilt \( b_n = 0 \), für ungerade Funktionen gilt \( a_n = 0 \) für alle \( n \in 0,  \).}
+
+		\paragraph{Wann ist eine Funktion \(f(x)\) mit einer endlichen Grenzfrequenz \(u_G\) aus den Abtastwerten \(f(n \cdot \Delta x)\) fehlerfrei rekonstruierbar?}
+		\answer{Wenn die Abtastfrequenz mindestens doppelt so hoch wie die Grenzfrequenz ist, \dh wenn \( 1/\Delta x > 2u_g \) gilt.}
+
+		\paragraph{Nennt sich die Diskretisierung einer kontinuierlichen Funktion mit einer anderen kontinuierlichen Funktion "Abtastung"?}
+		\answer{Nein, die diskretisierende Funktion muss eine Kammfunktion sei.}
+
+		\paragraph{Durch was kann eine Funktion, die die Dirichlet-Bedingungen erfüllt, dargestellt werden?}
+		\answer{Summe aus Sinus und Kosinus}
+
+		\paragraph{Welcher Operation entspricht eine Faltung zweier Funktionen im Ortsraum im Frequenzraum?}
+		\answer{Multiplikation}
+
+		\paragraph{Welche Operation wird genutzt, um die Frequenzanteile einer Funktion zu erhalten?}
+		\answer{Fourier-Transformation}
+
+		\paragraph{Angenommen, das Abtasttheorem von Shannon wird nicht eingehalten. Wie kann dennoch Aliasing verhindert werden ohne die Abtastfrequenz zu erhöhen?}
+		\answer{Aliasing kann nicht verhindert werden, nur ein wenig durch Filterung reduziert werden.}
+	% end
+
+	\section{Bilder}
+		\paragraph{Wie können redundante Daten bei der Bildkompression eliminiert werden?}
+		\answer{Durch Nachbarschaftsbeziehungen (zeitlich oder örtlich), Eliminierung von Effekten, die durch den Menschen nicht wahrgenommen werden können (psychovisuelle Effekte) sowie durch Entropiekodierung.}
+
+		\paragraph{Wie entsteht Aliasing?}
+		\answer{Aliasing entsteht durch eine zu langsame Abtastung (Abtasttheorem von Shannon).}
+
+		\paragraph{Was sind Vor- und Nachteile von Frequenzraum-Filtern gegenüber Ortsraum-Filtern?}
+		\answer{Frequenzraumfilter sind schnell und intuitiv zu erstellen. Bei der Rücktransformation aus dem Frequenzraum wird die Spezifikation approximiert, da im Ortsraum keine unendlich breiten Filter möglich sind. Außerdem muss für Frequenzraumfilter zunächst eine Fourier-Transformation durchgeführt werden.}
+
+		\paragraph{Was sind die fünf Teilschritte der JPEG-Kompression?}
+		\answer{
+			\begin{enumerate}
+				\item Konvertierung in den YCbCr-Farbraum
+				\item Farb-Subsampling
+				\item Diskrete Kosinustransformation
+				\item Quantisierung
+				\item Kodierung der Koeffizienten und abschließende Kompression
+			\end{enumerate}
+		}
+
+		\paragraph{In welchem Teilschritt der JPEG-Kompression werden psychovisuelle Effekte verwendet, um besser zu komprimieren?}
+		\answer{In den Teilschritten des Farb-Subsamplings sowie bei der Quantisierung.}
+
+		\paragraph{Welche Merkmale eines Bildes können anhand des dazugehörigen Histogramms erkannt werden?}
+		\answer{Helligkeit und Kontrast}
+
+		\paragraph{Was sind zwei Aspekte der Maske eines Hochpassfilters im Ortsraum und was kann damit berechnet werden?}
+		\answer{Die Werte können positiv und negativ sein und sind so normiert, dass die Summe Null ergibt. Damit kann \zB eine Kantenberechnung durchgeführt werden.}
+
+		\paragraph{Ist ein Binomial- oder ein Median-Filter schneller?}
+		\answer{Der Binomial-Filter, da bei einem Median-Filter die Pixel zunächst für jeden Block sortiert werden müssen.}
+
+		\paragraph{Ist der Laplacian-Filter ein Hoch-, Tief- oder Bandpass-Filter?}
+		\answer{Hochpass-Filter}
+
+		\paragraph{Sei \(I\) ein Bild und \(J\) ein Filter. Wie kann die Faltung mit dem Filter so umgeformt werden, dass die Faltung im Fourierraum geschieht. Nutze dabei \( \mathcal{F}(\cdot) \), um eine Funktion zu Fourier-Transformieren.}
+		\answer{
+			\begin{equation*}
+				\hat{I} = \mathcal{F}^{-1}\big( \mathcal{F}(I) \cdot \mathcal{F}(J) \big)
+			\end{equation*}
+		}
+	% end
+
+	\section{Bildverarbeitung}
+		\paragraph{Was versteht man unter "Image Blurring"? Welcher Filter kann diesen Effekt \zB hervorrufen?}
+		\answer{Das "Verschmieren"/Weichzeichnen eines Bildes, \dh das Bild wird unschärfer und es gehen Details verloren. Dies kann \zB durch einen Gauß-Filter erreicht werden.}
+
+		\paragraph{Was sind die beiden Probleme, die bei Deblurring auftreten können?}
+		\answer{
+			\begin{enumerate}
+				\item Beinahe Division durch Null bei der Invertierung des Kernels \(A\).
+				\item Rauschen: \( g = a(f) + n \)
+			\end{enumerate}
+		}
+
+		\paragraph{Was ist eine formale Lösung des ersten Problems?}
+		\answer{
+			Es kann stattdessen eine komplex konjugierte Matrix verwendet werden:
+			\begin{equation*}
+				F = \frac{A^\ast}{\lvert A \rVert} G
+			\end{equation*}
+		}
+
+		\paragraph{Welche Auswirkung hat die Wahl des Parameters \(R\) auf das Rauschen und die Kanten eines Bildes? Welche Filter entstehen bei unterschiedlicher Wahl von \(R\)?}
+		\answer{
+			\begin{itemize}
+				\item Ein kleines \(R\) führt zu einem Hochpass-Filter, \dh zur Verstärkung des Rauschens, Entfernung der Kanten und Entfernung grober Strukturen.
+				\item Ein großes \(R\) führt zu einem Tiefpass-Filter, \dh zur Entfernung des Rauschens, Verwischung der Kanten und Erhalten groben Strukturen.
+				\item Ein ideales \(R\) führt zu einem Bandpass-Filter, \dh zur Entfernung des Rauschens, Verstärkung der Kanten und Erhalten grober Strukturen.
+			\end{itemize}
+		}
+
+		\paragraph{Was sind Vor- und Nachteile bei der Anwendung des "Scale-Space-Ansatzes"?}
+		\answer{Entfernt Image Blurring, durch hinzufügen von zu vielen Termen wird das Rauschen jedoch wieder verstärkt}
+
+		\paragraph{Wie lautet die Perona-Malik-Gleichung und was bedeutet der Parameter \(c\)?}
+		\answer{
+			Gleichung:
+			\begin{equation*}
+				\partial_t L = \nabla \circ \Big( c \big( \lvert \nabla L \rvert^2 \big) \cdot \nabla L \Big)
+			\end{equation*}
+			Bei kleinem \( c \approx 0 \) wird die Diffusion an Kanten reduziert, bei großen \( c \approx 1 \) in flachen Bereichen verstärkt.
+		}
+
+		\paragraph{Was sind zwei Vorteile von Mehrschrittverfahren bezogen auf die Stoppzeit und Image Blurring (insbesondere bei dem Verfahren der Totalen Variation)?}
+		\answer{Bei dem Verfahren der Totalen Variation wird keine Stoppzeit benötigt und die Verfahren minimieren das Rauschen (bei Totaler Variation entsteht kein Blurring).}
+
+		\paragraph{Zur Bildverbesserung können partielle Diffusionsgleichungen genutzt werden, sodass das Bild in jedem Zeitschritt verbessert oder vereinfacht wird. Was wird bei Perona-Malik und der Totalen Variation gemacht, damit sich kein gleichmäßig graues Bild ergibt?}
+		\answer{
+			\begin{itemize}
+				\item Perona-Malik: Einführung einer Stoppzeit, die die Iteration irgendwann beendet.
+				\item Totale Variation: Einführung eines Distance Penalty, der den Algorithmus bestraft, sobald sich das Bild zu stark vom Anfangsbild unterscheidet.
+			\end{itemize}
+		}
+
+		\paragraph{Laut Hadamard ist das Problem "Deblurring" nicht korrekt gestellt. Was wird (\bspw bei dem Wiener-Filter) dagegen getan, um dem entgegenzuwirken?}
+		\answer{bei dem Wiener-Filter wird ein Regularisierungs-Parameter \(R\) eingeführt, um das Verfahren zu stabilisieren.}
+	% end
+
+	\section{Grafikpipeline}
+		\paragraph{Wieso sollte die Darstellungsreihenfolge innerhalb eines Baumes konsistent bleiben?}
+		\answer{Bleibt die Reihenfolge nicht konsistent, so wird die korrekte Rekonstruktion aus dem Baum erschwert, da der Baum mehrdeutig wird.}
+
+		\paragraph{Was ist der wesentliche Unterschied zwischen einem Quadtree und einem BSP-Tree?}
+		\answer{In einem Quadtree hat jeder Knoten entweder vier oder keine Kinder, in einem BSP-Tree entweder zwei oder keine Kinder.}
+
+		\paragraph{Was ist die maximale Anzahl an Knoten (inklusive Blätter), die ein Quadtree haben kann, um ein \( 8 \times 8 \) Raster darzustellen?}
+		\answer{\( 1\text{ Wurzelknoten} + 4\text{ Knoten auf Ebene Zwei} + 16\text{ Knoten auf Ebene Drei} + 64\text{ Knoten auf Ebene Vier} = 85\text{ Knoten} \)}
+
+		\paragraph{Was ist die minimale Anzahl an Knoten, die ein Octree haben kann, um ein \( 4 \times 4 \times 4 \) Raster darzustellen?}
+		\answer{Ein Knoten, \zB wenn der gesamte Bereich ausgefüllt ist.}
+
+		\paragraph{Was ist der Unterschied zwischen VR und AR?}
+		\answer{Bei VR (Virtual Reality) wird eine gesamte neue "Realität" produziert und simuliert (\zB in einem Achterbahnsimulator), bei AR (Augmented Reality) wird die Realität durch künstliche Objekte (\zB Schilder) erweitert.}
+
+		\paragraph{Was ist VR-Sickness und was sind die Ähnlichkeiten sowie Unterschiede zu Motion-Sickness?}
+		\answer{VR-Sickness tritt auf, wenn sich die Person nicht bewegt, das visuelle System jedoch eine Bewegung wahrnimmt (\zB mit einer VR-Brille). Motion-Sickness tritt auf, wenn sich die Person bewegt, das visuelle System jedoch keine Bewegung wahrnimmt (\zB im Zug im unbeleuchteten Tunnel).}
+
+		\paragraph{Was sind Vor- und Nachteile des Painters Algorithmus?}
+		\answer{
+			\begin{itemize}
+				\item Vorteil: Intuitiv, Verdeckungen werden automatisch Berücksichtigt
+				\item Nachteil: "Verdeckungskreise" sowie Transparenzen können nicht berücksichtigt werden. Außerdem müssen die Polygone zuvor der Tiefe nach geordnet werden.
+			\end{itemize}
+		}
+
+		\paragraph{Was ist Culling und wieso wird es verwendet?}
+		\answer{Beim Culling werden verdeckte Flächen (\zB Rückseiten) entfernt und somit nicht gerendert. Dies spart viele Ressourcen.}
+
+		\paragraph{Was ist Rasterisierung?}
+		\answer{Rasterisierung bezeichnet das Abbilden von Objekten, \zB Linien, auf eine Pixelebene (\dh die Umwandlung von Vektoren in einen diskreten Raum).}
+
+		\paragraph{Wie viele Pixel (inklusive Start- und Endpixel) werden beim Bresenham-Algorithmus gezeichnet, wenn Startpunkt \( (2, 4) \) und Endpunkt \( (6, 8) \) gegeben sind?}
+		\answer{Es werden \( 1 + \min \big\{ 6 - 2,\, 8 - 4 \big\} = 1 + \min \big\{ 4,\, 4 \big\} = 5 \) Pixel gezeichnet.}
+
+		\paragraph{Aus welchen drei Komponenten setzt sich die Leuchtdichte \( I_\text{total} \) beim Phong-Shading zusammen?}
+		\answer{
+			Ambiente Reflexion \( I_\text{amb} \), Spiegelnde Reflexion \( I_\text{spec} \), Diffuse Reflexion \( I_\text{diff} \):
+			\begin{equation*}
+				I_\text{total} = I_\text{amb} + I_\text{spec} + I_\text{diff}
+			\end{equation*}
+		}
+
+		\paragraph{Was ist ein weiteres Schattierungsverfahren (außer Phong-Shading)?}
+		\answer{Flat Shading, Gouraud Shading}
+
+		\paragraph{Auf welche der folgenden Aussagen trifft VR, AR oder beide zu: "\dots ist ein detaillierter und physikalisch korrekter Nachbau der realen Welt."; "\dots ermöglicht beim Betrachten über einen Monitor eine Veränderung der Farben eines realen Gemäldes."; "\dots verwendet Methoden des Visual Computing."}
+		\answer{VR; AR; Beide}
+	% end
+
+	\section{Transformationen}
+		\paragraph{Was sind zwei Unterschiede zwischen perspektivischer und paralleler Projektion?}
+		\answer{Bei der perspektivischen Transformation werden Winkel verzerrt und die Projektion sieht natürlicher aus. Bei der parallelen Projektion geschieht dies nicht und die Projektion sieht "technischer" aus.}
+
+		\paragraph{Was sind jeweils zwei Anwendungen von perspektivischer und paralleler Projektion und weshalb?}
+		\answer{
+			\begin{itemize}
+				\item Perspektivisch: Animationsfilme, First-Person-Spiele
+				\item Parallel: Medizinische Bildgebung, technische Zeichnungen
+			\end{itemize}
+		}
+
+		\paragraph{Ist die Verkettung beliebiger affiner Abbildungen kommutativ?}
+		\answer{Nein}
+
+		\paragraph{Sind Projektionstransformationen affine Abbildungen?}
+		\answer{Parallele ja, perspektivische nein}
+
+		\paragraph{Ist die Transformationsmatrix einer Skalierung eine Diagonalmatrix?}
+		\answer{Ja, auch in homogenen Koordinaten}
+
+		\paragraph{Welche drei Schritte müssen durchgeführt werden, um ein beliebiges Objekt im Raum um eine beliebige Raumachse zu drehen?}
+		\answer{
+			\begin{enumerate}
+				\item Verschieben des Objekts in den Ursprung
+				\item Rotation
+				\item Zurück verschieben des Objekts
+			\end{enumerate}
+		}
+
+		\paragraph{In welcher Stelle der Grafikpipeline werden Transformationen genutzt und wie?}
+		\answer{
+			\begin{itemize}
+				\item Modell-Transformation: Skalierung und Rotation der Primitive zum Aufbau des Modells
+				\item View-Transformation: Verschieben und Rotieren aller Modelle im Kamerabereich
+				\item Projektionstransformation: Perspektive oder parallele Projektion der Sezene
+			\end{itemize}
+		}
+
+		\paragraph{Wie viele Dimensionen haben homogene Koordinaten, wenn die assoziierten inhomogenen Koordinaten \(n\)-dimensional sind?}
+		\answer{Sie haben \( (n + 1) \) Dimensionen.}
+	% end
+
+	\section{3D-Visualisierung}
+		\paragraph{Wie kann eine Lehmfigur am besten in ein 3D-Modell umgewandelt werden, ohne diese zu berühren?}
+		\answer{Zum Beispiel durch einen Laserscan (ein Kamerascan eignet sich vermutlich nicht, da Lehm sehr gleichförmig ist und Kanten deshalb schwer zu erkennen wären).}
+
+		\paragraph{Was sind die Unterschiede zwischen direkter und indirekter Volumenvisualisierung (\bzgl Komplexität und Metadarstellung)?}
+		\answer{Die indirekte Volumenvisualisierung nutzt eine Zwischendarstellung, was die direkte nicht tut. Dabei wird die direkte Volumenvisualisierung mit der Anzahl Vertexes komplexer, die indirekte Volumenvisualisierung mit der Anzahl Polygone.}
+
+		\paragraph{Was sind drei Arten von Culling und was bewirken diese?}
+		\answer{Backface-Culling (Rückseiten werden nicht gezeichnet), View-Frustum-Culling (Polygone außerhalb des View Frustums werden nicht gezeichnet), Occlusion-Culling (verdeckte Polygone werden nichtr gezeichnet)}
+
+		\paragraph{Wie wird eine Delaunay-Triangulation aus einem Voronoi-Diagramm erstellt und umgekehrt?}
+		\answer{
+			Um eine Delaunay-Triangulation aus einem Voronoi-Diagramm zu erstellen, wir der duale Graph des Voronoi-Diagramms gebildet, sodass die umschließenden Kreise jedes Dreiecks keine Punkte enthalten. Ist dies nicht möglich, so müssen \mglw Kanten gedreht werden (Edge Flipping).
+			
+			Um ein Voronoi-Diagramm aus einer Delaunay-Triangulation zu erhalten, wird der duale Graph dieser gebildet.
+		}
+
+		\paragraph{Was sind drei Basisoperationen der Volumen-Rendering-Pipeline?}
+		\answer{Abtastung, Klassifizierung und Beleuchtung, Komposition}
+
+		\paragraph{Für welche zwei Dinge wird ein Transferfunktion verwendet?}
+		\answer{Um optische Farbattribute aus den Volumendaten zu erhalten, \zB den Farbton und die Transparenz.}
+
+		\paragraph{Was sind zwei Einsatzgebiete, in denen 3D-Daten vorkommen?}
+		\answer{Medizin (CT, MRT, \dots), Digitalisierung (\zB von Relikten)}
+
+		\paragraph{Wozu wird der Marching Squares Algorithmus verwendet?}
+		\answer{Um Isolinien/Isoflächen in einer Pixelmenge zu finden.}
+
+		\paragraph{Ist die Anzahl Dreiecke ein geeignetes Maß für die Komplexität eines Objekts? Wie viele Dreiecke werden benötigt, um eine Kugel exakt darzustellen?}
+		\answer{Ja. Es werden unendliche viele Dreiecke benötigt, da jede durch Dreiecke dargestellte Version einer Kugel nur eine Approximation darstellt.}
+	% end
+
+	\section{Szenengraphen}
+		\paragraph{Welche vier Informationen werden zum Rendering einer 3D-Szene benötigt?}
+		\answer{Objektgeometrie, Transformationen, Materialien, Kameras, Licht, Spezialeffekte}
+
+		\paragraph{Was sind die Vorteile des Szenengraph-Konzepts?}
+		\answer{Die einzelnen Komponenten sind wiederverwendbar durch Gruppierungen und es können Transformationen zusammengefasst werden.}
+
+		\paragraph{Was wird unter dem Begriff "X3DOM" verstanden?}
+		\answer{X3D im DOM}
+	% end
+
+	\section{Informationsvisualisierung}
+		\paragraph{Was sind Vor- und Nachteile einer multivariaten Scatterplotmatrix?}
+		\answer{
+			\begin{itemize}
+				\item Vorteile: Intuitiv verständlich, Korrelationen können erkannt werden
+				\item Nachteile: Es können nur Korrelationen zwischen zwei Dimensionen erkannt werden, ungeeignet für viele Dimensionen
+			\end{itemize}
+		}
+
+		\paragraph{Was sind zwei Beispiele für hierarchische Daten und wie können diese visualisiert werden?}
+		\answer{Beispiele: Dateisystem, Organisation in einer Firma; Visualisierung \zB durch ein Node-Link-Diagramm oder eine Treemap}
+
+		\paragraph{Wie lauten die vier Schritte sowie die drei "Interaktionen" im Referenzmodell von Card in der korrekten Reihenfolge?}
+		\answer{
+			\begin{itemize}
+				\item Schritte: Raw Data, Data Tables, Visual Structures, Views
+				\item Interaktionen: Data Transformations, Visual Mappings, View Transformations
+			\end{itemize}
+		}
+
+		\paragraph{Welche zwei Visualisierungstechniken eignen sich, um 1D-Daten ohne Zeit darzustellen? Welche ist besser?}
+		\answer{Es eignen sich \zB Kuchendiagramme oder Balkendiagramme, wobei letztere besser sind, da hier die Größen besser verglichen werden können.}
+
+		\paragraph{Können 1D-Daten durch parallele Koordinaten dargestellt werden?}
+		\answer{Ja, dies entspricht dann einer Linie mit Punkten (wie ein Zahlenstrahl).}
+	% end
+
+	\section{Farbe}
+		\paragraph{Was sind die Unterschiede der in der Vorlesung genannten technischen Farbräume \bzgl der Farbdarstellung?}
+		\answer{
+			Statt RGB kann \zB auch HSV genutzt werden, was sich zum intuitiven Tresholding besser eignet.
+			\begin{itemize}
+				\item RGB: Darstellung mit Rot-, Grün- und Blauwerten
+				\item YCbCr: Darstellung mit Luminanz, Übergang Blau-Geld und Rot-Grün im Gegenfarbraum
+				\item HSI/HSV/HSL: Darstellung mit Hue, Saturation, Intensity/Value/Lightness
+				\item CMY/CMYK: Darstellung mit Cyan-, Magenta- und Gelbwerten, \mglw noch Schwarzwerten
+			\end{itemize}
+		}
+
+		\paragraph{Was sind möglich Arten der Metamerie und was bedeuten diese?}
+		\answer{
+			\begin{itemize}
+				\item Metamerie: Zwei unterschiedliche Lichtreize lösen gleiche Farbvalenzen aus.
+				\item Beleuchtungsmetamerie: Zwei unterschiedliche Lichtreize lösen, abhängig von der Beleuchtung, die gleichen oder unterschiedliche Farbvalenzen aus.
+				\item Betrachtermetametie: Zwei unterschiedliche Lichtreize lösen, abhängig von dem Betrachter und bei gleicher Beleuchtung, die gleichen oder unterschiedliche Farbvalenzen aus.
+			\end{itemize}
+		}
+
+		\paragraph{Was ist der Unterschied zwischen bezogenen und unbezogenen Farben?}
+		\answer{Bezogene Farben werden relativ zu anderen Wahrgenommen, unbezogene Farben werden isoliert wahrgenommen.}
+
+		\paragraph{Was bedeuten die Begriffe "Weißpunkt", "Farbton", "Farbsättigung" und "Komplementärfarbe" \bzgl eines CIE~XY~Chromaticity Diagramms?}
+		\answer{
+			\begin{itemize}
+				\item Der Weißpunkt ist der Zentrale Punkt.
+				\item Der Farbton ist sind die am Rand befindlichen, monochromatischen Farben. Um den Farbton einer beliebigen Farbe zu finden, muss eine Linie durch den Weißpunkt gezogen werden. Der Punkt, an dem sich die Linie mit dem Rand schneidet, entspricht dem Farbton.
+				\item Die Farbsättigung beschreibt den relativen Abstand zum Rand, \bzw zum Weißpunkt.
+				\item Die Komplementärfarbe kann gefunden werden, indem eine Linie durch den Weißpunkt gezogen wird. Die Farbe, die dann "durch den Weißpunkt" im gleichen Abstand von diesem liegt, ist die Komplementärfarbe.
+			\end{itemize}
+		}
+
+		\paragraph{Was sind drei Attribute der Farbwahrnehmung?}
+		\answer{Helligkeit, Relative Helligkeit, Farbton, Farbigkeit, Buntheit}
+
+		\paragraph{Welcher Begriff wird durch die Aussage "Ob zwei verschiedene Farbreize bei gleichen Betrachtungsbedingungen für zwei verschiedene Personen unterschiedliche Farbreize erzeugen, hängt von den Spektralwertmatrizen der Personen ab." beschrieben?}
+		\answer{Betrachtermetamerie}
+
+		\paragraph{Welcher Begriff wird durch die Aussage "Dieser Gegenfarbraum modelliert Nichtlinearitäten des visuellen Systems und ist nahezu wahrnehmungsgleichabständig." beschrieben?}
+		\answer{CIELAB-Farbraum}
+
+		\paragraph{Welcher Begriff wird durch die Aussage "Eine Erhöhung der Leuchtdichte erhöht den Kontrast." beschrieben?}
+		\answer{Stevens-Effekt}
+
+		\paragraph{Welcher Begriff wird durch die Aussage "Eine Erhöhung der Leuchtdichte erhöht die Farbigkeit." beschrieben?}
+		\answer{Hunt-Effekt}
+
+		\paragraph{Welcher Begriff wird durch die Aussage "Eine Gegenfarbe im Hintergrund verstärkt die Farbwirkung." beschrieben?}
+		\answer{Simultankontrast}
+	% end
+
+	\section{Interaktion und User Interfaces}
+		\paragraph{Was sind, neben der Kommandozeile, vier weitere Interaktionsmöglichkeiten?}
+		\answer{Fenster, Menüs, Formulare, Fragen und Antworten, Direkte Manipulation, 3D-Umgebung, Natürliche Sprache, Gesten}
+
+		\paragraph{Was ist das Problem bei 3D-Interaktion mit 2D-Eingabegeräten?}
+		\answer{Die Interaktionen sind nicht immer (\bzw fast nie) eindeutig.}
+
+		\paragraph{Wofür steht "WIMP"?}
+		\answer{Windows, Icons, Menus, Pointers}
+	% end
+
+	\section{Multimedia Information Retrieval}
+		\paragraph{Welche Möglichkeiten der Spezifizierung einer Suchanfrage gibt es (neben Text) noch?}
+		\answer{Spracheingabe, Query-by-Example, Query-by-Sketch}
+
+		\paragraph{Was ist eine Möglichkeit, den Inhalt eines Multimediaobjekts zu beschreiben?}
+		\answer{Manuelle, textuelle Annotation}
+
+		\paragraph{Welche vier Bedingungen muss eine Metrik \( d : S \times S \to \R \) erfüllen muss?}
+		\answer{Nicht-Negativität, Definitheit, Symmetrie, Dreiecksungleichung}
+
+		\paragraph{Zu welchen dieser Bedingungen können Beispiele gefunden werden, bei denen die menschliche Wahrnehmung von Unterschieden nicht einer Metrik entspricht?}
+		\answer{Symmetrie, Dreiecksungleichung}
+
+		\paragraph{Was sind generalisierte Dokumente?}
+		\answer{Sämtliche "Dateien", die Informationen enthalten (Videos, Bilder, Audioaufnahmen, \dots)}
+	% end
+% end

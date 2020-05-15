@@ -65,11 +65,11 @@
 	\end{itemize}
 
 	\paragraph{Hello, World!}
-		\lstinputlisting[caption = { First PROMELA Program }, label = lst:promelaFirst, language = PROMELA]{code/promela/hello-world.pml}
+		\lstinputlisting[caption = { First PROMELA Program }, label = lst:promelaFirst, language = PROMELA]{\lstbasepath/code/promela/hello-world.pml}
 
 		\begin{itemize}
 			\item The program~\ref{lst:promelaFirst} can be simulated (executed, interpreted) using SPIN (this will be covered in more detail in chapter \ref{c:spin}):
-				\outputlisting{code/promela/hello-world.pml.out}
+				\outputlisting{\lstbasepath/code/promela/hello-world.pml.out}
 			\item The keyword \inlinePromela{proctype} declares a \textit{process} named \texttt{P}.
 			\item Printing using \inlinePromela{printf} uses a simplified C-like formatting syntax.
 			\item PROMELA is general is a bit C-like (also adapts the comment style of C).
@@ -164,14 +164,14 @@ active proctype P() {
 		\end{description}
 
 		\subsection{Selection}
-			\lstinputlisting[caption = { PROMELA Selection }, label = lst:promelaSelection, language = PROMELA]{code/promela/selection.pml}
+			\lstinputlisting[caption = { PROMELA Selection }, label = lst:promelaSelection, language = PROMELA]{\lstbasepath/code/promela/selection.pml}
 			
 			\begin{itemize}
 				\item The \textit{guards} (the conditions before the \inlinePromela{->}) may overlap. That is, multiple guard may be true at one time (like in program~\ref{lst:promelaSelection}).
 				\item Any alternative with a true guard is chosen randomly (non-deterministic).
 				\item When no guard is true, the process blocks until one becomes true (if this never happens, that's a problem).
 				\item During command line execution, the trace of the random simulation can be printed:
-					\outputlisting{code/promela/selection.pml.out}
+					\outputlisting{\lstbasepath/code/promela/selection.pml.out}
 				\item The Symbol \inlinePromela{->} is overloaded in PROMELA:
 				\begin{itemize}
 					\item Also used in conditional expressions \inlinePromela{boolean-guard -> then : else}.
@@ -184,7 +184,7 @@ active proctype P() {
 		% end
 
 		\subsection{Repetition}
-			\lstinputlisting[caption = { PROMELA Repetition }, label = lst:promelaDo, language = PROMELA]{code/promela/repetition.pml}
+			\lstinputlisting[caption = { PROMELA Repetition }, label = lst:promelaDo, language = PROMELA]{\lstbasepath/code/promela/repetition.pml}
 			
 			\begin{itemize}
 				\item Like in the selection statement, any alternative with a true guard is chosen randomly.
@@ -192,7 +192,7 @@ active proctype P() {
 				\item The command \inlinePromela{skip} continues the loop in the next iteration.
 				\item When no guard is true, the loop blocks until one becomes true.
 				\item During command line execution, the trace of the random simulation can be printed as well as the values of the local variables:
-					\outputlisting{code/promela/repetition.pml.out}
+					\outputlisting{\lstbasepath/code/promela/repetition.pml.out}
 			\end{itemize}
 		
 			\subsubsection{For-Loops}
@@ -216,7 +216,7 @@ active proctype P() {
 		% end
 
 		\subsection{Jumps}
-			\lstinputlisting[caption = { PROMELA Jumps }, label = lst:promelaGoto language = PROMELA]{code/promela/jumps.pml}
+			\lstinputlisting[caption = { PROMELA Jumps }, label = lst:promelaGoto language = PROMELA]{\lstbasepath/code/promela/jumps.pml}
 		
 			\begin{itemize}
 				\item It is possible to define labels and jump to them using \inlinePromela{goto}.
@@ -335,7 +335,7 @@ active proctype P() {
 		\end{itemize}
 	
 		\subsection{Modeling in PROMELA}
-			\lstinputlisting[caption = { PROMELA with multiple Processes }, label = lst:promelaMultipleProcesses, language = PROMELA]{code/promela/multiple-processes.pml}
+			\lstinputlisting[caption = { PROMELA with multiple Processes }, label = lst:promelaMultipleProcesses, language = PROMELA]{\lstbasepath/code/promela/multiple-processes.pml}
 		
 			\begin{itemize}
 				\item The primary concept for modeling concurrent systems in PROMELA is the use of processes.
@@ -347,12 +347,12 @@ active proctype P() {
 				\item The \inlinePromela{[2]} between \inlinePromela{active} and \inlinePromela{proctype} declares how many processes of the type should be created. If no number is given, SPIN defaults to one process.
 				\item The current process identifier is stored in the reserved variable \inlinePromela{\_pid}.
 				\item One sample execution of the program~\ref{lst:promelaMultipleProcesses} (the indicates the process that has generated the string, "one tab per process ID"; can be suppressed with the switch \texttt{-T}):
-					\outputlisting{code/promela/multiple-processes.pml.out}
+					\outputlisting{\lstbasepath/code/promela/multiple-processes.pml.out}
 			\end{itemize}
 		% end
 
 		\subsection{Starting Processing Explicitly}
-			\lstinputlisting[caption = { PROMELA Init Process }, label = lst:promelaInit, language = PROMELA]{code/promela/init.pml}
+			\lstinputlisting[caption = { PROMELA Init Process }, label = lst:promelaInit, language = PROMELA]{\lstbasepath/code/promela/init.pml}
 		
 			\begin{itemize}
 				\item There is exactly one \textit{initial process} that spawns the other ones.
@@ -406,7 +406,7 @@ init {
 			\end{itemize}
 		
 			\subsubsection{Interference of Global Data}
-				\lstinputlisting[caption = { PROMELA Global Data Interference }, label = lst:promelaInterference, language = PROMELA]{code/promela/interference.pml}
+				\lstinputlisting[caption = { PROMELA Global Data Interference }, label = lst:promelaInterference, language = PROMELA]{\lstbasepath/code/promela/interference.pml}
 			
 				Given the program in listing~\ref{lst:promelaInterference}, how many possible outputs exist? This can be drawn in "transition graph" shown in figure~\ref{fig:promelaInterference}.
 				
@@ -473,44 +473,44 @@ active [2] proctype P() {
   0: proc  - (:root:) creates proc  0 (P)
   0: proc  - (:root:) creates proc  1 (Q)
 Select a statement
-	choice 1: proc  1 (Q:1) code/promela/divbyzero.pml:12 (state 1) [a = 0]
-	choice 2: proc  0 (P:1) code/promela/divbyzero.pml:4 (state 1) [a = 1]
+	choice 1: proc  1 (Q:1) \lstbasepath/code/promela/divbyzero.pml:12 (state 1) [a = 0]
+	choice 2: proc  0 (P:1) \lstbasepath/code/promela/divbyzero.pml:4 (state 1) [a = 1]
 Select [1-2]: 2
-  1: proc  0 (P:1) code/promela/divbyzero.pml:4 (state 1)	[a = 1]
+  1: proc  0 (P:1) \lstbasepath/code/promela/divbyzero.pml:4 (state 1)	[a = 1]
 		a = 1
 Select a statement
-	choice 1: proc  1 (Q:1) code/promela/divbyzero.pml:12 (state 1) [a = 0]
-	choice 2: proc  0 (P:1) code/promela/divbyzero.pml:4 (state 2) [b = 1]
+	choice 1: proc  1 (Q:1) \lstbasepath/code/promela/divbyzero.pml:12 (state 1) [a = 0]
+	choice 2: proc  0 (P:1) \lstbasepath/code/promela/divbyzero.pml:4 (state 2) [b = 1]
 Select [1-2]: 2
-  2: proc  0 (P:1) code/promela/divbyzero.pml:4 (state 2)	[b = 1]
+  2: proc  0 (P:1) \lstbasepath/code/promela/divbyzero.pml:4 (state 2)	[b = 1]
 		b = 1
 Select a statement
-	choice 1: proc  1 (Q:1) code/promela/divbyzero.pml:12 (state 1) [a = 0]
-	choice 2: proc  0 (P:1) code/promela/divbyzero.pml:4 (state 3) [c = 1]
+	choice 1: proc  1 (Q:1) \lstbasepath/code/promela/divbyzero.pml:12 (state 1) [a = 0]
+	choice 2: proc  0 (P:1) \lstbasepath/code/promela/divbyzero.pml:4 (state 3) [c = 1]
 Select [1-2]: 2
-  3: proc  0 (P:1) code/promela/divbyzero.pml:4 (state 3)	[c = 1]
+  3: proc  0 (P:1) \lstbasepath/code/promela/divbyzero.pml:4 (state 3)	[c = 1]
 		c = 1
 Select a statement
-	choice 1: proc  1 (Q:1) code/promela/divbyzero.pml:12 (state 1) [a = 0]
-	choice 2: proc  0 (P:1) code/promela/divbyzero.pml:5 (state 8) [((a!=0))]
-	choice 3: proc  0 (P:1) code/promela/divbyzero.pml:5 (state 8) unexecutable, [else]
+	choice 1: proc  1 (Q:1) \lstbasepath/code/promela/divbyzero.pml:12 (state 1) [a = 0]
+	choice 2: proc  0 (P:1) \lstbasepath/code/promela/divbyzero.pml:5 (state 8) [((a!=0))]
+	choice 3: proc  0 (P:1) \lstbasepath/code/promela/divbyzero.pml:5 (state 8) unexecutable, [else]
 Select [1-3]: 2
-  4: proc  0 (P:1) code/promela/divbyzero.pml:6 (state 4)	[((a!=0))]
+  4: proc  0 (P:1) \lstbasepath/code/promela/divbyzero.pml:6 (state 4)	[((a!=0))]
 Select a statement
-	choice 1: proc  1 (Q:1) code/promela/divbyzero.pml:12 (state 1) [a = 0]
-	choice 2: proc  0 (P:1) code/promela/divbyzero.pml:6 (state 5) [c = (b/a)]
+	choice 1: proc  1 (Q:1) \lstbasepath/code/promela/divbyzero.pml:12 (state 1) [a = 0]
+	choice 2: proc  0 (P:1) \lstbasepath/code/promela/divbyzero.pml:6 (state 5) [c = (b/a)]
 Select [1-2]: 1
-  5: proc  1 (Q:1) code/promela/divbyzero.pml:12 (state 1)	[a = 0]
+  5: proc  1 (Q:1) \lstbasepath/code/promela/divbyzero.pml:12 (state 1)	[a = 0]
 		a = 0
 Select a statement
-	choice 1: proc  1 (Q:1) code/promela/divbyzero.pml:13 (state 2) <valid end state> [-end-]
-	choice 2: proc  0 (P:1) code/promela/divbyzero.pml:6 (state 5) [c = (b/a)]
+	choice 1: proc  1 (Q:1) \lstbasepath/code/promela/divbyzero.pml:13 (state 2) <valid end state> [-end-]
+	choice 2: proc  0 (P:1) \lstbasepath/code/promela/divbyzero.pml:6 (state 5) [c = (b/a)]
 Select [1-2]: 2
 [1]    2513 floating point exception  spin -p -g -i divbyzero.pml
 					\end{lstlisting}
 			\end{itemize}
 		
-			\lstinputlisting[caption = { Atomicity of Guards in PROMELA }, label = lst:promelaDivByZero, language = PROMELA]{code/promela/divbyzero.pml}
+			\lstinputlisting[caption = { Atomicity of Guards in PROMELA }, label = lst:promelaDivByZero, language = PROMELA]{\lstbasepath/code/promela/divbyzero.pml}
 
 			\subsubsection{Deterministic Sequences}
 				\begin{itemize}
@@ -931,14 +931,14 @@ active proctype Q() { /* analogous */ }
 		% end
 
 		\subsection{Client-Server Model}
-			\lstinputlisting[caption = { Client-Server Model in PROMELA }, label = lst:promelaClientServer, language = PROMELA]{code/promela/client-server.pml}
+			\lstinputlisting[caption = { Client-Server Model in PROMELA }, label = lst:promelaClientServer, language = PROMELA]{\lstbasepath/code/promela/client-server.pml}
 		
 			The basic code for the client-server Model is shown in listing~\ref{lst:promelaClientServer}. Because of interleaving, the order of sending is non-deterministic. The execution
-			\outputlisting{code/promela/client-server.pml.out}
+			\outputlisting{\lstbasepath/code/promela/client-server.pml.out}
 			produced a timeout in the server as not further messages are sent by the clients and the server blocks forever.
 
 			\subsubsection{Reply Channels}
-				\lstinputlisting[caption = { Client-Server Model with Replys in PROMELA }, label = lst:promelaClientServerReply, language = PROMELA]{code/promela/client-server-reply.pml}
+				\lstinputlisting[caption = { Client-Server Model with Replys in PROMELA }, label = lst:promelaClientServerReply, language = PROMELA]{\lstbasepath/code/promela/client-server-reply.pml}
 			
 				The above client-server model does not yet have replies which is not very useful. A second channel can be used to reply for the clients. The listing~\ref{lst:promelaClientServerReply} shows a slightly different example where the client sends a message and the server is asked to respond with the same message.
 				
@@ -946,7 +946,7 @@ active proctype Q() { /* analogous */ }
 			% end
 
 			\subsubsection{Sending Channels via Channels}
-				\lstinputlisting[caption = { Client-Server Model with Sending Channels in PROMELA }, label = lst:promelaClientServerCh, language = PROMELA]{code/promela/client-server-ch.pml}
+				\lstinputlisting[caption = { Client-Server Model with Sending Channels in PROMELA }, label = lst:promelaClientServerCh, language = PROMELA]{\lstbasepath/code/promela/client-server-ch.pml}
 			
 				One way to fix the protocol is that the clients declare local reply channels that are then send to the server, as shown in listing~\ref{lst:promelaClientServerCh}.
 			% end

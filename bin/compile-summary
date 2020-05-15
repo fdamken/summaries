@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+
+
+name="$(basename $(pwd))"
+
+# Check for pre-process stuff.
+if [[ -f Makefile ]]; then
+    make preprocess
+fi
+
+# Compile five times.
+for _ in $(seq 1 5); do
+    lualatex -shell-escape "$name-summary.tex"
+done

@@ -55,6 +55,7 @@
 \RequirePackage{enumitem}
 \RequirePackage{fancyvrb}
 \RequirePackage{float}
+\RequirePackage{siunitx}
 \RequirePackage{hyperref}
 \RequirePackage{listings}
 \RequirePackage{makecell}
@@ -227,12 +228,14 @@
     \newcommand{\bspw}{bspw.\xspace}
     \newcommand{\bzgl}{bzgl.\xspace}
     \newcommand{\bzw}{bzw.\xspace}
-    \renewcommand{\dh}{d.\,h.\xspace}
+    \newcommand{\ca}{ca.\xspace}
+    \newcommand{\gdw}{gdw.\xspace}
     \newcommand{\ggf}{ggf.\xspace}
     \newcommand{\iA}{i.\,A.\xspace}
     \newcommand{\mglw}{mglw.\xspace}
     \newcommand{\vs}{vs.\xspace}
     \newcommand{\zB}{z.\,B.\xspace}
+    \renewcommand{\dh}{d.\,h.\xspace}
 }
 % Robotics.
 \newcommand{\DIRKIN}{DIR\,KIN\xspace}
@@ -261,6 +264,7 @@
 \DeclareMathOperator{\rd}{rd}
 \DeclareMathOperator{\sign}{sign}
 \DeclareMathOperator{\Sig}{Sig}
+\DeclareMathOperator{\sinc}{sinc}
 \DeclareMathOperator{\val}{val}
 \DeclareMathOperator{\Var}{Var}
 \DeclareMathOperator{\Vf}{Vf}

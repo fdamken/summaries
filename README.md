@@ -25,5 +25,5 @@ If you found any issues, having suggestions, etc. [create an issue](https://gith
 * ✔ `mandatory/fs4/infman_db`
 * ✔ `mandatory/fs4/infman_nlp`
 * ✔ `mandatory/fs4/mathe3`
-* `mandatory/fs5/os`
-* `mandatory/fs5/vc`
+* ✔ `mandatory/fs5/os`
+* ✔ `mandatory/fs5/vc`

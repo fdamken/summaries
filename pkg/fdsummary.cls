@@ -49,13 +49,13 @@
 \RequirePackage{amsmath}
 \RequirePackage{amssymb}
 \RequirePackage{attachfile}
+\RequirePackage{bitpattern}
 \RequirePackage{bytefield}
 \RequirePackage{caption}
 \RequirePackage{csquotes}
 \RequirePackage{enumitem}
 \RequirePackage{fancyvrb}
 \RequirePackage{float}
-\RequirePackage{siunitx}
 \RequirePackage{hyperref}
 \RequirePackage{listings}
 \RequirePackage{makecell}
@@ -69,6 +69,7 @@
 \RequirePackage{prftree}
 \RequirePackage{qtree}
 \RequirePackage{rotating}
+\RequirePackage{siunitx}
 \RequirePackage{siunitx}
 \RequirePackage{stmaryrd}
 \RequirePackage{subcaption}
@@ -346,3 +347,8 @@
     \draw [fill = black] (0, 0) -- (0, 0.5) -- (0.5, 0.5) -- (0.5, 0) -- cycle;
     \end{tikzpicture}
 }
+
+
+% Workarounds and similar stuff.
+\newcommand{\infer}[2]{\prftree{#2}{#1}}
+\DeclareOldFontCommand{\it}{\normalfont\itshape}{\mathit}

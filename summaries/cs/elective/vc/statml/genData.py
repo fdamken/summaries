@@ -72,9 +72,15 @@ def models2d_gen():
 
 def models2d_plot(x, y, plt, plotSamples = False):
     X, Y = np.meshgrid(x, y)
-    z1 = mlab.bivariate_normal(X, Y, params2d_sigma[0][0], params2d_sigma[0][1], params2d_mu[0][0], params2d_mu[0][1], params2d_cov[0]) * weights2d[0]
-    z2 = mlab.bivariate_normal(X, Y, params2d_sigma[1][0], params2d_sigma[1][1], params2d_mu[1][0], params2d_mu[1][1], params2d_cov[1]) * weights2d[1]
-    z3 = mlab.bivariate_normal(X, Y, params2d_sigma[2][0], params2d_sigma[2][1], params2d_mu[2][0], params2d_mu[2][1], params2d_cov[2]) * weights2d[2]
+    pos = np.empty(X.shape + (2,))
+    pos[:, :, 0] = X
+    pos[:, :, 1] = Y
+    z1 = stats.multivariate_normal.pdf(pos, np.array(params2d_mu[0]), np.array(((params2d_sigma[0][0] ** 2, params2d_cov[0]), (params2d_cov[0], params2d_sigma[0][1] ** 2)))) * weights2d[0]
+    z2 = stats.multivariate_normal.pdf(pos, np.array(params2d_mu[1]), np.array(((params2d_sigma[1][0] ** 2, params2d_cov[1]), (params2d_cov[1], params2d_sigma[1][1] ** 2)))) * weights2d[0]
+    z3 = stats.multivariate_normal.pdf(pos, np.array(params2d_mu[2]), np.array(((params2d_sigma[2][0] ** 2, params2d_cov[2]), (params2d_cov[2], params2d_sigma[2][1] ** 2)))) * weights2d[0]
+    #z1 = mlab.bivariate_normal(X, Y, params2d_sigma[0][0], params2d_sigma[0][1], params2d_mu[0][0], params2d_mu[0][1], params2d_cov[0]) * weights2d[0]
+    #z2 = mlab.bivariate_normal(X, Y, params2d_sigma[1][0], params2d_sigma[1][1], params2d_mu[1][0], params2d_mu[1][1], params2d_cov[1]) * weights2d[1]
+    #z3 = mlab.bivariate_normal(X, Y, params2d_sigma[2][0], params2d_sigma[2][1], params2d_mu[2][0], params2d_mu[2][1], params2d_cov[2]) * weights2d[2]
     zN = z1 + z2 + z3
     zMin = min(z1.min(), z2.min(), z3.min(), zN.min())
     zMax = max(z1.max(), z2.max(), z3.max(), zN.max())

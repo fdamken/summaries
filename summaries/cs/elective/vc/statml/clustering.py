@@ -1,7 +1,6 @@
 from os import environ
 import numpy as np
 import matplotlib.cm as cm
-import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 import math
 import scipy.stats as stats

@@ -1,0 +1,1388 @@
+\chapter{Grundlagen}
+    \section{Vektornorm}
+        Eine \textit{Vektornorm} ist eine Abbildung \( \norm{\cdot} : \R^n \rightarrow \R ^ + \) mit folgenden Eigenschaften:
+        \begin{description}
+        	\item[Definitheit] \( \norm{c} = 0 \iff x = 0 \)
+        	\item[Homogenität] \( \norm{\alpha x} = \abs{\alpha} \cdot \norm{x} \) (für alle \( \alpha \in \R \) und alle \( x \in \R^n \))
+        	\item[Dreiecksungleichung] \( \norm{x + y} \leq \norm{x} + \norm{y} \) (für alle \( x, y \in \R^n \))
+        \end{description}
+    
+	    \paragraph{Wichtige Normen}
+		    \begin{description}
+		    	\item[\(p\)-Norm] \( \norm{x}_p = \sqrt[p]{\sum_{i = 1}^n \abs{x_i}^p} \)
+		    	\item[Summennorm (\(1\)-Norm)] \( \norm{x}_1 = \sum_{i = 1}^n \abs{x_i} \)
+		    	\item[Euklidische Norm (\(2\)-Norm)] \( \norm{x}_2 = \sqrt{\sum_{i = 1}^n x_i^2} = \sqrt{x^T x} \)
+		    	\item[Maximumsnorm (\(\infty\)-Norm)] \( \norm{x}_\infty = \max_{i = 1, \cdots, n} \abs{x_i} \)
+		    \end{description}
+	    % end
+    % end
+
+    \section{Induzierte Matrixnormen}
+        Sei \( \norm{\cdot} \) eine beliebige Norm auf \(\R^n\). Dann ist auf \( \R^{n \times n} \) eine dazugehörige Matrixnorm definiert durch:
+        \begin{equation*}
+	        \norm{A} \coloneqq \sup _ {\norm{x} = 1} \norm{Ax} = \sup _ {x\neq 0} \frac{\norm{Ax}}{\norm{x}}
+        \end{equation*}
+        für jede Matrix \( A \in \R^{n \times n} \). Diese Norm wird \textit{induzierte Matrixnorm} genannt.
+        
+        Eine solche Norm hat folgende Eigenschaften:
+        \begin{description}
+        	\item[Definitheit] \( \norm{A} = 0 \iff A = 0 \)
+        	\item[Homogenität] \( \norm{\alpha A} = \abs{\alpha} \cdot \norm{A} \) (für alle \( \alpha \in \R \) und alle \( A \in \R^{n \times n} \))
+        	\item[Dreiecksungleichung] \( \norm{A + B} \leq \norm{A} + \norm{B} \) (für alle \( A, B \in \R^{n \times n} \))
+        	\item[Verträglichkeit] \( \norm{Ax} \leq \norm{A} \cdot \norm{x} \) (für alle \( x \in \R^n \) und alle \( A \in \R^{n \times n} \))
+        	\item[Submultiplikativität] \( \norm{AB} \leq \norm{A} \cdot \norm{B} \) (für alle \( A, B \in \R^{n \times n} \))
+        \end{description}
+    
+	    \paragraph{Wichtige Normen}
+		    \begin{description}
+		    	\item[Spaltensummennorm (1-Norm)] \( \norm{A}_1 = \max_{j = 1, \cdots, n} \sum_{i = 1}^n \abs{a_{ij}} \)
+		    	\item[Euklidische Norm (2-Norm)] \( \norm{A}_2 = \sqrt{\lambda _ \textrm{max} (A^T A)} \) (mit \(\lambda\) Eigenwert von \( A \))
+		    	\item[Zeilensummennorm (\(\infty\)-Norm)] \( \norm{A}_\infty = \max_{i = 1, \cdots, n} \sum_{j = 1}^n \abs{a_{ij}} \)
+		    \end{description}
+	    % end
+    % end
+
+    \section{Konditionszahl}
+        Sei \( A \in \R^{n \times n} \) invertierbar und sei \( \norm{\cdot} \) eine induzierte Matrixnorm.
+        
+        Dann ist \[ \cond(A) = \norm{A} \cdot \norm{A^{-1}} \] die \textit{Konditionszahl} von \(A\) bzgl. der Matrixnorm \( \norm{\cdot} \).
+    % end
+
+    \section{Spezielle Matrizen}
+	    \begin{itemize}
+	        \item \(A \in \C^{n \times n}\) ist \textit{hermitesch} gdw. \( A^H = A \), wobei \( A^H \coloneqq \overline{A}^T \).
+	        \item \(A \in \C^{n \times n}\) ist \textit{unität} gdw. \( A^H = A^{-1} \).
+	        \item \(A \in \R^{n \times n}\) ist \textit{orthogonal} gdw. \( A^T = A^{-1} \), bzw. \( A^TA = AA^T = I \)
+	    \end{itemize}
+    % end
+
+    \section{Eigenwerte und Eigenvektoren}
+        Eine Zahl \( \lambda \in \C \) heißt \textit{Eigenwert} einer Matrix \( A \in \C^{n \times n} \) gdw. es einen Vektor \( x \in \C^n, x \neq o \) gibt mit:
+        \begin{equation*}
+	        Ax = \lambda x
+        \end{equation*}
+        Ein solcher Vektor wird \textit{Eigenvektor} genannt. Die Menge aller Eigenwerte \( \sigma(A) \) heißt \textit{Spektrum} von \(A\).
+        
+        Der Unterraum \[ \Eig_A(\lambda) \coloneqq \{ x \in C^N \forwhich (A - \lambda I)x = 0 \} \] wird \textit{Eigenraum} von \(A\) zum Eigenwert \(\lambda\) genannt. Die Dimension \[ \gamma(\lambda) \coloneqq \dim(\Eig_A(\lambda)) = n - \rank(A - \lambda I) \] ist die \textit{geometrische Vielfachheit} von \(\lambda\) und gibt die maximale Anzahl linear unabhängiger Eigenvektoren zu \(\lambda\) an.
+
+        \subsection{Charakteristisches Polynom}
+            \( \lambda \) ist ein Eigenwert von \(A \in \C^{n \times n} \) gdw. gilt \[ \mathcal{X}(\lambda) \coloneqq \det (A - \lambda I) = 0 \] also wenn \(\lambda\) eine Nullstelle des \textit{charakteristischen Polynoms} \(\mathcal{X}\) von \(A\) ist.
+            
+            Das charakteristische Polynom hat die Linearfaktorzerlegung \[ \mathcal{X}(\mu) = (-1)^n \cdot (\mu - \lambda_1)^{v_1} \cdot \cdots \cdot (\mu - \lambda_k)^{v_k} \] wobei \( v(\lambda_i) = v_i \in \N \) die \textit{algebraische Vielfachheit} von \(\lambda_i\) genannt wird.
+        % end
+
+        \subsection{Eigenschaften}
+            Sei \( A \in \C^{n \times n} \) eine beliebige Matrix, dann gilt:
+            \begin{itemize}
+            	\item \( \lambda \in \sigma(A) \implies \lambda \in \sigma(A^T) \land \overline{\lambda} \in \sigma(A^H) \)
+            	\item Für jede reguläre Matrix \(A\) hat die zu \(A\) ähnliche Matrix \( B = T^{-1} A T \) das selbe charakteristische Polynom und die selben Eigenwerte wie \(A\). Ist \(x\) ein Eigenvektor von \(A\), dann ist \( y = T^{-1} x \) ein Eigenvektor von \(B\).
+            	\item Ist \(A\) hermitesch, dann hat \(A\) nur reelle Eigenwerte. \\ Ist \(A\) unitär, dann gilt \( \abs{\lambda} = 1 \) für jeden Eigenwert \(\lambda\).
+            \end{itemize}
+        % end
+
+        \subsection{Diagonalisierbarkeit}
+            Eine Matrix \( A \in \C^{n \times n} \) heißt \textit{diagonalisierbar} gdw. sie \(n\) linear unabhängige Eigenvektoren besitzt.
+        % end
+    % end
+    
+    \section{\(\mathcal{O}\)-Notation}
+	    Für eine Funktion \( g : \N \rightarrow \R \) bezeichnet \( \mathcal{O}(g(n)) \) die Menge aller Funktionen, die asymptotische nicht schneller wachsen als \(g\), d.h.:
+	    \begin{equation*}
+		    \mathcal{O}(g(n)) \coloneqq \{ f : \N \rightarrow R \forwhich \exists n_0 \in \N : \exists c \in \R : \forall n \in N, n \geq n_0 : f(n) \leq c \cdot g(n) \}
+	    \end{equation*}
+    % end
+% end
+
+\chapter{Interpolation}
+    \begin{description}
+    	\item[Gegeben] Funktionaler Zusammenhang \( y = f(x), \quad f : [a, b] \rightarrow \R, a < b \in \R \)
+    	\item[Bekannt] Werte \( y_i = f(x_i), \quad i = 0, \cdots, n \) (\textit{Stützstellen})
+    	\item[Ziel] Annäherung für \(f(x)\) für beliebige \( x \in [a, b] \)
+    	\item[Interpolationsproblem] Suche einfache Ersatzfunktion \( \Phi(x) \) mit \( \Phi(x_i) = y_i, \quad i = 0, \cdots, n \)
+    	\item[Wunsch] Der Fehler \( \abs{f(x) - \Phi(x)} \) sollte auf \( [a, b] \) möglichst gering sein.
+    \end{description}
+
+    \paragraph{Interpolationsaufgabe}
+	    Zu einer gegebenen Ansatzfunktion \( \Phi(x; a_0, \cdots, a_n), \quad x \in \R \) mit Parametern \( a_0, \cdots, a_n \in \R \) sollen zu gegebenen Paaren \( (x_i, y_i) \quad i = 0, \cdots, n \) mit \( x_i, y_i \in \R \) und \( x_i \neq x_j \) für \( i \neq j \) sollen die Parameter \( a_0, \cdots, a_n \) so bestimmt werden, dass die Interpolationsbedingungen \( \Phi(x_i; a_0, \cdots, a_n) = y_i, \quad i = 0, \cdots, n \) erfüllt sind. Die Paare \( (x_i, y_i) \) werden als \textit{Stützpunkte} bezeichnet.
+    % end
+
+    \section{Polynominterpolation}
+        \textbf{Ansatzfunktion:} Polynome vom Grad \( \leq n \), also
+	    \begin{equation*}
+		    p_n(x) = \Phi(x, a_0, \cdots, a_n) = a_0 + a_1 x + \cdots + a_n x^n
+	    \end{equation*}
+	    \textbf{Interpolationsaufgabe:} Finde ein Polynom \( p_n(x) \) vom Grad \( \leq n \), sodass die Interpolationsbedingungen \( p_n(x_i) = y_i, \quad i = 0, \cdots, n \) erfüllt sind.
+	    
+	    Anwendungen hierfür sind z.B.:
+	    \begin{itemize}
+	    	\item Approximation einer Funktion auf einem Intervall
+	    	\item Inverse Interpolation (Approximation von \(f^{-1}\) bei einer gegebenen Funktion \(f\))
+	    	\item Numerische Integration (siehe Kapitel \ref{c:integration})
+	    	\item Numerische Differentiation
+	    \end{itemize}
+
+        \subsection{Eindeutigkeit}
+            Es existiert genau ein Polynom vom Grad \( \leq n \), welches die Interpolationsbedingungen erfüllt, und zwar \(p_n(x)\). Die Lösung einer Interpolationsaufgabe ist also eindeutig.
+        % end
+
+        \subsection{Naiver Lösungsansatz}
+            Die Interpolationsbedingungen liefern \( n + 1 \) Gleichungen, womit sich mit Koeffizienten \( a_0, \cdots, a_n \) ein lineares Gleichungssystem aufstellen lässt:
+            \begin{equation*}
+	            \begin{bmatrix}
+	            	1      & x_0    & x_0^2  & \cdots & x_0^n  \\
+	            	1      & x_1    & x_1^2  & \cdots & x_1^n  \\
+	            	\vdots & \vdots & \vdots & \ddots & \vdots \\
+	            	1      & x_n    & x_n^2  & \cdots & x_n^n
+	            \end{bmatrix}
+	            \cdot
+	            \begin{bmatrix}
+		            a_0 \\
+		            a_1 \\
+		            \vdots \\
+		            a_n
+	            \end{bmatrix}
+	            =
+	            \begin{bmatrix}
+		            y_0 \\
+		            y_1 \\
+		            \vdots \\
+		            y_n
+	            \end{bmatrix}
+            \end{equation*}
+            
+            \paragraph{Nachteile}
+	            \begin{itemize}
+	            	\item Hoher Rechenaufwand: Das Auflösen des Gleichungssystem benötigt \( \mathcal{O}(n^3) \) Rechenoperationen.
+	            	\item Die Koeffizientenmatrix (\textit{Vandermonde-Matrix}) ist invertierbar, aber extrem schlecht konditioniert \(\rightarrow\) Rundungsfehler werden dramatisch verstärkt.
+	            \end{itemize}
+            % end
+        % end
+
+        \subsection{Lagrange-Interpolation}
+            \begin{equation*}
+	            p_n(x) = \sum_{k = 0}^n y_k L_{k,n}(x) \qquad\qquad L_{k,n}(x) = \prod_{j = 0,\, j \neq k}^n \frac{x - x_j}{x_k - x_j}
+            \end{equation*}
+            
+            Die Lagrange-Polynome \( L_{k,n} \) sind so gewählt, dass:
+            \begin{equation*}
+	            L_{k,n}(x_i) =
+		            \begin{cases}
+			            1 & \text{falls } k = i \\
+			            0 & \text{sonst}
+		            \end{cases}
+		       \eqqcolon \delta_{ki}
+            \end{equation*}
+            wobei \( \delta_{ki} \) das Kronecker-Symbol ist.
+            
+            \paragraph{Bewertung}
+	            \begin{itemize}
+	            	\item Vorteile
+		            	\begin{itemize}
+		            		\item Rechenaufwand: \( \mathcal{O}(n^2) \) zur Koeffizientenberechnung, \( \mathcal{O}(n) \) zur Auswertung von \( p_n(x) \)
+		            		\item Intuitive Darstellung
+		            	\end{itemize}
+	            	\item Nachteile
+		            	\begin{itemize}
+		            		\item Hinzunahme von Stützstellen ist aufwendig.
+		            	\end{itemize}
+	            \end{itemize}
+            % end
+        % end
+
+        \subsection{Newtonsche Interpolationsformel}
+            \begin{equation*}
+	            p_n(x) = y_0 + \sum_{i=1}^n \gamma_i (x - x_0) \cdot \cdots \cdot (x - x_{i-1}) \qquad\qquad \gamma_i = f_{[x_0, \cdots, x_i]}
+            \end{equation*}
+            
+            Die Berechnung der Parameter erfolgt über die \textit{dividierten Differenzen} \( f_{[x_0, \cdots, x_i]} \coloneqq \gamma_i \) zu den Stützstellen \( x_0, \cdots, x_i \), wobei \( f_{[x_0]} = \gamma_0 = y_0 \). Allgemein werden die dividierten Differenzen über Rekursion berechnet (die Reihenfolge der \(x_i\) ist dabei irrelevant):
+            \begin{align*}
+	            j = 0, \cdots, n: &\quad f_{[x_j]} = y_j \\
+	            k = 1, \cdots, n,\, j = 0, \cdots, n - k: &\quad f_{[x_j, \cdots, x_{j+k}]} = \frac{f_{[x_{j + 1}, \cdots, x_{j+k}]} - f_{[x_j, \cdots, x_{j+k-1}]}}{{x_{j+k} - x_j}}
+            \end{align*}
+            Die Berechnung der dividierten Differenzen kann z.B. mit folgendem Schema erfolgen:
+            \begin{equation*}
+	            \begin{array}{c | ccccc}
+	            	 x_0   & f_{[x_0]} = y_0 &           \raisebox{-4pt}{\( \overset{\searrow}{} \)}           &  \\
+	            	       &                 &                                                                 & f_{[x_0, x_1]} &           \raisebox{-7pt}{\( \overset{\searrow}{} \)}           &  \\
+	            	 x_1   & f_{[x_1]} = y_1 & \raisebox{-6pt}{\( \overset{\nearrow}{\overset{\searrow}{}} \)} &                &                                                                 & f_{[x_0, x_1, x_2]} \\
+	            	       &                 &                                                                 & f_{[x_1, x_2]} & \raisebox{-6pt}{\( \overset{\nearrow}{\overset{\searrow}{}} \)} &  \\
+	            	 x_2   & f_{[x_2]} = y_2 & \raisebox{-6pt}{\( \overset{\nearrow}{\overset{\searrow}{}} \)} &                &                                                                 &       \vdots        \\
+	            	\vdots & \vdots          &                                                                 &     \vdots     &
+	            \end{array}
+            \end{equation*}
+            
+            \paragraph{Vorteile}
+	            \begin{itemize}
+	            	\item Rechenaufwand: \( \mathcal{O}(n^2) \) zur Berechnung der dividierten Differenzen, \( \mathcal{O}(n) \) zur Auswertung von \( p_n(x) \)
+	            	\item Hinzunahme neuer Stützstellen erfordert nur die Berechnung von \(n\) zusätzlichen dividierten Differenzen.
+	            \end{itemize}
+            % end
+        % end
+
+        \subsection{Fehlerabschätzungen}
+            Sei \( f \in C^{n+1}([a, b]) \) und \( x_0, \cdots, x_n \in [a, b] \) verschiedene Punkte und sei \( p_n(x) \) das eindeutige Interpolationspolynom vom Grad \( \leq n \) zu den Stützwerten \( (x_i, f(x_i)), \quad i = 0, \cdots, n \). Dann existiert zu jedem \( x \in [a, b] \) ein \( \xi_x \in [a, b] \) mit
+            \begin{equation*}
+	            f(x) - p_n(x) = \frac{f^{(n + 1)(\xi_x)}}{(n + 1)!} (x - x_0) \cdot \cdots \cdot (x - x_n)
+            \end{equation*}
+            
+            Mit dem Knotenpolynom \[ \omega(x) = \prod_{i = 0}^n (x - x_i) \] gilt für den maximalen Fehler:
+            \begin{equation*}
+	            \max_{x \in [a, b]} \abs{f(x) - p_n(x)} \leq \max_{x \in [a, b]} \frac{\abs{f^{(n + 1)}(x)}}{(n + 1)!} \max_{x \in [a, b]} \abs{\omega(x)} \leq \max_{x \in [a, b]} \frac{\abs{f^{(n + 1)}(x)}}{(n + 1)!} (b - a)^{n+1}
+            \end{equation*}
+            
+            Werden keine äquidistanten Stützstellen verwendet sondern Tschebyscheff-Abszissen, so verschärft sich die Fehlerabschätzung zu:
+            \begin{equation*}
+	            \max_{ x \in [a,b] } \abs{f(x) - p_n(x)} \leq \max_{x \in [a, b]} \frac{\abs{f^{(n+1)}(x)}}{(n + 1)!} \Bigg(\frac{b-a}{2}\Bigg)^{n+1} 2^{-n}
+            \end{equation*}
+        % end
+
+        \subsection{Runges Phänomen}
+            Bei äquidistanter Wahl der Stützpunkte, d.h. \( x_i = a + ih, \quad h = \frac{b - a}{n} \), ist i.A. nicht gewährleistet, dass gilt:
+            \begin{equation*}
+	            \lim\limits_{n \rightarrow \infty} f(x) - p_n(x) = 0 \qquad \textrm{für alle } x \in [a, b]
+            \end{equation*}
+            Runges Phänomen beschreibt das Überschwingen des Interpolanten am Rand des Intervalls.
+        % end
+
+        \subsection{Tschebyscheff-Abszissen}
+            Tschebyscheff-Abszissen dienen der Vermeidung von Runges Phänomen, in dem die Stützstellen nicht äquidistant gewählt werden:
+            \begin{equation*}
+	            x_i = \frac{b - a}{2} \cos\Bigg(\frac{2i + 1}{n + 1} \cdot \frac{\pi}{2}\Bigg) + \frac{b + a}{2} \qquad i = 0, \cdots, n
+            \end{equation*}
+            Dies liefert den minimalen Wert für \( \max_{x \in [a, b]} \abs{\omega(x)} \), und zwar:
+            \begin{equation*}
+	            \max_{x \in [a, b]} \abs{\omega(x)} = \Bigg(\frac{b - 1}{2}\Bigg)^{n + 1} 2^{-n}
+            \end{equation*}
+        % end
+    % end
+
+    \section{Spline-Interpolation}
+        \begin{itemize}
+        	\item Motivation: Höhere Anzahl an Stützstellen ergibt nicht immer eine bessere Approximation bei der Polynominterpolation.
+        	\item Lösung: Zerlegung von \([a,b]\) in Teilintervalle und Polynominterpolation auf den Teilintervallen mit Grad \( \leq k \).
+        	\item Problem: Die Polynome passen an den Intervallgrenzen mglw. nicht zusammen.
+        	\item[] \( \rightarrow \) Spline-Interpolation: Die Polynome gehen \( k - 1 \)-mal stetig ineinander über.
+        \end{itemize}
+    
+        \paragraph{Splinefunktion}
+	        Sei \( \Delta = \{ x_i \forwhich a = x_0 < x_1 < \cdots < x_n = b \} \) eine Zerlegung des Intervalls \( [a, b] \), wobei die \(x_i\) \textit{Knoten} genannt werden.
+	        
+	        Dann ist eine \textit{Splinefunktion} der Ordnung \(k\) zur Zerlegung \(\Delta\) eine Funktion \( s : [a, b] \rightarrow \R \) mit folgenden Eigenschaften:
+	        \begin{itemize}
+	        	\item Es gilt \( s \in C^{k - 1}([a, b]) \)
+	        	\item \( s \) stimmt auf jedem Intervall \( [x_i, x_{i+1}] \) mit einem Polynom \(s_i\) vom Grad \( \leq k \) überein.
+	        \end{itemize}
+	        Die Menge dieser Splinefunktionen wird mit \( S_{\Delta, k} \) bezeichnet.
+	        
+	        Splinefunktionen mit \(k = 1\) werden \textit{Lineare Splines} genannt, Splinefunktionen mit \(k = 3\) werden \textit{Kubische Splines} genannt.
+        % end
+        
+        \paragraph{Interpolationsaufgabe}
+	        Bestimme zu einer Zerlegung \(\Delta = \{ x_i \forwhich a = x_0 < x_1 < \cdots < x_n = b \} \) und Werten \( y_i \in \R, \quad i = 0, \cdots, n \) eine Funktion \( s \in S_{\Delta, k} \) mit \( s(x_i) = y_i, \quad i = 0, \cdots, n \).
+        % end
+
+        \subsection{Lineare Splines}
+            \begin{itemize}
+            	\item Ein linearer Spline \( s \in S_{\Delta, 1} \) ist stetig.
+            	\item \(s\) ist ein Polynom vom Grad \(\leq 1\) auf jedem Intervall \( [x_i, x_{i+1}] \).
+            	\item Die Interpolationsbedingungen ergeben \( s_i(x_i) = y_i \) und \( s_i(x_{i+1}) = y_{i+1} \).
+            	\item Dies legt \(s_i\) fest (Lagrange-Interpolation):
+            \end{itemize}
+            \begin{equation*}
+	            s(x) = s_i(x) = \frac{x_{i+1} - x}{x_{i+1} - x_i} y_i + \frac{x-x_i}{x_{i+1}-x_i} y_{i+1} \qquad \textrm{für alle } x \in [x_i, x_{i+1}]
+            \end{equation*}
+
+			\subsubsection{Eindeutigkeit}
+				Zu einer Zerlegung \(\Delta\) von \( [a, b] \) und Werten \( y_i, \quad i = 0, \cdots, n \) existiert genau ein interpolierender linearer Spline.
+			% end
+
+            \subsubsection{Fehlerabschätzung}
+                Sei \( f \in C^2([a, b]) \). Dann gilt für jede Zerlegung \( \Delta = \{ x_i \forwhich a = x_0 < x_1 \cdots x _ n = b \} \) von \([a,b]\) und den interpolierenden Spline \( s \in S_{\Delta, 1} \) von \(f\):
+                \begin{equation*}
+	                \max_{x \in [a, b]} \abs{f(x) - s(x)} \leq \frac{1}{8} \max_{x \in [a, b]} \abs{f''(x)} \, h_\textrm{max}^2 \qquad \textrm{mit } h_\textrm{max} \coloneqq \max_{i = 0, \cdots, n - 1} x_{i+1} - x_i
+                \end{equation*}
+            % end
+        % end
+
+        \subsection{Kubische Splines}
+            \begin{itemize}
+            	\item Ein kubischer Spline \( s \in S_{\Delta,3} \) ist zweimal stetig differenzierbar.
+            	\item \( s'' \) ist stetig und stückweise linear, d.h. \( s'' \in S_{\Delta,1} \).
+            	\item \(s\) wird durch Integration von \(s''\) bestimmt.
+            \end{itemize}
+        
+			Mit den \textit{Momenten} \( M_i = s_i''(x_i) \) ergibt sich der Ansatz:
+			\begin{equation*}
+				s_i(x) = \frac{1}{6} \Bigg(\frac{(x_{i+1}-x)^3}{x_{i+1}-x_i}M_i + \frac{(x-x_i)^3}{x_{i+1}-x_i}M_{i+1}\Bigg) + c_i(x-x_i) + d_i
+			\end{equation*}
+			mit zwei Konstanten \( c_i, d_i \in \R \):
+			\begin{align*}
+				c_i &=\, \frac{y_{i+1}-y_i}{h_i} - \frac{h_i}{6} (M_{i+1} - M_i) \\
+				d_i &=\, y_i - \frac{h_i^2}{6} M_i
+			\end{align*}
+
+			Zu Berechnung der Momente \(M_i, \quad i = 0, \cdots, n \) müssen zusätzliche Randbedingungen verwendet werden, die alle eindeutige Lösungen für \(M_0, \cdots, M_n\) liefern:
+			\begin{description}
+				\item[Natürliche Randbedingungen] \( s''(a) = s''(b) = 0 \), d.h. \( M_0 = M_n = 0 \)
+				\item[Hermite-Randbedingungen] \( s'(a) = f'(a) \) und \( s'(b) = f'(b) \)
+			\end{description}
+			Diese Randbedingungen ergeben mit obigem Ansatz ein lineares, diagonaldominantes, tridiagonales Gleichungssystem:
+			\begin{equation*}
+				\begin{bmatrix}
+					\mu_0         & \lambda_0           &  \\
+					\frac{h_0}{6} & \frac{h_0 + h_1}{3} & \frac{h_1}{6}       &  \\
+					              & \ddots              & \ddots              & \ddots                  &  \\
+					              &                     & \frac{h_{i - 1}}{6} & \frac{h_{i-1} + h_i}{3} & \frac{h_i}{6}     &  \\
+					              &                     &                     & \ddots                  & \ddots            & \ddots                    &  \\
+					              &                     &                     &                         & \frac{h_{n-2}}{6} & \frac{h_{n-2}+h_{n-1}}{3} & \frac{h_{n-1}}{6} \\
+					              &                     &                     &                         &                   & \lambda_n                 & \mu_n
+				\end{bmatrix}
+				\begin{bmatrix}
+					M_0    \\
+					M_1    \\
+					\vdots \\
+					M_n
+				\end{bmatrix}
+				=
+				\begin{bmatrix}
+					b_0                                                             \\
+					\frac{y_2 - y_1}{h_1} - \frac{y_1 - y_0}{h_0}                   \\
+					\vdots                                                          \\
+					\frac{y_{i+1} - y_i}{h_i} - \frac{y_i - y_{i-1}}{h_{i-1}}       \\
+					\vdots                                                          \\
+					\frac{y_n - y_{n-1}}{h_{n-1}} - \frac{y_{n-1}-y_{n-2}}{h_{n-2}} \\
+					b_n
+				\end{bmatrix}
+			\end{equation*}
+			Mit folgenden Werten für \( \mu_0, \lambda_0, \lambda_n, \mu_n, b_0, b_n \):
+			\begin{itemize}
+				\item Natürliche Randbedingungen:
+					\begin{align*}
+						\lambda_0 & =\, \lambda_n = b_0 = b_n = 0 \\
+						\mu_0     & =\, \mu_n = 1
+					\end{align*}
+				\item Hermite Randbedingungen:
+					\begin{align*}
+						\mu_0     & =\, \frac{h_0}{3}                       \\
+						\mu_n     & =\, \frac{h_{n-1}}{3}                   \\
+						\lambda_0 & =\, \frac{h_0}{6}                       \\
+						\lambda_n & =\, \frac{h_{n-1}}{6}                   \\
+						b_0       & =\, \frac{y_1-y_0}{h_0} - f'(a)         \\
+						b_n       & =\, f'(b) - \frac{y_n-y_{n-1}}{h_{n-1}}
+					\end{align*}
+			\end{itemize}
+
+			\subparagraph{Natürliche Randbedingungen}
+			\begin{equation*}
+				\begin{bmatrix}
+					1             & 0                   &  \\
+					\frac{h_0}{6} & \frac{h_0 + h_1}{3} & \frac{h_1}{6}       &  \\
+					              & \ddots              & \ddots              & \ddots                  &  \\
+					              &                     & \frac{h_{i - 1}}{6} & \frac{h_{i-1} + h_i}{3} & \frac{h_i}{6}     &  \\
+					              &                     &                     & \ddots                  & \ddots            & \ddots                    &  \\
+					              &                     &                     &                         & \frac{h_{n-2}}{6} & \frac{h_{n-2}+h_{n-1}}{3} & \frac{h_{n-1}}{6} \\
+					              &                     &                     &                         &                   & 0                         & 1
+				\end{bmatrix}
+				\begin{bmatrix}
+					M_0    \\
+					M_1    \\
+					\vdots \\
+					M_n
+				\end{bmatrix}
+				=
+				\begin{bmatrix}
+					0                                                               \\
+					\frac{y_2 - y_1}{h_1} - \frac{y_1 - y_0}{h_0}                   \\
+					\vdots                                                          \\
+					\frac{y_{i+1} - y_i}{h_i} - \frac{y_i - y_{i-1}}{h_{i-1}}       \\
+					\vdots                                                          \\
+					\frac{y_n - y_{n-1}}{h_{n-1}} - \frac{y_{n-1}-y_{n-2}}{h_{n-2}} \\
+					0
+				\end{bmatrix}
+			\end{equation*}
+
+			\subparagraph{Hermite Randbedingungen}
+			\begin{equation*}
+				\begin{bmatrix}
+					\frac{h_0}{3} & \frac{h_0}{6}       &  \\
+					\frac{h_0}{6} & \frac{h_0 + h_1}{3} & \frac{h_1}{6}       &  \\
+					              & \ddots              & \ddots              & \ddots                  &  \\
+					              &                     & \frac{h_{i - 1}}{6} & \frac{h_{i-1} + h_i}{3} & \frac{h_i}{6}     &  \\
+					              &                     &                     & \ddots                  & \ddots            & \ddots                    &  \\
+					              &                     &                     &                         & \frac{h_{n-2}}{6} & \frac{h_{n-2}+h_{n-1}}{3} & \frac{h_{n-1}}{6} \\
+					              &                     &                     &                         &                   & \frac{h_{n-1}}{6}         & \frac{h_{n-1}}{3}
+				\end{bmatrix}
+				\begin{bmatrix}
+					M_0    \\
+					M_1    \\
+					\vdots \\
+					M_n
+				\end{bmatrix}
+				=
+				\begin{bmatrix}
+					\frac{y_1-y_0}{h_0} - f'(a)                                     \\
+					\frac{y_2 - y_1}{h_1} - \frac{y_1 - y_0}{h_0}                   \\
+					\vdots                                                          \\
+					\frac{y_{i+1} - y_i}{h_i} - \frac{y_i - y_{i-1}}{h_{i-1}}       \\
+					\vdots                                                          \\
+					\frac{y_n - y_{n-1}}{h_{n-1}} - \frac{y_{n-1}-y_{n-2}}{h_{n-2}} \\
+					f'(b) - \frac{y_n-y_{n-1}}{h_{n-1}}
+				\end{bmatrix}
+			\end{equation*}
+			
+			\subsubsection{Fehlerabschätzung}
+				Seien \( h_\textrm{min} \coloneqq \min_{i = 0, \cdots, n - 1} h_i \) und \( h_\textrm{max} \coloneqq \max_{i = 0, \cdots, n - 1} h_i \).
+				
+				Dann gilt für \( f \in C^4([a, b]) \) mit \( f''(a) = f''(b) = 0 \) und jede Unterteilung \( \Delta \), \( y_i = f(x_i) \) und dem kubischen Spline-Interpolanten \( s \in S_{\Delta, 3} \) zu den \textbf{natürlichen Randbedingungen} und \( k = 1, 2 \):
+				\begin{align*}
+					\abs{f(x) - s(x)}             & \leq\, \frac{h_\textrm{max}}{h_\textrm{min}} \sup_{\xi \in [a, b]} \abs{f^{(4)}(\xi)} \, h_\textrm{max}^4         \\
+					\abs{f^{(k)}(x) - s^{(k)}(x)} & \leq\, \frac{2 h_\textrm{max}}{h_\textrm{min}} \sup_{\xi \in [a, b]} \abs{f^{(4)}(\xi)} \, h_\textrm{max}^{4 - k}
+				\end{align*}
+				
+				Für die \textbf{hermite Randbedingungen} gelten schärfere Fehlerabschätzungen (sei alles definiert wie oben):
+				\begin{align*}
+					\abs{f(x) - s(x)} &\leq\, \frac{5}{384} \sup_{\xi \in [a, b]} \abs{f^{(4)}(\xi)} \, h_\textrm{max}^4 \\
+					\abs{f^{(k)}(x) - s^{(k)}(x)} &\leq\, \frac{2 h_\textrm{max}}{h_\textrm{min}} \sup_{\xi \in [a, b]} \abs{f^{(4)}(\xi)} \, h_\textrm{max}^{4 - k}
+				\end{align*}
+			% end
+		% end
+    % end
+% end
+
+\chapter{Integration}
+	\label{c:integration}
+	
+	\begin{description}
+		\item[Gegeben] Ein funktionaler Zusammenhang \( f : [a, b] \rightarrow \R \).
+		\item[Ziel] Näherungsweise Bestimmung des Integrals \( \int_{a}^{b} \! f(x) \, dx \).
+	\end{description}
+	\textbf{Integrationsaufgabe:} Zu einem gegebenen, integrierbarem, \( f : [a, b] \rightarrow \R \), berechne \( I(f) = \int_{a}^{b} \! f(x) \, dx \).
+	
+	\paragraph{Exakte Integrationsformel}
+		Eine Integrationsformel \( J(f) = \sum_{i = 0}^{n} \beta_i f(x_i) \) heißt \textit{exakt vom Grad \(n\)} gdw. sie alle Polynome bis mindestens Grad \(n\) exakt integriert.
+	% end
+
+    \section{Geschlossene Newton-Cotes-Quadratur} % 2.5, 2.6, 2.7, 2.9, 2.10
+        \begin{equation*}
+	        I_n(f) = h \sum_{k=0}^{n} \alpha_{k,n} f(x_k) \qquad \alpha_{k,n} = \int_{0}^{n} \! \prod_{j = 0,\, j \neq k}^{n} \frac{s-j}{k-j} \, ds \qquad h = \frac{b-a}{n} \qquad x_k = a + kh
+        \end{equation*}
+        \begin{itemize}
+        	\item Die Werte \( \alpha_{0, n}, \cdots, \alpha_{n, n} \) heißen \textit{Gewichte}.
+        	\item Diese sind unabhängig von \(f\) und \([a, b]\) und somit tabellierbar.
+        	\item Es gilt immer:
+	        	\begin{equation*}
+		        	h \sum_{k=0}^{n} \alpha_{k,n} = b - a, \quad\textrm{also } \sum_{k=0}^{n} \alpha_{k, n} = n
+	        	\end{equation*}
+	        \item Die geschlossene Newton-Cotes-Formel \(I(f)\) ist exakt vom Grad \(n\).
+        \end{itemize}
+    
+        \paragraph{Fehlerabschätzung}
+	        Es gilt für den Fehler \( E_n(f) \coloneqq I(f) - I_n(f) \):
+	        \begin{equation*}
+		        \Bigg\lvert \int_{a}^{b} \! f(x) \, dx - \int_{a}^{b} \! p_n(x) \, dx \Bigg\rvert \leq \int_{a}^{b} \! \abs{f(x) - p_n(x)} \, dx \leq \max_{\xi \in [a, b]} \frac{\abs{f^{(n + 1)}(\xi)}}{(n + 1)!} (b - a) ^ {n+2}
+	        \end{equation*}
+        % end
+        
+        \subsection{Spezielle geschlossene Newton-Cotes-Formeln}
+	        \begin{table}[H]
+	        	\centering
+	        	\begin{tabular}{c | c ccccc c l}
+	        		\textbf{\(n\)} & \textbf{\(h\)}    &                           \multicolumn{5}{c}{\textbf{\(\alpha_{k,n}\)}}                           & \textbf{max. Fehler \( E_n(f) \)}                                & \textbf{Name} \\ \hline
+	        		    \(1\)      & \(b-a\)           & \(\frac{1}{2}\)   &  \(\frac{1}{2}\)  &                   &                   &                   & \( \max_{\xi \in [a, b]} \frac{\abs{f^{(2)}(\xi)}}{12} h^3 \)    & Trapezregel   \\
+	        		    \(2\)      & \(\frac{b-a}{2}\) & \(\frac{1}{3}\)   &  \(\frac{4}{3}\)  &  \(\frac{1}{3}\)  &                   &                   & \( \max_{\xi \in [a, b]} \frac{\abs{f^{(4)}(\xi)}}{90} h^5 \)    & Simpson-Regel \\
+	        		    \(3\)      & \(\frac{b-a}{3}\) & \(\frac{3}{8}\)   &  \(\frac{9}{8}\)  &  \(\frac{9}{8}\)  &  \(\frac{3}{8}\)  &                   & \( \max_{\xi \in [a, b]} \frac{3 \abs{f^{(4)}(\xi)}}{80} h^5 \)  & 3/8-Regel     \\
+	        		    \(4\)      & \(\frac{b-a}{4}\) & \(\frac{14}{45}\) & \(\frac{64}{45}\) & \(\frac{24}{45}\) & \(\frac{64}{45}\) & \(\frac{14}{45}\) & \( \max_{\xi \in [a, b]} \frac{8 \abs{f^{(6)}(\xi)}}{945} h^7 \) & Milne-Regel
+	        	\end{tabular}
+	        	\caption{Geschlossene Newton-Cotes-Formeln}
+	        \end{table}
+	        Ab \( n \geq 7 \) treten negative Gewichte auf, weshalb das Verfahren zunehmend numerisch instabil wird.
+        % end
+    % end
+
+    \section{Offene Newton-Cotes-Quadratur}
+        \begin{equation*}
+	        \tilde{I}_n(f) = h \sum_{k=1}^{n+1} \tilde{\alpha}_{k,n} f(x_k) \qquad \tilde{\alpha}_{k,n} = \int_{0}^{n+2} \! \prod_{j = 1,\, j \neq k}^{n + 1} \frac{s-j}{k-j} \, ds \qquad h = \frac{b-a}{n+2} \qquad x_k = a + kh
+        \end{equation*}
+        
+        \subsection{Spezielle offene Newton-Cotes-Formeln}
+	        \begin{table}[H]
+	        	\centering
+	        	\begin{tabular}{c | c ccc c l}
+	        		\textbf{\(n\)} & \textbf{\(h\)}    & \multicolumn{3}{c}{\textbf{\(\tilde{\alpha}_{k,n}\)}} & \textbf{max. Fehler \( \tilde{E}_n(f) \)}                        & \textbf{Name}  \\ \hline
+	        		    \(0\)      & \(\frac{b-a}{2}\) & \(2\)           &                  &                  & \( \max_{\xi \in [a, b]} \frac{\abs{f^{(2)}(\xi)}}{3} h^3 \)     & Rechteck-Regel \\
+	        		    \(1\)      & \(\frac{b-a}{3}\) & \(\frac{3}{2}\) & \(\frac{3}{2}\)  &                  & \( \max_{\xi \in [a, b]} \frac{3 \abs{f^{(2)}}(\xi)}{4} h^3 \)   &  \\
+	        		    \(2\)      & \(\frac{b-a}{4}\) & \(\frac{8}{3}\) & \(-\frac{4}{3}\) & \(\frac{8}{3}\)  & \( \max_{\xi \in [a, b]} \frac{28 \abs{f^{(4)}(\xi)}}{90} h^5 \) &
+	        	\end{tabular}
+	        	\caption{Offene Newton-Cotes-Formeln}
+	        \end{table}
+	        \begin{itemize}
+	        	\item Vorteil offener Formeln: kleineres \(h\) bei gleichem \(n\).
+	        	\item Die Fehlerordnung von \(n=1\) ist wie bei \(n=0\), also kein zusätzlicher Nutzen.
+	        	\item Ab \(n \geq 2 \) können negative Gewichte auftreten \( \implies \) Numerisch instabil.
+	        	\item Somit ist nur die Rechteck-Regel empfehlenswert.
+	        \end{itemize}
+        % end
+    % end
+
+    \section{Vergleich Geschlossene vs. Offene Newton-Cotes-Quadratur}
+        \begin{table}[H]
+        	\centering
+        	\begin{tabular}{c | c c l | c c l}
+        		               &                 \multicolumn{3}{c}{\textbf{geschlossen}}                  &                    \multicolumn{3}{c}{\textbf{offen}}                     \\ \hline
+        		\textbf{\(n\)} & \textbf{\(h\)}    & \textbf{\(\tilde{E}_n(f)\)}           & \textbf{Name} & \textbf{\(h\)}    & \textbf{\(E_n(f)\)}                  & \textbf{Name}  \\ \hline
+        		    \(0\)      &                   &                                       &               & \(\frac{b-a}{2}\) & \( \max_{\xi \in [a, b]} \frac{\abs{f^{(2)}(\xi)}}{3} h^3 \)     & Rechteck-Regel \\
+        		    \(1\)      & \(b-a\)           & \( \max_{\xi \in [a, b]} \frac{\abs{f^{(2)}(\xi)}}{12} h^3 \)    & Trapezregel   & \(\frac{b-a}{3}\) & \( \max_{\xi \in [a, b]} \frac{3 \abs{f^{(2)}(\xi)}}{4} h^3 \)   &  \\
+        		    \(2\)      & \(\frac{b-a}{2}\) & \( \max_{\xi \in [a, b]} \frac{\abs{f^{(4)}(\xi)}}{90} h^5 \)    & Simpson-Regel & \(\frac{b-a}{4}\) & \( \max_{\xi \in [a, b]} \frac{28 \abs{f^{(4)}(\xi)}}{90} h^5 \) &  \\
+        		    \(3\)      & \(\frac{b-a}{3}\) & \( \max_{\xi \in [a, b]} \frac{3 \abs{f^{(4)}(\xi)}}{80} h^5 \)  & 3/8-Regel     &                   &                                      &  \\
+        		    \(4\)      & \(\frac{b-a}{4}\) & \( \max_{\xi \in [a, b]} \frac{8 \abs{f^{(6)}(\xi)}}{945} h^7 \) & Milne-Regel   &                   &                                      &
+        	\end{tabular}
+        	\caption{Vergleich: Offene/Geschlossene Newton-Cotes-Quadratur}
+        \end{table}
+    % end
+
+    \section{Summierte Newton-Cotes-Formeln}
+        \begin{itemize}
+        	\item Problematik: Die Newton-Cotes-Formeln liefern nur genaue Ergebnisse, wenn das Integrationsintervall klein und die Anzahl der Knoten nicht zu groß ist.
+        	\item Idee: Zerlege \([a,b]\) im \(m\) Teilintervalle der Länge \( H = \frac{b-a}{m} \):
+	        	\begin{equation*}
+		        	y_j = a + jH, \quad j = 0, \cdots, m
+	        	\end{equation*}
+	        \item Es gilt:
+		        \begin{equation*}
+			        I(f) = \sum_{j = 0}^{m-1} \int_{y_j}^{y_{j+1}} \! f(x) \, dx
+		        \end{equation*}
+		    \item Wende nun die Newton-Cotes-Formel vom Grad \(n\) einzeln auf die Teilintervalle an und summiere das Ergebnis.
+        \end{itemize}
+    
+        \begin{equation*}
+	        S_N^{(n)} (f) = h \sum_{j = 0}^{m - 1} \sum_{i=0}^{n} \alpha_{i,n} f(x_{jn+i}) \qquad x_k = a + kh \qquad h = \frac{b-a}{N} \qquad N = nm
+        \end{equation*}
+        Die Gewichte \( \alpha_{i,n} \) sind die Gewichte der geschlossenen Newton-Cotes-Formel.
+        
+	    Der Quadraturfehler \[ R_N^{(n)} (f) = I(f) - S_N^{(n)} (f) \] ergibt sich durch Summierung der Fehler auf den Teilintervallen.
+
+        \subsection{Summierte Trapezregel (geschlossen)}
+            \begin{equation*}
+	            S_N^{(1)} (f) = \frac{h}{2} \sum_{j=0}^{m-1} \big(f(x_j) + f(x_{j+1})\big) \qquad x_j = a + jh \qquad h = \frac{b-a}{m}
+            \end{equation*}
+            Fehler: \( R_N^{(1)} (f) \leq \max_{\xi \in [a, b]} \frac{\abs{f''(\xi)}}{12} (b-a)h^2 \)
+        % end
+
+        \subsection{Summierte Simpson-Regel (geschlossen)}
+            \begin{equation*}
+	            S_N^{(2)} (f) = \frac{h}{3} \sum_{j=0}^{m-1} \big(f(x_{2j}) + 4 f(x_{2j+1}) + f(x_{2j+2})\big) \qquad x_j = a + jh \qquad h = \frac{b-a}{2m}
+            \end{equation*}
+            Fehler: \( R_N^{(2)} (f) \leq \max_{\xi \in [a, b]} \frac{\abs{f^{(4)}(\xi)}}{180} (b-a)h^4 \)
+        % end
+
+        \subsection{Summierte Rechteck-Regel (offen)}
+            \begin{equation*}
+	            \tilde{S}_N^{(0)} (f) = 2h \sum_{j=1}^{m} f(x_{2j-1}) \qquad x_j = a + jh \qquad h = \frac{b-a}{N}
+            \end{equation*}
+            Fehler: \( \tilde{R}_N^{(0)} (f) \leq \max_{\xi \in [a, b]} \frac{\abs{f''(\xi)}}{6} (b-a)h^2 \)
+        % end
+    % end
+% end
+
+\chapter{Gewöhnlichen Differentialgleichungen}
+	\begin{description}
+		\item[Gegeben] Eine Funktion \( f : [a, b] \times \R^n \rightarrow \R^n \) und ein Anfangswert \( y_0 \in \R^n \)
+		\item[Gesucht] Eine Funktion \( y : [a, b] \rightarrow \R^n \), deren Ableitung \( y' \) eine gewöhnliche Differentialgleichung der Form \[ y'(t) = f(t, y(t)), \quad t \in [a, b] \] erfüllt und zudem der Anfangsbedingung \( y(a) = y_0 \) genügt.
+			\begin{align*}
+				y'(t) & = f(t, y(t)), \quad t \in [a, b] \tag{AWP} \\
+				y(a)  & = y_0
+			\end{align*} \\ Oftmals bezeichnet \(t\) dabei die Zeit, woher der Name \textit{Anfangswertproblem} stammt.
+	\end{description}
+
+    \section{Existenz- und Eindeutigkeit}
+        Sei \( f : [a, b] \times \R^n \rightarrow \R^n \) Lipschitz-stetig. Dann gilt:
+        \begin{itemize}
+        	\item Zu jedem Anfangswert besitzt das AWP exakt eine Lösung \( y \in C^1([a, b]; \R^n) \) (Satz von Picard/Lindelöff).
+        	\item Sind \( y, z \) Lösungen zu den Anfangswerten \( y(a) = y_0 \) bzw. \( z(a) = z_0 \), dann gilt:
+	        	\begin{equation*}
+		        	\forall t \in [a, b] \norm{y(t) - z(t)} \leq e ^ { L(t-a) } \norm{y_0 - z_0}
+	        	\end{equation*}
+	        	Wobei \(L\) die Lipschitz-Konstante darstellt. Anders ausgedrückt: Die Lösung eines AWPs hängt stetig vom Anfangswert ab.
+        \end{itemize}
+    % end
+
+    \section{Numerische Verfahren}
+        Grundidee: Zerlege das Intervall \([a,b]\) in Teilintervalle \( t_j = a + jh \), \( j = 0, 1, \cdots, N \), \( h = \frac{b-a}{N} \) und approximiere das Integral des AWPs durch interpolatorische Quadratur und erhalte eine annähernde Lösung \( u_j \approx y(t_j) \). Der Fehler \( e_j = y(t_j) - u_j \) wird dabei \textit{Diskretisierungsfehler} genannt.
+
+		Dabei können alle folgenden Verfahren als
+		\begin{equation*}
+			u_0 = y_0 \\
+			u_{j+1} = u_j + h \Phi(t_j, h; u_j, u_{j+1}), \quad j = 0, \cdots, N - 1
+		\end{equation*}
+		geschrieben werden. Die Funktion \( \Phi(t, h; u, v) \) heißt dann \textit{Verfahrensfunktion}. Hängt diese nicht von \(v\) ab, heißt das Verfahren \textit{explizit}, sonst \textit{implizit}.
+
+        \subsection{Explizites Euler-Verfahren}
+	        \textbf{Verfahrensfunktion:}
+	        \begin{equation*}
+		        \Phi(t; u) = f(t, u)
+	        \end{equation*}
+	        
+	        \noindent\textbf{Verfahren:}
+            \begin{align*}
+            	u_0     & \coloneqq y_0                                               \\
+            	u_{j+1} & \coloneqq u_j + h f(t_j,\, u_j), \quad j = 0, \cdots, N - 1
+            \end{align*}
+        % end
+
+        \subsection{Implizites Euler-Verfahren}
+	        \textbf{Verfahrensfunktion:}
+	        \begin{equation*}
+		        \Phi(t, h; u, v) = f(t + h,\, v)
+	        \end{equation*}
+        
+	        \noindent\textbf{Verfahren:}
+            \begin{align*}
+            	u_0     & \coloneqq y_0                                                       \\
+            	u_{j+1} & \coloneqq u_j + h f(t_{j+1},\, u_{j+1}), \quad j = 0, \cdots, N - 1
+            \end{align*}
+            
+        % end
+
+        \subsection{Verfahren von Heun (1. RK-Verfahren 2. Ordnung)}
+	        \noindent\textbf{Verfahren:}
+            \begin{align*}
+            	u_0     & \coloneqq y_0                                                       \\
+            	u_{j+1} & \coloneqq u_j + \frac{h}{2} (k_1 + k_2), \quad j = 0, \cdots, N - 1 \\
+            	k_1     & \coloneqq f(t_j,\, u_j)                                             \\
+            	k_2     & \coloneqq f(t_{j+1},\, u_j + hk_1)
+            \end{align*}
+        % end
+
+        \subsection{Modifiziertes Euler-Verfahren (2. RK-Verfahren 2. Ordnung)}
+            \begin{align*}
+            	u_0     & \coloneqq y_0                                                   \\
+            	u_{j+1} & \coloneqq u_j + hk_2, \quad j = 0, \cdots, N - 1                \\
+            	k_1     & \coloneqq f(t_j,\, u_j)                                         \\
+            	k_2     & \coloneqq f\Big(t_j + \frac{h}{2},\, u_j + \frac{h}{2} k_1\Big)
+            \end{align*}
+        % end
+
+        \subsection{Klassisches Runge-Kutta-Verfahren 4. Ordnung (RK4)}
+            \begin{align*}
+            	u_0     & \coloneqq y_0                                                                     \\
+            	u_{j+1} & \coloneqq u_j + \frac{h}{6} (k_1 + 2k_2 + 2k_3 + k_4), \quad j = 0, \cdots, N - 1 \\
+            	k_1     & \coloneqq f(t_j,\, u_j)                                                           \\
+            	k_2     & \coloneqq f\Big(t_j + \frac{h}{2},\, u_j + \frac{h}{2} k_1\Big)                   \\
+            	k_3     & \coloneqq f\Big(t_j + \frac{h}{2},\, u_j + \frac{h}{2} k_2\Big)                   \\
+            	k_4     & \coloneqq f\Big(t_{j+1},\, u_j + hk_3\Big)
+            \end{align*}
+        % end
+
+        \subsection{Explizite Runge-Kutta-Verfahren und Butcher-Schema}
+	        \label{sec:butcherexplicit}
+        
+            Ein \(r\)-stufiges Runge-Kutta-Verfahren hat den allgemeinen Aufbau:
+            \begin{align*}
+            	k_i(t, u, h) = k_i \coloneqq & \, f\Big( t + \gamma_i h,\, u + h \sum_{j=1}^{i-1} \alpha_{i,j} k_j \Big), \quad i = 1, \cdots, r \\
+            	\Phi(t, h; u) =              & \, \sum_{i=1}^{r} \beta_i k_i
+            \end{align*}
+            Die Werte für \( \gamma_i \), \( \beta_j \) und \( \alpha_{kl} \) lassen sich durch das \textit{Butcher-Schema} kompakt beschreiben:
+            \begin{table}[H]
+            	\centering
+            	\begin{tabular}{c|ccccc}
+            		\(\gamma_1\) &      \(0\)       &                  &            &                    &  \\
+            		\(\gamma_2\) & \(\alpha_{2,1}\) &      \(0\)       &            &                    &  \\
+            		\(\gamma_3\) & \(\alpha_{3,1}\) & \(\alpha_{3,2}\) &   \(0\)    &                    &  \\
+            		 \(\vdots\)  &    \(\vdots\)    &    \(\vdots\)    & \(\ddots\) &     \(\ddots\)     &  \\
+            		\(\gamma_r\) & \(\alpha_{r,1}\) &    \(\cdots\)    & \(\cdots\) & \(\alpha_{r,r-1}\) &    \(0\)    \\ \hline
+            		             &   \(\beta_1\)    &   \(\beta_2\)    & \(\cdots\) &  \(\beta_{r-1}\)   & \(\beta_r\)
+            	\end{tabular}
+            	\caption{Butcher-Schema für explizite \(r\)-stufige RK-Verfahren}
+            \end{table}
+        
+            Für die oben vorgestellten Verfahren ergeben sich folgende Butcher-Schemata:
+            \begin{table}[H]
+            	\centering
+            	\begin{tabular}{ll}
+            		\textbf{Explizites Euler-Verfahren} &
+	            		\begin{tabular}{p{0.3cm}|p{0.3cm}}
+	            			\(0\) & \(0\) \\ \hline
+	            			      & \(1\)
+	            		\end{tabular} \\ & \\
+            		\textbf{Modifiziertes Euler-Verfahren} &
+						\begin{tabular}{p{0.3cm}|p{0.3cm}p{0.3cm}}
+							     \(0\)      &      \(0\)      &  \\
+							\(\frac{1}{2}\) & \(\frac{1}{2}\) & \(0\) \\ \hline
+							                &      \(0\)      & \(1\)
+						\end{tabular} \\ & \\
+					\textbf{Verfahren von Heun} &
+						\begin{tabular}{p{0.3cm}|p{0.3cm}p{0.3cm}}
+							\(0\) &      \(0\)      &  \\
+							\(1\) &      \(1\)      &      \(0\)      \\ \hline
+							      & \(\frac{1}{2}\) & \(\frac{1}{2}\)
+						\end{tabular} \\ & \\
+					\textbf{Klassisches RK-Verfahren 4. Ordnung (RK4)} &
+						\begin{tabular}{p{0.3cm}|p{0.3cm}p{0.3cm}p{0.3cm}p{0.3cm}}
+							     \(0\)      &      \(0\)      &                 &                 &  \\
+							\(\frac{1}{2}\) & \(\frac{1}{2}\) &      \(0\)      &                 &  \\
+							\(\frac{1}{2}\) &      \(0\)      & \(\frac{1}{2}\) &      \(0\)      &  \\
+							     \(1\)      &      \(0\)      &      \(0\)      &      \(1\)      &      \(0\)      \\ \hline
+							                & \(\frac{1}{6}\) & \(\frac{1}{3}\) & \(\frac{1}{3}\) & \(\frac{1}{6}\)
+						\end{tabular}
+            	\end{tabular}
+            	\caption{Klassische Butcher-Schemata}
+            \end{table}
+        % end
+
+        \subsection{Implizite Runge-Kutta-Verfahren und Butcher-Schema}
+	        \label{sec:butcherimplicit}
+        
+            Ähnlich wie für explizite RK-Verfahren (siehe \ref{sec:butcherexplicit}) lässt sich das Butcher-Schema auch für \(r\)-stufige implizite Runge-Kutta-Verfahren verallgemeinern:
+            \begin{align*}
+            	k_i(t, u, h) = k_i \coloneqq & \, f\Big( t + \gamma_i h,\, u + h \sum_{j=1}^{r} \alpha_{ij} k_j \Big), \quad i = 1, \cdots, r \\
+            	\Phi(t, h; u) =              & \, \sum_{i=1}^{r} \beta_i k_i
+            \end{align*}
+            Das Butcher-Schema bildet dann keine strikte untere Diagonalmatrix mehr und sieht wie folgt aus:
+            \begin{table}[H]
+            	\centering
+            	\begin{tabular}{c|ccccc}
+            		\(\gamma_1\) & \(\alpha_{1,1}\) & \(\cdots\)  & \(\cdots\) & \(\alpha_{1,r-1}\)  & \(\alpha_{1,r}\) \\
+            		\(\gamma_2\) & \(\alpha_{2,1}\) & \(\cdots\)  & \(\cdots\) & \(\alpha_{2,r-1}\)  & \(\alpha_{2,r}\) \\
+            		 \(\vdots\)  &    \(\vdots\)    & \(\vdots\)  & \(\vdots\) &     \(\vdots\)      &    \(\vdots\)    \\
+            		\(\gamma_r\) & \(\alpha_{r,1}\) & \(\cdots\)  & \(\cdots\) & \(\alpha_{r, r-1}\) & \(\alpha_{r,r}\) \\ \hline
+            		             &   \(\beta_1\)    & \(\beta_2\) & \(\cdots\) &   \(\beta_{r-1}\)   &   \(\beta_r\)
+            	\end{tabular}
+            	\caption{Butcher-Schema für implizite \(r\)-Stufige RK-Verfahren}
+            \end{table}
+        % end
+    % end
+
+    \section{Konvergenz und Konsistenz}
+        Sei \( \Phi \) eine Verfahrensfunktion. Dann heißt die Größe
+        \begin{align*}
+	        \tau(t, h) &= \frac{1}{h} \Big( y(t + h) - y(t) - h \Phi\big(t, h; y(t), y(t + h)\big) \Big), \quad h > 0, t \in [a, b - h] \\
+	                   &= \frac{1}{h} \times \textrm{Defekt beim Ensetzen der Lösung in das Verfahren}
+        \end{align*}
+        \textit{lokaler Abbruchfehler} oder \textit{Konsistenzfehler} des Verfahrens an der Stelle \(t\).
+        
+        \begin{itemize}
+        	\item \textbf{Konsistenz von der Ordnung \(p\)}
+	        	\begin{equation*}
+		        	\exists C > 0,\, \bar{h} > 0 : \forall 0 < h \leq \bar{h},\, t \in [a, b - h] : \norm{\tau(t, h)} \leq C h^p
+	        	\end{equation*}
+        	\item \textbf{Stabilität}
+	        	\begin{equation*}
+		        	\exists K > 0 : \forall t \in [a, b], u, v, \tilde{u}, \tilde{v} \in \R^n : \norm{\Phi(t, h; u, v) - \Phi(t, h; \tilde{u}, \tilde{v})} \leq K (\norm{u - \tilde{u}} + \norm{v - \tilde{v}})
+	        	\end{equation*}
+        	\item \textbf{Konvergenz von der Ordnung \(p\)}
+	        	\begin{equation*}
+		        	\exists M > 0,\, H > 0 : \forall j = 0, \cdots, N,\, h = \frac{b-a}{N} \leq H : \norm{e_j} = \norm{y(t_j) - u_j} \leq M h^p
+	        	\end{equation*} \\ Ist ein Verfahren (APX) konsistent von der Ordnung \(p\) und stabil, dann ist es auch konvergent von der Ordnung \(p\).
+        \end{itemize}
+
+        \subsection{Konsistenzordnungen}
+	        Für die oben vorgestellten Verfahren ergeben sich folgende Konsistenzordnungen:
+	        \begin{table}[H]
+	        	\centering
+	        	\begin{tabular}{l c}
+	        		\textbf{Verfahren}            & \textbf{Konsistenzordnung} \\
+	        		Explizites Euler-Verfahren    & 1                          \\
+	        		Implizites Euler-Verfahren    & 1                          \\
+	        		Verfahren von Heun            & 2                          \\
+	        		Modifiziertes Euler-Verfahren & 2                          \\
+	        		RK4                           & 4
+	        	\end{tabular}
+	        	\caption{Konsistenzordnungen}
+	        	\label{tab:consistency}
+	        \end{table}
+
+            \subsubsection{Konsistenzordnungen von Runge-Kutta-Verfahren}
+                Durch das Butcher-Schema können Verfahren von beliebiger Konsistenzordnung \(p\) erzeugt werden (hierzu muss die Stufenanzahl \(r\) groß genug gewählt werden).
+                
+                Bis zu Konsistenzordnung \( p = 4 \) lässt sich die Konsistenzordnung einfach nachrechnen (seien \( \gamma_i \), \( \beta_j \) und \( \alpha_{kl} \) wie im Butcher-Schema unter \ref{sec:butcherimplicit}). Dann gilt: Das Verfahren ist von Konsistenzordnung\dots
+                \begin{description}
+                	\item[\( p = 1 \)] wenn gilt:
+	                	\begin{equation*}
+		                	\sum_{i = 1}^{r} \beta_i = 1
+	                	\end{equation*}
+	                \item[\( p = 2 \)] wenn die Anforderungen für \( p = 1 \) gelten und gilt:
+		                \begin{equation*}
+			                \sum_{i=1}^{r} \beta_i \gamma_i = \frac{1}{2}
+		                \end{equation*}
+		            \item[\( p = 3 \)] wenn die Anforderungen für \( p = 2 \) gelten und gilt:
+			            \begin{equation*}
+			            	 \sum_{i=1}^{r} \beta_i \gamma_i^2 = \frac{1}{3} \qquad\qquad\qquad\qquad \sum_{i, j = 1}^{r} \beta_i \alpha_{i,j} \gamma_j  = \frac{1}{6}
+			            \end{equation*}
+			        \item[\( p = 4 \)] wenn die Anforderungen für \( p = 3 \) gelten und gilt:
+				        \begin{equation*}
+					        \begin{array}{lcl}
+					        	 \displaystyle \sum_{i=1}^{r} \beta_i \gamma_i^3 = \frac{1}{4} &\qquad\qquad\qquad\qquad& \displaystyle \sum_{i, j = 1}^{r} \beta_i \gamma_i \alpha_{i,j} \gamma_j     = \frac{1}{8}  \\
+					        	 \displaystyle \sum_{i, j = 1}^{r} \beta_i \alpha_{i,j} \gamma_j^2 = \frac{1}{12} && \displaystyle \sum_{i,j,k=1}^{r} \beta_i \alpha_{i,j} \alpha_{j,k} \gamma_k  = \frac{1}{24}
+					        \end{array}
+				        \end{equation*}
+                \end{description}
+            
+                Somit lassen sich die Konsistenzordnungen in Tabelle \ref{tab:consistency} leicht nachrechnen.
+            % end
+        % end
+    % end
+
+    \section{Steife Differentialgleichungen}
+        Ausgangspunkt: Ein Anfangswertproblem über ein System von \(n\) gewöhnlichen Differentialgleichungen (AWPn):
+        \begin{align*}
+        	y'(t) & = f(t, y(t)), \quad t \in [a, b] \\
+        	y(a)  & = y_0
+        \end{align*}
+        mit \( f : [a, b] \times \R^n \rightarrow \R^n, \quad y_0 \in \R^n \).
+        
+        Bei einer \textit{steifen Differentialgleichung} ist die Lösung zusammengesetzt auf einem langsam veränderlichen Teil (meist abklingend) und einem Anteil, der i.A. sehr schnell gedämpft wird.
+        
+        Ist das Systems linear (LAWPn), d.h. das AWPn ist durch folgende Gleichungen gegeben (mit einer Matrix \( A \in \R^n \) und einem Vektor \( c \in \R^n \)):
+        \begin{align*}
+	        y'(t) & = Ay(t) + c, \quad t \in [a, b] \\
+	        y(a) &= y_0
+        \end{align*}
+        Sei fernen \(A\) diagonalisierbar mit den Eigenwerten \(\lambda_i\) und den Eigenvektoren \(v_i\). Dann hat die allgemeine Lösung folgende Form (mit einer partikulären Lösung \(y_P\)):
+        \begin{equation*}
+	        y(t) = y_H(t) + y_P(t), \quad y_H(t) = \sum_{i=1}^{n} C_i e^{\lambda_i t} v_i
+        \end{equation*}
+        Gilt nun \( \Re(\lambda_i) < 0 \) für \( i = 1, \cdots, n \), so gilt aufgrund von \( \abs{e^{\lambda_i t}} = e^{\Re(\lambda_i)t} \):
+        \begin{equation*}
+	        \lim\limits_{t \rightarrow \infty} y_H(t) \rightarrow 0
+        \end{equation*}
+        Die Lösungen nähern sich also insgesamt der partikulären Lösung \( y_P \) an.
+        \begin{itemize}
+        	\item Dabei klingen Summanden in \(y_H\) mit \( \Re(\lambda_i) \ll -1 \) sehr schnell und Summanden mit \( \Re(\lambda_i) \not\ll -1 \) deutlich langsamer ab.
+        	\item Existieren Eigenwerte mit \( \Re(\lambda_i) \ll -1 \) \textit{und} Eigenwerte mit schwach negativem Realteil, wird das System \textit{steif} genannt.
+        \end{itemize}
+    
+        \paragraph{Problematik}
+	        Numerische Verfahren (insbesondere explizite Verfahren) haben oftmals Probleme bei der Approximation von steifen Differentialgleichungen. Sie benötigen häufig sehr kleine Schrittweiten, um annähernd eine Lösung zu approximieren.
+        % end
+
+        \subsection{Modellgleichung}
+            Beobachtung: Arbeitet ein numerisches Verfahren für alle DGL \( z' = \textrm{diag}(\lambda_1, \cdots, \lambda_n)z \) zuverlässig, dann liefert es auch für das steife System \( y' = Ay, \quad y(0) = y_0 \) gute Ergebnisse.
+            
+            Zum testen von numerischen Verfahren wird eine \textit{Modellgleichung} definiert:
+            \begin{equation*}
+	            y' = \lambda y, \quad y(0) = 1, \quad \textrm{mit } \lambda \in \C, \Re(\lambda) < 0
+            \end{equation*}
+            Diese hat die Lösung \( y = e^{\lambda t} \) und aufgrund von \( \Re(\lambda) < 0 \) gilt \( \lim\limits_{t \rightarrow \infty} y(t) = 0 \). Die Lösung fällt also abhängig von der Größe von \(\abs{\Re(\lambda)}\) sehr unterschiedlich stark ab.
+            
+            Damit ein numerisches Verfahren gut geeignet ist, muss die numerisch berechnete Näherungslösung von
+        	\begin{equation*}
+            	y' = \lambda y, \quad y(0) = 1, \textrm{mit } \lambda \in \C, \Re(\lambda) < 0
+        	\end{equation*}
+        	soll die Eigenschaften der analytischen Lösung \( y = e^{\lambda t} \), insbesondere \( \lim\limits_{t \rightarrow \infty} y(t) = 0 \) möglichst gut widerspiegeln.
+        % end
+
+        \subsection{Stabilität}
+	        \paragraph{Stabilitätsfunktion und -gebiet}
+		        Bei vielen Einschrittverfahren produziert die Anwendung auf die Modellgleichung eine Verfahrensvorschrift der Form:
+		        \begin{equation*}
+			        u_{j+1} = R(q)u_j \quad \textrm{mit } q = \lambda h
+		        \end{equation*}
+		        Mit einer Funktion \( R : D \rightarrow \C, \quad 0 \in D \subseteq \C \). Diese Funktion wird \textit{Stabilitätsfunktion} genannt.
+		        
+		        Die Menge \[ S = \{ q \in \C \forwhich \abs{R(q)} \leq 1 \} \] heißt dann \textit{Stabilitätsgebiet}.
+		        
+		        Für ein \(r\)-stufiges Runge-Kutta-Verfahren nach Butcher-Schema kann die Modellgleichung wie folgt berechnet werden (wobei \( \beta = (\beta_1, \cdots, \beta_r)^T \in \R^r \), \( A = (\alpha_{i,j}) \) die Matrix der \(\alpha\)-Koeffizienten und \( \mathbb{1} \in \R^r \) der Einsvektor ist):
+		        \begin{equation*}
+			        u_{j+1} = \big( 1 + \lambda h \beta^T (I - \lambda h A)^{-1} \mathbb{1} \big) u_j = \big( 1 + q \beta^T (I - qA)^{-1} \mathbb{1} \big) u_j
+		        \end{equation*}
+	        % end
+        
+	        \paragraph{A-Stabilität}
+	            Ein Verfahren heißt \textit{absolut stabil} (\textit{A-stabil}) gdw. seine Anwendung auf die Modellgleichung für jede Schrittweite \( h > 0 \) eine Folge \( (u_j)_{j \in \N_0} \) produziert mit:
+	            \begin{equation*}
+		            \forall j = 0, 1, \cdots : \abs{u_{j+1}} \leq \abs{u_j}
+	            \end{equation*}
+	            Anders ausgedrückt: Die produzierte folge muss monoton fallend sein.
+	            
+	            \begin{equation*}
+		            \textrm{A-stabil} \iff \forall q \in C, \Re(q) < 0 : \abs{R(q)} \leq 1 \iff S \supset \{ q \in \C \forwhich \Re(q) < 0 \}
+	            \end{equation*}
+	        % end
+	        
+	        \paragraph{L-Stabilität}
+		        Ein Verfahren heißt \textit{L-stabil} gdw. es A-stabil ist und die Stabilitätsfunktion zudem gegen \(0\) konvergiert, d.h.:
+		        \begin{equation*}
+			        \lim\limits_{q \rightarrow -\infty} R(q) = 0
+		        \end{equation*}
+	        % end
+        % end
+    % end
+% end
+
+\chapter{Lineare Gleichungssysteme}
+    \begin{description}
+    	\item[Gegeben] Ein lineares Gleichungssystem (LGS) \( Ax = b \) mit:
+	    	\begin{equation*}
+		    	A =
+		    	\begin{bmatrix}
+			    	a_{1,1} & a_{1,2} & \cdots & a_{1,n} \\
+			    	a_{2,1} & a_{2,2} & \cdots & a_{2,n} \\
+			    	\vdots  & \vdots  & \ddots & \vdots \\
+			    	a_{n,1} & a_{n,2} & \cdots & a_{n,n}
+		    	\end{bmatrix}
+		    	\in \R^{n \times n}, \qquad
+		    	b =
+		    	\begin{bmatrix}
+			    	b_1 \\
+			    	b_2 \\
+			    	\vdots \\
+			    	v_n
+		    	\end{bmatrix}
+		    	\in \R^n
+	    	\end{equation*}
+	    \item[Gesucht] Eine Lösung \( x \in \R^n \) des Gleichungssystems.
+    \end{description}
+
+    \section{Lösungstheorie}
+	    Ein LGS hat eine Lösung gdw. gilt \( \rank(A) = \rank(A, b) \). Das LGS hat eine eindeutige Lösung gdw. \(A\) regulär ist (d.h. \( \det(A) \neq 0 \)). Die Lösung lautet dann \( x = A^{-1} b \).
+    % end
+
+    \section{Gaußsches Eliminationsverfahren, Dreieckszerlegung}
+        Bei dem gaußschen Eliminationsverfahren wird versucht, das LGS durch die elementaren Operationen
+        \begin{itemize}
+        	\item Addition eines Vielfachen einer Gleichung zu einer anderen.
+        	\item Zeilenvertauschung, d.h. Vertauschung von Gleichungen.
+        	\item Spaltenvertauschung, d.h. Umnummerierung der Unbekannten.
+        \end{itemize}
+        in ein gestaffeltes Gleichungssystem \( Ry = c, \quad y_{\sigma_i} = x_i, \quad i = 1, \cdots, n \) umzuformen, welches die selben Lösungen besitzt wie das LGS mit Spaltenpermutationen \( \sigma_1, \cdots, \sigma_n \) und einer oberen Dreiecksmatrix \(R\).
+
+        \subsection{Lösung gestaffelter Gleichungssysteme}
+            \paragraph{Rückwärtssubstitution}
+	            Sei \( Ry = c \) ein gestaffeltes Gleichungssystem mit einer oberen Dreiecksmatrix
+	            \begin{equation*}
+		            R =
+		            \begin{bmatrix}
+		            	r_{1,1} & \cdots & r_{1,n} \\
+		            	        & \ddots & \vdots  \\
+		            	0       &        & r_{n,n}
+		            \end{bmatrix}
+	            \end{equation*}
+	            
+	            Dieses Gleichungssystem lässt sich leicht durch Rückwärtssubstitution lösen (mit \(R\) invertierbar und \( c = (c_1, \cdots, c_n)^T \)):
+	            \begin{equation*}
+		            y_i = \frac{c_i - \sum_{j = i + 1}^{n} r_{i,j} y_j}{r_{i,i}}, \quad i = n, n - 1, \cdots, 1
+	            \end{equation*}
+	            Der Berechnungsaufwand liegt dabei in \( \mathcal{O}(n^2) \), sofern keine spezielle Besetztheit vorliegt.
+            % end
+            
+            \paragraph{Vorwärtssubstitution}
+	            Sei \( Lz = d \) ein gestaffeltes Gleichungssystem mit einer unteren Dreiecksmatrix:
+	            \begin{equation*}
+		            L =
+		            \begin{bmatrix}
+		            	l_{1,1} &        & 0       \\
+		            	\vdots  & \ddots &  \\
+		            	l_{n,1} & \cdots & l_{n,n}
+		            \end{bmatrix}
+	            \end{equation*}
+	            
+	            Dieses Gleichungssystem lässt sich leicht durch Vorwärtssubstitution lösen (mit \(L\) invertierbar und \( d = (d_1, \cdots, d_n)^T \)):
+	            \begin{equation*}
+		            z_i = \frac{d_i - \sum_{j=1}^{i-1} l_{i,j} z_j}{l_{i,i}}, \quad i = 1, 2, \cdots, n
+	            \end{equation*}
+	            Der Berechnungsaufwand liegt dabei in \( \mathcal{O}(n^2) \), sofern keine spezielle Besetztheit vorliegt.
+            % end
+        % end
+
+        \subsection{Gaußsches Eliminationsverfahren}
+            Sämtliche Operationen bei dem gaußschen Eliminationsverfahren werden an der erweiterten Koeffizientenmatrix vorgenommen:
+            \begin{equation*}
+	            (A, b) =
+	            \left[
+	            \begin{array}{ccc|c}
+	            	a_{1,1} & \cdots & a_{1,n} &  b_1   \\
+	            	\vdots  & \ddots & \vdots  & \vdots \\
+	            	a_{n,1} & \cdots & a_{n,n} &  b_n
+	            \end{array}
+	            \right]
+            \end{equation*}
+
+            \subsubsection{Grundversion}
+                \begin{algorithm}[H]
+                	Initialisiere \( (A^{(1)}, b^{(1)}) \gets (A, b) \)
+                	
+                	\For{\( k = 1, \cdots, n - 1 \)}{
+                		Finde \( r \in \{ k, \cdots, n \} \) mit \( a_{r,k}^{(k)} \neq 0 \) (Pivotsuche)
+                		
+                		\If{\( \forall r : a_{r,k}^{(k)} = 0 \)}{
+                			\Return \(A\) nicht invertierbar
+                		}
+            		
+                		Vertausche Zeile \(r\) und \(k\), erhalte \( (\tilde{A}^{(k)}, \tilde{b}^{(k)}) \)
+                		
+                		\For{\( i = k + 1, \cdots, n \)}{
+	                		Subtrahiere \( l_{i,k} = \frac{\tilde{a}_{i,k}^{(k)}}{\tilde{a}_{k,k}^{(k)}} \) der \(k\)-ten Gleichung von der \(i\)-ten Gleichung
+                		}
+            		
+                		Erhalte \( (A^{(k + 1)}, b^{(k + 1)}) \)
+                	}
+            	
+                	\Return \( (A^{(n)}, b^{(n)}) \)
+                \end{algorithm}
+            % end
+
+            \subsubsection{Pivotstrategie}
+                \begin{itemize}
+                	\item Das Element \( a_{r,k}^{(k)} \) heißt \textit{Pivotelement}.
+                	\item Theoretisch ist es möglich, dass jedes Pivotelement \( \neq 0 \) ist.
+                	\item Die Wahl kleiner Pivotelemente kann jedoch zu einer dramatischen Verstärkung von Rundungsfehlern führen.
+                	\item Um dies zu vermeiden, muss eine geeignete Pivotstrategie verwendet werden.
+                	\item Hierzu gibt es die folgenden Strategien:
+	                	\begin{description}
+	                		\item[Spaltenpivotsuche] Wähle \( r \in \{ k, \cdots, n \} \) mit \( \abs{a_{r,k}^{(k)}} = \max_{i = k, \cdots, n} \abs{a_{i,k}^{(k)}} \).
+	                		\item[Vollständige Pivotsuche] Wähle \( r, s \in \{ k, \cdots, n \} \) mit \( \abs{a_{r,s}^{(k)}} = \max_{i, j = k, \cdots, n} \abs{a_{i,j}^{(k)}} \).
+	                	\end{description}
+                	\item Für beide Verfahren sollten die Zeilen von \(A\) \enquote{äquilibriert} sein, d.h. die Normen der Zeilen sollten in der gleichen Größenordnung liegen.
+                \end{itemize}
+
+                \paragraph{Verfahren mit Spaltenpivotsuche}
+	                \begin{algorithm}[H]
+	                	Initialisiere \( (A^{(1)}, b^{(1)}) \gets (A, b) \)
+	                	
+	                	\For{\( k = 1, \cdots, n - 1 \)}{
+	                		Finde \( r \in \{ k, \cdots, n \} \) mit \( \abs{a_{r,k}^{(k)}} = \max_{i = k, \cdots, n} \abs{a_{i,k}^{(k)}} \) (Spaltenpivotsuche)
+	                		
+	                		\If{\( a_{r,k}^{(k)} = 0 \)}{
+	                			\Return \(A\) nicht invertierbar
+	                		}
+	                		
+	                		Vertausche Zeile \(r\) und \(k\), erhalte \( (\tilde{A}^{(k)}, \tilde{b}^{(k)}) \)
+	                		
+	                		\For{\( i = k + 1, \cdots, n \)}{
+	                			Subtrahiere \( l_{i,k} = \frac{\tilde{a}_{i,k}^{(k)}}{\tilde{a}_{k,k}^{(k)}} \) der \(k\)-ten Gleichung von der \(i\)-ten Gleichung
+	                		}
+	                		
+	                		Erhalte \( (A^{(k + 1)}, b^{(k + 1)}) \)
+	                	}
+	                	
+	                	\Return \( (A^{(n)}, b^{(n)}) \)
+	                \end{algorithm}
+                % end
+
+                \paragraph{Verfahren mit vollständiger Pivotsuche}
+	                \begin{algorithm}[H]
+	                	Initialisiere \( (A^{(1)}, b^{(1)}) \gets (A, b) \)
+	                	
+	                	\For{\( k = 1, \cdots, n - 1 \)}{
+	                		Finde \( r, s \in \{ k, \cdots, n \} \) mit \( \abs{a_{r,s}^{(k)}} = \max_{i, j = k, \cdots, n} \abs{a_{i,j}^{(k)}} \) (vollständige Pivotsuche)
+	                		
+	                		\If{\( a_{r,s}^{(k)} = 0 \)}{
+	                			\Return \(A\) nicht invertierbar
+	                		}
+	                		
+	                		Vertausche Zeile \(r\) und \(k\) sowie Spalten \(s\) und \(k\), erhalte \( (\tilde{A}^{(k)}, \tilde{b}^{(k)}) \)
+	                		
+	                		\For{\( i = k + 1, \cdots, n \)}{
+	                			Subtrahiere \( l_{i,k} = \frac{\tilde{a}_{i,k}^{(k)}}{\tilde{a}_{k,k}^{(k)}} \) der \(k\)-ten Gleichung von der \(i\)-ten Gleichung
+	                		}
+	                		
+	                		Erhalte \( (A^{(k + 1)}, b^{(k + 1)}) \)
+	                	}
+	                	
+	                	\Return \( (A^{(n)}, b^{(n)}) \)
+	                \end{algorithm}
+	                Nach der Lösung des Dreieckssystems müssen die Spalten in \(x\) zurück getauscht werden!
+                % end
+            % end
+        % end
+
+        \subsection{LR-Zerlegung}
+            Speicherung der Multiplikatoren \( l_{i,k} \) in einer separaten unteren Diagonalmatrix \(L\):
+            \begin{equation*}
+	            L =
+	            \begin{bmatrix}
+	            	1       &         &        &           &  \\
+	            	l_{2,1} & 1       &        &           &  \\
+	            	l_{3,1} & l_{3,2} & 1      &           &  \\
+	            	\vdots  & \vdots  & \ddots & \ddots    &  \\
+	            	l_{n,1} & \cdots  & \cdots & l_{n,n-1} & 1
+	            \end{bmatrix}
+            \end{equation*}
+            Dies liefert \( LR = PAQ \), wobei \( P = P_{n-1} \cdots P_2 \cdot P_1 \) die Permutationsmatrix der Zeilen ist (d.h. die Permutationen der Zeilen von \(A\)). In einem Einzelschritt der Permutation werden die Zeilen \(k\) und \(r\) der Einheitsmatrix getauscht. \( Q = Q_1 \cdot Q_2 \cdots Q_{n-1} \) ist die Permutationsmatrix der Spalten, die analog zur Zeilenpermutationsmatrix erstellt wird. Im Falle der normalen Spaltenpivotsuche gilt \( Q = I \).
+            
+            Durch eine solche \(LR\)-Zerlegung kann, nach Lösung eines LGS \( Ax = b \) ein anderes Gleichungssystem \( Ay = c \) gelöst werden (gleiche Matrix, anderes erwartetes Ergebnis):
+            \begin{enumerate}
+            	\item Löse \( Lz = Pc \) nach \(z\) durch Vorwärtssubstitution.
+            	\item Löse \( Ry = z \) nach \(y\) durch Rückwärtssubstitution.
+            \end{enumerate}
+        % end
+
+        \subsection{Matrixklassen ohne Pivotsuche}
+	        Es wird keine Pivotsuche benötigt, wenn z.B.:
+	        \begin{itemize}
+	        	\item \( A = A^T \) symmetrisch positiv definit ist, also \( \forall x \in \R^n \setminus \{0\} : x^T A x > 0 \) gilt.
+	        	\item \(A\) strikt diagonaldominant ist, also \( \abs{a_{i,i}} > \sum_{j = 1,\, j \neq i}^{n} \abs{a_{i,j}}, \quad i = 1, \cdots, n \) gilt.
+	        	\item \(A\) eine M-Matrix ist, d.h. es gilt:
+		        	\begin{itemize}
+		        		\item \( a_{i,i} > 0, \quad i = 1, \cdots n \)
+		        		\item \( a_{i,j} \leq 0, \quad i \neq j \)
+		        		\item \( D^{-1} (A - D), \quad D = \textrm{diag}(a_{1,1}, \cdots, a_{n,n}) \) hat nur Eigenwerte \(\lambda\) mit \( \abs{\lambda} < 1 \)
+		        	\end{itemize}
+	        \end{itemize}
+        % end
+    % end
+
+    \section{Cholesky-Verfahren}
+        Sei \(A \in \R^{n \times n}\) symmetrisch und positiv definit. Dann existiert exakt eine untere Dreieckmatrix \(L\) mit positiven Diagonaleinträgen \( l_{i,i} > 0 \), sodass:
+        \begin{equation*}
+	        LL^T = A
+        \end{equation*}
+        gilt. Diese Zerlegung wird \textit{Cholesky-Zerlegung} genannt. Außerdem besitzt \(A\) eine eindeutige Dreieckszerlegung \( \tilde{L}\tilde{R} = A \), wobei \( \tilde{L} = LD^{-1} \), \( \tilde{R} = DL^T \) mit \( D = \textrm{diag}(l_{1,1}, \cdots, l_{n,n}) \). Diese Zerlegung wird vom Gauß-Algorithmus ohne Pivotsuche produziert.
+
+        \subsection{Verfahren}
+            \begin{algorithm}[H]
+            	\For{\( j = 1, \cdots, n - 1 \)}{
+	            	\begin{equation*}
+		            	i_{j,j} = \sqrt{a_{j,j} - \sum_{k = 1}^{j - 1} l_{j,k}^2}
+	            	\end{equation*}
+	            	
+	            	\For{\( i = j + 1, \cdots, n \)}{
+		            	\begin{equation*}
+			            	l_{i,j} = \frac{a_{i,j} - \sum_{k=1}^{j-1} l_{i,k} l_{j,k}}{l_{j,j}}
+		            	\end{equation*}
+	            	}
+            	}
+            \end{algorithm}
+        % end
+
+        \subsection{Eigenschaften}
+	        \begin{itemize}
+	        	\item Durch das Ausnutzen der Symmetrie benötigt das Cholesky-Verfahren nur etwas die Hälfte an Rechenschritten im Gegensatz zu dem Gauß-Algorithmus.
+	        	\item Das Cholesky-Verfahren ist zusätzlich die effizienteste Methode auf positive Definitheit, indem folgendes geprüft wird:
+	        	\begin{enumerate}
+	        		\item \( a = a_{j,j} - \sum_{k=1}^{j-1} l_{j,k}^2 \)
+	        		\item Falls \( a \leq 0 \): Stopp, \(A\) ist nicht positiv definit.
+	        		\item Setze ansonsten \( l_{j,j} = \sqrt{a} \).
+	        	\end{enumerate}
+	        \end{itemize}
+        % end
+    % end
+
+    \section{Fehlerabschätzungen und Rundungsfehlereinfluss}
+        Gerade bei großen Matrizen können Rundungsfehler die Rechnung erheblich beeinflussen. Somit muss betrachtet werden, wie sich die einzelnen Verfahren bei Störung der Matrix beeinflussen lassen.
+
+        \subsection{Fehlerabschätzungen für gestörte Gleichungssysteme}
+            Sei \( Ax = b \) das Gleichungssystem und \( (A + \Delta\!A)\tilde{x} = b + \Delta\!b \) das gestörte Gleichungssystem mit \( \Delta\!A \), \( \Delta\!b \) klein. Die Frage ist nun, wie klein der Fehler \( x - \tilde{x} \) ist?
+            
+            Sei \( A \in \R^{n \times n} \) invertierbar, \(b\), \(\Delta\!b \in \R^n\), \(b \neq 0\) und \(\Delta\!A \in \R^{n \times n}\) mit \( \norm{\Delta\!A} < \frac{1}{\norm{A^{-1}}} \) mit einer beliebigen durch eine Vektornorm \( \norm{\cdot} \) induzierte Matrixnorm \( \norm{\cdot} \). Seien ferner \(x\), \(\tilde{x}\) die Lösungen des Gleichungssystems. Dann gilt für den relativen Fehler:
+            \begin{equation*}
+	            \frac{\norm{\tilde{x} - x}}{\norm{x}} \leq \frac{\cond(A)}{1 - \cond(A) \frac{\norm{\Delta\!A}}{\norm{A}}} \bigg( \frac{\norm{\Delta\!A}}{\norm{A}} + \frac{\norm{\Delta\!b}}{\norm{b}} \bigg)
+            \end{equation*}
+        % end
+
+        \subsection{Rundungsfehleranalyse}
+            Sei \( A \in \R^{n \times n} \) invertierbar und \( \textrm{eps} \) die Maschinengenauigkeit. Außerdem wird das Gauß-Verfahren mit einer Pivotstrategie ausgeführt, die \( \abs{l_{i,j}} \leq 1 \) sicherstellt (z.B. Spaltenpivotsuche oder vollständige Pivotsuche). Dann wird \( \bar{L} \), \( \bar{R} \) wie folgt errechnet:
+            \begin{equation*}
+	            \bar{L}\bar{R} = PAQ + F, \quad \abs{f_{i,j}} \leq 2 j \bar{a} \frac{\textrm{eps}}{1 - \textrm{eps}}
+            \end{equation*}
+            Dabei sind \(P\), \(Q\) die resultierenden Permutationen und
+            \begin{equation*}
+	            \bar{a} = \max_k \bar{a}_k \qquad \bar{a}_k = \max_{i,j} \abs{a_{i,j}^{(k)}}
+            \end{equation*}
+            Wird eine Näherungslösung \( \bar{x} \) durch Vorwärts- und Rückwärtssubstitution berechnet, dann existiert eine Matrix \(E\) mit:
+            \begin{equation*}
+	            (A + E) \bar{x} = b \qquad \abs{e_{i,j}} \leq \frac{2(n + 1) \textrm{eps}}{1 - n \cdot \textrm{eps}} \abs{\bar{L}}_{i,j} \abs{\bar{R}}_{i,j} \leq \frac{2(n + 1) \textrm{eps}}{1 - n \cdot \textrm{eps}} n \bar{a}
+            \end{equation*}
+            
+            Für \( \bar{a}_k \) gelten folgende Abschätzungen:
+            \begin{description}[leftmargin = 5cm]
+            	\item[Spaltenpivotsuche] \( \bar{a}_k \leq 2^k \max_{i,j} \abs{a_{i,j}} \) (In der Regel ist diese Schranke viel zu pessimistisch, in der Praxis tritt fast immer \( \bar{a}_k \leq 10 \max_{i,j} \abs{a_{i,j}} \) auf.)
+            	\item[Spaltenpivotsuche (bei Tridiagonalmatrizen)] \( \bar{a}_k \leq 2 \max_{i,j} \abs{a_{i,j}} \)
+            	\item[Vollständige Pivotsuche] \( \bar{a}_k \leq f(k) \max_{i,j} \abs{a_{i,j}} \) mit \( f(k) = \sqrt{k} \cdot \prod_{i = 1}^{k - 1} \sqrt[i]{i + 1} \) (\(f(k)\) wächst sehr langsam. Bislang ist noch kein Beispiel mit \( \bar{a}_k \geq (k + 1) \max_{i,j} \abs{a_{i,j}} \) entdeckt worden.)
+            \end{description}
+        % end
+    % end
+% end
+
+\chapter{Nichtlineare Gleichungssysteme}
+    Gesucht ist eine Lösung \( x \in D \) von \[ F(x) = 0 \] mit einer gegebenen Abbildung
+    \begin{equation*}
+	    F =
+	    \begin{bmatrix}
+		    F_1 \\
+		    \vdots \\
+		    F_n
+	    \end{bmatrix}
+	    : D \rightarrow \R^n
+    \end{equation*}
+    wobei \( D \subseteq \R \) nichtleer und abgeschlossen und \(F\) mindestens einmal stetig differenzierbar mit einer Jacobi-Matrix \(F'(x)\).
+    
+    Im Gegensatz zu linearen Gleichungssystemen können nichtlineare Gleichungssysteme mehrere oder unendliche viele (isolierte) Lösungen besitzen.
+
+    \section{Newton-Verfahren}
+        Angenommen es gilt \( D = \R^N \), also \( F : \R^n \rightarrow \R^n \).
+
+		\subsection{Lokales Newton-Verfahren}
+			\begin{algorithm}[H]
+				Wähle einen Startpunkt \( x^{(0)} \in \R^n \) \\
+				\For{\( k = 0, 1, \cdots \)}{
+					\eIf{\( F(x^{(k)}) = 0 \)}{
+						\Return \( x^{(k)} \)
+					}{
+						Berechne Newton-Schritt \( s^{(k)} \in \R^n \) durch Lösen der Newton-Gleichung \[ F'(x^{(k)}) \, s^{(k)} = -F(x^{(k)}) \]
+						
+						Setze \( x^{(k + 1)} \gets x^{(k)} + s^{(k)} \)
+					}
+				}
+			\end{algorithm}
+		
+			\subsubsection{Konvergenz}
+				Das Newton-Verfahren konvergiert i.d.R. nur für Startpunkte, die nahe genug an der Lösung liegen (lokale Konvergenz).
+			% end
+        % end
+
+        \subsection{Globalisierung}
+	        Modifikation des Newton-Verfahrens, sodass für jeden Newton-Schritt eine Schrittweite von \( \sigma_k \in (0, 1] \) verwendet wird:
+	        \begin{equation*}
+		        x^{(k + 1)} = x^{(k)} + \sigma_k s^{(k)}
+	        \end{equation*}
+	        Die Schrittweite wird so bestimmt, dass \[ \norm{F(x^{(k+1)})}_2 < \norm{F(x^{(k)})}_2 \] gilt und die Abnahme \enquote{ausreichend groß} ist.
+
+            \subsubsection{Schrittweitenwahl nach Armijo}
+                Sei \( \delta \in (0, \frac{1}{2}) \) fest gegeben (z.B. \( \delta = 10^{-3} \)). Dann wird als Schrittweite das größte \( \sigma_k \in \{ 1, \frac{1}{2}, \frac{1}{2}, \cdots \} = \{ \frac{1}{2^k} \forwhich k \in \N \} \) gewählt, sodass gilt:
+                \begin{equation*}
+	                \norm{F(x^{(k)} + \sigma_k s^{(k)})}_2^2 \leq \norm{F(x^{(k)})}_2^2 - 2 \delta \sigma_k \norm{F(x^{(k)})}_2^2
+                \end{equation*}
+            % end
+
+            \subsubsection{Globalisiertes Newton-Verfahren}
+				\begin{algorithm}[H]
+					\SetAlgoLined
+					Wähle einen Startpunkt \( x^{(0)} \in \R^n \) \\
+					\For{\( k = 0, 1, \cdots \)}{
+						\eIf{\( F(x^{(k)}) = 0 \)}{
+							\Return \( x^{(k)} \)
+						}{
+							Berechne Newton-Schritt \( s^{(k)} \in \R^n \) durch Lösen der Newton-Gleichung \[ F'(x^{(k)}) \, s^{(k)} = -F(x^{(k)}) \]
+							
+							Bestimme \( \sigma_k \) nach Armijo-Regel
+							
+							Setze \( x^{(k + 1)} \gets x^{(k)} + \sigma_k s^{(k)} \)
+						}
+					}
+				\end{algorithm}
+            % end
+        % end
+    % end
+% end
+
+\chapter{Eigenwert- und Eigenvektorberechnung}
+    \section{Störungstheorie}
+        \begin{itemize}
+        	\item Bei oberen/unteren Diagonalmatrizen sind die Eigenwerte die Diagonalelemente.
+        	\item Verfahren wie das QR-Verfahren reduzieren das strikte untere Dreieck.
+        	\item Die Störungsresultate für Eigenwerte liefern u.a. Schranken, wie gut die Diagonalelemente mit den Eigenwerten übereinstimmen.
+        \end{itemize}
+    
+        Bezeichnet \( \lambda_i(A), \quad i = 1, \cdots, n \) die angeordneten Eigenwerte einer Matrix \( A \in \C^{n \times n} \), dann sind die Abbildungen \( A \in \C^{n \times n} \mapsto \lambda_i(A), \quad i = 1, \cdots, n \) stetig. D.h. die Eigenwerte hängen stetig von der Matrix ab.
+
+	    \subsection{Gershgorin-Kreise}
+	        Gershgorin-Kreise werden zur Abschätzung der Lage der Eigenwerte verwendet.
+	        
+	        Sei \( A = (a_{i,j}) \in \C^{n \times n} \) beliebig. Dann gilt \( \sigma(A) \subset \bigcup_{i=1}^n K_i \) mit den \textit{Gershgorin-Kreisen}
+	        \begin{equation*}
+		        K_i \coloneqq \bigg\{ \mu \in \C \forwhich \abs{\mu - a_{i,i}} \leq \sum_{j = 1,\, j \neq i}^{n} \abs{a_{i,j}} \bigg\}, \quad i = 1, \cdots, n
+	        \end{equation*}
+	        Ist die Vereinigung \(G_1\) von \(k\) Gershgorin-Kreisen disjunkt von der Vereinigung \(G_2\) der restlichen \(n-k\) Gershgorin-Kreisen, dann enthält \(G_1\) genau \(k\) und \(G_2\) genau \(n-k\) Eigenwerte von \(A\).
+	        
+	        Bei einer Störung einer Matrix verschieben sich die Gershgorin-Kreise leicht.
+	    % end
+	% end
+
+    \section{Numerische Verfahren}
+        Die numerischen Verfahren zur Berechnung der Eigenwerte lassen sich in zwei Klassen aufteilen:
+        \begin{itemize}
+        	\item \textbf{Vektoriteration} \\ Beginnend mit einem Startvektor wird dieser so lange verfeinert, bis die Eigenvektoren angenähert sind.
+        	\item \textbf{Ähnlichkeitstransformationen} \\ Beginnend von der Matrix aus wird diese so lange transformiert, bis das untere Dreieck gegen Null konvergiert und die Eigenwerte auf der Hauptdiagonalen stehen.
+        \end{itemize}
+    
+        Sei im folgenden \( A \in \C^{ n \times n } \) die Matrix, von der die Eigenwerte bestimmt werden soll.
+
+        \subsection{Vektoriteration}
+            Für eine Matrix \( B \in \C^{n \times n} \) ist die Vektoriteration gegeben durch:
+            \begin{equation*}
+	            z^{(k + 1)} = \frac{1}{\norm{Bz^{(k)}}} Bz^{(k)}, \quad k = 0, 1, \cdots
+            \end{equation*}
+            Mit einem Startvektor \( k^{(0)} \in \C^n \setminus \{0\} \).
+            
+            Bei einer geeigneten Wahl von \(B\) ergibt \(z^{(k)}\) eine Näherung für den betragsmäßig größten Eigenwert \(\lambda\). Die Näherung für den Eigenwert \(\lambda\) ergibt sich dann durch den \textit{Rayleighquotienten}:
+            \begin{equation*}
+	            R(z^{(k)}, B) = \frac{(z^{(k)})^H B z^{(k)}}{(z^{(k)})^H z^{(k)}}
+            \end{equation*}
+
+            \subsubsection{Konvergenz}
+	            \label{sec:eqconvergence}
+            
+	            \todo{Vektorit.: Konvergenz} % 6.37, 6.38, 6.41, 6.42
+            % end
+
+            \subsubsection{Vektoriteration von Mises}
+	            Mit der \textit{einfachen Vektoriteration von Mises} wird \( B = A \) gewählt.
+	            
+	            Die Konvergenz geht dann direkt aus \ref{sec:eqconvergence} hervor.
+	            
+	            \paragraph{Nachteile}
+		            \begin{itemize}
+		            	\item Langsame Konvergenz bei schlechter Trennung der Eigenwerte.
+		            	\item Einschränkung auf die Bestimmung des betragsmäßig größten Eigenwert.
+		            \end{itemize}
+		            Lösung: Inverse Vektoriteration von Wielandt.
+	            % end
+            % end
+
+            \subsubsection{Inverse Vektoriteration von Wielandt}
+                Sei \( \mu \) eine gute Näherung eines Eigenwertes \( \lambda_j \), sodass \( \abs{\lambda_j - \mu} \ll \abs{\lambda_i - \mu} \) gilt für alle \( \mu \neq \lambda_j \). Die \textit{inverse Vektoriteration von Wielandt} ist dann:
+                \begin{equation*}
+	                z^{(k+1)} = \frac{\hat{z}^{(k+1)}}{\norm{\hat{z}^{(k+1)}}} \qquad \textrm{mit } \hat{z}^{(k+1)} = (A - \mu I)^{-1} z^{(k)}
+                \end{equation*}
+                In der Praxis wird jedoch nicht \( (A - \mu I)^{-1} \) bestimmt, sondern \( (A - \mu I) \hat{z}^{(k+1)} = z^{(k)} \) gelöst.
+                
+                \todo{Inv. Vektorit.: Konvergenz} % 6.47
+            % end
+        % end
+
+        \subsection{QR-Verfahren (von Francis)}
+            Bei dem QR-Verfahren werden unitäre Ähnlichkeitstransformationen auf die Matrix \( A^{(1)} = A \in \C^{n \times n} \) angewandt.
+            
+            \begin{algorithm}[H]
+	            Initialisiere \( A^{(1)} \gets A \)
+	            
+	            \For{\( l = 1, 2, \cdots \)}{
+		            Berechne QR-Zerlegung \( Q_l R_l = A^{(l)} \), \\ \qquad\qquad wobei \( Q_l \in \C^{n \times n} \) unitär, \( R \in \C^{n \times n} \) obere Dreiecksmatrix
+		            
+		            \( A^{(l + 1)} \gets R_l Q_l \)
+	            }
+            \end{algorithm}
+        
+            Die Berechnung dieser QR-Zerlegung kann z.B. mit Hilfe des Householder-Verfahrens geschehen (siehe \ref{sec:householder}).
+
+            \subsubsection{Konvergenz}
+	            \todo{QR-Verfahren: Konvergenz} % 6.53, 6.54, 6.55, 6.56, 6.57, 6.58, 6.59, 6.60
+            % end
+
+            \subsubsection{Shift-Techniken}
+                \todo{QR-Verfahren: Shift-Techniken} % 6.61, 6.62, 6.63
+            % end
+
+                \paragraph{Verbreitete Shift-Strategie}
+                    \todo{QR-Verfahren: Verbreitete Shift-Strategie} % 6.64
+                % end
+
+                \paragraph{Berechnung der Eigenvektoren}
+	                Die Eigenvektoren können bspw. mit der inversen Vektoriteration berechnet werden, wobei dort als Shifts die berechneten \(\mu\) verwendet werden.
+                % end
+            % end
+
+            \subsubsection{Householder-Verfahren zur Berechnung}
+	            \label{sec:householder}
+	            
+                \begin{description}
+                	\item[Gegeben] Eine Matrix \( B \in \C^{n \times n} \).
+                	\item[Ziel] Eine unitäre Matrix \( Q \in \C^{n \times n} \) und eine obere Dreiecksmatrix \( R \in \C^{n \times n} \) mit \( B = QR \).
+                \end{description}
+            
+                \todo{Householdertransformation} % 6.66, 6.67, 6.68, 6.69, 6.70, 6.71, 6.72, 6.73
+            % end
+        % end
+    % end
+% end

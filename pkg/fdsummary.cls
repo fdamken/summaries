@@ -14,7 +14,7 @@
 
 \let\fdsummary@author=\@author
 
-\LoadClass[a4paper, fontsize=11pt, accentcolor=3b, class=report, custommargins=false, marginpar=false]{tudapub}
+\LoadClass[a4paper, fontsize=11pt, accentcolor=3b, class=report, custommargins=false, marginpar=false, pdfa=false]{tudapub}
 
 
 % Packages and commands required for class definition.
@@ -45,6 +45,8 @@
 \fdsummary@ifen{\RequirePackage[main = english, ngerman]{babel}}
 % Other Packages.
 \RequirePackage[ruled, vlined, linesnumbered]{algorithm2e}
+\RequirePackage[normalem]{ulem}
+\RequirePackage{amsmath}
 \RequirePackage{amssymb}
 \RequirePackage{attachfile}
 \RequirePackage{bytefield}
@@ -71,6 +73,7 @@
 \RequirePackage{subcaption}
 \RequirePackage{syntax}
 \RequirePackage{tabto}
+\RequirePackage{textcomp}
 \RequirePackage{tikz-uml}
 \RequirePackage{tikzpeople}
 \RequirePackage{tikz}
@@ -79,7 +82,7 @@
 \pgfplotsset{compat = newest}
 % Load TikZ libraries.
 %\usetikzlibrary{arrows.meta, shapes, backgrounds, angles, calc, positioning, decorations.markings}
-\usetikzlibrary{arrows.meta, shapes, backgrounds}
+\usetikzlibrary{arrows.meta, shapes, backgrounds, angles, calc, chains, scopes, decorations.pathmorphing, patterns, er, positioning}
 
 
 % Document information.
@@ -89,22 +92,21 @@
 \fdsummary@ifen{\subtitle{Summary}}
 \date{\today}
 
-% Metadata information for TUDa-Pub.
-\Metadata{author = \makeatletter\@author\makeatother}
-
 
 
 
 % ~ Styling. ~
 
 % Colors.
+\colorlet{ambiguityorange}{TUDa-8b}
+\colorlet{changedpurple}{TUDa-11a}
+\colorlet{colorDensity}{TUDa-1b}
+\colorlet{irl}{TUDa-0b}
+\colorlet{lerrorred}{TUDa-9b}
 \colorlet{lstcomments}{TUDa-4c}
 \colorlet{lstkeywords}{TUDa-9d}
 \colorlet{lstlinenumbers}{TUDa-0c}
 \colorlet{lststrings}{TUDa-2c}
-\colorlet{lerrorred}{TUDa-9b}
-\colorlet{changedpurple}{TUDa-11a}
-\colorlet{colorDensity}{TUDa-1b}
 
 % Description-list styling.
 \SetLabelAlign{parright}{\parbox[t]{\labelwidth}{\raggedleft#1}}
@@ -213,7 +215,12 @@
 \newcommand{\ciscoFirewall}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/firewall}}}
 \newcommand{\ciscoServer}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/file_server}}}
 \newcommand{\ciscoIdP}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/key}}}
+\newcommand{\tikzTimeDiagram}[3][1]{\foreach \x in { 1, ..., #2 } { \draw [->] (\x*5*#1, 0) to (\x*5*#1, -#3-1); }}
 
+% Other.
+\newcommand{\outputlisting}[1]{\lstinputlisting[numbers = none]{#1}}
+\newcommand{\inlinePromela}[1]{\lstinline[language = PROMELA]|#1|}
+\newcommand{\inlineJava}[1]{\lstinline[language = Java]|#1|}
 
 % Abbreviations.
 \fdsummary@ifde{
@@ -238,18 +245,39 @@
 % Math operators.
 \fdsummary@ifde{\newcommand{\ggT}{\ensuremath{\textrm{ggT}}}}
 \DeclareMathOperator{\Bias}{Bias}
+\DeclareMathOperator{\cond}{cond}
 \DeclareMathOperator{\const}{const}
 \DeclareMathOperator{\Cov}{Cov}
 \DeclareMathOperator{\Dec}{Dec}
+\DeclareMathOperator{\Eig}{Eig}
 \DeclareMathOperator{\emp}{emp}
 \DeclareMathOperator{\Enc}{Enc}
+\DeclareMathOperator{\eps}{eps}
 \DeclareMathOperator{\E}{E}
+\DeclareMathOperator{\gl}{gl}
 \DeclareMathOperator{\HMAC}{HMAC}
 \DeclareMathOperator{\MAC}{MAC}
+\DeclareMathOperator{\MSE}{MSE}
+\DeclareMathOperator{\rd}{rd}
 \DeclareMathOperator{\sign}{sign}
 \DeclareMathOperator{\Sig}{Sig}
+\DeclareMathOperator{\val}{val}
 \DeclareMathOperator{\Var}{Var}
 \DeclareMathOperator{\Vf}{Vf}
+% Logic.
+\DeclareMathOperator{\Fml}{Fml}
+\DeclareMathOperator{\FSym}{FSym}
+\DeclareMathOperator{\Program}{Program}
+\DeclareMathOperator{\ProgVSym}{ProgVSym}
+\DeclareMathOperator{\PSym}{PSym}
+\DeclareMathOperator{\Trm}{Trm}
+\DeclareMathOperator{\TSym}{TSym}
+\DeclareMathOperator{\VSym}{VSym}
+% Databases.
+\DeclareMathOperator{\Schema}{Schema}
+\DeclareMathOperator{\KEYS}{KEYS}
+\DeclareMathOperator{\PK}{PK}
+\DeclareMathOperator{\DB}{DB}
 
 % Other mathy stuff.
 % Numbers sets.
@@ -277,6 +305,20 @@
 \newcommand{\suminfty}[1][n]{\sum_{#1 = 0}^\infty}
 \newcommand{\limx}[1][x]{\lim_{#1 \to #1_0 }}
 \newcommand{\parallelAsync}{\ensuremath{\,\lvert\vert\rvert\,}}
+\newcommand{\eqv}{\leftrightarrow}
+% Logic.
+\newcommand{\always}{\square}
+\newcommand{\btlFor}{\ensuremath{\textit{For}_\textit{BTL}}}
+\newcommand{\lf}{\ensuremath{\mathfrak{f}}}
+\newcommand{\lt}{\ensuremath{\mathfrak{t}}}
+\newcommand{\pFor}{\ensuremath{\textit{For}_0}}
+\newcommand{\sometimes}{\lozenge}
+\newcommand{\subof}{\sqsubseteq}
+\newcommand{\tempty}{\perp}
+\newcommand{\tuni}{\top}
+\newcommand{\until}{\mathcal{U}}
+% For InfMan NLP.
+\newcommand{\ambiguity}[1]{\textcolor{ambiguityorange}{#1}}
 
 % BIG!
 \makeatletter

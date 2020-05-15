@@ -1,11 +1,5 @@
-all: clean graphs code
-	./vocabulary.sh de
-	./vocabulary.sh en
-	pdflatex fms-cheatsheet.tex
-	pdflatex fms-cheatsheet.tex
-	pdflatex fms-cheatsheet.tex
-	pdflatex fms-cheatsheet.tex
-	pdflatex fms-cheatsheet.tex
+preprocess: clean graphs code
+
 
 clean:
 	find . -type f -name 'tmp-*' -delete

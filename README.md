@@ -19,11 +19,11 @@ If you found any issues, having suggestions, etc. [create an issue](https://gith
 * ✔ `mandatory/fs3/css_waidner`
 * ✔ `mandatory/fs3/moses`
 * ✔ `mandatory/fs3/se`
-* `mandatory/fs4/cer`
-* `mandatory/fs4/cnuvs`
-* `mandatory/fs4/fmse`
-* `mandatory/fs4/infman_db`
-* `mandatory/fs4/infman_nlp`
-* `mandatory/fs4/mathe3`
+* ✔ `mandatory/fs4/cer`
+* ✔ `mandatory/fs4/cnuvs`
+* ✔ `mandatory/fs4/fmse`
+* ✔ `mandatory/fs4/infman_db`
+* ✔ `mandatory/fs4/infman_nlp`
+* ✔ `mandatory/fs4/mathe3`
 * `mandatory/fs5/os`
 * `mandatory/fs5/vc`

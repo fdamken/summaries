@@ -1,0 +1,1419 @@
+\chapter{Einführung}
+    \begin{itemize}
+    	\item Nahezu überall treten unsicherheitsbehaftete Daten, Parameter oder Prozesse auf. \\ Beispiele: Messfehler, Materialschwankungen, Rauschen, Inferenz, Nutzerverhalten, \dots
+    	\item In vielen Bereichen der Informatik sind mathematische Modelle zur Verarbeitung unsicherer Daten eine unerlässliche Basis. \\ Beispiele: Signalverarbeitung, Regelungstechnik, Machine Learning, Robotik, \dots
+    	\item Im allgemeinen lässt sich die Statistik/Stochastik in folgende Bereiche einteilen:
+        	\begin{itemize}
+        		\item Die \textit{Beschreibende Statistik} dient dazu, Beobachtungsdaten darzustellen und zu charakterisieren.
+        		\item In der \textit{Schließenden Statistik} geht es darum, Risiken auf Basis von mathematischen Modellen abzuschätzen und einzustufen.
+        		\item Diese mathematischen Modelle werden in der \textit{Wahrscheinlichkeitstheorie} behandelt.
+        	\end{itemize}
+    \end{itemize}
+% end
+
+\chapter{Grundbegriffe}
+    \section{Allgemeine Definitionen}
+	    \paragraph{Gamma-Funktion}
+		    \begin{equation*}
+			    \Gamma(x) = \int_{0}^{\infty} \! e^{-t} t^{x - 1} \, dt, \quad x > 0
+		    \end{equation*}
+	    % end
+	    
+	    \paragraph{Beta-Funktion}
+		    \begin{equation*}
+			    B(\alpha, \beta) = \int_{0}^{1} \! t^{\alpha - 1} (1 - t) ^ { \beta - 1 } \, dt, \quad \alpha, \beta > 0
+		    \end{equation*}
+	    % end
+    % end
+
+    \section{Messreihen}
+        Eine \textit{Messreihe} ist eine Reihe von \(n\) Zahlen:
+        \begin{equation*}
+            x_1, x_2, \cdots, x_n
+        \end{equation*}
+        Messreihen können in quantitativ-diskrete und quantitativ-stetige Typen eingeordnet werden, wobei die Merkmalsausprägungen bei ersterem ganze Zahlen sind und bei letzterem reelle Zahlen.
+        
+        Wird eine beliebige Messreihe der Größe nach sortiert, so entsteht eine \textit{geordnete Messreihe}:
+        \begin{equation*}
+            x_{(1)}, x_{(2)}, \cdots, x_{(n)}
+        \end{equation*}
+        Sie enthält die gleichen Werte, aber so angeordnet, dass \( x_{(1)} \leq x_{(2)} \leq \cdots \leq x_{(n)} \) gilt.
+
+		\subsection{Empirische Verteilungsfunktion}
+			Die \textit{empirische Verteilungsfunktion} zu einer Messreihe \( x_1, x_2, \cdots, x_n \) ist die Funktion
+			\begin{equation*}
+				F(z; x_1, x_2, \cdots, x_n) = \frac{\textrm{Anzahl der } x_i \textrm{ mit } x_i \leq z}{n} = \frac{\max \{ i \forwhich x_{(i)} \leq z \} }{n}
+			\end{equation*}
+		% end
+
+        \subsection{Klassen}
+            Werden \( r - 1 \) Zahlen \( a_1 < a_2 < \cdots < a_{r-1} \) gewählt, so entsteht die Unterteilung von \(\R\) in \(r\) Klassen:
+            \begin{equation*}
+	            \R = (-\infty, a_1) \cup (a_1, a_2] \cup \cdots \cup (a_{r-1}, a_{r-1}] \cup (a_{r-1}, \infty)
+            \end{equation*}
+            Mit \( F(z) = F(z; x_1, x_2, \cdots, x_n) \) ergibt sich die \textit{relative Klassenhäufigkeit} für die \(r\) Klassen mit:
+            \begin{equation*}
+	            F(a_1), \quad F(a_2) - F(a_1), \quad F(a_{r-1}) - F(a_{r-2}), 1 - F(a_{r-1})
+            \end{equation*}
+            Werden noch zwei zusätzliche Zahlen \( a_0 < \min \{ a_1, x_{(1)} \} \) und \( a_r > \max \{ a_{r-1}, x_{(n)} \} \) gewählt, so kann die Klassenhäufigkeit als \textit{Histogramm} dargestellt werden, wobei über jedem Intervall \( (a_{j-1}, a_j], \quad j = 1, \cdots, r \) ein Rechteck mit der Fläche der jeweiligen Klassenhäufigkeit erstellt wird. Die Gesamtfläche des Histogramms ist somit \(1\).
+        % end
+
+        \subsection{Zweidimensionale Messreihen}
+            Werden bei einer statistischen Erhebung zwei Merkmale gleichzeitig ermittelt, entstehen \textit{zweidimensionale Messreihen}:
+            \begin{equation*}
+                (x_1, y_1), (x_2, y_2), \cdots, (x_n, y_n)
+            \end{equation*}
+        % end
+    % end
+% end
+
+    \section{Maßzahlen}
+        \subsection{Lagemaßzahlen}
+            \subsubsection{Eindimensional}
+                Sei \( x_1, x_2, \cdots, x_n \) eine Messreihe mit der dazugehörigen geordneten Messreihe \( x_{(1)}, x_{(2)}, \cdots, x_{(n)} \).
+            
+                \paragraph{Arithmetisches Mittel}
+                \begin{equation*}
+	                \bar{x} = \frac{1}{n} \sum_{i=1}^n x_i = \frac{1}{n} (x_1 + x_2 + \cdots + x_n)
+                \end{equation*}
+                
+                \paragraph{Empirischer Median}
+                \begin{equation*}
+	                \tilde{x} =
+	                \begin{cases}
+	                	x_{(\frac{n}{2})}   & \textrm{falls } n \textrm{ gerade}   \\
+	                	x_{(\frac{n+1}{2})} & \textrm{falls } n \textrm{ ungerade}
+	                \end{cases}
+                \end{equation*}
+                
+                \paragraph{\(p\)-Quantil (\(0 < p < 1\))}
+                \begin{equation*}
+	                x_p =
+	                \begin{cases}
+	                	x_{np}                     & \textrm{falls } np \textrm{ ganzzahlig}       \\
+	                	x_{\lfloor np \rfloor + 1} & \textrm{falls } np \textrm{ nicht ganzzahlig}
+	                \end{cases}
+                \end{equation*}
+                Das \(0.25\)-Quantil wird \textit{unteres Quantil}, das \(0.75\)-Quantil \textit{oberes Quantil} genannt. Das \(0.5\)-Quantil entspricht dem Median.
+                
+                \paragraph{\(\alpha\)-gestutztes Mittel (\(0 < \alpha < 0.5\))}
+                \begin{equation*}
+	                \bar{x}_\alpha = \frac{1}{n - 2k} (x_{(k+1)} + \cdots + x_{(n-k)}), \quad k = \lfloor n\alpha \rfloor
+                \end{equation*}
+                Anschaulich: Die extremsten \(k\) Messwerte werden ignoriert.
+            % end
+
+            \subsubsection{Zweidimensional}
+                Sei \( (x_1, y_1), (x_2, y_2), \cdots, (x_n, y_n) \) eine Messreihe.
+                
+                \paragraph{Arithmetische Mittel}
+                \begin{equation*}
+                    \bar{x} = \frac{1}{n} \sum_{i = 1}^{n} x_i \qquad \bar{y} = \frac{1}{n} \sum_{i = 1}^{n} y_i
+                \end{equation*}
+            % end
+        % end
+
+        \subsection{Streuungsmaße}
+            \subsubsection{Eindimensional}
+                Sei \( x_1, x_2, \cdots, x_n \) eine Messreihe mit der dazugehörigen geordneten Messreihe \( x_{(1)}, x_{(2)}, \cdots, x_{(n)} \).
+                
+                \paragraph{Empirische Varianz}
+                \begin{equation*}
+                    s^2 = \frac{1}{n - 1} \sum_{i = 1}^{n} (x_i - \bar{x})^2 = \frac{1}{n - 1} \Bigg( \sum_{i = 1}^{n} x_i^2 - n \bar{x}^2 \Bigg)
+                \end{equation*}
+                
+                \paragraph{Empirische Streuung}
+                \begin{equation*}
+                    s = \sqrt{\frac{1}{n - 1} \sum_{i = 1}^{n} (x_i - \bar{x})^2} = \sqrt{s^2}
+                \end{equation*}
+                
+                \paragraph{Spannweite}
+                \begin{equation*}
+                    v = x_{(n)} - x_{(1)}
+                \end{equation*}
+                
+                \paragraph{Quartilsabstand}
+                \begin{equation*}
+                    q = x_{0.75} - x_{0.25}
+                \end{equation*}
+            % end
+
+            \subsubsection{Zweidimensional}
+                \paragraph{Empirische Varianzen}
+                \begin{equation*}
+                    s_x^2 = \frac{1}{n - 1} \sum_{i = 1}^{n} (x_i - \bar{x})^2 \qquad s_y^2 = \frac{1}{n - 1} \sum_{i = 1}^{n} (y_i - \bar{y})^2
+                \end{equation*}
+                
+                \paragraph{Empirische Streuungen}
+                \begin{equation*}
+                    s_x = \sqrt{\frac{1}{n - 1} \sum_{i = 1}^{n} (x_i - \bar{x})^2} \qquad s_y = \sqrt{\frac{1}{n - 1} \sum_{i = 1}^{n} (y_i - \bar{y})^2}
+                \end{equation*}
+                
+                \paragraph{Empirische Kovarianz}
+                \begin{equation*}
+                    s_{xy} = \frac{1}{n - 1} \sum_{i = 1}^{n} (x_i - \bar{x}) (y_i - \bar{y}) = \frac{1}{n - 1} \Bigg( \sum_{i = 1}^n x_i y_i - n\bar{x}\bar{y} \Bigg)
+                \end{equation*}
+                
+                \paragraph{Empirische Korrelationskoeffizient}
+                \begin{equation*}
+                    r_{xy} = \frac{s_{xy}}{s_x s_y}
+                \end{equation*}
+                Es gilt immer \( \abs{r_{xy}} \leq 1 \). Je näher \( \abs{r_{xy}} \) an \(1\) liegt, desto stärker korrelieren \(x\) und \(y\).
+            % end
+
+        \subsection{Regressionsgerade}
+            Der Zusammenhang der \(x\)- und \(y\)-Werte lässt sich durch eine \textit{Regressionsgerade} visualisieren.
+           	\begin{equation*}
+            	y = \hat{a} x + \hat{b}
+           	\end{equation*}
+           	Die Parameter \( \hat{a} \) und \( \hat{b} \) berechnen sich dabei wie folgt:
+           	\begin{equation*}
+               	\hat{a} = \frac{s_{xy}}{s_x^2} \qquad \hat{b} = \bar{y} - \hat{a} \bar{x}
+           	\end{equation*}
+           	
+           	Der Korrelationskoeffizient gibt den Trend der Abhängigkeiten der \(y\)-Werte von den \(x\)-Werten an:
+           	\begin{equation*}
+               	\text{Die Regressiongerade verläuft }
+               	\begin{cases}
+               		\textrm{streng monoton steigend.} & r_{xy} > 0 \\
+               		\textrm{streng monoton fallend.}  & r_{xy} < 0 \\
+               		\textrm{horizontal.}              & r_{xy} = 0
+               	\end{cases}
+           	\end{equation*}
+           	
+           	\subsubsection{Residuen}
+               	Die Abweichungen der Punkte \( (x_i, y_i) \) von der Regressionsgerade in vertikaler Richtung
+               	\begin{equation*}
+	               	r_i = y_i - \hat{a} x_i - \hat{b}, \quad i = 1, \cdots, n
+               	\end{equation*}
+               	werden \textit{Residuen} genannt.
+               	
+               	Für das \textit{Residuenquadrat} gilt:
+               	\begin{equation*}
+	               	\sum_{i = 1}^{n} r_i^2 = \sum_{i = 1}^{n} (y_i - \hat{y})^2 (1 - r_{xy}^2)
+               	\end{equation*}
+               	Die vertikale Abweichung von der Regressionsgerade hängt also stark von dem Korrelationskoeffizienten ab. Für Werte von \( \abs{r_{xy}} \), die nahe an \(1\) liegen verschwinden die Residuen annähernd (für \( \abs{r_{xy}} = 1 \) verschwinden sie vollständig).
+           	% end
+        % end
+    % end
+
+    \section{Zufallsexperimente und Wahrscheinlichkeit}
+        \subsection{Zufallsexperimente}
+            Ein \textit{Zufallsexperiment} ist ein Vorgang, der so genau beschrieben wird, dass er als beliebig oft wiederholbar betrachtet werden kann und dessen Ergebnisse vom Zufall abhängen.
+            
+            \begin{itemize}
+            	\item Die Menge \(\Omega\) heißt \textit{Ergebnismenge}.
+            	\item Die Elemente \(\omega \in \Omega\) heißen \textit{Ergebnisse},
+            	\item Teilmengen \(A \subseteq \Omega\) heißen \textit{Ereignisse}. Ein Ereignis \(A\) tritt ein gdw. ein Ergebnis \( \omega \in A \) eintritt.
+            \end{itemize}
+
+            \subsubsection{Ereignisse}
+                \begin{itemize}
+                	\item Ein \textit{zusammengesetztes Ereignis} \( A \cup B \) tritt ein gdw. ein Ergebnis \(\omega\) mit \(\omega \in A\) oder \(\omega \in B\) eintritt.
+                	\item Analog tritt ein Ereignis \( A \cap B \) ein gdw. ein Ergebnis \(\omega\) mit \(\omega \in A\) und \(\omega \in B\) eintritt.
+                	\item Das Ereignis \( A ^ c = \Omega \setminus A \) ist das zu \(A\) \textit{komplementäre Ereignis}.
+                	\item Zwei Ereignisse \(A\), \(B\) heißen \textit{unvereinbar} gdw. \( A \cap B = \setminus \) (d.h. die Ereignisse sind disjunkt).
+                	\item Die leere Menge \(\emptyset\) heißt \textit{unmögliches Ereignis} und die Menge \(\Omega\) \textit{sicheres Ereignis}.
+                	\item Einelementige Mengen \( \{ \omega \} \) heißen \textit{Elementarereignisse}.
+                	\item Für Folgen \( A_1, A_2, \cdots \) von Ereignissen wird das zusammengesetzte Ereignis \( \bigcup_{i = 1}^\infty A_i \) definiert, das eintritt gdw. mindestens ein \(A_i\) eintritt. Analog für \( \bigcap_{i = 1}^\infty A_i \) gdw. alle Ereignisse zugleich eintreten.
+                \end{itemize}
+
+                \paragraph{Ereignissysteme}
+                    Ein System \( \mathcal{A} \subseteq \mathcal{P}(\Omega) \) heißt \textit{\(\sigma-Algebra\)} oder \textit{Ereignissystem} gdw. gilt:
+                    \begin{enumerate}
+                    	\item \( \Omega \in \mathcal{A} \)
+                    	\item \( A \in \mathcal{A} \implies A^c \in \mathcal{A} \)
+                    	\item Für jede Folge \( A_1, A_2, \cdots \in \mathcal{A} \) gilt auch \( \bigcup_{i = 1}^\infty A_i \in \mathcal{A} \)
+                    \end{enumerate}
+                    Aufgrund von 2 und 3 gilt auch: \( A \cap B = (A^c \cup B^c)^c \in \mathcal{A} \).
+                    
+                    \begin{itemize}
+                    	\item Eine \(\sigma\)-Algebra erlaubt genau die Verknüpfungen von Ereignisse, die in der Praxis nützlich sind.
+                    \end{itemize}
+                % end
+
+                \paragraph{Ereignispartition}
+                    Mengen \( A_1, \cdots, A_n \) werden \textit{Ereignispartition} (oder \textit{vollständige Ereignisdisjunktion}) genannt, wenn die Ereignisse paarweise unvereinbar sind und \( \bigcup_{i = 1}^n A_i = \Omega \) gilt.
+                % end
+            % end
+        % end
+
+        \subsection{Wahrscheinlichkeit}
+            \subsubsection{Formeln der Kombinatorik}
+                Sei \( \Omega \) eine Ereignismenge mit \( n \) Elementen \( k \in \N \).
+            
+                \paragraph{Geordnete Probe mit Wiederholungen}
+                    Ein \(k\)-Tupel \( x_1, \cdots, x_k \) mit \( x_i \in \Omega, \quad i = 1, \cdots, k \) heißt \textit{geordnete Probe} von \(\Omega\) vom Umfang \(k\) \textit{mit Wiederholungen}. Dann existieren
+                    \begin{equation*}
+                        n^k
+                    \end{equation*}
+                    solcher Proben (für jede Stelle \(x_i\) gibt es \(n\) Möglichkeiten).
+                % end
+
+                \paragraph{Geordnete Probe ohne Wiederholungen}
+                    Ein \(k\)-Tupel \( x_1, \cdots, x_k \), \( k \leq n \) mit \( x_i \in \Omega, \quad i = 1, \cdots, k \) und \( x_i \neq x_j \) für \( i \neq j \) heißt \textit{geordnete Probe} von \(\Omega\) vom Umfang \(k\) \textit{ohne Wiederholungen}. Dann existieren
+                    \begin{equation*}
+                        n(n - 1)(n - 2) \cdots (n - k + 1)
+                    \end{equation*}
+                    solcher Proben (für die erste Stelle gibt es \(n\) Möglichkeiten, für die zweite \(n - 1\), usw.).
+                    
+                    Gilt \(k = n\) wird von \textit{Permutationen} der Menge \(\Omega\) gesprochen, wovon
+                    \begin{equation*}
+                        n! = n(n - 1)(n - 2) \cdots 2 \cdots 1
+                    \end{equation*}
+                    existieren.
+                % end
+
+                \paragraph{Ungeordnete Probe mit Wiederholungen}
+                    Eine \(k\)-Sammlung \( x_1, \cdots, x_k \), \( k \leq n \) mit \( x_i \in \Omega, \quad i = 1, \cdots, k \) heißt \textit{ungeordnete Probe} von \(\Omega\) vom Umfang \(k\) \textit{mit Wiederholungen}. Dann existieren
+                    \begin{equation*}
+                        \frac{(n + k - 1)!}{(n - 1)! \cdot k!} =
+                        \begin{pmatrix}
+	                        n + k - 1 \\
+	                        k
+                        \end{pmatrix}
+                    \end{equation*}
+                    solcher Proben.
+                % end
+
+                \paragraph{Ungeordnete Probe ohne Wiederholungen}
+                    Eine Teilmenge \( x_1, \cdots, x_k \), \( k \leq n \) mit \( x_i \in \Omega, \quad i = 1, \cdots, k \) heißt \textit{ungeordnete Probe} von \(\Omega\) vom Umfang \(k\) \textit{ohne Wiederholungen}. Dann existieren
+                    \begin{equation*}
+                        \begin{pmatrix}
+	                        n \\
+	                        k
+                        \end{pmatrix}
+                        =
+                        \frac{n!}{k! \cdot (n - k)!}
+                    \end{equation*}
+                    solcher Proben (es gibt \( n(n - 1)(n - 2) \cdots (n - k + 1) \) geordnete Proben, aber jeweils \(k!\) bestehen aus den gleichen \(k\) Elementen).
+                % end
+            % end
+            
+            \subsubsection{Wahrscheinlichkeiten}
+                Um jedem Ereignis eine Wahrscheinlichkeit zuzuordnen, wird eine Abbildung \( P : \mathcal{A} \rightarrow \R \) betrachtet. Diese Abbildung heißt \textit{Wahrscheinlichkeitsmaß}, wenn sie den \textit{Axiomen von Kolmogorov} genügt:
+                \begin{enumerate}
+                	\item \( \forall A \in \mathcal{A} : P(A) \geq 0 \)
+                	\item \( P(\Omega) = 1 \)
+                	\item \( P\Big( \bigcup_{i = 1}^\infty A_i \Big) = \sum_{i = 1}^{\infty} P(A_i) \) mit paarweise unvereinbaren \( A_1, A_2, \cdots \in \mathcal{A} \) (auch für endliche Folgen!)
+                \end{enumerate}
+                
+                \paragraph{Rechenregeln}
+                \begin{itemize}
+                	\item \( P(A^c) = 1 - P(A) \)
+                	\item \( P(\emptyset) = 0 \)
+                	\item \( 0 \leq P(A) \leq 1 \)
+                	\item \( A \subseteq B \implies P(A) \leq P(B) \)
+                	\item \( P(A \cup B) = P(A) + P(B) - P(A \cap B) \)
+                \end{itemize}
+                
+                Ist jedes Elementarereignis gleich Wahrscheinlich (wie z.B. bei einem Würfelwurf), so gilt für beliebige Ereignisse \( A \subseteq \Omega \):
+                \begin{equation*}
+	                P(A) = \sum_{\omega_i \in A} P(\{ \omega_i \}) = \frac{\abs{A}}{n}
+                \end{equation*}
+            % end
+
+            \subsubsection{Bedingte Wahrscheinlichkeit}
+                Seien \(A\), \(B\) zwei Ereignisse mit \( P(A), P(B) > 0 \). In vielen Fällen ist interessant, was die Wahrscheinlichkeit von \(A\) ist unter der Bedingung, dass \(B\) eintritt.
+                
+                Diese \textit{bedingte Wahrscheinlichkeit} wird als \( P(A \vert B) \) formuliert (Wahrscheinlichkeit von \(A\) unter der Bedingung \(B\)) und ist gegeben durch:
+                \begin{equation*}
+                    P(A \vert B) = \frac{P(A \cap B)}{P(B)}
+                \end{equation*}
+
+				\paragraph{Ereignispartition}
+					Für eine Ereignispartition \( A_1, \cdots, A_n \) mit \( P(A_i) > 0, \quad i = 1, \cdots, n \) und ein Ereignis \(B\) gilt:
+					\begin{equation*}
+						P(B) = \sum_{i = 1}^{n} P(A_i) \cdot P(B \vert A_i)
+					\end{equation*}
+				% end
+
+                \paragraph{Formel von Bayes}
+                    Seien \( A_1, \cdots, A_n \) eine Ereignispartition mit \( P(A_i) > 0, \quad i = 1, \cdots, n \) und \(B\) ein Ereignis mit \(P(B) > 0\). Dann gilt für \( i = 1, \cdots, n \):
+                    \begin{equation*}
+                        P(A_i \vert B) = \frac{P(A_i) \cdot P(B \vert A_i)}{P(B)}
+                    \end{equation*}
+                % end
+
+                \paragraph{Multiplikationsformel}
+                    Seien \( A_1, \cdots, A_n \) Ereignisse mit \( P(A_1 \cap A_2 \cap \cdots \cap A_n) > 0 \). Dann gilt:
+                    \begin{equation*}
+                        P(A_1 \cap A_2 \cap \cdots \cap A_n) = P(A_1) \cdot P(A_2 \vert A_1) \cdot P(A_3 \vert A_1 \cap A_2) \cdots P(A_n \vert A_1 \cap A_2 \cap \cdots \cap A_{n - 1})
+                    \end{equation*}
+                % end
+            % end
+
+            \subsubsection{Unabhängigkeit}
+                Zwei Ereignisse \(A\), \(B\) heißen \textit{paarweise unabhängig}, wenn gilt:
+                \begin{equation*}
+                    P(A \cap B) = P(A) \cdot P(B)
+                \end{equation*}
+                Mehrere Ereignisse \( A_1, \cdots, A_n \) heißen \textit{vollständig unabhängig}, wenn für alle \( \{ i_1, \cdots, i_k \} \subseteq \{ 1, \cdots, n \} \) gilt:
+                \begin{equation*}
+                    P(A_{i_1} \cap \cdots \cap A_{i_k}) = P(A_{i_1}) \cdots P(A_{i_k})
+                \end{equation*}
+                
+                \warning{Aus der paarweisen Unabhängigkeit mehrerer Ereignisse folgt nicht immer die vollständige Unabhängigkeit!}
+            % end
+        % end
+    % end
+
+    \section{Zufallsvariablen und Verteilungsfunktion}
+        Sei \( \Omega \) eine Ereignismenge und \( \mathcal{A} \) ein Ereignissystem bzgl. Wahrscheinlichkeit \(P\).
+    
+        \subsection{Zufallsvariablen} % 7.84, 7.85
+            Eine \textit{Zufallsvariable} ist eine Abbildung \[ X : \Omega \rightarrow \R \] mit der Eigenschaft, dass für jedes Intervall \( I \in \R \) die Urbildmenge \[ A = \{ \omega \in \Omega : X(\omega) \in I \} \] zum Ereignissystem \(\mathcal{A}\) gehört. Die Wahrscheinlichkeit, dass \(X\) Werte in diesem Intervall annimmt wird mit \( P(X \in I) \) bezeichnet, woraus sich folgende Schreibweisen ergeben:
+            \begin{equation*}
+                P(a \leq X \leq b), \quad P(X \leq x), \quad P(X < x), \quad P(\abs{X - a} < b), \quad P(X = b), \quad \textrm{usw.}
+            \end{equation*}
+
+            \subsubsection{Messreihen}
+                Eine Messreihe \( x_1, \cdots, x_n \) wird als Realisierung der Zufallsvariablen \( X_1, \cdots, X_n \) angesehen. Es wird daher angenommen, dass ein Ergebnis \( \omega \in \Omega \) existiert mit:
+                \begin{equation*}
+                    x_1 = X_1(\omega), \quad \cdots, \quad x_n = X_n(\omega)
+                \end{equation*}
+            % end
+        % end
+
+        \subsection{Verteilungsfunktion}
+            Sei \( X : \Omega \rightarrow \R \) eine Zufallsvariable.
+            
+            Die Abbildung \( F : \R \rightarrow \R \) wird dann \textit{Verteilungsfunktion} von der Zufallsvariable \(X\) genannt:
+            \begin{equation*}
+                F : \R \rightarrow \R : x \mapsto P(X \leq x)
+            \end{equation*}
+            Dabei müssen Verteilungsfunktionen monoton wachsende Funktionen sein mit:
+            \begin{equation*}
+	            F(-\infty) = 0 \qquad F(\infty) = 1 \qquad F(x+) = F(x), \quad \forall x \in \R
+            \end{equation*}
+            Dabei sind die Schreibweisen wie folgt definiert:
+            \begin{equation*}
+	            \begin{array}{rclcrcl}
+	            	     F(x+) & \coloneqq & \lim\limits_{h \rightarrow 0} F(x + h) & \qquad &     F(x-) & \coloneqq & \lim\limits_{h \rightarrow 0} F(x - h)  \\
+	            	F(-\infty) & \coloneqq & \lim\limits_{x \rightarrow -\infty}    & \qquad & F(\infty) & \coloneqq & \lim\limits_{x \rightarrow \infty} F(x)
+	            \end{array}
+            \end{equation*}
+            
+            \paragraph{Eigenschaften}
+	            \begin{equation*}
+		            \begin{array}{rclcl}
+		            	          P(X = a) & = & P(X \leq a) - P(X < a)    & = & F(a) - F(a-)  \\
+		            	   P(a < X \leq b) & = & P(X \leq b) - P(X \leq a) & = & F(b) - F(a)   \\
+		            	   P(a \leq X < b) & = & P(X < b) - P(X < a)       & = & F(b-) - F(a-) \\
+		            	P(a \leq X \leq b) & = & P(X \leq b) - P(X < a)    & = & F(b) - F(a-)  \\
+		            	          P(X > a) & = & 1 - P(X \leq a)           & = & 1 - F(a)
+		            \end{array}
+	            \end{equation*}
+            % end
+
+            \subsubsection{Quantile}
+                Ist die Verteilungsfunktion \(F\) stetig, so ist das \(p\)-Quantil \(x_p\) gegeben durch die Gleichung
+                \begin{equation*}
+                    F(x_p) = p
+                \end{equation*}
+                Die Quantile sind für gängige Verteilungsfunktionen somit tabellierbar und als Tabellen verfügbar.
+            % end
+        % end
+
+        \subsection{Diskret/Stetig verteilte Zufallsvariablen}
+            \begin{itemize}
+            	\item Eine Zufallsvariable ist \textit{diskret verteilt}, wenn sie nur endlich viele oder abzählbar unendliche viele Werte \( x_1, x_2, \cdots \) annehmen kann. Die Verteilungsfunktion ist entsprechend eine monoton wachsende Treppenfunktion, die an den Stellen \( P(X = x_i) \) anspringt.
+            	\item Eine Zufallsvariable ist \textit{stetig verteilt mit Dichte \(f\)}, wenn die Verteilungsfunktion gegeben ist durch
+                	\begin{equation*}
+	                	F(x) = \int_{-\infty}^{x} \! f(t) \, dt, \quad x \in \R
+                	\end{equation*}
+                	Die Dichte ist dabei nichtnegativ, die Verteilungsfunktion \(F\) ist stetig und es gilt \( \frac{d}{dx} F = f \).
+            \end{itemize}
+
+            \subsubsection{Beispiele für diskrete Verteilungen}
+                \paragraph{Geometrische Verteilung}
+                    Sei \( 0 < p < 1 \).
+                    
+                    Eine Zufallsvariable \(X\) mit Wertebereich \( \N^* \) heißt \textit{geometrisch verteilt mit Parameter \(p\)}, falls gilt
+                    \begin{equation*}
+	                    P(X = i) = (1 - p) ^ { i - 1 } p, \quad i = 1, 2, \cdots
+                    \end{equation*}
+                    
+                    \textbf{Erwartungswert/Varianz:}
+                    \begin{align*}
+                    	E(x)    & = \frac{1}{p}       \\
+                    	\Var(X) & = \frac{1 - p}{p^2}
+                    \end{align*}
+                    
+                    \subparagraph{Anwendung}
+	                    Zufallsexperimente mit Ereignis mit Wahrscheinlichkeit \(p\). Die Anzahl unabhängiger Wiederholung bis zum Eintreten des Ereignissen kann als geometrisch verteilte Zufallsvariable modelliert werden (\enquote{Warten auf den ersten Erfolg}).
+	                % end
+                % end
+
+                \paragraph{Binomialverteilung}
+                    Seien \( n \in \N \) und \( 0 < p < 1 \).
+                    
+                    Eine Zufallsvariable \(X\) mit Wertebereich \( \N_0 \) heißt \textit{binomialverteilt mit Parametern \( n, p \)} (kurz: \( B(n, p) \)-verteilt), falls gilt
+                    \begin{equation*}
+                        P(X = i) = { n \choose i } p^i (1 - p)^{ n - 1 }, \quad i = 0, 1, \cdots, n
+                    \end{equation*}
+                    
+                    \textbf{Erwartungswert/Varianz:}
+                    \begin{align*}
+                    	E(x)    & = np      \\
+                    	\Var(X) & = np(1-p)
+                    \end{align*}
+                    
+                    \subparagraph{Anwendung}
+                        \(n\)-mal unabhängig wiederholtes Zufallsexperiment mit Ereignis mit Wahrscheinlichkeit \(p\). Die Anzahl des Ereignis-Eintretens kann als \( B(n, p) \)-verteilte Zufallsvariable modelliert werden (\enquote{Anzahl der Erfolge bei \(n\) Versuchen}).
+                    % end
+                % end
+
+                \paragraph{Poissonverteilung}
+                    Sei \( \lambda > 0 \).
+                    
+                    Eine Zufallsvariable \(X\) mit Wertebereich \( \N_0 \) heißt \textit{Poisson-verteilt mit Parameter \( \lambda \)}, falls gilt
+                    \begin{equation*}
+                        P(X = i) = \frac{\lambda^i}{i!} e^{-\lambda}, \quad i = 0, 1, 2, \cdots
+                    \end{equation*}
+                    
+                    \textbf{Erwartungswert/Varianz:}
+                    \begin{align*}
+                    	E(X)    & = \lambda \\
+                    	\Var(X) & = \lambda
+                    \end{align*}
+                    
+                    \subparagraph{Anwendung}
+                        Anzahl der in einer Telefonzentrale innerhalb von 10 Minuten eingehenden Anrufe. \(\lambda\) gibt die \enquote{mittlere Anzahl} an eingehenden Anrufen an.
+                    % end
+                % end
+            % end
+
+            \subsubsection{Beispiele für stetige Verteilungen}
+                \paragraph{Rechteckverteilung}
+                    Sei \( a < b \).
+                    
+                    Eine stetig verteilte Zufallsvariable heißt \textit{rechteckverteilt im Intervall \( [a, b] \)} (kurz: \( R(a, b) \)-verteilt), falls
+                    \begin{equation*}
+                        f(t) =
+                        \begin{cases*}
+	                        \frac{1}{b - a} & \(a \leq t \leq b\) \\
+	                        0               & \textrm{sonst}
+                        \end{cases*}
+                    \end{equation*}
+                    gilt. Dann ergibt sich für die Verteilungsfunktion:
+                    \begin{equation*}
+                        F(x) = \int_{-\infty}^{x} \! f(t) \, dt =
+                        \begin{cases}
+                        	0                   & x \leq a  \\
+                        	\frac{x - a}{b - a} & a < x < b \\
+                        	1                   & x \geq b
+                        \end{cases}
+                    \end{equation*}
+                % end
+
+                \paragraph{Exponentialverteilung}
+                    Sei \( \lambda > 0 \).
+                    
+                    Eine stetig verteilte Zufallsvariable heißt \textit{exponentialverteilt mit Parameter \(\lambda\)} (kurz: \( \mathrm{Ex}(\lambda) \)-verteilt), falls
+                    \begin{equation*}
+                        f(t) =
+                        \begin{cases}
+                        	0                          & t < 0    \\
+                        	\lambda e ^ { -\lambda t } & t \geq 0
+                        \end{cases}
+                    \end{equation*}
+                    gilt. Dann ergibt sich für die Verteilungsfunktion:
+                    \begin{equation*}
+                        F(x) = \int_{-\infty}^{x} \! f(t) \, dt =
+                        \begin{cases}
+                        	0                  & x < 0    \\
+                        	1 - e^{-\lambda x} & x \geq 0
+                        \end{cases}
+                    \end{equation*}
+                    
+                    \textbf{Erwartungswert/Varianz:}
+                    \begin{align*}
+                    	E(x)    & = \frac{1}{\lambda}   \\
+                    	\Var(X) & = \frac{1}{\lambda^2}
+                    \end{align*}
+                % end
+
+                \paragraph{Normalverteilung}
+                    Seien \( \mu \in \R \) und \( \sigma \in R \).
+                    
+                    Eine stetig verteilte Zufallsvariable heißt \textit{normalverteilt mit Parametern \( \mu, \sigma^2 \)} (kurz: \( N(\mu, \sigma^2) \)), falls
+                    \begin{equation*}
+                        f(t) = \frac{1}{\sigma \sqrt{2\pi}} e^{ -\frac{1}{2} \big( \frac{t - \mu}{\sigma} \big) ^ 2 }
+                    \end{equation*}
+                    gilt. Mit \( \Phi \) aus der Standard-Normalverteilung (siehe \ref{sec:snd}) ergibt sich für die Verteilungsfunktion:
+                    \begin{equation*}
+                        F(x) = \Phi\bigg( \frac{x - \mu}{\sigma} \bigg)
+                    \end{equation*}
+                    
+                    \textbf{Erwartungswert/Varianz:}
+                    \begin{align*}
+                    	E(x)    & = \mu      \\
+                    	\Var(X) & = \sigma^2
+                    \end{align*}
+                    
+                    \subparagraph{Standard-Normalverteilung}
+                        \label{sec:snd}
+                    
+                        Ist \( \mu = 0 \) und \( \sigma^2 = 1 \), wird ist \textit{Standard-Normalverteilung} genannt und die Verteilungsfunktion mit
+                        \begin{equation*}
+	                        \Phi(x) = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{x} \! e^{-\frac{t^2}{2}} \, dt
+                        \end{equation*}
+                        bezeichnet.
+                        
+                        Da \( \Phi \) nicht geschlossen angebbar ist, muss die Funktion tabelliert oder numerisch ausgewertet werden. Es gilt:
+                        \begin{equation*}
+	                        \Phi(0) = \frac{1}{2}, \qquad \Phi(-x) = 1 - \Phi(x), \quad x \geq 0
+                        \end{equation*}
+                    % end
+                % end
+
+                \paragraph{Chi-Quadrat-Verteilung}
+                    Sei \( r \in \{ 1, \cdots, n \} \).
+                    
+                    Eine Zufallsvariable \(X\) heißt \textit{Chi-Quadrat-verteilt mit Parameter \(r\)} (kurz: \( \chi_r^2 \)-verteilt), falls
+                    \begin{equation*}
+                        F(x) = P(Z_1^2 + \cdots + Z_r^2 \leq x)
+                    \end{equation*}
+                    gilt. Die Dichte ist dabei
+                    \begin{equation*}
+                        f(x) = \frac{x^{\frac{r}{2} - 1} e^{-\frac{x}{2}}}{2^\frac{r}{2} \Gamma\big(\frac{n}{2}\big)}, \quad x > 0
+                    \end{equation*}
+                    mit der Gamma-Funktion.
+                % end
+
+                \paragraph{Studentsche t-Verteilung}
+                    Sei \( r \in \{ 1, \cdots, n - 1 \} \).
+                    
+                    Eine Zufallsvariable \(X\) heißt \textit{Student-t-verteilt mit Parameter \(r\)} (kurz: \( t_r \)-verteilt), falls
+                    \begin{equation*}
+                        F(x) = P\Bigg( \frac{Z_{r+1}}{\sqrt{(Z_1^2 + \cdots + Z_r^2) / r}} \leq x \Bigg)
+                    \end{equation*}
+                    gilt. Die Dichte ist dabei
+                    \begin{equation*}
+                        f(x) = \frac{\Gamma\big(\frac{r + 1}{2}\big)}{\sqrt{\pi r} \cdot \Gamma\big(\frac{2}{2}\big)} \Bigg(1 + \frac{x^2}{r}\Bigg) ^ { -\frac{r+1}{2} }
+                    \end{equation*}
+                    mit der Gamma-Funktion.
+                % end
+
+                \paragraph{Fisher-Verteilung}
+                    Seien \( r, s \in \{ 1, \cdots, n - 1 \} \) mit \( r + s \leq n \).
+                    
+                    Eine Zufallsvariable \(X\) heißt \textit{Fisher-Verteilt mit Parametern \( r, s \)} (kurz: \(F_{r,s}\)-verteilt), falls
+                    \begin{equation*}
+                        F(x) = P\Bigg( \frac{(Z_1^2 + \cdots + Z_r^2) / r}{(Z_{r+1}^2 + \cdots + Z_{r+s}^2) / s} \leq x \Bigg) = \frac{\chi_r^2 / r}{\chi_s^2 / s}
+                    \end{equation*}
+                    gilt. Die Dichte ist dabei
+                    \begin{equation*}
+                        f(x) = m^{\frac{r}{2}} n^{\frac{s}{2}} \cdot \frac{\Gamma\big( \frac{r}{2} + \frac{s}{2} \big)}{\Gamma\big( \frac{r}{2} \big) \cdot \Gamma\big( \frac{s}{2} \big)} \cdot \frac{x^{ \frac{r}{2} - 1 }}{(rx + s)^{\frac{r + s}{2}}}, \quad x \geq 0
+                    \end{equation*}
+                    mit der Gamma-Funktion.
+                % end
+            % end
+        % end
+
+        \subsection{Erwartungswert und Varianz}
+            \subsubsection{Erwartungswert}
+                Sei \( h : \R \rightarrow \R \) eine stückweise stückweise stetige Funktion.
+            
+                Der \textit{Erwartungswert} einer \textit{diskret verteilten} Zufallsvariable \(X\) und einer Funktion \( h(X) \) mit den Werten \( x_1, x_2, \cdots \) ist
+                \begin{equation*}
+                    E(X) = \sum_{i} x_i P(X = x_i) \qquad\qquad E(h(X)) = \sum_i h(x_i) P(X = x_i)
+                \end{equation*}
+                sofern \( \sum_i \abs{x_i} P(X = x_i) \) konvergiert.
+                
+                Der \textit{Erwartungswert} einer \textit{stetig verteilten} Zufallsvariable \(X\) und einer Funktion \( h(X) \) mit Dichte \(f\) ist
+                \begin{equation*}
+                    E(X) = \int_{-\infty}^{\infty} \! x f(x) \, dx \qquad\qquad E(h(X)) = \int_{-\infty}^{\infty} \! h(x) f(x) \, dx
+                \end{equation*}
+                sofern \( \int_{-\infty}^{\infty} \! \abs{x} f(x) \, dx \) konvergiert.
+
+                \paragraph{Rechenregeln}
+                    Seien \(X, X_1, \cdots, X_n\) Zufallsvariablen, \( b, a, a_1, \cdots, a_n \in \R \) und \( h_1, h_2 : \R \rightarrow \R \) stückweise stetig. Dann gelten folgende (teilweise redundante) Rechenregeln für den Erwartungswert:
+                    \begin{align*}
+                    	E(aX + b)                       & = aE(X) + b                          \\
+                    	E(h_1(X) + h_2(X))              & = E(h_1(X)) + E(h_2(x))              \\
+                    	E(a_1X_1 + \cdots + a_nX_n + b) & = a_1E(X_1) + \cdots + a_nE(X_n) + b
+                    \end{align*}
+                % end
+            % end
+
+            \subsubsection{Varianz}
+                Die \textit{Varianz} einer Zufallsvariable \(X\) ist der Erwartungswert der quadratischen Abweichung von \(X\) zu ihrem Erwartungswert:
+                \begin{equation*}
+                    \Var(X) = E\big( (X - E(X)) ^ 2 \big)
+                \end{equation*}
+                Die \textit{Standardabweichung} ist dann definiert durch: \( \sqrt{\Var(X)} \)
+
+                \paragraph{Rechenregeln}
+                    Sei \(X\) eine Zufallsvariable, \( a, b \in \R \). Dann gelten folgende Rechenregeln für die Varianz:
+                    \begin{align*}
+                        \Var(X) & = E(X^2) - \big(E(X)\big)^2 \\
+                        \Var(aX + b) & = a^2 \Var(X)
+                    \end{align*}
+                    
+                    Sind Zufallsvariablen \( X_1, \cdots, X_n \) unabhängig, dann gilt zusätzlich:
+                    \begin{equation*}
+	                    \Var(X_1 + \cdots + X_n) = \Var(X_1) + \cdots + \Var(X_n)
+                    \end{equation*}
+                % end
+            % end
+        % end
+
+        \subsection{Tschebyscheffsche Ungleichung}
+            Sei \( X \) eine Zufallsvariable. Dann gilt nach der \textit{tschebyscheffschen Ungleichung}:
+            \begin{equation*}
+                P(\abs{X - E(X)} \geq c) \leq \frac{\Var(X)}{c^2}, \quad c > 0
+            \end{equation*}
+        % end
+
+        \subsection{Unabhängigkeit}
+            Seien \( X_1, \cdots, X_n \) Zufallsvariablen mit den Verteilungsfunktionen \( F_1, \cdots, F_n \). Die \textit{gemeinsame Verteilungsfunktion} ist gegeben durch:
+            \begin{equation*}
+                F(x_1, \cdots, x_n) = P(X_1 \leq x_1, \cdots, X_n \leq x_n), \quad (x_1, \cdots, x_n)^T \in \R^n
+            \end{equation*}
+            
+            Die Zufallsvariablen heißen \textit{unabhängig}, wenn für alle \( (x_1, \cdots, x_n)^T \in \R^n \) die Ereignisse \[ \{ X_1 \leq x_1 \}, \cdots, \{ X_n \leq x_n \} \] vollständig unabhängig sind, d.h. \[ P(X_1 \leq x_1, \cdots, X_n \leq x_n) = P(X_1 \leq x_1) \cdots P(X_n \leq x_n) \] oder kurz \[ F(x_1, \cdots, x_n) = F_1(x_1) \cdots F_n(x_n) \]
+        % end
+    % end
+
+    \section{Einige Sätze}
+        \subsection{Das schwache Gesetz der großen Zahlen}
+            Ist \( X_1, X_2, \cdots \) eine Folge von unabhängigen identisch verteilten Zufallsvariablen mit \( \mu = E(X_i) \), \( \sigma^2 = \Var(X_i) \), dann gilt:
+            \begin{equation*}
+                \lim\limits_{n \rightarrow \infty} P\Bigg( \bigg\lvert\frac{1}{n} \sum_{i = 1}^{n} X_i - \mu\bigg\rvert \geq \varepsilon \Bigg) = 0, \quad \forall \epsilon > 0
+            \end{equation*}
+        % end
+
+        \subsection{Zentraler Grenzwertsatz}
+            Sei \( X_1, X_2, \cdots \) eine Folge von identisch verteilten unabhängigen Zufallsvariablen mit \( \mu_i = E(X_i) \), \( \sigma_i^2 = \Var(X_i) \), \( i = 1, 2, \cdots \). Dann gilt für alle \( y \in \R \):
+            \begin{equation*}
+                \lim\limits_{n \rightarrow \infty} P\Bigg( \frac{X_1 + \cdots + X_n - (\mu_1 + \cdots + \mu_n)}{\sqrt{\sigma_1^2 + \cdots + \sigma_n^2}} \leq y \Bigg) = \Phi(y)
+            \end{equation*}
+            Das arithmetische Mittel \( \bar{X}_{(n)} = \frac{1}{n} (X_1 + \cdots + X_n) \) ist also für große \(n\) annähernd \( N(\mu, \sigma^2) \) verteilt mit
+            \begin{equation*}
+                \mu = \frac{1}{n} E(X_1 + \cdots + X_n) = \frac{1}{n} (\mu_1 + \cdots + \mu_n) \qquad\qquad \sigma^2 = \frac{1}{n^2} \Var(X_1 + \cdots + X_n) = \frac{1}{n^2} (\sigma_1^2 + \cdots + \sigma_n^2)
+            \end{equation*}
+            
+            Anmerkung: Hat \(X\) den Erwartungswert \(\mu\) und die Varianz \(\sigma^2\), dann hat \( \frac{X - \mu}{\sigma} \) den Erwartungswert \(0\) und die Varianz \(1\).
+        % end
+
+        \subsection{Zentralsatz der Statistik}
+            \begin{equation*}
+	            F_n(z; x_1, \cdots, x_n) = \frac{\abs{\{ x_i \forwhich x_i \leq z \}}}{n}
+            \end{equation*}
+        
+            Sei \( X_1, X_2, \cdots \) eine Folge von unabhängigen identisch verteilten Zufallsvariablen mit der Verteilungsfunktion \(F\) und sei
+            \begin{equation*}
+                D_n(X_1, \cdots, X_n) = \sup_{z \in \R} \abs{F_n(z; X_1, \cdots, X_n) - F(z)}
+            \end{equation*}
+            die zufällige Maximalabweichung zwischen empirischer und \enquote{wahrer} Verteilungsfunktion. Dann gilt
+            \begin{equation*}
+                P\bigg( \lim\limits_{n \rightarrow \infty} D_n(X_1, \cdots, X_n) = 0 \bigg) = 1
+            \end{equation*}
+            Die zufällige Maximalabweichung konvergiert also mit einer Wahrscheinlichkeit \(1\) gegen \(0\).
+        % end
+
+        \subsection{Anwendungen}
+            Seien \( X_1, \cdots, X_n \) unabhängige identisch \( N(\mu, \sigma^2) \)-verteilte Zufallsvariablen mit arithmetischem Mittel und Stichprobenvarianz:
+            \begin{equation*}
+                \bar{X}_{(n)} = \frac{1}{n} \sum_{i = 1}^{n} X_i \qquad\qquad S_{(n)}^2 = \frac{1}{n - 1} \sum_{i = 1}^{n} (X_i - \bar{X}_{(n)})^2
+            \end{equation*}
+            Dann gilt:
+            \begin{itemize}
+            	\item \( \bar{X}_{(n)} \) ist \( N\Big(\mu, \frac{\sigma^2}{n}\Big) \)-verteilt
+            	\item \( \frac{n - 1}{\sigma^2} S_{(n)}^2 \) ist \( \chi_{n - 1}^2 \)-verteilt
+            	\item \( \bar{X}_{(n)} \) und \( S_{(n)}^2 \) sind unabhängig
+            	\item \( \sqrt{n} \frac{\bar{X}_{(n) - \mu}}{\sqrt{S_{(n)}^2}} \) ist \( t_{n-1} \)-verteilt
+            \end{itemize}
+        % end
+    % end
+% end
+
+\chapter{Schätzverfahren und Konfidenzintervalle}
+    \section{Grundlagen}
+        \begin{itemize}
+        	\item Sei im folgenden die Messreihe \(x_1, \cdots, x_n\) die Realisierung von unabhängigen identisch wie \(X\) verteilten Zufallsvariablen \(X_1, \cdots, X_n\).
+        	\item Außerdem wird angenommen, dass die Verteilungsfunktion \(F\) von \(X\) und aller \(X_i\) einer durch \(k\) Parameter \( \theta \in \Theta \subset \R^k \) parametrisierte Familie \( F_\theta, \quad \theta \in \Theta \) von Verteilungsfunktionen angehört.
+        	\item Der Parameter oder ein dadurch bestimmter Zahlenwert \( \tau : \Theta \rightarrow \R \) sei unbekannt und soll geschätzt werden.
+        	\item Ein \textit{Schätzverfahren} ist wie folgt definiert: \\ Ein \textit{Schätzverfahren} (oder eine \textit{Schätzfunktion} oder ein \textit{Schätzer}) ist eine Abbildung \[ T_n : \R^n \rightarrow \R \] die einer Messreihe \( x_1, \cdots, x_n \) einen Schätzwert \( T_n(x_1, \cdots, x_n) \) für den Wert \( \tau(\theta) \) zuordnet. Die Zufallsvariable \( T_n(X_1, \cdots, X_n) \) wird \textit{Schätzvariable} genannt.
+        	\item Der Erwartungswert und die Varianz der Schätzvariablen und allen \(X_i\) hängen von der Verteilungsfunktion \(F_\theta\) ab. Zur Verdeutlichung dieses Umstandes wird der Parameter \(\theta\) an sämtliche Funktionen geschrieben:
+            	\begin{equation*}
+	            	\begin{array}{rl}
+	            		              E_\theta(T_n(X_1, \cdots, X_n)), & E_\theta(X_1), \quad \dots               \\
+	            		           \Var_\Theta(T_n(X_1, \cdots, X_n)), & \Var_\theta(X_i), \quad \dots            \\
+	            		P_\theta(a \leq T_n(X_1, \cdots, X_n) \leq b), & P_\theta(a \leq X_1 \leq b), \quad \dots
+	            	\end{array}
+            	\end{equation*}
+        \end{itemize}
+    
+		\subsection{(Asymptotische) Erwartungstreue}
+			Ein Schätzer \( T_n : \R^n \rightarrow \R \) heißt \textit{erwartungstreu} für \( \tau : \Theta \rightarrow \R \), wenn gilt:
+			\begin{equation*}
+				E_\theta(T_n(X_1, \cdots, X_n)) = \tau(\theta) \quad \textrm{für alle } \theta \in \Theta
+			\end{equation*}
+			
+			Eine Folge von Schätzern \( T_n : \R^n \rightarrow \R, \quad n = 1, 2, \cdots \) heißt \textit{asymptotisch erwartungstreu} für \( \tau : \Theta \rightarrow \R \), wenn gilt:
+			\begin{equation*}
+				\lim\limits_{n \rightarrow \infty} E_\theta(T_n(X_1, \cdots, X_n)) = \tau(\theta) \quad \textrm{für alle } \theta \in \Theta
+			\end{equation*}
+			Das heißt, ein Schätzer liefert bei genügender Anzahl an Stichproben ein erwartungstreues Ergebnis.
+		% end
+
+        \subsection{Mittlerer quadratischer Fehler}
+            Um die Güte eines Schätzers zu beurteilen dient der \textit{Mittlere quadratische Fehler} (\textit{Mean squared error, MSE}):
+            \begin{eqnarray}
+                \MSE_\theta(T) \coloneqq E_\theta\big((T - \tau(\theta))^2\big)
+            \end{eqnarray}
+            Es gilt \( T \textrm{ erwartungstreu} \implies \MSE_\theta(T) = \Var_\theta(T) \).
+            
+            Seien \( T_1 \) und \(T_2\) Schätzer für \(\tau\), dann heißt \(T_1\) \textit{effizienter} als \(T_2\), wenn gilt
+            \begin{equation*}
+                \MSE_\theta(T_1) \leq \MSE_\theta(T_2) \quad \forall \theta \in \Theta
+            \end{equation*}
+            Sind \( T_1, T_2 \) erwartungstreu, dann heißt dies
+            \begin{equation*}
+                \Var_\theta(T_1) \leq \Var_\theta(T_2) \quad \forall \theta \in \Theta
+            \end{equation*}
+        % end
+
+        \subsection{Konsistenz}
+            Eine Folge an Schätzern \( T_1, T_2, \cdots \) heißt \textit{konsistent} für \(\tau\), wenn für alle \(\varepsilon > 0\) und alle \(\theta \in \Theta\) gilt
+            \begin{equation*}
+                \lim\limits_{n \rightarrow \infty} P_\theta\big( \abs{T_n(X_1, \cdots, X_n) - \tau(\theta)} > \varepsilon \big) = 0
+            \end{equation*}
+            
+            Die Folge heißt \textit{konsistent im quadratischen Mittel} für \(\tau\), wenn für alle \(\theta \in \Theta\) gilt
+            \begin{equation*}
+                \lim\limits_{n \rightarrow \infty} \MSE_\theta(T_n) = 0
+            \end{equation*}
+            
+            \paragraph{Sätze}
+                Ist \(T_1, T_2, \cdots\) eine Folge von Schätzern, die für \(\tau\) erwartungstreu sind und gilt
+                \begin{equation*}
+	                \lim\limits_{n \rightarrow \infty} \Var_\theta\big(T_n(X_1, \cdots, X_n)\big) = 0 \quad \forall \theta \in \Theta
+                \end{equation*}
+                dann ist die Folge von Schätzern konsistent für \(\tau\).
+                
+                Allgemeiner gilt: Ist \( T_1, T_2, \cdots \) eine Folge von Schätzern, die konsistent im quadratischen Mittel für \(\tau\) sind, dann ist die Folge konsistent für \(\tau\).
+            % end
+        % end
+    % end
+
+    \section{Maximum-Likelihood-Schätzer}
+        \begin{itemize}
+        	\item Bei gegebener Verteilungsklasse \( F_\theta, \quad \theta \in \Theta \) lassen sich Schätzer für den Parameter \(\theta\) oftmals mit der Maximum-Likelihood-Methode gewinne.
+        	\item Sind die Zufallsvariablen \( X_1, \cdots, X_n \) stetig mit einer Dichte verteilt, hängt die Dichte ebenfalls von den Parametern ab (\(f_\theta\)).
+        	\item Für diskrete Zufallsvariablen sei \( f_\theta(x) = P_\theta(X = x) \) für alle \(x\) aus dem Wertebereich. Sei dieser Wertebereich \(\mathbb{X}\).
+        \end{itemize}
+    
+		Für eine Messreihe \( x_1, \cdots, x_n \) heißt die Funktion \( L(\cdot; x_1, \cdots, x_n) \) mit
+		\begin{equation*}
+			L(\theta; x_1, \cdots, x_n) = f_\theta(x_1) \cdot f_\theta(x_2) \cdots f_\theta(x_n)
+		\end{equation*}
+		die zu der Messreihe gehörige \textit{Likelihood-Funktion}.
+		
+		Eine Parameterschätzung \( \hat{\theta} = \hat{\theta}(x_1, \cdots, x_n) \) mit
+		\begin{equation*}
+			L(\hat{\theta}; x_1, \cdots, x_n) \geq L(\theta; x_1, \cdots, x_n) \quad \forall \theta \in \Theta
+		\end{equation*}
+		heißt \textit{Maximum-Likelihood-Schätzwert}. Existiert ein solcher Schätzwert für jede mögliche Messreihe, dann ist
+		\begin{equation*}
+			T_n : \mathbb{X}^n \rightarrow \Theta : (x_1, \cdots, x_n) \mapsto \hat{\theta} (x_1, \cdots, x_n)
+		\end{equation*}
+		ein \textit{Maximum-Likelihood-Schätzer}.
+    % end
+
+    \section{Konfidenzintervalle}
+        \begin{itemize}
+        	\item Wie beim Schätzen wird eine Messreihe \(x_1, \cdots, x_n\) beobachtet und es sollen Ober- und Unterschranken für \( \tau(\theta) \) ermittelt werden.
+        	\item Dabei wird durch ein Paar \( U : \R^n \rightarrow \R \), \( O : \R^n \rightarrow \R \) von Schätzern mit \( U(x_1, \cdots, x_n) \leq O(x_1, \cdots, c_n) \) ein \enquote{zufälliges} Intervall \( I(X_1, \cdots, X_n) = [U(X_1, \cdots, X_n), O(X_1, \cdots, X_n)] \) definiert.
+        	\item Dieses Intervall heißt \textit{Konfidenzintervall} für \(\tau(\theta)\) zum \textit{Konfidenzniveau} \( 1 - \alpha \), falls gilt:
+	        	\begin{equation*}
+		        	P_\theta\big(U(X_1, \cdots, X_n) \leq \tau(\Theta) \leq O(X_1, \cdots, X_n)\big) \geq 1 - \alpha \quad \forall \theta \in \Theta
+	        	\end{equation*}
+	        \item Gehört das Intervall zu einer bestimmten Messreihe, heißt es \textit{konkretes Schätzintervall} für \(\tau(\theta)\).
+	        \item Dann enthält ein konkretes Schätzintervall den Wert \(\tau(\theta)\) mit einer Wahrscheinlichkeit von \( 1 - \alpha \).
+        \end{itemize}
+
+        \subsection{Konstruktion für normalverteilte Zufallsvariablen}
+            Seien \(X_1, \cdots, X_n\) unabhängig und identisch normalverteilte Zufallsvariablen. Dann ist die Verteilungsfunktion \(F_\theta\) durch den Parameter \( \theta = (\mu, \sigma^2) \) bestimmt:
+            \begin{equation*}
+	            F_\theta(x) = F_{(\mu, \sigma^2)}(x) = \Phi\bigg(\frac{x - \mu}{\sigma}\bigg)
+            \end{equation*}
+            Das Konfidenzniveau ist dabei immer \( 1 - \alpha \).
+
+            \paragraph{Für \(\mu\) bei bekannter Varianz}
+                Es ist \( \Theta = \{ (\mu, \sigma^2) \forwhich \mu \in \R \} \) und \( \tau(\theta) = \mu \).
+                
+                Das Konfidenzintervall für \(\mu\) zum Niveau \( 1 - \alpha \) lautet dann
+                \begin{equation*}
+	                I(X_1, \cdots, X_n) = \Bigg[ \bar{X}_{(n)} - u_{1 - \frac{\alpha}{2}} \frac{\sigma_0}{\sqrt{n}}, \quad \bar{X}_{(n)} + u_{1 - \frac{\alpha}{2}} \frac{\sigma_0}{\sqrt{n}} \Bigg]
+                \end{equation*}
+                mit dem \( 1 - \frac{\alpha}{2} \)-Quantil \( u_{ 1 - \frac{\alpha}{2} } \) der \( N(0, 1) \)-Verteilung, also
+                \begin{equation*}
+	                \Phi(u_{ 1 - \frac{\alpha}{2} }) = 1 - \frac{\alpha}{2}
+                \end{equation*}
+            % end
+
+            \paragraph{Für \(\mu\) bei unbekannter Varianz}
+                Es ist \( \Theta = \{ (\mu, \sigma^2) \forwhich \mu \in \R, \sigma^2 > 0 \} \) und \( \tau(\theta) = \mu \).
+                
+                Das Konfidenzintervall für \(\mu\) zum Niveau \( 1 - \alpha \) lautet dann
+                \begin{equation*}
+	                I(X_1, \cdots, X_n) = \Bigg[ \bar{X}_{(n)} - t_{ n - 1; 1 - \frac{\alpha}{2} } \cdot \sqrt{\frac{S_{(n)}^2}{n}}, \quad \bar{X}_{(n)} + t_{ n - 1; 1 - \frac{\alpha}{2} } \cdot \sqrt{\frac{S_{(n)}^2}{n}} \Bigg]
+                \end{equation*}
+                mit dem \( 1 - \frac{\alpha}{2} \)-Quantil \( t_{ n - 1; 1 - \frac{\alpha}{2} } \) der \( t_{n-1} \)-Verteilung.
+            % end
+
+            \paragraph{Für \(\sigma^2\) bei bekanntem Erwartungswert}
+                Es ist \( \Theta = \{ (\mu_0, \sigma^2) \forwhich \sigma^2 > 0 \} \) und \( \tau(\theta) = \sigma^2 \).
+                
+                Das Konfidenzintervall für \(\sigma^2\) zum Niveau \( 1 - \alpha \) lautet dann
+                \begin{equation*}
+	                I(X_1, \cdots, X_n) = \Bigg[ \frac{\sum_{i = 1}^{n} (X_i - \mu_0)^2}{\chi_{n; 1 - \frac{\alpha}{2}}^2}, \quad \frac{\sum_{i = 1}^{n} (X_i - \mu_0)^2}{\chi_{n; \frac{\alpha}{2}}^2} \Bigg]
+                \end{equation*}
+                mit dem \( 1-\frac{\alpha}{2} \)-Quantil \( \chi_{n; 1 - \frac{\alpha}{2}}^2 \) und dem \( \frac{\alpha}{2} \)-Quantil \( \chi_{n; \frac{\alpha}{2}}^2 \) der \( \chi_n^2 \)-Verteilung.
+            % end
+
+            \paragraph{Für \(\sigma^2\) bei unbekanntem Erwartungswert}
+                Es ist \( \Theta = \{ (\mu, \sigma^2) \forwhich \mu \in \R, \sigma^2 > 0 \} \) und \( \tau(\theta) = \sigma^2 \).
+                
+                Das Konfidenzintervall für \(\sigma^2\) zum Niveau \( 1 - \alpha \) lautet dann
+                \begin{equation*}
+	                I(X_1, \cdots, X_n) = \Bigg[ \frac{(n - 1) \, S_{(n)}^2}{\chi_{n - 1; 1 - \frac{\alpha}{2}}^2}, \quad \frac{(n - 1) \, S_{(n)}^2}{\chi_{n - 1; \frac{\alpha}{2}}^2} \Bigg]
+                \end{equation*}
+                mit dem \( 1-\frac{\alpha}{2} \)-Quantil \( \chi_{n-1; 1 - \frac{\alpha}{2}}^2 \) und dem \( \frac{\alpha}{2} \)-Quantil \( \chi_{n-1; \frac{\alpha}{2}}^2 \) der \( \chi_{n-1}^2 \)-Verteilung.
+            % end
+        % end
+    % end
+% end
+
+\chapter{Testverfahren}
+    \warning{Sämtliche Tests, die auf einer approximierten Verteilung und empirischen Daten basieren, sind nur für große Anzahl an Werten (großes \(n\)) anwendbar!}
+
+    \section{Grundlagen}
+        \begin{itemize}
+        	\item Die \textit{Nullhypothese} \(H_0\) ist die zu prüfende Annahme.
+        	\item Ein Verfahren zur Prüfung, ob eine Messreihe der Nullhypothese genügt, wird \textit{Test} genannt.
+        	\item Die Tests sind dabei durch Angabe von \textit{kritischen Bereichen} \( K \subset \R^n \) vollständig beschrieben.
+        \end{itemize}
+        \begin{equation*}
+	        \begin{cases}
+	        	\textrm{Lehne } H_0 \textrm{ ab} & \textrm{falls } (x_1, \cdots, x_n) \in K \\
+	        	\textrm{Akzeptierte } H_0        & \textrm{sonst}
+	        \end{cases}
+        \end{equation*}
+        \begin{itemize}
+        	\item Die wichtigen Fehlermöglichkeiten eines solchen Tests sind:
+	        	\begin{description}[leftmargin = 6cm]
+	        		\item[Fehler 1. Art (\textit{False Negative})] \(H_0\) wird abgelehnt, obwohl \(H_0\) zutrifft.
+	        		\item[Fehler 2. Art (\textit{False Positive})] \(H_0\) wird akzeptiert, obwohl \(H_0\) nicht zutrifft.
+	        	\end{description}
+        	\item \textbf{Ziel}
+	        	\begin{itemize}
+	        		\item Wahrscheinlichkeit für den Fehler 1. Art klein.
+	        		\item Dazu wird ein Testniveau \(\alpha\) vorgegeben.
+	        		\item Dann muss gelten:
+	        	\end{itemize}
+        \end{itemize}
+        \begin{equation*}
+		    \textrm{Unter Nullhypothese gilt } P\big((X_1, \cdots, X_n) \in K\big) \leq \alpha \quad\iff\quad P\big((K_1, \cdots, K_n) \in K \quad\vert\quad H_0\big) \leq \alpha
+		\end{equation*}
+
+        \subsection{Testgröße}
+            Der kritische Bereich wird durch eine passende Funktion, genannt \textit{Testgröße}:
+            \begin{equation*}
+                T : \R^n \rightarrow \R
+            \end{equation*}
+            und kritische Schranken \(c\) bzw. \(c_1\), \(c_2\) beschrieben.
+            
+            Damit können bspw. folgende Möglichkeiten an Tests spezifiziert werden, wobei diese immer die allgemeine Form \[ K = \Big\{ (x_1, \cdots, x_n) \in \R^n \forwhich \psi\big(T(x_1, \cdots, x_n)\big) \Big\} \] für die Definition der kritischen Bereiche annehmen mit unterschiedlichen Prädikaten \( \psi(t) \):
+            \begin{itemize}
+            	\item \( \psi(t) \coloneqq \big(\abs{t} > c\big) \)  \tabto{4.5cm} Betragsmäßig große Werte sprechen gegen \(H_0\).
+            	\item \( \psi(t) \coloneqq (t < c_1 \lor t > c_2) \) \tabto{4.5cm} Betragsmäßig kleine Werte sprechen gegen \(H_0\).
+            	\item \( \psi(t) \coloneqq (t > c) \)                \tabto{4.5cm} Große Werte sprechen gegen \(H_0\).
+            	\item \( \psi(t) \coloneqq (t < c) \)                \tabto{4.5cm} Kleine Werte sprechen gegen \(H_0\).
+            \end{itemize}
+        % end
+
+        \subsection{Allgemeines Konstruktionsprinzip zum Niveau \(\alpha\)}
+            \begin{enumerate}
+            	\item Verteilungsannahmen formulieren.
+            	\item Nullhypothese \(H_0\) formulieren.
+            	\item Testgröße \(T\) wählen und die Verteilung dieser unter \(H_0\) bestimmen.
+            	\item \(I \subseteq \R \) so wählen, dass unter \(H_0\) gilt \( P\big(T(X_1, \cdots, x_N) \in I\big) \leq \alpha \).
+            \end{enumerate}
+            Dabei wird \(I\) durch die kritischen Schranken festgelegt und ist bspw. von der Form:
+            \begin{equation*}
+	            I = \R \setminus [-c, c] \qquad I = \R \setminus [c_1, c_2] \qquad I = (c, \infty) \qquad I = (-\infty, c)
+            \end{equation*}
+            Für das Niveau \( \alpha \) wird oft \( 0.1\), \(0.05\) oder \(0.01 \) gewählt.
+        % end
+    % end
+
+    \section{Wichtige Tests bei Normalverteilungsannahme}
+        \paragraph{Für \(\mu_0\) bei bekannter Varianz (Gauß-Test)}
+            Seien \( X_1, \cdots, X_n \) unabhängig und identisch \( N(\mu, \sigma_0^2) \)-verteilt, sei \(\sigma_0^2\) bekannt und \(\mu_0\) zu testen.
+            \begin{enumerate}
+            	\item Wählen der Nullhypothese:
+                	\begin{enumerate}[label = \Alph*)]
+                		\item \( H_0 \): \quad \( \mu = \mu_0 \)
+                		\item \( H_0 \): \quad \( \mu \leq \mu_0 \)
+                		\item \( H_0 \): \quad \( \mu \geq \mu_0 \)
+                	\end{enumerate}
+            	\item Berechnen der Testgröße:
+                	\begin{equation*}
+	                	T(X_1, \cdots, X_n) = \frac{\sqrt{n}}{\sigma_0} (\bar{X}_{(n)} - \mu_0)
+                	\end{equation*}
+	            \item Ablehnung von \(H_0\), falls:
+		            \begin{enumerate}[label = \Alph*)]
+		            	\item \( \abs{T} > u_{1 - \frac{\alpha}{2}} \)
+		            	\item \( T > u_{1 - \alpha} \)
+		            	\item \( T < u_\alpha \)
+		            \end{enumerate}
+            \end{enumerate}
+        % end
+
+        \paragraph{Für \(\mu_0\) bei unbekannter Varianz (\(t\)-Test)}
+            Seien \( X_1, \cdots, X_n \) unabhängig und identisch \( N(\mu, \sigma^2) \)-verteilt und \(\mu_0\) zu testen.
+            \begin{enumerate}
+            	\item Wählen der Nullhypothese:
+                	\begin{enumerate}[label = \Alph*)]
+                		\item \( H_0 \): \quad \( \mu = \mu_0 \)
+                		\item \( H_0 \): \quad \( \mu \leq \mu_0 \)
+                		\item \( H_0 \): \quad \( \mu \geq \mu_0 \)
+                	\end{enumerate}
+            	\item Berechnen der Testgröße:
+                	\begin{equation*}
+	                	T(X_1, \cdots, X_n) = \sqrt{n} \frac{\bar{X}_{(n)} - \mu_0}{\sqrt{S_{(n)}^2}}
+                	\end{equation*}
+                \item Ablehnung von \(H_0\), falls:
+	                \begin{enumerate}[label = \Alph*)]
+	                	\item \( \abs{T} > t_{n - 1; 1 - \frac{\alpha}{2}} \)
+	                	\item \( T > t_{n - 1; 1 - \alpha} \)
+	                	\item \( T < t_{n - 1; \alpha} \)
+	                \end{enumerate}
+            \end{enumerate}
+        % end
+
+        \paragraph{Für \(\sigma^2\) bei bekanntem Erwartungswert}
+            Seien \( X_1, \cdots, X_n \) unabhängig und identisch \( N(\mu, \sigma^2) \)-verteilt, sei \( \mu \) bekannt und \(\sigma_0^2\) zu testen.
+            \begin{enumerate}
+            	\item Wählen der Nullhypothese:
+                	\begin{enumerate}[label = \Alph*)]
+                		\item \( H_0 \): \( \sigma^2 = \sigma_0^2 \)
+                		\item \( H_0 \): \( \sigma^2 \leq \sigma_0^2 \)
+                		\item \( H_0 \): \( \sigma^2 \geq \sigma_0^2 \)
+                	\end{enumerate}
+            	\item Berechnen der Testgröße:
+                	\begin{equation*}
+	                	T(X_1, \cdots, X_n) = \frac{1}{\sigma_0^2} \sum_{i = 1}^{n} (X_i - \mu)^2
+                	\end{equation*}
+                \item Ablehnung von \(H_0\), falls:
+	                \begin{enumerate}[label = \Alph*)]
+	                	\item \( T < \chi_{n; \frac{\alpha}{2}}^2 \) oder \( T > \chi_{n; 1 - \frac{\alpha}{2}}^2 \)
+	                	\item \( T > \chi_{n; 1 - \alpha}^2 \)
+	                	\item \( T < \chi_{n; \alpha}^2 \)
+	                \end{enumerate}
+            \end{enumerate}
+        % end
+
+        \paragraph{Für \(\sigma_0^2\) bei unbekanntem Erwartungswert (\(\chi^2\)-Test)}
+            Seien \( X_1, \cdots, X_n \) unabhängig und identisch \( N(\mu, \sigma^2) \)-verteilt und \(\sigma_0^2\) zu testen.
+            \begin{enumerate}
+            	\item Wählen der Nullhypothese:
+                	\begin{enumerate}[label = \Alph*)]
+                		\item \( H_0 \): \( \sigma^2 = \sigma_0^2 \)
+                		\item \( H_0 \): \( \sigma^2 \leq \sigma_0^2 \)
+                		\item \( H_0 \): \( \sigma^2 \geq \sigma_0^2 \)
+                	\end{enumerate}
+            	\item Berechnen der Testgröße:
+                	\begin{equation*}
+	                	T(X_1, \cdots, X_n) = \frac{n - 1}{\sigma_0^2} S_{(n)}^2
+                	\end{equation*}
+                \item Ablehnung von \(H_0\), falls:
+	                \begin{enumerate}[label = \Alph*)]
+	                	\item \( T < \chi_{n; \frac{\alpha}{2}}^2 \) oder \( T > \chi_{n; 1 - \frac{\alpha}{2}}^2 \)
+	                	\item \( T > \chi_{n; 1 - \alpha}^2 \)
+	                	\item \( T < \chi_{n; \alpha}^2 \)
+	                \end{enumerate}
+            \end{enumerate}
+        % end
+    % end
+
+    \section{Verteilungstests}
+        \paragraph{\(\chi^2\)-Anpassungstest}
+            Der \textit{\(\chi^2\)-Anpassungstest} dient zur Prüfung, ob die empirische Verteilung einer Zufallsvariable einer erwarteten Verteilung entspricht.
+        
+            Seien \( X_1, \cdots, X_n \) unabhängig und identisch verteilt mit unbekannter Verteilung \(F\) und sei \(x_1, \cdots, x_n\) eine realisierende Messreihe.
+            \begin{enumerate}
+            	\item \(H_0\): \quad \( F = F_0 \iff X_i \sim F_0 \)
+            	\item Partitionierung von \(R\) in \(k\) Intervalle (\( z_1 < z_2 < \cdots < z_{k-1} \)):
+                	\begin{equation*}
+	                	A_1 = (-\infty, z_1], \quad A_2 = (z_1, z_2], \quad, \cdots, \quad A_k = (z_{k-1}, \infty)
+                	\end{equation*}
+                \item Bestimmen der Häufigkeiten:
+	                \begin{equation*}
+		                h_j = \big| \{ i \forwhich x_i \in A_j \} \big|, \quad j = 1, \cdots, k
+	                \end{equation*}
+	            \item Unter \( H_0 \) gilt (mit \( z_0 \coloneqq -\infty \) und \( z_k \coloneqq \infty \)):
+		            \begin{equation*}
+			            p_j \coloneqq P(X \in A_j) \overset{H_0}{=} F_0(z_j) - F_0(z_{j-1}) \approx \frac{h_j}{n}, \quad j = 1, \cdots, k
+		            \end{equation*}
+		        \item Berechnen der Testgröße:
+			        \begin{equation*}
+				        T(X_1, \cdots, X_n) = \sum_{j = 1}^{k} \frac{(H_j - n p_j)^2}{n p_j}
+			        \end{equation*}
+			    \item Ablehnung von \(H_0\), falls:
+				    \begin{equation*}
+					    T > \chi_{k - 1; 1 - \alpha}^2
+				    \end{equation*}
+            \end{enumerate}
+        % end
+
+        \paragraph{\(\chi^2\)-Test auf Unabhängigkeit (Kontingenztest)}
+            Der \textit{\(\chi^2\)-Kontingenztest} dient zur Prüfung, ob Zufallsvariablen unabhängig sind.
+            
+            Seien \( (X_1, Y_1), \cdots, (X_n, Y_n) \) unabhängig und identisch wie \( (X, Y) \) verteilt und sei \( (x_1, y_1), \cdots, (x_n, y_n) \) eine realisierende Messreihe.
+            \begin{enumerate}
+            	\item \(H_0\): \quad \(X\) und \(Y\) sind unabhängig
+            	\item Partitionierung in \(k\) bzw. \(l\) Intervalle (\( z_1 < z_2 < \cdots < z_{k-1} \), \( \tilde{z}_1 < \tilde{z}_2 < \cdots < \tilde{z}_{k-1} \)):
+                	\begin{itemize}
+                		\item x-Achse: \( A_1 = (-\infty, z_1], \quad A_2 = (z_1, z_2], \quad, \cdots, \quad A_k = (z_{k-1}, \infty) \)
+                		\item y-Achse: \( B_1 = (-\infty, \tilde{z}_1], \quad B_2 = (\tilde{z}_1, \tilde{z}_2], \quad, \cdots, \quad B_l = (\tilde{z}_{l-1}, \infty) \)
+                	\end{itemize}
+            	\item Bestimmen der Häufigkeiten:
+                	\begin{equation*}
+	                	h_{ij} = \Big| \big\{ r \in \{ 1, \cdots, n \} \forwhich (x_r, y_r) \in A_i \times B_i \big\} \Big|, \quad i = 1, \cdots, k,\, j = 1, \cdots, l
+                	\end{equation*}
+                	und der Randhäufigkeiten:
+                	\begin{equation*}
+	                	h_{i.} = h_{i1} + \cdots + h_{il}, \quad i = 1, \cdots, k \qquad\qquad h_{.j} = h_{1j} + \cdots + h_{kj}, \quad j = 1, \cdots, l
+                	\end{equation*}
+	            \item Seien unter \(H_0\):
+		            \begin{equation*}
+			            \frac{h_{i.}}{n} \approx P(X \in A_i) \qquad \frac{h_{.j}}{n} \approx P(Y \in B_j)
+		            \end{equation*}
+		            \begin{equation*}
+			            \frac{\tilde{h}_{ij}}{n} \coloneqq \frac{h_{i.} h_{.j}}{n^2} \approx P(X \in A_i) \cdot P(Y \in B_j) \overset{H_0}{=} P(X \in A_i, Y \in B_j) \approx \frac{h_{ij}}{n}
+		            \end{equation*}
+			    \item Berechnen der Testgröße (mit Zufallsvariablen \( H_{ij} \) und \( \tilde{H}_{ij} \) für \( h_{ij} \) und \( \tilde{h}_{ij} \)):
+				    \begin{equation*}
+					    T(X_1, \cdots, X_n) = \sum_{i = 1}^{k} \sum_{j = 1}^{l} \frac{(H_{ij} - \tilde{H}_{ij})^2}{\tilde{H}_{ij}}
+				    \end{equation*}
+				\item Ablehnung von \(H_0\), falls:
+					\begin{equation*}
+						T > \chi_{(k - 1)(l - 1); 1 - \alpha}^2
+					\end{equation*}
+            \end{enumerate}
+        % end
+
+        \paragraph{\(\chi^2\)-Homogenitätstest}
+            Der \textit{\(\chi^2\)-Homogenitätstest} dient zur Prüfung, ob die mehrere Zufallsvariablen identisch verteilt sind.
+            
+            Seien \( X_1^{(i)}, \cdots, X_{n_i}^{(i)} \) unabhängig und identisch verteilt mit einer Verteilungsfunktion \(F_i\) für alle \( i = 1, \cdots, k \).
+            \begin{enumerate}
+            	\item \(H_0\): \quad \( F_1 = F_2 = \cdots = F_k \)
+            	\item Partitionierung in \(m\) Intervalle (\( z_1 < z_2 < \cdots < z_{k-1} \)):
+                	\begin{equation*}
+	                	A_1 = (-\infty, z_1], \quad A_2 = (z_1, z_2], \quad \cdots, \quad A_m = (z_{m-1}, \infty)
+                	\end{equation*}
+                \item Bestimmen der Häufigkeiten:
+	                \begin{equation*}
+		                H_{ij} = \big| \{ X_j^{(i)} \forwhich X_j^{(i)} \in A_j \} \big|, \quad i = 1, \cdots, k,\, j = 1, \cdots, m
+	                \end{equation*}
+	                und der summierten Häufigkeiten:
+	                \begin{equation*}
+		                H_{.j} = H_{ij} + \cdots + H_{kj}, \quad j = 1, \cdots, m
+	                \end{equation*}
+	            \item Unter \(H_0\) gilt daher für die relativen Häufigkeiten (mit \( n = n_1 + \cdots + n_k \)):
+		            \begin{equation*}
+			            \frac{h_{ij}}{n_i} \approx \frac{h_{.j}}{n} \iff h_{ij} - \frac{n_i h_{.j}}{n} \approx 0
+		            \end{equation*}
+		        \item Berechnen der Testgröße (mit Zufallsvariablen \(X_{ij}\) und \(H_{.j}\) für \(h_{ij}\) und \(h_{.j}\)):
+			        \begin{equation*}
+				        T(X_1^{(1)}, \cdots, X_{n_k}^{(k)}) = \sum_{i=1}^{k} \sum_{j=1}^m \frac{\Big(H_{ij} - \frac{n_i H_{.j}}{n}\Big)^2}{\frac{n_i H_{.j}}{n}}
+			        \end{equation*}
+			    \item Ablehnung von \(H_0\), falls:
+				    \begin{equation*}
+					    T > \chi_{(k-1)(m-1); 1-\alpha}^2
+				    \end{equation*}
+            \end{enumerate}
+        % end
+
+        \paragraph{Wilcoxon Vorzeichen-Rang-Test}
+            Der \textit{Wilcoxon Vorzeichen-Rang-Test} dient zur Prüfung, ob zwei Algorithmen in der gleichen Zeit laufen, d.h. gleich schnell sind.
+            
+            Seien \( X, Y \) Zufallsvariablen, die die Laufzeit der beiden Algorithmen angeben und seien \( x_1, \cdots, x_n \), \( y_1, \cdots, y_n \) zwei realisierende Messreihen.
+            \begin{enumerate}
+            	\item \(H_0\): \quad Beide Algorithmen sind gleich schnell.
+            	\item Berechne \( q_1 = \frac{x_1}{y_1},\, \cdots,\, q_n = \frac{x_n}{y_n} \) und entferne alle Quotienten nahe \(1\) und sei \( N \) die Anzahl noch verbleibender Messwerte.
+            	\item Ersetze alle \( 0 \leq q_i < 1 \) durch \( -\frac{1}{q_i} \) (\( i = 1, \cdots, N \)) und erhalte das Ergebnis \( \tilde{q}_1, \cdots, \tilde{q}_N \).
+            	\item Sortiere \( \abs{\tilde{q}_1} < \abs{\tilde{q}_2} < \cdots < \abs{\tilde{q}_N} \).
+            	\item Berechne und setze
+                	\begin{align*}
+	                	G_1 &\coloneqq \{ i \forwhich \tilde{q}_i < -1 \} \tag{Algorithmus 1 schneller} \\
+	                	G_2 &\coloneqq \{ i \forwhich \tilde{q}_i > 1 \} \tag{Algorithmus 2 schneller} \\
+	                	r_1 &\coloneqq \sum_{i \in G_1} i \\
+	                	r_2 &\coloneqq \sum_{i \in G_2} i
+                	\end{align*}
+                \item Berechnen der Testgröße:
+	                \begin{equation*}
+		                T = \frac{\min \{ r_1, r_2 \} - \frac{N(N + 1)}{4}}{\sqrt{\frac{N(N + 1)(2N + 1)}{24}}}
+	                \end{equation*}
+	            \item Ablehnung von \(H_0\), falls:
+		            \begin{equation*}
+			            \abs{T} > u_{1 - \frac{\alpha}{2}}
+		            \end{equation*}
+            \end{enumerate}
+        % end
+    % end
+    
+    \section{Weitere statische Tests}
+        \begin{description}
+        	\item[Parametrische Tests] Verteilung bekannt, Parameter unbekannt \\ ANOVA (mehrere Stichproben, normalverteilt, gleiche Varianz), \dots
+        	\item[Nichtparametrische Tests] Verteilung soll getestet werden \\ Kolmogorow-Smirnow-Test (Verteilungstyp), Wilcoxon-Mann-Whitney-Test (Lage von Stichproben), Kruskal-Wallis-Tests (\(\geq 3\) Gruppen von Stichproben), \dots
+        	\item[Unabhängigkeitstests] McNemar-Test (zwei abhängige Stichproben), \dots
+        	\item[Tests zu Regressionsmethoden] \(t\)-Test: Regressionskoeffizient, \dots
+        	\item[\dots]
+        \end{description}
+    % end
+% end
+
+\chapter{Robuste Statistik}
+    Ausreißer innerhalb einer Messreihe können die geschätzten statistischen Parameter stark verfälschen. Diesem Phänomen soll die robuste Statistik mit bestimmten Methodiken entgegenwirken.
+
+    \section{Median}
+        Sei \(X\) eine Zufallsvariable. Dann ist jede Zahl \( \mu_m \) ein \textit{robuster Median} mit:
+        \begin{equation*}
+            P(X \leq \mu_m) \geq \frac{1}{2} \quad \textrm{und} \quad P(X \geq \mu_m) \geq \frac{1}{2}
+        \end{equation*}
+        mit der Verteilungsfunktion \(F\) von \(X\) gilt gleichbedeutend:
+        \begin{equation*}
+            F(\mu_m) \geq \frac{1}{2} \quad \textrm{und} \quad F(\mu_m-) \leq \frac{1}{2}
+        \end{equation*}
+        
+        \paragraph{Eigenschaften}
+            \begin{itemize}
+            	\item Der Median ist so nur eindeutig, wenn \( F(x) = \frac{1}{2} \) genau eine Lösung besitzt.
+            	\item Wenn der Media eindeutig ist und die Verteilung \(F\) symmetrisch ist (d.h. es gilt \( \forall x \in \R : F(\mu_m + x) = q - F(\mu_m - x) \)), dann gleicht der Median dem Erwartungswert.
+            \end{itemize}
+        % end
+
+        \subsection{Schätzer}
+            Sei \( T(x_1, \cdots, x_n) \coloneqq \tilde{x} \) der empirische Median, dann kann ein Schätzer \( \tilde{X}_{(n)} \) für \(\mu_m\) mit diesem konstruiert werden:
+            \begin{equation*}
+                \tilde{X}_{(n)} \coloneqq
+                \begin{cases}
+                	X_{(\frac{n}{2})}(\omega)     & \textrm{falls } n \textrm{ gerade}   \\
+                	X_{(\frac{n + 1}{2})}(\omega) & \textrm{falls } n \textrm{ ungerade}
+                \end{cases}
+            \end{equation*}
+            für \( \omega \in \Omega \) und der geordneten Messreihe \( X_{(1)}(\omega), \cdots, X_{(n)}(\omega) \).
+            
+            \paragraph{Erwartungstreue}
+                Seien \(X_1, \cdots, X_n\) unabhängig und identisch verteilt mit Verteilungsfunktion \( F_\theta \). Sei außerdem der Median \( \mu_m = \tau(\theta) \) eindeutig und \( F_\theta \) symmetrisch.
+                
+                Dann ist \( \mu_m = \mu \) und \( \tilde{X}_{(n)} \) ein erwartungstreu für \( \mu_m = \mu = \tau(\theta) \).
+            % end
+            
+            \paragraph{Vergleich Median/Arithmetisches Mittel}
+                Seien \( \bar{X}_{(n)} \) und \( \tilde{X}_{(n)} \) Schätzer, wobei \( \bar{X}_{(n)} \) auf dem arithmetischen Mittel und \( \tilde{X}_{(n)} \) auf dem empirischen Median basiert.
+                
+                Für die beiden Schätzer gilt (asymptotisch):
+                \begin{align*}
+                	\MSE_\theta(\bar{X}_{(n)})   & = \frac{\sigma^2}{n}      \\
+                	\MSE_\theta(\tilde{X}_{(n)}) & = \frac{\pi \sigma^2}{2n}
+                \end{align*}
+                Somit ist der empirische Median um den Faktor \( \frac{2}{\pi} \approx 0.64 \) weniger effizient als das arithmetische Mittel. Anders ausgedrückt: Der Median ist bei 100 Beobachtungen genauso verlässlich wie das arithmetische mittel bei 64 Beobachtungen als Schätzer für den Erwartungswert
+            % end
+        % end
+    % end
+
+    \section{M-Schätzer}
+        \begin{itemize}
+        	\item Seien \( X_1, \cdots, X_n \) unabhängige identisch symmetrisch verteilte Zufallsvariablen mit der Realisierung \(x_1, \cdots, x_n\).
+        	\item \textbf{Ziel:} Erstellung eines Schätzers für den Erwartungswert \(\mu\).
+	        \item Der \textit{M-Schätzer} bildet ein allgemeines Prinzip zur Konstruktion für Schätzer des Erwartungswertes.
+	        \item Sei \( \Phi : [0, \infty) \rightarrow \R \) eine monoton wachsende Straffunktion und betrachte
+		        \begin{equation*}
+			        S(x) \coloneqq \sum_{i = 1}^{n} \Phi\big( \abs{x - x_i} \big)
+		        \end{equation*}
+		    \item Existiert ein eindeutiges Minimum \( \mu_M(x_1, \cdots, x_n) \), ist dies der zu \(\Phi\) gehörige M-Schätzer.
+        \end{itemize}
+    
+        \paragraph{Typische M-Schätzer}
+	        Üblicherweise wird \( \Phi(s) = s^p \) mit \( p > 0 \) gewählt. Dann liefert:
+	        \begin{description}[leftmargin = 2cm]
+	        	\item[\( p = 1\)] den Median \( \tilde{x} \). Er minimiert die Abstandssumme:
+		        	\begin{equation*}
+			        	\hspace{-2cm} S(x) = \sum_{i = 1}^{n} \abs{x - x_i}
+		        	\end{equation*}
+		        \item[\( p = 2 \)] das arithmetische Mittel. Es minimiert die quadratische Abstandssumme:
+			        \begin{equation*}
+				        \hspace{-2cm} S(x) = \sum_{i = 1}^{n} (x - x_i)^2
+			        \end{equation*}
+			    \item[\( p \rightarrow \infty \)] die Midrange
+				    \begin{equation*}
+					    \hspace{-2cm} \frac{\max \{ x_1, \cdots, x_n \} + \min \{ x_1, \cdots, x_n \}}{2}
+				    \end{equation*}
+	        \end{description}
+	        Kleinere Werte für \(p\) liefern dabei robustere M-Schätzer, da Ausreißer weniger stark bestraft werden.
+	        
+	        Eine weitere übliche Straffunktion ist z.B. die Lorentz-Straffunktion
+	        \begin{equation*}
+		        \Phi(s) = \ln\Big(1 + \frac{s^2}{2}\Big)
+	        \end{equation*}
+	        die robuster ist als die übliche quadratische Straffunktion.
+        % end
+    % end
+% end
+
+\chapter{Multivariate Verteilungen und Summen von Zufallsvariablen}
+    Oftmals ist es nötig, Zufallsvariablen zu betrachten, die voneinander abhängig, also nicht unabhängig sind. Dazu wird hier die gemeinsame Verteilung des Zufallsvektors \( X = (X_1, \cdots, X_n)^T \) und die Summe der Zufallsvariablen betrachtet.
+
+    \section{Grundlagen}
+        \paragraph{Gemeinsame Verteilungsfunktion}
+            Seien \( X_1, \cdots, X_n \) Zufallsvariablen mit Verteilungsfunktionen \( F_1, \cdots, F_n \). Dann ist die \textit{gemeinsame Verteilungsfunktion} (oder Verteilung des Zufallsvektors \( X I (X_1, \cdots, X_n)^T \)) gegeben durch:
+            \begin{equation*}
+	            F(x_1, \cdots, x_n) = P(X_1 \leq x_q, \cdots, X_n \leq x_n), \quad (x_1, \cdots, x_n) \in \R^n
+            \end{equation*}
+        % end
+        
+        \paragraph{Gemeinsame Dichte}
+            Eine Funktion \( f : \R^n \rightarrow [0, \infty) \) heißt \textit{gemeinsame Dichte} von \( X_1, \cdots, X_n \), wenn für alle \( (x_1, \cdots, x_n) \in \R^n \) gilt:
+            \begin{equation*}
+	            F(x_1, \cdots, x_n) = \int_{-\infty}^{x_n} \! \cdots \int_{-\infty}^{x_1} \! f(s_1, \cdots, s_n) \, ds_1 \, \cdots \, ds_n
+            \end{equation*}
+        % end
+        
+        \paragraph{Erwartungswertvektor}
+            Der Vektor \( \mu = \big( E(X_1), \cdots, E(X_n) \big)^T \) heißt (sofern er existiert) \textit{Erwartungswertvektor} von \(X\).
+        % end
+        
+        \paragraph{Kovarianzmatrix}
+            Die \textit{Kovarianzmatrix} ist (sofern sie existiert) eine Matrix \( \Sigma \in \R^{n \times n} \) der folgenden Form:
+            \begin{equation*}
+	            \Sigma =
+	            \begin{pmatrix}
+	            	\Var(X_1)      & \Cov(X_1, X_2) & \cdots & \Cov(X_1, X_n) \\
+	            	\Cov(X_2, X_1) & \Var(X_2)      & \cdots & \Cov(X_2, X_n) \\
+	            	\vdots         & \vdots         & \ddots & \vdots         \\
+	            	\Cov(X_n, X_1) & \Cov(X_n, X_2) & \cdots & \Var(X_n)
+	            \end{pmatrix}
+            \end{equation*}
+            wobei die \textit{Kovarianz} von zwei Zufallsvariablen gegeben ist durch \[ \Cov(X_i, X_j) \coloneqq E\Big( \big(X_i - E(X_i)\big) \cdot \big(X_j - E(X_j)\big) \Big) \] sofern \( \Var(X_i) \) existiert, d.h. \( < \infty \) ist (\( i = 1, \cdots, n \)).
+            
+            Es gilt weiterhin \( \Var(X_i) = \Cov(X_i, X_i) \) und \( \Cov(X_i, X_j) = \Cov(X_j, X_i) \).
+            
+            \subparagraph{Rechenregeln}
+	            Seien \(X, Y, Z\) Zufallsvariablen und \( a, b, c, d \in \R \).
+	            
+	            Dann gelten:
+	            \begin{itemize}
+	            	\item \( \Cov(X, Y) = E(XY) - E(X) E(Y) \)
+	            	\item \( \Var(X - Y) = \Var(X) + \Var(Y) + 2 \, \Cov(X, Y) \)
+	            	\item \( \Cov(aX + b, cY + d) = ac \, \Cov(X, Y) \)
+	            	\item \( \Cov(X, Y + Z) = \Cov(X, Y) + \Cov(X, Z) \)
+	            \end{itemize}
+            % end
+            
+            \subparagraph{Interpretationen}
+	            \begin{itemize}
+	            	\item Unabhängigkeit impliziert \( \Cov(X, Y) = 0 \).
+	            	\item Ist \( \Cov(X, Y) > 0 \), so wird \(X\) erhöht, wenn \(Y\) erhöht wird und umgekehrt.
+	            	\item Ist \( \Cov(X, Y) < 0 \), so wird \(X\) verringert, wenn \(Y\) erhöht wird und umgekehrt.
+	            	\item Der \textit{Korrelationskoeffizient}
+		            	\begin{equation*}
+			            	\varrho(X, Y) = \frac{\Cov(X, Y)}{\sqrt{\Var(X)} \sqrt{\Var(Y)}} \in [-1, 1]
+		            	\end{equation*}
+		            	ist skalierungsunabhängig.
+		            \item Der empirische Korrelationskoeffizient ist ein erwartungstreuer Schätzer für \( \varrho \).
+	            \end{itemize}
+            % end
+        % end
+
+		\subsection{Multivariate Normalverteilung}
+			\begin{itemize}
+				\item Dies ist die wichtigste multivariate Verteilung: \( N_n(\mu, \Sigma) \)
+				\item Sei \( X = (X_1, \cdots, X_n)^T \) ein Vektor mit normalverteilten Zufallsvariablen mit Erwartungswert \( \mu = \big( E(X_1), \cdots, E(X_n) \big)^T \) und Kovarianzmatrix \(\Sigma\).
+				\item Dann ist die multivariate Normalverteilungsdichte gegeben durch:
+			\end{itemize}
+			\begin{equation*}
+				f(x) = \frac{1}{\sqrt{2\pi}^n \sqrt{\det \Sigma}} e ^ { -\frac{1}{2} (x - \mu)^T \Sigma^{-1} (x - \mu) }, \quad x \in \R^n
+			\end{equation*}
+		% end
+
+        \subsection{Unabhängigkeit}
+            Seien \( X_1, \cdots, X_n \) Zufallsvariablen mit Dichten \( f_1(x_1), \cdots, f_n(x_n) \). Die Zufallsvariable sind unabhängig gdw. für die gemeinsame Verteilungsfunktion \(f\) gilt:
+            \begin{equation*}
+                f(x_1, \cdots, x_n) = f_1(x_1) \cdots f_n(x_n)
+            \end{equation*}
+        % end
+
+        \subsection{Korrelation} % 11.18, 11.19, 11.20, 11.21
+            Seien \( X_1, \cdots, X_n \) Zufallsvariablen mit \( \Var(X_i) < \infty, \quad i = 1, \cdots, n \). Die heißen \textit{paarweise unkorreliert}, wenn gilt:
+            \begin{equation*}
+                \Cov(X_i, X_j) = 0 \quad \forall i \neq j
+            \end{equation*}
+            Unabhängigkeit impliziert Unkorreliertheit, da für unabhängige Zufallsvariablen \( X_1, \cdots, X_n \) die obige Bedingung immer gilt.
+            
+            Sind die Zufallsvariablen gemeinsam normalverteilt, folgt aus der Unkorreliertheit sogar die Unabhängigkeit.
+        % end
+    % end
+
+    \section{Verteilung der Summe von Zufallsvariablen}
+        Seien \( X_1, \cdots, X_n \) unabhängige Zufallsvariablen, die \( N(\mu_i, \sigma_i^2) \)-verteilt sind. Dann ist \( X = X_1 + \cdots + X_n \) \( N(\mu, \sigma^2) \)-verteilt mit
+        \begin{equation*}
+            \mu = \mu_1 + \cdots + \mu_n, \qquad \sigma^2 = \sigma_1^2 + \cdots + \sigma_n^2
+        \end{equation*}
+
+        \subsection{Faltung}
+            Falls für die Funktionen \( f, g : \R \rightarrow \R \) das Integral
+            \begin{equation*}
+                (f \ast g)(x) \coloneqq \int_{-\infty}^{\infty} \! f(x - y) g(y) \, dy
+            \end{equation*}
+            für alle \(x \in \R\) existiert, dann heißt \( f \ast g \) die \textit{Faltung} von \(f\) und \(g\).
+            
+            Für \( f = (f_i) _ { i \in \mathbb{Z} } \) und \( g = (g_i)_{i \in \mathbb{Z}} \) ist die \textit{diskrete Faltung} von \(f\) und \(g\) gegebene durch:
+            \begin{equation*}
+                (f \ast g)_i \coloneqq \sum_{j \in \mathbb{Z}} f_{i - j} g_j
+            \end{equation*}
+            
+            Sind \( X_1, X_2 \) unabhängige stetige Zufallsvariablen mit Dichten \( f_1(x_1) \) und \( f_2(x_2) \), dann hat \( X_1 + X_2 \) die Dichte \( f_1 \ast f_2 \).
+        % end
+            
+		\subsection{Diskret verteilte Zufallsvariablen}
+			Seien \( X_1, X_2 \) unabhängige diskrete \( \mathbb{Z} \)-wertige Zufallsvariablen und seien
+			\begin{align*}
+				f_{X_1} & \coloneqq \big( P(X_1 = i) \big) _ { i \in \mathbb{Z} } \\
+				f_{X_2} & \coloneqq \big( P(X_2 = i) \big) _ { i \in \mathbb{Z} }
+			\end{align*}
+			Dann ist \( f_{X_1 + X_2} = \big( P(X_1 + X_2 = i) \big)_{i \in \mathbb{Z}} \) gegeben durch
+			\begin{equation*}
+				f_{X_1 + X_2} = f_{X_1} \ast f_{X_2}
+			\end{equation*}
+			
+			\subsubsection{Binomialverteilten Zufallsvariablen}
+				Seien \(X, Y\) jeweils \( B(n, p) \) bzw. \( B(m, p) \) verteilt. Dann ist \( X + Y \) \( B(n + m, p) \)-verteilt.
+			% end
+			
+			\subsubsection{Poissonverteilte Zufallsvariablen}
+				Seien \(X, Y\) jeweils Poisson-verteilt mit Parameter \( \lambda_1 \) bzw. \( \lambda_2 \). Dann ist \( X + Y \) Poisson-verteilt mit Parameter \( \lambda_1 + \lambda_2 \).
+			% end
+			
+			\subsubsection{Poisson Verteilung und bedingte Wahrscheinlichkeit}
+				Seien \(X, Y\) jeweils Poisson-verteilt mit Parameter \( \lambda_1 \) bzw. \( \lambda_2 \). Sei außerdem \( Z = X + Y \). Dann ist \(Z\) ebenfalls Poisson-verteilt mit Parameter \( \lambda_1 + \lambda_2 \).
+			
+				Betrachte nun \( X \vert Z \).  Aufgrund der Unabhängigkeit folgt, dass \( X \vert Z \) mit \( P(X = x \,\vert\, Z = z) \) Binomialverteilt ist mit \( B(z, \frac{\lambda_1}{\lambda_1 + \lambda_2}) \).
+			% end
+			
+			\subsubsection{Geometrische Verteilung und bedingte Wahrscheinlichkeit}
+				Sei \( X \) geometrisch verteilt mit Parameter \(p\).
+			
+				Betrachte nun \( Y_k = X - k \,\vert\, X > k \), d.h. die Anzahl der Versuche, bis das Ereignis eintritt, unter der Voraussetzung, dass es in den vorherigen \(k\) Versuchen nicht eingetreten ist. Die Zufallsvariable \(Y_k\) ist dann wieder geometrisch verteilt mit Parameter \(p\).
+			% end
+		% end
+    % end
+% end

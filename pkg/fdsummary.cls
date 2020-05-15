@@ -14,7 +14,7 @@
 
 \let\fdsummary@author=\@author
 
-\LoadClass[a4paper, 11pt, accentcolor=3b, class=report, custommargins=false, marginpar=false]{tudapub}
+\LoadClass[a4paper, fontsize=11pt, accentcolor=3b, class=report, custommargins=false, marginpar=false]{tudapub}
 
 
 % Packages and commands required for class definition.
@@ -69,7 +69,9 @@
 \RequirePackage{siunitx}
 \RequirePackage{stmaryrd}
 \RequirePackage{subcaption}
+\RequirePackage{syntax}
 \RequirePackage{tabto}
+\RequirePackage{tikz-uml}
 \RequirePackage{tikzpeople}
 \RequirePackage{tikz}
 \RequirePackage{xspace}
@@ -274,6 +276,7 @@
 \newcommand{\liminfty}[1][n]{\lim_{#1 \to \infty}}
 \newcommand{\suminfty}[1][n]{\sum_{#1 = 0}^\infty}
 \newcommand{\limx}[1][x]{\lim_{#1 \to #1_0 }}
+\newcommand{\parallelAsync}{\ensuremath{\,\lvert\vert\rvert\,}}
 
 % BIG!
 \makeatletter

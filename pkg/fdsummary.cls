@@ -6,15 +6,15 @@
 
 \def\fdsummary@language{none}
 \def\fdsummary@todoopts{}
-\def\fdsummary@class{tudreport}
 
 \DeclareOption{notodo}{\def\fdsummary@todoopts{disable}}
 \DeclareOption{german}{\def\fdsummary@language{german}}
 \DeclareOption{english}{\def\fdsummary@language{english}}
-\DeclareOption{pub}{\def\fdsummary@class{tudapub}}
 \ProcessOptions\relax
 
-\LoadClass[a4paper, 11pt, accentcolor = tud3b]{\fdsummary@class}
+\let\fdsummary@author=\@author
+
+\LoadClass[a4paper, 11pt, accentcolor = 3b, class = report]{tudapub}
 
 
 % Packages and commands required for class definition.
@@ -33,6 +33,7 @@
 \fdsummary@ifen{\RequirePackage[english, ngerman]{babel}}
 % Other Packages.
 \RequirePackage[ruled, vlined, linesnumbered]{algorithm2e}
+\RequirePackage{amssymb}
 \RequirePackage{caption}
 \RequirePackage{csquotes}
 \RequirePackage{enumitem}
@@ -53,10 +54,15 @@
 
 % Document information.
 % Can be overwritten by using \author again.
-\author{Fabian Damken}
-\fdsummary@ifde{\subtitle{Zusammenfassung \\ \@author}}
-\fdsummary@ifen{\subtitle{Summary         \\ \@author}}
+%\author{Fabian Damken}
+%\renewcommand{\@author}{\fdsummary@author}
+\fdsummary@ifde{\subtitle{Zusammenfassung}}
+\fdsummary@ifen{\subtitle{Summary}}
 \date{\today}
+
+% Metadata information for TUDa-Pub.
+\Metadata{author = \makeatletter\@author\makeatother}
+
 
 
 
@@ -120,7 +126,7 @@
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\Q}{\mathbb{Q}}
 \newcommand{\R}{\mathbb{R}}
-\newcommand{\C}{\mathbb{C}}
+\renewcommand{\C}{\mathbb{C}}
 % Top-left index, e.g. for transformation matrices.
 \newcommand{\inreferenceto}[2]{\prescript{#1}{}{#2}}
 % One vertical line for probabilities, densities, expectations, etc.

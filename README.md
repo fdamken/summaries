@@ -8,7 +8,7 @@ If you found any issues, having suggestions, etc. [create an issue](https://gith
 ## Streamlining Status
 
 * ✔ `elective/ce/gdr`
-* `elective/vc/statml`
+* ✔ `elective/vc/statml`
 * `mandatory/fs1/afe`
 * `mandatory/fs1/fop`
 * `mandatory/fs2/apl`

@@ -14,10 +14,22 @@
 
 \let\fdsummary@author=\@author
 
-\LoadClass[a4paper, 11pt, accentcolor = 3b, class = report]{tudapub}
+\LoadClass[a4paper, 11pt, accentcolor=3b, class=report, custommargins=false, marginpar=false]{tudapub}
 
 
 % Packages and commands required for class definition.
+\newread\fdsummary@metadata
+\openin\fdsummary@metadata=metadata.txt
+\read\fdsummary@metadata to \fileline
+\if\relax\fileline\relax\else
+\def\fdsummary@author{\fileline}
+\fi
+\read\fdsummary@metadata to \fileline
+\if\relax\fileline\relax\else
+\def\fdsummary@title{\fileline}
+\fi
+\closein\fdsummary@metadata
+
 \RequirePackage{ifthen}
 \ifthenelse{\equal{\fdsummary@language}{none}}
     {\PackageError{fdsummary}{No language given.}{Provide either option 'german' or 'english'.}}
@@ -29,33 +41,41 @@
 % Core Packages.
 \RequirePackage[T1]{fontenc}
 \RequirePackage[utf8]{inputenc}
-\fdsummary@ifde{\RequirePackage[ngerman, english]{babel}}
-\fdsummary@ifen{\RequirePackage[english, ngerman]{babel}}
+\fdsummary@ifde{\RequirePackage[main = ngerman, english]{babel}}
+\fdsummary@ifen{\RequirePackage[main = english, ngerman]{babel}}
 % Other Packages.
 \RequirePackage[ruled, vlined, linesnumbered]{algorithm2e}
 \RequirePackage{amssymb}
+\RequirePackage{attachfile}
 \RequirePackage{caption}
 \RequirePackage{csquotes}
 \RequirePackage{enumitem}
 \RequirePackage{float}
+\RequirePackage{float}
 \RequirePackage{hyperref}
+\RequirePackage{listings}
+\RequirePackage{makecell}
 \RequirePackage{mathtools}
+\RequirePackage{newunicodechar}
+\RequirePackage{pgfgantt}
+\RequirePackage{pgfplots}
 \RequirePackage{physics}
 \RequirePackage{qtree}
 \RequirePackage{siunitx}
 \RequirePackage{stmaryrd}
+\RequirePackage{subcaption}
 \RequirePackage{tabto}
 \RequirePackage{tikz}
 \RequirePackage{xspace}
 \RequirePackage[\fdsummary@todoopts]{todonotes}
+\pgfplotsset{compat = newest}
 % Load TikZ libraries.
-\usetikzlibrary{arrows.meta, shapes, backgrounds, angles, calc, decorations.markings}
+\usetikzlibrary{arrows.meta, shapes, backgrounds, angles, calc, positioning, decorations.markings}
 
 
 % Document information.
-% Can be overwritten by using \author again.
-%\author{Fabian Damken}
-%\renewcommand{\@author}{\fdsummary@author}
+\author{\fdsummary@author}
+\title{\fdsummary@title}
 \fdsummary@ifde{\subtitle{Zusammenfassung}}
 \fdsummary@ifen{\subtitle{Summary}}
 \date{\today}
@@ -68,13 +88,29 @@
 
 % ~ Styling. ~
 
+% Colors.
+\colorlet{lstcomments}{TUDa-4c}
+\colorlet{lstkeywords}{TUDa-9d}
+\colorlet{lstlinenumbers}{TUDa-0c}
+\colorlet{lststrings}{TUDa-2c}
+\colorlet{colorDensity}{TUDa-1b}
+
 % Description-list styling.
 \SetLabelAlign{parright}{\parbox[t]{\labelwidth}{\raggedleft#1}}
 \setlist[description]{style = multiline, leftmargin = 4cm, align = parright}
 
+% Some stuff for statistics and neural networks.
+\tikzstyle{neuron}        = [circle,fill=black!25,minimum size=17pt,inner sep=0pt]
+\tikzstyle{input neuron}  = [neuron, fill=green!50]
+\tikzstyle{output neuron} = [neuron, fill=red!50]
+\tikzstyle{hidden neuron} = [neuron, fill=blue!50]
+\tikzstyle{annot}         = [text width=4em, text centered]
+\tikzstyle{density}       = [colorDensity, line width = 2pt]
+\tikzset{declare function = { gaussian(\x,\m,\S) = 1/sqrt(2*pi*\S) * e^(-1/(2*\S) * (\x-\m)^2); }}
+
 % Make TikZ arrow longer and paths bigger.
-\tikzset{> = { Latex[length = 2.5mm] }}
 \tikzstyle{every path} = [ very thick ]
+\tikzset{> = { Latex[length = 2mm] }}
 
 % If somethis is quoted using "..", interpret it as \csquotes{..} for correct quotes.
 \MakeOuterQuote{"}
@@ -90,9 +126,60 @@
 \renewcommand{\vec}[1]{\boldsymbol{\mathrm{#1}}}
 \newcommand{\mat}[1]{\boldsymbol{\mathrm{#1}}}
 
+% Listings settings (use TUDa colors for highlighting).
+\lstset{
+    backgroundcolor = \color{white},
+    basicstyle = \ttfamily\scriptsize\color{black},
+    breakatwhitespace = true,
+    breaklines = true,
+    breakautoindent = true,
+    commentstyle = \color{lstcomments},
+    escapeinside = {{*@}{@*}},
+    keywordstyle = \color{lstkeywords},
+    numbers = left,
+    numberstyle = \tiny\color{lstlinenumbers},
+    showstringspaces = false,
+    stringstyle = \color{lststrings},
+    tabsize = 4
+}
+
+% Make it possible to include matplotlib plots with negative numbers.
+\newunicodechar{−}{--}
+
+% Center captions.
+\captionsetup{justification=centering}
+
 
 
 % ~ Commands. ~
+
+% We need to go deeper!
+\newcommand{\subsubparagraph}[1]{\hspace{1cm} \textbf{#1:}}
+
+% Include code as lstlisting and attachment.
+\newcommand{\code}[1]{\attachfile[icon = Paperclip]{#1} \lstinputlisting{#1}}
+
+% Generic way to highligh definitions and so on.
+\newcommand{\definition}[2]{\subparagraph{Definition (#1)} #2}
+\newcommand{\notation}[2]{\subparagraph{Notation (#1)} #2}
+\newcommand{\theorem}[1]{\subparagraph{Theorem} #1}
+\newcommand{\intuition}[1]{\subsubparagraph{Intuition} #1}
+\newcommand{\answer}[1]{\subparagraph{Answer} #1}
+
+% Boxes surrounded by borders for information and warnings.
+\newcommand{\info}[1]{
+    \begin{figure}[H]
+        \centering
+        \fbox{\parbox[c]{0.5\textwidth}{#1}}
+    \end{figure}
+}
+\newcommand{\warning}[1]{
+    \begin{figure}[H]
+        \centering
+        \fbox{\parbox[c]{0.5\textwidth}{\textbf{Warning:} #1}}
+    \end{figure}
+}
+
 
 % Abbreviations.
 \fdsummary@ifde{
@@ -115,10 +202,13 @@
 \newcommand{\INVDYN}{INV\,DYN\xspace}
 
 % Math operators.
-\fdsummary@ifde{\DeclareMathOperator{\Rang}{Rang}}
-\fdsummary@ifde{\DeclareMathOperator{\Rank}{Rank}}
+\DeclareMathOperator{\Bias}{Bias}
 \DeclareMathOperator{\const}{const}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\E}{E}
+\DeclareMathOperator{\emp}{emp}
 \DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\Var}{Var}
 
 % Other mathy stuff.
 % Numbers sets.
@@ -135,6 +225,18 @@
 \newcommand{\Biggiven}{\,\Big\vert\,}
 \newcommand{\bigggiven}{\,\bigg\vert\,}
 \newcommand{\Bigggiven}{\,\Bigg\vert\,}
+% One vertical line for set definitions.
+\newcommand{\forwhich}{\,\vert\,}
+\newcommand{\bigforwhich}{\,\big\vert\,}
+\newcommand{\Bigforwhich}{\,\Big\vert\,}
+\newcommand{\biggforwhich}{\,\bigg\vert\,}
+\newcommand{\Biggforwhich}{\,\Bigg\vert\,}
+
+% BIG!
+\makeatletter
+\newcommand{\BIG}{\bBigg@{4}}
+\newcommand{\BIGG}{\bBigg@{5}}
+\makeatother
 
 % Quadtree.
 \newcommand{\grayBox}{%

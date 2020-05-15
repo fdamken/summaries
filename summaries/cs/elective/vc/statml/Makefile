@@ -14,8 +14,8 @@ data:
 	zip tmp-code.zip genData.py optimization.py nonParametricModels.py mixtureModels.py clustering.py regression.py classification.py pca.py svm.py
 
 latex:
-	pdflatex -shell-escape sml-cheatsheet.tex
-	pdflatex -shell-escape sml-cheatsheet.tex
-	pdflatex -shell-escape sml-cheatsheet.tex
-	pdflatex -shell-escape sml-cheatsheet.tex
-	pdflatex -shell-escape sml-cheatsheet.tex
+	pdflatex -shell-escape statml-summary.tex
+	pdflatex -shell-escape statml-summary.tex
+	pdflatex -shell-escape statml-summary.tex
+	pdflatex -shell-escape statml-summary.tex
+	pdflatex -shell-escape statml-summary.tex

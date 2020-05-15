@@ -56,10 +56,12 @@
 \RequirePackage{listings}
 \RequirePackage{makecell}
 \RequirePackage{mathtools}
+\RequirePackage{mdframed}
 \RequirePackage{newunicodechar}
 \RequirePackage{pgfgantt}
 \RequirePackage{pgfplots}
 \RequirePackage{physics}
+\RequirePackage{prftree}
 \RequirePackage{qtree}
 \RequirePackage{rotating}
 \RequirePackage{siunitx}
@@ -165,7 +167,9 @@
 \newcommand{\notation}[2]{\subparagraph{Notation (#1)} #2}
 \newcommand{\theorem}[1]{\subparagraph{Theorem} #1}
 \newcommand{\intuition}[1]{\subsubparagraph{Intuition} #1}
-\newcommand{\answer}[1]{\subparagraph{Answer} #1}
+\fdsummary@ifde{\newcommand{\answer}[1]{\subparagraph{Antwort} #1}}
+\fdsummary@ifen{\newcommand{\answer}[1]{\subparagraph{Answer} #1}}
+
 
 % Boxes surrounded by borders for information and warnings.
 \newcommand{\info}[1]{
@@ -232,6 +236,10 @@
 \newcommand{\Bigforwhich}{\,\Big\vert\,}
 \newcommand{\biggforwhich}{\,\bigg\vert\,}
 \newcommand{\Biggforwhich}{\,\Bigg\vert\,}
+% Short forms.
+\newcommand{\liminfty}[1][n]{\lim_{#1 \to \infty}}
+\newcommand{\suminfty}[1][n]{\sum_{#1 = 0}^\infty}
+\newcommand{\limx}[1][x]{\lim_{#1 \to #1_0 }}
 
 % BIG!
 \makeatletter

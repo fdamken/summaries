@@ -11,9 +11,9 @@ If you found any issues, having suggestions, etc. [create an issue](https://gith
 * ✔ `elective/vc/statml`
 * ✔ `mandatory/fs1/afe`
 * ✔ `mandatory/fs1/fop`
-* `mandatory/fs2/apl`
-* `mandatory/fs2/mathe2`
-* `mandatory/fs2/ro`
+* ✔ `mandatory/fs2/apl`
+* ✔ `mandatory/fs2/mathe2`
+* ✔ `mandatory/fs2/ro`
 * `mandatory/fs3/aer`
 * `mandatory/fs3/css-fischlin`
 * `mandatory/fs3/css-waidner`

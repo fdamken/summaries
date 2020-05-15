@@ -1,0 +1,464 @@
+\chapter{Aussagenlogik}
+    Die Aussagenlogik beschäftigt sich mit Grundlegenden Aussagen, in denen Fakten (Atome), denen ein Wahrheitswert zugeordnet werden kann, miteinander verknüpft werden.
+
+    \section{Grundlegende Begriffe}
+        \begin{description}
+            \item[Allgemeingültigkeit] Eine FormEl $ \varphi $ ist allgemeingültig gdw. alle möglichen Interpretationen $ \mathcal{J} $ die Formel $ \varphi $ erfüllen. Eine solche Formel wird auch Tautologie genannt.
+            \item[Atome] Eine Formel $ \varphi $ ist atomar (ist ein Atom) gdw. sie in der Form $ p $ oder der Form $ \lnot p $ vorliegt, wobei $ p $ eine eigenständige Variable darstellt. Diese werden auch Literale genannt.
+            \item[Erfüllbarkeit] Eine Interpretation $ \mathcal{J} $ erfüllt eine Formel $ \varphi $ gdw. die Formel $ \varphi $ mit der Belegung $ \mathcal{J} $ wahr wird. Diese Aussage ist äquivalent zu den folgenden Aussagen:
+                \begin{itemize}
+                    \item $ \varphi $ ist wahr unter $ \mathcal{J} $.
+                    \item $ \mathcal{J} $ ist ein Modell von $ \varphi $.
+                \end{itemize}
+            \item[Formel] Eine Formel ist eine Menge von Atomen, welche mit booleschen Junktoren und Klammern zu einer Aussage zusammengefasst werden. Formel werden häufg mit $ \varphi $ oder $ \psi $ bezeichnet.
+            \item[Interpretation] Eine Interpretation ist eine Belegung der Variablen in einer Formel mit Wahrheitswerten (wahr/falsch), sodass die Formel ausgewertet werden kann. Interpretationen werden häufig mit $ \mathcal{J} $ bezeichnet.
+            \item[Klausel] Formeln in Klauselform ist eine Schreibweise für Formeln, in denen Atome auschließlich mit Disjunktionen verknüft sind. Hierbei werden die Atome als Elemente einer Menge verstanden, was die Schreibweise ergibt. \\ \textbf{Beispiel:} $ (a \lor b \lor \lnot c) $ ist eine solche Formel, welche als Klauselform folgendermaßen dargestellt wird: $ \{ a, b, \lnot c \} $.
+            \item[Klauselmengen] Eine Klauselmenge ist eine Menge von Formeln in Klauselform, welche bei der Umformung in einen logischen Ausdruck mit konjunktionen Verknüft werden. \\ \textbf{Beispiel:} $ ((a \lor b) \land (b \lor c) \land (a \lor \lnot d \lor \lnot e) \land d) $ ist eine Formel in konjunktiver Normalform, welche als Klauselform folgendermaßen dargestellt wird: $ \{ \{ a, b \}, \{ b, c \}, \{ a, \lnot d, \lnot e \}, \{ d \} \} $. Hierbei stellen die inneren Mengen die Klauseln dar und die äußere Menge die Klauselmenge.
+            \item[Minimales Model] Das minimale Modell $ \mathcal{I} $ einer Formel $ \varphi $ ist das Modell mit der minimalen Anzahl an 1-Belegungen, um $ \varphi $ zu erfüllen.
+            \item[Unerfüllbarkeit] Eine Formel $ \varphi $ ist unerfüllbar gdw. die Formel $ \varphi $ unter allen möglichen Interpretationen $ \mathcal{J} $ nicht wahr wird. Dies ist äquivalent dazu, dass das Negat der Formel $ \varphi $ (also $ \lnot \varphi $) allgemeingültig ist.
+        \end{description}
+    % end
+
+    \section{Notation}
+        Sei $ \mathcal{J} $ eine Interpretation, und seien $ \varphi, \psi $ Formeln.
+
+        \paragraph{$ \models $}
+            Das Symbol $ \models $ kann folgende Dinge beschreiben:
+            \begin{itemize}
+                \item $ \mathcal{J} \models \varphi $ bedeutet $ \mathcal{J} $ ist ein Modell von $ \varphi $
+                \item $ \varphi \models \psi $ bedeutet $ \varphi $ impliziert $ \psi $
+                \item $ \models \varphi $ bedeutet $ \varphi $ ist allgemeingültig
+            \end{itemize}
+        % end
+
+        \paragraph{$ \equiv $}
+            Das Symbol $ \equiv $ kann folgende Dinge beschreiben:
+            \begin{itemize}
+                \item $ \varphi \equiv \psi $ bedeuted $ \varphi $ ist logisch äquivalent zu $ \psi $
+            \end{itemize}
+        % end
+    % end
+
+    \section{Hornklauseln}
+        Eine Hornklausel (oder auch Horn-Formel) ist eine Formel in Klauselform, welche maximal ein positives Literal hat.
+
+        \warning{Nicht jede Formel lässt sich als Hornklauselmenge darstellen!}
+
+        Eine Hornklausel heißt
+        \begin{description}
+            \item[negativ] wenn sie keine positiven Literale.
+            \item[positiv] wenn sie auschließlich positive Literale besitzt.
+        \end{description}
+
+        Werden meherere Horn-Formeln in einer Klauselmenge zusammengefasst, so spricht man von einer Hornklauselmenge.
+
+        \subsection{Horn-Erfüllbarkeitstest}
+            Der Horn-Erfüllbarkeitstest ist ein effizienter Test um zu prüfen, ob eine Hornklauselmenge erfüllbar ist.
+
+            \begin{algorithm}[H]
+                \SetKwInOut{Eingabe}{Eingabe}
+                \SetKwInOut{Ergebnis}{Ergebnis}
+
+                \Eingabe{Hornklauselmenge $ K $}
+                \Ergebnis{$ K $ erfüllbar mit gegebenem minimalen Modell oder unerfüllbar}
+                \For{$ \psi \in K $ der Form $ \psi = x $}{
+                    markiere $ x $
+                }
+                \For{$ \psi \in K $ der Form $ \psi = \lnot x _ 1 \lor \cdots \lor \lnot x _ n $ (Typ 1) oder $ \psi = \lnot x _ 1 \lor \cdots \lor \lnot x _ n \lor y $ (Typ 2), wobei $ x _ 1, \cdots, x _ n $ markiert sind und, im Falle von Typ 2, $ y $ noch nicht markiert ist}{
+                    \If{$ \psi $ ist vom Typ 1}{
+                        $ \implies \text{unerfüllbar} $
+                    } \ElseIf{$ \psi $ ist vom Typ 2}{
+                        Markiere $ y $
+                    }
+                }
+                $ \implies \text{erfüllbar mit minimalem Modell gegeben durch die markierten Variablen} $
+            \end{algorithm}
+        % end
+    % end
+
+    \section{Kalküle}
+        \subsection{Resolutionskalkül}
+            \label{subsec:reso}
+
+            Das Resolutionskalkül ist ein Beweiskalkül, welches zum Beweisen der Unerfüllbarkeit von Klauselmengen.
+
+            Eine Klausel $ C $ heißt Resolvente von $ C _ 1 $ und $ C _ 2 $, wenn für ein Literal $ L $ gilt \[ L \in C _ 1, \lnot L \in C _ 1 \text{ und } C = (C _ 1 \setminus \{ L \}) \cup (C _ 2 \setminus \{ \lnot L \}) \]
+
+            \paragraph{Algorithmus}
+                Die Funktion $ \text{Res}(M) $ produziert alle möglichen Resolventen der Klauselmenge $ M $.
+
+                \begin{algorithm}[H]
+                    \SetKwInOut{Input}{Input}
+                    \SetKwInOut{Ergebnis}{Ergebnis}
+
+                    \Input{Klauselmenge $ K $}
+                    \Ergebnis{$ K $ erfüllbar oder unerfüllbar}
+                    \While{{$ \text{Res}(R) \neq R \land \Box \not\in R $}}{
+                        $ R \leftarrow \text{Res}(R) $
+                    }
+                    \If{$ \Box \in R $}{
+                        $ \implies \text{unerfüllbar} $
+                    } \Else{
+                        $ \implies \text{erfüllbar} $
+                    }
+                \end{algorithm}
+            % end
+
+            \paragraph{Beispiel}
+                $ K \coloneqq \{ \{ A, B \}, \{ A, \lnot B \}, \{ \lnot A, B \}, \{ \lnot A, \lnot B \} \} $
+
+                \begin{figure}[H]
+                    \centering
+                    \begin{tikzpicture}[grow' = up]
+                        \Tree[ .\ensuremath{\Box} [ [ .\ensuremath{\{ A \}} \ensuremath{\{ A, B \}} \ensuremath{\{ A, \lnot B \}} ] [ .\ensuremath{\{ \lnot A \}} \ensuremath{\{ \lnot A, B \}} \ensuremath{\{ \lnot A, \lnot B \}} ] ] ]
+                    \end{tikzpicture}
+                \end{figure}
+            % end
+
+            \paragraph{Einheitsresolution}
+                Als Einheitsresolution wird eine Resolution benannt, bei denen ausschließlich Klauseln mit 1-elementigen Klauseln resolviert.
+            % end
+        % end
+
+        \subsection{Sequenzenkalkül}
+            \subsubsection{Schlussregeln in $ \mathcal{SK} $ für AL}
+                Das Sequenzenkalkül $ \mathcal{SK} $ definiert die Schlussregeln in Abbildung \ref{fig:al:sk_regeln}.
+
+                \begin{figure}[h]
+                    \centering
+                    \begin{tabular}{| r l r l |}
+                        \hline
+                        (Axiom) & \infer{\Gamma, \varphi \vdash \Delta, \varphi}{\phantom{I}} & & \\
+                        (0-Axiom) & \infer{\Gamma, 0 \vdash \Delta}{} & (1-Axiom) & \infer{\Gamma \vdash \Delta, 1}{\phantom{I}} \\
+                        $ (\lnot L) $ & \infer{\Gamma, \lnot \vdash \Delta}{\Gamma \vdash \Delta, \varphi} & $ (\lnot R $) & \infer{\Gamma \vdash \Delta, \lnot \varphi}{\Gamma, \varphi \vdash \Delta} \\
+                        $ (\lor L) $ & \infer{\Gamma, \varphi \lor \psi \vdash \Delta}{\Gamma, \varphi \vdash \Delta \quad \Gamma, \psi \vdash \Delta} & $ (\lor R) $ & \infer{\Gamma \vdash \Delta, \varphi \lor \psi}{\Gamma \vdash \Delta, \varphi, \psi} \\
+                        $ (\land L) $ & \infer{\Gamma, \varphi \land \psi \vdash \Delta}{\Gamma, \varphi, \psi \vdash \Delta} & $ (\land R) $ & \infer{\Gamma \vdash \Delta, \varphi \land \psi}{\Gamma \vdash \Delta, \varphi \quad \Gamma \vdash \Delta, \psi} \\
+                        \hline
+                    \end{tabular}
+                    \caption{Schlussregeln in $ \mathcal{SK} $}
+                    \label{fig:al:sk_regeln}
+                \end{figure}
+            % end
+
+            \subsubsection{Schlussregeln in $ \mathcal{SK} ^ + $ für AL}
+                Das Sequenzenkalkül $ \mathcal{SK} ^ + $ erweitert $ \mathcal{SK} $ (\ref{fig:al:sk_regeln}) um Schnittregeln, unter anderem um modus ponens, wodurch sich eine vielzahl weiterer Regeln herleiten lässt. Die wichtigstens Regeln (inklusive der Kernschnittregeln modus ponens) sind in Abbildung \ref{fig:al:skplus_regeln} aufgezeigt.
+
+                \begin{figure}[ht]
+                    \centering
+                    \begin{tabular}{| r l |}
+                        \hline
+                        (modus ponens) & \infer{\Gamma, \Gamma' \vdash \Delta}{\Gamma \vdash \varphi \quad \Gamma', \varphi \vdash \Delta} \\
+                        (Kontradiktion) & \infer{\Gamma, \Gamma' \vdash \emptyset}{\Gamma \vdash \varphi \quad \Gamma' \vdash \lnot \varphi} \\
+                        (Widerspruch) & \infer{\Gamma \vdash \varphi}{\Gamma, \lnot \varphi \vdash \psi \quad \Gamma, \lnot \varphi \vdash \lnot \psi} \\
+                        \hline
+                    \end{tabular}
+                    \caption{Schlussregeln in $ \mathcal{SK} ^ + $}
+                    \label{fig:al:skplus_regeln}
+                \end{figure}
+            % end
+        % end
+    % end
+
+    \section{Kompaktheitssatz}
+        \label{sec:al:kompaktheit}
+
+        Eine (möglicherweise unendliche) Formelmenge $ \Sigma $ ist erfüllbar gdw. jede endliche Teilmenge von $ \Sigma $ erfüllbar ist.
+    % end
+
+    \section{Normalformen}
+        In der Aussagenlogik existieren die disjunktive Normalform und die konjunktive Normalform, welche sich in ihrer Komplexität stark unterscheiden. Ebenfalls ist ein effizientes Umrechnen von KNV $ \leftrightarrow $ DNF nicht möglich.
+
+        \subsection{Disjunktive Normalformmodus ponens (DNF)}
+            Eine Formel $ \varphi $ ist in disjunktiver Normalform gdw. sie die folgende Form hat ($ p _ { ij } $ ist ein Atom):
+            \begin{equation*}
+                \varphi = \bigvee _ i \bigwedge _ j p _ { ij }
+            \end{equation*}
+
+            \paragraph{Beispiel}
+                Gegeben sei die Formel $ \varphi \coloneqq \lnot (p \lor (\lnot (p \land q) \land \lnot r)) \lor s $. Diese ist logisch äquivalent zu folgender Formel in konjunktiver Normalform: $ \varphi \equiv (\lnot p \lor s) \land (p \lor r \lor s) \land (q \lor r \lor s) $.
+            % end
+        % end
+
+        \subsection{Konjunktive Normalform (KNF)}
+            Eine Formel $ \varphi $ ist in konjunktiver Normalform gdw. sie die folgende Form hat ($ p _ { ij } $ is tein Atom):
+            \begin{equation*}
+                \varphi = \bigwedge _ i \bigvee _ j p _ { ij }
+            \end{equation*}
+
+            \paragraph{Beispiel}
+                Gegeben sei die Formel $ \varphi \coloneqq \lnot (p \lor (\lnot (p \land q) \land \lnot r)) \lor s $. Diese ist logisch äquivalent zu folgender Formel in disjunktiver Normalform: $ \varphi \equiv (r \land \lnot p) \lor s $.
+            % end
+        % end
+    % end
+% end
+
+
+\chapter{Logik erster Stufe}
+    \section{Grundlegende Begriffe}
+        \begin{description}
+            \item[Formeln] Eine Formel der Logik erster Stufe ist eine Kombination aus Quantoren, Variablen, Funktionen und Relationen, welche mit booleschen Junktoren Verknüpft werden. Typische Namen für Formeln sind $ \varphi $ und $ \psi $.
+            \item[freie/gebundene Variablen] Eine freie Variable ist nicht an einen Quantor gebunden ((ab-) quantifiziert). Die Menge dieser Variablen wird mit der Funktion $ \text{frei}(\varphi) $ rekursiv formalisiert:
+                \begin{align*}
+                    \text{frei}(t _ 1 = t _ 2) &\coloneqq \text{var}(t _ 1) \cup \text{var}(t _ 2) \\
+                    \text{frei}(R t _ 1 \cdots t _ n) &\coloneqq \text{var}(t _ 1) \cup \cdots \cup \text{var}(t _ 2) \\
+                    \text{frei}(\lnot \varphi) &\coloneqq \text{frei}(\varphi) \\
+                    \text{frei}(\varphi \land \psi) = \text{frei}(\varphi \lor \psi) &\coloneqq \text{frei}(\varphi) \cup \text{frei}(\psi) \\
+                    \text{frei}(\forall x \varphi) = \text{frei}(\exists x \varphi) &\coloneqq \text{frei}(\varphi) \setminus \{ x \} \\
+                \end{align*}
+            \item[Interpretationen] \todo{Interpretationen}
+            \item[Quantoren] In der Logik erster Stufe wird zwischen den folgenden Quantoren unterschieden:
+                \begin{description}
+                    \item[Allquantor] Der Allquantor ($ \forall $) bindet (quantifiziert) die nachstehende Variable an sich und sagt aus, dass die folgende Aussage im Bezug auf den Quantor für alle Elemente aus der Trägermenge der Signatur gilt. \\ \textbf{Beispiel:} $ \forall x (x > 0) $ ist semantisch äquivalent zu "alle Elemente sind größer als 0".
+                    \item[Existensquantor] Der Existensquantor ($ \exists $) bindet (quantifiziert) die nachstehen Variable and sich und sagt aus, dass die folgende Aussage im Bezug auf den Quantor für mindestens ein Element aus der Trägermenge gilt. \\ \textbf{Beispiel:} $ \exists x (x > 0) $ ist semantisch äquivalent zu "mindestens ein Element ist größer als 0".
+                \end{description}
+            \item[Quantorenrang] Als \textit{Quantorenrang} wird die Anzahl der Quantoren bezeichnet, was durch die Funktion $ \textit{qr}(\varphi) $ rekursiv formalisiert wird:
+                \begin{align*}
+                    \text{qr}(\varphi) &\coloneqq 0 \tag{$ \varphi $ atomar} \\
+                    \text{qr}(\lnot \varphi) &\coloneqq \text{qr}(\varphi) \\
+                    \text{qr}(\varphi \land \psi) = \text{qr}(\varphi \lor \psi) &\coloneqq \text{max}(\text{qr}(\varphi), \text{qr}(\psi)) \\
+                    \text{qr}(\forall x \varphi) = \text{qr}(\exists x \varphi) &\coloneqq \text{qr}(\varphi) + 1 \\
+                \end{align*}
+            \item[Symbole] In Formeln der Logik erster Stufe können die Folgenden Typen von Symbolen genutzt werden (sei $ A $ die Trägermenge):
+                \begin{description}
+                    \item[Konstantensymbole] Konstantensymbole, meist mit $ a, b, c, \cdots $ bezeichnet, sind Elemente aus $ A $, welche Konstant in einer Formel stehen und nicht von einer Interpretation belegt oder an Quantoren gebunden werden können.
+                    \item[Funktionssymbole] Funktionssymbole, meist mit $ f, g, h, \cdots $ bezeichnet, sind $ n\text{-stellige} $ Funktionen der Form $ A ^ n \rightarrow A $. \\ \textbf{Notation:} Sei $ f $ ein $ 2\text{-stelliges} $ Funktionssymbol, so ist $ fxy $ als ein Aufruf dieser mit den Parametern $ x $, $ y $ zu verstehen.
+                    \item[Relatonssymbole] Relationssymbole, meist mit $ R, L, P, \cdots $ bezeichnet, sind $ n\text{-stellige} $ Teilmengen von $ A ^ n $. \\ \textbf{Prefix-Notation:} Sei $ R $ ein $ 3\text{-stelliges} $ Relationssymbol, so ist $ Rxyz $ als ein test zu verstehen, ob $ x $, $ y $, $ z $ in Relation stehen. \\ \textbf{Infix-Notation:} Sei $ \leq $ ein $ 2\text{-stelliges} $ Relationssymbol, so ist $ x \leq y $ als ein Test zu verstehen, ob $ x $, $ y $ in Relation stehen.
+                \end{description}
+            \item[Sätze] Eine Formel $ \varphi $ wird als \textit{Satz} bezeichnet, wenn gilt $ \text{frei}(\varphi) = \emptyset $. In anderen Worten: Dass die Formel keine freien Variablen enthält.
+            \item $ \varphi(t / x) $ besagt, dass die freie Variable $ x $ in $ \varphi $ durch $ c $ ersetzt wird. \\
+                \textbf{Beispiel:}
+                \begin{align*}
+                    \varphi(x) \coloneqq& \forall n (n = x \lor n \neq x) \\
+                    \varphi(c / x) =& \forall n (n = c \lor n \neq c) \\
+                \end{align*}
+        \end{description}
+    % end
+
+    \section{Herband}
+        \subsection{Herbrandstrukturen}
+            \todo{Herbrandstrukturen}
+        % end
+
+        \subsection{Herbrandmodelle}
+            \todo{Herbrandmodelle}
+        % end
+    % end
+
+    \section{Kalküle}
+        \subsection{Grundinstanzen-Resolutionskalkül}
+            \todo{GI-Resolutionskalkül}
+
+            Die Grundinstanzen-Resolution ist eine Erweiterung des Resolutionskalküls der Aussagenlogik (\ref{subsec:reso}). Somit kann es ebenfalls genutzt werden, um die Erfüllbarkeit und Unerfüllbarkeit einer Klauselmenge $ \Phi $ zu zeigen. Hierzu müssen alle Formeln, welche die Klauselmenge produzieren, in Skolem-Normalform vorliegen. Die eigentliche Formel ($ \varphi $ für $ \forall x _ 1 \cdots \forall x _ n \varphi $) entspricht dann einer Klausel der Klauselmenge. Die Klauselmenge wird nun für die Resolution vorbereitet, indem die folgenden Substitutionen vorgenommen werden können:
+            \begin{itemize}
+                \item Ersetzung einer Variable durch eine Konstante: $ P(x) \rightarrow P(c) $
+                \item Ersetzung einer Variable durch eine andere Variable: $ P(x) \rightarrow P(y) $
+                \item Ersetzung einer Variable durch eine Funktion: $ P(x) \rightarrow P(fx) $
+            \end{itemize}
+            Hierbei müssen stets alle Variablen einer Unterklauselmenge, welche aus einer Formel entstanden ist, substituiert werden!
+
+            \paragraph{Beispiel}
+                Seien die folgenden Sätze in FO gegeben:
+                \begin{align*}
+                    \varphi _ 1 \coloneqq& \forall x \forall y (Rxy \rightarrow (Px \leftrightarrow Qy)) \\
+                                =& \forall x \forall y ((\lnot Rxy \lor Px \lor \lnot Qy) \land (\lnot Rxy \lor \lnot Px \lor Qy)) \\
+                                \triangleq& \{ \{ \lnot Rxy, Px, \lnot Qy \}, \{ \lnot Rxy, \lnot Px, Qy \} \} \\
+                    \varphi _ 2 \coloneqq& \forall x \exists y (Rxy \land Py) \\
+                                \simeq& \forall x (Rxfx \land Pfx) \\
+                                \triangleq& \{ \{ Rxfx \}, \{ Pfx \} \} \\
+                    \varphi _ 3 \coloneqq& \exists x (\lnot Px \land \forall y (Qy \land (Py \rightarrow Rxy))) \\
+                                =& \exists x \forall y (\lnot Px \land (Qy \land (Py \rightarrow Rxy))) \\
+                                \simeq& \forall y (\lnot Pg \land (Qy \land (Py \rightarrow Pgy))) \\
+                                =& \forall y (\lnot Pg \land Qy \land (\lnot Py \lor Rxy)) \\
+                                \triangleq& \{ \{ \lnot Pg \}, \{ Qy \}, \{ \lnot Py, Rxy \} \} \\
+                \end{align*}
+
+                Dies ergibt, nach überlegten Substitutionen, die folgende Grundinstanzen-Klauselmenge:
+                \begin{align*}
+                    \{ & \\
+                       & \{ \lnot Rgfc, Pg, \lnot Qfc \}, \{ \lnot Rgfc, \lnot Pg, \lnot Qfc \}, \\
+                       & \{ Rgfc \}, \{ Pfg \}, \\
+                       & \{ \lnot Pg \}, \{ Qfc \}, \{ \lnot Pfc, Rgfc \} \\
+                    \} & \\
+                \end{align*}
+                Wodurch eine Resolution möglich wird.
+            % end
+        % end
+
+        \subsection{Sequenzenkalkül}
+            \subsubsection{Schlussregeln in $ \mathcal{SK} $ für FO}
+                Das Sequenzenkalkül $ \mathcal{SK} $ für die Logik erster Stufe weitet das Sequenzenkalkül $ \mathcal{SK} $ für die Aussagenlogik (siehe \ref{fig:al:sk_regeln}) auf die Logik erster Stufe aus. Es gelten somit auch alle Regeln aus dem Sequenzenkalkül $ \mathcal{SK} $ der Aussagenlogik. Die Schlussregeln sind in der Abbildung \ref{fig:fo:sk_regeln} aufgeführt.
+
+                \begin{figure}[ht]
+                    \centering
+                    \begin{tabular}{| r l r l |}
+                        \hline
+                        $ (\forall L) $ & \infer{\Gamma, \forall x \varphi(x) \vdash \Delta}{\Gamma, \varphi(t / x) \vdash \Delta} & $ \forall R $ & \infer{\Gamma \vdash \Delta, \forall x \varphi(x)}{\Gamma \vdash \Delta, \varphi(c / x)} \\
+                        $ (\exists L) $ & \infer{\Gamma, \exists x \varphi(x) \vdash \Delta}{\Gamma, \varphi(c / x) \vdash \Delta} & $ \exists R $ & \infer{\Gamma \vdash \Delta, \exists x \varphi(x)}{\Gamma \vdash \Delta, \varphi(t / x)} \\
+                        \hline
+                    \end{tabular}
+                    \caption{Schlussregeln in $ \mathcal{SK} $}
+
+                    Achtung: Für die Regeln $ \exists L $, $ \forall R $ darf das $ c $ noch nicht in $ \Gamma, \Delta, \varphi(x) $ vorhanden sein.
+
+                    \label{fig:fo:sk_regeln}
+                \end{figure}
+            % end
+
+            \subsubsection{Schlussregeln in $ \mathcal{SK} ^ = $ für FO}
+                Das Sequenzenkalkül $ \mathcal{SK} ^ = $ erweitert $ \mathcal{SK} $ (siehe \ref{fig:fo:sk_regeln}) um Schlussregeln für die Gleichheit ($ = $). Die Schlussregeln sind in \ref{fig:fo:skgleich_regeln} aufgeführt.
+
+                \begin{figure}[ht]
+                    \centering
+                    \begin{tabular}{| r l r l |}
+                        \hline
+                        $ (=) $ & \infer{\Gamma \vdash \Delta}{\Gamma, t = t' \vdash \Delta} & & \\
+                        (Sub-L) & \infer{\Gamma, t = t', \varphi(t' / x) \vdash \Delta}{\Gamma, \varphi(t / x) \vdash \Delta} & (Sub-R) & \infer{\Gamma, t = t' \vdash \Delta, \varphi(t' / x)}{\Gamma \vdash \Delta, \varphi(t / x)} \\
+                        \hline
+                    \end{tabular}
+                    \caption{Schlussregeln in $ \mathcal{SK} ^ = $}
+                    \label{fig:fo:skgleich_regeln}
+                \end{figure}
+            % end
+        % end
+    % end
+
+    \section{Kompaktheitssatz}
+        Entspricht dem Kompaktheitssatz der Aussagenlogik (siehe \ref{sec:al:kompaktheit}).
+
+        Daraus folgt, dass für jede Formelmenge $ \Phi \subseteq FO $ und Formel $ \psi \in FO $ gilt: \[ \Phi \vDash \psi \iff \text{es existiert eine endliche Teilmenge } \Phi _ 0 \subseteq \Phi \text{, sodass } \Phi _ 0 \vDash \psi \]
+    % end
+
+    \section{Normalformen}
+        \subsection{Pränexe Normalform (PNF)}
+            Eine Formel $ \varphi $ ist in der \textit{pränexen Normalform}, wenn in dieser alle Quantoren vor der eigentlichen Formel stehen, das heißt, sie hat die Form $ \frac{\forall}{\exists} x _ 1 \cdots \frac{\forall}{\exists} x _ n \varphi $.
+
+            Um eine beliebige Formel $ \varphi $ in die pränexe Normalform umzuformen, müssen alle Quantoren nach vorne gezogen. Ist eine Variable nicht eindeutig an einen Quantor gebunden, so muss diese zunächst umbenannt werden.
+
+            \paragraph{Beispiel}
+                Sei $ \varphi \coloneqq \forall x \exists y (x < y \land \exists y (x > y)) $.
+
+                Diese Formel wird nun schrittweise in die pränexe Normalform umgeformt:
+                \begin{align*}
+                    \varphi &= \forall x \exists y (x < y \land \exists y (x > y)) \tag{Umbenennung} \\
+                            &= \forall x \exists y (x < y \land \exists z (x > z)) \tag{Quantoren-Verschiebung} \\
+                            &= \forall x \exists y \exists z (x < y \land x > z) \tag{Pränexe Normalform} \\
+                \end{align*}
+            % end
+        % end
+
+        \subsection{Skolem-Normalform (SNF)}
+            Eine Formel $ \varphi $ ist in der \textit{Skolem-Normalform}, wenn in dieser ausschließlich Allquantoren existieren und diese vor der eigentlichen Formel stehen, das heißt, sie hat die Form $ \forall x _ 0 \cdots \forall x _ n \varphi $.
+
+            Um eine Formel in pränexer Normalform $ \varphi $ in die Skolem-Normalform umzuwandeln, müssen alle Variablen, welche an Existenzquantoren gebunden sind, in (neue!) $ n\text{-stellige} $ Funktionen geändert werden, welche von allen vorherigen freien und an Allquantoren gebundenen Variablen abhängen. Existiert keine solche vorherige Variable, so wird die Variable durch ein $ 0\text{-stelliges} $ Funktionssymbol substituiert, d.h. durch eine (neue!) Konstante. Dieser Prozess wird \textit{Skolemisierung} genannt.
+
+            \paragraph{Beispiel}
+                Sei $ \varphi \coloneqq \exists x \forall y \exists z (x > y \lor y < z) $ in pränexer Normalform.
+
+                Diese Formel wird nun schrittweise in die Skolem-Normalform umgewandelt (skolemisiert):
+                \begin{align*}
+                    \varphi &= \exists x \forall y \exists z (x > y \lor y < z) \tag{1. Existenzquantor} \\
+                            &= \forall y \exists z (c > y \lor y < z) \tag{2. Existenzquantor} \\
+                            &= \forall y (c > y \lor y < fy) \tag{Skolem-Normalform} \\
+                \end{align*}
+            % end
+        % end
+
+        \subsection{Negationsnormalform (NNF)}
+            Eine Formel $ \varphi $ ist in der \textit{Negationsnormalform}, wenn sie ausschließlich aus atomaren und negiert atomaren Formel mit $ \forall $, $ \exists $, $ \land $, $ \lor $ aufgebaut ist.
+
+            Um eine beliebige Formel $ \varphi $ in die Negationsnormalform umzuwandeln, müssen die booleschen Gesetze angewandt werden und mögliche Negationen auf die unterste Ebene geschoben werden.
+
+            \paragraph{Beispiel}
+                Sei $ \varphi \coloneqq \forall x \exists y (\lnot (x > y \rightarrow (x = y))) $.
+
+                Diese Formel wird nun schrittweise in die Negationsnormalform umgewandelt:
+                \begin{align*}
+                    \varphi &= \forall x \exists y (\lnot (x > y \rightarrow (x = y))) \\
+                            &= \forall x \exists y (\lnot (\lnot (x > y) \lor (x = y))) \\
+                            &= \forall x \exists y (x > y \land \lnot (x = y)) \\
+                \end{align*}
+                Dies entspricht der Negationsnormalform, da $ \lnot (x = y) $ als atomar gilt, da $ (x = y) $ eine Relation darstellt.
+            % end
+        % end
+
+        \subsection{Gleichheitsfreie Normalform (GNF)}
+            Eine Formel $ \varphi $ ist in der \textit{gleichheitsfreien Normalform}, wenn in dieser kein Gleichheitszeichen $ = $ existiert.
+
+            Um ein beliebige Formel $ \varphi $ in die gleichheitsfreie Normalform umzuwandeln, müssen alle Gleichheitszeichen durch ein (neues!) Relationssymbol $ \sim $ ersetzt werden, welches die Funktionalität des Gleichheitszeichens übernimmt.
+
+            \paragraph{Beispiel}
+                Sei $ \varphi \coloneqq \forall x \exists y (x = y) $.
+
+                Diese Formel wird nun in die gleichheitsfreie Normalform umgeformt:
+                \begin{align*}
+                    \varphi &= \forall x \exists y (x = y) \tag{Substitution} \\
+                            &= \forall x \exists y (x \sim y) \tag{Gleichheitsfreie Normalform} \\
+                \end{align*}
+            % end
+        % end
+    % end
+
+    \section{Spielsemantik}
+        Die Spielsemantik ist eine Methode, um die Allgemeingültigkeit und auch die Unerfüllbarkeit einer Formel zu beweisen. Hierbei wird eine in Negationsnormalform vorliegende Formel $ \varphi $ von links nach rechts durchlaufen, wobei die in \ref{fig:spielsemantik} gelisteten Spielregeln angewandt werden.
+
+        \begin{figure}[ht]
+            \label{fig:spielsemantik}
+            \begin{mdframed}
+                \textbf{Semantik-Spiel} [$ \mathcal{A}; \text{SF}(\varphi) $]:
+
+                Spieler: \textbf Verifizierer gegen \textbf Falsifizierer
+
+                \vspace{0.1cm}
+
+                Spielpositionen: $ (\psi, a) \in \text{SF}(\varphi) \times A ^ n $
+
+                \vspace{0.1cm}
+
+                Züge in Position $ (\psi, a), a = (a _ 1, \cdots, a _ n) $:
+                \vspace{0pt}
+                \begin{align*}
+                    \psi = \psi _ 1 \land \psi _ 2 & \quad\text{\textbf{F} am Zug - zieht nach $ (\psi _ 1, a) $ oder $ (\psi _ 2, a) $} \\
+                    \psi = \psi _ 1 \lor \psi _ 2  & \quad\text{\textbf{V} am Zug - zieht nach $ (\psi _ 1, a) $ oder $ (\psi _ 2, a) $} \\
+                    \psi = \forall x _ i \psi _ 0  & \quad\text{\textbf{F} am Zug - zieht nach einem $ (\psi _ 0, a') $ mit $ a' = (a _ 1, \cdots, a _ i ', \cdots, a _ n) $} \\
+                    \psi = \exists x _ i \psi _ 0  & \quad\text{\textbf{V} am Zug - zieht nach einem $ (\psi _ 0, a') $ mit $ a' = (a _ 1, \cdots, a _ i ', \cdots, a _ n) $} \\
+                \end{align*}
+
+                \vspace{0.1cm}
+
+                Spielende: In Positionen $ (\psi, a) $, wobei $ \psi $ atomar oder negiert atomar ist.
+
+                \vspace{0.1cm}
+
+                \begin{equation*}
+                    \text{Gewinner: }
+                    \begin{cases}
+                        \text{\textbf Verifizierer} & \text{falls } \mathcal{A} \models \psi[a] \\
+                        \text{\textbf Falsifizierer} & \text{falls } \mathcal{A} \not\models \psi[a] \\
+                    \end{cases}
+                \end{equation*}
+            \end{mdframed}
+            \caption{Spielsemantik}
+        \end{figure}
+    % end
+% end
+
+
+\chapter{Entscheidbarkeit}
+    \begin{itemize}
+        \item $ \text{SAT}(\text{AL}) \coloneqq \{ \varphi \in \text{AL} : \varphi \text{ erfüllbar} \} $ \\ entscheidbar
+        \item $ \overline{\text{SAT}(\text{AL})} \coloneqq \{ \varphi \in \text{AL} : \varphi \text{ unerfüllbar} \} $ \\ entscheidbar
+        \item $ \text{VAL}(\text{AL}) \coloneqq \{ \varphi \in \text{AL} : \varphi \text{ allgemeingültig} \} $ \\ enscheidbar
+        \item $ \text{SAT}(\text{FO}) \coloneqq \{ \varphi \in \text{FO} : \varphi \text{ erfüllbar} \} $ \\ unentscheidbar, rekursiv aufzählbar
+        \item $ \overline{\text{SAT}(\text{FO})} \coloneqq \{ \varphi \in \text{FO} : \varphi \text{ unerfüllbar} \} $ \\ unentscheidbar, rekursiv aufzählbar
+        \item $ \text{VAL}(\text{FO}) \coloneqq \{ \varphi \in \text{FO} : \varphi \text{ allgemeingültig} \} $ \\ unentscheidbar, rekursiv aufwählbar
+        \item $ \text{FINSAT}(\text{FO}) \coloneqq \{ \varphi \in \text{FO} : \varphi \text{ hat ein endliches Model} \} $ \\ unentscheidbar, nicht rekursiv aufwählbar
+        \item $ \text{INFSAT}(\text{FO}) \coloneqq \{ \varphi \in \text{FO} : \varphi \text{ hat nur unendliche Modelle} \} $ \\ unentscheidbar, nicht rekursiv aufzählbar
+    \end{itemize}
+% end
+
+
+\chapter{Abkürzungen und Begriffe}
+    \begin{description}
+        \item[Endlichkeitssatz] Kompaktheitssatz.
+    \end{description}
+% end

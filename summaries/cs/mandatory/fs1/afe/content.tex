@@ -1,0 +1,444 @@
+\section{Definitionen}
+    \subsection{Deterministischer Endlicher Automat (DFA)}
+        \paragraph{Formelle Definition}
+            Ein deterministischer endlicher Automat $ \mathcal{A} $ ist definiert durch das 5-Tupel $ \mathcal{A} = (\Sigma, Q, q _ 0, \delta, A) $ mit
+            \begin{itemize}
+                \item dem endlichen Terminalalphabet $ \Sigma $, $ \Sigma \neq \emptyset $.
+                \item der endlichen Zustandsmenge $ Q $.
+                \item dem Startzustand $ q _ 0 $.
+                \item der Übergangsfunktion $ \delta : Q \times \Sigma \rightarrow Q $ (Zustand, Gelesenes Terminalsymbol $ \rightarrow $ Nächster Zustand).
+                \item den akzeptierenden Zuständen $ A \subseteq Q $.
+            \end{itemize}
+
+        \paragraph{Darstellung}
+            \label{dfa:darstellung}
+            Ein (deterministischer) endlicher Automat ist dargestellt als ein Transitionssystem (gerichteter und gewichteter Graph) mit den Zuständen als Knoten, den Übergängen als Kanten (wobei $ \delta(q, a) \coloneqq q' $ den Übergang darstellt von dem Zustand $ q \in Q $ bei erhalt des Terminalsymbols $ a \in \Sigma $ zu dem Zustand $ q' \in Q $). Die Zustandsnamen werden die in die Kreise der Knoten geschrieben und die Terminalsymbole an die Kanten des Transitionssystems. Der Startzustand wird mit einem einfachen, quelllosen, Pfeil markiert. Die akzeptierenden Zustände werden doppel einkekreist.
+
+        \paragraph{Eigenschaften}
+            \begin{equation*}
+                \begin{split}
+                         & \text{Ein endlicher Automat ist deterministisch}
+                    \\
+                    \iff & \forall q \in Q : \forall a \in \Sigma : \exists ^ 1 q' \in Q : \delta(q, a) = q'
+                    \\
+                    \iff & \text{Jeder Zustand } q \in Q \text{ hat genau eine ausgehende Transition für jedes } a \in \Sigma.
+                \end{split}
+            \end{equation*}
+            Jeder deterministische endliche Automat ist ein nichtdeterministischer endlicher Automat ($ \text{DFA} \implies \text{NFA} $).
+
+        \paragraph{Verhalten}
+            \label{dfa:verhalten}
+            Der Automat startet bei dem Startzustand und ließt Schritt für Schritt ein Symbol des Eingabewortes ein. Mit jedem gelesenen Symbol wechelt der Zustand nach den definierten Übergängen. Sobald das Wort komplett eingelesen wurde (das heißt es sind keine weiteren Terminalsymbole mehr verfügbar), terminiert der Automat. Ist der Automat in einem akzeptierenden Zustand, so wird das Wort akzeptiert. Andernfalls wird das Wort nicht akzeptiert.
+
+
+    \subsection{Nichtdeterministischer Endlicher Automat (NFA)}
+        \paragraph{Formelle Definition}
+            Ein (nichtdeterministischer) endlicher Automat $ \mathcal{A} $ ist definiert durch das 5-Tupel $ \mathcal{A} = (\Sigma, Q, q _ 0, \Delta, A) $ mit
+            \begin{itemize}
+                \item dem endlichen Terminalalphabet $ \Sigma $, $ \Sigma \neq \emptyset $.
+                \item der endlichen Zustandsmenge $ Q $.
+                \item dem Startzustand $ q _ 0 \in Q $.
+                \item der endlichen Übergangsrelation $ \Delta \subseteq Q \times (\Sigma \cup \{ \varepsilon \}) \times Q $ (Zustand, Gelesenes Terminalsymbol oder $ \varepsilon $, Nächster Zustand).
+                \item den akzeptierenden Zuständen $ A \subseteq Q $.
+            \end{itemize}
+
+        \paragraph{Darstellung}
+            Die Darstellung eines nichtdeterministischen Automaten entspricht der Darstellung eines deterministischen Automaten (siehe \ref{dfa:darstellung}).
+
+        \paragraph{Eigenschaften}
+            Ein nichtdeterministischer Automat hat keine speziellen Eigenschaften.
+
+        \paragraph{Verhalten}
+            Ein nichtdeterministischer Automat verhält sich wie ein deterministischer Automat (siehe \ref{dfa:verhalten}) mit der Ausnahme, das er mehrere Zustände gleichzeitig annehmen kann (bei doppelten Transitionen). Kann eine Ausführung nicht weitergeführt werden (das heißt es existieren keine Transitionen mehr für das gelesene Terminalsymbol aus dem aktuellen Zustand), wird diese Ausführung verworfen/nicht akzeptiert. Ist keine weitere Ausführung mehr vorhanden, wird das Wort nicht akzeptiert. Bei einer $ \varepsilon $-Transition wechselt der Zustand immer, beziehungsweise es wird ein neuer Ausführungszweig begonnen (der NFA befindet sich in zwei Zuständen gleichzeitig).
+
+
+    \subsection{Grammatik}
+        \paragraph{Formelle Definition}
+            Eine Grammatik $ \mathcal{G} $ ist definiert durch das 4-Tupel $ \mathcal{G} = (\Sigma, V, P, X _ 0) $ mit
+            \begin{itemize}
+                \item dem endlichen Terminalalphabet $ \Sigma $, $ \Sigma \neq \emptyset $.
+                \item der endlichen Variablenmenge $ V $, $ V \cap \Sigma = \emptyset $.
+                \item der endlichen Menge von Produktionsregeln $ P \subseteq (V \cup \Sigma) ^ + \times (V \cup \Sigma) ^ * $ (Quellsymbol, Zielsymbole oder $ \varepsilon $).
+                \item der Startvariable $ X _ 0 \in V $.
+            \end{itemize}
+
+        \paragraph{Darstellung}
+            Eine Grammatik wird formell durch das oben beschriebene 4-Tupel definiert. Die Produktionsregeln werden als Tabellenartige Liste definiert, wobei die Quellsymbole (Variablensymbole/Terminalsymbol) links stehen und durch einen Pfeil ($ \rightarrow $) von den Zielsymbolen (Variablensymbol/Terminalsymbol) getrennt werden. Dabei kann ein Quellsymbol zu mehreren Zielsymbolen werden, diese werden durch einen vertikalen Strich ($ | $) getrennt. Ein $ \varepsilon $ als Zielsymbol entfernt das Quellsymbol.
+
+        \paragraph{Eigenschaften}
+            Eine Grammatik kann nur zur Konstruktion von Wörtern, aber nicht zur Entscheidung von Wörtern (ob diese in der Sprache liegen) genutzt werden.
+
+        \paragraph{Verhalten}
+            Bei der Konstruktion eines Wortes unter Nutzung einer Grammatik werden die Variablen so lange ersetzt, bis keine Variablen mehr vorhanden sind. das erhaltene Wort liegt in der von der Grammatik erzeugten Sprache.
+
+
+    \subsection{Kellerautomat}
+        \paragraph{Formelle Definition}
+            Ein (nichtdeterministischer) Kellerautomat $ \mathcal{P} $ ist definiert durch das 7-Tupel $ \mathcal{P} = (\Sigma, Q, q _ 0, \Delta, A, \Gamma, \#) $ mit
+            \begin{itemize}
+                \item dem endlichen Terminalalphabet $ \Sigma $, $ \Sigma \neq \emptyset $.
+                \item der endlichen Zustandsmenge $ Q $.
+                \item dem Startzustand $ q _ 0 \in Q $.
+                \item der endlichen Übergangsrelatation $ \Delta \subseteq Q \times \Gamma \times (\Sigma \cup \{ \varepsilon \}) \times \Gamma ^ * \times Q $ (Zustand, Gelesenes Kellersymbol, Gelesenes Terminalsymbol oder $ \varepsilon $, Zu schreibende Kellersymbole oder $ \varepsilon $, Nächster Zustand).
+                \item den akzeptierenden Zuständen $ A \subseteq Q $.
+                \item dem endlichen Kelleralphabet $ \Gamma $.
+                \item dem Startkellersymbol $ \# \in \Gamma $.
+            \end{itemize}
+            Ein $ \varepsilon $ in der Übergangsrelation stellt da, das kein Symbol gelesen werden muss (das heißt die Transition geschieht immer) oder dass kein Symbol in den Kellerspeicher geschrieben wird.
+
+        \paragraph{Darstellung}
+            Eine Kellerautomat wird dargestellt als ein nichtdeterministischer Automat und einem so genannten Kellerspeicher (Stack).
+
+        \paragraph{Verhalten}
+            Ein Kellerautomat verhält sich wie ein nichtdeterministischer Automat mit dem Zusatz eines Kellerspeichers. Mit jedem Einlesen eines Terminalsymbols beziehungsweise jedem Auführen eines Übergangs wird ein Kellersymbol aus dem Kellerspeicher gelesen und gelöscht. Dieses wird zusammen mit dem gelesenen Terminalsymbol als Bedingung genutzt welcher Übergang ausgeführt wird. Um ein oder mehrere Kellersymbole in den Kellerspeicher zu schreiben, werden diese in dem Übergang angegeben. Die angegebenen Kellersymbole ersetzen das gelesene Kellersymbol. Es kann unter anderem $ \varepsilon $ angegeben werden, wodurch nichts in den Kellerspeicher geschrieben wird. Es können mehrere Kellersymbole in den Kellerspeicher geschrieben, wobei diese von rechts in den Speicher geschrieben werden (das heißt das nächste Symbol welches gelesen wird ist das rechteste Symbol in der Auflistung). Hierbei werden die Kellersymbole einfach hintereinander geschrieben.
+
+            Der Kellerautomat ist akzeptiert ein Wort genau dann, wenn der Automat in einem akzeptierenden Zustand steht und der Kellerspeicher leer ist. Ist der Kellerspeicher leer, das Wort allerdings noch nicht abgearbeitet, terminiert der Kellerautomat und akzeptiert das Wort nicht.
+
+
+    \subsection{Turingmaschine}
+        \paragraph{Formelle Definition}
+            Eine (deteministische) Turingmaschine $ \mathcal{M} $ ist definiert durch das 6-Tupel $ \mathcal{M} = (\Sigma, Q, q _ 0, \delta, q ^ +, q ^ -) $ mit
+            \begin{itemize}
+                \item dem endlichen Terminalalphabet $ \Sigma $, $ \Sigma \neq \emptyset $.
+                \item der endlichen Zustandsmenge $ Q $.
+                \item dem Startzustand $ q _ 0 \in Q $.
+                \item der endlichen Übergangsfunktion $ \delta : Q \times (\Sigma \cup \{ \square \} \cup \Gamma) \rightarrow ((\Sigma \cup \{ \square \}) \times \{ <, \circ, > \}) \times Q $
+                \item dem akzeptierenden Endzustand $ q ^ + $.
+                \item dem verwerfenden Endzustand $ q ^ - $.
+            \end{itemize}
+            und dem Hilfsalphabet $ \Gamma $, $ \Gamma \cap \Sigma = \emptyset $.
+
+        \paragraph{Darstellung}
+            Eine Turingmaschine wird dargestellt als ein nichtdeterministischer Automat und einem unendlichen Speicherband.
+
+        \paragraph{Verhalten}
+            Eine Turingmaschine verhält sich wie ein nichtdeterministischer Automat mit dem Zusatz eines unendlichen Speicherbandes welches von einem Schreib- und Lesekopf beschrieben und gelesen werden kann. Mit jeder Transition beziehungsweise jedem Ausführen eines Übergangs wird das Terminalsymbol welches sich aktuell unter dem Kopf befindet gelesen und gelöscht und auf Basis von diesem und dem aktuellen Zustand entschieden, welcher Übergang ausgeführt wird. Das Wort befindet sich auf dem Band, eine Speicherzelle rechts von der initialen Kopfposition. Eine leere Speicherzelle wird formal als Kasten ($ \square $) dargestellt, dieses kann auch gelesen werden. Während dem Ausführen eines Übergangs wird ein neues Symbol (aus dem Terminalalphabet, dem Hilfsalphabet oder $ \square $) auf das Band geschrieben und der Kopf bewegt. Die möglichen Bewegungen sind links ($ < $), rechts ($ > $) und keine Bewegung ($ \circ $), wobei sich der Kopf jeweils um eine Speicherzelle verschiebt. Ferner wechelt der Zustand in den angegebenen Zustand.
+
+            Eine Turingmaschine akzeptiert ein Wort genau dann, wenn der Automat in den akzeptierenden Endzustand wechselt und akzeptiert das Wort nicht, wenn der Automat in den verwerfenden Endzustand wechselt. Solange der Automat nicht einen einen dieser beiden Zustände wechselt, läuft er unendlich weiter.
+
+
+\section{Endliche Automaten / Reguläre Sprachen}
+    \subsection{Satz von Kleene}
+        Die Menge der von endlichen Automaten erkannten Sprachen ist identisch zu der Menge der von regulären Ausdrücken erkannten Sprachen.
+
+        Hierzu werden die Formeln in \ref{f:kleene} rekursiv angewendet um den regulären Ausdruck zu produzieren. Hierfür müssen alle Zustände durchgehend von $ 1 $ bis $ n $ (Anzahl der Zustände) nummeriert sein. $ L ^ k _ { l, m } $ entspricht dem regulären Ausdruck, um von dem Zustand $ l $ in den Zustand $ m $ zu Wechseln unter Nutzung der Zustände $ \{ q _ i : 1 \leq i \leq k \} $ (das heißt es dürfen nur Zustände in dieser Menge während des Laufes genutzt werden). Durch rekursives Anwenden des Satzes von Kleene vereinfachen sich alle regulären Ausdrücke zu regulären Ausdrücken der Form $ L ^ 0 _ { l, m } $, was den Rekursionsanker/den Induktionsanfang darstellt.
+
+        \begin{figure}[ht]
+            \label{f:kleene}
+            \centering
+            \begin{equation*}
+                L ^ 0 _ { l, m } =
+                \begin{cases}
+                    \{ a \in \Sigma : \delta(l, a) = m \}                         & \text{für } l \neq m
+                    \\
+                    \{ \varepsilon \} \cup \{ a \in \Sigma : \delta(l, a) = l \}  & \text{für } l = m
+                \end{cases}
+            \end{equation*}
+            \[ L ^ k _ { l, m } = L ^ { k - 1 } _ { l, m } \cup L ^ { k - 1 } _ { l, k } \cdot (L ^ { k - 1 } _ { k, k }) ^ * \cdot L ^ { k - 1 } _ { k, m } \]
+            \caption{Satz von Kleene}
+        \end{figure}
+
+
+    \subsection{Pumping Lemma für reguläre Sprachen}
+        Für jede reguläre Sprache $ L \subseteq \Sigma ^ * $ existiert ein $ n \in \mathbb{N} $, sodass für jedes Wort $ x \in L $ mit $ \vert x \vert \geq n $ eine Zerlegung $ x = u \cdot v \cdot w $ mit $ v \neq \varepsilon $ existiert, sodass für alle $ m \in \mathbb{N} $ gilt, dass auch $ u \cdot v ^ m \cdot w \in L $ gilt. Dabei kann $ \vert u \cdot v \vert \leq n $ gelten.
+
+        \todo{Beweisbeispiel}
+
+
+    \subsection{Satz von Myhill-Nerode}
+        Für eine Sprache $ L \subseteq \Sigma $ gilt: $ L \text{ regulär} \iff \sim _ L \text{hat endlichen Index} $
+
+        \todo{Beweisbeispiel}
+
+
+    \subsection{Produktkonstruktion}
+        Seien $ \mathcal{A} _ 1 = (\Sigma, Q _ 1, s _ 1, \delta _ 1, A _ 1) $ und $ \mathcal{A} _ 2 = (\Sigma, Q _ 2, s _ 2, \delta _ 2, A _ 2) $ zwei DFAs über dem Alphabet $ \Sigma $.
+
+        Mit Hilfe der Produktkonstruktion ist es nun möglich, die Vereinigungsmenge ($ \mathcal{A} _ 1 \cup \mathcal{A} _ 2 $), die Schnittmenge ($ \mathcal{A} _ 1 \cap \mathcal{A} _ 2 $) und die Differenzmenge ($ \mathcal{A} _ 1 \setminus \mathcal{A} _ 2 $) zu bilden.
+
+        Für den durch Produktkonstruktion konstruierten DFA $ \mathcal{A} = (\Sigma, Q, s, \delta, A) $ gilt:
+        \begin{equation*}
+            \begin{split}
+                Q      & = Q _ 1 \times Q _ 2
+                \\
+                s      & = (s _ 1, s _ 2)
+                \\
+                \delta & : Q \times \Sigma \rightarrow Q : ((q _ 1, q _ 2), a) \mapsto (\delta _ 1 (q _ 1, a), \delta _ 2 (q _ 2, a))
+                \\
+                A      & =
+                    \begin{cases}
+                        \{ (q _ 1, q _ 2) \in Q : q _ 1 \in A _ 1 \lor q _ 2 \in A _ 2 \}       & \text{für } A _ 1 \cup A _ 2      \\
+                        \{ (q _ 1, q _ 2) \in Q : q _ 1 \in A _ 1 \land q _ 2 \in A _ 2 \}      & \text{für } A _ 1 \cap A _ 2      \\
+                        \{ (q _ 1, q _ 2) \in Q : q _ 1 \in A _ 1 \land q _ 2 \notin A _ 2 \}   & \text{für } A _ 1 \setminus A _ 2
+                    \end{cases}
+            \end{split}
+        \end{equation*}
+
+
+    \subsection{Potenzmengenkonstruktion}
+        Sei $ \mathcal{A} = (\Sigma, Q, s, \Delta, A) $ ein NFA über dem Alphabet $ \Sigma $.
+
+        Mit Hilfe der Potenzmengenkonstruktion ist es nun möglich, den NFA $ \mathcal{A} $ in einen DFA zu überführen.
+
+        Für den durch Potenzmengenkonstruktion konstruierten DFA $ \mathcal{A} ^ \text{det} = (\Sigma, \hat{Q}, \hat{s}, \hat{\delta}, \hat{A}) $ gilt:
+        \begin{equation*}
+            \begin{split}
+                \hat{Q}      & = \mathcal{P}(Q)
+                \\
+                \hat{s}      & = \{ s \}
+                \\
+                \hat{\delta}(S, a) & \coloneqq \{ q' \in Q : (q, a, q') \in \Delta \text{ für mindestens ein } q \in S \}
+                \\
+                \hat{A}      & = \{ S \subseteq Q : S \cap A \neq \emptyset \}
+            \end{split}
+        \end{equation*}
+
+        \paragraph{Beispiel}
+            Gegeben ist der NFA $ \mathcal{A} = (\Sigma, Q, s, \Delta, A) $ mit $ \Sigma = \{ a, b \} $, $ Q = \{ q _ 0, q _ 1, q _ 2, q _ 3 \} $, $ s = q _ 0 $, $ A = \{ q _ 3 \} $ und den Übergängen in der Tabelle \ref{prodkons:beispiel:nfa}.
+            \begin{figure}[ht]
+                \label{prodkons:beispiel:nfa}
+                \centering
+                \begin{tabular}{c | c c}
+                    $ \delta $ & a                    & b         \\
+                    \hline
+                    $ q _ 0 $  & $ q _ 0 $, $ q _ 2 $ & $ q _ 1 $ \\
+                    $ q _ 1 $  & $ q _ 3 $            & -         \\
+                    $ q _ 2 $  & $ q _ 3 $            & $ q _ 2 $ \\
+                    $ q _ 3 $  & -                    & -         \\
+                \end{tabular}
+                \caption{NFA: Übergängen}
+            \end{figure}
+
+            Um diesen aus diesem NFA nun einen DFA $ \mathcal{A} ^ \text{det} $ zu konstruieren, wird die Tabelle \ref{prodkons:beispiel:dfa} Zeile für Zeile ausgefüllt.
+            \begin{figure}[ht]
+                \label{prodkons:beispiel:dfa}
+                \centering
+                \begin{tabular}{c | c c}
+                    $ \delta $ & a & b \\
+                    \hline
+                    $ \{ 0 \} $       & $ \{ 0, 2 \} $    & $ \{ 1 \} $    \\
+                    $ \{ 0, 2 \} $    & $ \{ 0, 2, 3 \} $ & $ \{ 1, 2 \} $ \\
+                    $ \{ 1 \} $       & $ \{ 3 \} $       & $ \emptyset $  \\
+                    $ \emptyset $     & $ \emptyset $     & $ \emptyset $  \\
+                    $ \{ 3 \} $       & $ \emptyset $     & $ \emptyset $  \\
+                    $ \{ 0, 2, 3 \} $ & $ \{ 0, 2, 3 \} $ & $ \{ 1, 2 \} $ \\
+                    $ \{ 1, 2 \} $    & $ \{ 3 \} $       & $ \{ 2 \} $    \\
+                    $ \{ 2 \} $       & $ \{ 3 \} $       & $ \{ 2 \} $    \\
+                \end{tabular}
+                \caption{DFA: Übergänge}
+            \end{figure}
+
+            Somit ergibt sich $ \mathcal{A} ^ \text{det} = (\Sigma, \hat{Q}, \hat{s}, \hat{\Delta}, \hat{A}) $ mit $ \hat{Q} = \{ \{ 0 \}, \{ 0,2 \}, \{ 1 \}, \emptyset, \{ 3 \}, \{ 0, 2, 3 \}, \{ 1, 2 \}, \{ 2 \} \} $, $ \hat{s} = \{ 0 \} $, $ A = \{ \{ 3 \}, \{ 0, 2, 3 \} \} $ und den Übergängen in der Tabelle \ref{prodkons:beispiel:dfa}.
+
+
+    \subsection{DFA Minimalisierung}
+        Sei $ \mathcal{A} = (\Sigma, Q, q _ 0, \Delta, A) $ ein DFA über dem Alphabet $ \Sigma $.
+
+        Das Ziel der Minimalisierung ist es nun, die Zustandsmenge $ Q $ zu minimieren.
+
+        Um einen DFA zu minimieren, sind die folgenden Schritte nötig:
+        \begin{enumerate}
+            \item Den akzeptierenden Zuständen wird eine Äquivalenzklasse zugeordnet und den nicht-akzeptierenden Zuständen wird eine andere Äquivalenzklasse zugeordnet.
+            \item Für jeden Zustand wird aufgeschrieben, in welche Äquivalenzklasse der Automat übergeht, wenn ein bestimmtes Terminalsymbol gelesen wird. Dies wird für alle Terminalsymbole des Alphabets $ \Sigma $ durchgeführt.
+            \item Den Zuständen werden neue Äquivalenzklassen zugeordnet wobei bereits getrennte Zustände getrennt bleiben und alle Zustände, die in unterschiedliche Äquivalenzklassen übergehen in neue Äquivalenzklassen geschrieben werden.
+            \item Schritt 2 und Schritt 3 werden so lange wiederholt, bis sich keine neuen Äquivalenzklassen mehr ergeben.
+        \end{enumerate}
+
+        % \paragraph{Beispiel}
+        %     Gegeben ist der DFA $ \mathcal{A} = (\Sigma, Q, s, \Delta, A) $ mit $ \Sigma = \{ a, b \} $, $ Q = \{ 1, 2, 3, 4, 5, 6, 7, 8 \} $, $ s = 1 $, $ A = \{ 5, 6 \} $ und den Übergängen in der Tabelle
+        %     \begin{figure}[ht]
+        %         \label{minimal:beispiel:dfa_lang}
+        %         \centering
+        %         \begin{tabular}{c | c c}
+        %             $ \delta $ & a     & b     \\
+        %             \hline
+        %             $ 1 $      & $ 2 $ & $ 3 $ \\
+        %             $ 2 $      & $ 5 $ & $ 7 $ \\
+        %             $ 3 $      & $ 5 $ & $ 4 $ \\
+        %             $ 4 $      & $ 4 $ & $ 4 $ \\
+        %             $ 5 $      & $ 4 $ & $ 4 $ \\
+        %             $ 6 $      & $ 6 $ & $ 7 $ \\
+        %             $ 7 $      & $ 5 $ & $ 8 $ \\
+        %             $ 8 $      & $ 5 $ & $ 8 $ \\
+        %         \end{tabular}
+        %         \caption{Nicht-Minimaler DFA: Übergänge}
+        %     \end{figure}
+
+        %     Um diesen DFA nun zu minimalisieren, werden obige Schritte ausgeführt (siehe Tabelle \ref{minimal:beispiel:dfa_minimal})
+        %     \todo{DFA minimalisieren}
+        %     \begin{figure}[ht]
+        %         \label{minimal:beispiel:dfa_minimal}
+        %         \centering
+        %         \begin{tabular}{c || c | c c}
+        %             % TODO: DFA Minimieren
+        %         \end{tabular}
+        %         \caption{Minimalisierung}
+        %     \end{figure}
+
+        %     Somit ergibt sich $ \mathcal{A} ^ \text{min} = (\Sigma, \bar{Q}, \bar{s}, \bar{\Delta}, \bar{A}) $ mit $ \bar{Q} = \{ \} $, $ \bar{s} = 1 $, $ \bar{A} = \{ \} $ und den Übergängen in der Tabelle \ref{minimal:beispiel:dfa_min}.
+        %     \todo{Minimalen DFA hinzufügen}
+        %     \begin{figure}[ht]
+        %         \label{minimal:beispiel:dfa_min}
+        %         \centering
+        %         \begin{tabular}{c | c c}
+        %             $ \delta $ & a     & b     \\
+        %         \end{tabular}
+        %         \caption{Minimaler DFA: Übergänge}
+        %     \end{figure}
+
+
+    \subsection{Konkatenation}
+        Seien $ \mathcal{A} _ 1 = (\Sigma, Q _ 1, s _ 1, \Delta _ 1, A _ 1) $ und $ \mathcal{A} _ 2 = (\Sigma, Q _ 2, s _ 2, \Delta _ 2, A _ 2) $ zwei NFAs über dem Alphabet $ \Sigma $.
+
+        Durch die Konkatenation kann nun die Sprache $ L(\mathcal{A} _ 1) \cdot L(\mathcal{A} _ 2) $ gebildet und als NFA dargestellt werden.
+
+        Vorerst müssen die Zustände so umbenannt werden, dass $ Q _ 1 \cap Q _ 2 \neq \emptyset $ gilt. Dannach ist der NFA $ \mathcal{A} = (\Sigma, Q, s, \Delta, A) $ wie folgt definiert:
+        \begin{equation*}
+            \begin{split}
+                Q      & = Q _ 1 \cup Q _ 2
+                \\
+                s      & = s _ 1
+                \\
+                \Delta & = \Delta _ 1 \cup \Delta _ 2 \cup \{ (a _ 1, \varepsilon, s _ 2) : a _ 1 \in A _ 1 \}
+                \\
+                A      & = A _ 2
+            \end{split}
+        \end{equation*}
+
+        \todo{Beispiel}
+
+
+\section{Grammatiken}
+    \subsection{Pumping Lemma für kontextfreie Sprachen}
+        Für jede kontextfreie Sprache $ L \subseteq \Sigma ^ * $ existiert ein $ n \in \mathbb{N} $, sodass für jedes Wort $ x \in L $ mit $ \vert x \vert \geq n $ eine Zerlegung $ x = y \cdot u \cdot v \cdot w \cdot z $ mit $ u \cdot w \neq \varepsilon $ existiert, sodass für alle $ m \in \mathbb{N} $ gilt, dass auch $ y \cdot u ^ m \cdot v \cdot w ^ m \cdot z \in L $ gilt. Dabei kann $ \vert u \cdot v \cdot w \vert \leq n $ gelten.
+
+        \todo{Beweisbeispiel}
+
+
+    \subsection{Chomsky-Normalform}
+        Eine Grammatik in der Chomsky-Normalform enthält nur Produktionsregeln zu zwei Variablen ($ A \rightarrow BC $) oder einem Terminalsymbol ($ A \rightarrow a $). Außerdem kann die Startvariable zu $ \varepsilon $ werden, solange diese nicht mehr referenziert wird.
+
+        Um eine beliebige Grammatik in die Chomsky-Normalform umzuwandeln, werden die folgenden Schritte nacheinander ausgeführt:
+        \begin{enumerate}
+            \item Ersetze alle Terminalsymbole durch eindeutige Variablen, welche nur das Terminalsymbol referezieren.
+            \item Ersetze alle Variablenpaare in n-Tupeln (n > 2) von Variablen durch eindeutige Variablen.
+            \item Wiederhole Schritt 2 so lange, bis nur noch Produktionsregeln zu zwei oder einer Variablen oder einem Terminalsymbol existieren.
+            \item Ersetze alle einzelnen Variablen durch die jeweiligen Produktionsregeln.
+            \item Wiederhole Schritt 4 so lange, bis die Grammatik in der Chomsky-Normalform vorliegt.
+        \end{enumerate}
+
+
+    \subsection{CYK Algorithmus}
+        Der CYK Algorithmus wird genutzt um zu prüfen, ob ein Wort von einer Grammatik produziert wird oder nicht. Hierzu muss die Grammatik in der Chomsky-Normalform vorliegen!
+
+        Für ein Wort $ w \in \Sigma ^ * $ welches zu prüfen ist wird eine Tabelle angelegt mit $ \vert w \vert $ Spalten und $ \vert w \vert + 1 $ Zeilen. In der ersten Zeile wird das Wort notiert. Nun wird in der zweiten Zeile notiert, von welcher Variablen das darüber stehende Terminalsymbol produziert wird. Dies wird in einer Menge notiert (beispielsweise $ \{ S \} $) In der dritten Zeile wird notiert, aus Welchen Variablen zwibuchstabige Wörter unter der Nutzung der darüber liegenden Variablen produziert werden können. Dies wird sukzessive für die nächsten Zeilen fortgeführt. Ist es nicht möglich das Wort zu produzieren, so wird dies mit der leeren Menge ($ \emptyset $) notiert. Steht in der untersten und damit letzten Zelle die Startvariable, so ist das Wort mit der Grammatik produzierbar.
+
+        \paragraph{Beispiel}
+            Gegeben ist die Grammatik $ \mathcal{G} = (\Sigma, V, P, X _ 0) $ mit $ \Sigma = \{ x, m, p \} $, $ V = \{ S, T, M, N, P \} $, $ X _ 0 = S $ und den folgenden Produktionsregeln $ P $:
+            \begin{equation*}
+                \begin{split}
+                    S & \rightarrow x | ST | MS \\
+                    T & \rightarrow SP          \\
+                    M & \rightarrow NS          \\
+                    N & \rightarrow m           \\
+                    P & \rightarrow p           \\
+                \end{split}
+            \end{equation*}
+
+            In der Tabelle \ref{cyk:beispiel} ist zu sehen, wie schrittweise geprüft wird, ob $ xmxxp $ von der Grammatik $ \mathcal{G} $ produziert wird.
+            \begin{figure}[ht]
+                \label{cyk:beispiel}
+                \centering
+                \begin{tabular}{c | c | c | c | c}
+                    $ x $         & $ m $          & $ x $         & $ x $         & $ p $     \\
+                    \hline
+                    $ \{ S \}   $ & $ \{ N \} $    & $ \{ S \} $   & $ \{ S \} $ & $ \{ P \} $ \\
+                    $ \emptyset $ & $ \{ M \} $    & $ \emptyset $ & $ \{ T \} $ & -           \\
+                    $ \emptyset $ & $ \{ S \} $    & $ \{ S \} $   & -           & -           \\
+                    $ \emptyset $ & $ \{ T, M \} $ & -             & -           & -           \\
+                    $ \{ S \} $   & -              & -             & -           & -           \\
+                \end{tabular}
+                \caption{CYK: Beispiel}
+            \end{figure}
+            Da $ S = X _ 0 $ gilt, wird $ xmxxp $ von der Grammatik $ \mathcal{G} $ produziert.
+
+
+\section{Entscheidbarkeit und Aufzählbarkeit}
+    \label{entscheidbarkeit}
+    \paragraph{Definition}
+        \begin{itemize}
+            \item Eine Turingmaschine $ \mathcal{M} $ akzeptiert/erkennt ein Wort $ w \in \Sigma ^ * $ gdw. die Berechnung von $ \mathcal{M} $ akzeptierend ist (das heißt die Berechnung in $ q ^ + $ terminiert).
+            \item Die von einer Turingmaschine $ \mathcal{M} $ akzeptierte/erkannt Sprache ist $ L(\mathcal{M}) = \{ w \in \Sigma ^ * : \mathcal{M} \text{ akzeptiert } w \} $.
+            \item Eine Turingmaschine $ \mathcal{M} $ entscheidet eine Sprache (löst das Wortproblemder Sprache $ L $) $ L \subseteq \Sigma ^ * $ gdw. jede Eingabe von $ w \in \Sigma ^ * $ terminiert und $ L = L(\mathcal{M}) $ gilt (das heißt jede Eingabe von $ w \in L $ terminiert in $ q ^ + $ und jede Eingabe von $ w \in \Sigma ^ * \setminus L $ terminiert in $ q ^ - $).
+        \end{itemize}
+
+        Eine Sprache $ L \subseteq \Sigma ^ * $ heißt
+        \begin{itemize}
+            \item (rekursiv) aufzählbar/semi-entscheidbar $ \iff L $ wird von einer Turingmaschine akzeptiert
+            \item entscheidbar (rekursiv) $ \iff L $ wird von einer Turingmaschine entschieden $ \iff L \text{ aufzählbar} \land \Sigma ^ * \setminus L \text{ aufzählbar} $
+        \end{itemize}
+
+
+\section{Wortproblem}
+    Mit dem Wortproblem wird bezeichnet, ob eine Sprache entscheidbar ist oder nicht (siehe Entscheidbarkeit, \ref{entscheidbarkeit}).
+
+
+\section{Chomsky-Hierarchie}
+    Die Chomsky-Hierarchie ist eine Hierarchie von Klassen von Sprachen die bestimmten Regeln und Einschränkungen der Produktionsregeln unterliegen.
+
+    \subsection{Typ 0}
+        \begin{description}
+            \item[Typnummer] 0
+            \item[Grammatik] Beliebige formale Grammatik
+            \item[Regeln] -
+            \item[Sprachen] rekursiv aufzählbar
+            \item[Entscheidbarkeit] -
+            \item[Automaten] Turingmaschine
+            \item[Abgeschlossenheit] Konkatenation ($ \circ $), Schnitt ($ \cap $), Vereinigung ($ \cup $), Sternchen ($ ^ * $)
+            \item[Komplexitätsklasse] -
+        \end{description}
+
+    \subsection{Typ 1}
+        \begin{description}
+            \item[Typnummer] 1
+            \item[Grammatik] Kontextsensitive Grammatik
+            \item[Regeln] Nur Produktionen der Form $ \alpha A \beta \rightarrow \alpha \gamma \beta $ ($ A \in V $, $ \alpha, \beta \in (\Sigma \cup V) ^ * $, $ \gamma \in (\Sigma \cup V) ^ + $) sind erlaubt. Maximal eine Produktion der Form $ S \rightarrow \varepsilon $ ist erlaubt, wenn Produktion der Form $ \alpha \rightarrow \beta S \gamma $ existiert.
+            \item[Sprachen] kontextsensitiv
+            \item[Entscheidbarkeit] Wortproblem
+            \item[Automaten] linear eingeschränkte Turingmaschinen
+            \item[Abgeschlossenheit] Komplement ($ ^ \complement $), Konkatenation ($ \circ $), Schnitt ($ \cap $), Vereinigung ($ \cup $), Sternchen ($ ^ * $)
+            \item[Komplexitätsklasse] $ 2 ^ { O(n) } $
+        \end{description}
+
+    \subsection{Typ 2}
+        \begin{description}
+            \item[Typnummer] 2
+            \item[Grammatik] Kontextfreie Grammatik
+            \item[Regeln] Nur Produktionen der Form $ A \rightarrow \gamma $ ($ A \in V $, $ \gamma \in (\Sigma \cup V) ^ * $) sind erlaubt.
+            \item[Sprachen] kontextfrei
+            \item[Entscheidbarkeit] Wortproblem
+            \item[Automaten] Kellerautomat
+            \item[Abgeschlossenheit] Konkatenation ($ \circ $), Vereinigung ($ \cup $), Sternchen ($ ^ * $)
+            \item[Komplexitätsklasse] $ O(n ^ 3) $
+        \end{description}
+
+    \subsection{Typ 2}
+        \begin{description}
+            \item[Typnummer] 3
+            \item[Grammatik] Reguläre Grammatik
+            \item[Regeln] Nur rechts- oder linkslineare Produktionen: $ A \rightarrow aB $ oder $ A \rightarrow Ba $ ($ A, B \in V $, $ a \in \Sigma $). Zusätzlich können Produktionen der folgenden Formen existieren: $ A \rightarrow a $, $ A \rightarrow \varepsilon $ ($ A \in V $, $ a \in \Sigma $)
+            \item[Sprachen] regulär
+            \item[Entscheidbarkeit] Wortproblem
+            \item[Entscheidbarkeit] Endlicher Automat
+            \item[Abgeschlossenheit] Komplement ($ ^ \complement $), Konkatenation ($ \circ $), Schnitt ($ \cap $), Verinigung ($ \cup $), Sternchen ($ ^ * $)
+            \item[Komplexitätsklasse] $ O(n) $
+        \end{description}
+
+
+\section{Abkürzungen}
+    \begin{description}
+        \item[DFA] Deterministischer, endlicher, formaler Automat
+        \item[DTM] Deterministische Turingmaschine
+        \item[NFA] Nichtdeterministischer, endlicher, formaler Automat
+        \item[PDA] Pushdown-Automat (Kellerautomat)
+    \end{description}

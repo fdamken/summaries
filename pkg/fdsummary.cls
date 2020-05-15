@@ -20,13 +20,13 @@
 % Packages and commands required for class definition.
 \newread\fdsummary@metadata
 \openin\fdsummary@metadata=metadata.txt
-\read\fdsummary@metadata to \fileline
-\if\relax\fileline\relax\else
-\def\fdsummary@author{\fileline}
+\read\fdsummary@metadata to \filelinea
+\if\relax\filelinea\relax\else
+\def\fdsummary@author{\filelinea}
 \fi
-\read\fdsummary@metadata to \fileline
-\if\relax\fileline\relax\else
-\def\fdsummary@title{\fileline}
+\read\fdsummary@metadata to \filelinet
+\if\relax\filelinet\relax\else
+\def\fdsummary@title{\filelinet}
 \fi
 \closein\fdsummary@metadata
 

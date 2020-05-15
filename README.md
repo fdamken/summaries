@@ -9,7 +9,7 @@ If you found any issues, having suggestions, etc. [create an issue](https://gith
 
 * ✔ `elective/ce/gdr`
 * ✔ `elective/vc/statml`
-* `mandatory/fs1/afe`
+* ✔ `mandatory/fs1/afe`
 * `mandatory/fs1/fop`
 * `mandatory/fs2/apl`
 * `mandatory/fs2/mathe2`

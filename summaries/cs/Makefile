@@ -1,5 +1,16 @@
-all: clean
+all: clean collect compile
+
+
+collect:
 	./collect.sh >tmp-collected.tex
+
+
+compile:
+	lualatex all.tex
+	lualatex all.tex
+	lualatex all.tex
+	lualatex all.tex
+	lualatex all.tex
 
 
 clean:

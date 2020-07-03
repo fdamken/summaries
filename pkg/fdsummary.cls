@@ -310,8 +310,8 @@
 \newcommand{\suminfty}[1][n]{\sum_{#1 = 0}^\infty}
 \newcommand{\limx}[1][x]{\lim_{#1 \to #1_0 }}
 \newcommand{\parallelAsync}{\ensuremath{\,\lvert\vert\rvert\,}}
-\newcommand{\eqv}{\leftrightarrow}
 % Logic.
+\newcommand{\eqv}{\leftrightarrow}
 \newcommand{\always}{\square}
 \newcommand{\btlFor}{\ensuremath{\textit{For}_\textit{BTL}}}
 \newcommand{\lf}{\ensuremath{\mathfrak{f}}}

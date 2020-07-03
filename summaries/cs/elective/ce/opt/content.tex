@@ -1,587 +1,723 @@
+% !TeX spellcheck = en_US
+
 \chapter{Einführung} % 1.5
-    \todo{Content}
+	\todo{Content}
 
-    \section{Beispiele} % 1.6, 1.7, 1.8, 1.10, 1.11
-        \todo{Content}
-    % end
+	\section{Beispiele} % 1.6, 1.7, 1.8, 1.10, 1.11
+		\todo{Content}
+	% end
 
-    \section{Fragestellungen} % 1.12
-        \todo{Content}
-    % end
+	\section{Fragestellungen} % 1.12
+		\todo{Content}
+	% end
 
-    \section{Allgemeine Formulierung eines Optimierungsproblems} % 1.13, 1.14
-        \todo{Content}
-    % end
+	\section{Allgemeine Formulierung eines Optimierungsproblems} % 1.13, 1.14
+		\todo{Content}
+	% end
 
-    \section{Statische vs. Dynamische Optimierung} % 1.15, 1.16, 1.17, 1.18
-        \todo{Content}
-    % end
+	\section{Statische vs. Dynamische Optimierung} % 1.15, 1.16, 1.17, 1.18
+		\todo{Content}
+	% end
 
-    \section{Klassifizierung von Optimierungsverfahren} % 1.23
-        \todo{Content}
-    % end
+	\section{Klassifizierung von Optimierungsverfahren} % 1.23
+		\todo{Content}
+	% end
 
-    \section{Typische Struktur} % 1.24
-        \todo{Content}
-    % end
+	\section{Typische Struktur} % 1.24
+		\todo{Content}
+	% end
 % end
 
-\chapter{Gradientenbasierte Optimierung ohne Beschränkungen} % 2.2
-    \todo{Content}
+\chapter{Gradient-Based Optimization without Constraints}
+	\section{Solution Characterization}
+		This section covers the theoretical results for solving a nonlinear optimization problem using calculus.
+	
+		\subsection{One-Dimensional Optimization}
+			For a one-dimensional function \( \varphi(p) : \R \to \R \) the first-order necessary condition for a minimum is that the derivative of \( \varphi(p) \) w.r.t. the parameter \(p\) vanishes:
+			\begin{align*}
+				\dv{\varphi(p^\ast)}{p} \! = 0
+			\end{align*}
+			Where \( p^\ast \) denotes the optimal solution, i.e. the minimum.
+			
+			All solutions that fulfill this condition are \emph{candidates} for a minimum. If \( \varphi \) is twice continuous differentiable, the sufficient condition for a minimum is that the second-order derivative is positive:
+			\begin{align*}
+				\dv{\varphi(p^\ast)}{p} > 0
+			\end{align*}
+			Then \(p^\ast\) is called a \emph{strict minimum}. This condition is sufficient, but not necessary! The second-order necessary condition for a minimum is that the second-order derivative is non-negative, i.e. \( \dv{\varphi(p^\ast)}{p} \geq 0 \).
+			
+			\subsubsection{Possibilities for a Minimum}
+				There are three cases for a minimum:
+				\begin{itemize}
+					\item \(\varphi(p)\) is twice continuously differentiable everywhere
+					\item \(\varphi'(p)\) is not continuous everywhere but at \(p^\ast\)
+					\item \(\varphi'(p)\) is not continuous everywhere, not even at \(p^\ast\)
+				\end{itemize}
+				While the latter case is common, it is problematic as the solution can typically not be determined analytically (if a function is not continuous at one point, it is rarely invertible).
+			% end
+		% end
 
-    \section{Charakterisierung der Lösung} % 2.2
-        \todo{Content}
+		\subsection{Multi-Dimensional Optimization}
+			For multi-dimensional objective functions \( \varphi : \R^{n_p} \to \R \), where \(n_p\) is the dimensionality of the parameters, the first-order necessary condition is that the gradient vanishes:
+			\begin{align*}
+				\grad{\varphi}(\vec{p}^\ast) =
+					\begin{bmatrix}
+						\pdv{\varphi}{p_1} \\
+						\vdots \\
+						\pdv{\varphi}(p_{n_p})
+					\end{bmatrix}
+				=
+					\begin{bmatrix}
+						0 \\
+						\vdots \\
+						0
+					\end{bmatrix}
+			\end{align*}
+			
+			If \(\varphi(\vec{p})\) is twice continuously differentiable, the second-order sufficient condition is that the Hessian of \(\varphi(\vec{p})\) is positive definite. Analogous to the one-dimensional case, the second-order necessary condition is that the Hessian is positive semi-definite, i.e.:
+			\begin{align*}
+				H_\varphi(\vec{p}^\ast) =
+					\begin{bmatrix}
+						\pdv[2]{\varphi}{p_1}        & \cdots & \pdv{\varphi^2}{p_{n_p} p_1} \\
+						\vdots                       & \ddots & \vdots                       \\
+						\pdv{\varphi^2}{p_1 p_{n_p}} & \cdots & \pdv[2]{\varphi}{p_{n_p}}
+					\end{bmatrix}
+				> 0
+				\quad\text{or respectively}\quad
+				H_\varphi(\vec{p}^\ast) \geq 0
+			\end{align*}
 
-        \subsection{Eindimensionale Optimierung} % 2.3, 2.4, 2.5
-            \todo{Content}
-        % end
+			\paragraph{Example} % 2.7, 2.8, 2.9
+				\todo{Content}
+			% end
+		% end
+	% end
 
-        \subsection{Mehrdimensionale Optimierung} % 2.6, 2.10
-            \todo{Content}
+	\section{Numerical Gradient-Based Methods}
+		\subsection{Starting Point}
+			\subsubsection{Structure of Gradient-Based Methods}
+				Given a initial approximation \( \vec{p}^{(0)} \), an approximation of the minimum \( \vec{p}^\ast \) is wanted. Gradient-based methods are iteration methods based on the iteration rule
+				\begin{align*}
+					\vec{p}^{(k + 1)} = \vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)},\quad k = 0, 1, 2, \cdots
+				\end{align*}
+				where
+				\begin{itemize}
+					\item \(\vec{d}^{(k)}\) is the search direction found as the solution of a linear sub problem and
+					\item \(\alpha^{(k)}\) is the step size found by a one-dimensional \emph{line search}.
+				\end{itemize}
+				The iteration terminates once \( \vec{p}^{(k + 1)} \) is "close to" \(\vec{p}^\ast\), e.g. when the gradient nearly vanishes.
+			% end
 
-            \paragraph{Beispiel} % 2.7, 2.8, 2.9
-                \todo{Content}
-	        % end
-        % end
-    % end
+			\subsubsection{Descent Direction}
+				Gradient-based methods have to ensure the the local search direction \(\vec{d}^{(k)}\) really is a descent direction (the algorithm shall not "run up the hill"). This property is ensured iff the angle \( \delta \) between the search direction and the gradient \( \grad{\varphi}\big(\vec{}^{(k)}\big) \) greater than \SI{90}{\degree}, i.e.
+				\begin{align*}
+					\cos \delta = \frac{\big( \vec{d}^{(k)} \big)^T \Big(\!\grad{\varphi}\big(\vec{p}^{(k)}\big) \!\Big)}{\big\lVert \vec{d}^{(k)} \big\rVert \cdot \big\lVert \grad{\varphi}\big(\vec{p}^{(k)}\big) \big\rVert} < 0 \quad\iff\quad \big( \vec{d}^{(k)} \big)^T \Big(\! \grad{\varphi}\big(\vec{p}^{(k)}\big) \!\Big) < 0
+				\end{align*}
+				This is called the "necessary descent condition".
+			% end
 
-    \section{Numerische Gradientenbasierte Verfahren} % 2.11
-        \todo{Content}
+			\subsubsection{Algorithmic Structure}
+				The \autoref{alg:gradientBasedAlgorithmStructure} shows the basic structure of any gradient-based optimization algorithm.
+			
+				\begin{algorithm}  \DontPrintSemicolon
+					\textbf{Initialization:} Choose an initial approximation \(\vec{p}^{(0)}\) \;
+					\While{not converged}{
+						Determine new search direction: \tabto{6cm} \( \vec{d}^{(k)} \in \R^{n_p} \) \;
+						Determine new step size: \tabto{6cm} \( \alpha^{(k)} \in \R^+ \) \;
+						Update the approximation: \tabto{6cm} \( \vec{p}^{(k + 1)} \gets \vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)} \) \;
+					}
+				
+					\caption{Algorithmic structure of a gradient-based optimization algorithms.}
+					\label{alg:gradientBasedAlgorithmStructure}
+				\end{algorithm}
+			% end
+		% end
 
-        \subsection{Ausgangssituation} % 2.13
-            \todo{Content}
+		\subsection{Steepest Descent}
+			Steepest descent is the straightforward way for getting a search direction. The search direction is just set to the negative of the gradient:
+			\begin{align*}
+				\vec{d}^{(k)} = -\grad{\varphi}\big(\vec{p}^{(k)}\big)
+			\end{align*}
+			
+			\begin{itemize}
+				\item Advantages:
+					\begin{itemize}
+						\item Often quickly reaches areas around the local minimum.
+						\item No second derivatives needed.
+					\end{itemize}
+				\item Disadvantages:
+					\begin{itemize}
+						\item Very slow in areas around the local minimum compared to (Quasi-) Newton Methods.
+					\end{itemize}
+			\end{itemize}
+		% end
 
-            \subsubsection{Struktur gradientenbasierter Verfahren} % 2.14
-                \todo{Content}
-	        % end
+		\subsection{Conjugate Gradient}
+			Basic approach for conjugate gradient:
+			\begin{align*}
+				\vec{d}^{(0)} &= -\grad{\varphi}\big(\vec{p}^{(0)}\big) \\
+				\vec{d}^{(k)} &= \text{Component of } -\grad{\varphi}\big(\vec{p}^{(k)}\big) \text{ that is conjugate to } \vec{d}^{(0)}, \vec{d}^{(1)}, \cdots, \vec{d}^{(k - 1)}
+			\end{align*}
 
-            \subsubsection{Abstiegsrichtung} % 2.15
-                \todo{Content}
-	        % end
+			For a quadratic objective function
+			\begin{align*}
+				\varphi(\vec{p}) = \frac{1}{2} \vec{p}^T \mat{A} \vec{p} - \vec{b}^T \vec{p}
+			\end{align*}
+			with a positive semi-definite matrix \(\mat{A}\) and constant \(\mat{A}\), \(\vec{b}\), the search direction is given as the solution of:
+			\begin{align*}
+				\big(\vec{d}^{(k)}\big)^T \mat{A} \vec{d}^{(j)} = 0,\quad j = 1, \cdots, k - 1
+			\end{align*}
+			
+			With an optimal step size \( \alpha^{(k)} \), i.e.
+			\begin{align*}
+				\alpha^{(k)} = \arg\min_{\alpha} \varphi\big( \vec{p}^{(k)} + \alpha \vec{d}^{(k)} \big)
+					\quad\implies\quad \alpha^{(k)} = -\frac{1}{\big(\vec{d}^{(k)}\big)^T \mat{A} \vec{d}^{(k)}} \Big(\! \grad{\varphi}\big(\vec{p}^{(k)}\big) \!\Big)^T \big(\vec{d}^{(k)}\big)
+			\end{align*}
+			the minimum of \(\varphi\) is reached in \(n_p\) steps.
+			
+			The extension for nonlinear objective functions is given in~\autoref{alg:conjugateGradient}.
+			
+			\begin{algorithm}  \DontPrintSemicolon
+				\textbf{Initialization:} Choose an initial approximation \(\vec{p}^{(0)}\), set \( \vec{d}^{(0)} \gets -\grad{\varphi}\big(\vec{p}^{(0)}\big) \) \;
+				\While{not converged}{
+					\( \alpha^{(k)} \gets \arg\min_\alpha \arg\min_{\alpha} \varphi\big( \vec{p}^{(k)} + \alpha \vec{d}^{(k)} \big) \) \;
+					\( \vec{p}^{(k + 1)} \gets \vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)} \) \;
+					\( \beta^{(k + 1)} \gets \frac{\big(\! \grad{\varphi}\big(\vec{p}^{(k + 1)}\big) \!\big)^T \big(\! \grad{\varphi}\big(\vec{p}^{(k + 1)}\big) \!\big)}{\big(\! \grad{\varphi}\big(\vec{p}^{(k)}\big) \!\big)^T \big(\! \grad{\varphi}\big(\vec{p}^{(k)}\big) \!\big)} \) \;
+					\( \vec{d}^{(k + 1)} \gets -\grad{\varphi}\big(\vec{p}^{(k + 1)}\big) + \beta^{(k + 1)} \vec{d}^{(k)} \) \;
+				}
+				
+				\caption{Conjugate gradient for nonlinear objective functions.}
+				\label{alg:conjugateGradient}
+			\end{algorithm}
+		
+			\begin{itemize}
+				\item Exact line search necessary.
+				\item Different variants of GC-algorithms mainly distinguish in the choice of of \( \beta^{(k)} \).
+				\item Advantages:
+					\begin{itemize}
+						\item Faster then steepest descent.
+						\item No explicit storing of the Hessian \( H_\varphi\big(\vec{p}^{(k)}\big) \) necessary.
+						\item No explicit matrix-vector multiplication.
+						\item Useful even for extreme high dimensions \( n_p \).
+						\item Exact for quadratic objectives \( \varphi(\vec{p}) \).
+					\end{itemize}
+				\item Disadvantages:
+					\begin{itemize}
+						\item A lot slower then (Quasi-) Newton Methods.
+						\item In general not useful for optimizing simulation models.
+					\end{itemize}
+			\end{itemize}
+		% end
 
-            \subsubsection{Algorithmische Struktur} % 2.16
-                \todo{Content}
-	        % end
-        % end
+		\subsection{Newton-Verfahren} % 2.21, 2.22, 2.23
+			\todo{Content}
 
-        \subsection{Methode des steilsten Abstiegs (Steepest Descent)} % 2.17
-            \todo{Content}
-        % end
+			\subsubsection{Verfügbarkeit der zweiten Ableitungen} % 2.24
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Methode der konjugierten Gradienten (Conjugate Gradient)} % 2.18, 2.19, 2.20
-            \todo{Content}
-        % end
+		\subsection{Quasi-Newton-Verfahren} % 2.25, 2.26, 2.27
+			\todo{Content}
 
-        \subsection{Newton-Verfahren} % 2.21, 2.22, 2.23
-            \todo{Content}
+			\subsubsection{BFGS-Aktualisierung} % 2.28
+				\todo{Content}
+			% end
+		% end
 
-            \subsubsection{Verfügbarkeit der zweiten Ableitungen} % 2.24
-                \todo{Content}
-	        % end
-        % end
+		\subsection{Vergleich der Verfahren} % 2.29, 2.30, 2.31, 2.32, 2.33, 2.34, 2.35, 2.36, 2.37, 2.38
+			\todo{Content}
+		% end
+	% end
 
-        \subsection{Quasi-Newton-Verfahren} % 2.25, 2.26, 2.27
-            \todo{Content}
+	\section{Schrittweitenbestimmung, Liniensuche} % 2.39, 2.40, 2.47
+		\todo{Content}
 
-            \subsubsection{BFGS-Aktualisierung} % 2.28
-                \todo{Content}
-	        % end
-        % end
+		\subsection{Charakterisierung der Lösung} % 2.41
+			\todo{Content}
+		% end
 
-        \subsection{Vergleich der Verfahren} % 2.29, 2.30, 2.31, 2.32, 2.33, 2.34, 2.35, 2.36, 2.37, 2.38
-            \todo{Content}
-        % end
-    % end
+		\subsection{Übersicht und Anforderungen} % 2.42, 2.43
+			\todo{Content}
+		% end
 
-    \section{Schrittweitenbestimmung, Liniensuche} % 2.39, 2.40, 2.47
-        \todo{Content}
+		\subsection{Näherungsweise Liniensuche} % 2.44, 2.45, 2.46
+			\todo{Content}
+		% end
+	% end
 
-        \subsection{Charakterisierung der Lösung} % 2.41
-            \todo{Content}
-        % end
+	\section{Vertrauensbereichsverfahren (Trust Region Methods)} % 2.48, 2.49, 2.50
+		\todo{Content}
+	% end
 
-        \subsection{Übersicht und Anforderungen} % 2.42, 2.43
-            \todo{Content}
-        % end
+	\section{Konvergenzraten} % 2.51, 2.52, 2.53, 2.54
+		\todo{Content}
 
-        \subsection{Näherungsweise Liniensuche} % 2.44, 2.45, 2.46
-            \todo{Content}
-        % end
-    % end
-
-    \section{Vertrauensbereichsverfahren (Trust Region Methods)} % 2.48, 2.49, 2.50
-        \todo{Content}
-    % end
-
-    \section{Konvergenzraten} % 2.51, 2.52, 2.53, 2.54
-        \todo{Content}
-
-        \subsection{Gradientenbasierte Verfahren} % 2.55
-            \todo{Content}
-        % end
-    % end
+		\subsection{Gradientenbasierte Verfahren} % 2.55
+			\todo{Content}
+		% end
+	% end
 % end
 
 \chapter{Gradientenfreie Optimierung ohne Beschränkungen} % 3.1, 3.2
-    \todo{Content}
+	\todo{Content}
 
-    \section{Einleitung} % N/A
-    	\todo{Content}
+	\section{Einleitung} % N/A
+		\todo{Content}
 
-    	\subsection{Historische Entwicklung} % 3.3
-        	\todo{Content}
-	    % end
+		\subsection{Historische Entwicklung} % 3.3
+			\todo{Content}
+		% end
 
-        \subsection{Problemstellung} % 3.4
-            \todo{Content}
-        % end
+		\subsection{Problemstellung} % 3.4
+			\todo{Content}
+		% end
 
-        \subsection{Simulationsbasierte Optimierung} % 3.5, 3.6, 3.7, 3.8
-            \todo{Content}
-        % end
+		\subsection{Simulationsbasierte Optimierung} % 3.5, 3.6, 3.7, 3.8
+			\todo{Content}
+		% end
 
-        \subsection{Black-Box Optimierung} % 3.9
-            \todo{Content}
-        % end
-    % end
+		\subsection{Black-Box Optimierung} % 3.9
+			\todo{Content}
+		% end
+	% end
 
-    \section{Metaheuristiken} % 3.10
-        \todo{Content}
+	\section{Metaheuristiken} % 3.10
+		\todo{Content}
 
-        \subsection{Evolutionäre Algorithmen (EA)} % 3.11
-            \todo{Content}
-        % end
+		\subsection{Evolutionäre Algorithmen (EA)} % 3.11
+			\todo{Content}
+		% end
 
-        \subsection{Genetische Algorithmen (GA)} % 3.12
-            \todo{Content}
+		\subsection{Genetische Algorithmen (GA)} % 3.12
+			\todo{Content}
 
-            \paragraph{Beispiel} % 3.13, 3.14
-                \todo{Content}
-		    % end
-        % end
+			\paragraph{Beispiel} % 3.13, 3.14
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Weitere Metaheursitiken} % 3.15
-            \todo{Content}
-        % end
-    % end
+		\subsection{Weitere Metaheursitiken} % 3.15
+			\todo{Content}
+		% end
+	% end
 
-    \section{Deterministische Sampling Verfahren (Mustersuchverfahren)} % 3.16, 3.17
-        \todo{Content}
+	\section{Deterministische Sampling Verfahren (Mustersuchverfahren)} % 3.16, 3.17
+		\todo{Content}
 
-        \subsection{Nelder-Mead Simplexverfahren} % 3.18, 3.26, 3.27
-            \todo{Content}
+		\subsection{Nelder-Mead Simplexverfahren} % 3.18, 3.26, 3.27
+			\todo{Content}
 
-            \subsubsection{Iterationsphase} % 3.19, 3.20
-                \todo{Content}
-	        % end
+			\subsubsection{Iterationsphase} % 3.19, 3.20
+				\todo{Content}
+			% end
 
-            \subsubsection{Algorithmus} % 3.21, 3.22, 3.23
-                \todo{Content}
-	        % end
-        % end
+			\subsubsection{Algorithmus} % 3.21, 3.22, 3.23
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Multidirektionales Suchverfahren (MDS)} % 3.28
-            \todo{Content}
-        % end
+		\subsection{Multidirektionales Suchverfahren (MDS)} % 3.28
+			\todo{Content}
+		% end
 
-        \subsection{Asynchronous Parallel Pattern Search (APPS)} % 3.29, 3.30, 3.31
-            \todo{Content}
+		\subsection{Asynchronous Parallel Pattern Search (APPS)} % 3.29, 3.30, 3.31
+			\todo{Content}
 
-            \paragraph{Beispiel} % 3.32, 3.33, 3.34
-                \todo{Content}
-	        % end
-        % end
+			\paragraph{Beispiel} % 3.32, 3.33, 3.34
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Implizites Filtern} % 3.35, 3.36, 3.37, 3.38
-            \todo{Content}
-        % end
-    % end
+		\subsection{Implizites Filtern} % 3.35, 3.36, 3.37, 3.38
+			\todo{Content}
+		% end
+	% end
 
-    \section{Optimierung mit Ersatzfunktionen} % 3.39, 3.40, 3.41
-        \todo{Content}
+	\section{Optimierung mit Ersatzfunktionen} % 3.39, 3.40, 3.41
+		\todo{Content}
 
-        \subsection{Approximationsmethoden} % 3.42
-            \todo{Content}
+		\subsection{Approximationsmethoden} % 3.42
+			\todo{Content}
 
-            \subsubsection{Response Surface Methoden (RSM)} % 3.43
-                \todo{Content}
-	        % end
+			\subsubsection{Response Surface Methoden (RSM)} % 3.43
+				\todo{Content}
+			% end
 
-            \subsubsection{Radial Basis FUnctions (RBF)} % 3.44
-                \todo{Content}
-	        % end
+			\subsubsection{Radial Basis FUnctions (RBF)} % 3.44
+				\todo{Content}
+			% end
 
-            \subsubsection{Design and Analysis of Computer Experiments (DACE)} % 3.45
-                \todo{Content}
-	        % end
-        % end
+			\subsubsection{Design and Analysis of Computer Experiments (DACE)} % 3.45
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Auswahl der Stützstellen/Datenbasis/Anfangswerte} % 3.46
-            \todo{Content}
+		\subsection{Auswahl der Stützstellen/Datenbasis/Anfangswerte} % 3.46
+			\todo{Content}
 
-            \subsubsection{Design of Experiments (DoE)} % 3.47
-                \todo{Content}
-	        % end
-        % end
+			\subsubsection{Design of Experiments (DoE)} % 3.47
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Minimierung der Ersatzfunktion} % 3.48
-            \todo{Content}
+		\subsection{Minimierung der Ersatzfunktion} % 3.48
+			\todo{Content}
 
-            \subsubsection{Optimierung am Ersatzproblem} % 3.49
-                \todo{Content}
+			\subsubsection{Optimierung am Ersatzproblem} % 3.49
+				\todo{Content}
 
-                \paragraph{Strawman} % 3.48
-                    \todo{Content}
-		        % end
+				\paragraph{Strawman} % 3.48
+					\todo{Content}
+				% end
 
-                \paragraph{Shoemaker} % 3.48
-                    \todo{Content}
-		        % end
+				\paragraph{Shoemaker} % 3.48
+					\todo{Content}
+				% end
 
-                \paragraph{DACE-basierte, sequentielle Update-Strategien} % 3.50
-                    \todo{Content}
-		        % end
-	        % end
-        % end
+				\paragraph{DACE-basierte, sequentielle Update-Strategien} % 3.50
+					\todo{Content}
+				% end
+			% end
+		% end
 
-        \subsection{Diskussion} % 3.54
-            \todo{Content}
-        % end
-    % end
+		\subsection{Diskussion} % 3.54
+			\todo{Content}
+		% end
+	% end
 
-    \section{Vergleich der Verfahren} % 3.55
-        \todo{Content}
+	\section{Vergleich der Verfahren} % 3.55
+		\todo{Content}
 
-        \subsection{Design eines Magnetlagers} % 3.56, 3.57, 3.58, 3.59, 3.60, 3.61
-            \todo{Content}
-        % end
+		\subsection{Design eines Magnetlagers} % 3.56, 3.57, 3.58, 3.59, 3.60, 3.61
+			\todo{Content}
+		% end
 
-        \subsection{Laufoptimierung eines Humanoidroboters} % 3.62, 3.63
-            \todo{Content}
-        % end
-    % end
+		\subsection{Laufoptimierung eines Humanoidroboters} % 3.62, 3.63
+			\todo{Content}
+		% end
+	% end
 
-    \section{Diskussion} % 3.65, 3.66
-        \todo{Content}
-    % end
+	\section{Diskussion} % 3.65, 3.66
+		\todo{Content}
+	% end
 % end
 
 \chapter{Gradientenbasierte Optimierung mit Beschränkungen} % 4.1, 4.2, 4.3, 4.4, 4.5
-    \todo{Content}
+	\todo{Content}
 
-    \section{Charakterisierung der Lösung} % 4.6
-        \todo{Content}
+	\section{Charakterisierung der Lösung} % 4.6
+		\todo{Content}
 
-        \subsection{Motivation} % 4.7, 4.8
-            \todo{Content}
-        % end
+		\subsection{Motivation} % 4.7, 4.8
+			\todo{Content}
+		% end
 
-        \subsection{Lagrange-Funktion} % 4.9
-            \todo{Content}
-        % end
+		\subsection{Lagrange-Funktion} % 4.9
+			\todo{Content}
+		% end
 
-        \subsection{Notwendige Optimalitätsbedingungen 1. Ordnung (Karush-Kuhn-Tucker, KKT)} % 4.10
-            \todo{Content}
-        % end
+		\subsection{Notwendige Optimalitätsbedingungen 1. Ordnung (Karush-Kuhn-Tucker, KKT)} % 4.10
+			\todo{Content}
+		% end
 
-        \subsection{Notwendige Optimalitätsbedingungen 2. Ordnung} % 4.12
-            \todo{Content}
-        % end
+		\subsection{Notwendige Optimalitätsbedingungen 2. Ordnung} % 4.12
+			\todo{Content}
+		% end
 
-        \subsection{Beispiel} % 4.11, 4.13
-            \todo{Content}
-        % end
-    % end
+		\subsection{Beispiel} % 4.11, 4.13
+			\todo{Content}
+		% end
+	% end
 
-    \section{Einfache Schranken} % 4.14, 4.15, 4.16, 4.17
-        \todo{Content}
-    % end
+	\section{Einfache Schranken} % 4.14, 4.15, 4.16, 4.17
+		\todo{Content}
+	% end
 
-    \section{Straffunktionsverfahren} % 4.18, 4.19
-        \todo{Content}
+	\section{Straffunktionsverfahren} % 4.18, 4.19
+		\todo{Content}
 
-        \subsection{Äußere Straffunktionsverfahren} % 4.20, 4.21
-            \todo{Content}
+		\subsection{Äußere Straffunktionsverfahren} % 4.20, 4.21
+			\todo{Content}
 
-            \paragraph{Beispiel} % 4.22, 4.23
-                \todo{Content}
-	        % end
-        % end
+			\paragraph{Beispiel} % 4.22, 4.23
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Innere Straffunktionsverfahren} % 4.24, 4.25
-            \todo{Content}
+		\subsection{Innere Straffunktionsverfahren} % 4.24, 4.25
+			\todo{Content}
 
-            \paragraph{Beispiel} % 4.26
-                \todo{Content}
-	        % end
-        % end
+			\paragraph{Beispiel} % 4.26
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Exakte Straffunktionen} % 4.27
-            \todo{Content}
+		\subsection{Exakte Straffunktionen} % 4.27
+			\todo{Content}
 
-            \paragraph{Beispiel 1} % 4.28
-                \todo{Content}
-	        % end
+			\paragraph{Beispiel 1} % 4.28
+				\todo{Content}
+			% end
 
-            \paragraph{Beispiel 2} % 4.29
-                \todo{Content}
-	        % end
-        % end
+			\paragraph{Beispiel 2} % 4.29
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Erweiterte Lagrange-Funktion} % 4.30
-            \todo{Content}
+		\subsection{Erweiterte Lagrange-Funktion} % 4.30
+			\todo{Content}
 
-            \paragraph{Beispiel 1} % 4.31, 4.32
-                \todo{Content}
-	        % end
+			\paragraph{Beispiel 1} % 4.31, 4.32
+				\todo{Content}
+			% end
 
-            \paragraph{Beispiel 2} % 4.33
-                \todo{Content}
-	        % end
+			\paragraph{Beispiel 2} % 4.33
+				\todo{Content}
+			% end
 
-            \subsubsection{Eigenschaften} % 4.34, 4.35
-                \todo{Content}
-	        % end
-        % end
-    % end
+			\subsubsection{Eigenschaften} % 4.34, 4.35
+				\todo{Content}
+			% end
+		% end
+	% end
 
-    \section{Elimination von Beschränkungen} % 4.36, 4.37, 4.41
-        \todo{Content}
+	\section{Elimination von Beschränkungen} % 4.36, 4.37, 4.41
+		\todo{Content}
 
-        \paragraph{Beispiel 1} % 4.38
-            \todo{Content}
-        % end
+		\paragraph{Beispiel 1} % 4.38
+			\todo{Content}
+		% end
 
-        \paragraph{Beispiel 2} % 4.39
-            \todo{Content}
-        % end
+		\paragraph{Beispiel 2} % 4.39
+			\todo{Content}
+		% end
 
-        \paragraph{Beispiel 3} % 4.40
-            \todo{Content}
-        % end
-    % end
+		\paragraph{Beispiel 3} % 4.40
+			\todo{Content}
+		% end
+	% end
 
-    \section{Verfahren der Sequentiellen Quadratischen Optimierung (SQP)} % 4.42
-        \todo{Content}
+	\section{Verfahren der Sequentiellen Quadratischen Optimierung (SQP)} % 4.42
+		\todo{Content}
 
-        \subsection{Einleitung} % 4.43, 4.44
-            \todo{Content}
-        % end
+		\subsection{Einleitung} % 4.43, 4.44
+			\todo{Content}
+		% end
 
-        \subsection{Bestimmung der Suchrichtung} % 4.45, 4.46, 4.47
-            \todo{Content}
+		\subsection{Bestimmung der Suchrichtung} % 4.45, 4.46, 4.47
+			\todo{Content}
 
-            \subsubsection{Quadratisches Problem (QP)} % 4.48
-                \todo{Content}
-	        % end
-        % end
+			\subsubsection{Quadratisches Problem (QP)} % 4.48
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Bestimmung der Schrittweite} % 4.50
-            \todo{Content}
-        % end
+		\subsection{Bestimmung der Schrittweite} % 4.50
+			\todo{Content}
+		% end
 
-        \subsection{Approximation der Lagrange-Multiplikatoren} % 4.52
-            \todo{Content}
-        % end
+		\subsection{Approximation der Lagrange-Multiplikatoren} % 4.52
+			\todo{Content}
+		% end
 
-        \subsection{Terminierungskriterien} % 4.54, 4.55
-            \todo{Content}
-        % end
+		\subsection{Terminierungskriterien} % 4.54, 4.55
+			\todo{Content}
+		% end
 
-        \subsection{Approximation der Hesse-Matrix} % 4.58, 4.59
-            \todo{Content}
+		\subsection{Approximation der Hesse-Matrix} % 4.58, 4.59
+			\todo{Content}
 
-            \subsubsection{Naiver Ansatz} % 4.60
-                \todo{Content}
-	        % end
+			\subsubsection{Naiver Ansatz} % 4.60
+				\todo{Content}
+			% end
 
-            \subsubsection{Reduzierte Hesse-Matrix} % 4.61, 4.63, 4.64, 4.65, 4.66, 4.67, 4.68
-                \todo{Content}
+			\subsubsection{Reduzierte Hesse-Matrix} % 4.61, 4.63, 4.64, 4.65, 4.66, 4.67, 4.68
+				\todo{Content}
 
-                \paragraph{Beispiel} % 4.62
-                    \todo{Content}
-		        % end
-	        % end
+				\paragraph{Beispiel} % 4.62
+					\todo{Content}
+				% end
+			% end
 
-            \subsubsection{Approximation der reduzierten Hesse-Matrix} % 4.69
-                \todo{Content}
-	        % end
-        % end
+			\subsubsection{Approximation der reduzierten Hesse-Matrix} % 4.69
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{SQP-Verfahren} % 4.52, 4.53, 4.57, 4.75
-            \todo{Content}
-        % end
+		\subsection{SQP-Verfahren} % 4.52, 4.53, 4.57, 4.75
+			\todo{Content}
+		% end
 
-        \subsection{Bemerkungen} % 4.49, 4.70, 4.75, 4.76, 4.77, 4.78, 4.79
-            \todo{Content}
-        % end
+		\subsection{Bemerkungen} % 4.49, 4.70, 4.75, 4.76, 4.77, 4.78, 4.79
+			\todo{Content}
+		% end
 
-        \subsection{Beispiele} % N/A
-            \todo{Content}
+		\subsection{Beispiele} % N/A
+			\todo{Content}
 
-            \subsubsection{Optimale Steuerung eines 6-gelenkigen Industrieroboters} % 4.71, 4.72
-                \todo{Content}
-	        % end
+			\subsubsection{Optimale Steuerung eines 6-gelenkigen Industrieroboters} % 4.71, 4.72
+				\todo{Content}
+			% end
 
-            \subsubsection{PKW-Fahrt} % 4.73, 4.74
-                \todo{Content}
-	        % end
-        % end
-    % end
+			\subsubsection{PKW-Fahrt} % 4.73, 4.74
+				\todo{Content}
+			% end
+		% end
+	% end
 % end
 
 \chapter{Berechnung von Ableitungen} % 5.1, 5.2, 5.3, 5.4
-    \todo{Content}
+	\todo{Content}
 
-    \section{Finite-Differenzen-Approximation (numerische Differentiation)} % 5.5
-        \todo{Content}
+	\section{Finite-Differenzen-Approximation (numerische Differentiation)} % 5.5
+		\todo{Content}
 
-        \subsection{Vorwärtsdifferenzen-Approximation} % 5.6, 5.13
-            \todo{Content}
+		\subsection{Vorwärtsdifferenzen-Approximation} % 5.6, 5.13
+			\todo{Content}
 
-            \subsubsection{Fehler} % 5.8, 5.12
-                \todo{Content}
+			\subsubsection{Fehler} % 5.8, 5.12
+				\todo{Content}
 
-                \paragraph{Approximationsfehler} % 5.9
-                    \todo{Content}
-		        % end
+				\paragraph{Approximationsfehler} % 5.9
+					\todo{Content}
+				% end
 
-                \paragraph{Funktionsgenauigkeit} % 5.10
-                    \todo{Content}
-		        % end
+				\paragraph{Funktionsgenauigkeit} % 5.10
+					\todo{Content}
+				% end
 
-                \paragraph{Rundungsfehler} % 5.11
-                    \todo{Content}
-    		    % end
-	        % end
+				\paragraph{Rundungsfehler} % 5.11
+					\todo{Content}
+				% end
+			% end
 
-            \subsubsection{Wahl der Schrittweite} % 5.14, 5.15, 5.16, 5.17
-                \todo{Content}
-	        % end
-        % end
+			\subsubsection{Wahl der Schrittweite} % 5.14, 5.15, 5.16, 5.17
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Zentrale-Differenzen-Approximation} % 5.18, 5.19, 5.21, 5.22
-            \todo{Content}
-        % end
-    % end
+		\subsection{Zentrale-Differenzen-Approximation} % 5.18, 5.19, 5.21, 5.22
+			\todo{Content}
+		% end
+	% end
 
-    \section{Numerische Differentiation von Simulationsmodellen} % 5.23, 5.24, 5.25
-        \todo{Content}
+	\section{Numerische Differentiation von Simulationsmodellen} % 5.23, 5.24, 5.25
+		\todo{Content}
 
-        \subsection{Ableitung von ODE-Simulationsmodellen} % 5.27, 5.28
-            \todo{Content}
-        % end
+		\subsection{Ableitung von ODE-Simulationsmodellen} % 5.27, 5.28
+			\todo{Content}
+		% end
 
-        \subsection{Externe numerische Differentiation} % N/A
-            \todo{Content}
+		\subsection{Externe numerische Differentiation} % N/A
+			\todo{Content}
 
-            \subsubsection{Naiver Ansatz} % 5.29, 5.30, 5.31
-                \todo{Content}
-	        % end
+			\subsubsection{Naiver Ansatz} % 5.29, 5.30, 5.31
+				\todo{Content}
+			% end
 
-            \subsubsection{Gekoppelte Vorwärtsdifferenzen-Approximation} % 5.32
-                \todo{Content}
-	        % end
-        % end
+			\subsubsection{Gekoppelte Vorwärtsdifferenzen-Approximation} % 5.32
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Interne numerische Differentiation} % 5.33, 5.34
-            \todo{Content}
-        % end
-    % end
+		\subsection{Interne numerische Differentiation} % 5.33, 5.34
+			\todo{Content}
+		% end
+	% end
 
-    \section{Symbolische Differentiation} % 5.35, 5.36
-        \todo{Content}
-    % end
+	\section{Symbolische Differentiation} % 5.35, 5.36
+		\todo{Content}
+	% end
 
-    \section{Automatisches Differenzieren} % 5.37, 5.38, 5.39, 5.40
-        \todo{Content}
+	\section{Automatisches Differenzieren} % 5.37, 5.38, 5.39, 5.40
+		\todo{Content}
 
-        \paragraph{Beispiel} % 5.41, 5.42, 5.43
-            \todo{Content}
-        % end
-    % end
+		\paragraph{Beispiel} % 5.41, 5.42, 5.43
+			\todo{Content}
+		% end
+	% end
 % end
 
 \chapter{Minimierung von Abweichungen} % 6.1, 6.2, 6.3
-    \todo{Content}
+	\todo{Content}
 
-    \section{Parameterschätzung bei ODE-Systemen} % 6.5, 6.7
-        \todo{Content}
-    % end
+	\section{Parameterschätzung bei ODE-Systemen} % 6.5, 6.7
+		\todo{Content}
+	% end
 
-    \section{Gütekriterien zur Minimierung von Abweichungen} % 6.8, 6.9
-        \todo{Content}
-    % end
+	\section{Gütekriterien zur Minimierung von Abweichungen} % 6.8, 6.9
+		\todo{Content}
+	% end
 
-    \section{Lineare Ausgleichsrechnung} % 6.10, 6.11
-        \todo{Content}
-    % end
+	\section{Lineare Ausgleichsrechnung} % 6.10, 6.11
+		\todo{Content}
+	% end
 
-    \section{Optimalitätsbedingungen und Spezialverfahren} % 6.12, 6.13, 6.17
-        \todo{Content}
+	\section{Optimalitätsbedingungen und Spezialverfahren} % 6.12, 6.13, 6.17
+		\todo{Content}
 
-        \subsection{Quasi-Newton} % 6.14
-            \todo{Content}
-        % end
+		\subsection{Quasi-Newton} % 6.14
+			\todo{Content}
+		% end
 
-        \subsection{Gauß-Newton Verfahren} % 6.15
-            \todo{Content}
-        % end
+		\subsection{Gauß-Newton Verfahren} % 6.15
+			\todo{Content}
+		% end
 
-        \subsection{Levenberg-Marquardt Verfahren} % 6.16
-            \todo{Content}
-        % end
+		\subsection{Levenberg-Marquardt Verfahren} % 6.16
+			\todo{Content}
+		% end
 
-        \subsection{SQP-Verfahren} % 6.18
-            \todo{Content}
-        % end
-    % end
+		\subsection{SQP-Verfahren} % 6.18
+			\todo{Content}
+		% end
+	% end
 
-    \section{Normalen-Gleichungen} % 6.22, 6.23
-        \todo{Content}
+	\section{Normalen-Gleichungen} % 6.22, 6.23
+		\todo{Content}
 
-        \paragraph{Beispiel} % 6.24, 6.25, 6.26, 6.27, 6.28
-            \todo{Content}
-        % end
-    % end
+		\paragraph{Beispiel} % 6.24, 6.25, 6.26, 6.27, 6.28
+			\todo{Content}
+		% end
+	% end
 
-    \section{Interpretation von Berechnungsergebnissen} % 6.29
-        \todo{Content}
+	\section{Interpretation von Berechnungsergebnissen} % 6.29
+		\todo{Content}
 
-        \subsection{Mögliche Ursachen für Schwierigkeiten} % 6.30, 6.31
-            \todo{Content}
-        % end
-    % end
+		\subsection{Mögliche Ursachen für Schwierigkeiten} % 6.30, 6.31
+			\todo{Content}
+		% end
+	% end
 
-    \section{Die Varianz-Kovarianz-Matrix} % 6.32, 6.33, 6.34
-        \todo{Content}
-    % end
+	\section{Die Varianz-Kovarianz-Matrix} % 6.32, 6.33, 6.34
+		\todo{Content}
+	% end
 
-    \section{Optimale Experimentgestaltung} % 6.35, 6.36, 6.37
-        \todo{Content}
-    % end
+	\section{Optimale Experimentgestaltung} % 6.35, 6.36, 6.37
+		\todo{Content}
+	% end
 
-    \section{Beispiele} % 6.39
-        \todo{Content}
+	\section{Beispiele} % 6.39
+		\todo{Content}
 
-        \subsection{Parameterabhängige Gesamtfahrzeugdynamik} % 6.39, 6.40
-            \todo{Content}
+		\subsection{Parameterabhängige Gesamtfahrzeugdynamik} % 6.39, 6.40
+			\todo{Content}
 
-            \subsubsection{Simulierte Messwerte} % 6.41, 6.42, 6.43
-                \todo{Content}
-	        % end
+			\subsubsection{Simulierte Messwerte} % 6.41, 6.42, 6.43
+				\todo{Content}
+			% end
 
-            \subsubsection{Echte Messwerte} % 6.44
-                \todo{Content}
-	        % end
+			\subsubsection{Echte Messwerte} % 6.44
+				\todo{Content}
+			% end
 
-            \subsubsection{Vergleich der Verfahren} % 6.45
-                \todo{Content}
-	        % end
-        % end
+			\subsubsection{Vergleich der Verfahren} % 6.45
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Parameterschätzung für "BioBiped"} % 6.47, 6.48, 6.49
-            \todo{Content}
-        % end
-    % end
+		\subsection{Parameterschätzung für "BioBiped"} % 6.47, 6.48, 6.49
+			\todo{Content}
+		% end
+	% end
 % end

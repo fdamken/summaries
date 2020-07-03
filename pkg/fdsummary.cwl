@@ -62,8 +62,8 @@
 \colorlet{lststrings}{TUDa-2c}#B
 
 # Vector and matrix notation.
-\vec{%|}#m
-\mat{%|}#m
+\vec{vec}#m
+\mat{mat}#m
 
 
 % ~ Commands. ~

@@ -63,7 +63,7 @@
 					\begin{bmatrix}
 						\pdv{\varphi}{p_1} \\
 						\vdots \\
-						\pdv{\varphi}(p_{n_p})
+						\pdv{\varphi}{p_{n_p}}
 					\end{bmatrix}
 				=
 					\begin{bmatrix}
@@ -75,7 +75,7 @@
 			
 			If \(\varphi(\vec{p})\) is twice continuously differentiable, the second-order sufficient condition is that the Hessian of \(\varphi(\vec{p})\) is positive definite. Analogous to the one-dimensional case, the second-order necessary condition is that the Hessian is positive semi-definite, i.e.:
 			\begin{align*}
-				H_\varphi(\vec{p}^\ast) =
+				\mat{H}_\varphi(\vec{p}^\ast) =
 					\begin{bmatrix}
 						\pdv[2]{\varphi}{p_1}        & \cdots & \pdv{\varphi^2}{p_{n_p} p_1} \\
 						\vdots                       & \ddots & \vdots                       \\
@@ -83,7 +83,7 @@
 					\end{bmatrix}
 				> 0
 				\quad\text{or respectively}\quad
-				H_\varphi(\vec{p}^\ast) \geq 0
+				\mat{H}_\varphi(\vec{p}^\ast) \geq 0
 			\end{align*}
 
 			\paragraph{Example} % 2.7, 2.8, 2.9
@@ -109,9 +109,9 @@
 
 			\subsubsection{Descent Direction}
 				Gradient-based methods have to ensure the the local search direction \(\vec{d}^{(k)}\) really is a descent direction (the algorithm shall not "run up the hill"). This property is ensured iff the angle \( \delta \) between the search direction and the gradient \( \grad{\varphi}\big(\vec{}^{(k)}\big) \) greater than \SI{90}{\degree}, i.e.
-				\begin{align*}
-					\cos \delta = \frac{\big( \vec{d}^{(k)} \big)^T \Big(\!\grad{\varphi}\big(\vec{p}^{(k)}\big) \!\Big)}{\big\lVert \vec{d}^{(k)} \big\rVert \cdot \big\lVert \grad{\varphi}\big(\vec{p}^{(k)}\big) \big\rVert} < 0 \quad\iff\quad \big( \vec{d}^{(k)} \big)^T \Big(\! \grad{\varphi}\big(\vec{p}^{(k)}\big) \!\Big) < 0
-				\end{align*}
+				\begin{align}
+					\cos \delta = \frac{\big( \vec{d}^{(k)} \big)^T \Big(\!\grad{\varphi}\big(\vec{p}^{(k)}\big) \!\Big)}{\big\lVert \vec{d}^{(k)} \big\rVert \cdot \big\lVert \grad{\varphi}\big(\vec{p}^{(k)}\big) \big\rVert} < 0 \quad\iff\quad \big( \vec{d}^{(k)} \big)^T \Big(\! \grad{\varphi}\big(\vec{p}^{(k)}\big) \!\Big) < 0  \label{eq:descentDirection}
+				\end{align}
 				This is called the "necessary descent condition".
 			% end
 
@@ -119,11 +119,12 @@
 				The \autoref{alg:gradientBasedAlgorithmStructure} shows the basic structure of any gradient-based optimization algorithm.
 			
 				\begin{algorithm}  \DontPrintSemicolon
-					\textbf{Initialization:} Choose an initial approximation \(\vec{p}^{(0)}\) \;
+					\textbf{Initialization:} Choose an initial approximation \(\vec{p}^{(0)}\), set \( k \gets 0 \) \;
 					\While{not converged}{
 						Determine new search direction: \tabto{6cm} \( \vec{d}^{(k)} \in \R^{n_p} \) \;
 						Determine new step size: \tabto{6cm} \( \alpha^{(k)} \in \R^+ \) \;
 						Update the approximation: \tabto{6cm} \( \vec{p}^{(k + 1)} \gets \vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)} \) \;
+						\( k \gets k + 1 \) \;
 					}
 				
 					\caption{Algorithmic structure of a gradient-based optimization algorithms.}
@@ -177,15 +178,16 @@
 			The extension for nonlinear objective functions is given in~\autoref{alg:conjugateGradient}.
 			
 			\begin{algorithm}  \DontPrintSemicolon
-				\textbf{Initialization:} Choose an initial approximation \(\vec{p}^{(0)}\), set \( \vec{d}^{(0)} \gets -\grad{\varphi}\big(\vec{p}^{(0)}\big) \) \;
+				\textbf{Initialization:} Choose an initial approximation \(\vec{p}^{(0)}\), set \( \vec{d}^{(0)} \gets -\grad{\varphi}\big(\vec{p}^{(0)}\big) \) and \( k \gets 0 \) \;
 				\While{not converged}{
-					\( \alpha^{(k)} \gets \arg\min_\alpha \arg\min_{\alpha} \varphi\big( \vec{p}^{(k)} + \alpha \vec{d}^{(k)} \big) \) \;
+					\( \alpha^{(k)} \gets \arg\min_{\alpha} \varphi\big( \vec{p}^{(k)} + \alpha \vec{d}^{(k)} \big) \) \;
 					\( \vec{p}^{(k + 1)} \gets \vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)} \) \;
 					\( \beta^{(k + 1)} \gets \frac{\big(\! \grad{\varphi}\big(\vec{p}^{(k + 1)}\big) \!\big)^T \big(\! \grad{\varphi}\big(\vec{p}^{(k + 1)}\big) \!\big)}{\big(\! \grad{\varphi}\big(\vec{p}^{(k)}\big) \!\big)^T \big(\! \grad{\varphi}\big(\vec{p}^{(k)}\big) \!\big)} \) \;
 					\( \vec{d}^{(k + 1)} \gets -\grad{\varphi}\big(\vec{p}^{(k + 1)}\big) + \beta^{(k + 1)} \vec{d}^{(k)} \) \;
+					\( k \gets k + 1 \) \;
 				}
 				
-				\caption{Conjugate gradient for nonlinear objective functions.}
+				\caption{Conjugate Gradient for nonlinear Objective Function.}
 				\label{alg:conjugateGradient}
 			\end{algorithm}
 		
@@ -195,7 +197,7 @@
 				\item Advantages:
 					\begin{itemize}
 						\item Faster then steepest descent.
-						\item No explicit storing of the Hessian \( H_\varphi\big(\vec{p}^{(k)}\big) \) necessary.
+						\item No explicit storing of the Hessian \( \mat{H}_\varphi\big(\vec{p}^{(k)}\big) \) necessary.
 						\item No explicit matrix-vector multiplication.
 						\item Useful even for extreme high dimensions \( n_p \).
 						\item Exact for quadratic objectives \( \varphi(\vec{p}) \).
@@ -208,52 +210,328 @@
 			\end{itemize}
 		% end
 
-		\subsection{Newton-Verfahren} % 2.21, 2.22, 2.23
-			\todo{Content}
+		\subsection{Newton Method}
+			Assuming the approximation of each iteration, \( \vec{p}^{(k)} \), is close to the minimum \( \vec{p}^\ast \), the gradient \( \grad{\varphi}(\vec{p}^\ast) \) can be taylor-expanded around \( \vec{p}^{(k)} \):
+			\begin{align*}
+				\grad{\varphi}(\vec{p}^\ast) \overset{T\big(\!\vec{p}^{(k)}\!\big)}{=} \grad{\varphi}\big(\vec{p}^{(k)}\big) + \mat{H}_\varphi\big(\vec{p}^{(k)}\big) \big( \vec{p}^\ast - \vec{p}^{(k)} \big) + \cdots \overset{!}{=} \vec{0}
+			\end{align*}
+			By leaving our the higher order terms the search direction \( \vec{d}^{(k)} \coloneqq \vec{p}^\ast - \vec{p}^{(k)} \) is given by the solution of the system of linear equations
+			\begin{align*}
+				\mat{H}_\varphi\big(\vec{p}^{(k)}\big) \vec{d}^{(k)} = -\grad{\varphi}\big(\vec{p}^{(k)}\big)
+			\end{align*}
+			The realization is shown in~\autoref{alg:newtonMethod}.
+			
+			\begin{algorithm}  \DontPrintSemicolon
+				\textbf{Initialization:} Choose an initial approximation \(\vec{p}^{(0)}\), set \( k \gets 0 \) \;
+				\While{not converged}{
+					Solve \( \mat{H}_\varphi\big(\vec{p}^{(k)}\big) \vec{d}^{(k)} = -\grad{\varphi}\big(\vec{p}^{(k)}\big) \) for \( \vec{d}^{(k)} \) \;
+					\( \alpha^{(k)} \gets \arg\min_{\alpha} \varphi\big( \vec{p}^{(k)} + \alpha \vec{d}^{(k)} \big) \) \;
+					\( \vec{p}^{(k + 1)} \gets \vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)} \) \;
+					\( k \gets k + 1 \) \;
+				}
+				
+				\caption{Newton Method}
+				\label{alg:newtonMethod}
+			\end{algorithm}
+		
+			When plugging the search direction into the necessary descent condition~\eqref{eq:descentDirection}
+			\begin{align*}
+				\big(\vec{d}^{(k)}\big)^T \Big(\!\grad{\varphi}\big(\vec{p}^{(k)}\big)\!\Big)
+					= -\Big(\!\grad{\varphi}\big(\vec{p}^{(k)}\big)^T\Big) \Big(\!\mat{H}_\varphi\big(\vec{p}^{(k)}\big)\!\Big)^{-1} \Big(\!\grad{\varphi}\big(\vec{p}^{(k)}\big)\!\Big)
+					< 0
+			\end{align*}
+			it is clear that this is only fulfilled iff the Hessian is positive definite. But this is only the case in a region around the minimum! If the approximation is far away from the minimum, the search direction might also be an ascent direction causing the Newton method to diverge. There are two main solutions to this problem:
+			\begin{enumerate}
+				\item If the Hessian is not positive definite, replace it by an identity matrix. That is, set the search direction to the steepest descent.
+				\item Regularize the equation system with a weight \( \nu > 0 \) such that the new matrix is positive definite (this "rotates" the matrix in the direction of the steepest descent such that the new search direction always fulfills the descent condition):
+			\end{enumerate}
+			\begin{align*}
+				\Big( \mat{H}_\varphi\big(\vec{p}^{(k)}\big) + \nu \mat{I} \Big) \vec{d}^{(k)} = -\grad{\varphi}\big(\vec{p}^{(k)}\big)
+			\end{align*}
+			
+			\begin{itemize}
+				\item Advantages:
+					\begin{itemize}
+						\item Near to strong local minima of twice continuous differentiable objective, the Newton method is quadratic convergent.
+					\end{itemize}
+				\item Disadvantages:
+					\begin{itemize}
+						\item Computationally expensive as a linear system has to be solved in every iteration.
+						\item Not only first, but also second-order derivatives have to be available. This is a big disadvantage:
+							\begin{itemize}
+								\item In practice, the first derivative is rarely and the second derivative is never available.
+								\item Even a single wrong component in the gradient or the Hessian destroys the quadratic convergence.
+							\end{itemize}
+					\end{itemize}
+			\end{itemize}
 
-			\subsubsection{Verfügbarkeit der zweiten Ableitungen} % 2.24
-				\todo{Content}
+			\subsubsection{Availability of Second-Order Derivatives}
+				The obvious idea is to approximate the Hessian using finite differences. The approximated Hessian is then given as
+				\begin{align*}
+					\mat{H}_\varphi\big(\vec{p}^{(k)}\big) = \frac{1}{2} \big( \tilde{\mat{H}} + \tilde{\mat{H}}^T )  \label{eq:approxHessianSymm}
+				\end{align*}
+				where \(\tilde{\mat{H}}\) is given by
+				\begin{align*}
+					\tilde{\mat{H}}_i = \pdv{p_i} \Big( \grad{\varphi}\big(\vec{p}^{(k)}\big) \Big) \approx \frac{1}{h_i} \Big( \grad{\varphi}\big(\vec{p}^{(k)} + h_i \vec{e}_i\big) - \grad{\varphi}\big(\vec{p}^{(k)}\big) \Big)
+				\end{align*}
+				where \( \tilde{\mat{H}}_i \) is the \(i\)-th column of \(\tilde{\mat{H}}\). The equation~\eqref{eq:approxHessianSymm} is used to force the Hessian to be symmetric.
+				
+				Problems:
+				\begin{itemize}
+					\item The Hessian \( \mat{H}_\varphi\big(\vec{p}^{(k)}\big) = \frac{1}{2} \big( \tilde{\mat{H}} + \tilde{\mat{H}}^T ) \) is not necessarily positive definite.
+					\item In every iteration the Gradient has to be evaluated \(n_p\) times more.
+					\item The linear system still needs to be solved.
+					\item Only useful for high-dimensional problems with sparse gradients!
+				\end{itemize}
+				Another possibility are \emph{Quasi-Newton Methods}.
 			% end
 		% end
 
-		\subsection{Quasi-Newton-Verfahren} % 2.25, 2.26, 2.27
-			\todo{Content}
+		\subsection{Quasi-Newton Methods}
+			Quasi-Newton methods are equivalent to the Newton method, however, the Hessian (or its inverse) is approximated by a positive definite matrix
+			\begin{align*}
+				\hat{\mat{H}}^{(k)} \approx \mat{H}_\varphi\big(\vec{p}^{(k)}\big)
+			\end{align*}
+			that is updated in every iteration. This yields a lot of advantages over the classic Newton method:
+			\begin{itemize}
+				\item Only first-order derivatives needed.
+				\item As \( \hat{\mat{H}} \) constructed positive definite, the descent condition is fulfilled anytime.
+				\item If the inverse Hessian is directly approximated, only \( \mathcal{O}(n_p^2) \) multiplications instead of \( \mathcal{O}(n_p^3) \) for solving the linear system.
+			\end{itemize}
+		
+			But how to do the Hessian update? By Taylor-expanding the gradient \( \grad{\varphi}\big(\vec{p}^{(k)}\big) \) around \( \vec{p}^{(k + 1)} \)
+			\begin{align*}
+				\grad{\varphi}\big(\vec{p}^{(k)}\big) \overset{T\big(\!\vec{p}^{(k + 1)}\!\big)}{=} \grad{\varphi}\big(\vec{p}^{(k + 1)}\big) + \mat{H}_\varphi\big(\vec{p}^{(k + 1)}\big) \big( \vec{p}^{(k)} - \vec{p}^{(k + 1)} \big) + \cdots \overset{!}{=} \vec{0}
+			\end{align*}
+			and cutting off the higher-order terms, the following approximation holds:
+			\begin{align*}
+				\mat{H}_\varphi\big(\vec{p}^{(k + 1)}\big) \vec{d}^{(k)} \approx \grad{\varphi}\big(\vec{p}^{(k + 1)}\big) - \grad{\varphi}\big(\vec{p}^{(k)}\big)
+			\end{align*}
+			The approximation of the Hessian must therefore fulfill the \emph{secant condition}
+			\begin{align*}
+				\tilde{\mat{H}}^{(k + 1)} \vec{d}^{(k)} = \grad{\varphi}\big(\vec{p}^{(k + 1)}\big) - \grad{\varphi}\big(\vec{p}^{(k)}\big)
+			\end{align*}
+			
+			There exist a lot of different approaches for doing the Hessian updates \( \tilde{\mat{H}}^{(k + 1)} = \tilde{\mat{H}}^{(k)} + \mat{U}{(k)} \) for rank-1 or rank-2 matrices \(\mat{U}^{(k)}\):
+			\begin{itemize}
+				\item Approach for rank-1 corrections: \tabto{6cm} \( \tilde{\mat{H}}^{(k + 1)} = \tilde{\mat{H}}^{(k)} + \beta_1 \vec{u} \vec{u}^T \)
+				\item Approach for rank-2 corrections: \tabto{6cm} \( \tilde{\mat{H}}^{(k + 1)} = \tilde{\mat{H}}^{(k)} + \beta_1 \vec{u} \vec{u}^T + \beta_2 \vec{v} \vec{v}^T \)
+			\end{itemize}
+			The vectors \( \vec{u}, \vec{v} \in \R^{n_p} \) and scalars \( \beta_1, \beta_2 \in \R \) must have to be chosen such that \( \tilde{\mat{H}}^{(k + 1)} \) is
+			\begin{itemize}
+				\item positive definite,
+				\item symmetric,
+				\item fulfills the secant condition and
+				\item adding up the matrices is efficient and robust.
+			\end{itemize}
 
-			\subsubsection{BFGS-Aktualisierung} % 2.28
-				\todo{Content}
+			\subsubsection{BFGS-Update}
+				The most known rank-2 update for the Hessian is the \emph{BFGS-Update}\footnote{"BFGS" stands for the authors Broyden, Fletcher, Goldfarb and Shanno.}
+				\begin{align*}
+					\vec{u} & = \tilde{\mat{H}}^{(k)} \vec{d}^{(k)} &   \beta_1 & = -\frac{1}{\big(\vec{d}^{(k)}\big)^T \tilde{\mat{H}}^{(k)} \vec{d}^{(k)}} \\
+					\vec{v} & = \vec{g}^{(k)}                       &   \beta_2 & = \frac{1}{\big(\vec{g}^{(k)}\big)^T \vec{d}^{(k)}}
+				\end{align*}
+				where \( \vec{g}^{(k)} = \grad{\varphi}\big(\vec{p}^{(k + 1)}\big) - \grad{\varphi}\big(\vec{p}^{(k)}\big) \). Plugging that into the general approach for rank-2 updates yields the update rule for BFGS-approximations:
+				\begin{align*}
+					\tilde{\mat{H}}^{(k + 1)} = \tilde{\mat{H}}^{(k)}
+							- \frac{1}{\big(\vec{d}^{(k)}\big)^T \tilde{\mat{H}}^{(k)} \vec{d}^{(k)}} \tilde{\mat{H}}^{(k)} \vec{d}^{(k)} \big(\tilde{\mat{H}}^{(k)} \vec{d}^{(k)}\big)^T
+							+ \frac{1}{\big(\vec{g}^{(k)}\big)^T \vec{d}^{(k)}} \vec{g}^{(k)} \big(\vec{g}^{(k)}\big)^T
+				\end{align*}
+				\begin{itemize}
+					\item The direct approximation of the Hessian inverse is not really robust (e.g. for a non-optimal step size rule).
+					\item A better alternative is to directly approximate a useful factorization, e.g. the Cholesky decomposition. This is more robust and equally efficient (\( \mathcal{O}(n_p^2) \)).
+				\end{itemize}
+			
+				The pseudo code for the BFGS update is shown in~\autoref{alg:bfgs}.
+				
+				\begin{algorithm}  \DontPrintSemicolon
+					\textbf{Initialization:} Choose an initial approximation \(\vec{p}^{(0)}\), set \( \tilde{\mat{H}}^{(0)} = \mat{I} \) and \( k \gets 0 \) \;
+					\While{not converged}{
+						Solve \( \tilde{\mat{H}}^{(k)} \vec{d}^{(k)} = -\grad{\varphi}\big(\vec{p}^{(k)}\big) \) for \( \vec{d}^{(k)} \) \;
+						\( \alpha^{(k)} \gets \arg\min_{\alpha} \varphi\big( \vec{p}^{(k)} + \alpha \vec{d}^{(k)} \big) \) \;
+						\( \vec{p}^{(k + 1)} \gets \vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)} \) \;
+						\( \tilde{\mat{H}}^{(k + 1)} \gets \tilde{\mat{H}}^{(k)} - \frac{1}{\big(\vec{d}^{(k)}\big)^T \tilde{\mat{H}}^{(k)} \vec{d}^{(k)}} \tilde{\mat{H}}^{(k)} \vec{d}^{(k)} \big(\tilde{\mat{H}}^{(k)} \vec{d}^{(k)}\big)^T + \frac{1}{\big(\vec{g}^{(k)}\big)^T \vec{d}^{(k)}} \vec{g}^{(k)} \big(\vec{g}^{(k)}\big)^T \) \;
+						\( k \gets k + 1 \) \;
+					}
+					
+					\caption{Quasi-Newton Method with BFGS Update.}
+					\label{alg:bfgs}
+				\end{algorithm}
 			% end
 		% end
 
-		\subsection{Vergleich der Verfahren} % 2.29, 2.30, 2.31, 2.32, 2.33, 2.34, 2.35, 2.36, 2.37, 2.38
+		\subsection{Comparison} % 2.29, 2.30, 2.31, 2.32, 2.33, 2.34, 2.35, 2.36
 			\todo{Content}
+			
+			\begin{itemize}
+				\item 
+			\end{itemize}
+		% end
+		
+		\subsection{Notes and Discussion}
+			\begin{itemize}
+				\item The convergence of gradient-based methods can be shown under weak preconditions.
+				\item As the search direction is only a local descent direction, gradient-based algorithms only yields local minima.
+				\item There is no algorithm that can guarantee to find the global minimum!
+				\item Some approaches for determining a global minimum:
+					\begin{itemize}
+						\item Choose the initialization well, i.e. close to the global minimum.
+						\item Execute the algorithm multiple times with different starting points.
+						\item Validate the solution against properties of the original problem.
+						\item Execute direct search methods beforehand to find promising regions for the local minimum search.
+					\end{itemize}
+			\end{itemize}
+		
+			\begin{itemize}
+				\item Advantages:
+					\begin{itemize}
+						\item If gradient-based algorithms converge, they converge utterly fast.
+						\item Efficient also for high-dimensional problems, i.e. a large \( n_p \).
+					\end{itemize}
+				\item Disadvantages:
+					\begin{itemize}
+						\item Only applicable for functions that are differentiable almost everywhere.
+						\item Require gradient information exact up to four to eight decimal points.
+						\item Convergence to a local minimum near the initialization \( \vec{p}^{(0)} \).
+						\item Require some expert knowledge.
+					\end{itemize}
+			\end{itemize}
 		% end
 	% end
 
-	\section{Schrittweitenbestimmung, Liniensuche} % 2.39, 2.40, 2.47
-		\todo{Content}
-
-		\subsection{Charakterisierung der Lösung} % 2.41
-			\todo{Content}
+	\section{Step Size Rules, Line Search}
+		In every iteration of gradient-based algorithms, the step size has to be determined by minimizing the one-dimensional function:
+		\begin{align*}
+			\psi(\alpha) = \varphi\big(\vec{p}^{(k)} + \alpha \vec{d}^{(k)}\big)
+		\end{align*}
+		As the necessary first-order condition for a minimum, the derivative w.r.t. \(\alpha\) has to vanish:
+		\begin{align*}
+			\dv{\psi\big(\alpha^{(k)}\big)}{\alpha} = \dv{\alpha} \varphi\big(\vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)}\big) = \Big(\!\grad{\varphi}\big(\vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)}\big)\!\Big)^T \vec{d}^{(k)} \overset{!}{=} 0
+		\end{align*}
+		Thus the gradient of \(\varphi\) at the minimum \(\alpha^{(k)}\) as to be orthogonal to the search direction \(\vec{d}^{(k)}\). Intuitively, the optimal step size has to be chosen such that the iteration step cannot go any further without ascending again ("hitting an ascending contour line").
+		
+		Goal of the line search is to reach the minimum of \(\psi\) with least invocations of \(\psi\) as possible. Most of the existing search methods can be classified into
+		\begin{itemize}
+			\item \emph{Polynomial approximation}, e.g. quadratic or cubic interpolation
+			\item \emph{Direct search methods}, e.g. Fibonacci-search, golden ratio search
+			\item \emph{Optimal vs. non-optimal search methods}, e.g. by finding an improvement but not the minimum
+			\item Usage of the gradient information \( \psi' \) or not.
+		\end{itemize}
+	
+		Requirements:
+		\begin{itemize}
+			\item Finding the \(\alpha^{(k)}\) with a minimal value of \(\psi\).
+			\item Do not waste too much computation time on the line search.
+		\end{itemize}
+		In general, an exact line search requires lots of \(\psi\)-evaluations. But how far does \(\psi\) need to be reduced in order to guarantee convergence? In general, the condition \( \varphi\big(\vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)}\big) < \varphi\big(\vec{p}^{(k)}\big) \) is not enough!
+		
+		\subsection{Inexact Line Search}
+			Procedure: Generate and inspect a series of candidates for \(\alpha^{(k)}\) and terminate once one of the candidates fulfills specific criteria, e.g. the Armijo rule or Wolfe conditions.
+			
+			\subsubsection{Armijo Rule}
+				The \emph{Armijo rule} guarantees a sufficient reduction in \(\varphi\):
+				\begin{align*}
+					\varphi\big(\vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)}\big) \leq \varphi\big(\vec{p}^{(k)}\big) + c_1 \alpha^{(k)} \Big(\! \grad{\varphi}\big(\vec{p}^{(k)}\big) \!\Big)^T \vec{d}^{(k)} = \varphi\big(\vec{p}^{(k)}\big) + c_1 \alpha^{(k)} \psi'(0)
+				\end{align*}
+				Where \( 0 < c_1 < 1 \) is any constant, e.g. \( c_1 = 10^{-4} \).
+				
+				Hence, the minimal reduction has to be proportional to \(\alpha^{(k)}\) and the derivative \( \psi'(0) \).
+			% end
+			
+			\subsubsection{Curvature Condition}
+				But a sufficient descent condition is not enough as the step sizes must not be too small (otherwise progress would stop). Thus a second condition has to be employed, the \emph{curvature condition} that requires a minimum curvature on \(\psi\):
+				\begin{align*}
+					\Big(\!\grad{\varphi}\big(\vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)}\big)\!\Big)^T \geq c_2 \cdot \Big(\! \grad{\varphi}\big(\vec{p}^{(k)}\big) \!\Big)^T \vec{d}^{(k)} = c_2 \psi'(0) \quad\iff\quad \psi'\big(\vec{p}^{(k)}\big) \geq c_2 \psi'(0)
+				\end{align*}
+				Where \( c_1 < c_2 < 1 \) is any constant, e.g. \( c_2 = 0.9 \).
+			% end
+			
+			\subsubsection{Wolfe and Goldstein Conditions}
+				Combining the Armijo rule and the curvature condition yields the Wolfe conditions that guarantee both a minimal reduction and a minimal curvature. They are especially useful for Quasi-Newton methods as the Wolfe conditions are scale invariant, i.e. independent of
+				\begin{itemize}
+					\item multiplying \(\varphi\) with any constant and
+					\item affine transformations of \(\vec{p}\).
+				\end{itemize}
+			
+				There are other possibilities are, e.g. the \emph{Goldstein conditions}
+				\begin{align*}
+					\varphi\big(\vec{p}^{(k)}\big) + (1 - c) \alpha^{(k)} \Big(\! \grad{\varphi}\big(\vec{p}^{(k)}\big) \!\Big)^T \vec{d}^{(k)}
+						\leq \varphi\big( \vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)} \big)
+						\leq \varphi\big( \vec{p}^{(k)} \big) + c \alpha^{(k)} \Big(\! \grad{\varphi}\big(\vec{p}^{(k)}\big) \!\Big)^T \vec{d}^{(k)}
+				\end{align*}
+				with any \( 0 < c < 1/2 \), that are useful for Newton, but not for Quasi-Newton methods.
+			% end
 		% end
-
-		\subsection{Übersicht und Anforderungen} % 2.42, 2.43
-			\todo{Content}
-		% end
-
-		\subsection{Näherungsweise Liniensuche} % 2.44, 2.45, 2.46
-			\todo{Content}
+		
+		\subsection{Notes}
+			\begin{itemize}
+				\item For gradient-based methods a step size \( \alpha^{(k)} > 1 \) is in general not useful because:
+					\begin{itemize}
+						\item The search direction \( \vec{d}^{(k)} \) is determined using a linear or quadratic Taylor approximation.
+						\item The Taylor approximation is only valid in a small region around the current approximation \( \vec{p}^{(k)} \), i.e. for \( 0 < \alpha^{(k)} \leq 1 \).
+					\end{itemize}
+				\item The local quadratic or super-linear convergence of Newton-type methods is visible in practice as the last step can be executed with full step size \( \alpha^{(k)} = 1 \).
+			\end{itemize}
 		% end
 	% end
 
-	\section{Vertrauensbereichsverfahren (Trust Region Methods)} % 2.48, 2.49, 2.50
-		\todo{Content}
+	\section{Trust Region Methods}
+		Gradient-based methods with line search determine a fixed search direction and adjust the step size \( \alpha^{(k)} \) according to that search direction to reach global convergence.
+		
+		Another approach is to determine both the length and direction of \( \vec{d}^{(k)} \). The iteration step then becomes
+		\begin{align*}
+			\vec{p}^{(k + 1)} = \vec{p}^{(k)} + \vec{d}^{(k)}
+		\end{align*}
+		without any explicit step size. The length and direction of \( \vec{d}^{(k)} \) are then determined as a solution of the quadratic sub-problem
+		\begin{align*}
+			\min_{\vec{d} \in \R^{n_p}} &\, \Big(\! \grad{\varphi}\big(\vec{p}^{(k)}\big) \!\Big)^T \vec{d} + \frac{1}{2} \vec{d}^T \mat{H}_\varphi\big(\vec{p}^{(k)}\big) \vec{d} \\
+			\mathrm{s.t.} &\,
+				\begin{alignedat}{2}
+					\lVert \vec{d} \rVert_2 & \leq \delta
+				\end{alignedat}
+		\end{align*}
+		where \(\delta\) describes the area around the current approximation \( \vec{p}^{(k)} \) where the quadratic approximation of \( \varphi\big(\vec{p^{(k)}} + \vec{d}\big) \) makes sense, i.e. the \emph{trust region}.
+		
+		The value of \(\delta\) is extremely important for the efficiency of the method.
+		\begin{itemize}
+			\item If \(\delta\) is too small, opportunities for large steps are missed.
+			\item If \(\delta\) is too large, the minimum of the quadratic approximation might be far off the minimum of the objective if the Hessian is indefinite or negative definite.
+		\end{itemize}
+		It is possible to add a regularization parameter \(\beta \geq 0\) to the quadratic approximation
+		\begin{align*}
+			\Big( \mat{H}_\varphi\big(\vec{p}^{(k)}\big) + \beta \mat{I} \Big) \vec{d} = -\grad{\varphi}\big(\vec{p}^{(k)}\big)
+		\end{align*}
+		such that the matrix is positive semidefinite. The solution of this regularized problem also solves the trust region problem if either \( \beta = 0 \), \( \lVert \vec{d} \rVert \leq \delta \) or \( \beta \geq 0 \), \( \lVert \vec{d} \rVert = \delta \).
 	% end
 
-	\section{Konvergenzraten} % 2.51, 2.52, 2.53, 2.54
-		\todo{Content}
+	\section{Rate of Convergence}
+		A common criteria to measure the performance of a gradient method are \emph{rates of convergence}. These provide information on how fast an algorithm converges, i.e. how fast \( \vec{p}^{(k)} \to \vec{p}^\ast \) or \( \big\lVert \vec{p}^{(k)} - \vec{p}^\ast \big\rVert \to 0 \).
+		
+		\textbf{Definition:}
+		Let \( \big(\{\, \vec{p}^{(k)} \,\big\} \) be the series of approximations produced by an optimization method. Then this series has rate of convergence \(r\) if \(r\) is the greatest positive number such that the limit
+		\begin{align*}
+			0 \leq \liminfty[k] \frac{\big\lVert \vec{p}^{(k + 1)} - \vec{p}^\ast \big\rVert}{\big\lVert \vec{p}^{(k)} - \vec{p}^\ast \big\rVert^r} = \gamma < \infty
+		\end{align*}
+		converges (where \( \vec{p}^\ast = \liminfty[k] \vec{p}^{(k)} \)). If \( r = 1 \), then \( \gamma < 1 \) has to hold for the method to converge.
+		
+		A sequence is said to converge superlinearly if
+		\begin{align*}
+			\liminfty[k] \frac{\big\lVert \vec{p}^{(k + 1)} - \vec{p}^\ast \big\rVert}{\big\lVert \vec{p}^{(k)} - \vec{p}^\ast \big\rVert} = 0
+		\end{align*}
+		holds. Even though technically this condition holds for \( r > 1 \), in practice only methods with \( 1 < r < 2 \) are said to converge superlinearly (e.g. for \(r = 2\), the sequence is called to converge quadratically).
 
-		\subsection{Gradientenbasierte Verfahren} % 2.55
+		\paragraph{Examples} % 2.53
 			\todo{Content}
+		% end
+		
+		\subsection{Gradient-Based Methods}
+			Under ideal conditions (i.e. \(\varphi\) is twice continuously differentiable and \( \mat{H}_\varphi(\vec{p}^\ast) \) is positive definite), all of the following hold:
+			\begin{itemize}
+				\item Steepest descent is (locally) linearly convergent (with exact line search).
+				\item The Newton method is (locally) quadratically convergent.
+				\item Quasi-Newton methods with BFGS-update are (locally) superlinearly convergent (for inexact line search using the Wolfe conditions).
+			\end{itemize}
+			But: Even a single wrong component in the Hessian reduced the quadratic convergence of the Newton method to linear convergence!
 		% end
 	% end
 % end

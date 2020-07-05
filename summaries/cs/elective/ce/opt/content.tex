@@ -57,6 +57,8 @@
 		% end
 
 		\subsection{Multi-Dimensional Optimization}
+			\label{subsec:multiDimensionalOptimalityConditions}
+		
 			For multi-dimensional objective functions \( \varphi : \R^{n_p} \to \R \), where \(n_p\) is the dimensionality of the parameters, the first-order necessary condition is that the gradient vanishes:
 			\begin{align*}
 				\grad{\varphi}(\vec{p}^\ast) =
@@ -485,8 +487,8 @@
 		without any explicit step size. The length and direction of \( \vec{d}^{(k)} \) are then determined as a solution of the quadratic sub-problem
 		\begin{align*}
 			\min_{\vec{d} \in \R^{n_p}} &\, \Big(\! \grad{\varphi}\big(\vec{p}^{(k)}\big) \!\Big)^T \vec{d} + \frac{1}{2} \vec{d}^T \mat{H}_\varphi\big(\vec{p}^{(k)}\big) \vec{d} \\
-			\mathrm{s.t.} &\,
-				\begin{alignedat}{2}
+			\mathrm{subject~to}\quad &\,
+				\begin{alignedat}[t]{2}
 					\lVert \vec{d} \rVert_2 & \leq \delta
 				\end{alignedat}
 		\end{align*}
@@ -1005,113 +1007,379 @@
 	% end
 % end
 
-\chapter{Gradientenbasierte Optimierung mit Beschränkungen} % 4.1, 4.2, 4.3, 4.4, 4.5
-	\todo{Content}
+\chapter{Gradient-Based Optimization with Constraints}
+	This chapter covers the optimization problems with nonlinear equality- and inequality-constraints:
+	\begin{align*}
+		\min_{\vec{p} \in \R^{n_p}} &\, \varphi(\vec{p}) \\
+		\mathrm{subject~to}\quad &\,
+			\begin{alignedat}[t]{3}
+				\vec{a}(\vec{p}) &= \vec{0},\quad & \vec{a} : \R^{n_p} \to \R^{n_a} \\
+				\vec{b}(\vec{p}) &\geq \vec{0},\quad & \vec{b} : \R^{n_p} \to \R^{n_b}
+			\end{alignedat}
+	\end{align*}
+	Such an optimization problem is called a \emph{nonlinear programming problem} (NLP).
+	
+	\begin{itemize}
+		\item A point \( \vec{p} \in \R^{n_p} \) that fulfills the constraints is called a \emph{feasible point}.
+		\item The set of all feasibly points is called the \emph{feasible region}.
+		\item For a local minimum \( \vec{p}^\ast \) it holds that \( \varphi(\vec{p}^\ast) \leq \varphi(\vec{p}) \) for all feasible points \(\vec{p}\) in a neighborhood of \(\vec{p}^\ast\).
+		\item All constraints that are \emph{active} at a point \(\vec{p}\) make up the \emph{active set}. This set includes all equality constraints and the active inequality constraints \( A(\vec{p}) \coloneqq \{\, j \in \N : 1 \leq j \leq n_b,\, b_j(\vec{p}) = 0 \,\} \).
+	\end{itemize}
 
-	\section{Charakterisierung der Lösung} % 4.6
-		\todo{Content}
+	\section{Solution Characterization}
+		By a geometric view it is clear that the gradient of the active constraints must be parallel to the gradient of the objective function, i.e. there has to be a constant \( \mu_i^\ast \) for each active constraint \( a_i \) such that
+		\begin{align*}
+			\grad{\varphi}(\vec{p}^\ast) = \mu_i^\ast \grad{a_i}(\vec{p}^\ast)
+			\quad\iff\quad
+			\grad{\varphi}(\vec{p}^\ast) - \mu_i^\ast \grad{a_i}(\vec{p}^\ast) = \vec{0}
+		\end{align*}
+		
+		This leads directly leads to the definition of the Lagrangian
+		\begin{align*}
+			L(\vec{p}, \vec{\mu}, \vec{\sigma}) = \varphi(\vec{p}) - \vec{\mu}^T \vec{a}(\vec{p}) - \vec{\sigma}^T \vec{b}(\vec{p})
+		\end{align*}
+		with the Lagrange multiplier \( \vec{\mu} \), \( \vec{\sigma} \) which encodes the insight above.
+		
+		For formulating the \emph{first-order optimality conditions} analogous to the ones for unconstrained optimization (see~\autoref{subsec:multiDimensionalOptimalityConditions}), a \emph{constraint qualification} must hold: The gradients
+		\begin{align*}
+			\grad{a_1}(\vec{p}^\ast), \cdots, \grad{a_{n_p}}(\vec{p}^\ast) \quad\text{and}\quad \grad{b_j}(\vec{p}^\ast), j \in A(\vec{p}^\ast)
+		\end{align*}
+		of the active constraints have to linearly independent.
 
-		\subsection{Motivation} % 4.7, 4.8
-			\todo{Content}
+		\subsection{First-Order Necessary Optimality Conditions (Karush-Kuhn-Tucker Conditions, KKT)}
+			Let \( \varphi : \R^{n_p} \to \R \), \( \vec{a} : \R^{n_p} \to \R^{n_a} \) and \( \vec{b} : \R^{n_p} \to \R^{n_b} \) be continuously differentiable and let the constraint qualification be fulfilled. If \( \vec{p} \) is a feasible local minimum of the NLP, then there exist Lagrange multiplier \( \vec{\mu} \in \R^{n_a} \), \( \vec{\sigma} \in \R^{n_b} \) such that the \emph{Karush-Kuhn-Tucker} conditions hold:
+			\begin{align}
+				\grad_{\vec{p}}L(\vec{p}, \vec{\mu}, \vec{\sigma}) & = \vec{0}    \tag{KKT.i}   \\
+				\vec{\mu}^T \vec{a}(\vec{p})                       & = \vec{0}    \tag{KKT.iia} \\
+				\vec{\sigma}^T \vec{b}(\vec{p})                    & = \vec{0}    \tag{KKT.iib} \\
+				\vec{\sigma}                                       & \geq \vec{0} \tag{KKT.iii} \label{eq:kkt-iii}
+			\end{align}
+			Here, \( L(\vec{p}, \vec{\mu}, \vec{\sigma}) \) is the Lagrangian
+			\begin{align*}
+				L(\vec{p}, \vec{\mu}, \vec{\sigma}) \coloneqq \varphi(\vec{p}) + \vec{\mu}^T \vec{a}(\vec{p}) + \vec{\sigma}^T \vec{b}(\vec{p})
+			\end{align*}
+			and the inequality in~\eqref{eq:kkt-iii} is element-wise.
 		% end
 
-		\subsection{Lagrange-Funktion} % 4.9
-			\todo{Content}
+		\subsection{Second-Order Necessary Optimality Conditions}
+			The second-order necessary optimality condition is fulfilled if the first-order condition is fulfilled and the Hessian of the Lagrangian is positive semi-definite:
+			\begin{align*}
+				\mat{H}_L(\vec{p}, \vec{\mu}, \vec{\sigma}) \geq 0
+			\end{align*}
 		% end
 
-		\subsection{Notwendige Optimalitätsbedingungen 1. Ordnung (Karush-Kuhn-Tucker, KKT)} % 4.10
-			\todo{Content}
-		% end
-
-		\subsection{Notwendige Optimalitätsbedingungen 2. Ordnung} % 4.12
-			\todo{Content}
-		% end
-
-		\subsection{Beispiel} % 4.11, 4.13
-			\todo{Content}
-		% end
-	% end
-
-	\section{Einfache Schranken} % 4.14, 4.15, 4.16, 4.17
-		\todo{Content}
-	% end
-
-	\section{Straffunktionsverfahren} % 4.18, 4.19
-		\todo{Content}
-
-		\subsection{Äußere Straffunktionsverfahren} % 4.20, 4.21
-			\todo{Content}
-
-			\paragraph{Beispiel} % 4.22, 4.23
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Innere Straffunktionsverfahren} % 4.24, 4.25
-			\todo{Content}
-
-			\paragraph{Beispiel} % 4.26
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Exakte Straffunktionen} % 4.27
-			\todo{Content}
-
-			\paragraph{Beispiel 1} % 4.28
-				\todo{Content}
-			% end
-
-			\paragraph{Beispiel 2} % 4.29
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Erweiterte Lagrange-Funktion} % 4.30
-			\todo{Content}
-
-			\paragraph{Beispiel 1} % 4.31, 4.32
-				\todo{Content}
-			% end
-
-			\paragraph{Beispiel 2} % 4.33
-				\todo{Content}
-			% end
-
-			\subsubsection{Eigenschaften} % 4.34, 4.35
-				\todo{Content}
-			% end
-		% end
-	% end
-
-	\section{Elimination von Beschränkungen} % 4.36, 4.37, 4.41
-		\todo{Content}
-
-		\paragraph{Beispiel 1} % 4.38
-			\todo{Content}
-		% end
-
-		\paragraph{Beispiel 2} % 4.39
-			\todo{Content}
-		% end
-
-		\paragraph{Beispiel 3} % 4.40
+		\subsection{Example} % 4.11, 4.13
 			\todo{Content}
 		% end
 	% end
 
-	\section{Verfahren der Sequentiellen Quadratischen Optimierung (SQP)} % 4.42
-		\todo{Content}
+	\section{Simple Bounds, Box Constraints}
+		The most common type of inequality-constraints are simple lower and upper bounds on the optimization variables:
+		\begin{align*}
+			\min_{\vec{p} \in \R^{n_p}} &\, \varphi(\vec{p}) \\
+			\mathrm{subject~to}\quad &\,
+				\vec{p}_{i, \mathrm{min}} \leq \vec{p}_i \leq \vec{p}_{i, \mathrm{max}}
+		\end{align*}
+		In practice, these are not only used in nearly all constrained, but also in unconstrained optimization problems as they might increase the efficiency by constraining the search space. They also increase robustness of optimization techniques that ensure the fulfilling of the constrains in every iteration.
+		
+		Box constraints can also be used to prohibit "insecure values", e.g. negative variables when the objective function takes square roots.
+		
+		For gradient-free methods, the constraints can be ensured by clipping the new iteration value to the bounds:
+		\begin{align*}
+			p_i^{(k + 1)} = \max\big\{\, p_{i, \mathrm{min}},\, \min\big\{\, p_{i, \mathrm{max}},\, p_i^{(k + 1)} \,\big\} \big\}
+		\end{align*}
+		For gradient-based methods, box constraints can be considered like every other linear and nonlinear constraint (more on that later).
+	% end
 
-		\subsection{Einleitung} % 4.43, 4.44
+	\section{Penalty Function}
+		The approach of \emph{penalty functions} is to transform the constrained problem to an unconstrained problem by punishing violations of the constraints. As this arises big problems with lots of and highly nonlinear constraints, penalty functions are rarely used in practice anymore in favor of sequential quadratic programming (see~\autoref{sec:sqp}).
+		
+		As of today, penalty functions are mainly used for step size determination for nonlinear programs and in the application of robust, gradient-free methods in the unconstrained optimization for solving NLPs.
+
+		\subsection{Exterior Penalty Functions}
+			The original nonlinear problem is replaced by an unconstrained problem with a penalty function \(\Phi\)
+			\begin{align*}
+				\min_{\vec{p} \in \R^{n_p}} \Phi(\vec{p}, \rho),\quad \Phi(\vec{p}, \rho) = \varphi(\vec{p}) + \rho \sum_j \pi_j(\vec{p}),\quad \rho \in \R^+
+			\end{align*}
+			with a function \( \pi_j \) per constraint that is positive if the constraint is violated and zero otherwise.
+			
+			Often a series of unconstrained optimization problems \( \Phi(\vec{p}, \rho) \) is solved with an increasing \(\rho\), such that the solution \( \vec{p}^\ast(\rho) \) gets pushed into the feasible region of the NLP step by step in in the hope of
+			\begin{align*}
+				\liminfty[\rho] \vec{p}^\ast(\rho) = \vec{p}^\ast
+			\end{align*}
+			where \( \vec{p}^\ast \) is the real minimum.
+			
+			This approach is called \emph{exterior penalty functions} as the penalty term is only relevant if \( \vec{p} \) violates the according constraints.
+			
+			\subsubsection{Quadratic Penalty Function}
+				The \emph{quadratic penalty function} is the most common exterior penalty function:
+				\begin{align*}
+					\Phi_Q(\vec{p}, \rho) = \varphi(\vec{p}) + \rho \cdot \frac{1}{2} \Bigg( \sum_{k = 1}^{n_a} \big(a_k(\vec{p})\big)^2 + \sum_{jk = 1}^{n_b} \big(\hat{b}_k(\vec{p})\big)^2 \Bigg)
+				\end{align*}
+				Here, \( \hat{b}_j(\vec{p}) \) denotes the violation of the inequality constraints:
+				\begin{align*}
+					\hat{b}_j(\vec{p}) =
+						\begin{cases*}
+							0             & iff \( b_j(\vec{p}) \geq 0 \) \\
+							-b_j(\vec{p}) & iff \( b_j(\vec{p}) < 0 \)
+						\end{cases*}
+					= \big\lvert\! \min\{ 0,\, b_j(\vec{p}) \} \big\rvert
+				\end{align*}
+				
+				But in the case of \( \rho \to \infty \), the Hessian of \( \Phi_C \) gets more and more ill-condition and may even be singular in the limit.
+			% end
+
+			\paragraph{Example} % 4.22, 4.23
+				\todo{Content}
+			% end
+		% end
+
+		\subsection{Interior Penalty Functions}
+			When using exterior penalty functions, it is not guaranteed that every solution of the iterating unconstrained problems fulfills the constraints of the original NLP. Therefore, exterior penalty functions are not applicable if fulfilling the constraints in every iteration is required. \emph{Interior penalty functions} guarantee exactly that: Every subproblem yields a feasible solution.
+			
+			Given a NLP with only inequality constraints, interior penalty functions use \emph{barrier functions} that have the following properties:
+			\begin{itemize}
+				\item Value of infinity everywhere except inside the feasible region.
+				\item Continuously differentiable inside the feasible region.
+				\item The values go to \( +\infty \) as \(\vec{p}\) gets closer to the edge of the feasible region.
+			\end{itemize}
+		
+			\subsubsection{Logarithmic Barrier Function}
+				The \emph{logarithmic barrier function} is the most used interior penalty function:
+				\begin{align*}
+					\Phi_B(\vec{p}, r) = \varphi(\vec{p}) - r \sum_{k = 1}^{n_b} \ln b_i(\vec{p})
+				\end{align*}
+				The barrier parameter \( r > 0 \) will be decreased step by step and the solution should converge to the minimum as \( r \to 0 \).
+				
+				But in the case of \( r \to 0 \), the Hessian of \( \Phi_B \) gets more and more ill-condition and may even be singular in the limit.
+			% end
+
+			\paragraph{Example} % 4.26
+				\todo{Content}
+			% end
+		% end
+
+		\subsection{Exact Penalty Functions}
+			Neither the quadratic penalty function nor the logarithmic barrier function are "exact" penalty function so that, with an appropriate \(\rho\) or respectively \(r\), the solution of the unconstrained NLP yields the exact solution.
+			
+			One important penalty function of this class is the \emph{exact \(\ell_1\)-penalty function}:
+			\begin{align*}
+				\Phi_{\ell_1}(\vec{p}, \rho) = \varphi(\vec{p}) + \rho \sum_{k = 1}^{n_a} \big\lvert a_k(\vec{p}) \big\rvert + \rho \sum_{k = 1}^{n_b} \big\lvert\! \min\{ 0,\, b_j(\vec{p}) \} \big\rvert
+			\end{align*}
+			However, the \(\ell_1\)-penalty function is not differentiable! This make the numerical solution difficult. But the minimization yields, for adequate big \(\rho\), the minimum of the NLP!
+
+			\paragraph{Example 1} % 4.28
+				\todo{Content}
+			% end
+
+			\paragraph{Example 2} % 4.29
+				\todo{Content}
+			% end
+		% end
+
+		\subsection{Augmented Lagrangian}
+			The downsides of exterior, interior and the \(\ell_1\)-penalty function can be avoided by not using the objective directly, but by using the Lagrangian:
+			\begin{align*}
+				L_Q(\vec{p}, \vec{\mu}, \vec{\sigma}, \rho) = \varphi(\vec{p}) - \vec{\mu}^T \vec{a}(\vec{p}) - \vec{\sigma}^T \vec{b}(\vec{p}) + \rho \cdot \frac{1}{2} \Bigg( \sum_{k = 1}^{n_a} \big(a_k(\vec{p})\big)^2 + \sum_{jk = 1}^{n_b} \big( \min\{ 0,\, b_j(\vec{p}) \} \big)^2 \Bigg)
+			\end{align*}
+			But this requires a good approximation of the Lagrange multiplier \( \vec{\mu} \) and \( \vec{\sigma} \).
+
+			\paragraph{Example 1} % 4.31, 4.32
+				\todo{Content}
+			% end
+
+			\paragraph{Example 2} % 4.33
+				\todo{Content}
+			% end
+
+			\subsubsection{Notes}
+				\begin{itemize}
+					\item In practice, the augmented Lagrangian \( L_Q \) is used in the following fashion:
+						\begin{enumerate}
+							\item Choose Lagrange multipliers \( \vec{\mu} \), \( \vec{\sigma} \) and the parameter \( \rho > 0 \).
+							\item Calculate a local minimum \( \vec{p}^\ast(\rho) \) of \( L_Q \) using methods of the unconstrained optimization.
+							\item Update the Lagrange multipliers and \(\rho\). Repeat with 2.
+						\end{enumerate}
+					\item The update of the Lagrange multipliers according to \( \vec{\mu}(\rho) = -\rho \vec{a}\big(\vec{p}^\ast(\rho)\big) \) is based on the convergence properties of the quadratic penalty function.
+					\item If
+						\begin{itemize}
+							\item \(\vec{p}^\ast\) is a minimum of the NLP,
+							\item the constraint qualification hold and
+							\item the KKT-conditions and the second-order sufficient optimality condition is fulfilled for \( \vec{\mu}^\ast \), \( \vec{\sigma}^\ast \),
+						\end{itemize}
+						then
+						\begin{itemize}
+							\item exists a threshold \(\hat{\rho}\) for which it holds that for all \( \rho \geq \hat{\rho} \) it holds that
+							\item \(\vec{p}^\ast\) is a strict local minimum of the (quadratic) augmented Lagrangian \( L_Q(\vec{p}, \vec{\mu}^\ast, \vec{\sigma}^\ast, \rho) \).
+						\end{itemize}
+				\end{itemize}
+			% end
+		% end
+	% end
+
+	\section{Constraint Elimination}
+		For NLPs with active constraints it is often tempting to transform the NLP to remove some of the constraints and to reduce the number of optimization variables (the degrees of freedom). But this might yields wrong results! It has to be assured that:
+		\begin{itemize}
+			\item The original minimum is not eliminated.
+			\item The nonlinearity of the problem is not increased too much (causing problems in finite difference approximations of derivatives).
+			\item No singularities arise in the transformed objective.
+			\item No new discontinuities and non-differentiabilities are added to the objective.
+			\item The Hessian of the surrogate problem is not singular or ill-conditioned near the minimum.
+			\item The transformed problem does not have additional local minima or stationary points.
+			\item And a lot more.
+		\end{itemize}
+		In general: Keep more constraints and keep the function as linear as possible instead of applying transformations that behave badly.
+
+		\paragraph{Example 1} % 4.38
 			\todo{Content}
 		% end
 
-		\subsection{Bestimmung der Suchrichtung} % 4.45, 4.46, 4.47
+		\paragraph{Example 2} % 4.39
 			\todo{Content}
+		% end
 
-			\subsubsection{Quadratisches Problem (QP)} % 4.48
-				\todo{Content}
+		\paragraph{Example 3} % 4.40
+			\todo{Content}
+		% end
+	% end
+
+	\section{Sequential Quadratic Programming (SQP)}
+		\label{sec:sqp}
+	
+		To take care of highly nonlinear equality and inequality constraints, information about the trajectory of these have to be considered, i.e. gradient and Hessian information. Assuming that the constraints that are active on the solution are known, the optimization problem is given as:
+		\begin{align*}
+			\min_{\vec{p} \in \R^{n_p}} &\, \varphi(\vec{p}) \\
+			\mathrm{subject~to}\quad &\, \vec{a}(\vec{p}) = \vec{0},\quad \vec{a} : \R^{n_p} \to \R^{n_a}
+		\end{align*}
+		The KKT-conditions are then equivalent to the simpler formulation
+		\begin{align*}
+			\grad{L}(\vec{p}, \vec{\mu}) \coloneqq
+				\begin{bmatrix}
+					\grad_{\vec{p}}L(\vec{p}, \vec{\mu}) \\
+					\grad_{\vec{\mu}}L(\vec{p}, \vec{\mu})
+				\end{bmatrix}
+			=
+				\begin{bmatrix}
+					\grad{\varphi}(\vec{p}) - \vec{\mu}^T \cdot \grad{\vec{a}}(\vec{p}) \\
+					-\vec{a}(\vec{p})
+				\end{bmatrix}
+			= \vec{0}
+		\end{align*}
+		with the Lagrangian
+		\begin{align*}
+			L(\vec{p}, \vec{\mu}) = \varphi(\vec{p}) - \vec{\mu}^T \vec{a}(\vec{p})
+		\end{align*}
+		This yields a system of \( n_p + n_a \) nonlinear equations for \( n_p + n_a \) unknowns \( \vec{p} \), \( \vec{\mu} \).
+		
+		Taylor-expanding the gradient of the Lagrangian around \( \big( \vec{p}^{(k)}, \vec{\mu}^{(k)} \big) \) yields
+		\begin{align*}
+			\grad{L}(\vec{p}^\ast, \vec{\mu}^\ast) \overset{T\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big)}{=} \grad{L}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) + \mat{H}_L\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) \begin{bmatrix} \vec{d}_p^{(k)} \\ \vec{d}_\mu^{(k)} \end{bmatrix} + \cdots \overset{!}{=} 0
+		\end{align*}
+		with \( \vec{d}_p^{(k)} \coloneqq \vec{p}^\ast - \vec{p}^{(k)} \) and \( \vec{d}_\mu^{(k)} \coloneqq \vec{\mu}^\ast - \vec{\mu}^{(k)} \). Cutting off the higher-order terms yields the \emph{Lagrange-Newton method} where the search direction \( \vec{d}_p^{(k)} \), \( \vec{d}_\mu^{(k)} \) is given as the solution of
+		\begin{align*}
+			\mat{H}_L\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) \begin{bmatrix} \vec{d}_p^{(k)} \\ \vec{d}_\mu^{(k)} \end{bmatrix} = -\grad{L}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big)
+		\end{align*}
+		The Iteration equation \( k \to k + 1 \) is analogous to the Newton method:
+		\begin{align}
+			\begin{bmatrix}
+				\vec{p}^{(k + 1)} \\
+				\vec{\mu}^{(k + 1)}
+			\end{bmatrix}
+			=
+			\begin{bmatrix}
+				\vec{p}^{(k)} \\
+				\vec{\mu}^{(k)}
+			\end{bmatrix}
+			+
+			\begin{bmatrix}
+				\vec{d}_p^{(k)} \\
+				\vec{d}_\mu^{(k)}
+			\end{bmatrix}
+			\label{eq:sqpEqSystem}
+		\end{align}
+		But there is one catch: The set of active constraints at the minimum is generally not known and can change in every iteration.
+
+		\subsection{Finding the Search Direction}
+			Further analysis of the linear system~\eqref{eq:sqpEqSystem} with the Lagrangian
+			\begin{align*}
+				L(\vec{p}, \vec{\mu}) = \varphi(\vec{p}) - \vec{\mu}^T \vec{a}(\vec{p})
+			\end{align*}
+			yields that the linear system has the following structure:
+			\begin{align*}
+				\begin{bmatrix}
+					\mat{H}_L^p\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) & -\mat{J}_a\big(\vec{p}^{(k)}\big) \\
+					-\mat{J}_a^T\big(\vec{p}^{(k)}\big) & \mat{0}
+				\end{bmatrix}
+				\begin{bmatrix}
+					\vec{d}_p^{(k)} \\
+					\vec{d}_\mu^{(k)}
+				\end{bmatrix}
+				=
+				\begin{bmatrix}
+					-\grad{\varphi}\big(\vec{p}^{(k)}\big) + \mat{J}_a\big(\vec{p}^{(k)}\big) \vec{\mu}^{(k)} \\
+					\vec{a}\big(\vec{p}^{(k)}\big)
+				\end{bmatrix}
+			\end{align*}
+			Where \( \mat{H}_L^p\big(\vec{p}^{(k)}\big) \) is the Hessian of the Lagrangian w.r.t. \(\vec{p}\) and \( \mat{J}_a\big(\vec{p}^{(k)}\big) \) is the Jacobian
+			\begin{align*}
+				\mat{J}_a\big(\vec{p}^{(k)}\big) =
+					\begin{bmatrix}
+						\pdv{a_1}{p_1}     & \cdots & \pdv{a_{n_a}}{p_1}     \\
+						\vdots             & \ddots & \vdots                 \\
+						\pdv{a_1}{p_{n_p}} & \cdots & \pdv{a_{n_a}}{p_{n_p}}
+					\end{bmatrix}
+			\end{align*}
+			\textbf{Note that this definition of the Jacobian differs from the usual definition! This one has the gradients of the function has columns!}
+			
+			This linear system can be transformed to
+			\begin{align*}
+				\begin{bmatrix}
+					\mat{H}_L^p\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) & -\mat{J}_a\big(\vec{p}^{(k)}\big) \\
+					-\mat{J}_a^T\big(\vec{p}^{(k)}\big) & \mat{0}
+				\end{bmatrix}
+				\begin{bmatrix}
+					\vec{d}_p^{(k)} \\
+					\underbrace{\vec{d}_\mu^{(k)} + \vec{\mu}^{(k)}}_{\vec{\mu}^{(k + 1)}}
+				\end{bmatrix}
+				=
+				\begin{bmatrix}
+					-\grad{\varphi}\big(\vec{p}^{(k)}\big) \\
+					\vec{a}\big(\vec{p}^{(k)}\big)
+				\end{bmatrix}
+			\end{align*}
+			where \( \vec{d}_p^{(k)} \) can be viewed as the solution of a quadratic minimization problem!
+
+			\subsubsection{Quadratic Problem (QP)}
+				The said quadratic problem is given as:
+				\begin{align*}
+					\min_{\vec{d}_p \in \R^{n_p}} &\, \varphi\big(\vec{p}^{(k)}\big) + \grad{\varphi}^T\big(\vec{p}^{(k)}\big) \vec{d}_p + \frac{1}{2} \vec{d}_p^T \mat{H}_L\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) \vec{d}_p \\
+					\mathrm{subject~to} &\, \vec{a}\big(\vec{p}^{(k)}\big) + \mat{J}_a^T\big(\vec{p}^{(k)}\big) \vec{d}_p = \vec{0}
+				\end{align*}
+				Where the quadratic objective function of the QP consists of a quadratic Taylor-approximation of the NLP objective plus a weighted curvature condition via the Hessian of the activate conditions:
+				\begin{align*}
+					\mat{H}_L\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) = \mat{H}_\varphi\big(\vec{p}^{(k)}\big) - \vec{\mu}^T \mat{H}_{a_k}\big(\vec{p}^{(k)}\big)
+				\end{align*}
+				The linear constraints of the QP also consist of Taylor-approximations of the active NLP constraints.
+				
+				
+				Solving this quadratic optimization problem is more robust than solving the linear system of equations. There exist special algorithms for solving QPs. But even though they are not active, the inequality constraints must be fulfilled. Therefore, the QP is extended to also determine the Lagrange multipliers \( \vec{\mu}^{(k)} \), \( \vec{\sigma}^{(k)} \) along with the search direction \( \vec{d}_p^{(k)} \):
+				\begin{align*}
+					\min_{\vec{d}_p \in \R^{n_p}} &\, \varphi\big(\vec{p}^{(k)}\big) + \grad{\varphi}\big(\vec{p}^{(k)}\big) \vec{d}_p + \frac{1}{2} \vec{d}_p^T \mat{H}_L\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}, \vec{\sigma}^{(k)}\big) \vec{d}_p \\
+					\mathrm{subject~to}\quad &\,
+						\begin{alignedat}[t]{2}
+							\vec{a}\big(\vec{p}^{(k)}\big) + \mat{J}_a^T\big(\vec{p}^{(k)}\big) \vec{d}_p &= \vec{0} \\
+							\vec{b}\big(\vec{p}^{(k)}\big) + \mat{J}_b^T\big(\vec{p}^{(k)}\big) \vec{d}_p & \geq \vec{0}
+						\end{alignedat}
+				\end{align*}
+				Iteration step \( k \to k + 1 \): \( \vec{p}^{(k + 1)} = \vec{p}^{(k)} + \vec{d}_p^{(k)} \)
+			% end
+			
+			\subsubsection{Notes}
+				\begin{itemize}
+					\item Similar to the Newton method, it can be shown under some assumptions that the SQP method converges to a local minimum.
+					\item Algorithms for solving general QPs can be used to determine the active constraints in each iteration by solving the QP. \\ Even though it is not needed, it is useful for efficiency to use as much information as possible from the last iteration ("hot start").
+					\item Other approaches determine the active constraints (working set) outside of the QP solution to only solve QPs with equality constraints which is especially efficient.
+				\end{itemize}
 			% end
 		% end
 

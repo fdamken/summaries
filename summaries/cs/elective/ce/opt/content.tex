@@ -536,147 +536,472 @@
 	% end
 % end
 
-\chapter{Gradientenfreie Optimierung ohne Beschränkungen} % 3.1, 3.2
-	\todo{Content}
+\chapter{Gradient-Free Optimization without Constraints}
+	This chapter covers different types of sampling methods (direct search methods):
+	\begin{enumerate}
+		\item Metaheuristics (random search),
+		\item Deterministic Sampling Methods (pattern search) and
+		\item Surrogate optimization.
+	\end{enumerate}
+	These optimization methods only use evaluations of the objective \(\varphi\) and do not user gradient information (neither analytically nor using numerical differentiation). That is, \(\varphi\) is used as a "Black Box" for function evaluations.
 
-	\section{Einleitung} % N/A
-		\todo{Content}
+	Even for \(\varphi\) that are not differentiable and have lots of local minima, gradient-free algorithms are remarkably robust, but can also fail fast.
 
-		\subsection{Historische Entwicklung} % 3.3
-			\todo{Content}
+	\section{Introduction}
+		The objective \(\varphi\) that is to be optimized often has suboptimal properties, e.g.:
+		\begin{itemize}
+			\item the evaluation is noisy
+			\item not differentiable
+			\item high computation time for evaluation (e.g. when a simulation has to be run for each evaluation)
+		\end{itemize}
+	
+		But gradient-free techniques have a wide range of applications, e.g. in automobile, aerospace industry, robotics, financial, etc. The goal is to reduce the objective function as much as possible and find regions in which the objective is differently sensitive w.r.t. changes in the optimization variables.
+
+		\subsection{Simulation-Based Optimization}
+			In a simulation-based setting, the objective is evaluated by running a simulation (e.g. by solving a set of differential equations or running a real experiment). This yields a suboptimal setting for optimization, yet a common one:
+			\begin{itemize}
+				\item Only function values are computable and not gradient information is available.
+				\item Source code of the optimization is often not available. Hence, no information about how the simulation is computed.
+				\item Discontinuous/non-differentiable systems and model properties, e.g. due to collisions.
+				\item Non-differentiable structure inside the simulation (e.g. if-else).
+				\item Discontinuities caused by subprograms, heuristics, table data, \dots
+				\item Function evaluations are computationally expensive.
+				\item Numerical "noise" overlay the actual system properties.
+				\item Non-deterministic simulations (e.g. due to complex friction).
+			\end{itemize}
+			Hence, simulation-based optimization is a black box problem and can be solved (or approximated) using gradient-free methods!
 		% end
 
-		\subsection{Problemstellung} % 3.4
-			\todo{Content}
-		% end
-
-		\subsection{Simulationsbasierte Optimierung} % 3.5, 3.6, 3.7, 3.8
-			\todo{Content}
-		% end
-
-		\subsection{Black-Box Optimierung} % 3.9
-			\todo{Content}
-		% end
-	% end
-
-	\section{Metaheuristiken} % 3.10
-		\todo{Content}
-
-		\subsection{Evolutionäre Algorithmen (EA)} % 3.11
-			\todo{Content}
-		% end
-
-		\subsection{Genetische Algorithmen (GA)} % 3.12
-			\todo{Content}
-
-			\paragraph{Beispiel} % 3.13, 3.14
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Weitere Metaheursitiken} % 3.15
-			\todo{Content}
-		% end
-	% end
-
-	\section{Deterministische Sampling Verfahren (Mustersuchverfahren)} % 3.16, 3.17
-		\todo{Content}
-
-		\subsection{Nelder-Mead Simplexverfahren} % 3.18, 3.26, 3.27
-			\todo{Content}
-
-			\subsubsection{Iterationsphase} % 3.19, 3.20
-				\todo{Content}
-			% end
-
-			\subsubsection{Algorithmus} % 3.21, 3.22, 3.23
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Multidirektionales Suchverfahren (MDS)} % 3.28
-			\todo{Content}
-		% end
-
-		\subsection{Asynchronous Parallel Pattern Search (APPS)} % 3.29, 3.30, 3.31
-			\todo{Content}
-
-			\paragraph{Beispiel} % 3.32, 3.33, 3.34
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Implizites Filtern} % 3.35, 3.36, 3.37, 3.38
-			\todo{Content}
+		\subsection{Black-Box Optimization}
+			Naturally, gradient-based optimization methods are not well-suited for problems with "low" differentiability and computationally expensive function evaluations. These problems may be solved using gradient-free optimization methods. But\dots
+			\begin{itemize}
+				\item Gradient-based techniques are really slow in comparison to gradient-based ones for differentiable optimization problems.
+				\item They need a lot of function evaluations for high-dimensional problems and are thus practically only applicable for problems with dimensions \( n_p < 100 \), better \( n_p < 20 \).
+				\item Have lots of problems with nonlinear equality constraints!
+				\item The theory of gradient-free methods is not as mature as the theory for gradient-based methods.
+			\end{itemize}
 		% end
 	% end
 
-	\section{Optimierung mit Ersatzfunktionen} % 3.39, 3.40, 3.41
-		\todo{Content}
+	\section{Metaheuristics}
+		\subsection{Evolutionary Algorithm (EA)}
+			A \emph{evolutionary algorithm} mimics the biological evolutionary strategy with random search methods.
+			
+			\begin{enumerate}
+				\item Initialization: \tabto{2.5cm} Choose one "Parent" \( \vec{p}^{(0)} \) and a number of descendants \(\ell\).
+				\item Iteration: \tabto{2.5cm} Create \(\ell\) descendants via "mutation"
+			\end{enumerate}
+			\begin{align*}
+				\vec{p}^{(k, i)} = \vec{p}^{(k)} + \alpha_i^{(k)} \vec{d}_i,\quad i = 1, \cdots, \ell
+			\end{align*}
+			\begin{itemize}
+				\item[] where \( \vec{d}_i \in \R^{n_p} \) are vectors of Gaussian distributed variables and \( \alpha_i \in \R \) art suitable "mutation step sizes" Then select the descent with the lower \( \varphi \) value and repeat.
+			\end{itemize}
+		% end
 
-		\subsection{Approximationsmethoden} % 3.42
-			\todo{Content}
+		\subsection{Genetic Algorithms (GA)}
+			\emph{Genetic algorithms} are inspired by biological evolutionary strategies the positive properties caused by mutation are kept through natural selection. GAs are applicable for both real and discrete optimization variables \(\vec{p}\).
+			\begin{enumerate}
+				\item Initialization: \tabto{3cm} Choose a suitable set of different "individuals" (first generation).
+				\item Evaluation: \tabto{3cm} Determine the "fitness" of each candidate using the objective/fitness function.
+				\item Selection: \tabto{3cm} Randomly select candidates of the current generation (the higher the fitness, the higher the probability to be chosen).
+				\item Recombination: \tabto{3cm} Combine values (genomes) of the selected individuals and create new individuals.
+				\item Mutation: \tabto{3cm} Randomly change the genomes.
+				\item New Generation: \tabto{3cm} Select new individuals as the new generation and continue with step 2.
+			\end{enumerate}
 
-			\subsubsection{Response Surface Methoden (RSM)} % 3.43
-				\todo{Content}
-			% end
-
-			\subsubsection{Radial Basis FUnctions (RBF)} % 3.44
-				\todo{Content}
-			% end
-
-			\subsubsection{Design and Analysis of Computer Experiments (DACE)} % 3.45
+			\paragraph{Example} % 3.13, 3.14
 				\todo{Content}
 			% end
 		% end
 
-		\subsection{Auswahl der Stützstellen/Datenbasis/Anfangswerte} % 3.46
-			\todo{Content}
-
-			\subsubsection{Design of Experiments (DoE)} % 3.47
-				\todo{Content}
-			% end
+		\subsection{Further Metaheuristics}
+			Further metaheuristics based on real representations of \(\vec{p}\) like in evolutionary algorithms:
+			\begin{itemize}
+				\item Particle Swam: Population method, uses idea of combining local and swarm knowledge, direction and speed for particles are adjusted
+				\item \dots
+			\end{itemize}
+		
+			Further metaheuristics based on binary representations of \(\vec{p}\) like in genetic algorithms:
+			\begin{itemize}
+				\item Tabu Search: A list of possible manipulations is given, another lists dynamically the inverses of them, these cannot be applied any more
+				\item \dots
+			\end{itemize}
 		% end
+	% end
 
-		\subsection{Minimierung der Ersatzfunktion} % 3.48
-			\todo{Content}
+	\section{Deterministic Sampling Methods (Pattern Search Methods)}
+		Deterministic sampling methods can be further categorized into
+		\begin{itemize}
+			\item Qualitative methods: Only ranking w.r.t. to the function value.
+				\begin{itemize}
+					\item Simplex Methods
+					\item Coordinate- or compass-search
+					\item Multidirectional search
+					\item Pattern search methods
+					\item \dots
+				\end{itemize}
+			\item Quantitative methods: Consideration of the real function values.
+				\begin{itemize}
+					\item Implicit filtering (based on the simplex method)
+					\item DIRECT (dividing rectangles)
+					\item \dots
+				\end{itemize}
+		\end{itemize}
 
-			\subsubsection{Optimierung am Ersatzproblem} % 3.49
-				\todo{Content}
+		\subsection{Nelder-Mead Simplex Method}
+			A \emph{simplex} is a simple object that consists of \( n_p + 1 \) points \( \vec{p}^{(i)} \) in the parameter space (which is \(n_p\)-dimensional). In a 2D space, the three points form a triangle. In the iteration phase the values of \(\varphi\) at the corners are compared and the simplex is transformed according to specific rules (see~\autoref{subsec:nelderMeadIteration}). The algorithm terminates once the simplex contracts onto a single point.
 
-				\paragraph{Strawman} % 3.48
-					\todo{Content}
+			\subsubsection{Iteration Phase}
+				\label{subsec:nelderMeadIteration}
+			
+				The iteration phase starts by sorting the edges according to its \(\varphi\)-values:
+				\begin{align*}
+					\varphi\big(\vec{p}^{(1)}\big) \leq \varphi\big(\vec{p^{(2)}}\big) \leq \cdots \leq \varphi\big(\vec{p}^{(n_p + 1)}\big)
+				\end{align*}
+				where \( \vec{p}^{(1)} \) is called the \emph{best} point and \( \vec{p}^{(n_p + 1)} \) is called the \emph{worst}. The algorithm now tried to replace the worst point \( \vec{p}^{(n_p + 1)} \) with another point of the form
+				\begin{align*}
+					\vec{p}(\mu) = (1 + \mu) \bar{\vec{p}} - \mu \vec{p}^{(n_p + 1)}
+				\end{align*}
+				Where \(\bar{\vec{p}}\) is the centroid of the of all points \emph{except the worst}, i.e.:
+				\begin{align*}
+					\bar{\vec{p}} = \frac{1}{n_p} \sum_{i = 1}^{n_p} \vec{p}^{(i)}
+				\end{align*}
+				This corresponds to a reflection of the worst point over the centroid with a weight \(\mu\) that specifies "how far the point point gets pushed out", i.e. the ratio of the original distance of the worst point to the centroid that is preserved while reflecting. If \(\mu = 1\), the point is mirrored.
+				
+				In every iteration, the value \(\mu\) is chosen of a set of four values
+				\begin{align*}
+					-1 < \mu_{ic} < 0 < \mu_{oc} < \mu_{r} < \mu_{e}
+				\end{align*}
+				for example \( (\mu_{ic}, \mu_{oc}, \mu_r, \mu_\mathit{e}) = (-0.5, 0.5, 1, 2) \).
+			% end
+
+			\subsubsection{Algorithm}
+				Some termination criteria are for example:
+				\begin{itemize}
+					\item Exactness in the objective: \( \varphi\big( \vec{p}^{(n_p + 1)} \big) - \varphi\big(\vec{p}^{(1)}\big) \leq \varepsilon \)
+					\item Maximum number of function evaluations: \( k = k_\mathrm{max} \)
+					\item Sufficient small distance on the simplex corners.
+				\end{itemize}
+			
+				\begin{itemize}
+					\item Initialization: Choose a start simplex, evaluate the objective at the corners, sort them and set \( k = n_p + 1 \).
+					\item Iteration: While \( \varphi\big( \vec{p}^{(n_p + 1)} \big) - \varphi\big(\vec{p}^{(1)}\big) > \varepsilon \) and \( k < k_\mathrm{max} \), do:
+						\begin{enumerate}[label = (\alph*)]
+							\item Calculate the centroid \( \bar{\vec{p}} = \frac{1}{n_p} \sum_{i = 1}^{n_p} \vec{p}^{(i)} \).
+							\item \emph{Reflection:} If \( \varphi\big(\vec{p}^{(1)}\big) \leq \varphi\big(\vec{p}(\mu_r)\big) < \varphi\big(\vec{p}^{(n_p)}\big) \), replace \( \vec{p}^{(n_p + 1)} \) with \( \vec{p}(\mu_r) \); go to (g). \\
+									"Use the reflected point if it is better than the second worst, but not better than the best."
+							\item \emph{Expansion:} If \( \varphi\big(\vec{p}(\mu_r)\big) < \varphi\big(\vec{p}^{(1)}\big) \), then: \\
+									"If the reflected point is better than the best, \dots"
+								\begin{itemize}
+									\item If \( \varphi\big( \vec{p}(\mu_e) \big) < \varphi\big( \vec{p}(\mu_r) \big) \), replace \( \vec{p}^{(n_p + 1)} \) with \( \vec{p}(\mu_e) \); go to (g). \\
+											"\dots and the expanded point is better than the reflected point, use the expanded point."
+									\item If \( \varphi\big( \vec{p}(\mu_r) \big) < \varphi\big( \vec{p}(\mu_e) \big) \), replace \( \vec{p}^{(n_p + 1)} \) with \( \vec{p}(\mu_r) \); go to (g). \\
+											"\dots and the expanded point is worst than the reflected point, use the reflected point."
+								\end{itemize}
+							\item \emph{Outer Contraction:} If \( \varphi\big(\vec{p}^{(n_p)}\big) \leq \varphi\big(\vec{p}(\mu_r)\big) < \varphi\big(\vec{p}^{(n_p + 1)}\big) \), then: \\
+									"If the reflected point is better than the worst, but worst than second worst, \dots"
+								\begin{itemize}
+									\item If \( \varphi\big(\vec{p}(\mu_{oc})\big) < \varphi\big(\vec{p}(\mu_r)\big) \), replace \( \vec{p}^{(n_p + 1)} \) with \( \vec{p}(\mu_{oc}) \); go to (g). \\
+											"\dots and the outer contraction point is better than the reflected point, use the outer contraction point."
+									\item Else, go to (f).
+								\end{itemize}
+							\item \emph{Inner Contraction:} If \( \varphi\big(\vec{p}^{(n_p + 1)}\big) \leq \varphi\big(\vec{p}(\mu_r)\big) \), then: \\
+									"If the reflected point is worst than the worst point, \dots"
+								\begin{itemize}
+									\item If \( \varphi\big(\vec{p}(\mu_{ic})\big) < \varphi\big(\vec{p}^{(n_p + 1)}\big) \), replace \( \vec{p}^{(n_p + 1)} \) with \( \vec{p}(\mu_{ic}) \); go to (g). \\
+											"\dots and the inner contraction point is better than the worst, use the inner contraction point."
+									\item Else, go to (f).
+								\end{itemize}
+							\item \emph{Shrink:} For all \( 2 \leq i \leq n_p + 1 \), set \( \vec{p}^{(i)} = \vec{p}^{(1)} - \frac{1}{2} \big( \vec{p}^{(i)} - \vec{p}^{(1)} \big) \).
+							\item \emph{Sort:} Sorting the current simplex corners such that \( \varphi\big(\vec{p}^{(1)}\big) \leq \varphi\big(\vec{p^{(2)}}\big) \leq \cdots \leq \varphi\big(\vec{p}^{(n_p + 1)}\big) \) holds again. Repeat.
+						\end{enumerate}
+				\end{itemize}
+			
+				The Nelder-Mead method therefore always tries to create a big simplex and only shrink if every other action would yield a worst corner/simplex.
+			% end
+			
+			\subsubsection{Notes}
+				\begin{itemize}
+					\item The method is not guaranteed to converge. But in practice, it yields good results.
+					\item Can get stuck on a suboptimal point such that the algorithm has to be restarted with other initial simplex corners.
+				\end{itemize}
+			
+				\paragraph{Simplex-Gradient}
+					It is possible to detect stagnation using a \emph{Simplex-Gradient} \( \vec{D}^{(k)} \in \R^{n_p} \), \( \vec{D}^{(k)} = \big( \mat{V}^{(k)} \big)^{-T} \vec{\delta}^{(k)} \) where \( \mat{V}^{(k)} \) is the matrix of the simplex directions
+					\begin{align*}
+						\mat{V}^{(k)} =
+							\begin{bmatrix}
+								\vec{p}^{(2)} - \vec{p}^{(1)} & \vec{p}^{(3)} - \vec{p}^{(1)} & \cdots & \vec{p}^{(n_p + 1)} - \vec{p}^{(1)}
+							\end{bmatrix}
+						\eqqcolon
+							\begin{bmatrix}
+								\vec{v}^{(1)} & \vec{v}^{(2)} & \cdots & \vec{v}^{(n_p)}
+							\end{bmatrix}
+						\in \R^{n_p \times n_p}
+					\end{align*}
+					and \( \vec{\delta}^{(k)} \) is the vector of the objective differences:
+					\begin{align*}
+						\vec{\delta}^{(k)} =
+							\begin{bmatrix}
+								\varphi\big(\vec{p}^{(2)}\big) - \varphi\big(\vec{p}^{(1)}\big) \\
+								\varphi\big(\vec{p}^{(3)}\big) - \varphi\big(\vec{p}^{(1)}\big) \\
+								\vdots \\
+								\varphi\big(\vec{p}^{(n_p + 1)}\big) - \varphi\big(\vec{p}^{(1)}\big)
+							\end{bmatrix}
+						\in \R^{n_p}
+					\end{align*}
+					Analogous to a gradient-based method, this yields a condition for \emph{minimum progress}
+					\begin{align*}
+						\hat{\varphi}^{(k + 1)} - \hat{\varphi}^{(k)} < -\alpha \big\lVert \vec{D}^{(k)} \big\rVert^2,\qquad
+						\hat{\varphi} = \frac{1}{n_p + 1} \sum_{i = 1}^{n_p + 1} \varphi\big(\vec{p}^{(i)}\big)
+					\end{align*}
+					with a small \( \alpha > 0 \). One approach for a condition on when to restart is to restart if both
+					\begin{align*}
+						\hat{\varphi}^{(k + 1)} - \hat{\varphi}^{(k)} > -\alpha \big\lVert \vec{D}^{(k)} \big\rVert^2
+						\quad\text{and}\quad
+						\hat{\varphi}^{(k + 1)} - \hat{\varphi}^{(k)} < 0
+					\end{align*}
+					hold.
 				% end
-
-				\paragraph{Shoemaker} % 3.48
-					\todo{Content}
-				% end
-
-				\paragraph{DACE-basierte, sequentielle Update-Strategien} % 3.50
-					\todo{Content}
-				% end
 			% end
 		% end
 
-		\subsection{Diskussion} % 3.54
+		\subsection{Multidirectional Search Methods}
+			\begin{itemize}
+				\item In the Nelder-Mead method a bad conditioning of the simplex, i.e. the matrix \( \mat{V}^{(k)} \), leads to problems that cannot be avoided.
+				\item In multidirectional search methods this problem is avoided by making every simplex congruent to its predecessors.
+				\item The algorithm uses similar steps for reflection, expansion and contraction, but possibly needs a lot more function evaluations.
+			\end{itemize}
+		% end
+
+		\subsection{Asynchronous Parallel Pattern Search (APPS)}
+			\begin{itemize}
+				\item \emph{Asynchronous Parallel Pattern Search} is a pattern-based search method on a grid.
+				\item The direction of the pattern determines the descent direction.
+				\item Patterns can be varied while maintaining their mathematical properties.
+				\item It is "naturally" parallelizable.
+			\end{itemize}
+		% end
+
+		\subsection{Implicit Filtering}
+			\emph{Implicit filtering} is a descent method using "smooth" approximations of the gradients. It uses a central approximation of the simplex gradient
+			\begin{align*}
+				\vec{D}_C^{(k)} = \frac{1}{2} \big( \vec{D}^{(k)} + \vec{D}_R^{(k)} \big)
+			\end{align*}
+			where \( \vec{D}_R^{(k)} \) is the gradient of the simplex that is reflected around \( \vec{p}^{(k)} \).
+			
+			The structure of implicit filtering is sketched in\autoref{alg:implicitFiltering}.
+			
+			\begin{algorithm}  \DontPrintSemicolon
+				\textbf{Initialization:} Choose \( \alpha, \beta \in (0, 1) \) and set \( \mat{H} = \mat{I} \) \;
+				\While{not converged}{
+					Calculate \( \varphi\big(\vec{p}^{(k)}\big) \), \( \vec{D}_C^{(k)} \) and the search direction \( \vec{d}^{(k)} = -\mat{H}^{-1} \vec{D}_C^{(k)} \) \;
+					Inexact line search for \( j = 1, \cdots, j_\mathrm{max} \), \( \lambda \coloneqq \beta^j \) until the following holds:
+						\begin{align*}
+							\varphi(\vec{p} + \lambda \vec{d}) - \varphi(\vec{p}) \leq \alpha \lambda \grad_{\Delta \vec{p}_k} \varphi^T(\vec{p}) \vec{d}^{(k)}
+						\end{align*} \;
+					\( \vec{p}^{(k + 1)} \gets \vec{p}^{(k)} + \lambda \vec{d}^{(k)} \) \;
+					\If{line search successful}{
+						Quasi-Newton update of the Hessian \(\mat{H}\) with \( \vec{p}^{(k + 1)} - \vec{p}^{(k)} \) and \( \vec{D}_C^{(k + 1)} - \vec{D}_C^{(k)} \) \;
+					} \Else{
+						\( \mat{H} \gets \mat{I} \) \;
+						Shrink the simplex \;
+					}
+				}
+				
+				\caption{Implicit Filtering.}
+				\label{alg:implicitFiltering}
+			\end{algorithm}
+		% end
+	% end
+
+	\section{Surrogate Optimization}
+		In \emph{surrogate optimization methods}, the (complex) objective is replaced with a simpler approximation that maintains the key properties of the objective (e.g. a noisy measurement might be replaced by a simpler regression model). This surrogate function is then minimized and adjusted in order to find a good approximation of the solution of the original problem (this can also be applied for constraint functions).
+		
+		Requirements for the surrogate function \( \hat{\varphi} : \R^{n_p} \to \R \): For all function evaluation (or "sampling") points \( \Big( \vec{p}^{(i)}, \varphi\big(\vec{p}^{(i)}\big) \Big) \), \( i = 1, \cdots, m \) it must hold that
+		\begin{align*}
+			\varphi\big( \vec{p}^{(i)} \big) = \hat{\varphi}\big( \vec{p}^{(i)} \big) + \epsilon
+		\end{align*}
+		where \( \epsilon \in \R \) is some "slack" constant that determines how exact the surrogate function shall be.
+		\begin{itemize}
+			\item For \(\epsilon = 0\), the problem is the same as interpolation.
+			\item For \(\epsilon > 0\), the surrogate function does not perfectly reproduce the objective, but might be smoother.
+		\end{itemize}
+		Further requirements are that \( \hat{\varphi} \) should be fast to compute and the gradients of \(\hat{\varphi}\) should be available in closed form.
+		
+		This raises some questions:
+		\begin{enumerate}
+			\item \(\varphi\) might be too complex for a simple approximation \(\implies\) which approximation method should be used?
+			\item How to generate the data basis of the function evaluations? Generating all in one point will not yields good results\dots
+			\item Which method is feasible to minimize \(\hat{\varphi}\)?
+		\end{enumerate}
+
+		\subsection{Approximation Methods}
+			\subsubsection{Response Surface Methods (RSMs)}
+				\emph{Response surface methods} use simple polynomials of a low degree as the model function \(\hat{\varphi}\), e.g.:
+				\begin{itemize}
+					\item Degree one (linear): \tabto{5.5cm} \( \hat{\varphi}(\vec{p}) = \beta_0 + \beta_1^T \vec{p} \)
+					\item Degree one with mixed terms: \tabto{5.5cm} \( \hat{\varphi}(\vec{p}) = \beta_0 + \vec{\beta}_1^T \vec{p} + \sum_{i} \sum_{\substack{j \\ j \neq i}} \beta_2^{i, j} p_i p_j \)
+					\item Degree two (quadratic): \tabto{5.5cm} \( \hat{\varphi}(\vec{p}) = \beta_0 + \vec{\beta}_1 \vec{p} + \vec{p}^T \mat{\beta}_2 \vec{p} \)
+					\item Higher degree: \dots
+				\end{itemize}
+				The unknown parameters \( \beta_1 \in \R \), \( \vec{\beta}_2 \in \R^{n_p} \) and \( \mat{\beta}_2 \in \R^{n_p \times n_p} \) can be approximated using least squares:
+				\begin{align*}
+					\min_{\beta_1, \vec{\beta}_2, \mat{\beta}_2} \sum_i \Big( \varphi\big(\vec{p}^{(i)}\big) - \hat{\varphi}\big(\vec{p}^{(i)}\big) \Big)
+				\end{align*}
+				
+				\begin{itemize}
+					\item Advantage: Simple and the approximations are easy to compute.
+					\item Disadvantage: The RSMs cover only the global behavior and not local accuracy.
+				\end{itemize}
+			% end
+
+			\subsubsection{Radial Basis Functions (RBFs)}
+				Now the surrogate function \( \hat{\varphi} \) uses a linear combination of \emph{radial basis functions}:
+				\begin{align*}
+					\hat{\varphi}(\vec{p}) = \sum_{i = 1}^{m} \gamma_i h\Big( \big\lVert \vec{p} - \vec{p}^{(i)} \big\rVert \Big)
+				\end{align*}
+				with basis function \( h(\cdot) \) based only on the euclidean distance from the interpolation point, e.g.
+				\begin{itemize}
+					\item Linear: \tabto{2cm} \( h(r_i) = r_i \)
+					\item Cubic: \tabto{2cm} \( h(r_i) = r_i^3 \)
+					\item Thin-Plate: \tabto{2cm} \( h(r_i) = r_i^2 \log r \)
+				\end{itemize}
+				where \( r_i = \big\lVert \vec{p} - \vec{p}^{(i)} \big\rVert \).
+				
+				A suitable combination of RSM and RBF yield cubic spline-approximation:
+				\begin{align*}
+					\hat{\varphi}(\vec{p}) = \beta_0 + \vec{\beta}_1 \vec{p} + \sum_i \gamma_i h(\vec{p}),\quad \beta_1 \in \R, \beta_2 \in \R^{n_p}, \gamma_i \in \R
+				\end{align*}
+				\begin{itemize}
+					\item Univariate: \tabto{2cm} \( h(\vec{p}) = \frac{1}{12} \sum_i r_i^3 \)
+					\item Bivariate: \tabto{2cm} \( h(\vec{p}) = \frac{1}{16 \pi} \sum_i r_i^2 \log r_i \)
+				\end{itemize}
+			% end
+
+			\subsubsection{Design and Analysis of Computer Experiments (DACE)}
+				Assuming the model function is a realization of a stochastic process
+				\begin{align*}
+					\hat{\varphi}(\vec{p}) = \vec{v}^T(\vec{p}) \vec{\beta} + Z(\vec{p})
+				\end{align*}
+				where \( \vec{v}(\vec{p}) \) is a vector of basis functions (e.g. RSM, RBF) and \( Z(\vec{p}) \) is a stationary random variable that is Gaussian distributed with zero mean. The covariance between two points \( \vec{p}^{(l)} \) and \( \vec{p}^{(k)} \) is given as
+				\begin{align*}
+					\Cov\Big[ Z\big(\vec{p}^{(l)}\big), Z\big(\vec{p}^{(k)}\big) \Big] = \sigma^2 R\big(\vec{p}^{(l)}, \vec{p}^{(k)}\big)
+					\quad\text{with}\quad
+					R\big(\vec{p}^{(l)}, \vec{p}^{(k)}\big) = \prod_{i = 1}^{n_p} e^{-\theta_i d_i^2},\quad d_i = \big\lVert \vec{p}_i^{(l)} - \vec{p}_i^{(k)} \big\rVert_2
+				\end{align*}
+				Die unknown parameters \(\vec{\beta}\), \(\vec{\theta}\) and \(\sigma^2\) are then estimated using statistical estimators, e.g. maximum likelihood.
+			% end
+		% end
+
+		\subsection{Select of the Sampling Points}
+			\subsubsection{Design of Experiments (DoE)}
+				The classical strategy for selection sampling points, \emph{design of experiments} is mainly designed for physical experiments, not for deterministic ones! Typical approach:
+				\begin{itemize}
+					\item Classical selection
+						\begin{itemize}
+							\item orthogonal arrays
+							\item latin hypercubes
+							\item combinations
+						\end{itemize}
+					\item Metric-bases methods
+						\begin{itemize}
+							\item MiniMax: minimizing the maximal distance between the sampling points
+							\item MaxiMin: maximizing the minimal distance
+						\end{itemize}
+					\item Stochastic selection for Gaussian processes
+						\begin{itemize}
+							\item Entropy Design or D-Opt: maximizing the determinant of the covariance matrix
+							\item A-Opt: depends on the trace of the covariance matrix
+							\item G-Opt: minimize the maximum mean squared error
+						\end{itemize}
+				\end{itemize}
+			% end
+		% end
+
+		\subsection{Minimizing the Surrogate Function}
+			To successfully minimize the original objective function, the data basis of the surrogate function has to be expanded sequentially. The following sections describe two methods for this, the Strawman and the Shoemaker method.
+
+			\subsubsection{Strawman}
+				\begin{enumerate}
+					\item Calculate the current minimum of the surrogate function (e.g. using gradient descent).
+					\item Add the minimum of the surrogate function as a sampling point.
+					\item Calculate the new surrogate function. Repeat.
+				\end{enumerate}
+			% end
+
+			\subsubsection{Shoemaker}
+				\begin{enumerate}
+					\item Calculate the minimum with a minimal distance to all sampling points.
+					\item Extend the sampling points by this point.
+					\item Determine the new surrogate function. Repeat.
+				\end{enumerate}
+			% end
+
+			\subsubsection{DACE-Based, Sequential Update Strategy}
+				\begin{itemize}
+					\item The the expected mean error as a criteria for the quality of the surrogate function.
+					\item Weigh small function values and uncertainties in the approximations.
+					\item There exist different strategies following this basic idea.
+					\item Termination criteria:
+						\begin{itemize}
+							\item Number of function evaluations
+							\item No more improvements in the objective function
+							\item \(\varphi(\vec{p})\) close to the minimal possible function value
+						\end{itemize}
+					\item Sequential methods are better on normal computers, for parallel computers a special scheme should be used.
+				\end{itemize}
+			% end
+		% end
+
+		\subsection{Discussion}
+			\begin{itemize}
+				\item Independent of the approximation method, the surrogate function has to be minimized one or more times per iteration (depending on the actual method).
+				\item But the effort for the minimization is negligible as one simulation run for the evaluation of \(\varphi\) often takes a lot longer.
+				\item Every method of~\autoref{c:gradientOptimization} can be used for minimizing \(\hat{\varphi}\) as the gradients are available by design.
+				\item Advantages:
+					\begin{itemize}
+						\item \(\hat{\varphi}\) is given in closed form as well as the gradientd.
+						\item Easy to compute, Newton-type methods applicable!
+						\item "Smooth" surrogate function.
+					\end{itemize}
+				\item Disadvantages:
+					\begin{itemize}
+						\item Approximation accuracy is limited.
+						\item The number of sample points rises a lot for high-dimensional problems (curse of dimensionality).
+					\end{itemize}
+			\end{itemize}
+		% end
+	% end
+
+	\section{Comparison}
+		\subsection{Magnetic Bearing Design} % 3.56, 3.57, 3.58, 3.59, 3.60, 3.61
+			\todo{Content}
+		% end
+
+		\subsection{Walking Optimization of a Humanoid Robot} % 3.62, 3.63
 			\todo{Content}
 		% end
 	% end
 
-	\section{Vergleich der Verfahren} % 3.55
-		\todo{Content}
-
-		\subsection{Design eines Magnetlagers} % 3.56, 3.57, 3.58, 3.59, 3.60, 3.61
-			\todo{Content}
-		% end
-
-		\subsection{Laufoptimierung eines Humanoidroboters} % 3.62, 3.63
-			\todo{Content}
-		% end
-	% end
-
-	\section{Diskussion} % 3.65, 3.66
-		\todo{Content}
+	\section{Discussion}
+		\begin{itemize}
+			\item Advantages:
+				\begin{itemize}
+					\item Application is easy, no or little prior knowledge required.
+					\item Robust toward discontinuities of \(\varphi\) or \(\grad{\varphi}\).
+					\item No calculation of gradients necessary.
+					\item No need to start "close to" a solution.
+					\item Some methods (e.g. evolutionary algorithms) are highly parallelizable, some are not (e.g. Nelder-Mead).
+				\end{itemize}
+			\item Disadvantages:
+				\begin{itemize}
+					\item Slow convergence, high number of steps needed and high computation time due to many \(\varphi\)-evaluations.
+					\item Inefficient for large \( n_p \).
+					\item Major difficulties for nonlinear constraints in \(\vec{p}\).
+				\end{itemize}
+		\end{itemize}
 	% end
 % end
 

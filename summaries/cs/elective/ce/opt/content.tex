@@ -402,6 +402,8 @@
 	% end
 
 	\section{Step Size Rules, Line Search}
+		\label{sec:gradientUnconsStepSize}
+	
 		In every iteration of gradient-based algorithms, the step size has to be determined by minimizing the one-dimensional function:
 		\begin{align*}
 			\psi(\alpha) = \varphi\big(\vec{p}^{(k)} + \alpha \vec{d}^{(k)}\big)
@@ -1260,7 +1262,7 @@
 				\end{bmatrix}
 			=
 				\begin{bmatrix}
-					\grad{\varphi}(\vec{p}) - \vec{\mu}^T \cdot \grad{\vec{a}}(\vec{p}) \\
+					\grad{\varphi}(\vec{p}) - \sum_{k = 1}^{n_a} \mu_k \cdot \grad{a_k}(\vec{p}) \\
 					-\vec{a}(\vec{p})
 				\end{bmatrix}
 			= \vec{0}
@@ -1276,11 +1278,11 @@
 			\grad{L}(\vec{p}^\ast, \vec{\mu}^\ast) \overset{T\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big)}{=} \grad{L}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) + \mat{H}_L\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) \begin{bmatrix} \vec{d}_p^{(k)} \\ \vec{d}_\mu^{(k)} \end{bmatrix} + \cdots \overset{!}{=} 0
 		\end{align*}
 		with \( \vec{d}_p^{(k)} \coloneqq \vec{p}^\ast - \vec{p}^{(k)} \) and \( \vec{d}_\mu^{(k)} \coloneqq \vec{\mu}^\ast - \vec{\mu}^{(k)} \). Cutting off the higher-order terms yields the \emph{Lagrange-Newton method} where the search direction \( \vec{d}_p^{(k)} \), \( \vec{d}_\mu^{(k)} \) is given as the solution of
-		\begin{align*}
-			\mat{H}_L\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) \begin{bmatrix} \vec{d}_p^{(k)} \\ \vec{d}_\mu^{(k)} \end{bmatrix} = -\grad{L}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big)
-		\end{align*}
-		The Iteration equation \( k \to k + 1 \) is analogous to the Newton method:
 		\begin{align}
+			\mat{H}_L\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) \begin{bmatrix} \vec{d}_p^{(k)} \\ \vec{d}_\mu^{(k)} \end{bmatrix} = -\grad{L}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) \label{eq:sqpEqSystem}
+		\end{align}
+		The Iteration equation \( k \to k + 1 \) is analogous to the Newton method:
+		\begin{align*}
 			\begin{bmatrix}
 				\vec{p}^{(k + 1)} \\
 				\vec{\mu}^{(k + 1)}
@@ -1295,8 +1297,7 @@
 				\vec{d}_p^{(k)} \\
 				\vec{d}_\mu^{(k)}
 			\end{bmatrix}
-			\label{eq:sqpEqSystem}
-		\end{align}
+		\end{align*}
 		But there is one catch: The set of active constraints at the minimum is generally not known and can change in every iteration.
 
 		\subsection{Finding the Search Direction}
@@ -1307,8 +1308,8 @@
 			yields that the linear system has the following structure:
 			\begin{align*}
 				\begin{bmatrix}
-					\mat{H}_L^p\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) & -\mat{J}_a\big(\vec{p}^{(k)}\big) \\
-					-\mat{J}_a^T\big(\vec{p}^{(k)}\big) & \mat{0}
+					\mat{H}_L^{\vec{p}}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) & -\mat{J}_{\vec{a}}\big(\vec{p}^{(k)}\big) \\
+					-\mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) & \mat{0}
 				\end{bmatrix}
 				\begin{bmatrix}
 					\vec{d}_p^{(k)} \\
@@ -1316,13 +1317,13 @@
 				\end{bmatrix}
 				=
 				\begin{bmatrix}
-					-\grad{\varphi}\big(\vec{p}^{(k)}\big) + \mat{J}_a\big(\vec{p}^{(k)}\big) \vec{\mu}^{(k)} \\
+					-\grad{\varphi}\big(\vec{p}^{(k)}\big) + \mat{J}_{\vec{a}}\big(\vec{p}^{(k)}\big) \vec{\mu}^{(k)} \\
 					\vec{a}\big(\vec{p}^{(k)}\big)
 				\end{bmatrix}
 			\end{align*}
-			Where \( \mat{H}_L^p\big(\vec{p}^{(k)}\big) \) is the Hessian of the Lagrangian w.r.t. \(\vec{p}\) and \( \mat{J}_a\big(\vec{p}^{(k)}\big) \) is the Jacobian
+			Where \( \mat{H}_L^p\big(\vec{p}^{(k)}\big) \) is the Hessian of the Lagrangian w.r.t. \(\vec{p}\) and \( \mat{J}_{\vec{a}}\big(\vec{p}^{(k)}\big) \) is the Jacobian
 			\begin{align*}
-				\mat{J}_a\big(\vec{p}^{(k)}\big) =
+				\mat{J}_{\vec{a}}\big(\vec{p}^{(k)}\big) =
 					\begin{bmatrix}
 						\pdv{a_1}{p_1}     & \cdots & \pdv{a_{n_a}}{p_1}     \\
 						\vdots             & \ddots & \vdots                 \\
@@ -1334,8 +1335,8 @@
 			This linear system can be transformed to
 			\begin{align*}
 				\begin{bmatrix}
-					\mat{H}_L^p\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) & -\mat{J}_a\big(\vec{p}^{(k)}\big) \\
-					-\mat{J}_a^T\big(\vec{p}^{(k)}\big) & \mat{0}
+					\mat{H}_L^{\vec{p}}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) & -\mat{J}_{\vec{a}}\big(\vec{p}^{(k)}\big) \\
+					-\mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) & \mat{0}
 				\end{bmatrix}
 				\begin{bmatrix}
 					\vec{d}_p^{(k)} \\
@@ -1352,25 +1353,24 @@
 			\subsubsection{Quadratic Problem (QP)}
 				The said quadratic problem is given as:
 				\begin{align*}
-					\min_{\vec{d}_p \in \R^{n_p}} &\, \varphi\big(\vec{p}^{(k)}\big) + \grad{\varphi}^T\big(\vec{p}^{(k)}\big) \vec{d}_p + \frac{1}{2} \vec{d}_p^T \mat{H}_L\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) \vec{d}_p \\
-					\mathrm{subject~to} &\, \vec{a}\big(\vec{p}^{(k)}\big) + \mat{J}_a^T\big(\vec{p}^{(k)}\big) \vec{d}_p = \vec{0}
+					\min_{\vec{d}_p \in \R^{n_p}} &\, \varphi\big(\vec{p}^{(k)}\big) + \Big(\!\grad{\varphi}\big(\vec{p}^{(k)}\big)\!\Big)^T \vec{d}_p + \frac{1}{2} \vec{d}_p^T \mat{H}_L^{\vec{p}}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) \vec{d}_p \\
+					\mathrm{subject~to}\quad &\, \vec{a}\big(\vec{p}^{(k)}\big) + \mat{J}_a^T\big(\vec{p}^{(k)}\big) \vec{d}_p = \vec{0}
 				\end{align*}
 				Where the quadratic objective function of the QP consists of a quadratic Taylor-approximation of the NLP objective plus a weighted curvature condition via the Hessian of the activate conditions:
 				\begin{align*}
-					\mat{H}_L\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) = \mat{H}_\varphi\big(\vec{p}^{(k)}\big) - \vec{\mu}^T \mat{H}_{a_k}\big(\vec{p}^{(k)}\big)
+					\mat{H}_L^{\vec{p}}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) = \mat{H}_\varphi\big(\vec{p}^{(k)}\big) - \sum_{i = 1}^{n_a} \mu_i^T \mat{H}_{a_i}\big(\vec{p}^{(k)}\big)
 				\end{align*}
 				The linear constraints of the QP also consist of Taylor-approximations of the active NLP constraints.
 				
-				
-				Solving this quadratic optimization problem is more robust than solving the linear system of equations. There exist special algorithms for solving QPs. But even though they are not active, the inequality constraints must be fulfilled. Therefore, the QP is extended to also determine the Lagrange multipliers \( \vec{\mu}^{(k)} \), \( \vec{\sigma}^{(k)} \) along with the search direction \( \vec{d}_p^{(k)} \):
-				\begin{align*}
-					\min_{\vec{d}_p \in \R^{n_p}} &\, \varphi\big(\vec{p}^{(k)}\big) + \grad{\varphi}\big(\vec{p}^{(k)}\big) \vec{d}_p + \frac{1}{2} \vec{d}_p^T \mat{H}_L\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}, \vec{\sigma}^{(k)}\big) \vec{d}_p \\
+				Solving this quadratic optimization problem is more robust and possibly faster than solving the linear system of equations. There exist special algorithms for solving QPs. But even though they are not active, the inequality constraints must be fulfilled. Therefore, the QP is extended to also determine the Lagrange multipliers \( \vec{\mu}^{(k)} \), \( \vec{\sigma}^{(k)} \) along with the search direction \( \vec{d}_p^{(k)} \):
+				\begin{align}
+					\min_{\vec{d}_p \in \R^{n_p}} &\, \varphi\big(\vec{p}^{(k)}\big) + \Big(\!\grad{\varphi}\big(\vec{p}^{(k)}\big)\!\Big)^T \vec{d}_p + \frac{1}{2} \vec{d}_p^T \mat{H}_L^{\vec{p}}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}, \vec{\sigma}^{(k)}\big) \vec{d}_p \\
 					\mathrm{subject~to}\quad &\,
 						\begin{alignedat}[t]{2}
-							\vec{a}\big(\vec{p}^{(k)}\big) + \mat{J}_a^T\big(\vec{p}^{(k)}\big) \vec{d}_p &= \vec{0} \\
-							\vec{b}\big(\vec{p}^{(k)}\big) + \mat{J}_b^T\big(\vec{p}^{(k)}\big) \vec{d}_p & \geq \vec{0}
-						\end{alignedat}
-				\end{align*}
+							\vec{a}\big(\vec{p}^{(k)}\big) + \mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \vec{d}_p &= \vec{0} \\
+							\vec{b}\big(\vec{p}^{(k)}\big) + \mat{J}_{\vec{b}}^T\big(\vec{p}^{(k)}\big) \vec{d}_p & \geq \vec{0}
+						\end{alignedat}  \label{eq:qp}
+				\end{align}
 				Iteration step \( k \to k + 1 \): \( \vec{p}^{(k + 1)} = \vec{p}^{(k)} + \vec{d}_p^{(k)} \)
 			% end
 			
@@ -1383,56 +1383,319 @@
 			% end
 		% end
 
-		\subsection{Bestimmung der Schrittweite} % 4.50
-			\todo{Content}
+		\subsection{Step Size Rules}
+			If the initialization \(\vec{p}^{(0)}\) is "far" away from the minimum (or the QP is a bad, local approximation of the NLP), the convergence can be improved by determining the optimal step size for
+			\begin{align*}
+				\vec{p}^{(k + 1)} = \vec{p}^{(k)} + \alpha^{(k)} \vec{d}_p^{(k)}
+				\quad\text{or respectively}\quad
+				\begin{bmatrix}
+					\vec{p}^{(k + 1)} \\
+					\vec{\mu}^{(k + 1)}
+				\end{bmatrix}
+				=
+				\begin{bmatrix}
+					\vec{p}^{(k)} \\
+					\vec{\mu}^{(k)}
+				\end{bmatrix}
+				+
+				\alpha^{(k)}
+				\begin{bmatrix}
+					\vec{d}_p^{(k)} \\
+					\vec{\mu}_{QP}^{(k + 1)} - \vec{\mu}^{(k)}
+				\end{bmatrix}
+			\end{align*}
+			Common methods for determining the step size are
+			\begin{itemize}
+				\item the (quadratic) augmented Lagrangian \( L_Q \) or
+				\item the exact \(\ell_1\)-penalty function \( \Phi_{\ell_1} \)
+			\end{itemize}
+			with step size rules like the Armijo rule similar as in the unconstrained optimization (see~\autoref{sec:gradientUnconsStepSize}).
 		% end
 
-		\subsection{Approximation der Lagrange-Multiplikatoren} % 4.52
-			\todo{Content}
+		\subsection{Approximation of the Lagrange Multipliers}
+			If the approximation \( \vec{p}^{(k)} \) is far away from the NLP solution, it is not useful to use the Lagrange multipliers of the QP for the NLP (as the linearization is only valid locally). Another method is to approximate the Lagrange multipliers after calculating \( \vec{p}^{(k + 1)} \) (i.e. solving the QP) using minimum least squares:
+			\begin{align*}
+				\min_{\mu \in \R^{n_a}} &\,
+						\bigg\lVert
+							\grad{\varphi}\big(\vec{p}^{(k + 1)}\big)
+							- \sum_{i = 1}^{n_a} \mu_i^{(k + 1)} \cdot \grad{a_i}\big(\vec{p}^{(k + 1)}\big)
+						\bigg\rVert_2^2 \\
+				\intertext{or equivalently model the active inequality constraints explicitly:}
+				\min_{\mu \in \R^{n_a}} &\,
+						\bigg\lVert
+							\grad{\varphi}\big(\vec{p}^{(k + 1)}\big)
+							- \sum_{i = 1}^{n_a} \mu_i^{(k + 1)} \cdot \grad{a_i}\big(\vec{p}^{(k + 1)}\big)
+							- \sum_{i \in A\big(\vec{p}^{(k + 1)}\big)} \sigma_i^{(k + 1)} \cdot \grad{a_i}\big(\vec{p}^{(k + 1)}\big)
+						\bigg\rVert_2^2
+			\end{align*}
+			Solving least squares problem will be discussed in detail in~\autoref{c:leastSquares}.
 		% end
 
-		\subsection{Terminierungskriterien} % 4.54, 4.55
-			\todo{Content}
+		\subsection{Termination Criteria}
+			An obvious termination criteria would be to check whether the necessary KKT-conditions are sufficiently fulfilled, i.a. \( \grad{L}(\vec{p}, \vec{\mu}) \approx \vec{0} \).
+			
+			The commonly used SQP method \emph{NPSOL} terminates if all of the following criteria are fulfilled:
+			\begin{enumerate}
+				\item Old and new approximation do not change any more:
+			\end{enumerate}
+			\begin{align*}
+				\big\lVert \vec{p}^{(k + 1)} - \vec{p}^{(k)} \big\rVert = \alpha^{(k)} \cdot \big\lVert \vec{d}_p^{(k)} \big\rVert_2 \leq \sqrt{\varepsilon_\mathrm{opt}} \Big( 1 + \big\lVert \vec{p}^{(k + 1)} \big\rVert_2 \Big)
+			\end{align*}
+			\begin{enumerate}
+				\setcounter{enumi}{1}
+				\item Gradient of the objective function that is projected onto the active constraints vanishes:
+			\end{enumerate}
+			\begin{align*}
+				\Big\lVert \vec{Z}^T \cdot \grad{\varphi}\big(\vec{p}^{(k + 1)}\big) \Big\rVert_2 \leq \sqrt{\varepsilon_\mathrm{opt}} \Big( 1 + \max\Big\{ 1 + \big\lvert \varphi\big(\vec{p}^{(k + 1)}\big) \big\rvert,\, \big\lVert \grad{\varphi}\big(\vec{p}^{(k + 1)}\big) \big\rVert_2 \} \Big)
+			\end{align*}
+			\begin{enumerate}
+				\setcounter{enumi}{2}
+				\item Constraints are sufficiently fulfilled:
+			\end{enumerate}
+			\begin{align*}
+				\big\lvert a_i\big(\vec{p}^{(k + 1)}\big) \big\rvert & \leq \varepsilon_\mathrm{ft},\quad i = 1, \cdots, n_a  \\
+				b_j\big(\vec{p}^{(k + 1)}\big)                       & \geq -\varepsilon_\mathrm{ft},\quad i = 1, \cdots, n_b
+			\end{align*}
+			Where the constraints \( \varepsilon_\mathrm{opt} \), \( \varepsilon_\mathrm{ft} \) have to be chosen by the user.
+			
+			In the more modern method \emph{SNOPT}, all of the following two criteria have to be fulfilled:
+			\begin{gather*}
+				\frac{
+					\max_{i = 1, \cdots, n_p} \bigg\{ \bigg\lvert \pdv{\varphi\big(\vec{p}^{(k)}\big)}{p_i} - \sum_{j = 1}^{n_a} \mu_j^{(k)} \cdot \pdv{a_j\big(\vec{p}^{(k)}\big)}{p_i} - \sum_{l \in A\big(\vec{p}^{(k)}\big)} \sigma_j^{(k)} \cdot \pdv{b_l\big(\vec{p}^{(k)}\big)}{p_i} \bigg\rvert \bigg\}
+				}{
+					\sqrt{\sum_{j = 1}^{n_a} \big( \mu_j^{(k)} \big)^2 + \sum_{l \in A\big(\vec{p}^{(k)}\big)} \big(\sigma_j^{(k)}\big)^2}
+				} \leq \varepsilon_\mathrm{opt} \\
+				\frac{\max\Big\{ \big\lvert a_j\big(\vec{p}^{(k)}\big) \big\rvert : i = 1, \cdots, n_p \Big\} \cup \Big\{ \big\lvert \min\big\{ 0,\, b_l\big(\vec{p}^{(k)}\big) \big\} \big\rvert : l \in A\big(\vec{p}^{(k)}\big) \Big\}}{\big\lVert \vec{p}^{(k)} \big\rVert_2} \leq \varepsilon_\mathrm{ft}
+			\end{gather*}
+			
+			A common criteria to detect failures is a maximum number of iterations \( k_\mathrm{max} \).
 		% end
 
-		\subsection{Approximation der Hesse-Matrix} % 4.58, 4.59
-			\todo{Content}
+		\subsection{Hessian Approximation}
+			The quadratic problem\eqref{eq:qp} needs the \( (n_p \times n_p) \)-dimensional Hessian of the Lagrangian
+			\begin{align*}
+				\mat{H}_L^{\vec{p}}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}, \vec{\sigma}^{(k)}\big) = \mat{H}_\varphi\big(\vec{p}^{(k)}\big) - \sum_{i = 1}^{n_a} \mu_i^{(k)} \mat{H}_{a_i}\big(\vec{p}^{(k)}\big) - \sum_{i \in A\big(\vec{p}^{(k)}\big)} \sigma_i^{(k)} \mat{H}_{b_i}\big(\vec{p}^{(k)}\big)
+			\end{align*}
+			for (theoretical) quadratic convergence of the SQP method. But in practice, the second-order derivatives (the Hessian) is often not available! Additionally it is assumed that the Hessian has a positive curvature (i.e. is positive definite) along all feasible directions, which is fulfilled near a strict minimum. However, this cannot be assumed in every iteration.
+			
+			Hence, approximations/modifications of the Hessian are required.
 
-			\subsubsection{Naiver Ansatz} % 4.60
-				\todo{Content}
+			\subsubsection{Na{\"i}ve Approach: BFGS Approximation}
+				It is tempting to use the BFGS update for the Hessian that is really successful in the unconstrained optimization. The update rule is given as:
+				\begin{align*}
+					\tilde{\mat{H}}^{(k + 1)} &= \tilde{\mat{H}}^{(k)}
+						- \frac{1}{\big(\vec{d}^{(k)}\big)^T \tilde{\mat{H}}^{(k)} \vec{d}^{(k)}} \tilde{\mat{H}}^{(k)} \vec{d}^{(k)} \big(\tilde{\mat{H}}^{(k)} \vec{d}^{(k)}\big)^T
+						+ \frac{1}{\big(\vec{g}^{(k)}\big)^T \vec{d}^{(k)}} \vec{g}^{(k)} \big(\vec{g}^{(k)}\big)^T \\
+					\vec{g}^{(k)} &= \grad_{\vec{p}}L\big(\vec{p}^{(k + 1)}, \vec{\mu}^{(k + 1)}, \vec{\sigma}^{(k + 1)}\big) - \grad_{\vec{p}}L\big(\vec{p}^{(k)}, \vec{\mu}^{(k + 1)}, \vec{\sigma}^{(k + 1)}\big)
+				\end{align*}
+				But it is not necessary that the full Hessian of the Lagrangian is positive definite! Additionally, it is very inefficient to calculate the full Hessian if the NLP has lots of active constraints. Hence, the approximation has to be modified in order to be useful for SQP methods.
 			% end
 
-			\subsubsection{Reduzierte Hesse-Matrix} % 4.61, 4.63, 4.64, 4.65, 4.66, 4.67, 4.68
-				\todo{Content}
+			\subsubsection{Reduced Hessian} % 4.61, 4.63, 4.64, 4.65, 4.66, 4.67, 4.68
+				Every active constraints reduces the degrees of freedom by one Hence the degrees of freedom are the number of optimization variables \(n_p\) minus the number of active and linearly independent constraints. In all of the following it is assumed that it is known which constraints are active at the solution, yielding the following, simpler, view of the NLP:
+				\begin{align}
+					\min_{\vec{d}_p \in \R^{n_p}} &\, \varphi\big(\vec{p}^{(k)}\big) + \Big(\!\grad{\varphi}\big(\vec{p}^{(k)}\big)\!\Big)^T \vec{d}_p + \frac{1}{2} \vec{d}_p^T \mat{H}_L^{\vec{p}}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}, \vec{\sigma}^{(k)}\big) \vec{d}_p \\
+					\mathrm{subject~to}\quad &\,
+						\begin{alignedat}[t]{2}
+							\vec{a}\big(\vec{p}^{(k)}\big) + \mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \vec{d}_p &= \vec{0}
+						\end{alignedat}  \label{eq:activeQp}
+				\end{align}
+				where the last Jacobian \( \mat{J}_{\vec{a}}^T \) might also contain active inequality constraints which are left out here for brevity. But they are handled the same as regular equality constraints and can be considered to be part of it knowing which are active (as assumed). The degrees of freedom of this NLP are therefore \( n_p - n_a \).
+				
+				Assuming the current approximation \( \vec{p}^{(k)} \) fulfills the constraints, \( \vec{a}\big(\vec{p}^{(k)}\big) = \vec{0} \), the next approximation also has to fulfill the constraints:
+				\begin{align*}
+					\vec{a}\big(\vec{p}^{(k)} + \vec{d}_p\big) = \vec{0}
+				\end{align*}
+				By Taylor-expanding this equation around \( \vec{p}^{(k)} \)
+				\begin{align*}
+					\vec{a}\big(\vec{p}^{(k)} + \vec{d}_p\big) \overset{T\big(\vec{p}^{(k)}\big)}{=} \vec{a}\big(\vec{p}^{(k)}\big) + \mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \vec{d}_p + \cdots = 0
+				\end{align*}
+				a linear system for the search direction \( \vec{d}_p \) can be found such that the new iteration is also feasible:
+				\begin{align*}
+					\mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \vec{d}_p = \vec{0}
+				\end{align*}
+				Thus, \( \vec{d}_p \) has to lie in the kernel of \( \mat{J}_{\vec{a}}^T \) and the dimensionality of the kernel is \( n_p - n_a \).
+				
+				Hence, the kernel is spanned by \( n_p - n_a \) basis vectors (which are not uniquely determined). Let \( \mat{Z}^{(k)} \) be the matrix that contains these basis vectors as columns, then
+				\begin{align*}
+					\mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \mat{Z}^{(k)} = \mat{0}
+				\end{align*}
+				holds and the search direction \( \vec{d}_p \in \R^{n_p} \) can be represented as
+				\begin{align*}
+					\vec{d}_p = \mat{Y}^{(k)} \vec{d}_p^y + \mat{Z}^{(k)} \vec{d}_p^z
+				\end{align*}
+				where \( \mat{Z}^{(k)} \in \R^{n_p \times (n_p - n_a)} \) are the basis vectors of the kernel and \( \mat{Y}^{(k)} \in \R^{n_p \times n_a} \) are the basis vectors of the image space of \( \mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \). The vectors \( \vec{d}_p^y \in \R^{n_a} \) and \( \vec{d}_p^z \in \R^{n_p - n_a} \) are unknown and have to be computed to solve the QP. Plugging this formulation of \( \vec{d}_p \) into the constraints of~\eqref{eq:activeQp}:
+				\begin{align}
+					&& \vec{0} &= \vec{a}\big(\vec{p}^{(k)}\big) + \mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \vec{d}_p &  \nonumber \\
+					\iff && -\vec{a}\big(\vec{p}^{(k)}\big) &= \mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \vec{d}_p &  \nonumber \\
+					     &&  &= \mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \big( \mat{Y}^{(k)} \vec{d}_p^y + \mat{Z}^{(k)} \vec{d}_p^z \big) &  \nonumber \\
+					     &&  &= \mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \mat{Y}^{(k)} \vec{d}_p^y + \underbrace{\mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \mat{Z}^{(k)}}_{=\, \mat{0}} \vec{d}_p^z &  \nonumber \\
+					     &&  &= \mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \mat{Y}^{(k)} \vec{d}_p^y &  \label{eq:qpDYlinear}
+				\end{align}
+				The vector \( \vec{d}_p^y \) is therefore determined by the active constraints via the linear system~\eqref{eq:qpDYlinear}. Now there remain \( n_p - n_a \) degrees of freedom for the actual optimization.
+				
+				Plugging the formulation of \( \vec{d}_p \) into the objective of the QP\footnote{Note that the parameters of the Hessian are kept implicitly for brevity.}
+				\begin{align*}
+					&\, \varphi\big(\vec{p}^{(k)}\big) + \Big(\!\grad{\varphi}\big(\vec{p}^{(k)}\big)\!\Big)^T \vec{d}_p + \frac{1}{2} \vec{d}_p^T \mat{H}_L^{\vec{p}} \vec{d}_p \\
+					=&\, \varphi\big(\vec{p}^{(k)}\big) + \Big(\!\grad{\varphi}\big(\vec{p}^{(k)}\big)\!\Big)^T \big( \mat{Y}^{(k)} \vec{d}_p^y + \mat{Z}^{(k)} \vec{d}_p^z \big) + \frac{1}{2} \big( \mat{Y}^{(k)} \vec{d}_p^y + \mat{Z}^{(k)} \vec{d}_p^z \big)^T \mat{H}_L^{\vec{p}} \big( \mat{Y}^{(k)} \vec{d}_p^y + \mat{Z}^{(k)} \vec{d}_p^z \big)
+				\end{align*}
+				yields the following objective when leaving out all constant parts w.r.t. \( \vec{d}_p^z \), as that is the optimization variable:
+				\begin{align*}
+					\varphi\big(\vec{p}^{(k)}\big) + \Big(\!\grad{\varphi}\big(\vec{p}^{(k)}\big)\!\Big)^T \mat{Z}^{(k)} \vec{d}_p^z + \big(\vec{d}_p^y\big)^T \big(\mat{Z}^{(k)})^T \mat{H}_L^{\vec{p}} \big( \mat{Z}^{(k)} \vec{d}_p^z \big) + \frac{1}{2} \big(\vec{d}_p^z\big)^T \big(\mat{Z}^{(k)})^T \mat{H}_L^{\vec{p}} \mat{Z}^{(k)} \vec{d}_p^z
+				\end{align*}
+				The solution of this optimization problem can be computed by solving the following linear system (if the reduced Hessian is positive definite, which it is close to a strict local minimum):
+				\begin{align*}
+					\Big( \big(\mat{Z}^{(k)}\big)^T \mat{H}_L^{(k)} \mat{Z}^{(k)} \Big) \vec{d}_p^z = -\big(\mat{Z}^{(k)}\big)^T \mat{H}_L^{(k)} \mat{Y}^{(k)} \vec{d}_p^y - \big(\mat{Z}^{(k)}\big)^T \cdot \grad{\varphi}\big(\vec{p}^{(k)}\big)
+				\end{align*}
+				
+				\paragraph{Summary}
+					Using the representation \( \vec{d}_p = \mat{Y}^{(k)} \vec{d}_p^y + \mat{Z}^{(k)} \vec{d}_p^z \), the search direction as the solution of the QP~\eqref{eq:activeQp} can be computed by solving two staggered linear systems:
+					\begin{align*}
+						\mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \mat{Y}^{(k)} \vec{d}_p^y &= -\vec{a}\big(\vec{p}^{(k)}\big) \\
+						\Big( \big(\mat{Z}^{(k)}\big)^T \mat{H}_L^{(k)} \mat{Z}^{(k)} \Big) \vec{d}_p^z &= -\big(\mat{Z}^{(k)}\big)^T \mat{H}_L^{(k)} \mat{Y}^{(k)} \vec{d}_p^y - \big(\mat{Z}^{(k)}\big)^T \cdot \grad{\varphi}\big(\vec{p}^{(k)}\big)
+					\end{align*}
+					
+					\begin{itemize}
+						\item If \( \vec{a}\big(\vec{p}^{(k)}\big) = \vec{0} \), i.e. the constraints are linear, \( \vec{d}_p^y = \vec{0} \).
+						\item If additionally \( \big(\mat{Z}^{(k)}\big)^T \cdot \grad{\varphi}\big(\vec{p}^{(k)}\big) = \vec{0} \), then \( \vec{d}_p^z = \vec{0} \).
+					\end{itemize}
+				% end
+				
+				\paragraph{First- and Second-Order Conditions}
+					Using the matrix \( \mat{Z} \) some of the necessary and sufficient conditions can be formulated equivalent:
+					\begin{itemize}
+						\item First-order necessary condition:
+					\end{itemize}
+					\begin{align*}
+						\grad{\varphi}(\vec{p}^\ast) - \sum_{i = 1}^{n_a} \mu_i \cdot \grad{a_i}(\vec{p}^\ast) - \sum_{i \in A(\vec{p}^\ast)} = \vec{0}
+						\quad\iff\quad
+						\mat{Z}^T(\vec{p}^\ast) \cdot \grad{\varphi}(\vec{p}^\ast) = \vec{0}
+					\end{align*}
+					\begin{itemize}
+						\item Second-order necessary condition: \\ The reduced Hessian of the Lagrangian \( \mat{Z}^T(\vec{p}^\ast) \cdot \mat{H}_L^{\vec{p}}(\vec{p}^\ast, \vec{\mu}^\ast, \vec{\sigma}^\ast) \cdot \mat{Z}(\vec{p}^\ast) \) is positive semidefinite.
+						\item Second-order sufficient condition: \\ The reduced Hessian of the Lagrangian is positive definite.
+					\end{itemize}
+				% end
 
-				\paragraph{Beispiel} % 4.62
+				\paragraph{Example} % 4.62
 					\todo{Content}
 				% end
 			% end
 
-			\subsubsection{Approximation der reduzierten Hesse-Matrix} % 4.69
-				\todo{Content}
+			\subsubsection{Approximation of the Reduced Hessian}
+				The reduced Hessian contains all information that is needed to compute the QP solution! Hence, SQP methods can be built on this reduced Hessian. A Quasi-Newton approximation, e.g. BFGS, can be used to update the reduced Hessian:
+				\begin{align*}
+					\tilde{\mat{H}}^{(k + 1)} &= \tilde{\mat{H}}^{(k)}
+							- \frac{1}{\big(\vec{d}^{(k)}\big)^T \tilde{\mat{H}}^{(k)} \vec{d}^{(k)}} \tilde{\mat{H}}^{(k)} \vec{d}^{(k)} \big(\tilde{\mat{H}}^{(k)} \vec{d}^{(k)}\big)^T
+							+ \frac{1}{\big(\vec{g}^{(k)}\big)^T \vec{d}^{(k)}} \vec{g}^{(k)} \big(\vec{g}^{(k)}\big)^T \\
+					\vec{d}^{(k)} &= \vec{d}_p^z \\
+					\vec{g}^{(k)} &= \big(\mat{Z}^{(k + 1)}\big)^T \cdot \grad_{\vec{p}}L\big(\vec{p}^{(k + 1)}, \vec{\mu}^{(k + 1)}, \vec{\sigma}^{(k + 1)}\big) - \big(\mat{Z}^{(k)}\big)^T \cdot \grad_{\vec{p}}L\big(\vec{p}^{(k)}, \vec{\mu}^{(k + 1)}, \vec{\sigma}^{(k + 1)}\big)
+				\end{align*}
+				
+				Analogous to unconstrained optimization, it is helpful to replace the rank-2 update with a rank-1 update and directly approximate a Cholesky decomposition.
 			% end
 		% end
 
-		\subsection{SQP-Verfahren} % 4.52, 4.53, 4.57, 4.75
-			\todo{Content}
+		\subsection{SQP Method (Algorithm)}
+			A sketch of the implementation of an SQP method is given in~\autoref{alg:sqp}.
+			
+			\begin{algorithm}  \DontPrintSemicolon
+				\textbf{Initialization:} Choose an initial approximation \(\vec{p}^{(0)}\), set \( k \gets 0 \) \;
+				\While{not converged}{
+					Calculate the Lagrange multipliers \(\vec{\mu}^{(k)}\), \(\vec{\sigma}^{(k)}\) using least squares:
+					\begin{align*}
+						\min_{\mu \in \R^{n_a}} &\,
+							\bigg\lVert
+								\grad{\varphi}\big(\vec{p}^{(k + 1)}\big)
+								- \sum_{i = 1}^{n_a} \mu_i^{(k + 1)} \cdot \grad{a_i}\big(\vec{p}^{(k + 1)}\big)
+								- \sum_{i \in A\big(\vec{p}^{(k + 1)}\big)} \sigma_i^{(k + 1)} \cdot \grad{a_i}\big(\vec{p}^{(k + 1)}\big)
+							\bigg\rVert_2^2
+					\end{align*} \;
+					\If{termination criteria fulfilled}{
+						\Return \;
+					}
+					Calculate new search direction \( \vec{d}_p^{(k)} \) by solving the quadratic problem:
+					\begin{align*}
+						\min_{\vec{d}_p \in \R^{n_p}} &\, \varphi\big(\vec{p}^{(k)}\big) + \Big(\!\grad{\varphi}\big(\vec{p}^{(k)}\big)\!\Big)^T \vec{d}_p + \frac{1}{2} \vec{d}_p^T \mat{H}_L^{\vec{p}}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}, \vec{\sigma}^{(k)}\big) \vec{d}_p \\
+						\mathrm{subject~to}\quad &\,
+							\begin{alignedat}[t]{2}
+								\vec{a}\big(\vec{p}^{(k)}\big) + \mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \vec{d}_p &= \vec{0} \\
+								\vec{b}\big(\vec{p}^{(k)}\big) + \mat{J}_{\vec{b}}^T\big(\vec{p}^{(k)}\big) \vec{d}_p & \geq \vec{0}
+							\end{alignedat}
+					\end{align*} \;
+					Calculate the step size \( \alpha^{(k)} \) using by minimizing a merit function, e.g. the augmented Lagrangian
+					\begin{align*}
+						\min_{\alpha \in \R^+} \, L_Q\big( \vec{p}^{(k)} + \alpha \vec{d}_p^{(k)},\, \vec{\mu}^{(k)} + \alpha \vec{d}_\mu^{(k)},\, \vec{\sigma}^{(k)} + \alpha \vec{d}_\sigma^{(k)},\, \rho^{(k)} \big)
+					\end{align*}
+					or the exact \(\ell_1\)-penalty function \( \min_{\alpha \in \R^+} \, \Phi_{\ell_1} \big( \vec{p}^{(k)} + \alpha \vec{d}_p^{(k)},\, \rho^{(k)} \big) \) \;
+					Calculate the new solution approximation:
+					\begin{align*}
+						\vec{p}^{(k + 1)} \gets \vec{p}^{(k)} + \alpha^{(k)} \vec{d}_p^{(k)}
+					\end{align*} \;
+				}
+				
+				\caption{Sequential Quadratic Programming}
+				\label{alg:sqp}
+			\end{algorithm}
 		% end
 
-		\subsection{Bemerkungen} % 4.49, 4.70, 4.75, 4.76, 4.77, 4.78, 4.79
-			\todo{Content}
+		\subsection{Notes}
+			\begin{itemize}
+				\item When using the reduced Hessian, the matrix \( \mat{Z}^{(k)} \) has to be updated in every iteration.
+				\item Especially for high-dimensional problems, the gradients and Jacobians are sparse, i.e. only a few entries are nonzero. This behavior can be exploited in order to optimize implementations a lot.
+				\item To rise efficiency and robustness further, sophisticated implementations of SQP methods (e.g. NPSOL, SNOPT) differentiate between constraints like
+					\begin{itemize}
+						\item upper and lower bounds
+						\item linear constraints
+						\item nonlinear constraints
+					\end{itemize}
+			\end{itemize}
 		% end
-
-		\subsection{Beispiele} % N/A
+		
+		\subsection{Examples} % N/A
 			\todo{Content}
-
-			\subsubsection{Optimale Steuerung eines 6-gelenkigen Industrieroboters} % 4.71, 4.72
+			
+			\subsubsection{Optimal Control of a 6-DoF Industry Robot} % 4.71, 4.72
 				\todo{Content}
 			% end
-
-			\subsubsection{PKW-Fahrt} % 4.73, 4.74
+			
+			\subsubsection{Car Drive} % 4.73, 4.74
 				\todo{Content}
 			% end
+		% end
+		
+		\subsection{Wrap-Up}
+			\begin{itemize}
+				\item Motivation:
+					\begin{itemize}
+						\item The Newton method is applied to determine a root ("zero point") of the gradient of the Lagrangian.
+						\item This yields a linear equation system to determine a search direction.
+						\item Requires first- and second-order derivatives of the objective and the constraints.
+						\item Preliminaries for the derivative where differentiability and knowing which constraints are active.
+					\end{itemize}
+				\item Basic structure:
+					\begin{itemize}
+						\item The linear system derived as a first step is equivalent to the solution of a quadratic problem (QP).
+						\item Solving the QP is faster and more robust than solving the linear system directly.
+						\item This yields a sequence of quadratic problems, thus \emph{sequential quadratic programming} (SQP).
+					\end{itemize}
+				\item Improvement of the basic structure:
+					\begin{itemize}
+						\item For globalizing the method, a step size determination was introduced using line search on an appropriate test function (penalty function).
+						\item As the second-order derivatives are commonly not available, Quasi-Newton approximations of the Lagrangian are used.
+					\end{itemize}
+				\item SQP for high-dimensional NLPs:
+					\begin{itemize}
+						\item If the NLP is high-dimensional, the reduced Hessian shall be used.
+						\item The QP can be solved faster and the Hessian of the Lagrangian can be approximation using Quasi-Newton approaches!
+						\item High-dimensional NLPs often have sparse gradients as Jacobians which can be used for further performance improvements.
+					\end{itemize}
+				\item Outlook:
+					\begin{itemize}
+						\item There are lots of SQP methods, e.g. trust-region SQP that can work with indefinite or negative definite Hessians or methods that allow only feasible approximations in every iteration (feasible SQP methods), while the "classic" SQP only fulfills the constraints at the end (infeasible SQP method).
+						\item Other numerical methods for solving nonlinear, constrained optimization problems exist, e.g. inner point methods.
+					\end{itemize}
+			\end{itemize}
 		% end
 	% end
 % end
@@ -1510,6 +1773,8 @@
 % end
 
 \chapter{Minimierung von Abweichungen} % 6.1, 6.2, 6.3
+	\label{c:leastSquares}
+
 	\todo{Content}
 
 	\section{Parameterschätzung bei ODE-Systemen} % 6.5, 6.7

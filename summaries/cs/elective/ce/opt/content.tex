@@ -1700,75 +1700,281 @@
 	% end
 % end
 
-\chapter{Berechnung von Ableitungen} % 5.1, 5.2, 5.3, 5.4
-	\todo{Content}
+\chapter{Calculation of Derivatives}
+	To use efficient gradient-based algorithms, the first-order derivatives
+	\begin{align*}
+		\pdv{\varphi}{p_i} && \pdv{a_k}{p_i} && \pdv{b_l}{p_i}
+	\end{align*}
+	of the objective and the constraints are needed. But these are typically not available directly! And even one wrong derivative could destroy the fast convergence properties\dots
 
-	\section{Finite-Differenzen-Approximation (numerische Differentiation)} % 5.5
-		\todo{Content}
+	\section{Finite Difference Approximation (numerical Differentiation)}
+		\subsection{Forward Difference Approximation}
+			The most known approximation of the first derivative  is the \emph{forward difference approximation}
+			\begin{align*}
+				\pdv{\varphi(\vec{p})}{p_i} \approx D_{V, i} \varphi(\vec{p}) = \frac{1}{\delta_i} \big( \varphi(\vec{p} + \vec{e}_i \delta_i) - \varphi(\vec{p}) \big)
+			\end{align*}
+			where \( \vec{e}_i \in \R^{n_p} \) is the \(i\)-th unit vector and \(\delta_i\) is an appropriate step size. The complete error is:
 
-		\subsection{Vorwärtsdifferenzen-Approximation} % 5.6, 5.13
-			\todo{Content}
+			\subsubsection{Error}
+				The complete error of the approximation is composed of the following:
+				\begin{itemize}
+					\item Approximation error (theoretical error)
+					\item Function precision
+					\item Rounding error
+				\end{itemize}
 
-			\subsubsection{Fehler} % 5.8, 5.12
-				\todo{Content}
-
-				\paragraph{Approximationsfehler} % 5.9
-					\todo{Content}
+				\paragraph{Approximation Error}
+					The (theoretical) approximation error is given as the neglected terms of the Taylor approximation (i.e. the Lagrangian remainder):
+					\begin{align*}
+						&& \varphi(\vec{p} + \vec{e}_i \delta_i) &\overset{\mathclap{\,T(\vec{p})\,}}{=} \varphi(\vec{p}) + \pdv{\varphi(\vec{p})}{p_i} \delta_i + \frac{1}{2} \pdv[2]{\varphi(\tilde{\vec{p}})}{p_i} \delta_i^2,\quad \tilde{\vec{p}} \in [\vec{p}, \vec{p} + \vec{e}_i \delta_i] & \\
+						\iff && \varphi(\vec{p} + \vec{e}_i \delta_i) - \varphi(\vec{p}) - \pdv{\varphi(\vec{p})}{p_i} \delta_i &= \frac{1}{2} \pdv[2]{\varphi(\tilde{\vec{p}})}{p_i} \delta_i^2 & \\
+						\iff && \underbrace{\frac{1}{\delta_i} \big( \varphi(\vec{p} + \vec{e}_i \delta_i) - \varphi(\vec{p}) \big)}_{=\, D_{V, i}\varphi(\vec{p})} - \pdv{\varphi(\vec{p})}{p_i} &= \frac{1}{2} \pdv[2]{\varphi(\tilde{\vec{p}})}{p_i} \delta_i & \\
+						\iff && D_{V, i}\varphi(\vec{p}) - \pdv{\varphi(\vec{p})}{p_i} &= \frac{1}{2} \pdv[2]{\varphi(\tilde{\vec{p}})}{p_i} \delta_i \eqqcolon T_{V, i}(\varphi; \delta_i) &
+					\end{align*}
+					In theory, the error should decrease with the step size. But today's computers have finite arithmetic! Other error factors have a serious role demolishing this theoretical result.
 				% end
 
-				\paragraph{Funktionsgenauigkeit} % 5.10
-					\todo{Content}
+				\paragraph{Function Precision}
+					The function precision takes into account that the target function \( \varphi \) cannot be calculated with machine precision, e.g. because the evaluation depends on other methods or because rounding errors have summed up due to cancellation or ill-conditioning.
+					
+					This can be taken into account with the absolute errors \( \varepsilon \), \( \varepsilon_{\delta_i} \) of the function evaluations:
+					\begin{align*}
+						\hat{\varphi}(\vec{p}) = \varphi(\vec{p}) + \varepsilon && \hat{\varphi}(\vec{p} + \vec{e}_i \delta_i) = \varphi(\vec{p} + \vec{e}_i \delta_i) + \varepsilon_{\delta_i}
+					\end{align*}
+					Where the absolute error can be expressed in terms of a relative error \( \varepsilon_R = 10^{-n_d} \) as \( \varepsilon = \varepsilon_R \varphi(\vec{p}) \) where \(n_d\) are the number of decimal places that are correct. Plugging \( \hat{\varphi} \) into the forward approximation yields the function precision error \( C(D_{V, i}\varphi; \delta_i) \):
+					\begin{align*}
+						D_{V, i}\hat{\varphi}(\vec{p})
+							= \frac{1}{\delta_i} \big( \hat{\varphi}(\vec{p} + \vec{e}_i \delta_i) - \hat{\varphi}(\vec{p}) \big)
+							= \frac{1}{\delta_i} \big( \varphi(\vec{p} + \vec{e}_i \delta_i) - \varphi(\vec{p}) \big) + \frac{\varepsilon_{\delta_i} - \varepsilon}{\delta_i}
+							\eqqcolon D_{V, i} \varphi(\vec{p}) + C(D_{V, i} \varphi; \delta_i)
+					\end{align*}
 				% end
 
-				\paragraph{Rundungsfehler} % 5.11
-					\todo{Content}
+				\paragraph{Rounding Error}
+					Additionally to the function precision and the theoretical error, rounding errors are produced by the subtraction and the division. But if \(\delta_i\) does not get "too small", these are negligible compared to the approximation error and the function precision.
+				% end
+				
+				\paragraph{Total Error}
+					Hence, the total error is given as:
+					\begin{align}
+						T_{V, i}(\varphi; \delta_i) + C(D_{V, i} \varphi; \delta_i) = \frac{1}{2} \pdv[2]{\varphi(\tilde{\vec{p}})}{p_i} \delta_i + \frac{\varepsilon_{\delta_i} - \varepsilon}{\delta_i}  \label{eq:forwardError}
+					\end{align}
 				% end
 			% end
 
-			\subsubsection{Wahl der Schrittweite} % 5.14, 5.15, 5.16, 5.17
-				\todo{Content}
+			\subsubsection{Choosing the Step Size}
+				Ideally, the step size should be chooses such that the error is minimal. As the error term~\eqref{eq:forwardError} contains second-order derivatives that are not available, an upper bound has to be drawn on the error that more or less independent of the derivatives:
+				\begin{align*}
+					\Bigg\lvert \frac{1}{2} \pdv[2]{\varphi(\tilde{\vec{p}})}{p_i} \delta_i + \frac{\varepsilon_{\delta_i} - \varepsilon}{\delta_i} \Bigg\rvert
+						&\leq \frac{1}{2} \delta_i \Bigg\lvert \pdv[2]{\varphi(\tilde{\vec{p}})}{p_i} \Bigg\rvert + \frac{1}{\delta_i} \big\lvert \varepsilon_{\delta_i} - \varepsilon \big\rvert
+						\leq \frac{1}{2} \delta_i L_{\varphi\prime\prime, i} + \frac{2}{\delta_i} \varepsilon_R L_\varphi \\
+					L_{\varphi\prime\prime, i} &\coloneqq \max\Bigg\{\, \Bigg\lvert \pdv[2]{\varphi(\tilde{\vec{p}})}{p_i} \Bigg\rvert \,:\, \tilde{\vec{p}} \in [\vec{p}, \vec{p} + \vec{e}_i \delta_i] \,\Bigg\} \\
+					L_\varphi &\coloneqq \max\Big\{\, \big\lvert \varphi(\vec{p}) \big\rvert,\, \big\lvert \varphi(\vec{p} + \vec{e}_i \delta_i) \big\rvert \,\Big\}
+				\end{align*}
+				Minimizing this w.r.r. to the step size yields:
+				\begin{gather*}
+					\min_{\delta_i \in \R^+} \, \Phi(\delta_i),\quad \Phi(\delta_i) = \frac{1}{2} \delta_i L_{\varphi'', i} + \frac{2}{\delta_i} \varepsilon_R L_\varphi \\
+					\implies\quad \Phi'(\delta_i) = \frac{1}{2} L_{\varphi\prime\prime, i} - \frac{2}{\delta_i^2} \varepsilon L_\varphi \overset{!}{=} 0
+					\quad\overset{L_{\varphi\prime\prime, i} \,\neq\, 0}{\iff}\quad \delta_i = \sqrt{\frac{4 \varepsilon_R L_\varphi}{L_{\varphi'', i}}}
+				\end{gather*}
+				If \( L_\varphi / L_{\varphi\prime\prime, i} \approx \), then \( \delta_i \approx 2 \sqrt{\varepsilon_R} \). If additionally it is possible to evaluate the function with machine precision, i.e. \( \varepsilon_R = \varepsilon_\mathrm{mach} \), the optimal step size is simply
+				\begin{align*}
+					\delta_i \approx 2 \sqrt{\varepsilon_\mathrm{mach}}
+				\end{align*}
+				This step size often is a good choice and thus set as the default in most implementations. It also explains the rule of thumb that forward-differences can approximately evaluate half of decimal places correctly.
+			% end
+			
+			\subsubsection{Notes}
+				\begin{itemize}
+					\item For evaluating the gradient \( \grad{\varphi}(\vec{p}) \) it is necessary to
+						\begin{itemize}
+							\item Determine \(n_p\) step sized \(\delta_i\) and to evaluate \(\varphi\) at least \( 2n_p \) times to approximate \( L_{\varphi\prime\prime, i} \).
+							\item Every iteration of a gradient-based method needs the gradients causing high computation times.
+							\item It is better to use a one-time approximation of \emph{relative step sizes} \( \varepsilon_i \) with \( \delta_i = \varepsilon_i \big(1 + \lvert p_i \rvert\big) \) at the initialization \(\vec{p}^{(0)}\).
+							\item The value \( \varepsilon_i = 5 \sqrt{\varepsilon_\mathrm{mach}} \) can be used as an initial relative step size.
+							\item If the optimization fails, restart with a new initialization and re-calculate the step sizes.
+						\end{itemize}
+				\end{itemize}
 			% end
 		% end
 
-		\subsection{Zentrale-Differenzen-Approximation} % 5.18, 5.19, 5.21, 5.22
-			\todo{Content}
+		\subsection{Central-Difference Approximation}
+			For forward difference approximation often yields results that are good enough, except the gradients are too small. Additionally, the forward approximation is not sufficient if the optimization step size \( \alpha^{(k)} \) such that the changes in \( \vec{p} \) are less than the step size \(\delta\) or the differences in the function values are "too small" relative to \(\delta\).
+			
+			A potentially more exact approximation are \emph{central differences}:
+			\begin{align*}
+				\pdv{\varphi(\vec{p})}{p_i} \approx D_{Z, i}\varphi(\vec{p}) = \frac{1}{2 \delta_i} \big( \varphi(\vec{p} + \vec{e}_i \delta_i) - \varphi(\vec{p} - \vec{e}_i \delta_i) \big)
+			\end{align*}
+			Analogous to the forward differences, Taylor-expand this formula yields the insight that the order of the approximation error is \( \mathcal{O}(\delta_i^2) \) while the order of the forward differences is \( \mathcal{O}(\delta_i) \). Analogous to the forward differences, the optimal step size \( \delta_i^Z \) can be calculated by minimizing an upper bound on the total error, yielding the optimal step size
+			\begin{align*}
+				\delta_i^Z = \sqrt[3]{\frac{3 \varepsilon_R L_\varphi}{L_{\varphi\prime\prime\prime, i}}},\quad L_{\varphi\prime\prime\prime, i} = \max\Bigg\{\, \Bigg\lvert \pdv[3]{\varphi(\tilde{\vec{p}})}{p_i} \Bigg\rvert \,:\, \tilde{\vec{p}} \in \big[ \vec{p} - \vec{e}_i \delta_i^Z, \vec{p} + \vec{e}_i \delta_i^Z \big] \,\Bigg\}
+			\end{align*}
+			For functions with \( L_\varphi / L_{\varphi\prime\prime\prime, i} \approx 1 \) it follows \( \delta_i^Z \approx \sqrt[3]{3\varepsilon_R} \approx \delta_i^{2/3} \). If additionally \( L_\varphi \approx 1 \) and \( L_{\varphi\prime\prime\prime, i} \approx 1 \), it follows:
+			\begin{align*}
+				\Bigg\lvert D_{Z, i}\hat{\varphi}(\vec{p}) - \pdv{\varphi(\vec{p})}{p_i} \Bigg\rvert \leq \varepsilon_R^{2/3}
+			\end{align*}
+			Hence, the rule of thumb that central difference can approximately evaluate two third of decimal places correctly.
+			
+			But central differences produce much more computational overhead compared to forward/backward differences! Thus they should only be used if needed (by switching from forward to central differences).
+			
+			To approximate the second derivative, the following schema can be used
+			\begin{align*}
+				\pdv[2]{\varphi(\vec{p})}{p_i} \approx \frac{1}{\delta_i^2} \big( \varphi(\vec{p} + \vec{e}_i \delta_i) - 2\varphi(\vec{p}) + \varphi(\vec{p} - \vec{e}_i \delta_i) \big)
+			\end{align*}
+			that is a combination of forward and backward differences to approximate the second-order derivative. This directly gives the \(i\)-th diagonal entry of the Hessian of \(\varphi\), which can reduce the number of iterations needed.
 		% end
 	% end
 
-	\section{Numerische Differentiation von Simulationsmodellen} % 5.23, 5.24, 5.25
-		\todo{Content}
+	\section{Numerical Differentiation of Simulation Models}
+		An important class in optimization is simulation-based optimization where the system state \( \vec{x}(t) \) is given as the numerical solution of ODEs or PDEs. In this setting, the objective \(\varphi\) and the constraints \(\vec{a}\), \(\vec{b}\) are dependent on the state variables \(\vec{x}\) of an ODE/PDE system. Hence, the calculation of \( \varphi\big(\vec{x}(\vec{p})\big) \) requires solving the ODE/PDE numerically:
+		\begin{itemize}
+			\item Every calculation of \( \varphi\big(\vec{x}(\vec{p})\big) \), \(\vec{a}\) and \(\vec{b}\) is computationally expensive.
+			\item The calculation is only possible with simulation errors (i.e. approximation error in the ODE/PDE solver and accumulated rounding errors).
+			\item The gradients (see below) are generally not available and have to me approximated.
+		\end{itemize}
+		\begin{align*}
+			\grad{\varphi}\big(\vec{x}(\vec{p})\big) = \pdv{\varphi\big(\vec{x}(\vec{p})\big)}{\vec{p}} = \pdv{\varphi}{\vec{x}} \pdv{\vec{x}}{\vec{p}}
+		\end{align*}
 
-		\subsection{Ableitung von ODE-Simulationsmodellen} % 5.27, 5.28
-			\todo{Content}
+		\subsection{Derivative of ODE-Simulation Models}
+			Given an IVP (initial value problem) \( \dot{\vec{x}} = \vec{f}(t, \vec{x}; \vec{p}) \), \( \vec{x}(0) = \vec{x}_0 \), \( 0 \leq t \leq t_f \), the derivatives of the (numerical) solution \( \vec{x}(t; \vec{p}) \) w.r.t. to the parameters \( \vec{p} \) are required. Formally, the parameters \(\vec{p}\) can be transformed to initial values \(\vec{x}_0\) and thus the derivatives w.r.t. the parameters to derivatives w.r.t. the initial values. The derivative w.r.t. the initial values is called the \emph{sensitivity matrix}:
+			\begin{align*}
+				\pdv{\vec{x}(t; \vec{x}_0)}{\vec{x}_0}
+			\end{align*}
+			
+			The IVP with the parameters \(\vec{p}\) transformed to initial values is given as
+			\begin{align*}
+				\begin{bmatrix}
+					\dot{x}_1 \\
+					\vdots \\
+					\dot{x}_{n_x}
+				\end{bmatrix}
+				= \dot{\vec{x}} = \vec{f}(t, \vec{x}, x_{n_x + 1}, \cdots, x_{n_x + n_p}) \\
+				\begin{bmatrix}
+					\dot{x}_{n_x + 1} \\
+					\vdots \\
+					\dot{x}_{n_x + n_p}
+				\end{bmatrix}
+				=
+				\begin{bmatrix}
+					0 \\
+					\vdots \\
+					0
+				\end{bmatrix}
+			\end{align*}
+			with \( x_{n_x + 1} \coloneqq p_1 \), \( \cdots \), \( x_{n_x + n_p} \coloneqq p_{n_p} \) and the initial values
+			\begin{align*}
+				\vec{x}(0) = \vec{x}_0 \qquad
+				\begin{bmatrix}
+					x_{n_x + 1}(0) \\
+					\vdots \\
+					x_{n_x + n_p}(0)
+				\end{bmatrix}
+				=
+				\begin{bmatrix}
+					p_1 \\
+					\vdots \\
+					p_{n_p}
+				\end{bmatrix}
+			\end{align*}
+			That is, the "parameter states" are added as time invariant states always equaling the parameters.
 		% end
 
-		\subsection{Externe numerische Differentiation} % N/A
-			\todo{Content}
-
-			\subsubsection{Naiver Ansatz} % 5.29, 5.30, 5.31
-				\todo{Content}
+		\subsection{External Numerical Differentiation}
+			\subsubsection{Na{\"i}ve Approach} % 5.29, 5.30, 5.31
+				Just use forward differences:
+				\begin{align*}
+					\pdv{\vec{x}(t; \vec{p})}{p_i} \approx \frac{1}{\delta_i} \big( \vec{x}(t; \vec{p} + \vec{e}_i \delta_i) - \vec{x}(t; \vec{p}) \big)
+				\end{align*}
+				\begin{itemize}
+					\item This approach requires solving \(n_p\) additional IVP solutions for calculating the tweaked evaluations.
+					\item To solve the IVP as best as possible, it may use variable step sizes.
+					\item This causes gradient-based algorithms to have extremely big problems in finding the minimum!
+					\item But this is not only caused by the optimization method\dots
+				\end{itemize}
+			
+				\paragraph{Runge-Kutta Methods}
+					When using Runge-Kutta methods of order \(m\), the numerical solutions depends on the integration tolerance and the internal step width of the integration. By just looking at the initial values, the error of RK methods of order \(m\) is
+					\begin{align*}
+						\tilde{\vec{x}}(t; \vec{x}_0, h_1) &= \vec{x}(t; \vec{x}_0) + \sum_{j = m}^{N} \tilde{c}_j(t, \vec{x}_0) h_1^j + \mathcal{O}\big(h_1^{N + 1}\big) \\
+						\tilde{\vec{x}}(t; \vec{x}_0 + \vec{e}_i \delta_i, h_2) &= \vec{x}(t; \vec{x}_0 + \vec{e}_i \delta_i) + \sum_{j = m}^{N} \tilde{c}_j(t, \vec{x}_0 + \vec{e}_i \delta_i) h_2^j + \mathcal{O}\big(h_2^{N + 1}\big)
+					\end{align*}
+					with differentiable functions \( \tilde{c}_j(t, \vec{x}_0) \). Plugging this into the forward difference scheme yields:
+					\begin{align*}
+						  &\, \frac{1}{\delta_i} \big( \tilde{\vec{x}}(t; \vec{x}_0 + \vec{e}_i \delta_i, h_2) - \tilde{\vec{x}}(t; \vec{x}_0, h_1) \big) \\
+						= &\, \pdv{\vec{x}(t; \vec{x}_0)}{x_{0, i}} + \mathcal{O}(\delta_i) + \sum_{j = m}^{N} \tilde{c}_j(t, \vec{x}_0 + \vec{e}_i \delta_i) \cdot \underbrace{\frac{h_2^j - h_1^j}{\delta_i}}_{\to\,\infty} + \sum_{j = m}^{N} \Bigg( \pdv{\tilde{c}_j(t, \vec{x}_0)}{x_{0, i}} + \mathcal{O}(\delta_i) \!\Bigg) h_1^j + \mathcal{O}\Bigg( \frac{h_1^{N + 1}}{\delta_i} \Bigg) + \mathcal{O}\Bigg( \frac{h_2^{N + 1}}{\delta_i} \Bigg)
+					\end{align*}
+					This is the problem! If the integration steps \( h_1 \neq h_2 \) are not equal, the error term becomes dominant as \( \delta_i \) usually is "small".
+					
+					A "solution" would be to set \( h_1 = h_2 \), causing bad integration results.
+				% end
 			% end
 
-			\subsubsection{Gekoppelte Vorwärtsdifferenzen-Approximation} % 5.32
-				\todo{Content}
+			\subsubsection{Coupled Forward Differences Approximation}
+				It is possible to simultaneously integrate an \( (n_p + 1) \)-times big IVP for each tweaked value guaranteeing \( h_1 = h_2 \):
+				\begin{align*}
+					\dot{\vec{x}} &= \vec{f}(t, \vec{x}),\quad \vec{x}(0) = \vec{x}_0 \\
+					\dot{\vec{x}} &= \vec{f}(t, \vec{x}) \\
+					&\,\,\,\vdots \\
+					\dot{\vec{x}} &= \vec{f}(t, \vec{x})
+				\end{align*}
 			% end
 		% end
 
-		\subsection{Interne numerische Differentiation} % 5.33, 5.34
-			\todo{Content}
+		\subsection{Internal Numerical Differentiation}
+			The external numerical differentiation costs a lot of time! One insight: The sensitivity matrix can be expresses as the solution of a matrix-ODE:
+			\begin{align*}
+				\dv{t} \pdv{\vec{x}(t; \vec{x}_0)}{\vec{x}_0} = \pdv{\vec{f}\big(t, \vec{x}(t; \vec{x}_0)\big)}{\vec{x}} \pdv{\vec{x}(t; \vec{x}_0)}{\vec{x}_0},\quad \pdv{\vec{x}(0; \vec{x}_0)}{\vec{x}_0} = \mat{I}
+			\end{align*}
+			
+			\begin{itemize}
+				\item Variant 1: Simultaneously integrate the ODE and the matrix-ODE with a standard integrator.
+				\item Variant 2 (better): Differentiated integrate method calculates \( \vec{x}(t; \vec{p}) \), \( \pdv{\vec{x}(t; \vec{p})}{\vec{p}} \), \( \pdv{\dot{\vec{x}}(t; \vec{p})}{\vec{p}} \)
+					\begin{itemize}
+						\item Advantage: Really efficient.
+						\item Disadvantage: Implementation complexity; especially complication for switching points.
+					\end{itemize}
+			\end{itemize}
 		% end
 	% end
 
-	\section{Symbolische Differentiation} % 5.35, 5.36
-		\todo{Content}
+	\section{Symbol Differentiation}
+		If the functions \( \varphi \), \( \vec{a} \), \( \vec{b} \) are given as explicit formulas, the derivatives \( \grad{\varphi}(\vec{p}) \), \( \mat{J}_{\vec{a}}(\vec{p}) \), \( \mat{J}_{\vec{b}}(\vec{p}) \) could be evaluated using a computer algebra system (e.g. Maple, Mathematica, SymPy, \dots) in closed form. This is based on a systematic application of chain, product, \dots rules and often requires a special input format.
+		\begin{itemize}
+			\item Advantage: No approximation error, only rounding errors.
+			\item Disadvantages: Can lead to complex functions that are computationally expensive to evaluate.
+		\end{itemize}
 	% end
 
-	\section{Automatisches Differenzieren} % 5.37, 5.38, 5.39, 5.40
-		\todo{Content}
-
-		\paragraph{Beispiel} % 5.41, 5.42, 5.43
-			\todo{Content}
-		% end
+	\section{Automatic Differentiation}
+		\emph{Automatic differentiation} refers to a technique to generate first and possible second-order derivatives of an existing program that calculates \(\varphi\), \(\vec{a}\), \(\vec{b}\). This is based on the insight that every every so complex function can be composed of as a sequence of elementary functions with one or two arguments:
+		\begin{itemize}
+			\item 1-argument functions: Sine, Cosine, Exponential, Logarithm, \dots
+			\item 2-argument functions: Addition, Subtraction, Multiplication, Division, Exponentiation
+		\end{itemize}
+		AD-methods are based on an analysis of the evaluation sequence as a \emph{computation graph} of elementary functions.
+		
+		There are two main design decisions:
+		\begin{itemize}
+			\item Pre-compile a program to get the derivative function to be able to evaluation the function and the derivatives simultaneously (forward mode).
+			\item Build the computation graph after the function has been evaluated and evaluate the derivative afterwards (backward mode).
+		\end{itemize}
+		The computational complexity of the gradient in forward mode on a scalar function with multiply variables \(\varphi(\vec{p})\) can be as high as for symbolic differentiation: \( \mathcal{O}(n_p \). But for the backward mode, a complexity of \( \mathcal{O}(5) \) can be reached independent of \( n_p \)! But the memory complexity can rise a lot\dots
+		
+		\begin{itemize}
+			\item Advantages:
+				\begin{itemize}
+					\item No approximation error, only rounding errors.
+					\item AD is continuously improving and even today's algorithms are capable of a lot of calculations.
+				\end{itemize}
+			\item Disadvantages:
+				\begin{itemize}
+					\item It is problematic to handle piecewise functions (if-then-else), approximation of tabular data, approximations of Sine, Cosine, \dots by rationale functions. \\ But this is problematic even for analytical derivatives\dots
+				\end{itemize}
+		\end{itemize}
+		Even ODE- and PDE-simulations can be handled using AD!
+		
+		Popular implementations, commonly used in machine learning, are libraries like TensorFlow (static computation graph) and PyTorch (dynamic computation graph).
 	% end
 % end
 

@@ -2201,29 +2201,72 @@
 	% end
 % end
 
-\chapter{Minimierung von Funktionalen} % 7
-	\todo{Content}
+\chapter{Minimization of Functionals}
+	In the setting of \emph{variational problems}, the unknown \(\vec{x}\) is a function of \(t\) (where \(t\) is the independent variable) and the objective is a functional \( J[\vec{x}] \) of integral type:
+	\begin{align*}
+		J[\vec{x}] = \int\! L\big( \vec{x}(t), \dot{\vec{x}}(t), t \big) \dd{t}
+	\end{align*}
+	the solution \( \vec{x}^\ast \) must fulfill given constraints, e.g.:
+	\begin{itemize}
+		\item Initial and end conditions (boundary conditions)
+		\item Inequality constraints
+		\item Integral-type constraints
+		\item Differential equations
+	\end{itemize}
+	If differential equations are given, the problem is called an \emph{optimal control problem}.
 
-	\section{Einleitung} % 7.2, 7.3
-		\todo{Content}
-	% end
+	\section{Euler-Lagrange Equation} % 7.5, 7.6, 7.9
+		Given an optimization problem
+		\begin{align*}
+			\min_{\vec{x}} &\, J[\vec{x}],\quad J[\vec{x}] = \int_a^b\! L\big(\vec{x}(t), \dot{\vec{x}}, t\big) \dd{t} \\
+			\mathrm{subject~to} &\,
+				\begin{alignedat}{2}
+					\vec{x}(a) &= \vec{x}_a \\
+					\vec{x}(b) &= \vec{x}_b
+				\end{alignedat}
+		\end{align*}
+		where \( \vec{x} : \R \to \R^{n_x} \), \( L : \R^{n_x} \times \R^{n_x} \times R \to R \) are two times continuously differentiable.
+		
+		A \emph{stationary} solution \( \vec{x}^\ast \), i.e. a solution that is a minimum candidate, has to fulfill the \emph{Euler-Lagrange Equation}:
+		\begin{align*}
+			\pdv{L}{x_i} - \dv{t} \pdv{L}{\dot{x}_i} = 0,\quad i = \dotsrange{1}{n_x}
+		\end{align*}
+		Additionally, the boundary conditions \( \vec{x}(a) = \vec{x}_a \), \( \vec{x}(b) = \vec{x}_b \) must be fulfilled, yielding a second-order ordinary boundary value problem.
 
-	\section{Charakteristika von Variationsproblemen} % 7.4
-		\todo{Content}
-	% end
-
-	\section{Euler-Lagrangesche Differentialgleichung} % 7.5, 7.6, 7.9
-		\todo{Content}
-
-		\subsection{Beispiel} % 7.10
-			\todo{Content}
+		\subsection{Example} % 7.10
+			As of the \emph{Hamilton's principle} \(\vec{x}(t)\) between \(t_1\) and \(t_2\) is a stationary point of the action functional
+			\begin{align*}
+				\int_{t_1}^{t_2} \! L\big(\vec{x}(t), \dot{\vec{x}}(t), t\big) \dd{t}
+			\end{align*}
+			where \(L\) is the Lagrangian of the system, i.e. the difference of kinetic and potential energy:
+			\begin{align*}
+				L = T - V
+			\end{align*}
+			
+			For a ball with mass \(m\) and gravity acceleration \(g\) that is thrown into the air in a straight line (i.e. one-dimensional), the kinetic and potential energy are given as:
+			\begin{align*}
+				T = \frac{m}{2} \dot{x}^2 \qquad\qquad V = mgx
+			\end{align*}
+			The Lagrangian then is \( L = T - V = \frac{m}{2} \dot{x}^2 - mgx \). Plugging that in the Euler-Lagrange equations yields a second-order differential equation for the movement of the ball:
+			\begin{align*}
+				\pdv{L}{x} = -mg \qquad \pdv{L}{\dot{x}} = mx \qquad \dv{t} \pdv{L}{\dot{x}} = m\ddot{x} \quad\implies\quad -mg - m\ddot{x} = 0 \quad\iff\quad \ddot{x} = -g
+			\end{align*}
+			Solving this differential equation with the initial values \( x(0) = 0 \), \( \dot{x}(0) = \dot{x}_0 \) yields the equation of movement of the ball:
+			\begin{align*}
+				x(t) = -\frac{g}{2} t^2 + \dot{x}_0 t
+			\end{align*}
+			As expected, this equation is a perfect parabola w.r.t. time! The same can be done in two dimensions.
 		% end
 
-		\subsection{Bemerkungen} % 7.11
-			\todo{Content}
+		\subsection{Notes}
+			\begin{itemize}
+				\item The Euler-Lagrange equations are in general not tractable. Hence, numerical methods have to be used.
+				\item The equations can be extended to solutions with non-differentiabilities, (in-) equality constraints, integral-type constraints, \dots
+				\item Also, second-order necessary conditions can be formulated.
+			\end{itemize}
 		% end
 
-		\subsection{Herleitung} % 7.6, 7.7, 7.8, 7.9
+		\subsection{Derivation} % 7.6, 7.7, 7.8, 7.9
 			\todo{Content}
 		% end
 	% end

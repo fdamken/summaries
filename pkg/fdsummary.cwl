@@ -190,8 +190,9 @@
 \biggforwhich#m
 \Biggforwhich#m
 % Short forms.
-\liminfty{variable}#m
-\suminfty{variable}#m
+\dotsrange{from}{to}#m
+\liminfty[variable]#m
+\suminfty[variable]#m
 \limx#m
 \parallelAsync#m
 % Logic.

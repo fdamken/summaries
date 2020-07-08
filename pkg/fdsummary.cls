@@ -306,6 +306,7 @@
 \newcommand{\biggforwhich}{\,\bigg\vert\,}
 \newcommand{\Biggforwhich}{\,\Bigg\vert\,}
 % Short forms.
+\newcommand{\dotsrange}[2]{#1,\,\cdots\!,#2}
 \newcommand{\liminfty}[1][n]{\lim_{#1 \to \infty}}
 \newcommand{\suminfty}[1][n]{\sum_{#1 = 0}^\infty}
 \newcommand{\limx}[1][x]{\lim_{#1 \to #1_0 }}

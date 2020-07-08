@@ -1064,10 +1064,17 @@
 		% end
 
 		\subsection{Second-Order Necessary Optimality Conditions}
-			The second-order necessary optimality condition is fulfilled if the first-order condition is fulfilled and the Hessian of the Lagrangian is positive semi-definite:
-			\begin{align*}
-				\mat{H}_L(\vec{p}, \vec{\mu}, \vec{\sigma}) \geq 0
-			\end{align*}
+			The second-order necessary optimality condition is fulfilled if the first-order condition is fulfilled and the Hessian of the Lagrangian has a positive curvature \emph{along the feasible directions}:
+			\begin{gather*}
+				%\forall \vec{z} \in \R^{n_p} \setminus \{\vec{0}\},\, \vec{z}^T \cdot \grad{a_i}(\vec{p}) = \vec{0},\, \vec{z}^T \cdot \grad{b_j}(\vec{p}) : 
+				\vec{z}^T \mat{H}_L^{\vec{p}}(\vec{p}, \vec{\mu}, \vec{\sigma}) \vec{z} \geq 0 \\
+				\quad\text{for all }
+				\vec{z} \in \R^{n_p} \setminus \{\vec{0}\}
+				\text{ with }
+				\big( \vec{z}^T \cdot \grad{a_i}(\vec{p}) = \vec{0} \big)_{i = 1, \cdots, n_a},
+				\text{ and }
+				\big( \vec{z}^T \cdot \grad{b_j}(\vec{p}) = \vec{0} \big)_{j \in A(\vec{p})}
+			\end{gather*}
 		% end
 
 		\subsection{Example} % 4.11, 4.13
@@ -1837,6 +1844,8 @@
 		\end{align*}
 
 		\subsection{Derivative of ODE-Simulation Models}
+			\label{subsec:derivativeOde}
+		
 			Given an IVP (initial value problem) \( \dot{\vec{x}} = \vec{f}(t, \vec{x}; \vec{p}) \), \( \vec{x}(0) = \vec{x}_0 \), \( 0 \leq t \leq t_f \), the derivatives of the (numerical) solution \( \vec{x}(t; \vec{p}) \) w.r.t. to the parameters \( \vec{p} \) are required. Formally, the parameters \(\vec{p}\) can be transformed to initial values \(\vec{x}_0\) and thus the derivatives w.r.t. the parameters to derivatives w.r.t. the initial values. The derivative w.r.t. the initial values is called the \emph{sensitivity matrix}:
 			\begin{align*}
 				\pdv{\vec{x}(t; \vec{x}_0)}{\vec{x}_0}
@@ -1978,87 +1987,215 @@
 	% end
 % end
 
-\chapter{Minimierung von Abweichungen} % 6.1, 6.2, 6.3
+\chapter{Parameter Estimation}
 	\label{c:leastSquares}
+	
+	This chapter covers a special type of objective function: the sum of squares, called \emph{least squares} optimization problems:
+	\begin{align*}
+		\varphi(\vec{p}) = \frac{1}{2} \sum_{i = 1}^{n_r} r_i^2(\vec{p}) = \frac{1}{2} \lVert \vec{r}(\vec{p}) \rVert_2^2
+	\end{align*}
+	This objective function arises in a lot of optimization problems, e.g.: Given some detected corner points \( (x_i, y_i)_{i = 1, \cdots, n_r} \) of a ball, what is the radius \(R_K\) and the position \( (x_K, y_K) \) if the ball? The residual (error) function \(\vec{r}\) can be determined from the circle equation:
+	\begin{align*}
+		R_K^2 = (x_i - x_K)^2 + (y_i - y_K)^2 \quad\implies\quad r_i(x_K, y_K, R_K) = \sqrt{(x_i - x_K)^2 + (y_i - y_K)^2} - R_K
+	\end{align*}
+	
+	If, in practice, some parametric model is used, this almost always leads to a parameter fitting problem to measure/minimize the differences between the model and measurements. By minimizing the differences, the model with that most correspond to the measurements can be found (e.g. the parameters of a friction model or inertia of a robot).
 
-	\todo{Content}
-
-	\section{Parameterschätzung bei ODE-Systemen} % 6.5, 6.7
-		\todo{Content}
+	\section{Objective Functions}
+		There are various different objective functions that could be used:
+		\begin{itemize}
+			\item Absolute sum: \tabto{4cm} \( \varphi_1(\vec{p}) = \lVert \vec{r}(\vec{p}) \rVert_1 = \sum_{i = 1}^{n_r} \lvert r_i(\vec{p}) \rvert \)
+			\item Sum of squares: \tabto{4cm} \( \varphi_2(\vec{p}) = \frac{1}{2} \lVert \vec{r}(\vec{p}) \rVert_2^2 = \frac{1}{2} \sum_{i = 1}^{n_r} r_i^2(\vec{p}) \)
+			\item Maximum difference: \tabto{4cm} \( \varphi_\infty(\vec{p}) = \lVert \vec{r}(\vec{p}) \rVert_\infty = \max\big\{ \lvert r_i(\vec{p}) \rvert : i = \dotsrange{1}{n_r} \big\} \)
+		\end{itemize}
+		But even if \(\vec{r}\) is differentiable, \(\varphi_1\) and \(\varphi_\infty\) are generally not. But \(\varphi_\infty\) can be transformed into a NLP with differentiable functions:
+		\begin{align*}
+			\min_{\vec{p}, p_{n_r + 1}} &\, p_{n_r + 1} \\
+			\mathrm{subject~to} &\,
+				-p_{n_r + 1} \leq r_i(\vec{p}) \leq p_{n_r + 1},\quad i = \dotsrange{1}{n_r}
+		\end{align*}
+		Anyway, \(\varphi_\infty\) is extremely sensitive towards outliers. On the other hand, \(\varphi_2\) is less sensitive towards outliers and is differentiable (if \(\vec{r}\) is differentiable)!
+		
+		Hence, in most cases the least squares objective \(\varphi_2\) is used. Besides the differentiability, it is also statistically appealing: If the measurement noise \(\varepsilon_{ij}\) are statistically independent and Gaussian distributed with mean \(0\) and variance \(\sigma^2\), the solution of \( \varphi_2 \to \mathrm{min} \) is a maximum likelihood estimator!
+		
+		Additionally, by exploiting the structure of \(\varphi_2\), the efficiency of gradient-based algorithms can be increased (e.g. due to sparse Jacobians).
 	% end
 
-	\section{Gütekriterien zur Minimierung von Abweichungen} % 6.8, 6.9
-		\todo{Content}
+	\section{Linear Least Squares}
+		In the special case of a linear residual function \( \vec{r}(\vec{p}) = \mat{J}^T \vec{p} + \vec{f} \) and the least squares objective
+		\begin{align*}
+			\varphi(\vec{p}) = \varphi_2(\vec{p}) = \frac{1}{2} \lVert \vec{r}(\vec{p}) \rVert_2^2
+		\end{align*}
+		the optimization problem is quadratic in \(\vec{p}\):
+		\begin{align*}
+			\varphi(\vec{p}) = \frac{1}{2} \big\lVert \mat{J}^T \vec{p} + \vec{f}_r \big\rVert = \frac{1}{2} \big( \vec{p}^T \mat{J} + \vec{f}_r^T \big) \big( \mat{J}^T \vec{p} + \vec{f}_r \big)
+		\end{align*}
+		Zeroing the gradient \( \grad{\varphi}(\vec{p}) \overset{!}{=} \vec{0} \) yields the \emph{normal equations}
+		\begin{align*}
+			\mat{J} \mat{J}^T \vec{p}^\ast = -\mat{J}\vec{f}_r
+		\end{align*}
+		that a solution must fulfill (where \( \mat{J} \mat{J}^T \) is symmetric and positive definite). This linear system should not be solved as a normal linear system as it is ill-conditioned! Better use special methods like orthogonalization or single value decomposition.
 	% end
 
-	\section{Lineare Ausgleichsrechnung} % 6.10, 6.11
-		\todo{Content}
-	% end
+	\section{Optimality Conditions and Special Methods}
+		Let \( \varphi(\vec{p}) = \varphi_2(\vec{p}) \) be two times continuously differentiable. Then the following first- and second-order necessary conditions can be formulated:
+		\begin{enumerate}
+			\item The gradient has to vanish:
+		\end{enumerate}
+		\begin{align*}
+			\grad{\varphi_2}(\vec{p}^\ast) = \mat{J}_{\vec{r}}(\vec{p}^\ast) \cdot \vec{r}(\vec{p}^\ast) = \vec{0}
+		\end{align*}
+		\begin{enumerate}
+			\setcounter{enumi}{1}
+			\item The Hessian has to be positive semidefinite:
+		\end{enumerate}
+		\begin{align}
+			\mat{H}_{\varphi_2}(\vec{p}^\ast) = \mat{J}_{\vec{r}}(\vec{p}^\ast) \, \mat{J}_{\vec{r}}^T(\vec{p}^\ast) + \sum_{i = 1}^{n_r} \big( r_i(\vec{p}^\ast) \cdot \mat{H}_{r_i}(\vec{p}^\ast) \big)  \label{eq:leastSquaresHessian}
+		\end{align}
 
-	\section{Optimalitätsbedingungen und Spezialverfahren} % 6.12, 6.13, 6.17
-		\todo{Content}
-
-		\subsection{Quasi-Newton} % 6.14
-			\todo{Content}
+		\subsection{Gauss-Quasi-Newton Method}
+			In the Quasi-Newton method, the search direction is determined as a solution of the linear system
+			\begin{align*}
+				\mat{H}_\varphi\big(\vec{p}^{(k)}\big) \vec{d}^{(k)} = -\grad{\varphi}\big(\vec{p}^{(k)}\big)
+			\end{align*}
+			where the Hessian is approximated, e.g. using a BFGS update. But in the case of a least squares optimization problem, the only part of the Hessian~\eqref{eq:leastSquaresHessian} depending on second-order derivatives is:
+			\begin{align*}
+				\sum_{i = 1}^{n_r} \big( r_i(\vec{p}^\ast) \cdot \mat{H}_{r_i}(\vec{p}^\ast) \big)
+			\end{align*}
+			But as the objective gets smaller and smaller, this term also vanishes. Hence, the Hessian can be approximated using first-order derivatives only
+			\begin{align*}
+				\mat{H}_{\varphi_2}(\vec{p}^\ast) \approx \mat{J}_{\vec{r}}(\vec{p}^\ast) \, \mat{J}_{\vec{r}}^T(\vec{p}^\ast)
+			\end{align*}
+			if the residuals are "small". This leads to the \emph{Gauss-Newton Method} where the search direction is given as the solution of the normal equations
+			\begin{align*}
+				\mat{J}_r\big(\vec{p}^{(k)}\big) \mat{J}_r^T\big(\vec{p}^{(k)}\big) \vec{d}^{(k)} = -\mat{J}_r\big(\vec{p}^{(k)}\big) \cdot \vec{r}\big(\vec{p}^{(k)}\big)
+			\end{align*}
+			or as the solution of a (better conditioned) linear least squares problem:
+			\begin{align*}
+				\min_{\vec{d} \in \R^{n_p}} &\, \frac{1}{2} \Big\lVert \mat{J}_r^T\big(\vec{p}^{(k)}\big) \vec{d} + \vec{r}\big(\vec{p}^{(k)}\big) \Big\rVert_2^2
+			\end{align*}
+			
+			If residuals are big or the problem is ill-conditioned, it can be modified with a suitable matrix \( \mat{B}^{(k)} \):
+			\begin{align*}
+				\Big( \mat{J}_{\vec{r}}\big(\vec{p}^{(k)}\big) \mat{J}_{\vec{r}}^T\big(\vec{p}^{(k)}\big) + \mat{B}^{(k)} \Big) \vec{d}^{(k)} = -\mat{J}_r\big(\vec{p}^{(k)}\big) \cdot \vec{r}\big(\vec{p}^{(k)}\big)
+			\end{align*}
+			
+			Additionally a step size rule should be used. This method is implemented, e.g. in \emph{NLSCON} which also allows additional nonlinear inequality constraints.
 		% end
 
-		\subsection{Gauß-Newton Verfahren} % 6.15
-			\todo{Content}
+		\subsection{Levenberg-Marquardt Methods}
+			Instead of a Newton-approach, trust region methods can be used to determine the search direction. In the \emph{Levenberg-Marquardt Method}, the search direction \(\vec{d}^{(k)}\) is given as the solution of:
+			\begin{align*}
+				\Big( \mat{J}_{\vec{r}}\big(\vec{p}^{(k)}\big) \mat{J}_{\vec{r}}^T\big(\vec{p}^{(k)}\big) + \gamma^{(k)} \mat{I} \Big) \vec{d}^{(k)} = -\mat{J}_{\vec{r}}\big(\vec{p}^{(k)}\big) \cdot \vec{r}\big(\vec{p}^{(k)}\big),\quad \gamma^{(k)} \geq 0
+			\end{align*}
+			That is, the search direction is a mixture of the Gauss-Newton direction and steepest descent. The same search direction can be received by solving a constrained linear least squares problem:
+			\begin{align*}
+				\min_{\vec{d} \in \R^{n_p}} &\, \frac{1}{2} \Big\lVert \mat{J}_{\vec{r}}^T\big(\vec{p}^{(k)}\big) \vec{d} + \vec{r}\big(\vec{p}^{(k)}\big) \Big\rVert_2^2 \\
+				\mathrm{subject~to} &\,
+					\lvert \vec{d} \rVert_2 \leq \delta^{(k)}
+			\end{align*}
+			Where \(\delta\) and \(\gamma\) have a connection.
+			
+			This is implemented, e.g. in \emph{LMDER}, \emph{LMJAC} of \emph{MINPACK}.
 		% end
-
-		\subsection{Levenberg-Marquardt Verfahren} % 6.16
-			\todo{Content}
-		% end
-
-		\subsection{SQP-Verfahren} % 6.18
-			\todo{Content}
-		% end
-	% end
-
-	\section{Normalen-Gleichungen} % 6.22, 6.23
-		\todo{Content}
-
-		\paragraph{Beispiel} % 6.24, 6.25, 6.26, 6.27, 6.28
-			\todo{Content}
-		% end
-	% end
-
-	\section{Interpretation von Berechnungsergebnissen} % 6.29
-		\todo{Content}
-
-		\subsection{Mögliche Ursachen für Schwierigkeiten} % 6.30, 6.31
-			\todo{Content}
+		
+		\subsection{Notes}
+			\begin{itemize}
+				\item The Gauss-Newton method needs an appropriate test function that also exploits the structure of the objective function to determine the step size to ensure global convergence.
+				\item In the Levenberg-Marquardt method, globalization happens by choosing an appropriate trust region.
+				\item Levenberg-Marquardt and Gauss-Newton methods are in general a lot more efficient (faster and more precise) than solving least squares problems using general purpose optimization techniques (e.g. Quasi-Newton or SQP).
+				\item When optimization by simulation, the sensitivity matrix \( \pdv{\vec{x}(t; \vec{p})}{\vec{p}} \) is needed (see\autoref{subsec:derivativeOde}).
+			\end{itemize}
 		% end
 	% end
 
-	\section{Die Varianz-Kovarianz-Matrix} % 6.32, 6.33, 6.34
-		\todo{Content}
+	\section{Conditioning of Normal Equations}
+		Often, the Jacobian of the objective function of linear least squares \( \mat{J} \) is ill-conditioned, i.e. \( \cond \mat{J} \) is high, causing round error to be increased. In extreme cases, \( \mat{J} \) does not has full rank, i.e. \( \cond \mat{J} = \infty \). In this case, the solution \( \vec{d} \) of the normal equations
+		\begin{align*}
+			\mat{J} \mat{J}^T \vec{d} = -\mat{J}\vec{r}
+		\end{align*}
+		is not unique! Common reasons for ill-conditioning are:
+		\begin{itemize}
+			\item "too few" measurements \\ E.g. the measurements are not "dense enough".
+			\item not the "correct" measurements \\ E.g. the measurements to not depend or weakly depend on the optimization variables.
+			\item System model does not fit to the measurements (it is incompatible). Then either the measurements or the model is wrong.
+		\end{itemize}
 	% end
 
-	\section{Optimale Experimentgestaltung} % 6.35, 6.36, 6.37
-		\todo{Content}
+	\section{Result Interpretation}
+		\subsection{Common Problems}
+			Common problems if the residuals are still high after the optimization terminates:
+			\begin{itemize}
+				\item Derivatives are not precise enough.
+				\item The optimization method is not suitable for the problem, e.g. if the method cannot handle inexact function evaluations or has problems with local minima of \(\varphi_2\).
+				\item In parameter estimation settings,
+					\begin{itemize}
+						\item the system model and measurements might be incompatible (wrong measurements) or
+						\item the system model and the physical might be incompatible (wrong model).
+					\end{itemize}
+			\end{itemize}
+		
+			Common problems for small residuals:
+			\begin{itemize}
+				\item Some optimization variables might not be uniquely determined.
+				\item Too less measurements, variables are not unique in general (e.g. linearly dependent in the model).
+			\end{itemize}
+		
+			Practical aspects:
+			\begin{itemize}
+				\item Scaling/balancing of the variables: By the transformation \( p_i \to \hat{p}_i = s_i p_i \), \( s_i = \const > 0 \), the derivative changes to \( \pdv{\varphi}{\hat{p}_i} = \pdv{\varphi}{p_i} \frac{1}{s_i} \).
+				\item Scaling of the residuals by weights \( w_i > 0 \): \( \varphi(\vec{p}) = \frac{1}{2} \sum_{i = 1}^{n_r} w_i r_i^2(\vec{p}) \)
+			\end{itemize}
+		% end
+		
+		\subsection{The Covariance Matrix}
+			Assuming the measurement errors \( \varepsilon_i \) (in the measurements \(r_i\)) are normally distributed with zero mean and constant variance \(\sigma^2\). Then the solution of the linear least squares problem is a maximum likelihood estimator for the parameters! The covariance matrix \(\mat{V}\) is then given by \( \mat{V} = \sigma^2 \big(\mat{J} \mat{J}^T\big)^{-1} \) where the variance can be approximated by
+			\begin{align*}
+				\sigma^2 \approx \frac{\lVert \vec{r}(\vec{p}^\ast) \rVert^2}{n_r - n_p}
+			\end{align*}
+			and the mean of the residual squares is given as
+			\begin{align*}
+				\E\big[ \lVert \vec{r}(\vec{p}^\ast) \rVert^2 \big] = (n_r - n_p) \sigma^2
+			\end{align*}
+			Hence, a bad conditioning of \(\mat{J}\) implies high variance!
+		% end
 	% end
 
-	\section{Beispiele} % 6.39
+	\section{Optimal Experimental Design}
+		Goal of \emph{optimal experimental design} is a good conditioning of the parameter identification problem, i.e. the optimal experimental parameters \( \vec{s}^\ast \) is a solution of the optimization problem
+		\begin{align*}
+			\min_{\vec{s}} &\, \phi_\mathrm{exp}\big(\mat{V}(\vec{s})\big)
+		\end{align*}
+		where \(\mat{V}\) is the covariance matrix. Some objective \(\phi_\mathrm{exp}\) are:
+		\begin{enumerate}
+			\item Determinant of \(\mat{V}\).
+			\item Trace mean, i.e. \( \tr \mat{V} / n_p \)
+			\item Biggest eigenvalue of \(\mat{V}\)
+			\item Absolute length of the biggest confidence interval.
+			\item Conditional number.
+		\end{enumerate}
+	% end
+
+	\section{Examples} % 6.39
 		\todo{Content}
 
-		\subsection{Parameterabhängige Gesamtfahrzeugdynamik} % 6.39, 6.40
+		\subsection{Parameter-Dependent Vehicle Dynamics} % 6.39, 6.40
 			\todo{Content}
 
-			\subsubsection{Simulierte Messwerte} % 6.41, 6.42, 6.43
+			\subsubsection{Simulated Measurements} % 6.41, 6.42, 6.43
 				\todo{Content}
 			% end
 
-			\subsubsection{Echte Messwerte} % 6.44
+			\subsubsection{Real Measurements} % 6.44
 				\todo{Content}
 			% end
 
-			\subsubsection{Vergleich der Verfahren} % 6.45
+			\subsubsection{Comparison} % 6.45
 				\todo{Content}
 			% end
 		% end
 
-		\subsection{Parameterschätzung für "BioBiped"} % 6.47, 6.48, 6.49
+		\subsection{Parameter Estimation for "BioBiped"} % 6.47, 6.48, 6.49
 			\todo{Content}
 		% end
 	% end

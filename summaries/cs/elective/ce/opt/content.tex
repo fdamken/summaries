@@ -2233,7 +2233,9 @@
 		\end{align*}
 		Additionally, the boundary conditions \( \vec{x}(a) = \vec{x}_a \), \( \vec{x}(b) = \vec{x}_b \) must be fulfilled, yielding a second-order ordinary boundary value problem.
 
-		\subsection{Example} % 7.10
+		\subsection{Example}
+			\label{subsec:ballExample}
+		
 			As of the \emph{Hamilton's principle} \(\vec{x}(t)\) between \(t_1\) and \(t_2\) is a stationary point of the action functional
 			\begin{align*}
 				\int_{t_1}^{t_2} \! L\big(\vec{x}(t), \dot{\vec{x}}(t), t\big) \dd{t}
@@ -2272,140 +2274,486 @@
 	% end
 % end
 
-\chapter{Optimale steuerung dynamischer Systeme} % 8.1
-	\todo{Content}
+\chapter{Optimal Control}
+	A dynamical system is described by the ODE
+	\begin{align*}
+		\dot{\vec{x}} = \vec{f}(\vec{x}, \vec{u}, \vec{p}, \vec{z}),\quad \vec{x}(0) = \vec{x}_0
+	\end{align*}
+	where \(\vec{x}\) is the state, \(\vec{u}\) are the control variables, \(\vec{p}\) are (constant) system parameters and \(\vec{z}\) is noise. An optimal control problem has given \(\vec{x}_0\), \(\vec{p}\) and \(\vec{x}_i(t_f)\) and seeks for an optimal \(\vec{u}\) and \(\vec{x}\).
+	
+	A complete optimal control problem is given as:
+	\begin{align*}
+		\min &\, J[\vec{u}],\quad J[\vec{u}] = \phi\big(\vec{x}(t_f), t_f\big) + \int_{0}^{t_f} \! L\big(\vec{x}(t), \vec{u}(t)\big) \dd{t} \\
+		\mathrm{subject~to} &\,
+			\begin{alignedat}[t]{2}
+				\dot{\vec{x}}(t) &= \vec{f}\big(\vec{x}(t), \vec{u}(t)\big) \\
+				x_i(0) &= x_{i, 0} = \const,\quad i \in \{\, \dotsrange{1}{n_x} \,\} \\
+				\vec{r}\big(\vec{x}(t_f), t_f\big) &= \vec{0},\quad \text{e.g. } x_j(t_f) = x_{j, f},\, j \in \{\, \dotsrange{1}{n_x} \,\} \\
+				\vec{g}\big(\vec{x}(t), \vec{u}(t)\big) &\geq \vec{0} \\
+				\vec{g}\big(\vec{x}(t)\big) &\geq \vec{0} \\
+				\vec{r}^i\big( \vec{x}(t_s - 0), \vec{x}(t_s + 0), t_s \big) &= \vec{0}
+			\end{alignedat}
+	\end{align*}
+	The constraints (from to bottom) are called:
+	\begin{itemize}
+		\item Equations of movement, these are the defining property of an optimal control problem over a regular variational problem.
+		\item Initial conditions (optional).
+		\item Final conditions (optional).
+		\item Control constraints (optional, often box constraints).
+		\item State constraints (optional).
+		\item Interior point constraints (optional).
+	\end{itemize}
+	Additionally, the final time \(t_f\) might either fixed or free. The objective (called the \emph{Bolza functional}) is split into an endpoint cost (also called \emph{Mayer term}) and a Lagrangian:
+	\begin{align*}
+		J[\vec{u}] = \underbrace{\phi\big(\vec{x}(t_f), t_f\big)}_{\text{Endpoint Cost}}
+			+ \int_{0}^{t_f} \! \underbrace{L\big(\vec{x}(t), \vec{u}(t)\big)}_{\text{Lagrangian}} \dd{t}
+	\end{align*}
+	Note that the endpoint cost is more general than the Lagrangian in terms that the Lagrangian term can be transformed to an endpoint cost by introducing a new state
+	\begin{align*}
+		\dot{x}_{n_x + 1} = L\big(\vec{x}(t), \vec{u}(t)\big),\quad x_{n_x + 1}(0) = 0
+	\end{align*}
+	and changing the endpoint cost to:
+	\begin{align*}
+		\tilde{\phi}\big(\tilde{\vec{x}}(t_f), t_f\big) \coloneqq \phi\big(\vec{x}(t_f), t_f\big) + x_{n_x + 1}(t_f)
+	\end{align*}
+	Additionally, non-autonomous problems can be transformed to autonomous problems by introducing a "clock state" \( \dot{x}_{n_x + 1} = 1 \), \( x_{n_x + 1}(0) = 0 \) and changing the ODE accordingly:
+	\begin{align*}
+		\dot{\vec{x}}(t) = \vec{f}\big(t, \vec{x}(t), \vec{u}(t)\big) \quad\to\quad \dot{\vec{x}}(t) = \vec{f}\big(x_{n_x + 1}, \vec{x}(t), \vec{u}(t)\big)
+	\end{align*}
 
-	\subsection{Einleitung} % N/A
-		\subsection{Zeitkontinuierliche Systeme} % 8.2, 8.3
+	\section{Necessary Optimality Conditions for the Basis Problem}
+		The basis optimal control problem does not have control, state or interior constraints:
+		\begin{align*}
+			\min &\, J[\vec{u}],\quad J[\vec{u}] = \phi\big(\vec{x}(t_f), t_f\big) + \int_{0}^{t_f} \! L\big(\vec{x}(t), \vec{u}(t)\big) \dd{t} \\
+			\mathrm{subject~to} &\,
+				\begin{alignedat}[t]{2}
+					\dot{\vec{x}}(t) &= \vec{f}\big(\vec{x}(t), \vec{u}(t)\big) \\
+					x_i(0) &= x_{i, 0} = \const,\quad i \in \{\, \dotsrange{1}{n_x} \,\} \\
+					\vec{r}\big(\vec{x}(t_f), t_f\big) &= \vec{0},\quad \text{e.g. } x_j(t_f) = x_{j, f},\, j \in \{\, \dotsrange{1}{n_x} \,\}
+				\end{alignedat}
+		\end{align*}
+		For formulating the necessary optimality conditions, the following auxiliary functions are needed (the latter one is called \emph{Hamiltonian}):
+		\begin{align*}
+			\Phi(\vec{x}, t, \vec{\nu}) &\coloneqq \phi(\vec{x}, t) + \vec{\nu}^T \vec{r}(\vec{x}, t) \\
+			H(\vec{x}, \vec{u}, \vec{\lambda}) &\coloneqq L(\vec{x}, \vec{u}) + \vec{\lambda}^T \vec{f}(\vec{x}, \vec{u})
+		\end{align*}
+		Note that, while kept implicitly, the auxiliary variables \(\vec{\nu}\) and \(\vec{\lambda}\) are time-dependent! The \(\vec{\lambda}\) are also called the \emph{adjunct variables} of the optimal control problem.
+		
+		\subsection{Boundary Conditions}
+			\label{subsec:boundary}
+			
+			To solve the optimal control problem, \(2n_x\) boundary conditions are needed (the optimality conditions will yield one first-order ODE for every state and adjunct variable). Additional to the given boundary conditions of the problem formulation, enough conditions have to be found to get \(2n_x\) conditions. Common cases:
+			\begin{enumerate}[label = (\roman*)]
+				\item Fixed initial conditions \( x_i(0) = x_{i, 0} = \const \): \\
+						Either \( x_k(0) \) is given or, if not, set \( \lambda_i(0) = -\pdv{\phi(\vec{x}(0), \vec{x}(t_f), t_f)}{x_i(0)} \)
+				\item Fixed final conditions \( x_i(t_f) = x_{i, f} = \const \): \\
+						Either \( x_i(t_f) \) is given or, if not and \(x_i\) is not part of \( \vec{r}(\cdots) \), set \( \lambda_i(t_f) = \pdv{\phi(\vec{x}(t_f), t_f)}{x_i(t_f)} \)
+				\item Mixed boundary conditions:
+					\begin{enumerate}
+						\item General boundary conditions \( \vec{r}\big(\vec{x}(0), \vec{x}(t_f), t_f\big) = \vec{0} \): \\
+								If \( x_i(0) \) is free, set \( \lambda_i(0) + \pdv{\Phi}{x_i(0)} \Big\vert_{t = 0} = 0 \) \\
+								If \( x_i(t_f) \) is free, set \( \lambda_i(t_f) - \pdv{\Phi}{x_i(t_f)} \Big\vert_{t = t_f} = 0 \)
+						\item Periodic boundary conditions \( x_i(0) - x_j(t_f) = 0 \): \\
+								Set \( \lambda_i(0) - \lambda_j(t_f) + \pdv{\phi}{x_i(0)} + \pdv{\phi}{x_j(t_f)} = 0 \)
+					\end{enumerate}
+			\end{enumerate}
+			If the final time \(t_f\) is free, an additional condition has to be employed:
+			\begin{align*}
+				H\big(\vec{x}(t_f), \vec{u}(t_f), \vec{\lambda}(t_f)\big) = -\pdv{\Phi}{t_f}
+			\end{align*}
+		% end
+
+		\subsection{First-Order Necessary Optimality Conditions (Maximum Principle)}
+			Functions \( \vec{x}^\ast \), \( \vec{u}^\ast \) and \( \vec{\lambda}^\ast \not\equiv \vec{0} \) are the optimal solution of the basis problem iff the \emph{canonical differential equations}
+			\begin{align*}
+				\dot{\vec{x}} = \pdv{H}{\vec{\lambda}} \qquad \dot{\vec{\lambda}} = -\frac{H}{\vec{x}}
+			\end{align*}
+			and the boundary conditions are fulfilled and the optimal control \(\vec{u}^\ast\) minimizes the Hamilton function:
+			\begin{align}
+				H\big(\vec{x}^\ast(t), \vec{u}^\ast(t), \vec{\lambda}^\ast(t)\big) = \min_{\tilde{\vec{u}} \in U} \, H\big(\vec{x}^\ast(t), \tilde{\vec{u}}, \vec{\lambda}^\ast(t)\big),\quad \forall t \in [0, t_f]  \label{eq:maximumPrinciple}
+			\end{align}
+			Where \( U \subseteq \R^{n_u} \) is the set of feasible controls. These conditions are called the \emph{maximum principle}.
+			
+			\textbf{Definition:} The Hamiltonian is called \emph{regular} if and only if it has an unique minimum.
+			
+			If the Hamiltonian is regular and the control \(\vec{u}\) appears nonlinear in the Hamiltonian, condition~\eqref{eq:maximumPrinciple} can be formulated as
+			\begin{align*}
+				\pdv{H}{\vec{u}} = \vec{0}
+			\end{align*}
+			
+			\subsubsection{Derivation} % 8.8, 8.9, 8.10, 8.11
+				\todo{Content}
+			% end
+		% end
+
+		\subsection{Second-Order Necessary Optimality Condition (Legendre-Clebsch Condition)} % 8.28, 8.31
+			For stationary \(\vec{x}^\ast\), \(\vec{u}^\ast\), \(\vec{\lambda}^\ast\), the second-order necessary optimality condition, also called the \emph{Legendre-Clebsch Condition} is that the Hessian of the Hamiltonian is positive semidefinite along the optimal state and control:
+			\begin{align*}
+				\mat{H}_H\big(\vec{x}^\ast(t), \vec{u}^\ast(t), \vec{\lambda}^\ast(t)\big) \geq 0,\quad \forall t \in [0, t_f]
+			\end{align*}
+		% end
+
+		\subsection{Example} % 8.12
 			\todo{Content}
 		% end
 
-		\subsection{Allgemeine Problemstellung} % 8.4, 8.5
+		\subsection{Application: Optimal Robot Control} % 8.13
 			\todo{Content}
+
+			\subsubsection{The Robot Dynamics} % 8.14, 8.15
+				\todo{Content}
+			% end
+
+			\subsubsection{Optimal Control} % 8.16, 8.17
+				\todo{Content}
+			% end
+
+			\subsubsection{Objective Functionals} % 8.18
+				\todo{Content}
+			% end
+
+			\subsubsection{Necessary Conditions} % 8.24, 8.25, 8.26, 8.29, 8.30
+				\todo{Content}
+			% end
 		% end
 	% end
 
-	\section{Notwendige Bedingungen für ein Minimum des Basisproblems} % 8.6, 8.7, 8.8
-		\todo{Content}
+	\section{Bang-Bang Singular Control}
+		This chapter covers optimal control functions where the control function appears only linear in the Lagrangian and the motion equations:
+		\begin{align*}
+			L\big(\vec{x}(t), \vec{u}(t)\big) &= L_0\big(\vec{x}(t)\big) + \vec{L}_1^T\big(\vec{x}(t)\big) \vec{u}(t),\quad L_0 : \R^{n_x} \to R,\, \vec{L}_1 : \R^{n_x} \to \R^{n_u} \\
+			\vec{f}\big(\vec{x}(t), \vec{u}(t)\big) &= \vec{f}_0\big(\vec{x}(t)\big) + \mat{f}_1^T\big(\vec{x}(t)\big) \vec{u},\quad \vec{f}_0 : \R^{n_x} \to \R^{n_x},\, \mat{f}_1 : \R^{n_x} \to \R^{n_u \times n_x}
+		\end{align*}
+		Also, it is assumed to have box constraints for the controls: \( \vec{u}_\mathrm{min} \leq \vec{u}(t) \leq \vec{u}_\mathrm{max} \).
+		
+		The according Hamiltonian is
+		\begin{align*}
+			H(\vec{x}, \vec{u}, \vec{\lambda})
+				&= L_0\big(\vec{x}(t)\big) + \vec{L}_1^T(\vec{x}(t)\big) \vec{u}(t) + \vec{\lambda}^T \big( \vec{f}_0\big(\vec{x}(t)\big) + \mat{f}_1^T\big(\vec{x}(t)\big) \vec{u} \big) \\
+				&= \underbrace{\big( \vec{L}_1^T(\vec{x}(t)\big) + \vec{\lambda}^T \mat{f}_1^T\big(\vec{x}(t)\big) \big)}_{\vec{s}(\vec{x}, \vec{\lambda}) \,\coloneqq} \vec{u}(t) + L_0\big(\vec{x}(t)\big) + \vec{\lambda}^T \vec{f}_0\big(\vec{x}(t)\big)
+		\end{align*}
+		where \( \vec{s}(\vec{x}, \vec{\lambda}) \) is called the \emph{switching function}. As of the maximum principle, the control \(\vec{u}\) is optimal iff it minimizes the Hamiltonian. Hence, the optimal control function \(\vec{u}\) is given as a piecewise function depending on the switching function:
+		\begin{align*}
+			u_i(t) =
+				\begin{cases*}
+					u_{i, \mathrm{min}}  & iff \( s_i\big(\vec{x}(t), \vec{\lambda}(t)\big) > 0 \) \\
+					u_{i, \mathrm{max}}  & iff \( s_i\big(\vec{x}(t), \vec{\lambda}(t)\big) < 0 \) \\
+					u_{i, \mathrm{sing}} & iff \( s_i\big(\vec{x}(t), \vec{\lambda}(t)\big) \equiv 0 \) \\
+				\end{cases*}
+		\end{align*}
+		Here, \( u_{i, \mathrm{sing}} \) is the \emph{singular control} that is only needed if the switching function is zero over an interval. The other two cases are called \emph{bang-bang control}.
+		
+		All of the following will only cover a single control \( u_i(t) \), but the methods can be applied to more than one control variable in a setting. Of course it is possible that some control variables are nonlinear in the Lagrangian, hence a bang-bang or singular control is not needed in that case.
 
-		\subsection{Notwendige Bedingungen erster Ordnung} % 8.20, 8.21, 8.22, 8.23, 8.27, 8.31
-			\todo{Content}
-		% end
+		\subsection{Singular Control}
+			Let \(t_1\) and \(t_2\), \( t_1 < t_2 \) denote the start and end point of a singular control interval, respectively, i.e. the switching function is zero in that interval:
+			\begin{align*}
+				s_i\big(\vec{x}, \vec{\lambda}\big) = 0,\quad \forall t \in [t_1, t_2]
+			\end{align*}
+			With the insight that a system has to keep itself in the singular control, also the time derivative \( s_i^{(1)} \coloneqq \dv{s_i}{t} \) of the switching function has to vanish. And also the second-order time derivative \( s_i^{(2)} \). In fact, every time derivative has to vanish, yielding a recursive process for calculating the \(m\)-th time derivative:
+			\begin{align*}
+				s_i^{(m)} = \dv{t} s_i^{(m - 1)}\big(\vec{x}(t), \vec{\lambda}(t)\big) \equiv 0
+			\end{align*}
+			Let \(m\) be the smallest number of which the control \(u_i\) appears explicitly in the time derivative, \( \pdv{s_i^{(m)}}{u_1} \neq 0 \). This yields a formula to determine \( u_{i, \mathrm{sing}} \):
+			\begin{align*}
+				s_i^{(m)}\big(\vec{x}(t), \vec{\lambda}(t), \vec{u}(t)\big) \equiv 0
+			\end{align*}
+			Where \( u_i \) is part of the vector \(\vec{u}\).
 
-		\subsection{Notwendige Bedingung zweiter Ordnung (Legendre-Clebsch Bedingung)} % 8.28, 8.31
-			\todo{Content}
-		% end
-
-		\subsection{Beispiel} % 8.12
-			\todo{Content}
-		% end
-
-		\subsection{Anwendung: Optimale Robotersteuerung} % 8.13
-			\todo{Content}
-
-			\subsubsection{Die Roboterdynamik} % 8.14, 8.15
-				\todo{Content}
-			% end
-
-			\subsubsection{Optimale Steuerung} % 8.16, 8.17
-				\todo{Content}
-			% end
-
-			\subsubsection{Gütekriterien} % 8.18
-				\todo{Content}
-			% end
-
-			\subsubsection{Notwendige Bedingungen} % 8.24, 8.25, 8.26, 8.29, 8.30
-				\todo{Content}
-			% end
-		% end
-	% end
-
-	\section{Bang-Bang und Singuläre Steuerung} % 8.32, 8.33, 8.34
-		\todo{Content}
-
-		\subsection{Singuläre Steuerung} % 8.35, 8.36
-			\todo{Content}
-
-			\subsubsection{Notwendige Bedingungen für singuläre Steuerung} % 8.37, 8.38
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Anwendung: Zeitminimale Robotersteuerung} % 8.39, 8.40, 8.41
-			\todo{Content}
-
-			\subsubsection{Eigenschaften} % 8.42
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Bemerkungen} % 8.43
-			\todo{Content}
-		% end
-	% end
-
-	\section{Die Wertefunktion} % 8.44, 8.45, 8.47, 8.51
-		\todo{Content}
-
-		\subsection{Hamilton-Jacobi-Bellman Gleichung} % 8.50
-			\todo{Content}
-
-			\subsubsection{Herleitung} % 8.46, 8.47, 8.48, 8.49, 8.50
-				\todo{Content}
+			\subsubsection{Second-Order Necessary Optimality Condition for Singular Control}
+				\textbf{Theorem:} If \( m < \infty \), then \( m \) is even. Let \( m = 2p \), where \(p\) is called the \emph{order} of the singular control.
+				
+				The second-order necessary optimality condition for singular control, i.e. the generalized Legendre-Clebsch is:
+				\begin{align*}
+					(-1)^p \pdv{u_i} s_i^{(m)}\big( \vec{x}^\ast(t), \vec{\lambda}^\ast(t), \vec{u}^\ast(t) \big) \geq 0,\quad \forall t \in [t_1, t_2]
+				\end{align*}
+				The condition can be expanded to a sufficient condition by replacing the inequality with a strict inequality, i.e. the left side has to be positive.
+				
+				If the sufficient condition is fulfilled, two conclusions can be proven:
+				\begin{itemize}
+					\item If \(p\) is odd, \(u_i\) is either discontinuous or continuously differentiable in \( t_1 \).
+					\item If \(p\) is even, \(u_i\) is continuous in \( t_1 \), but \emph{chattering} is possible. If \emph{chattering} occurs, the control \(u_i\) "rings" around zero until reaching \(t_1\), i.e. \(s_i\) has infinitely many root before entering the singular section.
+				\end{itemize}
 			% end
 		% end
 
-		\subsection{Bemerkungen} % 8.52
+		\subsection{Application: Time-Minimal Robot Control} % 8.39, 8.40, 8.41
 			\todo{Content}
+		% end
+
+		\subsection{Notes}
+			\begin{itemize}
+				\item If all degrees of freedom would become singular simultaneously, all adjunct variables would be zero (contradicting the maximum principle). Hence, this is not possible! For bang-bang control this means that at least one control input has to operate at its maximum or minimum.
+				\item With the given properties, a numerically calculated solution can be checked for sanity (e.g. if all controls are singular on a section, the solution cannot be optimal).
+				\item There are approaches to eliminate singular control beforehand so that only the number and order of switching points has to be calculated. But often a control problem can be found that necessarily has singular parts, so such methods cannot determine the optimal solution.
+				\item The necessary conditions lead to a fully determined boundary value problem (BVP) for \(\vec{x}\) and \(\vec{\lambda}\) that can be solved using numerical methods (see~\autoref{sec:indirectMethods}), but the order of bang-bang and singular control has to be known.
+			\end{itemize}
 		% end
 	% end
 
-	\section{Zustandsbeschränkungen} % 8.53, 8.54, 8.55
-		\todo{Content}
+	\section{Value Function and Hamilton-Jacobi-Bellman Equation}
+		There is a useful interpretation of the adjunct variables \(\vec{\lambda}\)! Note that by varying the initial conditions \(t_0\) and \( \vec{x}(t_0) = \vec{x}_0 \), different trajectories \(\vec{x}^\ast\), \(\vec{u}^\ast\), \(\vec{\lambda}^\ast\) are generated by solving the optimal control problem. The \emph{Value Function} expresses the value (of the objective) for a given initial condition \( (t_0, \vec{x}_0) \):
+		\begin{align*}
+			V(t_0, \vec{x}_0) &= \min_{\vec{u} \,\in\, U} \, \Bigg(\! \phi\big(\vec{x}(t_f), t_f\big) + \int_{t_0}^{t_f}\! L\big(\vec{x}(\tau), \vec{u}(\tau)\big) \dd{\tau} \!\Bigg) \\
+			V(t_f, \vec{x})   &= \phi(\vec{x}, t_f)
+		\end{align*}
+		
+		The \emph{Hamilton-Jacobi-Bellman Equation} is a partial differential equation for the value function:
+		\begin{align*}
+			-\pdv{V(t, \vec{x})}{t} &= \min_{\tilde{\vec{u}}} \, \Bigg(\! L(t, \vec{x}, \tilde{\vec{u}}) + \bigg( \pdv{V(t, \vec{x})}{\vec{x}} \bigg)^T \vec{f}(t, \vec{x}, \tilde{\vec{u}}) \!\Bigg) \\
+			V(t_f, \vec{x}) &= \phi(\vec{x}, t_f)
+		\end{align*}
+		
+		If \( V(t, \vec{x}) \) is a solution of the Hamilton-Jacobi-Bellman equation, then the minimization
+		\begin{align*}
+			\min_{\tilde{\vec{u}}} \, \Bigg(\! L(t, \vec{x}, \tilde{\vec{u}}) + \bigg( \pdv{V(t, \vec{x})}{\vec{x}} \bigg)^T \vec{f}(t, \vec{x}, \tilde{\vec{u}}) \!\Bigg)
+		\end{align*}
+		generates the optimal control \( \vec{u}^\ast \) of the basis problem with \( t_0 \leq t \leq t_f \) with the adjunct variables:
+		\begin{align*}
+			\vec{\lambda}^\ast(t) = \pdv{V\big(t, \vec{x}^\ast(t)\big)}{\vec{x}}
+		\end{align*}
+		Hence, the adjunct variables are the gradient of the minimal objective value w.r.t. the state.
 
-		\subsection{Gemischte Ungleichungsbeschränkungen} % 8.56, 8.57
+		\subsection{Derivation} % 8.46, 8.47, 8.48, 8.49, 8.50, 8.51
+			\todo{Content}
+		% end
+
+		\subsection{Notes}
+			\begin{itemize}
+				\item If \( \lambda_i^\ast(t) \equiv 0 \) for \( t \in [t_1, t_2] \), the value of the objective does not depend on \( x_i^\ast(t) \) for the same interval.
+				\item The value function contains all information needed for the optimal feedback control \( \vec{u}^\ast(t, \vec{x}) \). If the value function would be available, the optimal control could be calculate for arbitrary initial conditions. But most of the time it is not available\dots
+				\item It is nearly impossible to solve the HJB equation numerically (!) for relevant problems, even without constraints.
+			\end{itemize}
+		% end
+	% end
+
+	\section{Constraints}
+		It is possible to add state and control constraints to the optimal control problem in the form
+		\begin{align*}
+			\vec{g}\big(\vec{x}(t), \vec{u}(t)\big) \geq \vec{0}
+		\end{align*}
+		where the inequality is element-wise. Such a constraint is called a \emph{control constraint} if \(\vec{u}\) appears explicitly in \(\vec{g}\), i.e. \( \pdv{\vec{g}}{\vec{u}} \neq \mat{0} \).
+	
+		\subsection{Mixed Inequality Constraints}
+			Mixed inequality constraints are both dependent on the state and the control:
+			\begin{align*}
+				\vec{g}\big(\vec{x}(t), \vec{u}(t)\big) \geq \vec{0},\quad \vec{g} : \R^{n_x} \times \R^{n_u} \to \R^{n_g},\quad t \in [0, t_f]
+			\end{align*}
+			This constraint is added to the Hamiltonian with multipliers \( \vec{\eta} \) yielding the augmented Hamiltonian, similar to the Lagrangian of static optimization:
+			\begin{align*}
+				H(\vec{x}, \vec{u}, \vec{\lambda}, \vec{\eta}) = L(\vec{x}, \vec{u}) + \lambda^T \vec{f}(\vec{x}, \vec{u}) + \vec{\eta}^T \vec{g}(\vec{x}, \vec{u})
+			\end{align*}
+			Analogous to the normal Hamiltonian, the augmented Hamiltonian is called \emph{regular} along the optimal solution \( \vec{x}^\ast(t) \), \( \vec{\lambda}^\ast(t) \), \( \vec{\eta}^\ast(t) \) iff \( H\big( \vec{x}^\ast(t), \vec{u}, \vec{\lambda}^\ast(t), \vec{\eta}^(t) \big) \) has a unique minimum \( \vec{u} = \vec{u}^\ast(t) \) for all \( t \in [0, t_f] \).
+
+			\subsubsection{Necessary Conditions (Maximum Principle)}
+				Let the problem be autonomous, \(\vec{f}\), \(\vec{g}\), \(\phi\) be continuously differentiable, \(U\) the set of feasible optimal controls and let the inequality constraint \( \vec{g} \geq \vec{0} \) have an active component \( g_i \) with \( g_i(t) = 0 \) for \( t \in [t_1, t_2] \), i.e. let it be active on \( [t_1, t_2] \).
+				
+				If not all boundary conditions are given, they have to be determined analogous to\autoref{subsec:boundary}.
+				
+				Then the necessary optimality conditions can be defined analogous to the ones of the basis problem: Iff \( \vec{x}^\ast \), \( \vec{u}^\ast \), \( \vec{\lambda}^\ast \), \( \vec{\eta}^\ast \) are optimal, the canonical differential equations
+				\begin{align*}
+					\dot{\vec{x}} = \pdv{H}{\vec{\lambda}} \qquad \dot{\vec{\lambda}} = -\pdv{H}{\vec{x}}
+				\end{align*}
+				are fulfilled and
+				\begin{align*}
+					\eta_j
+						\begin{cases*}
+							= 0    & iff \( g_j\big(\vec{x}(t), \vec{u}(t)\big) > 0 \) \\
+							\leq 0 & iff \( g_j\big(\vec{x}(t), \vec{u}(t)\big) = 0 \)
+						\end{cases*}
+				\end{align*}
+				which is, for the special constraint \(g_i\), equivalent to:
+				\begin{align*}
+					\eta_j
+						\begin{cases*}
+							= 0    & \( t \in [0, t_1) \cup (t_2, t_f] \) \\
+							\leq 0 & \( t \in [t_1, t_2] \)
+						\end{cases*}
+				\end{align*}
+				Also, the following condition have to be fulfilled on the switching points of the constraints:
+				\begin{align*}
+					\lim\limits_{\delta \to 0^+} \vec{\lambda}(t_\Delta + \delta) = \bigg(\! \lim\limits_{\delta \to 0^-} \vec{\lambda}(t_\Delta + \delta) \!\bigg) - \nu_\Delta \cdot \pdv{g_i\big(\vec{x}(t_\Delta), \vec{u}(t_\Delta)\big)}{\vec{x}}
+				\end{align*}
+				Where \( \eta_\Delta = \const \leq 0 \) and \( t_\Delta \) is the entry/exit point, i.e. \( \Delta = 1 \) or \( \Delta = 2 \). This implies that the adjunct variables are in general not continuous at the switching points.
+				
+				The optimal control than has to minimize the augmented Hamiltonian over \(U\):
+				\begin{align}
+					H\big(\vec{x}^\ast(t), \vec{u}^\ast(t), \vec{\lambda}^\ast(t), \vec{\eta}^\ast(t)\big) = \min_{\tilde{\vec{u}} \,\in\, U} \, H\big(\vec{x}^\ast(t), \tilde{\vec{u}}, \vec{\lambda}^\ast(t), \vec{\eta}^\ast(t)\big),\quad \forall t \in [0, t_f]  \label{eq:constrainedMax}
+				\end{align}
+				
+				Along the active constraint,
+				\begin{align*}
+					g_i\big(\vec{x}(t), \vec{u}(t)\big) = 0 \quad\text{and}\quad \pdv{g_i(\vec{x}, \vec{u})}{u_j} \neq 0
+				\end{align*}
+				yields a condition for determining \(u_j\) along the active constraint. All other controls as well as \(u_j\) outside of the active section have to fulfill~\eqref{eq:constrainedMax} and the Legendre-Clebsch condition (iff \(H\) is regular) or the corresponding bang-bang/singular control, respectively.
+				
+				As the problem is autonomous, the Hamiltonian is constant sectionally constant w.r.t. time \(t\) and it can change when constraints become active/inactive.
+			% end
+		% end
+
+		\subsection{State Inequality Constraints}
+			Simple state inequality constraints
+			\begin{align*}
+				\vec{g}\big(\vec{x}(t)\big) \geq \vec{0}
+			\end{align*}
+			that does not contain \(\vec{u}\), but at least one \(x_i\) are handled like a mixture of mixed constraints and singular control.
+			
+			Let a single constraint \( g_i \) be active in the interval \( [t_1, t_2] \), i.e. \( g_i\big(\vec{x}(t), \vec{u}(t)\big) = 0 \) for \( t \in [t_1, t_2] \). Then also the time derivative has to vanish as well as the second-order time derivative\footnote{Let \( g_i^{(0)} \coloneqq g_i \).}:
+			\begin{align*}
+				g_i^{(m_g)} = \dv{t} g_i^{(m_g - 1)}\big(\vec{x}(t)\big) \equiv 0
+			\end{align*}
+			Let \(m_g\) be the smallest number such that \( g_i^{(m_g)} \) explicitly contains the control \(u_j\), then
+			\begin{align*}
+				g^{(m_g)}(\vec{x}, \vec{u}) = 0
+			\end{align*}
+			yields an equation for determining \( u_j \) in the interval \( [t_1, t_2] \) and \(m_g\) is called the \emph{order} of the state constraint. Hence, a single active constraints determined a single control variable!
+
+			\subsubsection{Augmented Hamiltonian}
+				Let \( \vec{g}(\vec{x}) = g(\vec{x}) \), i.e. only a single state constraint.
+			
+				Mathematically, the active constraint \( g\big(\vec{x}(t)\big) = 0 \) for \( t \in [t_1, t_2] \) is equivalent to
+				\begin{align*}
+					g^{(k)}\big(\vec{x}(t), \vec{u}(t)\big) = 0,\quad t \in [t_1, t_2]
+				\end{align*}
+				for every \( k = \dotsrange{1}{m_g} \). Hence, there are multiple, equivalent formulations of the maximum principle for active state constraints by viewing at the corresponding augmented Hamiltonian, e.g.:
+				\begin{align*}
+					H^0(\vec{x}, \vec{u}, \vec{\lambda}^0, \eta^0) &= L(\vec{x}, \vec{u}) + \big(\vec{\lambda}^0\big)^T \vec{f}(\vec{x}, \vec{u}) + \eta^0 g^{(0)}(\vec{x}) \\
+					&\,\,\,\vdots \\
+					H^k(\vec{x}, \vec{u}, \vec{\lambda}^k, \eta^k) &= L(\vec{x}, \vec{u}) + \big(\vec{\lambda}^k\big)^T \vec{f}(\vec{x}, \vec{u}) + \eta^k g^{(k)}(\vec{x}) \\
+					&\,\,\,\vdots \\
+					H^k(\vec{x}, \vec{u}, \vec{\lambda}^{m_g}, \eta^{m_g}) &= L(\vec{x}, \vec{u}) + \big(\vec{\lambda}^{m_g}\big)^T \vec{f}(\vec{x}, \vec{u}) + \eta^{m_g} g^{(m_g)}(\vec{x})
+				\end{align*}
+			% end
+
+			\subsubsection{Maximum Principle}
+				As in the previous section, a single state constraint \(g\) is assumed.
+				
+				If not all boundary conditions are given, they have to be determined analogous to\autoref{subsec:boundary}.
+				
+				The maximum principle for state constraints is similar to the one for mixed constraints. Let \(g\) be active in the interval \( [t_1, t_2] \). Iff \( \vec{x}^\ast \), \( \vec{u}^\ast \), \( \vec{\lambda}^{k\ast} \), \( \vec{\eta}^{k\ast} \) are optimal, the canonical differential equations
+				\begin{align*}
+					\dot{\vec{x}} = \pdv{H^k}{\vec{\lambda}} \qquad \dot{\vec{\lambda}}^k = -\pdv{H^k}{\vec{x}}
+				\end{align*}
+				are fulfilled and
+				\begin{align*}
+					\eta
+						\begin{cases*}
+							= 0    & iff \( g\big(\vec{x}(t), \vec{u}(t)\big) > 0 \) \\
+							\leq 0 & iff \( g\big(\vec{x}(t), \vec{u}(t)\big) = 0 \)
+						\end{cases*}
+					\quad\iff\quad
+					\eta
+						\begin{cases*}
+							= 0    & \( t \in [0, t_1) \cup (t_2, t_f] \) \\
+							\leq 0 & \( t \in [t_1, t_2] \)
+						\end{cases*}
+				\end{align*}
+				Additionally \(\eta^k\) have to fulfill the sign conditions,
+				\begin{align*}
+					(-1)^j \dv[j]{t} \eta^k(t) = \eta^{k - j}(t) \leq 0,\quad j = \dotsrange{1}{k}
+				\end{align*}
+				and the final conditions
+				\begin{align*}
+					\lim\limits_{\delta \to 0^-} \dv[j]{t} \eta^k(t_2 + \delta) = 0,\quad j = \dotsrange{0}{k - 2} \text{ if } k \geq 2
+				\end{align*}
+				For \( k = \dotsrange{1}{m_g} \) the active constraints have to fulfill the following at the entry point:
+				\begin{align*}
+					\lim\limits_{\delta \to 0^+} \vec{\lambda}^k(t_1 + \delta) = \bigg(\! \lim\limits_{\delta \to 0^-} \vec{\lambda}^k(t_1 + \delta) \!\bigg) - \sum_{j = 1}^{k} \beta^j \cdot \pdv{g^{(j - 1)}\big(\vec{x}(t_1)\big)}{\vec{x}}
+				\end{align*}
+				with \( \beta^j \leq 0 \). And on the exit point the condition
+				\begin{align*}
+					\lim\limits_{\delta \to 0^+} \vec{\lambda}^k(t_2 + \delta) = \lim\limits_{\delta \to 0^-} \vec{\lambda}^k(t_2 + \delta)
+				\end{align*}
+				has to be fulfilled for \( k = \dotsrange{1}{m_g} \). That is, the adjunct variables of the \(x_i\) that appear in \( g^{(j - 1)} \) are discontinuous at the entry point and continuous at the exit point of the active constraint.
+				
+				The optimal control than has to minimize the augmented Hamiltonian over \(U\):
+				\begin{align*}
+					H\big(\vec{x}^\ast(t), \vec{u}^\ast(t), \vec{\lambda}^\ast(t), \vec{\eta}^\ast(t)\big) = \min_{\tilde{\vec{u}} \,\in\, U} \, H\big(\vec{x}^\ast(t), \tilde{\vec{u}}, \vec{\lambda}^\ast(t), \vec{\eta}^\ast(t)\big),\quad \forall t \in [0, t_f]
+				\end{align*}
+				
+				As the problem is autonomous, the Hamiltonian is constant sectionally constant w.r.t. time \(t\) and it can change when constraints become active/inactive.
+				
+				To get back and forth in different formulations for \(k\), the following recursion can be defined. For \( m_g \geq 1 \):
+				\begin{align*}
+					\eta^1(t) &=
+						\begin{cases*}
+							\nu_2 + \int_{t}^{t_2} \eta^0(\tau) \dd{\tau} & iff \( t \in [t_1, t_2] \) \\
+							0 & else
+						\end{cases*} \\
+					\beta^1 &= \nu_1 + \eta^1(t_1)
+				\end{align*}
+				And for \( m_g \geq 2 \) and \( k \geq 2 \):
+				\begin{align*}
+					\eta^k(t) &=
+						\begin{cases*}
+							\int_{t}^{t_2} \eta^{k - 1}(\tau) \dd{\tau} & iff \( t \in [t_1, t_2] \) \\
+							0 & else
+						\end{cases*} \\
+					\beta^k &= \eta^k(t_1) \\
+					\vec{\lambda}^k(t) &= \vec{\lambda}^0(t) - \sum_{j = 1}^{k} \eta^j(t) \cdot \pdv{g^{(j - 1)}\big(\vec{x}(t)\big)}{\vec{x}}
+				\end{align*}
+				Where \( \nu_1, \nu_2 \leq 0 \) are given by
+				\begin{align*}
+					\lim\limits_{\delta \to 0^+} \vec{\lambda}^0(t_\Delta + \delta) = \bigg(\! \lim\limits_{\delta \to 0^-} \vec{\lambda}^0(t_\Delta + \delta) \!\bigg) - \nu_\Delta \cdot \pdv{g_i\big(\vec{x}(t_\Delta), \vec{u}(t_\Delta)\big)}{\vec{x}}
+				\end{align*}
+				for \( \Delta = 1 \) and \( \Delta = 2 \).
+			% end
+
+			\subsubsection{Notes}
+				\begin{itemize}
+					\item There are three different types of active constraints possible:
+						\begin{enumerate}
+							\item Contact point \\ The states control directly "into" the infeasible region and have to do an immediate turn when having contact with the constraint (like bumping a car into a wall and bouncing off).
+							\item Touch point \\ The states just merely touch the border of the infeasible region and no changes have to be made to the control (like a a go-around with merely touching the ground).
+							\item Boundary arc \\ The states have to remain a while on the border (the "active section") until going away again (like sliding along the edge on an ice rink).
+						\end{enumerate}
+					\item If the Hamiltonian is regular, there are multiple possibilities shown in~\autoref{tab:activeConstraints}.
+					\item Typically when working with the necessary conditions directly (analytically), \(H^0\) or \(H^{m_g}\) are used.
+					\item The conditions and relations for \(H^k\) are primarily useful to analyze for the solutions can be transformed one into another and are as such equivalent.
+					\item The solutions for \(\vec{x}\) and \(\vec{u}\) are the same for all \(H^k\), but the \(\vec{\lambda}\) and \(\vec{\eta}\) might be different on the active sections (and only on these).
+				\end{itemize}
+			
+				\begin{table}
+					\centering
+					\begin{tabular}{c|cc}
+						Order \(m_g\) & Touch Point & Boundary Arc \\ \hline
+						    \(1\)     &     no      &     yes      \\
+						    even      &     yes     &     yes      \\
+						     odd      &     yes     &      no
+					\end{tabular}
+					\caption{Possibilities for active state-only constraints in optimal control given the order of the constraint.}
+					\label{tab:activeConstraints}
+				\end{table}
+			% end
+		% end
+
+		\subsection{Examples} % 8.75
 			\todo{Content}
 
-			\subsubsection{Notwendige Bedingungen} % 8.58, 8.59, 8.60, 8.61
+			\subsubsection{Optimal Robot Control} % 8.76
+				\todo{Content}
+			% end
+
+			\subsubsection{Energy Minimization Problem} % 8.77, 8.78, 8.79, 8.80, 8.81, 8.82, 8.83, 8.84, 8.85, 8.86
 				\todo{Content}
 			% end
 		% end
 
-		\subsection{Reine Zustandsungleichungsbeschränkungen} % 8.62, 8.63, 8.65
-			\todo{Content}
-
-			\subsubsection{Ordnung einer Zustandsbeschränkung} % 8.66
-				\todo{Content}
-			% end
-
-			\subsubsection{Erweiterte Hamiltonfunktion} % 8.67, 8.68
-				\todo{Content}
-			% end
-
-			\subsubsection{Maximumprinzip} % 8.69, 8.70, 8.71, 8.72
-				\todo{Content}
-			% end
-
-			\subsubsection{Bemerkungen} % 8.73, 8.74
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Beispiele} % 8.75
-			\todo{Content}
-
-			\subsubsection{Optimale Robotersteuerung} % 8.76
-				\todo{Content}
-			% end
-
-			\subsubsection{Energieminimierungsproblem} % 8.77, 8.78, 8.79, 8.80, 8.81, 8.82, 8.83, 8.84, 8.85, 8.86
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Zusammenfassung} % 8.87, 8.88
-			\todo{Content}
+		\subsection{Summary}
+			\begin{itemize}
+				\item The conditions derivable from the maximum principle for yields a multi-point boundary value problem for \(\vec{x}^\ast\) and \(\vec{\lambda}^\ast\).
+				\item The interior switching points \( t_{S, i} \) result of:
+					\begin{itemize}
+						\item Switching points at bang-bang and singular control.
+						\item The entry and exit into/of active sections of mixed or state constraints.
+						\item Other constraints at interior time steps.
+						\item A dynamic that is only defined piecewise.
+					\end{itemize}
+				\item The switching structure (i.e. the number of order of switching points) in normally unknown!
+				\item The switching structure has to be determined otherwise, e.g. by solving the unconstrained problem and successively tighten the constraints (continuation/homotopy technique).
+				\item Other things like discontinuities in the system dynamics and state constraints at interior points are not covered here\dots
+				\item Optimal control is hell more complex than it seems in this summary!
+			\end{itemize}
 		% end
 	% end
 % end
@@ -2426,6 +2774,8 @@
 	% end
 
 	\section{Indirekte Verfahren} % 9.5, 9.6, 9.7
+		\label{sec:indirectMethods}
+	
 		\todo{Content}
 	% end
 

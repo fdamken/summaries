@@ -31,20 +31,20 @@
 \chapter{Gradient-Based Optimization without Constraints}
 	\section{Solution Characterization}
 		This section covers the theoretical results for solving a nonlinear optimization problem using calculus.
-	
+
 		\subsection{One-Dimensional Optimization}
 			For a one-dimensional function \( \varphi(p) : \R \to \R \) the first-order necessary condition for a minimum is that the derivative of \( \varphi(p) \) w.r.t. the parameter \(p\) vanishes:
 			\begin{align*}
 				\dv{\varphi(p^\ast)}{p} \! = 0
 			\end{align*}
 			Where \( p^\ast \) denotes the optimal solution, i.e. the minimum.
-			
+
 			All solutions that fulfill this condition are \emph{candidates} for a minimum. If \( \varphi \) is twice continuous differentiable, the sufficient condition for a minimum is that the second-order derivative is positive:
 			\begin{align*}
 				\dv{\varphi(p^\ast)}{p} > 0
 			\end{align*}
 			Then \(p^\ast\) is called a \emph{strict minimum}. This condition is sufficient, but not necessary! The second-order necessary condition for a minimum is that the second-order derivative is non-negative, i.e. \( \dv{\varphi(p^\ast)}{p} \geq 0 \).
-			
+
 			\subsubsection{Possibilities for a Minimum}
 				There are three cases for a minimum:
 				\begin{itemize}
@@ -58,7 +58,7 @@
 
 		\subsection{Multi-Dimensional Optimization}
 			\label{subsec:multiDimensionalOptimalityConditions}
-		
+
 			For multi-dimensional objective functions \( \varphi : \R^{n_p} \to \R \), where \(n_p\) is the dimensionality of the parameters, the first-order necessary condition is that the gradient vanishes:
 			\begin{align*}
 				\grad{\varphi}(\vec{p}^\ast) =
@@ -74,7 +74,7 @@
 						0
 					\end{bmatrix}
 			\end{align*}
-			
+
 			If \(\varphi(\vec{p})\) is twice continuously differentiable, the second-order sufficient condition is that the Hessian of \(\varphi(\vec{p})\) is positive definite. Analogous to the one-dimensional case, the second-order necessary condition is that the Hessian is positive semi-definite, i.e.:
 			\begin{align*}
 				\mat{H}_\varphi(\vec{p}^\ast) =
@@ -119,7 +119,7 @@
 
 			\subsubsection{Algorithmic Structure}
 				The \autoref{alg:gradientBasedAlgorithmStructure} shows the basic structure of any gradient-based optimization algorithm.
-			
+
 				\begin{algorithm}  \DontPrintSemicolon
 					\textbf{Initialization:} Choose an initial approximation \(\vec{p}^{(0)}\), set \( k \gets 0 \) \;
 					\While{not converged}{
@@ -128,7 +128,7 @@
 						Update the approximation: \tabto{6cm} \( \vec{p}^{(k + 1)} \gets \vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)} \) \;
 						\( k \gets k + 1 \) \;
 					}
-				
+
 					\caption{Algorithmic structure of a gradient-based optimization algorithms.}
 					\label{alg:gradientBasedAlgorithmStructure}
 				\end{algorithm}
@@ -140,7 +140,7 @@
 			\begin{align*}
 				\vec{d}^{(k)} = -\grad{\varphi}\big(\vec{p}^{(k)}\big)
 			\end{align*}
-			
+
 			\begin{itemize}
 				\item Advantages:
 					\begin{itemize}
@@ -169,16 +169,16 @@
 			\begin{align*}
 				\big(\vec{d}^{(k)}\big)^T \mat{A} \vec{d}^{(j)} = 0,\quad j = 1, \cdots, k - 1
 			\end{align*}
-			
+
 			With an optimal step size \( \alpha^{(k)} \), i.e.
 			\begin{align*}
 				\alpha^{(k)} = \arg\min_{\alpha} \varphi\big( \vec{p}^{(k)} + \alpha \vec{d}^{(k)} \big)
 					\quad\implies\quad \alpha^{(k)} = -\frac{1}{\big(\vec{d}^{(k)}\big)^T \mat{A} \vec{d}^{(k)}} \Big(\! \grad{\varphi}\big(\vec{p}^{(k)}\big) \!\Big)^T \big(\vec{d}^{(k)}\big)
 			\end{align*}
 			the minimum of \(\varphi\) is reached in \(n_p\) steps.
-			
+
 			The extension for nonlinear objective functions is given in~\autoref{alg:conjugateGradient}.
-			
+
 			\begin{algorithm}  \DontPrintSemicolon
 				\textbf{Initialization:} Choose an initial approximation \(\vec{p}^{(0)}\), set \( \vec{d}^{(0)} \gets -\grad{\varphi}\big(\vec{p}^{(0)}\big) \) and \( k \gets 0 \) \;
 				\While{not converged}{
@@ -188,11 +188,11 @@
 					\( \vec{d}^{(k + 1)} \gets -\grad{\varphi}\big(\vec{p}^{(k + 1)}\big) + \beta^{(k + 1)} \vec{d}^{(k)} \) \;
 					\( k \gets k + 1 \) \;
 				}
-				
+
 				\caption{Conjugate Gradient for nonlinear Objective Function.}
 				\label{alg:conjugateGradient}
 			\end{algorithm}
-		
+
 			\begin{itemize}
 				\item Exact line search necessary.
 				\item Different variants of GC-algorithms mainly distinguish in the choice of of \( \beta^{(k)} \).
@@ -222,7 +222,7 @@
 				\mat{H}_\varphi\big(\vec{p}^{(k)}\big) \vec{d}^{(k)} = -\grad{\varphi}\big(\vec{p}^{(k)}\big)
 			\end{align*}
 			The realization is shown in~\autoref{alg:newtonMethod}.
-			
+
 			\begin{algorithm}  \DontPrintSemicolon
 				\textbf{Initialization:} Choose an initial approximation \(\vec{p}^{(0)}\), set \( k \gets 0 \) \;
 				\While{not converged}{
@@ -231,11 +231,11 @@
 					\( \vec{p}^{(k + 1)} \gets \vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)} \) \;
 					\( k \gets k + 1 \) \;
 				}
-				
+
 				\caption{Newton Method}
 				\label{alg:newtonMethod}
 			\end{algorithm}
-		
+
 			When plugging the search direction into the necessary descent condition~\eqref{eq:descentDirection}
 			\begin{align*}
 				\big(\vec{d}^{(k)}\big)^T \Big(\!\grad{\varphi}\big(\vec{p}^{(k)}\big)\!\Big)
@@ -250,7 +250,7 @@
 			\begin{align*}
 				\Big( \mat{H}_\varphi\big(\vec{p}^{(k)}\big) + \nu \mat{I} \Big) \vec{d}^{(k)} = -\grad{\varphi}\big(\vec{p}^{(k)}\big)
 			\end{align*}
-			
+
 			\begin{itemize}
 				\item Advantages:
 					\begin{itemize}
@@ -277,7 +277,7 @@
 					\tilde{\mat{H}}_i = \pdv{p_i} \Big( \grad{\varphi}\big(\vec{p}^{(k)}\big) \Big) \approx \frac{1}{h_i} \Big( \grad{\varphi}\big(\vec{p}^{(k)} + h_i \vec{e}_i\big) - \grad{\varphi}\big(\vec{p}^{(k)}\big) \Big)
 				\end{align*}
 				where \( \tilde{\mat{H}}_i \) is the \(i\)-th column of \(\tilde{\mat{H}}\). The equation~\eqref{eq:approxHessianSymm} is used to force the Hessian to be symmetric.
-				
+
 				Problems:
 				\begin{itemize}
 					\item The Hessian \( \mat{H}_\varphi\big(\vec{p}^{(k)}\big) = \frac{1}{2} \big( \tilde{\mat{H}} + \tilde{\mat{H}}^T ) \) is not necessarily positive definite.
@@ -300,7 +300,7 @@
 				\item As \( \hat{\mat{H}} \) constructed positive definite, the descent condition is fulfilled anytime.
 				\item If the inverse Hessian is directly approximated, only \( \mathcal{O}(n_p^2) \) multiplications instead of \( \mathcal{O}(n_p^3) \) for solving the linear system.
 			\end{itemize}
-		
+
 			But how to do the Hessian update? By Taylor-expanding the gradient \( \grad{\varphi}\big(\vec{p}^{(k)}\big) \) around \( \vec{p}^{(k + 1)} \)
 			\begin{align*}
 				\grad{\varphi}\big(\vec{p}^{(k)}\big) \overset{T\big(\!\vec{p}^{(k + 1)}\!\big)}{=} \grad{\varphi}\big(\vec{p}^{(k + 1)}\big) + \mat{H}_\varphi\big(\vec{p}^{(k + 1)}\big) \big( \vec{p}^{(k)} - \vec{p}^{(k + 1)} \big) + \cdots \overset{!}{=} \vec{0}
@@ -313,7 +313,7 @@
 			\begin{align*}
 				\tilde{\mat{H}}^{(k + 1)} \vec{d}^{(k)} = \grad{\varphi}\big(\vec{p}^{(k + 1)}\big) - \grad{\varphi}\big(\vec{p}^{(k)}\big)
 			\end{align*}
-			
+
 			There exist a lot of different approaches for doing the Hessian updates \( \tilde{\mat{H}}^{(k + 1)} = \tilde{\mat{H}}^{(k)} + \mat{U}{(k)} \) for rank-1 or rank-2 matrices \(\mat{U}^{(k)}\):
 			\begin{itemize}
 				\item Approach for rank-1 corrections: \tabto{6cm} \( \tilde{\mat{H}}^{(k + 1)} = \tilde{\mat{H}}^{(k)} + \beta_1 \vec{u} \vec{u}^T \)
@@ -343,9 +343,9 @@
 					\item The direct approximation of the Hessian inverse is not really robust (e.g. for a non-optimal step size rule).
 					\item A better alternative is to directly approximate a useful factorization, e.g. the Cholesky decomposition. This is more robust and equally efficient (\( \mathcal{O}(n_p^2) \)).
 				\end{itemize}
-			
+
 				The pseudo code for the BFGS update is shown in~\autoref{alg:bfgs}.
-				
+
 				\begin{algorithm}  \DontPrintSemicolon
 					\textbf{Initialization:} Choose an initial approximation \(\vec{p}^{(0)}\), set \( \tilde{\mat{H}}^{(0)} = \mat{I} \) and \( k \gets 0 \) \;
 					\While{not converged}{
@@ -355,7 +355,7 @@
 						\( \tilde{\mat{H}}^{(k + 1)} \gets \tilde{\mat{H}}^{(k)} - \frac{1}{\big(\vec{d}^{(k)}\big)^T \tilde{\mat{H}}^{(k)} \vec{d}^{(k)}} \tilde{\mat{H}}^{(k)} \vec{d}^{(k)} \big(\tilde{\mat{H}}^{(k)} \vec{d}^{(k)}\big)^T + \frac{1}{\big(\vec{g}^{(k)}\big)^T \vec{d}^{(k)}} \vec{g}^{(k)} \big(\vec{g}^{(k)}\big)^T \) \;
 						\( k \gets k + 1 \) \;
 					}
-					
+
 					\caption{Quasi-Newton Method with BFGS Update.}
 					\label{alg:bfgs}
 				\end{algorithm}
@@ -364,12 +364,12 @@
 
 		\subsection{Comparison} % 2.29, 2.30, 2.31, 2.32, 2.33, 2.34, 2.35, 2.36
 			\todo{Content}
-			
+
 			\begin{itemize}
-				\item 
+				\item
 			\end{itemize}
 		% end
-		
+
 		\subsection{Notes and Discussion}
 			\begin{itemize}
 				\item The convergence of gradient-based methods can be shown under weak preconditions.
@@ -383,7 +383,7 @@
 						\item Execute direct search methods beforehand to find promising regions for the local minimum search.
 					\end{itemize}
 			\end{itemize}
-		
+
 			\begin{itemize}
 				\item Advantages:
 					\begin{itemize}
@@ -403,7 +403,7 @@
 
 	\section{Step Size Rules, Line Search}
 		\label{sec:gradientUnconsStepSize}
-	
+
 		In every iteration of gradient-based algorithms, the step size has to be determined by minimizing the one-dimensional function:
 		\begin{align*}
 			\psi(\alpha) = \varphi\big(\vec{p}^{(k)} + \alpha \vec{d}^{(k)}\big)
@@ -413,7 +413,7 @@
 			\dv{\psi\big(\alpha^{(k)}\big)}{\alpha} = \dv{\alpha} \varphi\big(\vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)}\big) = \Big(\!\grad{\varphi}\big(\vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)}\big)\!\Big)^T \vec{d}^{(k)} \overset{!}{=} 0
 		\end{align*}
 		Thus the gradient of \(\varphi\) at the minimum \(\alpha^{(k)}\) as to be orthogonal to the search direction \(\vec{d}^{(k)}\). Intuitively, the optimal step size has to be chosen such that the iteration step cannot go any further without ascending again ("hitting an ascending contour line").
-		
+
 		Goal of the line search is to reach the minimum of \(\psi\) with least invocations of \(\psi\) as possible. Most of the existing search methods can be classified into
 		\begin{itemize}
 			\item \emph{Polynomial approximation}, e.g. quadratic or cubic interpolation
@@ -421,27 +421,27 @@
 			\item \emph{Optimal vs. non-optimal search methods}, e.g. by finding an improvement but not the minimum
 			\item Usage of the gradient information \( \psi' \) or not.
 		\end{itemize}
-	
+
 		Requirements:
 		\begin{itemize}
 			\item Finding the \(\alpha^{(k)}\) with a minimal value of \(\psi\).
 			\item Do not waste too much computation time on the line search.
 		\end{itemize}
 		In general, an exact line search requires lots of \(\psi\)-evaluations. But how far does \(\psi\) need to be reduced in order to guarantee convergence? In general, the condition \( \varphi\big(\vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)}\big) < \varphi\big(\vec{p}^{(k)}\big) \) is not enough!
-		
+
 		\subsection{Inexact Line Search}
 			Procedure: Generate and inspect a series of candidates for \(\alpha^{(k)}\) and terminate once one of the candidates fulfills specific criteria, e.g. the Armijo rule or Wolfe conditions.
-			
+
 			\subsubsection{Armijo Rule}
 				The \emph{Armijo rule} guarantees a sufficient reduction in \(\varphi\):
 				\begin{align*}
 					\varphi\big(\vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)}\big) \leq \varphi\big(\vec{p}^{(k)}\big) + c_1 \alpha^{(k)} \Big(\! \grad{\varphi}\big(\vec{p}^{(k)}\big) \!\Big)^T \vec{d}^{(k)} = \varphi\big(\vec{p}^{(k)}\big) + c_1 \alpha^{(k)} \psi'(0)
 				\end{align*}
 				Where \( 0 < c_1 < 1 \) is any constant, e.g. \( c_1 = 10^{-4} \).
-				
+
 				Hence, the minimal reduction has to be proportional to \(\alpha^{(k)}\) and the derivative \( \psi'(0) \).
 			% end
-			
+
 			\subsubsection{Curvature Condition}
 				But a sufficient descent condition is not enough as the step sizes must not be too small (otherwise progress would stop). Thus a second condition has to be employed, the \emph{curvature condition} that requires a minimum curvature on \(\psi\):
 				\begin{align*}
@@ -449,14 +449,14 @@
 				\end{align*}
 				Where \( c_1 < c_2 < 1 \) is any constant, e.g. \( c_2 = 0.9 \).
 			% end
-			
+
 			\subsubsection{Wolfe and Goldstein Conditions}
 				Combining the Armijo rule and the curvature condition yields the Wolfe conditions that guarantee both a minimal reduction and a minimal curvature. They are especially useful for Quasi-Newton methods as the Wolfe conditions are scale invariant, i.e. independent of
 				\begin{itemize}
 					\item multiplying \(\varphi\) with any constant and
 					\item affine transformations of \(\vec{p}\).
 				\end{itemize}
-			
+
 				There are other possibilities are, e.g. the \emph{Goldstein conditions}
 				\begin{align*}
 					\varphi\big(\vec{p}^{(k)}\big) + (1 - c) \alpha^{(k)} \Big(\! \grad{\varphi}\big(\vec{p}^{(k)}\big) \!\Big)^T \vec{d}^{(k)}
@@ -466,7 +466,7 @@
 				with any \( 0 < c < 1/2 \), that are useful for Newton, but not for Quasi-Newton methods.
 			% end
 		% end
-		
+
 		\subsection{Notes}
 			\begin{itemize}
 				\item For gradient-based methods a step size \( \alpha^{(k)} > 1 \) is in general not useful because:
@@ -481,7 +481,7 @@
 
 	\section{Trust Region Methods}
 		Gradient-based methods with line search determine a fixed search direction and adjust the step size \( \alpha^{(k)} \) according to that search direction to reach global convergence.
-		
+
 		Another approach is to determine both the length and direction of \( \vec{d}^{(k)} \). The iteration step then becomes
 		\begin{align*}
 			\vec{p}^{(k + 1)} = \vec{p}^{(k)} + \vec{d}^{(k)}
@@ -495,7 +495,7 @@
 				\end{alignedat}
 		\end{align*}
 		where \(\delta\) describes the area around the current approximation \( \vec{p}^{(k)} \) where the quadratic approximation of \( \varphi\big(\vec{p^{(k)}} + \vec{d}\big) \) makes sense, i.e. the \emph{trust region}.
-		
+
 		The value of \(\delta\) is extremely important for the efficiency of the method.
 		\begin{itemize}
 			\item If \(\delta\) is too small, opportunities for large steps are missed.
@@ -510,14 +510,14 @@
 
 	\section{Rate of Convergence}
 		A common criteria to measure the performance of a gradient method are \emph{rates of convergence}. These provide information on how fast an algorithm converges, i.e. how fast \( \vec{p}^{(k)} \to \vec{p}^\ast \) or \( \big\lVert \vec{p}^{(k)} - \vec{p}^\ast \big\rVert \to 0 \).
-		
+
 		\textbf{Definition:}
 		Let \( \big(\{\, \vec{p}^{(k)} \,\big\} \) be the series of approximations produced by an optimization method. Then this series has rate of convergence \(r\) if \(r\) is the greatest positive number such that the limit
 		\begin{align*}
 			0 \leq \liminfty[k] \frac{\big\lVert \vec{p}^{(k + 1)} - \vec{p}^\ast \big\rVert}{\big\lVert \vec{p}^{(k)} - \vec{p}^\ast \big\rVert^r} = \gamma < \infty
 		\end{align*}
 		converges (where \( \vec{p}^\ast = \liminfty[k] \vec{p}^{(k)} \)). If \( r = 1 \), then \( \gamma < 1 \) has to hold for the method to converge.
-		
+
 		A sequence is said to converge superlinearly if
 		\begin{align*}
 			\liminfty[k] \frac{\big\lVert \vec{p}^{(k + 1)} - \vec{p}^\ast \big\rVert}{\big\lVert \vec{p}^{(k)} - \vec{p}^\ast \big\rVert} = 0
@@ -527,7 +527,7 @@
 		\paragraph{Examples} % 2.53
 			\todo{Content}
 		% end
-		
+
 		\subsection{Gradient-Based Methods}
 			Under ideal conditions (i.e. \(\varphi\) is twice continuously differentiable and \( \mat{H}_\varphi(\vec{p}^\ast) \) is positive definite), all of the following hold:
 			\begin{itemize}
@@ -558,7 +558,7 @@
 			\item not differentiable
 			\item high computation time for evaluation (e.g. when a simulation has to be run for each evaluation)
 		\end{itemize}
-	
+
 		But gradient-free techniques have a wide range of applications, e.g. in automobile, aerospace industry, robotics, financial, etc. The goal is to reduce the objective function as much as possible and find regions in which the objective is differently sensitive w.r.t. changes in the optimization variables.
 
 		\subsection{Simulation-Based Optimization}
@@ -590,7 +590,7 @@
 	\section{Metaheuristics}
 		\subsection{Evolutionary Algorithm (EA)}
 			A \emph{evolutionary algorithm} mimics the biological evolutionary strategy with random search methods.
-			
+
 			\begin{enumerate}
 				\item Initialization: \tabto{2.5cm} Choose one "Parent" \( \vec{p}^{(0)} \) and a number of descendants \(\ell\).
 				\item Iteration: \tabto{2.5cm} Create \(\ell\) descendants via "mutation"
@@ -625,7 +625,7 @@
 				\item Particle Swam: Population method, uses idea of combining local and swarm knowledge, direction and speed for particles are adjusted
 				\item \dots
 			\end{itemize}
-		
+
 			Further metaheuristics based on binary representations of \(\vec{p}\) like in genetic algorithms:
 			\begin{itemize}
 				\item Tabu Search: A list of possible manipulations is given, another lists dynamically the inverses of them, these cannot be applied any more
@@ -658,7 +658,7 @@
 
 			\subsubsection{Iteration Phase}
 				\label{subsec:nelderMeadIteration}
-			
+
 				The iteration phase starts by sorting the edges according to its \(\varphi\)-values:
 				\begin{align*}
 					\varphi\big(\vec{p}^{(1)}\big) \leq \varphi\big(\vec{p^{(2)}}\big) \leq \cdots \leq \varphi\big(\vec{p}^{(n_p + 1)}\big)
@@ -672,7 +672,7 @@
 					\bar{\vec{p}} = \frac{1}{n_p} \sum_{i = 1}^{n_p} \vec{p}^{(i)}
 				\end{align*}
 				This corresponds to a reflection of the worst point over the centroid with a weight \(\mu\) that specifies "how far the point point gets pushed out", i.e. the ratio of the original distance of the worst point to the centroid that is preserved while reflecting. If \(\mu = 1\), the point is mirrored.
-				
+
 				In every iteration, the value \(\mu\) is chosen of a set of four values
 				\begin{align*}
 					-1 < \mu_{ic} < 0 < \mu_{oc} < \mu_{r} < \mu_{e}
@@ -687,7 +687,7 @@
 					\item Maximum number of function evaluations: \( k = k_\mathrm{max} \)
 					\item Sufficient small distance on the simplex corners.
 				\end{itemize}
-			
+
 				\begin{itemize}
 					\item Initialization: Choose a start simplex, evaluate the objective at the corners, sort them and set \( k = n_p + 1 \).
 					\item Iteration: While \( \varphi\big( \vec{p}^{(n_p + 1)} \big) - \varphi\big(\vec{p}^{(1)}\big) > \varepsilon \) and \( k < k_\mathrm{max} \), do:
@@ -721,16 +721,16 @@
 							\item \emph{Sort:} Sorting the current simplex corners such that \( \varphi\big(\vec{p}^{(1)}\big) \leq \varphi\big(\vec{p^{(2)}}\big) \leq \cdots \leq \varphi\big(\vec{p}^{(n_p + 1)}\big) \) holds again. Repeat.
 						\end{enumerate}
 				\end{itemize}
-			
+
 				The Nelder-Mead method therefore always tries to create a big simplex and only shrink if every other action would yield a worst corner/simplex.
 			% end
-			
+
 			\subsubsection{Notes}
 				\begin{itemize}
 					\item The method is not guaranteed to converge. But in practice, it yields good results.
 					\item Can get stuck on a suboptimal point such that the algorithm has to be restarted with other initial simplex corners.
 				\end{itemize}
-			
+
 				\paragraph{Simplex-Gradient}
 					It is possible to detect stagnation using a \emph{Simplex-Gradient} \( \vec{D}^{(k)} \in \R^{n_p} \), \( \vec{D}^{(k)} = \big( \mat{V}^{(k)} \big)^{-T} \vec{\delta}^{(k)} \) where \( \mat{V}^{(k)} \) is the matrix of the simplex directions
 					\begin{align*}
@@ -794,9 +794,9 @@
 				\vec{D}_C^{(k)} = \frac{1}{2} \big( \vec{D}^{(k)} + \vec{D}_R^{(k)} \big)
 			\end{align*}
 			where \( \vec{D}_R^{(k)} \) is the gradient of the simplex that is reflected around \( \vec{p}^{(k)} \).
-			
+
 			The structure of implicit filtering is sketched in\autoref{alg:implicitFiltering}.
-			
+
 			\begin{algorithm}  \DontPrintSemicolon
 				\textbf{Initialization:} Choose \( \alpha, \beta \in (0, 1) \) and set \( \mat{H} = \mat{I} \) \;
 				\While{not converged}{
@@ -813,7 +813,7 @@
 						Shrink the simplex \;
 					}
 				}
-				
+
 				\caption{Implicit Filtering.}
 				\label{alg:implicitFiltering}
 			\end{algorithm}
@@ -822,7 +822,7 @@
 
 	\section{Surrogate Optimization}
 		In \emph{surrogate optimization methods}, the (complex) objective is replaced with a simpler approximation that maintains the key properties of the objective (e.g. a noisy measurement might be replaced by a simpler regression model). This surrogate function is then minimized and adjusted in order to find a good approximation of the solution of the original problem (this can also be applied for constraint functions).
-		
+
 		Requirements for the surrogate function \( \hat{\varphi} : \R^{n_p} \to \R \): For all function evaluation (or "sampling") points \( \Big( \vec{p}^{(i)}, \varphi\big(\vec{p}^{(i)}\big) \Big) \), \( i = 1, \cdots, m \) it must hold that
 		\begin{align*}
 			\varphi\big( \vec{p}^{(i)} \big) = \hat{\varphi}\big( \vec{p}^{(i)} \big) + \epsilon
@@ -833,7 +833,7 @@
 			\item For \(\epsilon > 0\), the surrogate function does not perfectly reproduce the objective, but might be smoother.
 		\end{itemize}
 		Further requirements are that \( \hat{\varphi} \) should be fast to compute and the gradients of \(\hat{\varphi}\) should be available in closed form.
-		
+
 		This raises some questions:
 		\begin{enumerate}
 			\item \(\varphi\) might be too complex for a simple approximation \(\implies\) which approximation method should be used?
@@ -854,7 +854,7 @@
 				\begin{align*}
 					\min_{\beta_1, \vec{\beta}_2, \mat{\beta}_2} \sum_i \Big( \varphi\big(\vec{p}^{(i)}\big) - \hat{\varphi}\big(\vec{p}^{(i)}\big) \Big)
 				\end{align*}
-				
+
 				\begin{itemize}
 					\item Advantage: Simple and the approximations are easy to compute.
 					\item Disadvantage: The RSMs cover only the global behavior and not local accuracy.
@@ -873,7 +873,7 @@
 					\item Thin-Plate: \tabto{2cm} \( h(r_i) = r_i^2 \log r \)
 				\end{itemize}
 				where \( r_i = \big\lVert \vec{p} - \vec{p}^{(i)} \big\rVert \).
-				
+
 				A suitable combination of RSM and RBF yield cubic spline-approximation:
 				\begin{align*}
 					\hat{\varphi}(\vec{p}) = \beta_0 + \vec{\beta}_1 \vec{p} + \sum_i \gamma_i h(\vec{p}),\quad \beta_1 \in \R, \beta_2 \in \R^{n_p}, \gamma_i \in \R
@@ -1020,7 +1020,7 @@
 			\end{alignedat}
 	\end{align*}
 	Such an optimization problem is called a \emph{nonlinear programming problem} (NLP).
-	
+
 	\begin{itemize}
 		\item A point \( \vec{p} \in \R^{n_p} \) that fulfills the constraints is called a \emph{feasible point}.
 		\item The set of all feasibly points is called the \emph{feasible region}.
@@ -1035,13 +1035,13 @@
 			\quad\iff\quad
 			\grad{\varphi}(\vec{p}^\ast) - \mu_i^\ast \grad{a_i}(\vec{p}^\ast) = \vec{0}
 		\end{align*}
-		
+
 		This leads directly leads to the definition of the Lagrangian
 		\begin{align*}
 			L(\vec{p}, \vec{\mu}, \vec{\sigma}) = \varphi(\vec{p}) - \vec{\mu}^T \vec{a}(\vec{p}) - \vec{\sigma}^T \vec{b}(\vec{p})
 		\end{align*}
 		with the Lagrange multiplier \( \vec{\mu} \), \( \vec{\sigma} \) which encodes the insight above.
-		
+
 		For formulating the \emph{first-order optimality conditions} analogous to the ones for unconstrained optimization (see~\autoref{subsec:multiDimensionalOptimalityConditions}), a \emph{constraint qualification} must hold: The gradients
 		\begin{align*}
 			\grad{a_1}(\vec{p}^\ast), \cdots, \grad{a_{n_p}}(\vec{p}^\ast) \quad\text{and}\quad \grad{b_j}(\vec{p}^\ast), j \in A(\vec{p}^\ast)
@@ -1066,7 +1066,7 @@
 		\subsection{Second-Order Necessary Optimality Conditions}
 			The second-order necessary optimality condition is fulfilled if the first-order condition is fulfilled and the Hessian of the Lagrangian has a positive curvature \emph{along the feasible directions}:
 			\begin{gather*}
-				%\forall \vec{z} \in \R^{n_p} \setminus \{\vec{0}\},\, \vec{z}^T \cdot \grad{a_i}(\vec{p}) = \vec{0},\, \vec{z}^T \cdot \grad{b_j}(\vec{p}) : 
+				%\forall \vec{z} \in \R^{n_p} \setminus \{\vec{0}\},\, \vec{z}^T \cdot \grad{a_i}(\vec{p}) = \vec{0},\, \vec{z}^T \cdot \grad{b_j}(\vec{p}) :
 				\vec{z}^T \mat{H}_L^{\vec{p}}(\vec{p}, \vec{\mu}, \vec{\sigma}) \vec{z} \geq 0 \\
 				\quad\text{for all }
 				\vec{z} \in \R^{n_p} \setminus \{\vec{0}\}
@@ -1090,9 +1090,9 @@
 				\vec{p}_{i, \mathrm{min}} \leq \vec{p}_i \leq \vec{p}_{i, \mathrm{max}}
 		\end{align*}
 		In practice, these are not only used in nearly all constrained, but also in unconstrained optimization problems as they might increase the efficiency by constraining the search space. They also increase robustness of optimization techniques that ensure the fulfilling of the constrains in every iteration.
-		
+
 		Box constraints can also be used to prohibit "insecure values", e.g. negative variables when the objective function takes square roots.
-		
+
 		For gradient-free methods, the constraints can be ensured by clipping the new iteration value to the bounds:
 		\begin{align*}
 			p_i^{(k + 1)} = \max\big\{\, p_{i, \mathrm{min}},\, \min\big\{\, p_{i, \mathrm{max}},\, p_i^{(k + 1)} \,\big\} \big\}
@@ -1102,7 +1102,7 @@
 
 	\section{Penalty Function}
 		The approach of \emph{penalty functions} is to transform the constrained problem to an unconstrained problem by punishing violations of the constraints. As this arises big problems with lots of and highly nonlinear constraints, penalty functions are rarely used in practice anymore in favor of sequential quadratic programming (see~\autoref{sec:sqp}).
-		
+
 		As of today, penalty functions are mainly used for step size determination for nonlinear programs and in the application of robust, gradient-free methods in the unconstrained optimization for solving NLPs.
 
 		\subsection{Exterior Penalty Functions}
@@ -1111,15 +1111,15 @@
 				\min_{\vec{p} \in \R^{n_p}} \Phi(\vec{p}, \rho),\quad \Phi(\vec{p}, \rho) = \varphi(\vec{p}) + \rho \sum_j \pi_j(\vec{p}),\quad \rho \in \R^+
 			\end{align*}
 			with a function \( \pi_j \) per constraint that is positive if the constraint is violated and zero otherwise.
-			
+
 			Often a series of unconstrained optimization problems \( \Phi(\vec{p}, \rho) \) is solved with an increasing \(\rho\), such that the solution \( \vec{p}^\ast(\rho) \) gets pushed into the feasible region of the NLP step by step in in the hope of
 			\begin{align*}
 				\liminfty[\rho] \vec{p}^\ast(\rho) = \vec{p}^\ast
 			\end{align*}
 			where \( \vec{p}^\ast \) is the real minimum.
-			
+
 			This approach is called \emph{exterior penalty functions} as the penalty term is only relevant if \( \vec{p} \) violates the according constraints.
-			
+
 			\subsubsection{Quadratic Penalty Function}
 				The \emph{quadratic penalty function} is the most common exterior penalty function:
 				\begin{align*}
@@ -1134,7 +1134,7 @@
 						\end{cases*}
 					= \big\lvert\! \min\{ 0,\, b_j(\vec{p}) \} \big\rvert
 				\end{align*}
-				
+
 				But in the case of \( \rho \to \infty \), the Hessian of \( \Phi_C \) gets more and more ill-condition and may even be singular in the limit.
 			% end
 
@@ -1145,21 +1145,21 @@
 
 		\subsection{Interior Penalty Functions}
 			When using exterior penalty functions, it is not guaranteed that every solution of the iterating unconstrained problems fulfills the constraints of the original NLP. Therefore, exterior penalty functions are not applicable if fulfilling the constraints in every iteration is required. \emph{Interior penalty functions} guarantee exactly that: Every subproblem yields a feasible solution.
-			
+
 			Given a NLP with only inequality constraints, interior penalty functions use \emph{barrier functions} that have the following properties:
 			\begin{itemize}
 				\item Value of infinity everywhere except inside the feasible region.
 				\item Continuously differentiable inside the feasible region.
 				\item The values go to \( +\infty \) as \(\vec{p}\) gets closer to the edge of the feasible region.
 			\end{itemize}
-		
+
 			\subsubsection{Logarithmic Barrier Function}
 				The \emph{logarithmic barrier function} is the most used interior penalty function:
 				\begin{align*}
 					\Phi_B(\vec{p}, r) = \varphi(\vec{p}) - r \sum_{k = 1}^{n_b} \ln b_i(\vec{p})
 				\end{align*}
 				The barrier parameter \( r > 0 \) will be decreased step by step and the solution should converge to the minimum as \( r \to 0 \).
-				
+
 				But in the case of \( r \to 0 \), the Hessian of \( \Phi_B \) gets more and more ill-condition and may even be singular in the limit.
 			% end
 
@@ -1170,7 +1170,7 @@
 
 		\subsection{Exact Penalty Functions}
 			Neither the quadratic penalty function nor the logarithmic barrier function are "exact" penalty function so that, with an appropriate \(\rho\) or respectively \(r\), the solution of the unconstrained NLP yields the exact solution.
-			
+
 			One important penalty function of this class is the \emph{exact \(\ell_1\)-penalty function}:
 			\begin{align*}
 				\Phi_{\ell_1}(\vec{p}, \rho) = \varphi(\vec{p}) + \rho \sum_{k = 1}^{n_a} \big\lvert a_k(\vec{p}) \big\rvert + \rho \sum_{k = 1}^{n_b} \big\lvert\! \min\{ 0,\, b_j(\vec{p}) \} \big\rvert
@@ -1254,7 +1254,7 @@
 
 	\section{Sequential Quadratic Programming (SQP)}
 		\label{sec:sqp}
-	
+
 		To take care of highly nonlinear equality and inequality constraints, information about the trajectory of these have to be considered, i.e. gradient and Hessian information. Assuming that the constraints that are active on the solution are known, the optimization problem is given as:
 		\begin{align*}
 			\min_{\vec{p} \in \R^{n_p}} &\, \varphi(\vec{p}) \\
@@ -1279,7 +1279,7 @@
 			L(\vec{p}, \vec{\mu}) = \varphi(\vec{p}) - \vec{\mu}^T \vec{a}(\vec{p})
 		\end{align*}
 		This yields a system of \( n_p + n_a \) nonlinear equations for \( n_p + n_a \) unknowns \( \vec{p} \), \( \vec{\mu} \).
-		
+
 		Taylor-expanding the gradient of the Lagrangian around \( \big( \vec{p}^{(k)}, \vec{\mu}^{(k)} \big) \) yields
 		\begin{align*}
 			\grad{L}(\vec{p}^\ast, \vec{\mu}^\ast) \overset{T\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big)}{=} \grad{L}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) + \mat{H}_L\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) \begin{bmatrix} \vec{d}_p^{(k)} \\ \vec{d}_\mu^{(k)} \end{bmatrix} + \cdots \overset{!}{=} 0
@@ -1338,7 +1338,7 @@
 					\end{bmatrix}
 			\end{align*}
 			\textbf{Note that this definition of the Jacobian differs from the usual definition! This one has the gradients of the function has columns!}
-			
+
 			This linear system can be transformed to
 			\begin{align*}
 				\begin{bmatrix}
@@ -1368,7 +1368,7 @@
 					\mat{H}_L^{\vec{p}}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}\big) = \mat{H}_\varphi\big(\vec{p}^{(k)}\big) - \sum_{i = 1}^{n_a} \mu_i^T \mat{H}_{a_i}\big(\vec{p}^{(k)}\big)
 				\end{align*}
 				The linear constraints of the QP also consist of Taylor-approximations of the active NLP constraints.
-				
+
 				Solving this quadratic optimization problem is more robust and possibly faster than solving the linear system of equations. There exist special algorithms for solving QPs. But even though they are not active, the inequality constraints must be fulfilled. Therefore, the QP is extended to also determine the Lagrange multipliers \( \vec{\mu}^{(k)} \), \( \vec{\sigma}^{(k)} \) along with the search direction \( \vec{d}_p^{(k)} \):
 				\begin{align}
 					\min_{\vec{d}_p \in \R^{n_p}} &\, \varphi\big(\vec{p}^{(k)}\big) + \Big(\!\grad{\varphi}\big(\vec{p}^{(k)}\big)\!\Big)^T \vec{d}_p + \frac{1}{2} \vec{d}_p^T \mat{H}_L^{\vec{p}}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}, \vec{\sigma}^{(k)}\big) \vec{d}_p \\
@@ -1380,7 +1380,7 @@
 				\end{align}
 				Iteration step \( k \to k + 1 \): \( \vec{p}^{(k + 1)} = \vec{p}^{(k)} + \vec{d}_p^{(k)} \)
 			% end
-			
+
 			\subsubsection{Notes}
 				\begin{itemize}
 					\item Similar to the Newton method, it can be shown under some assumptions that the SQP method converges to a local minimum.
@@ -1440,7 +1440,7 @@
 
 		\subsection{Termination Criteria}
 			An obvious termination criteria would be to check whether the necessary KKT-conditions are sufficiently fulfilled, i.a. \( \grad{L}(\vec{p}, \vec{\mu}) \approx \vec{0} \).
-			
+
 			The commonly used SQP method \emph{NPSOL} terminates if all of the following criteria are fulfilled:
 			\begin{enumerate}
 				\item Old and new approximation do not change any more:
@@ -1464,7 +1464,7 @@
 				b_j\big(\vec{p}^{(k + 1)}\big)                       & \geq -\varepsilon_\mathrm{ft},\quad i = 1, \cdots, n_b
 			\end{align*}
 			Where the constraints \( \varepsilon_\mathrm{opt} \), \( \varepsilon_\mathrm{ft} \) have to be chosen by the user.
-			
+
 			In the more modern method \emph{SNOPT}, all of the following two criteria have to be fulfilled:
 			\begin{gather*}
 				\frac{
@@ -1474,7 +1474,7 @@
 				} \leq \varepsilon_\mathrm{opt} \\
 				\frac{\max\Big\{ \big\lvert a_j\big(\vec{p}^{(k)}\big) \big\rvert : i = 1, \cdots, n_p \Big\} \cup \Big\{ \big\lvert \min\big\{ 0,\, b_l\big(\vec{p}^{(k)}\big) \big\} \big\rvert : l \in A\big(\vec{p}^{(k)}\big) \Big\}}{\big\lVert \vec{p}^{(k)} \big\rVert_2} \leq \varepsilon_\mathrm{ft}
 			\end{gather*}
-			
+
 			A common criteria to detect failures is a maximum number of iterations \( k_\mathrm{max} \).
 		% end
 
@@ -1484,7 +1484,7 @@
 				\mat{H}_L^{\vec{p}}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}, \vec{\sigma}^{(k)}\big) = \mat{H}_\varphi\big(\vec{p}^{(k)}\big) - \sum_{i = 1}^{n_a} \mu_i^{(k)} \mat{H}_{a_i}\big(\vec{p}^{(k)}\big) - \sum_{i \in A\big(\vec{p}^{(k)}\big)} \sigma_i^{(k)} \mat{H}_{b_i}\big(\vec{p}^{(k)}\big)
 			\end{align*}
 			for (theoretical) quadratic convergence of the SQP method. But in practice, the second-order derivatives (the Hessian) is often not available! Additionally it is assumed that the Hessian has a positive curvature (i.e. is positive definite) along all feasible directions, which is fulfilled near a strict minimum. However, this cannot be assumed in every iteration.
-			
+
 			Hence, approximations/modifications of the Hessian are required.
 
 			\subsubsection{Na{\"i}ve Approach: BFGS Approximation}
@@ -1508,7 +1508,7 @@
 						\end{alignedat}  \label{eq:activeQp}
 				\end{align}
 				where the last Jacobian \( \mat{J}_{\vec{a}}^T \) might also contain active inequality constraints which are left out here for brevity. But they are handled the same as regular equality constraints and can be considered to be part of it knowing which are active (as assumed). The degrees of freedom of this NLP are therefore \( n_p - n_a \).
-				
+
 				Assuming the current approximation \( \vec{p}^{(k)} \) fulfills the constraints, \( \vec{a}\big(\vec{p}^{(k)}\big) = \vec{0} \), the next approximation also has to fulfill the constraints:
 				\begin{align*}
 					\vec{a}\big(\vec{p}^{(k)} + \vec{d}_p\big) = \vec{0}
@@ -1522,7 +1522,7 @@
 					\mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \vec{d}_p = \vec{0}
 				\end{align*}
 				Thus, \( \vec{d}_p \) has to lie in the kernel of \( \mat{J}_{\vec{a}}^T \) and the dimensionality of the kernel is \( n_p - n_a \).
-				
+
 				Hence, the kernel is spanned by \( n_p - n_a \) basis vectors (which are not uniquely determined). Let \( \mat{Z}^{(k)} \) be the matrix that contains these basis vectors as columns, then
 				\begin{align*}
 					\mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \mat{Z}^{(k)} = \mat{0}
@@ -1540,7 +1540,7 @@
 					     &&  &= \mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \mat{Y}^{(k)} \vec{d}_p^y &  \label{eq:qpDYlinear}
 				\end{align}
 				The vector \( \vec{d}_p^y \) is therefore determined by the active constraints via the linear system~\eqref{eq:qpDYlinear}. Now there remain \( n_p - n_a \) degrees of freedom for the actual optimization.
-				
+
 				Plugging the formulation of \( \vec{d}_p \) into the objective of the QP\footnote{Note that the parameters of the Hessian are kept implicitly for brevity.}
 				\begin{align*}
 					&\, \varphi\big(\vec{p}^{(k)}\big) + \Big(\!\grad{\varphi}\big(\vec{p}^{(k)}\big)\!\Big)^T \vec{d}_p + \frac{1}{2} \vec{d}_p^T \mat{H}_L^{\vec{p}} \vec{d}_p \\
@@ -1554,20 +1554,20 @@
 				\begin{align*}
 					\Big( \big(\mat{Z}^{(k)}\big)^T \mat{H}_L^{(k)} \mat{Z}^{(k)} \Big) \vec{d}_p^z = -\big(\mat{Z}^{(k)}\big)^T \mat{H}_L^{(k)} \mat{Y}^{(k)} \vec{d}_p^y - \big(\mat{Z}^{(k)}\big)^T \cdot \grad{\varphi}\big(\vec{p}^{(k)}\big)
 				\end{align*}
-				
+
 				\paragraph{Summary}
 					Using the representation \( \vec{d}_p = \mat{Y}^{(k)} \vec{d}_p^y + \mat{Z}^{(k)} \vec{d}_p^z \), the search direction as the solution of the QP~\eqref{eq:activeQp} can be computed by solving two staggered linear systems:
 					\begin{align*}
 						\mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \mat{Y}^{(k)} \vec{d}_p^y &= -\vec{a}\big(\vec{p}^{(k)}\big) \\
 						\Big( \big(\mat{Z}^{(k)}\big)^T \mat{H}_L^{(k)} \mat{Z}^{(k)} \Big) \vec{d}_p^z &= -\big(\mat{Z}^{(k)}\big)^T \mat{H}_L^{(k)} \mat{Y}^{(k)} \vec{d}_p^y - \big(\mat{Z}^{(k)}\big)^T \cdot \grad{\varphi}\big(\vec{p}^{(k)}\big)
 					\end{align*}
-					
+
 					\begin{itemize}
 						\item If \( \vec{a}\big(\vec{p}^{(k)}\big) = \vec{0} \), i.e. the constraints are linear, \( \vec{d}_p^y = \vec{0} \).
 						\item If additionally \( \big(\mat{Z}^{(k)}\big)^T \cdot \grad{\varphi}\big(\vec{p}^{(k)}\big) = \vec{0} \), then \( \vec{d}_p^z = \vec{0} \).
 					\end{itemize}
 				% end
-				
+
 				\paragraph{First- and Second-Order Conditions}
 					Using the matrix \( \mat{Z} \) some of the necessary and sufficient conditions can be formulated equivalent:
 					\begin{itemize}
@@ -1598,14 +1598,14 @@
 					\vec{d}^{(k)} &= \vec{d}_p^z \\
 					\vec{g}^{(k)} &= \big(\mat{Z}^{(k + 1)}\big)^T \cdot \grad_{\vec{p}}L\big(\vec{p}^{(k + 1)}, \vec{\mu}^{(k + 1)}, \vec{\sigma}^{(k + 1)}\big) - \big(\mat{Z}^{(k)}\big)^T \cdot \grad_{\vec{p}}L\big(\vec{p}^{(k)}, \vec{\mu}^{(k + 1)}, \vec{\sigma}^{(k + 1)}\big)
 				\end{align*}
-				
+
 				Analogous to unconstrained optimization, it is helpful to replace the rank-2 update with a rank-1 update and directly approximate a Cholesky decomposition.
 			% end
 		% end
 
 		\subsection{SQP Method (Algorithm)}
 			A sketch of the implementation of an SQP method is given in~\autoref{alg:sqp}.
-			
+
 			\begin{algorithm}  \DontPrintSemicolon
 				\textbf{Initialization:} Choose an initial approximation \(\vec{p}^{(0)}\), set \( k \gets 0 \) \;
 				\While{not converged}{
@@ -1640,7 +1640,7 @@
 						\vec{p}^{(k + 1)} \gets \vec{p}^{(k)} + \alpha^{(k)} \vec{d}_p^{(k)}
 					\end{align*} \;
 				}
-				
+
 				\caption{Sequential Quadratic Programming}
 				\label{alg:sqp}
 			\end{algorithm}
@@ -1658,19 +1658,19 @@
 					\end{itemize}
 			\end{itemize}
 		% end
-		
+
 		\subsection{Examples} % N/A
 			\todo{Content}
-			
+
 			\subsubsection{Optimal Control of a 6-DoF Industry Robot} % 4.71, 4.72
 				\todo{Content}
 			% end
-			
+
 			\subsubsection{Car Drive} % 4.73, 4.74
 				\todo{Content}
 			% end
 		% end
-		
+
 		\subsection{Wrap-Up}
 			\begin{itemize}
 				\item Motivation:
@@ -1743,7 +1743,7 @@
 
 				\paragraph{Function Precision}
 					The function precision takes into account that the target function \( \varphi \) cannot be calculated with machine precision, e.g. because the evaluation depends on other methods or because rounding errors have summed up due to cancellation or ill-conditioning.
-					
+
 					This can be taken into account with the absolute errors \( \varepsilon \), \( \varepsilon_{\delta_i} \) of the function evaluations:
 					\begin{align*}
 						\hat{\varphi}(\vec{p}) = \varphi(\vec{p}) + \varepsilon && \hat{\varphi}(\vec{p} + \vec{e}_i \delta_i) = \varphi(\vec{p} + \vec{e}_i \delta_i) + \varepsilon_{\delta_i}
@@ -1760,7 +1760,7 @@
 				\paragraph{Rounding Error}
 					Additionally to the function precision and the theoretical error, rounding errors are produced by the subtraction and the division. But if \(\delta_i\) does not get "too small", these are negligible compared to the approximation error and the function precision.
 				% end
-				
+
 				\paragraph{Total Error}
 					Hence, the total error is given as:
 					\begin{align}
@@ -1790,7 +1790,7 @@
 				\end{align*}
 				This step size often is a good choice and thus set as the default in most implementations. It also explains the rule of thumb that forward-differences can approximately evaluate half of decimal places correctly.
 			% end
-			
+
 			\subsubsection{Notes}
 				\begin{itemize}
 					\item For evaluating the gradient \( \grad{\varphi}(\vec{p}) \) it is necessary to
@@ -1807,7 +1807,7 @@
 
 		\subsection{Central-Difference Approximation}
 			For forward difference approximation often yields results that are good enough, except the gradients are too small. Additionally, the forward approximation is not sufficient if the optimization step size \( \alpha^{(k)} \) such that the changes in \( \vec{p} \) are less than the step size \(\delta\) or the differences in the function values are "too small" relative to \(\delta\).
-			
+
 			A potentially more exact approximation are \emph{central differences}:
 			\begin{align*}
 				\pdv{\varphi(\vec{p})}{p_i} \approx D_{Z, i}\varphi(\vec{p}) = \frac{1}{2 \delta_i} \big( \varphi(\vec{p} + \vec{e}_i \delta_i) - \varphi(\vec{p} - \vec{e}_i \delta_i) \big)
@@ -1821,9 +1821,9 @@
 				\Bigg\lvert D_{Z, i}\hat{\varphi}(\vec{p}) - \pdv{\varphi(\vec{p})}{p_i} \Bigg\rvert \leq \varepsilon_R^{2/3}
 			\end{align*}
 			Hence, the rule of thumb that central difference can approximately evaluate two third of decimal places correctly.
-			
+
 			But central differences produce much more computational overhead compared to forward/backward differences! Thus they should only be used if needed (by switching from forward to central differences).
-			
+
 			To approximate the second derivative, the following schema can be used
 			\begin{align*}
 				\pdv[2]{\varphi(\vec{p})}{p_i} \approx \frac{1}{\delta_i^2} \big( \varphi(\vec{p} + \vec{e}_i \delta_i) - 2\varphi(\vec{p}) + \varphi(\vec{p} - \vec{e}_i \delta_i) \big)
@@ -1845,12 +1845,12 @@
 
 		\subsection{Derivative of ODE-Simulation Models}
 			\label{subsec:derivativeOde}
-		
+
 			Given an IVP (initial value problem) \( \dot{\vec{x}} = \vec{f}(t, \vec{x}; \vec{p}) \), \( \vec{x}(0) = \vec{x}_0 \), \( 0 \leq t \leq t_f \), the derivatives of the (numerical) solution \( \vec{x}(t; \vec{p}) \) w.r.t. to the parameters \( \vec{p} \) are required. Formally, the parameters \(\vec{p}\) can be transformed to initial values \(\vec{x}_0\) and thus the derivatives w.r.t. the parameters to derivatives w.r.t. the initial values. The derivative w.r.t. the initial values is called the \emph{sensitivity matrix}:
 			\begin{align*}
 				\pdv{\vec{x}(t; \vec{x}_0)}{\vec{x}_0}
 			\end{align*}
-			
+
 			The IVP with the parameters \(\vec{p}\) transformed to initial values is given as
 			\begin{align*}
 				\begin{bmatrix}
@@ -1901,7 +1901,7 @@
 					\item This causes gradient-based algorithms to have extremely big problems in finding the minimum!
 					\item But this is not only caused by the optimization method\dots
 				\end{itemize}
-			
+
 				\paragraph{Runge-Kutta Methods}
 					When using Runge-Kutta methods of order \(m\), the numerical solutions depends on the integration tolerance and the internal step width of the integration. By just looking at the initial values, the error of RK methods of order \(m\) is
 					\begin{align*}
@@ -1914,7 +1914,7 @@
 						= &\, \pdv{\vec{x}(t; \vec{x}_0)}{x_{0, i}} + \mathcal{O}(\delta_i) + \sum_{j = m}^{N} \tilde{c}_j(t, \vec{x}_0 + \vec{e}_i \delta_i) \cdot \underbrace{\frac{h_2^j - h_1^j}{\delta_i}}_{\to\,\infty} + \sum_{j = m}^{N} \Bigg( \pdv{\tilde{c}_j(t, \vec{x}_0)}{x_{0, i}} + \mathcal{O}(\delta_i) \!\Bigg) h_1^j + \mathcal{O}\Bigg( \frac{h_1^{N + 1}}{\delta_i} \Bigg) + \mathcal{O}\Bigg( \frac{h_2^{N + 1}}{\delta_i} \Bigg)
 					\end{align*}
 					This is the problem! If the integration steps \( h_1 \neq h_2 \) are not equal, the error term becomes dominant as \( \delta_i \) usually is "small".
-					
+
 					A "solution" would be to set \( h_1 = h_2 \), causing bad integration results.
 				% end
 			% end
@@ -1935,7 +1935,7 @@
 			\begin{align*}
 				\dv{t} \pdv{\vec{x}(t; \vec{x}_0)}{\vec{x}_0} = \pdv{\vec{f}\big(t, \vec{x}(t; \vec{x}_0)\big)}{\vec{x}} \pdv{\vec{x}(t; \vec{x}_0)}{\vec{x}_0},\quad \pdv{\vec{x}(0; \vec{x}_0)}{\vec{x}_0} = \mat{I}
 			\end{align*}
-			
+
 			\begin{itemize}
 				\item Variant 1: Simultaneously integrate the ODE and the matrix-ODE with a standard integrator.
 				\item Variant 2 (better): Differentiated integrate method calculates \( \vec{x}(t; \vec{p}) \), \( \pdv{\vec{x}(t; \vec{p})}{\vec{p}} \), \( \pdv{\dot{\vec{x}}(t; \vec{p})}{\vec{p}} \)
@@ -1962,14 +1962,14 @@
 			\item 2-argument functions: Addition, Subtraction, Multiplication, Division, Exponentiation
 		\end{itemize}
 		AD-methods are based on an analysis of the evaluation sequence as a \emph{computation graph} of elementary functions.
-		
+
 		There are two main design decisions:
 		\begin{itemize}
 			\item Pre-compile a program to get the derivative function to be able to evaluation the function and the derivatives simultaneously (forward mode).
 			\item Build the computation graph after the function has been evaluated and evaluate the derivative afterwards (backward mode).
 		\end{itemize}
 		The computational complexity of the gradient in forward mode on a scalar function with multiply variables \(\varphi(\vec{p})\) can be as high as for symbolic differentiation: \( \mathcal{O}(n_p \). But for the backward mode, a complexity of \( \mathcal{O}(5) \) can be reached independent of \( n_p \)! But the memory complexity can rise a lot\dots
-		
+
 		\begin{itemize}
 			\item Advantages:
 				\begin{itemize}
@@ -1982,14 +1982,14 @@
 				\end{itemize}
 		\end{itemize}
 		Even ODE- and PDE-simulations can be handled using AD!
-		
+
 		Popular implementations, commonly used in machine learning, are libraries like TensorFlow (static computation graph) and PyTorch (dynamic computation graph).
 	% end
 % end
 
 \chapter{Parameter Estimation}
 	\label{c:leastSquares}
-	
+
 	This chapter covers a special type of objective function: the sum of squares, called \emph{least squares} optimization problems:
 	\begin{align*}
 		\varphi(\vec{p}) = \frac{1}{2} \sum_{i = 1}^{n_r} r_i^2(\vec{p}) = \frac{1}{2} \lVert \vec{r}(\vec{p}) \rVert_2^2
@@ -1998,7 +1998,7 @@
 	\begin{align*}
 		R_K^2 = (x_i - x_K)^2 + (y_i - y_K)^2 \quad\implies\quad r_i(x_K, y_K, R_K) = \sqrt{(x_i - x_K)^2 + (y_i - y_K)^2} - R_K
 	\end{align*}
-	
+
 	If, in practice, some parametric model is used, this almost always leads to a parameter fitting problem to measure/minimize the differences between the model and measurements. By minimizing the differences, the model with that most correspond to the measurements can be found (e.g. the parameters of a friction model or inertia of a robot).
 
 	\section{Objective Functions}
@@ -2015,9 +2015,9 @@
 				-p_{n_r + 1} \leq r_i(\vec{p}) \leq p_{n_r + 1},\quad i = \dotsrange{1}{n_r}
 		\end{align*}
 		Anyway, \(\varphi_\infty\) is extremely sensitive towards outliers. On the other hand, \(\varphi_2\) is less sensitive towards outliers and is differentiable (if \(\vec{r}\) is differentiable)!
-		
+
 		Hence, in most cases the least squares objective \(\varphi_2\) is used. Besides the differentiability, it is also statistically appealing: If the measurement noise \(\varepsilon_{ij}\) are statistically independent and Gaussian distributed with mean \(0\) and variance \(\sigma^2\), the solution of \( \varphi_2 \to \mathrm{min} \) is a maximum likelihood estimator!
-		
+
 		Additionally, by exploiting the structure of \(\varphi_2\), the efficiency of gradient-based algorithms can be increased (e.g. due to sparse Jacobians).
 	% end
 
@@ -2074,12 +2074,12 @@
 			\begin{align*}
 				\min_{\vec{d} \in \R^{n_p}} &\, \frac{1}{2} \Big\lVert \mat{J}_r^T\big(\vec{p}^{(k)}\big) \vec{d} + \vec{r}\big(\vec{p}^{(k)}\big) \Big\rVert_2^2
 			\end{align*}
-			
+
 			If residuals are big or the problem is ill-conditioned, it can be modified with a suitable matrix \( \mat{B}^{(k)} \):
 			\begin{align*}
 				\Big( \mat{J}_{\vec{r}}\big(\vec{p}^{(k)}\big) \mat{J}_{\vec{r}}^T\big(\vec{p}^{(k)}\big) + \mat{B}^{(k)} \Big) \vec{d}^{(k)} = -\mat{J}_r\big(\vec{p}^{(k)}\big) \cdot \vec{r}\big(\vec{p}^{(k)}\big)
 			\end{align*}
-			
+
 			Additionally a step size rule should be used. This method is implemented, e.g. in \emph{NLSCON} which also allows additional nonlinear inequality constraints.
 		% end
 
@@ -2095,10 +2095,10 @@
 					\lvert \vec{d} \rVert_2 \leq \delta^{(k)}
 			\end{align*}
 			Where \(\delta\) and \(\gamma\) have a connection.
-			
+
 			This is implemented, e.g. in \emph{LMDER}, \emph{LMJAC} of \emph{MINPACK}.
 		% end
-		
+
 		\subsection{Notes}
 			\begin{itemize}
 				\item The Gauss-Newton method needs an appropriate test function that also exploits the structure of the objective function to determine the step size to ensure global convergence.
@@ -2134,20 +2134,20 @@
 						\item the system model and the physical might be incompatible (wrong model).
 					\end{itemize}
 			\end{itemize}
-		
+
 			Common problems for small residuals:
 			\begin{itemize}
 				\item Some optimization variables might not be uniquely determined.
 				\item Too less measurements, variables are not unique in general (e.g. linearly dependent in the model).
 			\end{itemize}
-		
+
 			Practical aspects:
 			\begin{itemize}
 				\item Scaling/balancing of the variables: By the transformation \( p_i \to \hat{p}_i = s_i p_i \), \( s_i = \const > 0 \), the derivative changes to \( \pdv{\varphi}{\hat{p}_i} = \pdv{\varphi}{p_i} \frac{1}{s_i} \).
 				\item Scaling of the residuals by weights \( w_i > 0 \): \( \varphi(\vec{p}) = \frac{1}{2} \sum_{i = 1}^{n_r} w_i r_i^2(\vec{p}) \)
 			\end{itemize}
 		% end
-		
+
 		\subsection{The Covariance Matrix}
 			Assuming the measurement errors \( \varepsilon_i \) (in the measurements \(r_i\)) are normally distributed with zero mean and constant variance \(\sigma^2\). Then the solution of the linear least squares problem is a maximum likelihood estimator for the parameters! The covariance matrix \(\mat{V}\) is then given by \( \mat{V} = \sigma^2 \big(\mat{J} \mat{J}^T\big)^{-1} \) where the variance can be approximated by
 			\begin{align*}
@@ -2226,7 +2226,7 @@
 				\end{alignedat}
 		\end{align*}
 		where \( \vec{x} : \R \to \R^{n_x} \), \( L : \R^{n_x} \times \R^{n_x} \times R \to R \) are two times continuously differentiable.
-		
+
 		A \emph{stationary} solution \( \vec{x}^\ast \), i.e. a solution that is a minimum candidate, has to fulfill the \emph{Euler-Lagrange Equation}:
 		\begin{align*}
 			\pdv{L}{x_i} - \dv{t} \pdv{L}{\dot{x}_i} = 0,\quad i = \dotsrange{1}{n_x}
@@ -2235,7 +2235,7 @@
 
 		\subsection{Example}
 			\label{subsec:ballExample}
-		
+
 			As of the \emph{Hamilton's principle} \(\vec{x}(t)\) between \(t_1\) and \(t_2\) is a stationary point of the action functional
 			\begin{align*}
 				\int_{t_1}^{t_2} \! L\big(\vec{x}(t), \dot{\vec{x}}(t), t\big) \dd{t}
@@ -2244,7 +2244,7 @@
 			\begin{align*}
 				L = T - V
 			\end{align*}
-			
+
 			For a ball with mass \(m\) and gravity acceleration \(g\) that is thrown into the air in a straight line (i.e. one-dimensional), the kinetic and potential energy are given as:
 			\begin{align*}
 				T = \frac{m}{2} \dot{x}^2 \qquad\qquad V = mgx
@@ -2275,12 +2275,14 @@
 % end
 
 \chapter{Optimal Control}
+	\label{c:optimalControl}
+
 	A dynamical system is described by the ODE
 	\begin{align*}
 		\dot{\vec{x}} = \vec{f}(\vec{x}, \vec{u}, \vec{p}, \vec{z}),\quad \vec{x}(0) = \vec{x}_0
 	\end{align*}
 	where \(\vec{x}\) is the state, \(\vec{u}\) are the control variables, \(\vec{p}\) are (constant) system parameters and \(\vec{z}\) is noise. An optimal control problem has given \(\vec{x}_0\), \(\vec{p}\) and \(\vec{x}_i(t_f)\) and seeks for an optimal \(\vec{u}\) and \(\vec{x}\).
-	
+
 	A complete optimal control problem is given as:
 	\begin{align*}
 		\min &\, J[\vec{u}],\quad J[\vec{u}] = \phi\big(\vec{x}(t_f), t_f\big) + \int_{0}^{t_f} \! L\big(\vec{x}(t), \vec{u}(t)\big) \dd{t} \\
@@ -2338,10 +2340,10 @@
 			H(\vec{x}, \vec{u}, \vec{\lambda}) &\coloneqq L(\vec{x}, \vec{u}) + \vec{\lambda}^T \vec{f}(\vec{x}, \vec{u})
 		\end{align*}
 		Note that, while kept implicitly, the auxiliary variables \(\vec{\nu}\) and \(\vec{\lambda}\) are time-dependent! The \(\vec{\lambda}\) are also called the \emph{adjunct variables} of the optimal control problem.
-		
+
 		\subsection{Boundary Conditions}
 			\label{subsec:boundary}
-			
+
 			To solve the optimal control problem, \(2n_x\) boundary conditions are needed (the optimality conditions will yield one first-order ODE for every state and adjunct variable). Additional to the given boundary conditions of the problem formulation, enough conditions have to be found to get \(2n_x\) conditions. Common cases:
 			\begin{enumerate}[label = (\roman*)]
 				\item Fixed initial conditions \( x_i(0) = x_{i, 0} = \const \): \\
@@ -2373,14 +2375,14 @@
 				H\big(\vec{x}^\ast(t), \vec{u}^\ast(t), \vec{\lambda}^\ast(t)\big) = \min_{\tilde{\vec{u}} \in U} \, H\big(\vec{x}^\ast(t), \tilde{\vec{u}}, \vec{\lambda}^\ast(t)\big),\quad \forall t \in [0, t_f]  \label{eq:maximumPrinciple}
 			\end{align}
 			Where \( U \subseteq \R^{n_u} \) is the set of feasible controls. These conditions are called the \emph{maximum principle}.
-			
+
 			\textbf{Definition:} The Hamiltonian is called \emph{regular} if and only if it has an unique minimum.
-			
+
 			If the Hamiltonian is regular and the control \(\vec{u}\) appears nonlinear in the Hamiltonian, condition~\eqref{eq:maximumPrinciple} can be formulated as
 			\begin{align*}
 				\pdv{H}{\vec{u}} = \vec{0}
 			\end{align*}
-			
+
 			\subsubsection{Derivation} % 8.8, 8.9, 8.10, 8.11
 				\todo{Content}
 			% end
@@ -2425,7 +2427,7 @@
 			\vec{f}\big(\vec{x}(t), \vec{u}(t)\big) &= \vec{f}_0\big(\vec{x}(t)\big) + \mat{f}_1^T\big(\vec{x}(t)\big) \vec{u},\quad \vec{f}_0 : \R^{n_x} \to \R^{n_x},\, \mat{f}_1 : \R^{n_x} \to \R^{n_u \times n_x}
 		\end{align*}
 		Also, it is assumed to have box constraints for the controls: \( \vec{u}_\mathrm{min} \leq \vec{u}(t) \leq \vec{u}_\mathrm{max} \).
-		
+
 		The according Hamiltonian is
 		\begin{align*}
 			H(\vec{x}, \vec{u}, \vec{\lambda})
@@ -2442,7 +2444,7 @@
 				\end{cases*}
 		\end{align*}
 		Here, \( u_{i, \mathrm{sing}} \) is the \emph{singular control} that is only needed if the switching function is zero over an interval. The other two cases are called \emph{bang-bang control}.
-		
+
 		All of the following will only cover a single control \( u_i(t) \), but the methods can be applied to more than one control variable in a setting. Of course it is possible that some control variables are nonlinear in the Lagrangian, hence a bang-bang or singular control is not needed in that case.
 
 		\subsection{Singular Control}
@@ -2462,13 +2464,13 @@
 
 			\subsubsection{Second-Order Necessary Optimality Condition for Singular Control}
 				\textbf{Theorem:} If \( m < \infty \), then \( m \) is even. Let \( m = 2p \), where \(p\) is called the \emph{order} of the singular control.
-				
+
 				The second-order necessary optimality condition for singular control, i.e. the generalized Legendre-Clebsch is:
 				\begin{align*}
 					(-1)^p \pdv{u_i} s_i^{(m)}\big( \vec{x}^\ast(t), \vec{\lambda}^\ast(t), \vec{u}^\ast(t) \big) \geq 0,\quad \forall t \in [t_1, t_2]
 				\end{align*}
 				The condition can be expanded to a sufficient condition by replacing the inequality with a strict inequality, i.e. the left side has to be positive.
-				
+
 				If the sufficient condition is fulfilled, two conclusions can be proven:
 				\begin{itemize}
 					\item If \(p\) is odd, \(u_i\) is either discontinuous or continuously differentiable in \( t_1 \).
@@ -2497,13 +2499,13 @@
 			V(t_0, \vec{x}_0) &= \min_{\vec{u} \,\in\, U} \, \Bigg(\! \phi\big(\vec{x}(t_f), t_f\big) + \int_{t_0}^{t_f}\! L\big(\vec{x}(\tau), \vec{u}(\tau)\big) \dd{\tau} \!\Bigg) \\
 			V(t_f, \vec{x})   &= \phi(\vec{x}, t_f)
 		\end{align*}
-		
+
 		The \emph{Hamilton-Jacobi-Bellman Equation} is a partial differential equation for the value function:
 		\begin{align*}
 			-\pdv{V(t, \vec{x})}{t} &= \min_{\tilde{\vec{u}}} \, \Bigg(\! L(t, \vec{x}, \tilde{\vec{u}}) + \bigg( \pdv{V(t, \vec{x})}{\vec{x}} \bigg)^T \vec{f}(t, \vec{x}, \tilde{\vec{u}}) \!\Bigg) \\
 			V(t_f, \vec{x}) &= \phi(\vec{x}, t_f)
 		\end{align*}
-		
+
 		If \( V(t, \vec{x}) \) is a solution of the Hamilton-Jacobi-Bellman equation, then the minimization
 		\begin{align*}
 			\min_{\tilde{\vec{u}}} \, \Bigg(\! L(t, \vec{x}, \tilde{\vec{u}}) + \bigg( \pdv{V(t, \vec{x})}{\vec{x}} \bigg)^T \vec{f}(t, \vec{x}, \tilde{\vec{u}}) \!\Bigg)
@@ -2533,7 +2535,7 @@
 			\vec{g}\big(\vec{x}(t), \vec{u}(t)\big) \geq \vec{0}
 		\end{align*}
 		where the inequality is element-wise. Such a constraint is called a \emph{control constraint} if \(\vec{u}\) appears explicitly in \(\vec{g}\), i.e. \( \pdv{\vec{g}}{\vec{u}} \neq \mat{0} \).
-	
+
 		\subsection{Mixed Inequality Constraints}
 			Mixed inequality constraints are both dependent on the state and the control:
 			\begin{align*}
@@ -2547,9 +2549,9 @@
 
 			\subsubsection{Necessary Conditions (Maximum Principle)}
 				Let the problem be autonomous, \(\vec{f}\), \(\vec{g}\), \(\phi\) be continuously differentiable, \(U\) the set of feasible optimal controls and let the inequality constraint \( \vec{g} \geq \vec{0} \) have an active component \( g_i \) with \( g_i(t) = 0 \) for \( t \in [t_1, t_2] \), i.e. let it be active on \( [t_1, t_2] \).
-				
+
 				If not all boundary conditions are given, they have to be determined analogous to\autoref{subsec:boundary}.
-				
+
 				Then the necessary optimality conditions can be defined analogous to the ones of the basis problem: Iff \( \vec{x}^\ast \), \( \vec{u}^\ast \), \( \vec{\lambda}^\ast \), \( \vec{\eta}^\ast \) are optimal, the canonical differential equations
 				\begin{align*}
 					\dot{\vec{x}} = \pdv{H}{\vec{\lambda}} \qquad \dot{\vec{\lambda}} = -\pdv{H}{\vec{x}}
@@ -2575,18 +2577,18 @@
 					\lim\limits_{\delta \to 0^+} \vec{\lambda}(t_\Delta + \delta) = \bigg(\! \lim\limits_{\delta \to 0^-} \vec{\lambda}(t_\Delta + \delta) \!\bigg) - \nu_\Delta \cdot \pdv{g_i\big(\vec{x}(t_\Delta), \vec{u}(t_\Delta)\big)}{\vec{x}}
 				\end{align*}
 				Where \( \eta_\Delta = \const \leq 0 \) and \( t_\Delta \) is the entry/exit point, i.e. \( \Delta = 1 \) or \( \Delta = 2 \). This implies that the adjunct variables are in general not continuous at the switching points.
-				
+
 				The optimal control than has to minimize the augmented Hamiltonian over \(U\):
 				\begin{align}
 					H\big(\vec{x}^\ast(t), \vec{u}^\ast(t), \vec{\lambda}^\ast(t), \vec{\eta}^\ast(t)\big) = \min_{\tilde{\vec{u}} \,\in\, U} \, H\big(\vec{x}^\ast(t), \tilde{\vec{u}}, \vec{\lambda}^\ast(t), \vec{\eta}^\ast(t)\big),\quad \forall t \in [0, t_f]  \label{eq:constrainedMax}
 				\end{align}
-				
+
 				Along the active constraint,
 				\begin{align*}
 					g_i\big(\vec{x}(t), \vec{u}(t)\big) = 0 \quad\text{and}\quad \pdv{g_i(\vec{x}, \vec{u})}{u_j} \neq 0
 				\end{align*}
 				yields a condition for determining \(u_j\) along the active constraint. All other controls as well as \(u_j\) outside of the active section have to fulfill~\eqref{eq:constrainedMax} and the Legendre-Clebsch condition (iff \(H\) is regular) or the corresponding bang-bang/singular control, respectively.
-				
+
 				As the problem is autonomous, the Hamiltonian is constant sectionally constant w.r.t. time \(t\) and it can change when constraints become active/inactive.
 			% end
 		% end
@@ -2597,7 +2599,7 @@
 				\vec{g}\big(\vec{x}(t)\big) \geq \vec{0}
 			\end{align*}
 			that does not contain \(\vec{u}\), but at least one \(x_i\) are handled like a mixture of mixed constraints and singular control.
-			
+
 			Let a single constraint \( g_i \) be active in the interval \( [t_1, t_2] \), i.e. \( g_i\big(\vec{x}(t), \vec{u}(t)\big) = 0 \) for \( t \in [t_1, t_2] \). Then also the time derivative has to vanish as well as the second-order time derivative\footnote{Let \( g_i^{(0)} \coloneqq g_i \).}:
 			\begin{align*}
 				g_i^{(m_g)} = \dv{t} g_i^{(m_g - 1)}\big(\vec{x}(t)\big) \equiv 0
@@ -2610,7 +2612,7 @@
 
 			\subsubsection{Augmented Hamiltonian}
 				Let \( \vec{g}(\vec{x}) = g(\vec{x}) \), i.e. only a single state constraint.
-			
+
 				Mathematically, the active constraint \( g\big(\vec{x}(t)\big) = 0 \) for \( t \in [t_1, t_2] \) is equivalent to
 				\begin{align*}
 					g^{(k)}\big(\vec{x}(t), \vec{u}(t)\big) = 0,\quad t \in [t_1, t_2]
@@ -2627,9 +2629,9 @@
 
 			\subsubsection{Maximum Principle}
 				As in the previous section, a single state constraint \(g\) is assumed.
-				
+
 				If not all boundary conditions are given, they have to be determined analogous to\autoref{subsec:boundary}.
-				
+
 				The maximum principle for state constraints is similar to the one for mixed constraints. Let \(g\) be active in the interval \( [t_1, t_2] \). Iff \( \vec{x}^\ast \), \( \vec{u}^\ast \), \( \vec{\lambda}^{k\ast} \), \( \vec{\eta}^{k\ast} \) are optimal, the canonical differential equations
 				\begin{align*}
 					\dot{\vec{x}} = \pdv{H^k}{\vec{\lambda}} \qquad \dot{\vec{\lambda}}^k = -\pdv{H^k}{\vec{x}}
@@ -2665,14 +2667,14 @@
 					\lim\limits_{\delta \to 0^+} \vec{\lambda}^k(t_2 + \delta) = \lim\limits_{\delta \to 0^-} \vec{\lambda}^k(t_2 + \delta)
 				\end{align*}
 				has to be fulfilled for \( k = \dotsrange{1}{m_g} \). That is, the adjunct variables of the \(x_i\) that appear in \( g^{(j - 1)} \) are discontinuous at the entry point and continuous at the exit point of the active constraint.
-				
+
 				The optimal control than has to minimize the augmented Hamiltonian over \(U\):
 				\begin{align*}
 					H\big(\vec{x}^\ast(t), \vec{u}^\ast(t), \vec{\lambda}^\ast(t), \vec{\eta}^\ast(t)\big) = \min_{\tilde{\vec{u}} \,\in\, U} \, H\big(\vec{x}^\ast(t), \tilde{\vec{u}}, \vec{\lambda}^\ast(t), \vec{\eta}^\ast(t)\big),\quad \forall t \in [0, t_f]
 				\end{align*}
-				
+
 				As the problem is autonomous, the Hamiltonian is constant sectionally constant w.r.t. time \(t\) and it can change when constraints become active/inactive.
-				
+
 				To get back and forth in different formulations for \(k\), the following recursion can be defined. For \( m_g \geq 1 \):
 				\begin{align*}
 					\eta^1(t) &=
@@ -2712,7 +2714,7 @@
 					\item The conditions and relations for \(H^k\) are primarily useful to analyze for the solutions can be transformed one into another and are as such equivalent.
 					\item The solutions for \(\vec{x}\) and \(\vec{u}\) are the same for all \(H^k\), but the \(\vec{\lambda}\) and \(\vec{\eta}\) might be different on the active sections (and only on these).
 				\end{itemize}
-			
+
 				\begin{table}
 					\centering
 					\begin{tabular}{c|cc}
@@ -2758,109 +2760,327 @@
 	% end
 % end
 
-\chapter{Berechnung optimaler Trajektorien} % 9.2
-	\todo{Content}
+\chapter{Calculating Optimal Trajectories}
+	This chapter covers the numerical calculation of optimal trajectories exploiting the theoretical results of~\autoref{c:optimalControl}.
 
-	\section{Erste Berechnungsverfahren} % 9.2
-		\todo{Content}
-
-		\subsection{Dynamische Programmierung} % 9.3
-			\todo{Content}
+	\section{First Computation Methods}
+		\subsection{Dynamic Programming}
+			The technique of \emph{dynamic programming} was introduced by Richard Bellman for numerically solving optimal control problems:
+			\begin{itemize}
+				\item Start from the final state \(\vec{x}_f\) at \(t_f\), the discretized Bellman Equation is used to successively iterate forward in time until \( t = 0 \).
+				\item The effort raises exponentially with the dimensions \(n_x\) of \(\vec{x}\) (the "curse of dimensionality").
+				\item A lot of current research is based on dynamic programming, especially in the field of reinforcement learning.
+			\end{itemize}
 		% end
 
-		\subsection{Gradientenverfahren} % 9.4
-			\todo{Content}
+		\subsection{Gradient Methods (Min-H Methods)}
+			\begin{enumerate}
+				\item Starting with an approximation for \( \vec{x} \), \( \vec{\lambda} \), \( 0 \leq t \leq t_f \), calculate an approximation for \( \vec{u} \) by minimizing the Hamiltonian at discrete time steps \(t_i\), e.g. using gradient methods.
+				\item Use this approximation for \(\vec{u}\) to solve the dynamics numerically using forward integration and calculate the adjunct variables using backward iteration.
+				\item Repeat with the new approximations for \(\vec{x}\), \(\vec{\lambda}\).
+			\end{enumerate}
 		% end
 	% end
 
-	\section{Indirekte Verfahren} % 9.5, 9.6, 9.7
+	\section{Indirect Methods}
 		\label{sec:indirectMethods}
-	
-		\todo{Content}
+
+		\emph{Indirect methods} are based on the necessary conditions and try to solve the arising boundary value problem.
+		\begin{itemize}
+			\item Advantages:
+				\begin{itemize}
+					\item As it depends on the necessary conditions, the found solution is likely to be optimal.
+					\item By using highly precise integration methods, the solution can be determined with a high precision. This is especially useful, e.g. for satellite missions.
+					\item Increasingly powerful tools like automatic differentiation ease this method.
+				\end{itemize}
+			\item Disadvantages:
+				\begin{itemize}
+					\item A lot of expert knowledge is needed to derive the optimality conditions and formulate the multi-point boundary value problem.
+					\item The explicit derivation of the necessary conditions can be really costly.
+					\item The correct, optimal switching structure is not known a-prior.
+					\item Numerical methods need initial approximations for \(\vec{x}\) and \(\vec{\lambda}\) which are, especially for \(\vec{\lambda}\), hard to get.
+				\end{itemize}
+		\end{itemize}
 	% end
 
-	\section{Direkte Verfahren} % 9.8, 9.9, 9.10
-		\todo{Content}
+	\section{Direct Methods}
+		\emph{Direct methods} avoid the explicit formulation of the necessary conditions by discretizing the control and possible the state variables. They transform the optimal control problem to a nonlinear optimization problem and employ methods of the nonlinear optimization.
+		\begin{itemize}
+			\item The user does not have to handle adjunct variables, switching structures, \dots
+			\item The efficiency of the method highly depends on the discretization and the employed nonlinear optimization problem.
+			\item Progress in nonlinear optimization (especially SQP) yield highly efficient direct methods.
+			\item Most commonly used.
+		\end{itemize}
 
-		\subsection{Direkte Kollokationsverfahren} % 9.11, 9.25
-			\todo{Content}
+		All of the following assumes an optimal control problem given as:
+		\begin{align*}
+			\min_{\vec{u}} &\, J[\vec{u}] = \phi\big(\vec{x}(t_0), \vec{x}(t_f), t_f\big) \\
+			\mathrm{subject~to}\quad &\,
+				\begin{alignedat}[t]{2}
+					\dot{\vec{x}}(t) &= \vec{f}\big(\vec{x}(t), \vec{u}(t)\big),\quad t \in [t_0, t_f] \\
+					x_i(0) &= x_{i, 0},\quad i \in I_0 \subseteq \{\, \dotsrange{1}{n_x} \,\} \\
+					x_j(t_f) &= x_{j, f},\quad j \in I_f \subseteq \{\, \dotsrange{1}{n_x} \,\} \\
+					\vec{g}\big(\vec{x}(t)\big) &\geq \vec{0} \\
+					\vec{g}\big(\vec{x}(t), \vec{u}(t)\big) &\geq \vec{0}
+				\end{alignedat}
+		\end{align*}
+		The biggest difference is that this problem does not have a Lagrangian term, but as the Lagrangian can be transformed to a Mayer term, this is no loss of generality.
 
-			\subsubsection{Erste Diskretisierung} % 9.12, 9.13, 9.14
-				\todo{Content}
+		\subsection{Direct Collocation Methods}
+			\emph{Direct collocation methods} approximate the control state variables \(\vec{u}\), \(\vec{x}\) using piecewise polynomial functions.
 
-				\paragraph{Modellalgorithmus} % 9.15
+			First of all, the interval \( [t_0, t_f] \) is split into \(n_s\) segments \( [t_i, t_{i + 1}] \) where
+			\begin{align*}
+				t_i = t_0 + \tau_i \cdot (t_f - t_0) \quad\text{with}\quad 0 = \tau_1 < \tau_2 < \cdots < \tau_{n_s + 1} = 1
+			\end{align*}
+			with all \(\tau_i\) given. The resulting segmented space is called the \emph{mesh}. In every of these segments, \(\vec{u}\) and \(\vec{x}\) and approximated using a polynomial. As \(\vec{u}\) is part of the integrand for \(\vec{x}\), it is reasonable to choose a higher polynomial degree for \(\vec{x}\) than \(\vec{u}\).
+
+			Also let \( t_{i + 1/2} \coloneqq t_i + h_i / 2 \) with \( h_i \coloneqq t_{i + 1} - t_i \).
+
+			\subsubsection{First Discretization, Constant Control} % 9.12, 9.13, 9.14
+				A first idea is to approximate the control using constant functions
+				\begin{align*}
+					\tilde{u}_i(t) = u_i(t_{j + 1/2}),\quad t_j \leq t < t_{j + 1},\quad j = \dotsrange{1}{n_s},\quad i = \dotsrange{1}{n_u}
+				\end{align*}
+				and to approximate the state using linear functions:
+				\begin{align*}
+					\tilde{x}_i(t) = x_i(t_j) + \frac{t - t_j}{h_j} \big( x_i(t_{j + 1}) - x_i(t_j) \big),\quad t_j \leq t < t_{j + 1},\quad j = \dotsrange{1}{n_s},\quad i = \dotsrange{1}{n_x}
+				\end{align*}
+				The optimization variables are given as the vector
+				\begin{align*}
+					\vec{p}
+						&= \begin{bmatrix} \vec{x}(t_1) & \vec{u}(t_{1 + 1/2}) & \vec{x}(t_2) & \vec{u}(t_{2 + 1/2}) & \cdots & \vec{x}(t_{n_s}) & \vec{u}(t_{n_s + 1/2}) & \vec{x}(t_{n_s + 1}) & t_f \end{bmatrix}^T \\
+						&= \begin{bmatrix} \vec{p}_1^x & \vec{p}_1^u & \vec{p}_2^x  & \vec{p}_2^u & \cdots & \vec{p}_{n_s}^x & \vec{p}_{n_s}^u & \vec{p}_{n_s + 1}^x & t_f \end{bmatrix}^T
+				\end{align*}
+				where the final time \(t_f\) might be left out if it is given. The second row specifies a shorthand notation for the parameter of the approximation of \(\vec{x}\)/\(\vec{u}\). The approximations shall now be determined subject to:
+				\begin{itemize}
+					\item Minimize the objective functional.
+					\item Fulfill the differential equations and inequality constraints at the center of a segment.
+					\item Comply with the initial and final conditions.
+				\end{itemize}
+
+				This yields the following finite-dimensional nonlinear optimization problem with \( n_p = n_s \cdot (n_x + n_u) + n_x + 1 \) optimization variables (or one less if the final time is given):
+				\begin{align*}
+					\min_{\vec{p} \,\in\, \R^{n_p}} &\, \varphi(\vec{p}),\quad \varphi(\vec{p}) = \phi\big(\vec{p}_1^x, \vec{p}_{n_s + 1}^x, t_f\big) \\
+					\mathrm{subject~to}\quad &\,
+						\begin{alignedat}[t]{2}
+							\vec{f}\big( \tilde{\vec{x}}(t_{j + 1/2}),\, \tilde{\vec{u}}(t_{j + 1/2}) \big) - \dot{\tilde{\vec{x}}}(t_{j + 1/2}) &= \vec{0},\quad j = \dotsrange{1}{n_s} \\
+							\tilde{x}_i(t_0) &= x_{i, 0},\quad i \in I_0 \subseteq \{\, \dotsrange{1}{n_x} \,\} \\
+							\tilde{x}_j(t_f) &= x_{j, f},\quad j \in I_f \subseteq \{\, \dotsrange{1}{n_x} \,\} \\
+							\vec{g}\big( \tilde{\vec{x}}(t_{j + 1/2}), \tilde{\vec{u}}(t_{j + 1/2}) \big) &\geq \vec{0},\quad j = \dotsrange{1}{n_s}
+						\end{alignedat}
+				\end{align*}
+				With \( \tilde{\vec{u}}(t_{j + 1/2}) = \vec{p}_j^u \),\,\, \( \tilde{\vec{x}}(t_{j + 1/2}) = \frac{1}{2} \big( \vec{p}_j^x + \vec{p}_{j + 1}^x \big) \) and \( \dot{\tilde{\vec{x}}}(t_{j + 1/2}) = \frac{1}{h_j} \big( \vec{p}_{j + 1}^x - \vec{p}_j^x \big) \).
+
+				But low approximations like this have to use lots of mesh points to get good approximations. Hence, approximations of higher degree might be useful.
+			% end
+
+			\subsubsection{Second Discretization, Linear Control}
+				Approximate the control using linear functions:
+				\begin{align*}
+					\tilde{u}_i(t) = u_i(t_j) + \frac{t - t_j}{h_j} \big( u_i(t_{j + 1}) - u_i(t_j) \big),\quad t_j \leq t < t_{j + 1},\quad j = \dotsrange{1}{n_s},\quad i = \dotsrange{1}{n_u}
+				\end{align*}
+				And approximate the state using linear functions:
+				\begin{align*}
+					\tilde{x}_i(t) = \sum_{k = 0}^{3} c_{i, j, k} \bigg( \frac{t - t_j}{h_j} \!\bigg)^k,\quad t_j \leq t < t_{j + 1},\quad j = \dotsrange{1}{n_s},\quad i = \dotsrange{1}{n_u}
+				\end{align*}
+				Here, \( c_{i, j, k} \) is the \(k\)-th coefficient for the \(i\)-th component in the \(j\)-th segment \( [t_j, t_{j + 1}] \), yielding four unknown parameters per component and segment. One of the parameters is determined by requiring continuity an the left side of the segment. The other three parameters are determined by requiring the fulfilling of the ODEs at three time steps in the \(j\)-th segment:
+				\begin{itemize}
+					\item Gauss Points: \( t_{j + 1/2} - \sqrt{3/5} h_j \),\quad \( t_{j + 1/2} \),\quad \( t_{j + 1/2} + \sqrt{3/5} h_j \)
+						\begin{itemize}
+							\item Theoretically provide the best approximation.
+							\item Do not provide differentiable transitions between the segments.
+							\item Need \( 3n_s \) evaluations of the ODEs.
+						\end{itemize}
+					\item Lobatto Points: \( t_j \),\quad \( t_{j + 1/2} \),\quad \( t_{j + 1} \)
+						\begin{itemize}
+							\item Provide continuously differentiable transitions between the segments.
+							\item Need \( 2n_s + 1 \) evaluations of the ODEs.
+						\end{itemize}
+				\end{itemize}
+				When using Lobatto points, the NLP parameters per segment can be reduced from four to two, thus reducing the collocation constraints from three to one per segment. But the remaining constraints are more nonlinear\dots Hence, the dimension of the NLP is similar to the constraint approximation, bit given a much better approximation of the solution.
+
+				By plugging the constraints/locations of the Lobatto points into the state approximation, this yields the following formulas for the coefficients:
+				\begin{align*}
+					\begin{bmatrix}
+						c_{i, j, 0} \\
+						c_{i, j, 1} \\
+						c_{i, j, 2} \\
+						c_{i, j, 3}
+					\end{bmatrix}
+					=
+					\begin{bmatrix}
+						1  & 0     & 0  & 0    \\
+						0  & h_j   & 0  & 0    \\
+						-3 & -2h_j & 3  & -h_j \\
+						2  & h_j   & -2 & h_j
+					\end{bmatrix}
+					\cdot
+					\begin{bmatrix}
+						p_{i, j}^x \\
+						p_{i, j}^{\dot{x}} \\
+						p_{i, j + 1}^{x} \\
+						p_{i, j + 1}^{\dot{x}}
+					\end{bmatrix}
+					=
+					\begin{bmatrix}
+						p_{i, j}^x \\
+						h_j p_{i, j}^{\dot{x}} \\
+						-3 p_{i, j}^x - 2h_j p_{i, j}^{\dot{x}} + 3 p_{i, j + 1}^{x} - h_j p_{i, j + 1}^{\dot{x}} \\
+						2 p_{i, j}^x + h_j p_{i, j}^{\dot{x}} - 2 p_{i, j + 1}^{x} + h_j p_{i, j + 1}^{\dot{x}}
+					\end{bmatrix}
+				\end{align*}
+				Where \( p_{i, j}^{\dot{x}} = \dot{x}_i(t_j) = f_i\big(\vec{x}(t_j), \vec{u}(t_j)\big) = f_i(\vec{p}_j^x, \vec{p}_j^u) \). Hence, all coefficients can be computed using only the parameter vector
+				\begin{align*}
+					\vec{p}
+						&= \begin{bmatrix} \vec{x}(t_1) & \vec{u}(t_{1 + 1/2}) & \vec{x}(t_2) & \vec{u}(t_{2 + 1/2}) & \cdots & \vec{x}(t_{n_s}) & \vec{u}(t_{n_s + 1/2}) & \vec{x}(t_{n_s + 1}) & \vec{u}(t_{n_s + 1 + 1/2}) & t_f \end{bmatrix}^T \\
+						&= \begin{bmatrix} \vec{p}_1^x & \vec{p}_1^u & \vec{p}_2^x  & \vec{p}_2^u & \cdots & \vec{p}_{n_s}^x & \vec{p}_{n_s}^u & \vec{p}_{n_s + 1}^x & \vec{p}_{n_s + 1}^u & t_f \end{bmatrix}^T
+				\end{align*}
+				with one parameter more than the constant control approximation. That is, \( n_p = (n_s + 1) (n_x + n_u) + 1 \) parameters (or one less if the final time is fixed). This yields the following nonlinear optimization problem:
+				\begin{align*}
+					\min_{\vec{p} \,\in\, \R^{n_p}} &\, \varphi(\vec{p}),\quad \varphi(\vec{p}) = \phi\big(\vec{p}_1^x, \vec{p}_{n_s + 1}^x, t_f\big) \\
+					\mathrm{subject~to}\quad &\,
+						\begin{alignedat}[t]{2}
+							\vec{f}\big( \tilde{\vec{x}}(t_{j + 1/2}),\, \tilde{\vec{u}}(t_{j + 1/2}) \big) - \dot{\tilde{\vec{x}}}(t_{j + 1/2}) &= \vec{0},\quad j = \dotsrange{1}{n_s} \\
+							\tilde{x}_i(t_0) &= x_{i, 0},\quad i \in I_0 \subseteq \{\, \dotsrange{1}{n_x} \,\} \\
+							\tilde{x}_j(t_f) &= x_{j, f},\quad j \in I_f \subseteq \{\, \dotsrange{1}{n_x} \,\} \\
+							\vec{g}\big( \tilde{\vec{x}}(t_{j + 1/2}), \tilde{\vec{u}}(t_{j + 1/2}) \big) &\geq \vec{0},\quad j = \dotsrange{1}{n_s}
+						\end{alignedat}
+				\end{align*}
+				With \( \tilde{\vec{u}}(t_{j + 1/2}) = \vec{p}_j^u \),\,\, \( \tilde{\vec{x}}(t_{j + 1/2}) = \frac{1}{2} \big( \vec{p}_j^x + \vec{p}_{j + 1}^x \big) \) and \( \dot{\tilde{\vec{x}}}(t_{j + 1/2}) = \frac{1}{h_j} \big( \vec{p}_{j + 1}^x - \vec{p}_j^x \big) \).
+			% end
+
+			\subsubsection{Discretization of Inequality Constraints}
+				In the NLP, the inequality constraints are evaluated at the points \( t_j \), i.e. the mesh points. But why not at other points, e.g. \( \vec{g}(t_{j + 1/2}) \)? As of the theoretical results, one control is determined by
+				\begin{align*}
+					g^{(m_g)}\big(\vec{x}(t), \vec{u}(t)\big) = \dv[m_g]{t} g\big(\vec{x}(t)\big) \equiv 0
+				\end{align*}
+				in an active segment \( t \in [t_1, t_2] \). Hence, for consistency, the number of degrees of freedom on a potential arc have to equal the number of degrees of freedom of the discretized control constraints. This is only ensured when the inequality constraints are evaluated at the mesh points \(t_j\).
+			% end
+
+			\subsubsection{Sparsity}
+				In direct collocation methods, the resulting NLPs have sparse gradients and Jacobians. For example, the memory complexity of the full Jacobian is \( \mathcal{O}(n_s^2) \), while the non-zero elements rise linearly. By exploiting this sparse structure, the efficiency for NLP solvers can be highly enhanced!
+			% end
+
+			\subsubsection{Convergence Properties and Solution Validation}
+				By studying the Lagrangian of the NLP, it is possible to show that a gradient method that is using the Lagrangian for determining the step size, the maximum principle is taken into account in a discretized matter. That way, using direct collocation methods, it is possible to compute approximations for the adjunct variables and the multipliers \(\vec{\eta}^0\). Hence, the theoretical optimality conditions can be validated afterwards!
+
+				For autonomous problems, the Hamiltonian has to be sectionally constant which can be validated using the calculated approximations \( \tilde{\vec{a}}(t) \), \( \tilde{\vec{u}}(t) \), \( \tilde{\vec{\lambda}}^0(t) \), \( \tilde{\vec{\eta}}^0(t) \). Another thing that can be validates is whether the initial and final conditions for the adjunct variables are fulfilled.
+
+				\paragraph{Derivation} % 9.30, 9.31, 9.32
 					\todo{Content}
 				% end
+			% end
 
-				\paragraph{Bemerkungen} % 9.16
-					\todo{Content}
+			\subsubsection{Choosing the Mesh Points}
+				Direct collocation methods typically start with a rough grid and a rough approximation for \(\vec{x}^\ast\) and \(\vec{u}^\ast\) that is then successively adjusted until the solution is smooth enough. But how to do this mesh adjustments?
+				\begin{itemize}
+					\item Ideally: A segment-wise approximation error \( \big\lVert \tilde{\vec{x}}(t) - \vec{x}^\ast(t) \big\rVert \), \( \big\lVert \tilde{\vec{u}}(t) - \vec{u}^\ast(t) \big\rVert \).
+					\item Alternatively: Use the error of in the ODE and inequality constraints: \( \big\lVert \vec{f}\big(\tilde{\vec{x}}(t), \tilde{\vec{u}}(t)\big) - \dot{\tilde{\vec{x}}}(t) \big\rVert \), \( \big\lVert \vec{g}_{\_}\big(\tilde{\vec{x}}(t), \tilde{\vec{u}}(t)\big) \big\rVert \) with \( g_{\_} \coloneqq \lvert g \rvert \) as the element-wise absolute value.
+				\end{itemize}
+				And refine the mesh until \( \lVert \cdot \rVert \leq \varepsilon_\mathrm{tol} \).
+
+				\paragraph{Segment-Wise Error Estimation}
+					Assuming \( \tilde{\vec{u}}(t) = \vec{u}^\ast(t) \), theories of collocation methods can be used to estimate the error
+					\begin{align*}
+						\big\lVert \tilde{\vec{x}}(t) - \vec{x}^\ast(t) \big\rVert
+					\end{align*}
+					where \( \vec{x}^\ast \) is the "real" solution of the BVP. But this method does not work well for direct collocation methods.
+				% end
+
+				\paragraph{Segment-Wise Error Estimation of Time-Continuous Constraints}
+					Simple strategy that works good in practice: Check the fulfilling of the constraints at test points, e.g. for the second discretization:
+					\begin{align*}
+						\big\lVert \vec{f}\big( \tilde{\vec{x}}(t), \tilde{\vec{u}}(t) \big) - \dot{\tilde{\vec{x}}}(t) \big\rVert \quad \big\lVert \vec{g}_{\_}\big(\tilde{\vec{x}}(t), \tilde{\vec{u}}(t)\big) \big\rVert \quad\text{for}\quad t = t_{j + k/4} = t_j + \frac{k}{4} h_j,\quad k = 1, 2, 3
+					\end{align*}
+					Then successively split the segments with too big errors into smaller segments.
+				% end
+
+				\paragraph{Segment-Wise Estimation of Optimality Error}
+					The previous error estimation methods only take the constraints into account, not that this is an optimal control problem. But it is also possible to approximate the "optimality error" using the calculated values for the adjunct variables (e.g. using quadrature rules):
+					\begin{align*}
+						L = \phi\big( \tilde{\vec{x}}(0), \tilde{\vec{x}}(t_f), t_f \big) + \sum_{j = 1}^{n_s} \underbrace{\int_{t_j}^{t_{j + 1}} \! \Big[ \tilde{\vec{\lambda}}^T\!(t) \cdot \Big(\! \vec{f}\big( \tilde{\vec{x}}(t), \tilde{\vec{u}}(t) \big) - \dot{\tilde{\vec{x}}}(t) \!\Big) + \tilde{\vec{\eta}}^T\!(t) \cdot \vec{g}\big( \tilde{\vec{x}}(t), \tilde{\vec{u}}(t) \big) \Big] \dd{t}}_\text{Optimality Error in the \(j\)-th Segment}
+					\end{align*}
 				% end
 			% end
 
-			\subsubsection{Zweite Diskretisierung} % 9.17, 9.18
-				\todo{Content}
+			\subsubsection{Implementation}
+				The general approach to implement direct collocation methods is shown in\autoref{alg:directCollocation}.
 
-				\paragraph{Gauss- und Lobatto-Punkte} % 9.19, 9.20, 9.21
-					\todo{Content}
-				% end
+				\begin{algorithm}  \DontPrintSemicolon
+					\textbf{Initialization:} Choose a start grid \( \big( \tau_j^{(0)} \big)_{j = 1}^{n_s^{(0)} + 1} \) and initial values \( \vec{p}_j^{x, (0)} = \vec{x}(t_j) \), \( \vec{p}_j^{u, (0)} = \vec{u}(t_{j + 1/2}) \) \;
+					\While{not converged (error in \(\dot{\vec{x}}\), maximum iterations or maximum mesh size)}{
+						Adjust the mesh: \( \big( \tau_j^{(k)} \big)_{j = 1}^{n_s^{(k)} + 1} \) \;
+						Solve the resulting NLP:
+						\begin{align*}
+							\min_{\vec{p} \,\in\, \R^{n_p}} &\, \varphi(\vec{p}) \\
+							\mathrm{subject~to}\quad &\,
+								\begin{alignedat}[t]{2}
+									\vec{a}(\vec{p}) &= \vec{0} \\
+									\vec{b}(\vec{p}) &\geq \vec{0}
+								\end{alignedat}
+						\end{align*} \;
+						\( k \gets k + 1 \) \;
+					}
 
-				\paragraph{Resultierendes NLP} % 9.21
-					\todo{Content}
-				% end
+					\caption{Direct Collocation Algorithm.}
+					\label{alg:directCollocation}
+				\end{algorithm}
 			% end
 
-			\subsubsection{Diskretisierung von Ungleichungsbeschränkungen} % 9.22
-				\todo{Content}
+			\subsubsection{Notes}
+				\begin{itemize}
+					\item For a rough mesh, the tolerances \( \varepsilon_{\mathrm{opt}} \) and \( \varepsilon_\mathrm{ft} \) do not have to be chosen too tight as the NLP solver might not ding a solution then.
+					\item While successively refining the grid, the tolerances can be set to tighter values.
+					\item Ideally, the most SQP iterations are needed for the first two meshes. For the high-dimensional NLPs for fine grids, only a few iterations are needed.
+					\item System parameters can be optimized simultaneously by adding them to the variable vector \(\vec{p}\).
+				\end{itemize}
 			% end
 
-			\subsubsection{Konvergenzeigenschaften} % 9.30, 9.31, 9.32
-				\todo{Content}
-			% end
-
-			\subsubsection{Validierung der berechneten Lösung} % 9.33
-				\todo{Content}
-			% end
-
-			\subsubsection{Wahl der Gitterpunkte} % 9.36, 9.37
-				\todo{Content}
-
-				\paragraph{Approximative, segmentweise Fehlerschätzung} % 9.38
-					\todo{Content}
-				% end
-
-				\paragraph{Segmentweise Fehlerschätzung bei zeitkontinuierlichen Nebenbedingungen} % 9.39
-					\todo{Content}
-				% end
-
-				\paragraph{Segmentweise Schätzung des Optimalitätsfehlers} % 9.40
-					\todo{Content}
-				% end
-			% end
-
-			\subsubsection{Vorgehensweise} % 9.41
-				\todo{Content}
-			% end
-
-			\subsubsection{Bemerkungen} % 9.43
-				\todo{Content}
-			% end
-
-			\subsubsection{Anwendung: Optimale Robotersteuerung} % 9.23, 9.24, 9.26, 9.27, 9.28
-				\todo{Content}
-			% end
-
-			\subsubsection{Beispiel: Zeitminimale Robotersteuerung} % 9.34, 9.35
+			\subsubsection{Application: Optimal Robot Control} % 9.23, 9.24, 9.26, 9.27, 9.28, 9.34, 9.35
 				\todo{Content}
 			% end
 		% end
 
-		\subsection{Direkte Schießverfahren} % 9.44, 9.45, 9.46, 9.47
-			\todo{Content}
+		\subsection{Direct Shooting Methods}
+			Similar to the direct collocation methods, shooting methods rely on a segmentation of the the interval \( [t_0, t_f] \) into \( n_s \) segments \( [t_j, t_{j + 1}] \) with \( n_s + 1 \) mesh point \( t_j \). Then the control \(\vec{u}\) is approximated per section, e.g. using constant or linear functions.
+
+			Direct shooting methods then solve various initial value problems until one fulfills the boundary conditions. Informally speaking, multiple trajectories are "shot into the room" until one is feasible. More formally, the process is:
+			\begin{enumerate}
+				\item Divide the interval into \(n_s\) segments and approximate the control \(\vec{u}\), e.g. using a piecewise linear function \( \tilde{\vec{u}} \). Then parameterize \(\vec{u}\) by \( \vec{p} = \begin{bmatrix} \vec{u}(t_1) & \cdots & \vec{u}(t_f) & t_f \end{bmatrix}^T \in \R^{n_u \cdot (n_s + 1)} \).
+				\item Simulate the movement by forward-integrating the system dynamics starting from the initial values and by using the approximated control \( \tilde{\vec{u}} \). This gives an approximation of the state, \( \tilde{\vec{x}} \).
+				\item Calculate the objective and the violations of the constraints, especially the final constraints.
+				\item Optimize \(\vec{p}\) such that the objective is minimized while fulfilling the constraints. Repeat.
+			\end{enumerate}
+
+			But the calculation of the NLP gradients and the Jacobians needs calculating the sensitivity matrix \( \pdv{\vec{x}(t; \vec{p})}{\vec{p}} \).
+			\begin{itemize}
+				\item Advantages:
+					\begin{itemize}
+						\item The resulting dimension of the NLPs are lot less than for direct collocation methods.
+						\item In every iteration of the NLP solver, a solution of the ODEs is available.
+					\end{itemize}
+				\item Disadvantages:
+					\begin{itemize}
+						\item Solving the initial value problem may highly depend on the approximations \( \tilde{\vec{u}} \), \( \tilde{t}_f \). To increase the robustness, multiple shooting methods can be used.
+						\item Approximations for the adjunct variables are not as natural as in direct collocation methods, but possible.
+					\end{itemize}
+			\end{itemize}
 		% end
 	% end
 
-	\section{Bemerkungen} % 9.48, 9.49
-		\todo{Content}
+	\section{Notes}
+		\begin{itemize}
+			\item Some big disadvantages of indirect methods, that good approximations of the optimal state- and adjunct variables and the switching structure are needed, can be overcome by using a direct method first.
+			\item The majority of optimal control problems are nowadays solved using direct methods (other approaches exist besides direct collocation and shooting methods).
+			\item Important applications are for example, aerospace engineering, robots, vehicles, process engineering, economy, biology, ecology, \dots
+			\item Direct collocation methods are also called "simultaneous simulation and optimization".
+			\item Direct shooting methods are also called "iterative simulation and optimization".
+				\begin{itemize}
+					\item Two different algorithms are used for simulation and optimization.
+					\item Highly efficient and stable calculation of the sensitivity matrix using special integration techniques.
+				\end{itemize}
+		\end{itemize}
 	% end
 % end
 

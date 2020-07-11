@@ -3227,81 +3227,136 @@
 	% end
 % end
 
-\chapter{Weitere Themen der Optimalen Steuerung} % 11.1
-	\todo{Content}
+\chapter{Further Topics on Optimal Control}
+	\section{Inverse Optimal Control}
+		\emph{Inverse optimal control} approaches the following problem:
+		\begin{itemize}
+			\item \emph{Given} a dynamic process \( \dot{\vec{x}} = \vec{f}\big(\vec{x}(t), \vec{u}(t)\big) \) and measurements of a run \( \vec{x}_k = \vec{x}(t_k) + \vec{\varepsilon}_k \) that is in general noisy,
+			\item \emph{Assume} the run was controlled optimally,
+			\item \emph{Find} the objective function that was used.
+		\end{itemize}
 
-	\section{Inverse Optimalsteuerung} % 11.2, 11.3
-		\todo{Content}
+		One possible approach is the linear combination of multiple "basis" functionals \( J_k[\vec{u}] \), e.g. one for minimum energy and one for minimum time:
+		\begin{align*}
+			J^\ast[\vec{u}] = \sum_{k = 1}^{n_J} \omega_k J_k[\vec{u}]
+		\end{align*}
+		This yields a two-level optimization problem:
+		\begin{itemize}
+			\item "Outer" problem: Finite-dimensional, nonlinear optimization problem: \( \Phi(\vec{\omega}) = \sum_{k = 1}^{n_m} \lVert \vec{x}^\ast(t_k, \vec{\omega}) - \vec{x}_k \rVert_2^2 \)
+			\item "Inner" problem: Constraints of the outer problem; Optimal control problem with solution \( \vec{x}^\ast \)
+		\end{itemize}
+		\begin{align*}
+			\min_{\vec{u}} &\, J^\ast[\vec{u}],\quad J^\ast[\vec{u}] = \sum_{k = 1}^{n_J} \omega_k J_k[\vec{u}] \\
+			\mathrm{subject~to}\quad &\,
+				\dot{\vec{x}}(t) = \vec{f}\big(\vec{x}(t), \vec{u}(t)\big)
+		\end{align*}
 	% end
 
-	\section{Differentialspiele} % 11.4, 11.5
-		\todo{Content}
+	\section{Differential/Dynamic Games}
+		\emph{Differential games} have ODEs for the complete state \( \vec{x} \) containing multiple ODEs for every player and controls \( \dotsrange{\vec{v}_1(t)}{\vec{v}_{n_p}(t)} \) for every placer. Additionally they might have state or control constraints. The players then might minimize or maximize one or more objective cooperative or non-cooperative.
 
-		\subsection{Nichtkooperative Nullsummen-Differentialspiele} % 11.6, 11.7
-			\todo{Content}
+		\subsection{Non-Cooperative Two-Player Zero-Sum Differential Games}
+			A common class of differential games are \emph{non-cooperative two-player zero-sum differential games} where:
+			\begin{itemize}
+				\item \emph{Non-cooperative} means that one player tries to maximize the objective and the other tries to minimize it.
+				\item \emph{Zero-sum} means that the loss of one player is the reward of the other and vice versa.
+			\end{itemize}
+			Necessary conditions for these games can be derived from the minimax principle similar to the maximum principle using the ODEs for both players, adjunct differential equations and a Hamiltonian.
 
-			\subsubsection{Beispiel} % 11.7
+			This also yields a multi-point BVP that can be solved numerically using indirect methods and it is also possible to use direct methods.
+
+			These games can be used, e.g. to generate robust trajectories by letting one player "be the noise" or friction or similar that tries to destroy the optimal trajectory.
+
+			\subsubsection{Example} % 11.7
 				\todo{Content}
 			% end
-		% end
-
-		\subsection{Notwendige Bedingungen} % 11.8
-			\todo{Content}
 		% end
 	% end
 
-	\section{Lernverfahren und Optimierung} % 11.9
-		\todo{Content}
+	\section{Learning Methods and Optimization}
+		Learning methods (from machine learning) often rely on formulations of solving specific optimization problems. Hence, machine learning and optimization is highly coupled. The focus is a little bit different as most optimization methods try to find solutions as accurate as possible while ML algorithms try to generalize as best as possible to handle unseen scenarios.
 
-		\subsection{Einleitung} % 11.10, 11.15, 11.17, 11.18
-			\todo{Content}
+		\subsection{Foundations}
+			The underlying task often is to find a model \( \vec{f}_{\vec{\theta}}(\vec{x}) \) that has a specific input/output behavior that is enforced using a \emph{loss function}, e.g. the least squares loss function. These models are then optimized using basic gradient methods, gradient descent, without step size determination but using a small step size or an adaptive one (e.g. adam, adagrad, adadelta). A common function approximator are neural networks which use multiple \emph{layers}, \emph{activation functions} and \emph{weights} to approximate arbitrary functions (in fact, any function can be approximated using a two-layer neural net).
+
+			Some open questions are:
+			\begin{itemize}
+				\item Why and when does gradient descent work and how fast?
+				\item Why does not training not always cause overfitting (even when the number of parameters are much higher than the number of samples)?
+				\item How to interpret the trained models (explainable AI)?
+			\end{itemize}
 		% end
 
-		\subsection{Grundlagen} % 11.19, 11.20, 11.21, 11.22
-			\todo{Content}
+		\subsection{Reinforcement Learning}
+			\emph{Reinforcement learning} is highly related to optimal control in terms if a reward that is maximized by tweaking controls etc. However, optimal control is often discrete and models are often treated as stochastic models allowing reasoning about uncertainty. It is also possible to not have any model (e.g. in model-free reinforcement learning)! The model is then learned implicitly.
 
-			\subsubsection{Formales Schema} % 11.23
-				\todo{Content}
+			\subsubsection{Reward}
+				In the RL setting, it is possible to study both finite and infinite time horizons using discounted rewards ensuring that the sum of rewards converges.
 			% end
 
-			\subsubsection{Gradien Descent} % 11.24
-				\todo{Content}
+			\subsubsection{Value Function}
+				In RL, a policy \( \pi \) is searched which is commonly dependent on the state, not time: \( \pi = \pi(\vec{x}) \).
+
+				The \emph{value function} describes the discounted reward starting from the current state:
+				\begin{align*}
+					V^\pi(\vec{x}_0) = \sum_{k = 0}^{\infty} \gamma^k r_k\big(\vec{x}_k, \pi(\vec{x}_k)\big)
+				\end{align*}
+				The \emph{state-action function} describes the discounted reward of the current state if a specific action is taken next and following the policy afterwards:
+				\begin{align*}
+					Q^\pi(\vec{x}_0, \vec{u}_0) = r_1(\vec{x}_0, \vec{u}_0) + \sum_{min}^{max}
+				\end{align*}
 			% end
 
-			\subsubsection{(Tiefe) Neuronale Netze} % 11.25
-				\todo{Content}
+			\subsubsection{First Approach}
+				A first approach would be to learn the control directly by maximizing the reward \( J \) using gradient descent:
+				\begin{align*}
+					\grad_{\vec{\theta}}{J} = \pdv{J}{\pi_{\vec{\theta}}} \pdv{\pi_{\vec{\theta}}}{\vec{\theta}}
+				\end{align*}
+				But this requires a gradient of the objective\dots The approximation may have high variances. Additionally, new gradient is computed independently of old approximations. Hence, no learning happens.
 			% end
 
-			\subsubsection{Grundlegende Fragen} % 11.26
-				\todo{Content}
-			% end
-		% end
+			\subsubsection{Learning the Value Function}
+				It is better to solve the optimization problem
+				\begin{align*}
+					\vec{u}^\ast(\vec{x}) = \arg\max_{\vec{u}} \, Q^\pi(\vec{x}, \vec{u})
+				\end{align*}
+				by approximating the value function \( V(\vec{x}_0) \) with a function \( V_{\vec{\theta}}(\vec{x}_0) \), e.g. with \emph{Temporal Difference Learning} (TD).
 
-		\subsection{Bezüge zur (optimalen) Steuerung und Regelung} % 11.27, 11.28, 11.29, 11.30
-			\todo{Content}
+				This uses the Bellman equation
+				\begin{align*}
+					V(\vec{x}) = \max_{\vec{u}} \, r(\vec{x}, \vec{u}) + \gamma V(\vec{x}, \vec{u}) = \max_{\vec{u}} Q(\vec{x}, \vec{u})
+				\end{align*}
+				which is a discretized version of the H-J-B equation. Temporal difference learning measures the TD-error \( \delta_n = r(\vec{x}, \vec{u}) + V_{\vec{\theta}}(\vec{x}_n) - \gamma V_{\vec{\theta}}(\vec{x}_{n + 1}) \) and uses gradient descent to update the parameters \(\vec{\theta}\). An instance of this class of algorithms is Q-Learning.
 
-			\subsubsection{Bewertung der Aktionen} % 11.31
-				\todo{Content}
-			% end
-
-			\subsubsection{Wertefunktion} % 11.32
-				\todo{Content}
-			% end
-
-			\subsubsection{Erster Ansatz} % 11.33
-				\todo{Content}
-			% end
-
-			\subsubsection{Lernen der Wertefunktion} % 11.34, 11.35
-				\todo{Content}
-			% end
-
-			\subsubsection{Kombination aus Wertefunktion und optimaler Steuerung} % 11.36
-				\todo{Content}
+				\begin{itemize}
+					\item Advantages:
+						\begin{itemize}
+							\item Small variance in the approximations of the expected reward.
+						\end{itemize}
+					\item Disadvantages:
+						\begin{itemize}
+							\item In every state, an optimization problem has to be solved. The overhead can be reduced by discretizing the control and just trying out all possibilities.
+							\item No guarantee of convergence (but this holds for every algorithm proposed in this course as it may guarantee convergence but convergence to a poor local minimum).
+						\end{itemize}
+				\end{itemize}
 			% end
 
-			\subsubsection{Bemerkungen} % 11.37
-				\todo{Content}
+			\subsubsection{Actor-Critic}
+				Another approach is to approximate the control and the value function at the same time:
+				\begin{itemize}
+					\item The \emph{actor} generates control \(\vec{u}\) for a given state \(\vec{x}\) and
+					\item the \emph{critic} estimates the quality of the current control and learns the value functions that is used to tweak the control parameters.
+				\end{itemize}
+				This method combined the advantages of the previous approaches as it does not require to solve an optimization problem in each step and no control discretization. It also allows a more precise measurement of the gradients.
+			% end
+
+			\subsubsection{Notes}
+				\begin{itemize}
+					\item All proposed methods are based on an approximation of the value function or the control. In practice, neural networks are often used for these approximations.
+					\item Stability proves have been made for systems with special structures (e.g. affine dynamics).
+					\item Better convergence than actor-only methods.
+					\item The approach can be extended to models with continuous time.
+				\end{itemize}
 			% end
 		% end
 	% end

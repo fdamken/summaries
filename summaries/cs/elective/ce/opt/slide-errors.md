@@ -9,3 +9,6 @@
 * Foliensatz 4.5
     - Folie 13
         + Bei der Summe der Notwendigen Bedingung erster Ordnung steht \( p^{(k)} \), nicht \( p^\ast \).
+* Foliensatz 11
+    - Folie 24
+        + Bei der Q-Funktion wird der Reward vorne nicht discounted.

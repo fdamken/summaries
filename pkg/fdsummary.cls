@@ -50,6 +50,7 @@
 \RequirePackage{amssymb}
 \RequirePackage{attachfile}
 \RequirePackage{bitpattern}
+\RequirePackage{bm}
 \RequirePackage{bytefield}
 \RequirePackage{caption}
 \RequirePackage{csquotes}
@@ -138,8 +139,8 @@
 }
 
 % Vector and matrix notation.
-\renewcommand{\vec}[1]{\boldsymbol{\mathrm{#1}}}
-\newcommand{\mat}[1]{\boldsymbol{\mathrm{#1}}}
+\renewcommand{\vec}[1]{\bm{#1}}
+\newcommand{\mat}[1]{\bm{#1}}
 
 % Listings settings (use TUDa colors for highlighting).
 \lstdefinestyle{base}{
@@ -253,6 +254,7 @@
 \DeclareMathOperator{\const}{const}
 \DeclareMathOperator{\Cov}{Cov}
 \DeclareMathOperator{\Dec}{Dec}
+\DeclareMathOperator{\diag}{diag}
 \DeclareMathOperator{\Eig}{Eig}
 \DeclareMathOperator{\emp}{emp}
 \DeclareMathOperator{\Enc}{Enc}

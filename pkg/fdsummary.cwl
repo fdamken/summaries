@@ -15,6 +15,7 @@
 #include:amssymb
 #include:attachfile
 #include:bitpattern
+#include:bm
 #include:bytefield
 #include:caption
 #include:csquotes
@@ -137,6 +138,7 @@
 \const#m
 \Cov#m
 \Dec#m
+\diag#m
 \Eig#m
 \emp#m
 \Enc#m

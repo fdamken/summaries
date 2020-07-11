@@ -3084,51 +3084,146 @@
 	% end
 % end
 
-\chapter{Optimale Rückkopplungssteuerung} % 10.1, 10.2, 10.3
-	\todo{Content}
+\chapter{Optimal Feedback Control}
+	Applying the computed control trajectory directly as an open loop (feedforward) control as illustrated in~\autoref{fig:feedforwardControl} would cause growing divergence from the nominal state \( \vec{x}_d^\ast(t) \). This can be caused by e.g.:
+	\begin{itemize}
+		\item Errors in the model (complex models cannot be 100\% accurate).
+		\item Noise: During the run of a dynamic process noise may affect the systems behavior.
+	\end{itemize}
+	Hence, the wanted end state might not be reached when just using feedforward control.
 
-	\section{Feedforward Control} % 10.4, 10.5
-		\todo{Content}
+	\begin{figure}
+		\centering
+		\begin{tikzpicture}[every node/.style = { align = center }, block/.style = { draw, rectangle, minimum width = 2.5cm, minimum height = 1.5cm }]
+			\node [block] (a) {Trajectory \\ Planning};
+			\node [block, right = 2 of a] (b) {Open-Loop \\ Control};
+			\node [block, right = 2 of b] (c) {Dynamic \\ Process};
+			\node [right = 1 of c] (d) {\( \vec{x}_a(t) \)};
+
+			\draw [->] (a) -- node[above]{\( \vec{x}_d^\ast(t) \)} node[below]{\( \vec{u}^\ast(t) \)} (b);
+			\draw [->] (b) -- node[above]{\( \vec{u}^\ast(t) \)} (c);
+			\draw [->] (c) -- (d);
+		\end{tikzpicture}
+		\caption{Feedforward Control}
+		\label{fig:feedforwardControl}
+	\end{figure}
+
+	\section{Classical Feedback Control (Position Control)}
+		It seems obvious to just use a classical position control for the nominal stater state trajectory \( \vec{x}^\ast(t) \) (a set point trajectory control) as illustrated in~\autoref{fig:feedbackControl}. But this causes "ringing" around the nominal trajectory, e.g. using a PID control law. Additionally, using a position control has more flaws:
+		\begin{itemize}
+			\item An individual control for each state component is merely possible.
+			\item The quality of the position control depends on the desired states and the control parameters.
+			\item Returning to the nominal trajectory using control laws is not the optimal trajectory from the disturbed state as the initial state to the final state!
+			\item Also, using position control can cause violations of the constraints, e.g. a bang-bang control always operates on the border of the control constraints. Hence, returning to the nominal trajectory might cause overshooting this constraints.
+		\end{itemize}
+
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[every node/.style = { align = center }, block/.style = { draw, rectangle, minimum width = 2.5cm, minimum height = 1.5cm }]
+				\node [block] (a) {Trajectory \\ Planning};
+				\node [block, right = 2 of a] (b) {Control};
+				\node [block, right = 2 of b] (c) {Dynamic \\ Process};
+				\node [right = 1 of c] (d) {\( \vec{x}_a(t) \)};
+				\node [draw, rectangle, minimum width = 2.5cm, below = 0.5 of c] (e) {Sensors, \\ Odometry};
+
+				\draw [->] (a) -- node[above]{\( \vec{x}_d^\ast(t) \)} node[below]{\( \vec{u}^\ast(t) \)} (b);
+				\draw [->] (b) -- node[above]{\( \vec{u}^\ast(t) \)} (c);
+				\draw [->] (c) -- (d);
+				\draw [->] (d) |- (e) -| (b);
+			\end{tikzpicture}
+			\caption{Feedback Control}
+			\label{fig:feedbackControl}
+		\end{figure}
 	% end
 
-	\section{Sollwerttrajektorien-Folgeregelung} % 10.6, 10.7, 10.8, 10.9, 10.10
-		\todo{Content}
+	\section{Optimal Feedback Control}
+		If the real trajectory at time step \( t_1 \) differs from the nominal state \( \vec{x}^\ast(t_1; \vec{x}_0) \) that was calculated starting from \( \vec{x}_0 \) it would be optimal to now following a new trajectory with the initial state \( \vec{x}_d(t_1) \). But how to calculate this new trajectory? These computations have to be done anytime. But data from the old trajectory can be used for faster calculations!
+
+		These re-computations would not be necessary if the optimal control trajectory would not be calculated as a function of time \( \vec{u}^\ast(t) \) (as a feedforward control), but as a function of the initial state \( \vec{u}^\ast(\vec{x}_0) \), i.e. as a feedback control. Sadly, it is nearly impossible to calculate this function except for some special cases\dots
 	% end
 
-	\section{Optimal Feedback Control} % 10.11, 10.12
-		\todo{Content}
+	\section{Linear Quadratic Regulator (LQR)}
+		Linear systems with quadratic objective are the only system for which the optimal feedback control \( \vec{u}^\ast(\vec{x}_0) \) can be computed in closed form! A linear system with quadratic objective is given as
+		\begin{align*}
+			\min_{\vec{u}} &\, J[\vec{u}],\quad J[\vec{u}] = \int_{t_0}^{t_f} \Big( \vec{x}^T\!(t) \mat{Q} \vec{x}(t) + \vec{u}^T\!(t) \mat{\Gamma} \vec{u}(t) \Big) \dd{t} \\
+			\mathrm{subject~to}\quad &\,
+				\begin{alignedat}{2}
+					\dot{\vec{x}}(t) &= \mat{A}(t) \vec{x}(t) + \mat{B}(t) \vec{u}(t) \\
+					\vec{x}(t) &= \vec{x}_0 \\
+					\vec{x}(t_f) &\phantom{=}\,\,\, \text{free}
+				\end{alignedat}
+		\end{align*}
+		with a symmetric and positive definite matrix \( \mat{Q} \) and a diagonal Matrix \( \mat{\Gamma} = \diag(\dotsrange{\gamma_1}{\gamma_{n_u}}) \). The optimal control law is then given as
+		\begin{align*}
+			\vec{u}(\vec{x}) = -\mat{\Gamma}^{-1} \mat{B}^T\!(t) \mat{P}(t) \vec{x}
+		\end{align*}
+		where the matrix \( \mat{P}(t) \) is found by solving the matrix-Riccati ODE
+		\begin{align*}
+			\dot{\mat{P}}(t) + \mat{Q} + \mat{A}^T\!(t) \mat{P}(t) + \mat{P}(t) \mat{A}(t) - \mat{P}(t) \mat{\Gamma}^{-1} \mat{B}^T\!(t) \mat{P}(t) = \mat{O}
+		\end{align*}
+		with the boundary condition \( \mat{P}(t_f) = \mat{O} \).
+
+		If the system is time invariant, i.e. \( \dot{\mat{A}} = \mat{O} \), \( \dot{\mat{B}} = \mat{O} \) or \( t_f = \infty \), it follows \( \dot{\mat{P}} = \mat{O} \) and hence \(\mat{P}\) is given by solving the algebraic matrix-Riccati equation:
+		\begin{align*}
+			\mat{P} + \mat{Q} + \mat{A}^T \mat{P} + \mat{P} \mat{A} - \mat{P} \mat{\Gamma}^{-1} \mat{B}^T \mat{P} = \mat{O}
+		\end{align*}
+		As \(\mat{P}\) is symmetric, these are \( n_x \cdot (n_x + 1) / 2 \) equations to determine every element of \(\mat{P}\).
+
+		These matrix-Riccati algebraic/differential equations can be solved efficiently using special numerical methods. LQR systems can approximate a lots of systems and are therefore more useful than it appears at first (e.g. active damping in cars or linearized inverted pendulum). In theory, LQR methods can be applied to any system using an infinite-dimensional nonlinear embedding ("measurement") which can be finitely approximated, still yielding good results. Another approach is iterative LQR (iLQR) that linearizes the system in every time step.
+
+		\subsection{Derivation} % 10.15, 10.16, 10.17
+			\todo{Content}
+		% end
 	% end
 
-	\section{Linear-Quadratische Optimalsteuerung} % 10.13, 10.14
-		\todo{Content}
+	\section{Neighboring Extremals}
+		TO approximately the new trajectory \( \vec{x}^\ast\big(t; \vec{x}_a(t_1)\big) \), all information that have already been expended for calculating the trajectory \( \vec{x}^\ast(t; \vec{x}_0) \) can be used. These updates have to be be done continuously.
 
-		\subsection{Notwendige Bedingungen} % 10.15, 10.16, 10.17
-			\todo{Content}
+		\subsection{Indirect Methods}
+			Indirect methods calculates a solution trajectory \( \vec{x}^\ast(t) \), \( \vec{u}^\ast(t) \), \( \vec{\lambda}^\ast(t) \), \( \vec{\eta}^\ast(t) \) as the numerical solution of the multi-point boundary value problem rising from the necessary optimality conditions. By Taylor-expanding the disturbed trajectory \( \vec{x}^\ast(t; \vec{x}_0 + \vec{\varepsilon}_0) \) around the nominal trajectory yields a linear-quadratic optimal control problem (called "accessory minimum problem") for
+			\begin{align*}
+				\delta\vec{x}(t),\quad \delta\vec{u}(t),\quad \delta\vec{\lambda}(t)
+			\end{align*}
+			Different variants of this are possible, e.g. the repeated correction method:
+			\begin{enumerate}
+				\item Calculate \( \vec{x}^\ast(t) \), \( \vec{u}^\ast(t) \), \( \vec{\lambda}^\ast(t) \), \( \vec{\eta}^\ast(t) \) using the multi-point BVP width multiple-shooting methods.
+				\item Feedback schema for noisy nominal trajectory \( \vec{u}^\ast(t_0; \vec{x}_0 + \vec{\varepsilon}_0) = \vec{u}^\ast(t_0; \vec{x}_0) + \delta\vec{u}(t_0) \) containing the nominal control and a correction term.
+				\item Calculate the control correction using: \( \Delta\vec{u}(t_0) = \mat{K}_1(t_0) \cdot \partial\vec{x}(t_0) + \mat{K}_2(t) \cdot \partial\vec{\lambda}(t_0) \)
+				\item Apply this repeatedly for different time steps \( t_0 = t_1 \).
+			\end{enumerate}
+
+			\begin{itemize}
+				\item Advantages:
+					\begin{itemize}
+						\item Fast, numerical calculation.
+						\item First-order optimal trajectories.
+						\item Can be used to correct noise in the model parameters of the ODE.
+					\end{itemize}
+				\item Disadvantages:
+					\begin{itemize}
+						\item Only locally applicable along a nominal trajectory (i.e. "little" noise that does not change the switching structure)
+						\item Depends on the multi-point BVP of the necessary conditions. Hence, application is time consuming as the ODEs have to be formulated.
+					\end{itemize}
+			\end{itemize}
 		% end
 
-		\subsection{Zeitinvariante Dynamik} % 10.18, 10.19
-			\todo{Content}
+		\subsection{Direct Methods}
+			Direct methods solve the problem by discretizing the problem, resulting in a NLP that contains the initial value \( \vec{x}(t_0) \) in its equality constraints. Studying the dependency on this parameters leads to sensitivity and stability analysis of nonlinear optimization problems.
+
+			For direct collocation methods it can be shown that the linear-quadratic optimal control problem is analogous to a quadratic problem (QP) for calculating the corrections \( \vec{p}^\ast(\vec{x}_0 + \vec{\varepsilon}_0) = \vec{p}^\ast(\vec{x}_0) + \delta\vec{p} \).
+		% end
+
+		\subsection{Nonlinear Model Predictive Control (NMPC)}
+			For \emph{nonlinear model predictive control}, a series of optimal control problems is solved for a varying time horizon \(P_j\). These methods are commonly used for chemical processes with slow reaction time and aerospace engineering, but not so often in fast environments like robot movements.
 		% end
 	% end
 
-	\section{Benachbarte Extremalen} % 10.20, 10.21, 10.22
-		\todo{Content}
-
-		\subsection{Indirekte Verfahren} % 10.23, 10.24, 10.25, 10.26
-			\todo{Content}
-		% end
-
-		\subsection{Direkte Verfahren} % 10.27
-			\todo{Content}
-		% end
-
-		\subsection{Modellgestützte, prädiktive Regelung} % 10.28, 10.29
-			\todo{Content}
-		% end
-	% end
-
-	\section{Numerische Synthese der nichtlinearen Rückkopplungssteuerung} % 10.30, 10.31, 10.32, 10.33
-		\todo{Content}
+	\section{Numerical Synthesis of the Nonlinear Feedback Control}
+		Direct collocation methods can compute optimal control problems with different initial conditions \( \vec{x}_0 \) pretty fast and robust. Using an appropriate "step size control", multiple neighboring trajectories can be computed kind of automatic.
+		\begin{itemize}
+			\item First approach for synthesis \( \vec{u}^\ast(\vec{x}) \): Calculate \( \vec{u}^\ast \) using the HJB equation where \( \vec{x}^\ast(t) \), \( \vec{\lambda}^\ast(t) \) are approximated using reference trajectories for \( \vec{x}_a(t_1) \).
+			\item Second approach: Approximate \( \vec{u}^\ast(t) \), e.g. an approximation that has been trained on lots of open-loop optimal trajectories.
+		\end{itemize}
 	% end
 % end
 

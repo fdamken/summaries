@@ -352,7 +352,8 @@
 						Solve \( \tilde{\mat{H}}^{(k)} \vec{d}^{(k)} = -\grad{\varphi}\big(\vec{p}^{(k)}\big) \) for \( \vec{d}^{(k)} \) \;
 						\( \alpha^{(k)} \gets \arg\min_{\alpha} \varphi\big( \vec{p}^{(k)} + \alpha \vec{d}^{(k)} \big) \) \;
 						\( \vec{p}^{(k + 1)} \gets \vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)} \) \;
-						\( \tilde{\mat{H}}^{(k + 1)} \gets \tilde{\mat{H}}^{(k)} - \frac{1}{\big(\vec{d}^{(k)}\big)^T \tilde{\mat{H}}^{(k)} \vec{d}^{(k)}} \tilde{\mat{H}}^{(k)} \vec{d}^{(k)} \big(\tilde{\mat{H}}^{(k)} \vec{d}^{(k)}\big)^T + \frac{1}{\big(\vec{g}^{(k)}\big)^T \vec{d}^{(k)}} \vec{g}^{(k)} \big(\vec{g}^{(k)}\big)^T \) \;
+						\( \vec{g}^{(k)} \gets \grad{\varphi}\big(\vec{p}^{(k + 1)}\big) - \grad{\varphi}\big(\vec{p}^{(k)}\big) \) \;
+						\( \tilde{\mat{H}}^{(k + 1)} \gets \tilde{\mat{H}}^{(k)} - \frac{1}{(\vec{d}^{(k)})^T \tilde{\mat{H}}^{(k)} \vec{d}^{(k)}} \tilde{\mat{H}}^{(k)} \vec{d}^{(k)} \big(\tilde{\mat{H}}^{(k)} \vec{d}^{(k)}\big)^T + \frac{1}{(\vec{g}^{(k)})^T \vec{d}^{(k)}} \vec{g}^{(k)} \big(\vec{g}^{(k)}\big)^T \) \;
 						\( k \gets k + 1 \) \;
 					}
 
@@ -364,10 +365,6 @@
 
 		\subsection{Comparison} % 2.29, 2.30, 2.31, 2.32, 2.33, 2.34, 2.35, 2.36
 			\todo{Content}
-
-			\begin{itemize}
-				\item
-			\end{itemize}
 		% end
 
 		\subsection{Notes and Discussion}
@@ -445,7 +442,7 @@
 			\subsubsection{Curvature Condition}
 				But a sufficient descent condition is not enough as the step sizes must not be too small (otherwise progress would stop). Thus a second condition has to be employed, the \emph{curvature condition} that requires a minimum curvature on \(\psi\):
 				\begin{align*}
-					\Big(\!\grad{\varphi}\big(\vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)}\big)\!\Big)^T \geq c_2 \cdot \Big(\! \grad{\varphi}\big(\vec{p}^{(k)}\big) \!\Big)^T \vec{d}^{(k)} = c_2 \psi'(0) \quad\iff\quad \psi'\big(\vec{p}^{(k)}\big) \geq c_2 \psi'(0)
+					\Big(\!\grad{\varphi}\big(\vec{p}^{(k)} + \alpha^{(k)} \vec{d}^{(k)}\big)\!\Big)^T \vec{d}^{(k)} \geq c_2 \cdot \Big(\! \grad{\varphi}\big(\vec{p}^{(k)}\big) \!\Big)^T \vec{d}^{(k)} = c_2 \psi'(0) \quad\iff\quad \psi'\big(\vec{p}^{(k)}\big) \geq c_2 \psi'(0)
 				\end{align*}
 				Where \( c_1 < c_2 < 1 \) is any constant, e.g. \( c_2 = 0.9 \).
 			% end
@@ -1058,7 +1055,7 @@
 			\end{align}
 			Here, \( L(\vec{p}, \vec{\mu}, \vec{\sigma}) \) is the Lagrangian
 			\begin{align*}
-				L(\vec{p}, \vec{\mu}, \vec{\sigma}) \coloneqq \varphi(\vec{p}) + \vec{\mu}^T \vec{a}(\vec{p}) + \vec{\sigma}^T \vec{b}(\vec{p})
+				L(\vec{p}, \vec{\mu}, \vec{\sigma}) \coloneqq \varphi(\vec{p}) - \vec{\mu}^T \vec{a}(\vec{p}) - \vec{\sigma}^T \vec{b}(\vec{p})
 			\end{align*}
 			and the inequality in~\eqref{eq:kkt-iii} is element-wise.
 		% end
@@ -2391,7 +2388,7 @@
 		\subsection{Second-Order Necessary Optimality Condition (Legendre-Clebsch Condition)} % 8.28, 8.31
 			For stationary \(\vec{x}^\ast\), \(\vec{u}^\ast\), \(\vec{\lambda}^\ast\), the second-order necessary optimality condition, also called the \emph{Legendre-Clebsch Condition} is that the Hessian of the Hamiltonian is positive semidefinite along the optimal state and control:
 			\begin{align*}
-				\mat{H}_H\big(\vec{x}^\ast(t), \vec{u}^\ast(t), \vec{\lambda}^\ast(t)\big) \geq 0,\quad \forall t \in [0, t_f]
+				\mat{H}_H^{\vec{p}}\big(\vec{x}^\ast(t), \vec{u}^\ast(t), \vec{\lambda}^\ast(t)\big) \geq 0,\quad \forall t \in [0, t_f]
 			\end{align*}
 		% end
 
@@ -3159,13 +3156,13 @@
 		\end{align*}
 		where the matrix \( \mat{P}(t) \) is found by solving the matrix-Riccati ODE
 		\begin{align*}
-			\dot{\mat{P}}(t) + \mat{Q} + \mat{A}^T\!(t) \mat{P}(t) + \mat{P}(t) \mat{A}(t) - \mat{P}(t) \mat{\Gamma}^{-1} \mat{B}^T\!(t) \mat{P}(t) = \mat{O}
+			\dot{\mat{P}}(t) + \mat{Q} + \mat{A}^T\!(t) \mat{P}(t) + \mat{P}(t) \mat{A}(t) - \mat{P}(t) \mat{\Gamma}^{-1} \mat{B}(t) \mat{B}^T\!(t) \mat{P}(t) = \mat{O}
 		\end{align*}
 		with the boundary condition \( \mat{P}(t_f) = \mat{O} \).
 
 		If the system is time invariant, i.e. \( \dot{\mat{A}} = \mat{O} \), \( \dot{\mat{B}} = \mat{O} \) or \( t_f = \infty \), it follows \( \dot{\mat{P}} = \mat{O} \) and hence \(\mat{P}\) is given by solving the algebraic matrix-Riccati equation:
 		\begin{align*}
-			\mat{P} + \mat{Q} + \mat{A}^T \mat{P} + \mat{P} \mat{A} - \mat{P} \mat{\Gamma}^{-1} \mat{B}^T \mat{P} = \mat{O}
+			\mat{Q} + \mat{A}^T \mat{P} + \mat{P} \mat{A} - \mat{P} \mat{\Gamma}^{-1} \mat{B} \mat{B}^T \mat{P} = \mat{O}
 		\end{align*}
 		As \(\mat{P}\) is symmetric, these are \( n_x \cdot (n_x + 1) / 2 \) equations to determine every element of \(\mat{P}\).
 

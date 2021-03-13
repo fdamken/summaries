@@ -64,49 +64,221 @@
 	% end
 % end
 
-\chapter{Robotics} % 2.1, 2.2, 2.5
-	\todo{Content}
+\chapter{Robotics}
+	This chapter covers the basics of robotics, covering modeling position, velocity, acceleration and forces as well as representing trajectories. Also the main concepts of linear and model-based control are covered.
 
-	\section{Modeling Robots} % 2.6, 2.7, 2.10, 2.11, 2.12, 2.13
-		\todo{Content}
+	The definition of what a robot are quite diverse. The robotics institute of America defines a robot as follows: "A robot is a reprogrammable multi-functional manipulator designed to move material, parts, tools, or specialized devices through variable programmed motions for the performance of a variety of tasks." Another, rather inverse, definition is from G. Randelov: "A computer is just an amputee robot."
 
-		\subsection{Kinematics} % 2.15, 2.16, 2.17
-			\todo{Content}
+	\section{Modeling Robots}
+		Modeling of a robot can be split into two separate categories: kinematics and dynamics. In \emph{kinematics}, only the geometric properties of the robot are modeled, e.g. the link length. In \emph{dynamics}, the forces acting on the links and joints are analyzed. There are two types of joints that can be used to model every joint out there: revolute and prismatic joints, whilst revolute joints are the most common ones. The displacement of a revolute joint is an angle (typically in radians), the displacement of a prismatic joint is a distance (typically in meters).
 
-			\subsubsection{Rotations and Euler Angles} % 2.18, 2.19, 2.20, 2.21, 2.22
-				\todo{Content}
+		The displacements of all joints in a robot is denoted with a vector \(\vec{q}\), the task space (e.g. the Cartesian coordinate system of the world) is denoted by \(\vec{x}\) and the state (i.e. the variables of the robot and the environment) is denoted by \(\vec{s}\). The set of places \(\vec{x}\) in the task space that the robot can reach is called the \emph{workspace}. That is, everything outside the workspace is not reachable.
+
+		Actions that can be taken by the controlled are denoted by \(\vec{u}\) or \(\vec{a}\) and are most often in some way related to torques in the joints. A (control) policy \(\pi\) then maps the state \(\vec{s}\) onto some action \(\vec{u}\) to take, either in a deterministic or stochastic way:
+		\begin{itemize}
+			\item \eqmakebox[modelingRobotsPolicy][l]{Deterministic:} \( \vec{u} = \pi(\vec{s}) \)
+			\item \eqmakebox[modelingRobotsPolicy][l]{Stochastic:}    \( \vec{u} \sim \pi(\vec{u} \given \vec{s}) \)
+		\end{itemize}
+		The complete system of a robot including the generation of the trajectory to perform as well as the controller is shown in \autoref{fig:robotsCompleteBlockDiagram}.
+
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[block/.style = { draw, rectangle, minimum height = 1cm, minimum width = 2.5cm }]
+				\node [block] (t) {\textbf{Trajectory}};
+				\node [block, right = 2 of t] (c) {\textbf{Control}};
+				\node [block, right = 2 of c] (d) {\textbf{Dynamics}};
+				\node [block, right = 2 of d] (k) {\textbf{Kinematics}};
+
+				\coordinate [right = 0 of t] (tr1);
+				\coordinate [left = 0 of c] (cl1);
+				\coordinate [right = 0 of c] (cr1);
+				\coordinate [left = 0 of d] (dl1);
+				\coordinate [right = 0 of d] (dr1);
+				\coordinate [left = 0 of k] (kl1);
+
+				\coordinate [below = 0 of c] (cb);
+				\coordinate [left = 0.5 of cb] (cbl);
+				\coordinate [below = 1.75 of cbl] (cblb);
+				\coordinate [right = 0.5 of cb] (cbr);
+				\coordinate [below = 0.75+0.125 of cbr] (cbrb);
+				\coordinate [below = 0 of d] (db);
+				\coordinate [below = 0.75+0.125 of db] (dbb);
+				\coordinate [below = 0 of k] (kb);
+				\coordinate [below = 1.75 of kb] (kbb);
+
+				\draw [->] (tr1) -- node[above]{\( \vec{x}_d \), \( \dot{\vec{x}}_d \), \( \ddot{\vec{x}}_t \)} (cl1);
+				\draw [->] (cr1) -- node[above]{\( \vec{u} \)} (dl1);
+				\draw [->] (dr1) -- node[above]{\( \vec{q} \), \( \dot{\vec{q}} \), \( \ddot{\vec{q}} \)} (kl1);
+				\draw [->] (db) -- (dbb) -- node[above]{\( \vec{q} \), \( \dot{\vec{q}} \), \( \ddot{\vec{q}} \)} (cbrb) -- (cbr);
+				\draw [->] (kb) -- (kbb) -- node[above]{\( \vec{x} \), \( \dot{\vec{x}} \), \( \ddot{\vec{x}} \)} (cblb) -- (cbl);
+			\end{tikzpicture}
+			\caption{Block diagram of a complete system with the desired values \( \vec{x}_d \), \( \dot{\vec{x}}_d \), \( \ddot{\vec{x}}_t \), the joint angles/velocities/accelerations \( \vec{q} \), \( \dot{\vec{q}} \), \( \ddot{\vec{q}} \), the end-effector positions/velocities/accelerations \( \vec{x} \), \( \dot{\vec{x}} \), \( \ddot{\vec{x}} \), and the motor commands/torques \( \vec{u} \).}
+			\label{fig:robotsCompleteBlockDiagram}
+		\end{figure}
+
+		\subsection{Kinematics}
+			Forward kinematics tackle the problem to get the position of the end-effector given the current joint positions or, more general, the position of any point in reference to a set coordinate system. Forward kinematics therefore describe a mapping from joint- to task-space:
+			\begin{equation*}
+				\vec{x} = \vec{f}(\vec{q})
+			\end{equation*}
+			For simple robots, e.g. a two-dimensional robot with only few revolute joints or a robot with only prismatic joints, the forward kinematics can be found straightforwardly with geometric knowledge. For more complex robots, however, more sophisticated methods are needed to not waste a lot of time finding the forward kinematics model.
+
+			\subsubsection{Rotations and Euler Angles}
+				To model revolute joints, a decent modeling of rotations is needed. In two-dimensional settings, a rotary transformation around an arbitrary angle \(\alpha\) is described by the following matrix:
+				\begin{equation*}
+					\mat{R}(\alpha) =
+						\begin{bmatrix}
+							\cos\alpha & -\sin\alpha \\
+							\sin\alpha &  \cos\alpha
+						\end{bmatrix}
+				\end{equation*}
+				In three-dimensional settings, one transformation is needed for a rotation around one of the Cartesian axis. Letting \(x\), \(y\) and \(z\) be the first, second and third Cartesian axis, respectively, the corresponding rotation matrices around an angle \(\alpha\) are given as:
+				\begin{align*}
+					\mat{R}_x(\alpha) =
+						\begin{bmatrix}
+							1 & 0          & 0           \\
+							0 & \cos\alpha & -\sin\alpha \\
+							0 & \sin\alpha &  \cos\alpha
+						\end{bmatrix}
+					&&
+					\mat{R}_y(\alpha) =
+						\begin{bmatrix}
+							 \cos\alpha & 0 & \sin\alpha \\
+							 0          & 1 & 0          \\
+							-\sin\alpha & 0 & \cos\alpha
+						\end{bmatrix}
+					&&
+					\mat{R}_z(\alpha) =
+						\begin{bmatrix}
+							\cos\alpha & -\sin\alpha & 0 \\
+							\sin\alpha &  \cos\alpha & 0 \\
+							0          &  0          & 1
+						\end{bmatrix}
+				\end{align*}
+
+				One of many methods of representing arbitrary rotations are \emph{Euler angles} which are parameterized by roll \(\psi\), pitch \(\theta\) and yaw \(\phi\). They transform from a coordinate system \(1\) into a coordinate system \(0\) as follows:
+				\begin{equation*}
+					\mat{R}_1^0 = \mat{R}_z(\phi) \mat{R}_y(\theta) \mat{R}_x(\psi)
+				\end{equation*}
+				Problems with Euler angles are that they are not unique, i.e. different Euler angles may describe the same rotation, and it is hard to quantify differences between Euler angles. An alternative for describing rotations are \emph{unit quaternions} and angle-axis formulations, where both a rotation axis as well as a rotation angle are given. Both of them solve the singularities with Euler angles and it is easier to computer differences of orientations.
 			% end
 
-			\subsubsection{Homogeneous Transformations} % 2.23, 2.24, 2.25
-				\todo{Content}
+			\subsubsection{Homogeneous Transformations}
+				\emph{Homogeneous transformations} are a ways to represent combined translation and rotation transformations, e.g.
+				\begin{equation*}
+					\vec{p}^1 = \mat{R}_2^1 \vec{p}^2 + \vec{\delta}^1
+					\quad\implies\quad
+					\vec{p}^0 = \mat{R}_1^0 \vec{p}^1 + \vec{\delta}^0 = \mat{R}_1^0 \big( \mat{R}_2^1 \vec{p}^2 + \vec{\delta}^1 \big) + \vec{\delta}^0
+				\end{equation*}
+				into a single matrix-vector multiplication, making the computation less clumsy:
+				\begin{equation*}
+					\vec{p}^0 = \mat{R}_1^0 \vec{p}^1 + \vec{\delta}^0
+					\quad\implies\quad
+					\underbrace{\begin{bmatrix}
+						\vec{p}^1 \\
+						1
+					\end{bmatrix}}_{\tilde{\vec{p}}^1}
+					=
+					\underbrace{\begin{bmatrix}
+						\mat{R}_1^0 & \vec{\delta}^1 \\
+						\vec{0}     & 1
+					\end{bmatrix}}_{\mat{H}_1^0}
+					\underbrace{\begin{bmatrix}
+						\vec{p}^0 \\
+						1
+					\end{bmatrix}}_{\tilde{\vec{p}}^0}
+				\end{equation*}
+				Hence, multiple translation-rotation transformations can be stacked as follows:
+				\begin{equation*}
+					\tilde{\vec{p}}^0 = \mat{H}_1^0 \mat{H}_2^1 \cdots \mat{H}_n^{n - 1} \tilde{\vec{p}}^n
+				\end{equation*}
 			% end
 
-			\subsubsection{Denavit-Hartenberg Convention} % 2.26, 2.27
-				\todo{Content}
+			\subsubsection{Denavit-Hartenberg Convention}
+				A common convention for describing the coordinate systems of a robot is the \emph{Denavit-Hartenberg convention} which describes the kinematics of a complete robot with only four parameters per joint. These four parameters are:
+				\begin{itemize}
+					\item \(\theta_i\), the angle between \(x_{i - 1}\) and \(x_i\), measured around \(z_{i - 1}\). Variable if \(i\) is a revolute joint.
+					\item \(d_i\), the distance of the origin of \(S_{i - 1}\) along \(z_{i - 1}\) to the intersection with \(x_i\). Variable if \(i\) is a prismatic joint.
+					\item \(a_i\), the distance between the intersection of \(z_{i - 1}\) and \(x_i\) along \(x_i\) towards the origin of \(S_i\).
+					\item \(\alpha_i\), the angle between \(z_{i - 1}\) and \(z_i\), measured around \(x_i\).
+				\end{itemize}
+				Along with that, the following conditions have to hold for the coordinate systems \(S_i\):
+				\begin{itemize}
+					\item The origins of the coordinate systems lie on the movement axis.
+					\item The \(z_{i - 1}\)-axis lies along the movement axis of the \(i\)-th joint.
+					\item The \(x_i\)-axis is perpendicular to the \(z_{i - 1}\)-axis and point away from it.
+					\item The \(x_i\)-axis and the \(z_{i - 1}\)-axis have an intersection.
+				\end{itemize}
+				Placing the coordinate system can be formulated as an algorithm, check out the foundations of robotics summary\footnote{\url{https://projects.frisp.org/documents/29} (German)} for more details.
 			% end
 		% end
 
-		\subsection{Inverse Kinematics} % 2.90, 2.92, 2.94, 2.95
-			\todo{Content}
+		\subsection{Differential Forward Kinematics (Velocities and Accelerations)}
+			Often it is necessary to get the velocities \(\dot{\vec{x}}\) and accelerations \(\ddot{\vec{x}}\}\) of the end-effector. These can be computed straightforwardly using the chain rule
+			\begin{align*}
+				\dot{\vec{x}} = \dv{t} \vec{f}(\vec{q}) = \dv{\vec{f}(\vec{q})}{\vec{q}} \dv{\vec{q}}{t} = \underbrace{\mat{J}(\vec{q})}_{\mathclap{\text{Jacobian}}} \dot{\vec{q}}
+				&&
+				\ddot{\vec{x}} = \dot{\mat{J}}(\vec{q}) \dot{\vec{q}} + \mat{J}(\vec{q}) \ddot{\vec{q}}
+			\end{align*}
+			where the end-effector velocities and accelerations are computed from the joint velocities and accelerations.
+
+			\subsubsection{Singularities}
+				In some cases, the Jacobian \( \mat{J}(\vec{q}) \) might get rank-deficient, i.e. \( \det \mat{J}(\vec{q}) = 0 \). In this case, infinite velocities in the joints are required to reach a desired end-effector velocities as the Jacobian is not invertible anymore. These positions are called \emph{singularities} of the robot and correspond to a loss in the degrees of freedom, e.g. when the robot stretches out its arm.
+			% end
+
+			\subsubsection{Computing the Jacobians}
+				There are two main ways of computing the Jacobian:
+				\begin{description}
+					\item[Analytical] As before, the Jacobian is derived analytically and has the problem of singularities.
+					\item[Geometric]  These are derived from geometric insights, maybe circumventing the "representational singularities".
+				\end{description}
+				Both of these ways are just different representations of the same concept.
+			% end
 		% end
 
-		\subsection{Differential Forward Kinematics (Velocities)} % 2.28, 2.30, 2.31, 2.33
-			\todo{Content}
+		\subsection{Inverse Kinematics}
+			The obvious next problem is how to get the required joint positions to reach a given end-effector pose\footnote{A pose refers to both the position and the orientation at the same time.}. Hence, the \emph{inverse kinematics} are a mapping from the task- to the joint-space:
+			\begin{equation*}
+				\vec{q} = \vec{f}^{-1}(\vec{x})
+			\end{equation*}
+			For really simple robots, this can again be solved from a geometric perspective. However, there is most likely more than one solution for a given end-effector position! With certain redundancies in the robot, it is even possible to get infinite solutions.
 
-			\subsubsection{Singularities} % 2.32
-				\todo{Content}
-			% end
+			An additional problem is that the inverse kinematics equations are often not solvable analytically, hence numerical methods have to be used. But those do not guarantee to find all solutions which might be necessary to move into an "optimal" joint configuration. However, for a lot of industrial robots, invertible solutions are possible due to intelligent joint and link design.
 		% end
 
 		\subsection{Differential Inverse Kinematics} % 2.96, 2.97
 			\todo{Content}
 		% end
 
-		\subsection{Dynamics} % 2.35, 2.36, 2.37, 2.38
-			\todo{Content}
+		\subsection{Dynamics}
+			For the dynamics of a robot, a forward model
+			\begin{equation*}
+				\ddot{\vec{q}} = \vec{f}(\vec{q}, \dot{\vec{q}}, \vec{u})
+			\end{equation*}
+			is wanted that gives the joint accelerations given the joint positions and velocities and torques/forces (in case of revolute/prismatic joints, respectively). Usually the dynamics are represented in the general form
+			\begin{equation*}
+				\vec{u} = \mat{M}(\vec{q}) \ddot{\vec{q}} + \vec{c}(\vec{q}, \dot{\vec{q}}) + \vec{g}(\vec{q})
+			\end{equation*}
+			with the motor commands \(\vec{u}\), the joint positions/velocities/accelerations \(\vec{q}\)/\(\dot{\vec{q}}\)/\(\ddot{\vec{q}}\), the mass matrix \(\mat{M}(\vec{q})\), the Coriolis and centripetal forces \(\vec{c}(\vec{q}, \dot{\vec{q}})\), and the gravity \(\vec{g}(\vec{q})\). This general form can be easily inverted to get the joint accelerations, as the mass matrix is always positive definite and hence invertible:
+			\begin{equation*}
+				\ddot{\vec{q}} = \mat{M}^{-1}(\vec{q}) \big( \vec{u} - \vec{c}(\vec{q}, \dot{\vec{q}}) - \vec{g}(\vec{q}) \big)
+			\end{equation*}
 
-			\subsubsection{Computing the Forces} % 2.39
-				\todo{Content}
+			\subsubsection{Computing the Forces}
+				To compute the rigid body forces, there are two central methods:
+				\begin{enumerate}
+					\item Newton-Euler Method
+						\begin{itemize}
+							\item Force-dissection-based approach.
+							\item Can be formalized nicely, check out the foundations of robotics summary\footnote{\url{https://projects.frisp.org/documents/29} (German)} for more details.
+						\end{itemize}
+					\item Lagrangian Method
+						\begin{itemize}
+							\item Energy-based approach.
+							\item Based on Lagrangian mechanics, check out the theoretical physics: classical mechanics summary\footnote{\url{https://projects.frisp.org/documents/31} (German)} for more details.
+						\end{itemize}
+				\end{enumerate}
+				Other forces than rigid body forces, e.g. friction, are a lot harder to model as there is not general recipe for modeling them (friction is not so well understood).
 
 				\paragraph{Newton-Euler Method} % 2.40
 					\todo{Content}

@@ -55,6 +55,7 @@
 \RequirePackage{caption}
 \RequirePackage{csquotes}
 \RequirePackage{enumitem}
+\RequirePackage{eqparbox}
 \RequirePackage{fancyvrb}
 \RequirePackage{float}
 \RequirePackage{hyperref}
@@ -168,7 +169,7 @@
 \newunicodechar{−}{--}
 
 % Center captions.
-\captionsetup{justification=centering}
+\captionsetup{justification=RaggedRight, singlelinecheck=true}
 
 
 

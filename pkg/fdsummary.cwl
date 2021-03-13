@@ -20,6 +20,7 @@
 #include:caption
 #include:csquotes
 #include:enumitem
+#include:eqparbox
 #include:fancyvrb
 #include:float
 #include:hyperref

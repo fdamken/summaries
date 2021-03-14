@@ -72,7 +72,7 @@
 	\section{Modeling Robots}
 		Modeling of a robot can be split into two separate categories: kinematics and dynamics. In \emph{kinematics}, only the geometric properties of the robot are modeled, e.g. the link length. In \emph{dynamics}, the forces acting on the links and joints are analyzed. There are two types of joints that can be used to model every joint out there: revolute and prismatic joints, whilst revolute joints are the most common ones. The displacement of a revolute joint is an angle (typically in radians), the displacement of a prismatic joint is a distance (typically in meters).
 
-		The displacements of all joints in a robot is denoted with a vector \(\vec{q}\), the task space (e.g. the Cartesian coordinate system of the world) is denoted by \(\vec{x}\) and the state (i.e. the variables of the robot and the environment) is denoted by \(\vec{s}\). The set of places \(\vec{x}\) in the task space that the robot can reach is called the \emph{workspace}. That is, everything outside the workspace is not reachable.
+		The displacements of all joints in a robot is denoted with a vector \(\vec{q}\), the task-space (e.g. the Cartesian coordinate system of the world) is denoted by \(\vec{x}\) and the state (i.e. the variables of the robot and the environment) is denoted by \(\vec{s}\). The set of places \(\vec{x}\) in the task-space that the robot can reach is called the \emph{workspace}. That is, everything outside the workspace is not reachable.
 
 		Actions that can be taken by the controlled are denoted by \(\vec{u}\) or \(\vec{a}\) and are most often in some way related to torques in the joints. A (control) policy \(\pi\) then maps the state \(\vec{s}\) onto some action \(\vec{u}\) to take, either in a deterministic or stochastic way:
 		\begin{itemize}
@@ -214,12 +214,11 @@
 		% end
 
 		\subsection{Differential Forward Kinematics (Velocities and Accelerations)}
-			Often it is necessary to get the velocities \(\dot{\vec{x}}\) and accelerations \(\ddot{\vec{x}}\}\) of the end-effector. These can be computed straightforwardly using the chain rule
-			\begin{align*}
-				\dot{\vec{x}} = \dv{t} \vec{f}(\vec{q}) = \dv{\vec{f}(\vec{q})}{\vec{q}} \dv{\vec{q}}{t} = \underbrace{\mat{J}(\vec{q})}_{\mathclap{\text{Jacobian}}} \dot{\vec{q}}
-				&&
-				\ddot{\vec{x}} = \dot{\mat{J}}(\vec{q}) \dot{\vec{q}} + \mat{J}(\vec{q}) \ddot{\vec{q}}
-			\end{align*}
+			Often it is necessary to get the velocities \(\dot{\vec{x}}\) and accelerations \(\ddot{\vec{x}}\) of the end-effector. These can be computed straightforwardly using the chain rule
+			\begin{align}
+				\dot{\vec{x}} &= \dv{t} \vec{f}(\vec{q}) = \dv{\vec{f}(\vec{q})}{\vec{q}} \dv{\vec{q}}{t} = \underbrace{\mat{J}(\vec{q})}_{\mathclap{\text{Jacobian}}} \dot{\vec{q}}  \label{eq:diffForwardKin} \\
+				\ddot{\vec{x}} &= \dot{\mat{J}}(\vec{q}) \dot{\vec{q}} + \mat{J}(\vec{q}) \ddot{\vec{q}}  \nonumber
+			\end{align}
 			where the end-effector velocities and accelerations are computed from the joint velocities and accelerations.
 
 			\subsubsection{Singularities}
@@ -237,6 +236,8 @@
 		% end
 
 		\subsection{Inverse Kinematics}
+			\label{subsec:inverseKinematics}
+
 			The obvious next problem is how to get the required joint positions to reach a given end-effector pose\footnote{A pose refers to both the position and the orientation at the same time.}. Hence, the \emph{inverse kinematics} are a mapping from the task- to the joint-space:
 			\begin{equation*}
 				\vec{q} = \vec{f}^{-1}(\vec{x})
@@ -246,23 +247,19 @@
 			An additional problem is that the inverse kinematics equations are often not solvable analytically, hence numerical methods have to be used. But those do not guarantee to find all solutions which might be necessary to move into an "optimal" joint configuration. However, for a lot of industrial robots, invertible solutions are possible due to intelligent joint and link design.
 		% end
 
-		\subsection{Differential Inverse Kinematics} % 2.96, 2.97
-			\todo{Content}
-		% end
-
 		\subsection{Dynamics}
 			For the dynamics of a robot, a forward model
 			\begin{equation*}
 				\ddot{\vec{q}} = \vec{f}(\vec{q}, \dot{\vec{q}}, \vec{u})
 			\end{equation*}
 			is wanted that gives the joint accelerations given the joint positions and velocities and torques/forces (in case of revolute/prismatic joints, respectively). Usually the dynamics are represented in the general form
-			\begin{equation*}
-				\vec{u} = \mat{M}(\vec{q}) \ddot{\vec{q}} + \vec{c}(\vec{q}, \dot{\vec{q}}) + \vec{g}(\vec{q})
-			\end{equation*}
+			\begin{equation}
+				\vec{u} = \mat{M}(\vec{q}) \ddot{\vec{q}} + \vec{c}(\vec{q}, \dot{\vec{q}}) + \vec{g}(\vec{q})  \label{eq:dynamicsInverseGeneral}
+			\end{equation}
 			with the motor commands \(\vec{u}\), the joint positions/velocities/accelerations \(\vec{q}\)/\(\dot{\vec{q}}\)/\(\ddot{\vec{q}}\), the mass matrix \(\mat{M}(\vec{q})\), the Coriolis and centripetal forces \(\vec{c}(\vec{q}, \dot{\vec{q}})\), and the gravity \(\vec{g}(\vec{q})\). This general form can be easily inverted to get the joint accelerations, as the mass matrix is always positive definite and hence invertible:
-			\begin{equation*}
-				\ddot{\vec{q}} = \mat{M}^{-1}(\vec{q}) \big( \vec{u} - \vec{c}(\vec{q}, \dot{\vec{q}}) - \vec{g}(\vec{q}) \big)
-			\end{equation*}
+			\begin{equation}
+				\ddot{\vec{q}} = \mat{M}^{-1}(\vec{q}) \big( \vec{u} - \vec{c}(\vec{q}, \dot{\vec{q}}) - \vec{g}(\vec{q}) \big)  \label{eq:dynamicsGeneral}
+			\end{equation}
 
 			\subsubsection{Computing the Forces}
 				To compute the rigid body forces, there are two central methods:
@@ -280,107 +277,389 @@
 				\end{enumerate}
 				Other forces than rigid body forces, e.g. friction, are a lot harder to model as there is not general recipe for modeling them (friction is not so well understood).
 
-				\paragraph{Newton-Euler Method} % 2.40
-					\todo{Content}
+				\paragraph{Newton-Euler Method}
+					The Newton-Euler method is based on \emph{force dissection} and exploiting of the required force equilibrium. It yields the \emph{recursive Newton-Euler algorithm} that can be used to straightforwardly compute the torques/forces in the joints.
 				% end
 
-				\paragraph{Lagrangian Methods} % 2.41, 2.42, 2.43
-					\todo{Content}
+				\paragraph{Lagrangian Methods}
+					The \emph{Lagrangian method} is energy-based and works by defining the \emph{Lagrangian}
+					\begin{equation*}
+						L = T - V
+					\end{equation*}
+					where \(T\) is the kinetic energy and \(V\) is the potential energy. For a one-dimensional point mass with mass \(m\) in a gravity field with the gravity constant \(g\), the energies are given as \( T = \frac{1}{2} m\dot{y}^2 \) and \( V = mgy \), where \(y\) is the one degree of freedom. The Lagrangian is hence given as:
+					\begin{equation*}
+						L = \frac{1}{2} m \dot{y}^2 - mgy
+					\end{equation*}
+					Let \(f\) be the force of e.g. a motor that is somehow attached to the mass, the equations of motion are given as the \emph{Lagrangian equations of motion}:
+					\begin{equation*}
+						\dv{t} \pdv{L}{\dot{y}} - \pdv{L}{y} = f
+						\quad\implies\quad
+						m \ddot{y} + mg = f
+					\end{equation*}
+					For multi-dimensional systems, this equation can be generalized straightforwardly as
+					\begin{equation*}
+						\dv{t} \pdv{L}{\dot{x}_i} - \pdv{L}{x_i} = f_i
+					\end{equation*}
+					where \(x_i\) is one degree of freedom as \(f_i\) is the respective force.
+
+					For robots, finding the potential energy is straightforward as it is just the sum of all potential energies in the links, i.e.
+					\begin{equation*}
+						V = \sum_{i = 1}^{n} V_i = \sum_{i = 1}^{n} m_i \vec{g}^T \vec{r}_{c_i},
+					\end{equation*}
+					where \(\vec{g}\) is the vector describing the gravitational acceleration and \(\vec{r}_{c_i}\) is the position of the center of mass of the \(i\)-th link. The kinetic energy is a tad more complicated as it involves rotational energy and interactions between the different joints, e.g. Coriolis forces. It is given as
+					\begin{equation*}
+						T = \frac{1}{2} \dot{\vec{q}}^T \Bigg[ \sum_{i = 1}^{n} m_i \mat{J}_{\vec{v}_i}^T(\vec{q}) \mat{J}_{\vec{v}_i}(\vec{q}) + \mat{J}_{\vec{\omega}_i}^T(\vec{q}) \mat{R}_i(\vec{q}) \mat{I}_i \mat{R}_i^T(\vec{q}) \mat{J}_{\vec{\omega}_i}(\vec{q}) \Bigg] \dot{\vec{q}},
+					\end{equation*}
+					where
+					\begin{description}[leftmargin=2cm]
+						\item[\(\vec{q}\)/\(\dot{\vec{q}}\)] are the positions/velocities of the joints,
+						\item[\(m_i\)] is the mass of the \(i\)-th link,
+						\item[\(\mat{J}_{\vec{v}_i}\)] is the linear Jacobian of the \(i\)-th joint,
+						\item[\(\mat{J}_{\vec{\omega}_i}\)] is the rotational Jacobian of the \(i\)-th joint
+						\item[\(\mat{I}_i\)] is the inertia tensor of the \(i\)-th link, and
+						\item[\(\mat{R}_i(\vec{q})\)] is the orientation of the \(i\)-th link.
+					\end{description}
 				% end
 
-				\paragraph{Comparison of Newton-Euler and Lagrangian} % 2.44
-					\todo{Content}
+				\paragraph{Comparison of Newton-Euler and Lagrangian}
+					Using the Newton-Euler approach manually, i.e. to find the equations directly, is quite tedious and therefore not suitable for large robots. The Lagrangian approach, on the other hand, is a lot faster to execute by hand and therefore appropriate for finding the equations explicitly.
+
+					In most cases, however, the algorithm is used computationally without formulating the equations explicitly. In this case, the Newton-Euler method is better suited as it has a computational complexity of \( \mathcal{O}(n) \) whilst the Lagrangian approach has a complexity of \( \mathcal{O}(n^3) \).
 				% end
 			% end
 
-			\subsubsection{General Forms} % 2.45, 2.47, 2.48, 2.49
-				\todo{Content}
+			\subsubsection{General Forms}
+				If somehow an inverse dynamics model \( \vec{u} = \vec{f}(\vec{q}, \dot{\vec{q}}, \ddot{\vec{q}}) \) is achieved in the general form \eqref{eq:dynamicsInverseGeneral}, it is easy to compute the forward dynamics model \( \ddot{\vec{q}} = \vec{f}(\vec{q}, \dot{\vec{q}}, \vec{u}) \) by inverting the mass matrix as shown in \eqref{eq:dynamicsGeneral}. By integrating \(\ddot{\vec{q}}\), the velocities and positions can be recovered:
+				\begin{align*}
+					\dot{\vec{q}}(t) = \int_0^t \! \ddot{\vec{q}}(\tau) \dd{\tau}
+					&&
+					\vec{q}(t) = \int_0^t \! \dot{\vec{q}}(\tau) \dd{\tau}
+				\end{align*}
+				But this is (in most cases) not possible in closed form, so numerical integration techniques are required. One suitable method is for example the \emph{symplectic Euler method}, also called the \emph{semi-implicit Euler method}. It first integrates for the velocity with an explicit Euler method and subsequently integrates for the position with an implicit Euler method:
+				\begin{align*}
+					\dot{\vec{q}}_{k + 1} = \dot{\vec{q}}_k + h \ddot{\vec{q}}(t_k)
+					&&
+					\vec{q}_{k + 1} = \vec{q}_k + h \dot{\vec{q}}_{k + 1}
+				\end{align*}
+				Here, \(k\) is the step, \( h \in (0, 1) \) is the step size with \( t_k \coloneqq kh \), and \( \vec{q}_k \) and \( \dot{\vec{q}}_k \) are the respective approximations of the positions and velocities.
 			% end
 		% end
 	% end
 
-	\section{Representing Trajectories} % 2.50, 2.51, 2.52, 2.53
-		\todo{Content}
+	\section{Representing Trajectories}
+		A trajectory \( \vec{q}_d(t) \)/\( \dot{\vec{q}}_d(t) \)/\( \ddot{\vec{q}}_d(t) \) specifies the joint positions/velocities/accelerations at any point in time and is used to specify movements for the robot to execute. A common way to specify trajectories is to specify via-points the robot has to reach and to interpolate between them as shown in \autoref{fig:robotsViaPoints}. But as the motor commands can only influence the acceleration direction and the velocities and positions are found with integration, the trajectory and the time-derivative of the trajectory must not jump! This can be achieved with polynomial spline-interpolation which will be discussed further in the next sections.
 
-		\subsection{Splines} % N/A
-			\todo{Content}
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[
+						dot/.style = {
+							circle,
+							fill,
+							minimum size = 5pt,
+							inner sep = 0pt,
+							outer sep = 0pt
+						},
+						cross/.style = {
+							draw,
+							cross out,
+							thick,
+							minimum size = 5pt,
+							inner sep = 0pt,
+							outer sep = 0pt
+						}
+					]
 
-			\subsubsection{Cubic Splines} % 2.54, 2.55, 2.56
-				\todo{Content}
+				\node [dot, label=left:Start] (start) at (0,  0) {};
+				\node [dot, label=right:Goal] (goal)  at (4, -4) {};
+
+				\node [cross] (v1) at (2,    0.25) {};
+				\node [cross] (v2) at (2.5, -1) {};
+				\node [cross] (v3) at (1.5, -3) {};
+
+				\draw (0.5, -0.5) rectangle node[left,  xshift=-0.5cm]{Obstacle} (1.5, -1.5);
+				\draw (3,   -2  ) rectangle node[right, xshift= 0.5cm]{Obstacle} (4,   -3);
+
+				\draw plot [smooth] coordinates {(start) (v1) (v2) (v3) (goal)};
+			\end{tikzpicture}
+			\caption{Illustration of trajectory planning with via-points (the crosses) to avoid obstacles. The trajectory between the via-points is found with interpolation.}
+			\label{fig:robotsViaPoints}
+		\end{figure}
+
+		\subsection{Splines}
+			As already discussed, polynomial splines can be used to avoid jumps in the positions and velocities. The spline must be at least cubic as linear and quadratic splines do not have enough parameters to encode all the required information (and they have jumps in the velocities).
+
+			\subsubsection{Cubic Splines}
+				A cubic spline
+				\begin{equation*}
+					q(t) = a_0 + a_1 t + a_2 t^2 + a_3 t^3
+				\end{equation*}
+				has four parameters that can be found using the boundary conditions \( q(t_0) = q_0 \), \( \dot{q}(t_0) = v_0 \), \( q(t_f) = q_f \) and \( \dot{q}(t_f) = v_f \) where \(t_0\) and \(t_f\) are the initial and final time step, respectively. This yields a system of linear equations,
+				\begin{equation*}
+					\begin{bmatrix}
+						1 & t_0 & t_0^2 & t_0^3   \\
+						0 & 1   & 2 t_0 & 3 t_0^2 \\
+						1 & t_f & t_f^2 & t_f^3   \\
+						0 & 1   & 2 t_f & 3 t_f^2
+					\end{bmatrix}
+					\begin{bmatrix}
+						a_0 \\
+						a_1 \\
+						a_2 \\
+						a_3
+					\end{bmatrix}
+					=
+					\begin{bmatrix}
+						q_0 \\
+						v_0 \\
+						q_f \\
+						v_f
+					\end{bmatrix}
+				\end{equation*}
+				that can be solved for the parameters \(a_0\), \(a_1\), \(a_2\) and \(a_3\). The via-points are the initial and final position of the spline between them. In case of multiple degrees of freedom, multiple splines have to be used, i.e. the parameters become vectors.
+
+				But cubic splines still exhibit jumps in the acceleration which are dangerous at high speeds and might damage the robot!
 			% end
 
-			\subsubsection{Quintic Splines} % 2.57, 2.58
-				\todo{Content}
+			\subsubsection{Quintic Splines}
+				An alternative are quintic splines
+				\begin{equation*}
+					q(t) = a_0 + a_1 t + a_2 t^2 + a_3 t^3 + a_4 t^4 + a_5 t^5
+				\end{equation*}
+				which do not have jumps in the acceleration by imposing additional constraints on the accelerations, \( \ddot{q}(t_0) = a_0 \) and \( \ddot{q}(t_f) = a_f \). This again yields a system of linear equations:
+				\begin{equation*}
+					\begin{bmatrix}
+						1 & t_0 & t_0^2 & t_0^3   & t_0^4    & t_0^5    \\
+						0 & 1   & 2 t_0 & 3 t_0^2 & 4 t_0^3  & 5 t_0^4  \\
+						0 & 0   & 2     & 6 t_0   & 12 t_0^2 & 20 t_0^3 \\
+						1 & t_f & t_f^2 & t_f^3   & t_f^4    & t_f^5    \\
+						0 & 1   & 2 t_f & 3 t_f^2 & 4 t_f^3  & 5 t_f^4  \\
+						0 & 0   & 2     & 6 t_f   & 12 t_f^2 & 20 t_f^3
+					\end{bmatrix}
+					\begin{bmatrix}
+						a_0 \\
+						a_1 \\
+						a_2 \\
+						a_3 \\
+						a_4 \\
+						a_5
+					\end{bmatrix}
+					=
+					\begin{bmatrix}
+						q_0 \\
+						v_0 \\
+						a_0 \\
+						q_f \\
+						v_f \\
+						a_f
+					\end{bmatrix}
+				\end{equation*}
+				By equalizing the accelerations at the start and end of each spline, the acceleration becomes continuous, i.e. no jumps are present anymore.
 			% end
 		% end
 
-		\subsection{Alternatives} % 2.59
-			\todo{Content}
+		\subsection{Alternatives}
+			Alternatives to splines are for example
+			\begin{itemize}
+				\item linear segments with parabolic blends,
+				\item trapezoidal minimum time trajectories,
+				\item potential fields \( V(\vec{q}) \) with \( \dot{\vec{q}} = \pdv{V(\vec{q})}{\vec{q}} \), and
+				\item nonlinear dynamical systems \( \ddot{\vec{q}} = \vec{f}(\vec{q}, \dot{\vec{q}}, \vec{\theta}) \) parameterized by \(\vec{\theta}\).
+			\end{itemize}
 		% end
 	% end
 
-	\section{Control in Joint Space} % 2.60, 2.62, 2.63, 2.64
-		\todo{Content}
+	\section{Control in Joint-Space}
+		Given a desired trajectory \( \vec{q}_d(t) \)/\( \dot{\vec{q}}_d(t) \)/\( \ddot{\vec{q}}_d(t) \), it is still necessary to find the corresponding motor inputs \(\vec{u}\) to follow this trajectory. This problem is called \emph{control}.
 
-		\subsection{Linear Feedback Control} % 2.65, 2.66, 2.67, 2.68, 2.69, 2.70
-			\todo{Content}
+		The generic idea of \emph{feedback control} is to take an action, measure the current state, compare it with the desired state, and adjust the action over and over again. A simple example for this is controlling the water temperature when taking a shower. An illustration of the control loop is shown in \autoref{fig:controlShower} with a simple model of the actual temperature where the control input is purely additive. Additionally, the measured data is noisy, illustrated by the measurement errors \(\epsilon\). The function \( f(T_d, y_t) \) is called the \emph{control law} and determines the control inputs. A special case for this is linear feedback control, which will be discussed in the next section.
 
-			\subsubsection{P-Controller} % 2.71
-				\todo{Content}
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[align = center, block/.style = { draw, rectangle, minimum height = 1cm, minimum width = 3cm }]
+				\node [block, label = above:Controller] (controller) {\( u_t = f(T_d, y_t) \)};
+				\node [block, label = above:Plant, right = 2 of controller] (plant) {\( T_{t + 1} = T_t + u_t \)};
+				\node [block, label = right:Sensor, below = 1 of plant] (sensor) {\( y_t = T_t + \epsilon \)};
+				\node [left = 2 of controller] (desired) {Desired Value \\ \( T_d = \SI{35}{\celsius} \)};
+
+				\draw [->] (desired) -- (controller);
+				\draw [->] (controller) -- (plant);
+				\draw [->] (plant) -- (sensor);
+				\draw [->] (sensor) -| (controller);
+			\end{tikzpicture}
+			\caption{Illustration of the feedback control loop in shower with a simple linear model of the temperature and the measurement errors \(\epsilon\).}
+			\label{fig:controlShower}
+		\end{figure}
+
+		\subsection{Linear Feedback Control}
+			For \emph{linear feedback control}, the control law \( f(T_d, y_t) \) is a linear function \( f(T_d, y_t) = K (T_d - y_t) \) that determines the control input based on the difference of the desired and the actual temperatures (the error). The parameter \(K\) is called the \emph{gain} which amplifies the error for the control input. Obviously, too high or too low gains would cause an uncomfortable way to shower, either by overshooting around the desired temperature (too high gain) or by never reaching the desired temperature (too small gain). Also, messing up the sign (by choosing a negative \(K\)) can be catastrophic, as in this case it would drive the temperature towards absolute zero.
+
+			The following sections will generalize the idea of a linear feedback controller to multiple variables, where \(K\) becomes a matrix.
+
+			\subsubsection{P-Controller}
+				For a desired joint position \(\vec{q}_d\), given the actual joint position \(\vec{q}_t\), a \emph{P-controller} just includes terms proportional to the positioning error:
+				\begin{equation*}
+					\vec{u}_t = \mat{K}_P (\vec{q}_d - \vec{q}_t)
+				\end{equation*}
+				But a simple P-controller causes high oscillations in the position, making it not suitable for real control.
 			% end
 
-			\subsubsection{PD-Controller} % 2.74, 2.80
-				\todo{Content}
+			\subsubsection{PD-Controller}
+				An extended version, the \emph{PD-controller}, additionally includes differential values in terms of the joint velocities. The control law is then given as
+				\begin{equation*}
+					\vec{u}_t = \mat{K}_P (\vec{q}_d - \vec{q}_t) + \mat{K}_D (\dot{\vec{q}}_d - \dot{\vec{q}}_t)
+				\end{equation*}
+				with the gains \( \mat{K}_P \) and \( \mat{K}_D \). This control law eliminates the oscillations, but a steady-state error remains due to the gravitational force acting on the robot.
 
-				\paragraph{With Gravity Compensation} % 2.76, 2.77
-					\todo{Content}
+				\paragraph{With Gravity Compensation}
+					If a model of the gravitational force is available, it can be used to remove the steady-state error by adding the gravitational acceleration to the control low:
+					\begin{equation*}
+						\vec{u}_t = \mat{K}_P (\vec{q}_d - \vec{q}_t) + \mat{K}_D (\dot{\vec{q}}_d - \dot{\vec{q}}_t) + \vec{g}(\vec{q})
+					\end{equation*}
+					But of course this required a reasonable model which is not always available.
 				% end
 			% end
 
-			\subsubsection{PID-Controller} % 2.79
-				\todo{Content}
+			\subsubsection{PID-Controller}
+				Another commonly used control law is the \emph{PID-controller} which, in addition to the proportional and differential terms, adds an integral part that keeps track of the error from the beginning of time:
+				\begin{equation*}
+					\vec{u}_t = \mat{K}_P (\vec{q}_d - \vec{q}_t) + \mat{K}_D (\dot{\vec{q}}_d - \dot{\vec{q}}_t) + \mat{K}_I \int_0^t \! (\vec{q}_d - \vec{q}_\tau) \dd{\tau}
+				\end{equation*}
+				This approach also removes the steady-state error for steady-state control, i.e. when the robot should move to a single point. However, for tracking control, this approach is not suitable as there may always be a positioning error, letting the integral part become large very quick. This results in high motor commands may causing damage to the robot.
+
+				Also, there is the problem of wind-up where if the position is not reached, the controller might get saturated due to limitations of the motor. This causes the control law to be effectively useless as it cannot react to other errors anymore.
 			% end
 		% end
 
-		\subsection{Model-Based Control} % 2.81, 2.82, 2.83
-			\todo{Content}
+		\subsection{Model-Based Feedback Control}
+			Some problems with PD-control with gravity compensation include that there always needs to be an error in either the position of the velocity to generate a control signal. This implies that high gains are needed in order to be accurate. But high gains cause the robot to be really stiff and dangerous as it moves with higher power!
+
+			If a model of the dynamics is present (e.g. using the recursive Newton-Euler algorithm), it can be used to compute the motor inputs for a desired acceleration. Being able to only set the acceleration is no limitation since dynamical systems are second-order systems anyway, so only the accelerations are directly controllable. This is called \emph{model-based feedback control} and it is described by the following equations:
+			\begin{align*}
+				\ddot{\vec{q}}_t^{\,\mathrm{ref}} &= \mat{K}_P (\vec{q}_d - \vec{q}_t) + \mat{K}_D (\dot{\vec{q}}_d - \dot{\vec{q}}_t) + \ddot{\vec{q}}_d \\
+				\vec{u}_t &= \mat{M}(\vec{q}_t) \ddot{\vec{q}}_t^{\,\mathrm{ref}} + \vec{c}(\vec{q}, \dot{\vec{q}}) + \vec{g}(\vec{q})
+			\end{align*}
+			A major drawback is of course that this needs an accurate model of the dynamics!
 		% end
 
-		\subsection{Feedforward Control} % 2.84, 2.85, 2.86
-			\todo{Content}
-		% end
-	% end
-
-	\section{Control in Task Space} % 2.87, 2.88, 2.89
-		\todo{Content}
-
-		\subsection{Differential Inverse Kinematics} % 2.97
-			\todo{Content}
-		% end
-
-		\subsection{Jacobian Transpose} % 2.98, 2.99
-			\todo{Content}
-		% end
-
-		\subsection{Jacobian Pseudo-Inverse} % 2.100, 2.101
-			\todo{Content}
-		% end
-
-		\subsection{Task-Prioritization with Null-Space Movements} % 2.102
-			\todo{Content}
-		% end
-
-		\subsection{More Advanced Solutions} % 2.103
-			\todo{Content}
-		% end
-
-		\subsection{Singularities and Damped Pseudo-Inverse} % 2.104, 2.105
-			\todo{Content}
+		\subsection{Feedforward Control}
+			In feedforward control, it is assumed that \( \vec{q}_t \approx \vec{q}_d \) and \( \dot{\vec{q}}_t \approx \dot{\vec{q}}_d \). This directly yields the following control law:
+			\begin{align*}
+				\vec{u}_t^\mathrm{FF} &= \mat{M}(\vec{q}_d) \ddot{\vec{q}}_d + \vec{c}(\vec{q}_d, \dot{\vec{q}}_d) + \vec{g}(\vec{q}_d) \\
+				\vec{u}_t^\mathrm{FB} &= \mat{K}_P (\vec{q}_d - \vec{q}) + \mat{K}_D (\dot{\vec{q}}_d - \dot{\vec{q}}) \\
+				\vec{u}_t &= \vec{u}_t^\mathrm{FF} + \vec{u}_t^\mathrm{FB}
+			\end{align*}
+			As the inverse model does not play such a high role in feedforward control, it can also be used if the model is only approximate or even bad. Hence, feedforward control is highly relevant in practice as models are often not so good that model-based feedback control can be used. Additionally, it is often possible to pre-compute the feedforward terms \( \vec{u}_t^\mathrm{FF} \) such that less real-time computations are needed.
 		% end
 	% end
 
-	\section{Wrap-Up} % 2.107
-		\todo{Content}
+	\section{Control in Task-Space}
+		So far it was assumed that the space to plan the movements in was the joint-space. However, sometimes it is more practical to plan in task-space, e.g. when trying to hit a ball with a table tennis racket. Hence, an inverse kinematics model \( \vec{q} = \vec{f}^{-1}(\vec{x}) \) as discussed in \autoref{subsec:inverseKinematics} is needed. But is is often hard if not impossible to find such a model!
+
+		\subsection{Differential Inverse Kinematics}
+			As already seen, the inverse kinematics problem is hard to solve. But assuming the robot is non-redundant (i.e. \( n = r \), where \(r\) is the dimensionality of the task-space), the Jacobian of the differential forward kinematics model in \eqref{eq:diffForwardKin} becomes square. Assuming not to be in a singularity, the joint velocities can therefore be obtained by inverting \( \mat{J}(\vec{q}) \):
+			\begin{equation*}
+				\dot{\vec{q}} = \mat{J}^{-1}(\vec{q}) \dot{\vec{x}}
+			\end{equation*}
+			By (numerically) integrating these velocities, the joint positions can be recovered (if the initial position is known).
+
+			\subsubsection{Jacobian Transpose}
+				If the Jacobian is not square, it is not possible to invert it directly. Hence, the task-space error
+				\begin{equation*}
+					E = \frac{1}{2} \big(\vec{x}_d - \vec{f}(\vec{q})\big)^T \big(\vec{x}_d - \vec{f}(\vec{q})\big)
+				\end{equation*}
+				has to be minimized (where \(\vec{f}(\vec{q})\) is the forward kinematics model). This can be done by gradient decent "in the system", i.e. the desired joint velocities are computed by minimizing the error. The desired joint positions can then again be recovered by numerical integration. Computing the gradient
+				\begin{equation*}
+					\pdv{E}{\vec{q}} = -\dv{\vec{f}(\vec{q})}{\vec{q}} \big(\vec{x} - \vec{f}(\vec{q})\big) \doteq -\mat{J}^T(\vec{q}) \big(\vec{x}_d - \vec{f}(\vec{q})\big)
+				\end{equation*}
+				therefore yields the following desired velocity, where \(\gamma\) is the step size:
+				\begin{equation*}
+					\dot{\vec{q}}_d = -\gamma \mat{J}^T(\vec{q}) \big(\vec{x}_d - \vec{f}(\vec{q})\big)
+				\end{equation*}
+				This is called the \emph{Jacobian transpose method}. As already said, the desired joint position \( \vec{q}_d \) can then be recovered by numerically integrating \( \dot{\vec{q}}_d \). All of this can then be fed into an joint-space controller, e.g. a PD- or model-based controller.
+
+				By adding numerical differentiation, it is also possible to use joint-space controllers that control the acceleration.
+			% end
+
+			\subsubsection{Jacobian Pseudo-Inverse}
+				Under the assumption that the robot is not too far away from the solution, it is possible to also set desired task space velocities whilst finding the smallest \( \dot{\vec{q}}_d \) that keeps that velocity. This can be formulated as the optimization problem
+				\begin{equation}
+					\begin{aligned}
+						\dot{\vec{q}}_d = \arg\min_{\dot{\vec{q}}} \,& \frac{1}{2} \dot{\vec{q}}^T \dot{\vec{q}} \\
+						\mathrm{s.t.} \quad&
+							\begin{aligned}[t]
+								\mat{J}(\vec{q}) \dot{\vec{q}} &= \dot{\vec{x}}_d
+							\end{aligned}
+					\end{aligned}  \label{eq:jacobianPseudoInverseOptProblem}
+				\end{equation}
+				This can be solved with Lagrangian optimization with the multipliers \( \vec{\lambda} \). For brevity, let \( \mat{J} \coloneqq \mat{J}(\vec{q}) \). Given the Lagrangian
+				\begin{equation*}
+					\mathcal{L} = \frac{1}{2} \dot{\vec{q}}^T \dot{\vec{q}} - \vec{\lambda}^T \big( \mat{J} \dot{\vec{q}} - \dot{\vec{x}}_d \big),
+				\end{equation*}
+				setting the derivative w.r.t. \( \dot{\vec{q}} \) to zero yields
+				\begin{equation}
+					\pdv{\mathcal{L}}{\dot{\vec{q}}} = \dot{\vec{q}} - \mat{J}^T \vec{\lambda} \overset{!}{=} \vec{0}
+					\quad\implies\quad
+					\dot{\vec{q}} = \mat{J}^T \vec{\lambda}.  \label{eq:jacobianPseudoInversePartial}
+				\end{equation}
+				Inserting this into the Lagrangian, taking the derivative w.r.t. \( \vec{\lambda} \) and setting it to zero then yields the solution of the optimization problem:
+				\begin{align*}
+					&& \mathcal{L} &= \frac{1}{2} \dot{\vec{q}}^T \dot{\vec{q}} - \vec{\lambda}^T \big( \mat{J} \dot{\vec{q}} - \dot{\vec{x}}_d \big) = \frac{1}{2} \vec{\lambda}^T \mat{J} \mat{J}^T \vec{\lambda} - \vec{\lambda}^T \big( \mat{J} \mat{J}^T \vec{\lambda} - \dot{\vec{x}}_d \big) \\
+					\implies && \pdv{\mathcal{L}}{\vec{\lambda}} &= \mat{J} \mat{J}^T \vec{\lambda} - 2 \mat{J} \mat{J}^T \vec{\lambda} + \dot{\vec{x}}_d = -\mat{J} \mat{J}^T \vec{\lambda} + \dot{\vec{x}}_d \overset{!}{=} 0 \\
+					\implies && \vec{\lambda} &= \big( \mat{J} \mat{J}^T \big)^{-1} \dot{\vec{x}}_d
+				\end{align*}
+				Plugging this result back into \eqref{eq:jacobianPseudoInversePartial} yields the desired joint velocity and the solution of the optimization problem:
+				\begin{equation*}
+					\dot{\vec{q}}_d
+						= \underbrace{\mat{J}^T \big( \mat{J} \mat{J}^T \big)^{-1}}_{\mat{J}^\dagger} \dot{\vec{x}}_d
+						\doteq \mat{J}^\dagger \dot{\vec{x}}_d
+				\end{equation*}
+			% end
+		% end
+
+		\subsection{Task-Prioritization with Null-Space Movements}
+			It is possible to modify the task-space control law to simultaneously execute another action in the \emph{null-space}, a space that does not contradict the constraints of the optimization problem \eqref{eq:jacobianPseudoInverseOptProblem}. This can be, for example, to push the robot into a rest position \( \vec{q}_\mathrm{rest} \) where it does not consume energy. This base task can be formulated with a P-controller
+			\begin{equation*}
+				\dot{\vec{q}}_0 = \mat{K}_P (\vec{q}_\mathrm{rest} - \vec{q}).
+			\end{equation*}
+			The optimization problem then is as following:
+			\begin{equation*}
+				\begin{aligned}
+					\dot{\vec{q}}_d = \arg\min_{\dot{\vec{q}}} \, & \frac{1}{2} (\dot{\vec{q}} - \dot{\vec{q}}_0)^T (\dot{\vec{q}} - \dot{\vec{q}}_0) \\
+					\mathrm{s.t.} \quad&
+						\begin{aligned}[t]
+							\mat{J}(\vec{q}) \dot{\vec{q}} &= \dot{\vec{x}}_d
+						\end{aligned}
+				\end{aligned}
+			\end{equation*}
+			The result of this optimization problem is
+			\begin{equation*}
+				\dot{\vec{q}}_d = \mat{J}^\dagger \dot{\vec{x}}_d + \big( \mat{I} - \mat{J}^\dagger \mat{J} \big) \dot{\vec{q}}_0
+			\end{equation*}
+			where again \( \mat{J} \coloneqq \mat{J}(\vec{q}) \). The null-space is characterized by \( \big( \mat{I} - \mat{J}^\dagger \mat{J} \big) \) which includes all movements \( \dot{\vec{q}}_\mathrm{null} \) that do not contradict the constraint \( \mat{J} \dot{\vec{q}} = \dot{\vec{x}}_d \), i.e. \( \dot{\vec{x}}_d = \mat{J} (\dot{\vec{q}} + \dot{\vec{q}}_\mathrm{null}) \) or equivalent \( \mat{J} \dot{\vec{q}}_\mathrm{null} = \vec{0} \) holds.
+		% end
+
+		\subsection{More Advanced Solutions}
+			It is also possible to use an acceleration formulation which has the solution
+			\begin{equation*}
+				\ddot{\vec{q}}_d = \mat{J}^\dagger ( \ddot{\vec{x}}_d - \dot{\mat{J}} \dot{\vec{q}} ) + \big( \mat{I} - \mat{J}^\dagger \mat{J} \big) \ddot{\vec{q}}_0.
+			\end{equation*}
+			There is a whole class of so-called \emph{operational space control laws}, i.e. task-space control laws, that can all be derived from the following most general optimization problem:
+			\begin{equation*}
+				\begin{aligned}
+					\min_{\vec{u}} \,& \frac{1}{2} (\vec{u} - \vec{u}_0)^T (\vec{u} - \vec{u}_0) \\
+					\mathrm{s.t.} \quad&
+						\begin{aligned}[t]
+							\mat{A}(\vec{q}, \dot{\vec{q}}, t) \ddot{\vec{q}} &= \dot{\vec{b}}(\vec{q}, \dot{\vec{q}}, t) \\
+							                                        \vec{u}_0 &= \vec{g}(\vec{q}, \dot{\vec{q}}, t) \\
+							                  \mat{M}(\vec{q}) \ddot{\vec{q}} &= \vec{u} + \vec{c}(\vec{q}, \dot{\vec{q}}) + \vec{g}(\vec{q})
+						\end{aligned}
+				\end{aligned}
+			\end{equation*}
+		% end
+
+		\subsection{Singularities and Damped Pseudo-Inverse}
+			If the Jacobian gets rank-deficient, i.e. singular, it is not longer possible to evaluate the pseudo-inverse \( \mat{J}^\dagger = \mat{J}^T \big( \mat{J} \mat{J}^T \big)^{-1} \) due to the last inversion. It is therefore numerically more stable to use a damped pseudo-inverse \( \mat{J}^{\dagger(\lambda)} = \mat{J}^T \big( \mat{J} \mat{J}^T + \lambda \mat{I} \big)^{-1} \) as a replacement of the regular pseudo-inverse. This avoids singularities in the inversion.
+		% end
 	% end
 % end
 

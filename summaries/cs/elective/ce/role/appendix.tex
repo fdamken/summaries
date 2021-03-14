@@ -1,22 +1,61 @@
-\chapter{Self-Test Questions} % N/A
-	The text below also contains answers for the self-test questions! To prevent you from reading the answers accidentally, the questions start on a new page after the demo questions.
-
-	\section{Demo}
-		\paragraph{In what case can you toggle the visibility of the answers?}
-		\answer{If my PDF viewer supports it.}
-
-		\paragraph{In what case can you definitely not toggle the visibilities of the answers?}
-		\answer{If I have printed the document.}
-	% end
-	
-	\newpage
+\chapter{Self-Test Questions}
+	The text below also contains answers for the self-test questions! Make sure to not spoiler you!
 
 	\section{Introduction} % KI-Campus
 		\todo{Content}
 	% end
 
 	\section{Robotics} % 2.108, KI-Campus
-		\todo{Content}
+		\paragraph{How to compute the racket position, orientation and velocity in a game of table tennis?}
+		\answer{The position and orientation can directly be computed using the forward kinematics model, e.g. using the Denavit-Hartenberg convention. To compute the velocity of the racket, the forward kinematics model has to be differentiated w.r.t. to the time. By using the chain rule, only the Jacobian of the model has to be computed w.r.t. the joint displacements. Multiplying this with the joint velocities gives the racket velocities.}
+
+		\paragraph{What is an inverse dynamics model? What is a forward dynamics model?}
+		\answer{The inverse dynamics model computes the joint torques/forces given the respective accelerations. The forward dynamics model computes the accelerations from the torques/forces.}
+
+		\paragraph{What kind of models are needed to build a robot simulator?}
+		\answer{The forward kinematics and dynamics models are needed. The latter is first used to compute the accelerations and then, after integrating the accelerations numerically two times, the former can be used to animate the robot.}
+
+		\paragraph{How to represent trajectories in such a way that they can be tracked?}
+		\answer{Trajectories have to be at least once, better twice, continuous differentiable, to avoid jumps in the positions and velocities and possibly the accelerations. This can be achieved by modeling a trajectory as a cubic or quintic spline across given via-points. These via-points represent the support points of the spline.}
+
+		\paragraph{What does feedback control mean?}
+		\answer{In feedback control, the actual state of the system is used to compute the control inputs. This allows for error correction if the robot does not behave exactly like the model predicts, for example.}
+
+		\paragraph{What control laws are common for robots?}
+		\answer{It is common to use PD-controllers with gravity compensation and PID-controllers as well as model-based feedback and feedforward controllers. But the model-based controllers need a really good model.}
+
+		\paragraph{What is model-based feedback control?}
+		\answer{In model-based feedback control, a reference acceleration is computed using a PD-controller that assesses the position, velocity and acceleration of the joints. This reference acceleration is then fed into the inverse dynamics model, giving the joint torques/forces that are then applied to the joints.}
+
+		\paragraph{How can be inverse kinematics be computed?}
+		\answer{It is sometimes possible to compute the inverse kinematics analytically. If this is not possible, it might be possible to compute them numerically, e.g. with the Newton method. However, it is better to use the inverse differential kinematics model to compute the velocities of the joints and then integrate them to recover the positions. For square Jacobians this is possible straightforwardly, for non-square Jacobians numerical methods have to be used.}
+
+		\paragraph{What is task-space control?}
+		\answer{In task-space control, the trajectory is planned in the task-space rather than in the joint-space. Then the task-space data has to be converted into the joint-space to then apply joint-space controllers like the PID-controller. Common methods are for example the Jacobian transpose method and the Jacobian pseudo-inverse method.}
+
+		\paragraph{KI-Campus: Given the joint state of a robot, which model is used to compute the end-effector position?}
+		\answer{Using the forward kinematics model.}
+
+		\paragraph{KI-Campus: Given the joint state of a robot, which model is used to compute the torques/forces applied by the physics?}
+		\answer{Using the inverse dynamics model.}
+
+		\paragraph{KI-Campus: Given the desired end-effector state of a robot, which model is used to compute the joint positions to achieve it?}
+		\answer{Using the inverse kinematics model.}
+
+		\paragraph{KI-Campus: How to compute the forward kinematics?}
+		\answer{The forward kinematics can be caomputed straightforwardly, e.g. by using the Denavit-Hartenberg convention and the respective homogeneous transformation matrices. They can also be computed by simple geometric observations in some cases.}
+
+		\paragraph{KI-Campus: What are the limitations of the P-controller?}
+		\answer{It oscillates around the desired position and does not include velocity-control.}
+
+		\paragraph{KI-Campus: How can model-based control deal with mismatches between the real system and the model?}
+		\answer{Using feedforward control, a model-based controller is combined with a "standard" PD-controller to eradicate modeling errors.}
+
+		\paragraph{KI-Campus: How to compute the analytical solution for inverse kinematics?}
+		\answer{This can be done by inverting the forward kinematics or by geometric observations in the system. This is, however, rather tedious and not always possible.}
+
+		\paragraph{KI-Campus: What are a few examples in which null-space control would make sense.}
+		\answer{For example for saving energy by being in rest postures in a redundant robot. In a redundant pristmatic robot, this may be that no joint is fully stretched but all joint are located around the center.}
 	% end
 
 	\section{Machine Learning Foundations} % 5b.139, 5c.96

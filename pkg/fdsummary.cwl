@@ -144,7 +144,6 @@
 \emp#m
 \Enc#m
 \eps#m
-\E#m
 \gl#m
 \HMAC#m
 \MAC#m
@@ -178,6 +177,8 @@
 \Q#
 \R#
 \C#
+% Expectation.
+\E#
 % Top-left index, e.g. for transformation matrices.
 \inreferenceto{reference-frame}{obj}}#m
 % One vertical line for probabilities, densities, expectations, etc.

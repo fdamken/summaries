@@ -5,7 +5,7 @@
 		\todo{Content}
 	% end
 
-	\section{Robotics} % 2.108, KI-Campus
+	\section{Robotics}
 		\paragraph{How to compute the racket position, orientation and velocity in a game of table tennis?}
 		\answer{The position and orientation can directly be computed using the forward kinematics model, e.g. using the Denavit-Hartenberg convention. To compute the velocity of the racket, the forward kinematics model has to be differentiated w.r.t. to the time. By using the chain rule, only the Jacobian of the model has to be computed w.r.t. the joint displacements. Multiplying this with the joint velocities gives the racket velocities.}
 
@@ -43,7 +43,7 @@
 		\answer{Using the inverse kinematics model.}
 
 		\paragraph{KI-Campus: How to compute the forward kinematics?}
-		\answer{The forward kinematics can be caomputed straightforwardly, e.g. by using the Denavit-Hartenberg convention and the respective homogeneous transformation matrices. They can also be computed by simple geometric observations in some cases.}
+		\answer{The forward kinematics can be computed straightforwardly, e.g. by using the Denavit-Hartenberg convention and the respective homogeneous transformation matrices. They can also be computed by simple geometric observations in some cases.}
 
 		\paragraph{KI-Campus: What are the limitations of the P-controller?}
 		\answer{It oscillates around the desired position and does not include velocity-control.}
@@ -55,15 +55,40 @@
 		\answer{This can be done by inverting the forward kinematics or by geometric observations in the system. This is, however, rather tedious and not always possible.}
 
 		\paragraph{KI-Campus: What are a few examples in which null-space control would make sense.}
-		\answer{For example for saving energy by being in rest postures in a redundant robot. In a redundant pristmatic robot, this may be that no joint is fully stretched but all joint are located around the center.}
+		\answer{For example for saving energy by being in rest postures in a redundant robot. In a redundant prismatic robot, this may be that no joint is fully stretched but all joint are located around the center.}
 	% end
 
 	\section{Machine Learning Foundations} % 5b.139, 5c.96
 		\todo{Content}
 	% end
 
-	\section{Optimal Control} % 3a.43, 3b.60
-		\todo{Content}
+	\section{Optimal Control}
+		\subsection{Discrete Optimal Control} % 3a.43
+			\paragraph{What is an MDP, a policy, a value function, a state-action value function?}
+			\answer{An MDP, a Markov decision process, is a system with discrete states and actions that behaves Markovian, i.e. a state only depends on the previous state and the action taken and not on any other states. The initial state is drawn from the initial state distribution. A policy (that can be either deterministic or stochastic) prescribed what action to take given an action. The value function assesses the quality of a state, i.e. it gives the expected long-term reward when following a given policy. The state-action function, also called the Q-function, assesses the quality of state-action pairs, i.e. it gives the expected long-term reward when taking the said action in said state and subsequently following a policy. Maximizing the optimal Q-function yields the optimal policy.}
+
+			\paragraph{What is policy evaluation, policy improvement, policy iteration and value iteration?}
+			\answer{Policy evaluation estimated the (state-action) value function for a given policy by iterating the Bellman equation. Policy improvement takes a state-action value and deduces the policy from it w.r.t. the action for every state. Policy iteration iterates policy evaluation and improvement until convergence to find the optimal policy. Value iteration also finds the optimal policy but iterated the Bellman equation directly.}
+
+			\paragraph{What is the main difference between policy iteration vs. value iteration?}
+			\answer{In value iteration a lot of redundant maximization operations are performed for computing the value function. In policy iteration this is circumvented using the embedded policy evaluation.}
+
+			\paragraph{What is the Bellman equation?}
+			The Bellman equation describes how to compute the (optimal) value function from the (optimal) state-action value function. For infinite horizon problems, it is given as
+			\begin{equation*}
+				V^\ast(\vec{s}) = \max_{\vec{a}} \, \Big( r(\vec{s}, \vec{a}) + \gamma \sum_{\vec{s}'} p(\vec{s}' \given \vec{s}, \vec{a}) V^\ast(\vec{s}') \Big).
+			\end{equation*}
+
+			\paragraph{What are the differences between finite and infinite horizon objectives? Give examples of robotics problems in both settings.}
+			\answer{For finite-horizon problems, all of the transition dynamics, reward function and (state-action= value functions and therefore also the policy are time-dependent. Also there is a last reward \( r_T(\vec{s}_T) \) that is independent of the action. This can be interpreted as that it is relevant how much steps are left to make decisions. For infinite-horizon objectives, this is no longer relevant and the time-dependencies is dropped for all components. An infinite-horizon problem is, for example, balancing an inverted pendulum where more reward is gained the longer the pendulum can be held upright. An example for a finite-horizon problem is ball-in-cup, where once the ball is in the cup the problem is no longer interesting.}
+
+			\paragraph{Why is dynamic programming difficult to apply directly to robotics?}
+			\answer{Dynamic programming as discussed in this chapter is only applicable for discrete state-action spaces. This can be achieved by separating the world in buckets, but this would cause an exponential explosion in the memory required to store the value function. Using LQR (next chapter), dynamic programming can also be used for continuous state-action spaces, but this requires the system to be linear and the reward to be quadratic with Gaussian noise. But the world and therefore robots are not linear, but in most cases highly nonlinear.}
+		% end
+
+		\subsection{Continuous Optimal Control} % 3b.60
+			\todo{Content}
+		% end
 	% end
 
 	\section{Approximate Optimal Control} % 4a.31, 4b.29

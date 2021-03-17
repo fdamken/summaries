@@ -971,53 +971,213 @@
 	% end
 % end
 
-\chapter{Optimal Control} % N/A
-	\todo{Content}
+\chapter{Optimal Control}
+	In lots of scenarios it is too costly to program a desired behavior. This phenomenon is none from e.g. image understanding where the state-of-the-art approach is to use machine learning. So supervised learning is not enough for acquiring certain behaviors, e.g. due to imperfect demonstrations, the correspondence problem and the simple fact that it is impossible to demonstrate everything. The correspondence problem describes the fact that the robot works differently than humans, i.e. the transfer from a human motion to joint movements or a robot is not straightforward.
 
-	\section{Discrete State-Action Space} % 3a.1, 3a.2
-		\todo{Content}
+	Hence, self-improvement is needed! The robot explores the environment by trial-and-error and the environment (or the engineers of the environment) give feedback based on the current states and the executed actions. This is called the \emph{reward}. In optimal control and reinforcement learning settings, it is common to talk about the \emph{reward}, whereas in other literature it is more common to talk about the \emph{cost}, which is just an inverted notion of the same concept, so \( \mathit{Reward} = -\mathit{Cost} \) and maximizing the reward is equivalent to minimizing the cost.
 
-		\subsection{Foundations} % N/A
-			\todo{Content}
+	This chapter is split into two sections: optimal control for discrete and continuous state-action spaces. In both settings the time is assumed to be discrete (controlling a robot is most often done with a certain sampling rate anyway).
 
-			\subsubsection{Dynamic Programing and Principle of Optimality} % 3a.6, 3a.7
-				\todo{Content}
+	The vast field of optimal control is based on the \emph{principle of optimality} by Richard Bellman (1957): "An optimal policy has the property that whatever the initial state and initial decision are, the remaining decisions must constitute an optimal policy with regard to the state resulting from the first decision." This principle can be broken done in two main ideas:
+	\begin{enumerate}
+		\item Breaking down the optimal solutions in small parts, each part must be optimal.
+		\item The initial and previous states do not matter for the optimal policy, i.e. only the current state is relevant for determining the optimal action.
+	\end{enumerate}
+	This principle leads to the principle of \emph{dynamic programming}. It breaks down the problem into small sub-problems which are then solved optimally. All sub-solutions together than constitute an optimal (global) policy. Famous examples for algorithms implementing the paradigm of dynamic programming are for example Dijkstra's algorithm for the shortest-path-problem.
+
+	\section{Discrete State-Action Space}
+		Optimal control for discrete state-action spaces are based on \emph{Markov decision processes} (MDPs) which are defined by
+		\begin{itemize}
+			\item state space \( \vec{s} \in \mathcal{S} \),
+			\item action space \( \vec{a} \in \mathcal{A} \),
+			\item transition dynamics \( p_t(\vec{s}_{t + 1} \given \vec{s}_t, \vec{a}_t) \),
+			\item reward function \( r_t : \mathcal{S} \times \mathcal{A} \to \R \), and
+			\item initial state distribution \( \mu_0(\vec{s}) \).
+		\end{itemize}
+		The \emph{Markov property} describes that the transition dynamics are only dependent on the previous state and the taken action, but not on any previous states or actions, i.e.
+		\begin{equation*}
+			p_t(\vec{s}_{t + 1} \given \vec{s}_t, \vec{a}_t, \vec{s}_{t - 1}, \vec{a}_{t - 1}, \,\cdots\!\,) = p_t(\vec{s}_{t + 1} \given \vec{s}_t, \vec{a}_t)
+		\end{equation*}
+		holds. MDPs can be visualized nicely as transition diagrams as illustrated in \autoref{fig:smallMdp}.
+
+		A \emph{policy} \(\pi\) in an MDPs describes the action to take given a state. It can either be \emph{deterministic}, i.e. \( \vec{a} = \pi(\vec{s}) \), \( \pi : \mathcal{S} \to \mathcal{A} \) or \emph{stochastic}, i.e. \( \vec{a} \sim \pi(\cdot \given \vec{s}) \), \( \pi : \mathcal{S} \times \mathcal{A} \to \R^+ \). As deterministic policies can also be represented as stochastic policies with an action probability of \num{1}, all of the following assumes a stochastic policy if not stated otherwise. But this stochastic policy might encode deterministic behavior.
+
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[state/.style = { draw, circle, minimum width = 1cm, minimum height = 1cm }]
+				\node [state] (s0) {\( s_{\,\mathclap{0}} \)};
+				\node [state, right = 1.5 of s0] (s1) {\( s_{\,\mathclap{1}} \)};
+
+				\draw [->] (s0) to[out=180+20, in=180-20, looseness=8] node[left]{\( a_0 \)} (s0);
+				\draw [->] (s0) to[out=-20, in=180+20] node[below]{\( a_21\)} (s1);
+				\draw [->] (s1) to[out=180-20, in=20] node[above]{\( a_0 \), \( a_1 \)} (s0);
+			\end{tikzpicture}
+			\caption{Simple Markov decision process with two states and actions.}
+			\label{fig:smallMdp}
+		\end{figure}
+
+		\subsection{Finite-Horizon Optimal Control}
+			For optimal control with a finite horizon \(T\), the cumulative reward over \(T\) time steps is maximized. That is, a policy \(\pi(\vec{a} \given \vec{s})\) is searched that maximizes the expected reward
+			\begin{equation}
+				J_\pi = \E_{\mu_0, p, \pi}\Bigg[ r_T(\vec{s}_T) + \sum_{t = 0}^{T - 1} r_t(\vec{s}_t, \vec{a}_t) \Bigg]\!,  \label{eq:expectedLongTermReward}
+			\end{equation}
+			where \( \E_{\mu_0, p, \pi}[\cdot] \) is a short form for \( \E_{\vec{s}_0 \sim \mu_0(\cdot),\, \vec{s}_{t + 1} \sim p(\cdot \given \vec{s}_t, \vec{a}_t),\, \vec{a}_t \sim \pi(\cdot \given \vec{s}_t) } \). The final reward \( r_T(\vec{s}_T) \) does not depend on the action as there is no action to take in the last state. In all of the following, the final reward might also be referred to as \( r_T(\vec{s}_T, \vec{a}_T) \), but it does still only depend on \( \vec{s}_T \) as there is no \( \vec{a}_T \)! It is convenient as it clears up some of the summations.
+
+			\subsubsection{Value and State-Action Value Functions}
+				To assess the "quality" of a state or state-action pair, two functions are defined: The value and the state-action value functions, where the latter is often called the Q-function. For some policy \(\pi\), they are defined as follows:
+				\begin{align*}
+					V_t^\pi(\vec{s})          &= \E_{p, \pi}\Bigg[ \sum_{\tau = t}^{T} r_\tau(\vec{s}_\tau, \vec{a}_\tau) \Bigggiven \vec{s}_t = \vec{s} \Bigg]                        \\
+					Q_t^\pi(\vec{s}, \vec{a}) &= \E_{p, \pi}\Bigg[ \sum_{\tau = t}^{T} r_\tau(\vec{s}_\tau, \vec{a}_\tau) \Bigggiven \vec{s}_t = \vec{s},\, \vec{a}_t = \vec{a} \Bigg]
+				\end{align*}
+				The intuition of these functions is as follows:
+				\begin{description}[leftmargin = 3.5cm]
+					\item[Value Function] How "good" is it to be in state \( \vec{s} \) under the policy \(\pi\)?
+					\item[Q-Function]     How "good" is it to take action \( \vec{a} \) in state \( \vec{s} \) when subsequently following the policy \(\pi\)?
+				\end{description}
+				Given the optimal policy \( \pi^\ast \), i.e. the policy that maximizes \eqref{eq:expectedLongTermReward}, the respective value and Q-functions are usually called \( V_t^\ast \) and \( Q_t^\ast \). For the optimal policy, the value and Q-function can be calculated from each other straightforwardly:
+				\begin{equation*}
+					\begin{aligned}
+						V_t^\ast(\vec{s})          &= \max_{\vec{a}} \, Q_t^\ast(\vec{s}, \vec{a}) \\
+						Q_t^\ast(\vec{s}, \vec{a}) &= r_t(\vec{s}, \vec{a}) + \E_{\vec{s}' \sim p(\cdot \given \vec{s}, \vec{a})}\big[ V_{t + 1}^\ast(\vec{s}') \big]
+					\end{aligned}  \label{eq:valueQFuncRelations}
+				\end{equation*}
 			% end
 
-			\subsubsection{Markov Decision Process and Policies} % 3a.9, 3a.10
-				\todo{Content}
+			\subsubsection{Value Iteration}
+				Applying the principle of dynamic programming to an MDP is straightforward. As in the last time step there is no action, the value function for the last time step is simply
+				\begin{equation*}
+					V_T^\ast(\vec{s}) = r_T(\vec{s})
+				\end{equation*}
+				for every state \(\vec{s}\) (this has to be evaluated). Then \emph{value iteration} iterates backwards in time, by maximizing the Q-function that is computed from the value function for \( t = \dotsrange{T - 1}{1} \):
+				\begin{equation*}
+					V_t^\ast(\vec{s}) = \max_{\vec{a}} \, Q_t(\vec{s}_t, \vec{a}) = \max_{\vec{a}} \, \Big( r_t(\vec{s}_t, \vec{a}) + \E_{\vec{s}' \sim p(\cdot \given \vec{s}_t, \vec{a})}\big[ V_{t + 1}^\ast(\vec{s}') \biggiven \vec{s}_t, \vec{a} \big] \Big)
+				\end{equation*}
+				Following this pattern, the optimal value function for time step \(t\) is obtained after \( T - t + 1 \) iterations. The (deterministic) optimal policy \( \pi_t^\ast : \mathcal{S} \to \mathcal{A} \) is then obtained by maximizing the Q-function
+				\begin{equation*}
+					\pi_t^\ast(\vec{s}) = \arg\max_{\vec{a}} \, Q_t^\ast(\vec{s}, \vec{a})
+				\end{equation*}
+				which can either be obtained from the value function or, ideally, has been stored whilst executing the value iteration.
+
+				A pseudo-code version of value iteration is shown in \autoref{alg:valueIterationFiniteHorizon}. Note that the computation of the value function was split into computing the Q-function on \autoref{algline:valueIterationFiniteHorizon-qComputation} and then computing the value function on \autoref{algline:valueIterationFiniteHorizon-vComputation} for to simplify the final computation of the policy on \autoref{algline:valueIterationFiniteHorizon-piComputation}.
+
+				\begin{algorithm}  \DontPrintSemicolon
+					\( V_T^\ast(\vec{s}) \gets r_T(\vec{s}) \) for all \( \vec{s} \in \mathcal{S} \) \;
+					\For{\( t = \dotsrange{T - 1}{0} \)}{
+						\tcp{Compute Q-Function for time step \(t\) for all \( \vec{s} \in \mathcal{S} \) and \( \vec{a} \in \mathcal{A} \):}
+						\( Q_t^\ast(\vec{s}, \vec{a}) \gets r_t(\vec{s}, \vec{a}) + \sum_{\vec{s}'} p_t(\vec{s}' \given \vec{s}, \vec{a}) V_{t + 1}^\ast(\vec{s}') \)  \label{algline:valueIterationFiniteHorizon-qComputation} \;
+
+						\tcp{Compute V-Function for time step \(t\) for all \( \vec{s} \in \mathcal{S} \):}
+						\( V_t^\ast(\vec{s}) \gets \max_{\vec{a}} \, Q_t^\ast(\vec{s}, \vec{a}) \)  \label{algline:valueIterationFiniteHorizon-vComputation} \;
+					}
+					\tcp{Return optimal policy for each time step \(t\) for all \( \vec{s} \in \mathcal{S} \):}
+					\Return \( \pi_t^\ast(\vec{s}) \gets \arg\max_{\vec{a}} \, Q_t^\ast(\vec{s}, \vec{a}) \)  \label{algline:valueIterationFiniteHorizon-piComputation} \;
+
+					\caption{Value Iteration for Finite-Horizon Problems}
+					\label{alg:valueIterationFiniteHorizon}
+				\end{algorithm}
 			% end
-		% end
 
-		\subsection{Finite-Horizon Optimal Control} % 3a.12, 3a.13
-			\todo{Content}
-
-			\subsubsection{Value and State-Action Value Functions} % 3a.14, 3a.15, 3a.17
-				\todo{Content}
-			% end
-
-			\subsubsection{Value Iteration} % 3a.18, 3a.19
-				\todo{Content}
-			% end
-
-			\subsubsection{Consequences of a Finite Time Horizon} % 3a.21
-				\todo{Content}
+			\subsubsection{Consequences of a Finite Time Horizon}
+				Choosing a finite time horizon over an infinite one has some major consequences on the environment and the e.g. the value function. First of all, it matters how many time steps are left. This implies that not only the state transition model, but also the policy and the reward function might be time-dependent as denoted by the index \(t\). This leads to also the value and Q-function being time-dependent! However, having a finite amount of steps makes it possible to find the optimal value function in a finite amount of steps.
 			% end
 		% end
 
 		\subsection{Infinite-Horizon Optimal Control} % 3a.22, 3a.23, 3a.24, 3a.25
-			\todo{Content}
+			Using an infinite time horizon, i.e. \( T = \infty \), the time index is not part of the state! Hence, also the optimal policy as well as the value and Q-function are time-independent and also the reward function and the state transition model are time-independent. But this comes at the cost of the sum of rewards, i.e. the optimization objective, being infinite and hence divergent.
 
-			\subsubsection{Value and State-Action Value Functions} % 3a.30, 3a.31, 3a.32, 3a.33
-				\todo{Content}
+			The simplest and most straightforward approach is to introduce a \emph{discount factor} \( \gamma \in [0, 1) \) that trades of the long term vs. the immediate reward. The optimization objective, the discounted sum of rewards, now is
+			\begin{equation*}
+				J_\pi = \E_{\mu_0, p, \pi} \Bigg[ \sum_{t = 0}^{\infty} \gamma^t r(\vec{s}_t, \vec{a}_t) \Bigg]  \label{eq:expectedDiscountedLongTermReward}
+			\end{equation*}
+			analogous to the objective for the finite horizon \eqref{eq:expectedLongTermReward}. The value and state-action value functions are defined accordingly as
+			\begin{align*}
+				V^\pi(\vec{s}) &= \E_{p, \pi}\Bigg[ \sum_{t = 0}^{\infty} \gamma^t r(\vec{s}_t, \vec{a}_t) \Bigggiven \vec{s}_0 = \vec{s} \Bigg] \\
+				Q^\pi(\vec{s}, \vec{a}) &= \E_{p, \pi}\Bigg[ \sum_{t = 0}^{\infty} \gamma^t r(\vec{s}_t, \vec{a}_t) \Bigggiven \vec{s}_0 = \vec{s},\, \vec{a}_0 = \vec{a} \Bigg]\!,
+			\end{align*}
+			with the relations
+			\begin{align*}
+				V^\pi(\vec{s}) &= \E_\pi\big[ Q^\pi(\vec{s}, \vec{a}) \biggiven \vec{a} \big] \\
+				Q^\pi(\vec{s}, \vec{a}) &= r(\vec{s}, \vec{a}) + \gamma \E_{\vec{s}' \sim p(\cdot \given \vec{s}, \vec{a})}\big[ V^\pi(\vec{s}') \big]
+			\end{align*}
+			between them. These are analogous to the finite-horizon case relations in \eqref{eq:valueQFuncRelations}, however in the last formula the expectation is multiplied with the discount factor. Also the maximization in the first equation was replaced with an expectation as now the policy might be suboptimal. In the finite case, only the optimal policy was used which equals using the maximum operator.
+
+			\subsubsection{Value Iteration}
+				Finding the optimal Q-function is again possible using value iteration with \( T \to \infty \) as shown in \autoref{alg:valueIterationInfiniteHorizon}. The only slight change (except for making the value function time-independent) is again that the expectation for computing the Q-function has to be multiplied with the discount factor in \autoref{algline:valueIterationInfiniteHorizon-qComputation}.
+
+				\begin{algorithm}  \DontPrintSemicolon
+					\( V^\ast(\vec{s}) \gets 0 \) for all \( \vec{s} \in \mathcal{S} \) \;
+					\Repeat{convergence of \( V^\ast \)}{
+						\tcp{Compute Q-Function for all \( \vec{s} \in \mathcal{S} \) and \( \vec{a} \in \mathcal{A} \):}
+						\( Q^\ast(\vec{s}, \vec{a}) \gets r(\vec{s}, \vec{a}) + \gamma \sum_{\vec{s}'} p(\vec{s}' \given \vec{s}, \vec{a}) V^\ast(\vec{s}') \)  \label{algline:valueIterationInfiniteHorizon-qComputation} \;
+
+						\tcp{Compute V-Function for all \( \vec{s} \in \mathcal{S} \):}
+						\( V^\ast(\vec{s}) \gets \max_{\vec{a}} \, Q^\ast(\vec{s}, \vec{a}) \) \;
+					}
+					\tcp{Return optimal policy for all \( \vec{s} \in \mathcal{S} \):}
+					\Return \( \pi^\ast(\vec{s}) \gets \arg\max_{\vec{a}} \, Q^\ast(\vec{s}, \vec{a}) \) \;
+
+					\caption{Value Iteration for Infinite-Horizon Problems}
+					\label{alg:valueIterationInfiniteHorizon}
+				\end{algorithm}
 			% end
 
-			\subsubsection{Value Iteration} % 3a.26
-				\todo{Content}
-			% end
+			\subsubsection{Policy Iteration}
+				One major drawback of value iteration as introduced before is that a lot of redundant maximization operations have to be performed when calculating the Q-function values. This drawback can be overcome by \emph{policy iteration}, a similar approach for computing the optimal value and Q-function. It is composed of two steps that are after each other until convergence:
+				\begin{enumerate}
+					\item \eqmakebox[policyIteration][l]{\emph{Policy Evaluation:}} Estimation of the quality of the states and actions for the current policy.
+					\item \eqmakebox[policyIteration][l]{\emph{Policy Improvement:}} Improve the policy by taking the actions with the highest quality.
+				\end{enumerate}
+				The process of policy evaluation is shown in \autoref{alg:policyEvaluation}. The main difference is that the value and Q-functions are not the optimal ones any more but the ones for the given policy \(\pi\). This results in the computation of the value function on \autoref{algline:policyEvaluationInfiniteHorizon-vComputation} to become an expectation (the policy is not optimal anymore and so is the Q-function, so using the maximum action would be wrong). The next step for policy iteration is to improve the policy by taking the actions with the highest quality. This corresponds to choosing the policy as
+				\begin{equation*}
+					\pi(\vec{a} \given \vec{s}) =
+						\begin{cases}
+							1 & \text{if } \vec{a} = \arg\max_{\vec{a}'} \, Q^\pi(\vec{s}, \vec{a}') \\
+							0 & \text{otherwise}
+						\end{cases}
+				\end{equation*}
+				where \( Q^\pi \) is the Q-function found via policy evaluation. Putting it all together, policy iteration is shown in \autoref{alg:policyIteration}.
 
-			\subsubsection{Policy Iteration} % 3a.29, 3a.34, 3a.36, 3a.37
-				\todo{Content}
+				\begin{algorithm}  \DontPrintSemicolon
+					\KwIn{Policy \(\pi\)}
+					\( V^\pi(\vec{s}) \gets 0 \) for all \( \vec{s} \in \mathcal{S} \) \;
+					\Repeat{convergence of \( V^\pi \)}{
+						\tcp{Compute Q-Function for all \( \vec{s} \in \mathcal{S} \) and \( \vec{a} \in \mathcal{A} \):}
+						\( Q^\pi(\vec{s}, \vec{a}) \gets r(\vec{s}, \vec{a}) + \gamma \sum_{\vec{s}'} p(\vec{s}' \given \vec{s}, \vec{a}) V^\pi(\vec{s}') \) \;
+
+						\tcp{Compute V-Function for all \( \vec{s} \in \mathcal{S} \):}
+						\( V^\pi(\vec{s}) \gets \sum_{\vec{a}} \pi(\vec{a} \given \vec{s}) Q^\pi(\vec{s}, \vec{a}) \)  \label{algline:policyEvaluationInfiniteHorizon-vComputation} \;
+					}
+					\Return \( V^\pi \) and/or \( Q^\pi \) as needed \;
+
+					\caption{Policy Evaluation for Infinite-Horizon Problems}
+					\label{alg:policyEvaluation}
+				\end{algorithm}
+
+				\begin{algorithm}  \DontPrintSemicolon
+					\KwIn{Policy \(\pi\)}
+					\( V^\pi(\vec{s}) \gets 0 \) for all \( \vec{s} \in \mathcal{S} \) \;
+					\Repeat{convergence of \( \pi \)}{
+						\Repeat{convergence of \( V^\pi \)}{
+							\tcp{Compute Q-Function for all \( \vec{s} \in \mathcal{S} \) and \( \vec{a} \in \mathcal{A} \):}
+							\( Q^\pi(\vec{s}, \vec{a}) \gets r(\vec{s}, \vec{a}) + \gamma \sum_{\vec{s}'} p(\vec{s}' \given \vec{s}, \vec{a}) V^\pi(\vec{s}') \) \;
+
+							\tcp{Compute V-Function for all \( \vec{s} \in \mathcal{S} \):}
+							\( V^\pi(\vec{s}) \gets \sum_{\vec{a}} \pi(\vec{a} \given \vec{s}) Q^\pi(\vec{s}, \vec{a}) \) \;
+						}
+						\tcp{Improve policy for all \( \vec{s} \in \mathcal{S} \) and \( \vec{a} \in \mathcal{A} \):}
+						\(
+							\pi(\vec{a} \given \vec{s}) =
+								\begin{cases}
+									1 & \text{if } \vec{a} = \arg\max_{\vec{a}'} \, Q^\pi(\vec{s}, \vec{a}') \\
+									0 & \text{otherwise}
+								\end{cases}
+						\)
+					}
+					\Return \( \pi \) \;
+
+					\caption{Policy Iteration for Infinite-Horizon Problems}
+					\label{alg:policyIteration}
+				\end{algorithm}
 			% end
 		% end
 	% end
@@ -1071,7 +1231,7 @@
 	% end
 % end
 
-\chapter{Approximate Optimal Control} % N/A
+\chapter{Approximate Optimal Control} % {3a.41, 3a.42}
 	\todo{Content}
 
 	\section{Differential Dynamic Programming (DDP)} % 4a.1, 4a.2, 4a.3, 4a.12

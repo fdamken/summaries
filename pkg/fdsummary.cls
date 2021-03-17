@@ -129,6 +129,9 @@
 %\tikzstyle{every path} = [ very thick ]
 \tikzset{> = { Latex[length = 2mm] }}
 
+% Disable teletyper-font in algorithm2e comments.
+\SetCommentSty{}
+
 % If somethis is quoted using "..", interpret it as \csquotes{..} for correct quotes.
 \MakeOuterQuote{"}
 
@@ -168,7 +171,7 @@
 % Make it possible to include matplotlib plots with negative numbers.
 \newunicodechar{−}{--}
 
-% Center captions.
+% Align captions right or, if they are to small, center them.
 \captionsetup{justification=RaggedRight, singlelinecheck=true}
 
 
@@ -260,7 +263,6 @@
 \DeclareMathOperator{\emp}{emp}
 \DeclareMathOperator{\Enc}{Enc}
 \DeclareMathOperator{\eps}{eps}
-\DeclareMathOperator{\E}{E}
 \DeclareMathOperator{\gl}{gl}
 \DeclareMathOperator{\HMAC}{HMAC}
 \DeclareMathOperator{\MAC}{MAC}
@@ -294,6 +296,8 @@
 \newcommand{\Q}{\mathbb{Q}}
 \newcommand{\R}{\mathbb{R}}
 \renewcommand{\C}{\mathbb{C}}
+% Expectation.
+\newcommand{\E}{\mathbb{E}}
 % Top-left index, e.g. for transformation matrices.
 \newcommand{\inreferenceto}[2]{\prescript{#1}{}{#2}}
 % One vertical line for probabilities, densities, expectations, etc.

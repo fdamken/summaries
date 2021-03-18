@@ -181,6 +181,9 @@
 \newcommand{\HREF}[1]{\href{#1}{#1}}
 \newcommand\circled[1]{\tikz[baseline=(char.base)]{\node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
 
+% Reference the matrix cookbook - always a good idea.
+\newcommand{\matrixcookbook}{matrix cookbook\footnote{\url{https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf}}\xspace}
+
 % We need to go deeper!
 \newcommand{\subsubparagraph}[1]{\hspace{1cm} \textbf{#1:}}
 

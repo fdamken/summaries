@@ -1050,7 +1050,7 @@
 				\end{equation*}
 				for every state \(\vec{s}\) (this has to be evaluated). Then \emph{value iteration} iterates backwards in time, by maximizing the Q-function that is computed from the value function for \( t = \dotsrange{T - 1}{1} \):
 				\begin{equation*}
-					V_t^\ast(\vec{s}) = \max_{\vec{a}} \, Q_t(\vec{s}_t, \vec{a}) = \max_{\vec{a}} \, \Big( r_t(\vec{s}_t, \vec{a}) + \E_{\vec{s}' \sim p(\cdot \given \vec{s}_t, \vec{a})}\big[ V_{t + 1}^\ast(\vec{s}') \biggiven \vec{s}_t, \vec{a} \big] \Big)
+					V_t^\ast(\vec{s}) = \max_{\vec{a}} \, Q_t(\vec{s}, \vec{a}) = \max_{\vec{a}} \, \Big( r_t(\vec{s}, \vec{a}) + \E_{\vec{s}' \sim p(\cdot \given \vec{s}, \vec{a})}\big[ V_{t + 1}^\ast(\vec{s}') \biggiven \vec{s}, \vec{a} \big] \Big)
 				\end{equation*}
 				Following this pattern, the optimal value function for time step \(t\) is obtained after \( T - t + 1 \) iterations. The (deterministic) optimal policy \( \pi_t^\ast : \mathcal{S} \to \mathcal{A} \) is then obtained by maximizing the Q-function
 				\begin{equation*}
@@ -1082,7 +1082,7 @@
 			% end
 		% end
 
-		\subsection{Infinite-Horizon Optimal Control} % 3a.22, 3a.23, 3a.24, 3a.25
+		\subsection{Infinite-Horizon Optimal Control}
 			Using an infinite time horizon, i.e. \( T = \infty \), the time index is not part of the state! Hence, also the optimal policy as well as the value and Q-function are time-independent and also the reward function and the state transition model are time-independent. But this comes at the cost of the sum of rewards, i.e. the optimization objective, being infinite and hence divergent.
 
 			The simplest and most straightforward approach is to introduce a \emph{discount factor} \( \gamma \in [0, 1) \) that trades of the long term vs. the immediate reward. The optimization objective, the discounted sum of rewards, now is
@@ -1182,56 +1182,175 @@
 		% end
 	% end
 
-	\section{Continuous State-Action Space} % 3b.1, 3b.2
-		\todo{Content}
+	\section{Continuous State-Action Space}
+		In this section the application of the principle of dynamic programming will be applied to continuous state-action spaces. For continuous systems, this is often just called \emph{optimal control} and a slightly different notation is used, namely \(\vec{x}\) for the state and \(\vec{u}\) for the action. This section will stick to this convention.
 
-		\subsection{Modeling the System} % 3b.5, 3b.7, 3b.8, 3b.9, 3b.10, 3b.11
-			\todo{Content}
-		% end
+		Sadly, the optimal control problem of maximizing the expected long-term reward is not tractable for almost all systems. In fact, the only system where it is is for linear transition dynamics with additive Gaussian noise and a quadratic reward. The resulting optimal policy is called the \emph{Linear Quadratic Regulator} (LQR). The first part of this section will focus on these tractable systems, following by an approach for approximating nonlinear systems and optimal control with learned models.
 
-		\subsection{Linear Quadratic Regulator (LQR)} % 3b.12, 3b.13, 3b.14, 3b.15
-			\todo{Content}
+		\subsection{Linear Quadratic Regulator (LQR)}
+			\label{subsec:lqr}
 
-			\subsubsection{Recap of Value Iteration} % 3b.17, 3b.18
-				\todo{Content}
-			% end
+			% TODO: Linear terms in reward!
 
-			\subsubsection{Solving the Optimal Control Problem} % 3b.19, 3b.20, 3b.21, 3b.22, 3b.23, 3b.24, 3b.25, 3b.26, 2.27
-				\todo{Content}
+			LQR systems is defined by the state and action spaces, \( \vec{x} \in \R^n \) and \( \vec{u} \in \R^m \), the linear (possible time-dependent) transition dynamics
+			\begin{equation*}
+				p_t(\vec{x}_{t + 1} \given \vec{x}_t, \vec{u}) = \mathcal{N}\big(\vec{x}_{t + 1} \biggiven \mat{A}_t \vec{x}_t + \mat{B}_t \vec{u}_t + \vec{b}_t,\, \mat{\Sigma}_t \big)
+			\end{equation*}
+			with (additive) Gaussian noise, the quadratic reward function
+			\begin{equation*}
+				r_t(\vec{x}, \vec{u}) = -(\vec{x} - \vec{x}_d)^T \mat{R}_t (\vec{x} - \vec{x}_d) - \vec{u}_t^T \mat{H}_t \vec{u}_t,
+			\end{equation*}
+			with symmetric and positive-definite matrices \(\mat{R}_t\) and \(\mat{H}_t\), and the initial state distribution \( \mu_0(\vec{x}) = \mathcal{N}(\vec{x} \given \vec{\mu}_0, \mat{\Sigma}_0) \). The final reward is given as \( r_T(\vec{x}) = r_T(\vec{x}, \vec{0}) \). The objective is to maximize the expected long-term reward with a finite time horizon \(T\):
+			\begin{equation*}
+				J_\pi = \E_{\mu_0, p, \pi}\Bigg[ r_T(\vec{x}) + \sum_{t = 0}^{T - 1} r_t(\vec{x}_t, \vec{u}_t) \Bigg]
+			\end{equation*}
+			The value \(\vec{x}_d\) can be seen as the desired state. Deviations from \(\vec{x}_d\) punish the system with a highly negative reward.
 
-				\paragraph{Computing the Expectation} % 3b.21
-					\todo{Content}
+			\subsection{Solving the Optimal Control Problem}
+				Applying the principle of optimal control now says to start with the last time step \(T\) by setting \( V_T^\ast(\vec{x}) = r_T(\vec{x}) \) for all states. Subsequently, iterate over \( t = \dotsrange{T - 1}{0} \) and compute
+				\begin{equation*}
+					V_t^\ast(\vec{x}) = \max_{\vec{u}} \, \Big( r_t(\vec{x}_t, \vec{u}_t) + \E_{\vec{x}' \sim p(\cdot \given \vec{x}, \vec{u})}\big[ V_{t + 1}^\ast(\vec{x}') \biggiven \vec{x}, \vec{u} \big] \Big).
+				\end{equation*}
+				For applying this to continuous state-action spaces, the expectation and the maximization have to be solved. And this step is only possible for LQR problems! Applying dynamic programming can be split further into the following steps:
+				\begin{enumerate}
+					\item Compute the value function for the last time step:
+						\begin{equation*}
+							V_T^\ast(\vec{x}) = r_T(\vec{x})
+						\end{equation*}
+					\item To get from \(t + 1\) to \(t\), compute the Q-function for all states and actions:
+						\begin{equation*}
+							Q_t^\ast(\vec{x}, \vec{u}) = r_t(\vec{x}_t, \vec{u}_t) + \E_{\vec{x}' \sim p(\cdot \given \vec{x}, \vec{u})}\big[ V_{t + 1}^\ast(\vec{x}') \biggiven \vec{x}, \vec{u} \big]
+						\end{equation*}
+					\item Compute the optimal policy for time step \(t\) for all states:
+						\begin{equation*}
+							\pi_t^\ast(\vec{x}) = \arg\max_{\vec{u}} \, Q_t^\ast(\vec{x}, \vec{u})
+						\end{equation*}
+					\item Compute the optimal value function for time step \(t\) for all states:
+						\begin{equation*}
+							V_t^\ast(\vec{x}) = Q_t^\ast\big(\vec{x}, \pi_t^\ast(\vec{x})\big)
+						\end{equation*}
+					\item Repeat from 2 until \( t = 0 \) is reached.
+				\end{enumerate}
+				The next paragraphs will focus on these steps separately.
+
+				\paragraph{1. Compute the Value Function for the Last Time Step}
+					This can be computed straightforwardly as
+					\begin{equation*}
+						V_T^\ast(\vec{x}) = r_T(\vec{x}) = -(\vec{x} - \vec{x}_d)^T \mat{R}_T (\vec{x} - \vec{x}_d) \doteq -(\vec{x} - \vec{x}_d)^T \mat{V}_T (\vec{x} - \vec{x}_d)
+					\end{equation*}
+					with \( \mat{V}_t \coloneqq \mat{R}_T \).
 				% end
 
-				\paragraph{Computing the Maximization} % 3b.23
-					\todo{Content}
+				\paragraph{2. Compute the Q-Function}
+					To compute the Q-function
+					\begin{equation*}
+						Q_t^\ast(\vec{x}, \vec{u}) = r_t(\vec{x}_t, \vec{u}_t) + \E_{\vec{x}' \sim p(\cdot \given \vec{x}, \vec{u})}\big[ V_{t + 1}^\ast(\vec{x}') \biggiven \vec{x}, \vec{u} \big],
+					\end{equation*}
+					firstly the expectation has to be computed. By assuming a quadratic structure for the value function of time step \(t + 1\), i.e. \( V_{t + 1}^\ast(\vec{x}) = -(\vec{x} - \vec{x}_d)^T \mat{V}_{t + 1} (\vec{x} - \vec{x}_d) \) with a symmetric and positive-definite \( \mat{V}_{t + 1} \), the expectation becomes
+					\begin{align*}
+						\E_{\vec{x}' \sim p(\cdot \given \vec{x}, \vec{u})}\big[ V_{t + 1}^\ast(\vec{x}') \biggiven \vec{x}, \vec{u} \big]
+							&= \int\! V_{t + 1}^\ast(\vec{x}') \, p(\vec{x}' \given \vec{x}, \vec{u}) \dd{\vec{x}'} \\
+							&= - \int\! (\vec{x} - \vec{x}_d)^T \mat{V}_{t + 1} (\vec{x} - \vec{x}_d) \, \mathcal{N}\big(\vec{x}' \biggiven \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t,\, \mat{\Sigma}_t \big) \dd{\vec{x}'} \\
+							&= -\big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big)^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big) - \tr(\mat{V}_{t + 1} \mat{\Sigma}_t)
+					\end{align*}
+					where in the last step equation (380) from the \matrixcookbook was used. Plugging in the reward function yields the Q-function:
+					\begin{equation*}
+						\begin{aligned}
+							Q_t^\ast(\vec{x}, \vec{u}) =
+								&\, -(\vec{x} - \vec{x}_d)^T \mat{R}_t (\vec{x} - \vec{x}_d) - \vec{u}^T \mat{H}_t \vec{u} \\
+								&\, -\big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big)^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big) \\
+								&\, -\tr(\mat{V}_{t + 1} \mat{\Sigma}_t)
+						\end{aligned}  \label{eq:qFunctionLQR}
+					\end{equation*}
 				% end
+
+				\paragraph{3. Compute the Optimal Policy}
+					Computing the optimal policy is done by maximizing the Q-function w.r.t. the action \(\vec{u}\). This means taking the derivative of \eqref{eq:qFunctionLQR} and setting it to zero:
+					\begin{align*}
+						&& \pdv{\vec{u}} Q_t^\ast(\vec{x}, \vec{u})
+							&= -2 \mat{H}_t \vec{u} - 2 \mat{B}_t^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big) & \\
+						&&	&= -2 \mat{H}_t \vec{u} - 2 \mat{B}_t^T \mat{V}_{t + 1} \mat{A}_t \vec{x} - 2 \mat{B}_t^T \mat{V}_{t + 1} \mat{B}_t \vec{u}_t - 2 \mat{B}_t^T \mat{V}_{t + 1} \vec{b}_t + 2 \mat{B}_t^T \mat{V}_{t + 1} \vec{x}_d & \\
+						&&	&= -2 \big( \mat{H}_t + \mat{B}_t^T \mat{V}_{t + 1} \mat{B}_t \big) \vec{u} - 2 \mat{B}_t^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \vec{b}_t - \vec{x}_d \big) \overset{!}{=} \vec{0} & \\
+						\implies && \pi_t^\ast(\vec{x}) = \vec{u}^\ast &= -\big( \mat{H}_t + \mat{B}_t^T \mat{V}_{t + 1} \mat{B}_t \big)^{-1} \mat{B}_t^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \vec{b}_t - \vec{x}_d \big) &
+					\end{align*}
+					% TODO: What about v_t?
+				% end
+
+				\paragraph{4. Compute the Value Function}
+					To compute the value function, plug the obtained optimal policy into the Q-function:
+					% TODO: What about the trace?
+				% end
+
+				% TODO: Continue and finish derivation of LQR! Also summarize at the end.
 			% end
 		% end
 
-		\subsection{Approximating Nonlinear Systems} % 3b.32, 3b.33, 3b.34, 3b.35, 3b.36
-			\todo{Content}
+		\subsection{Approximating Nonlinear Systems}
+			Being able to solve the optimal control problem for LQR-systems is nice, but almost all systems in robotics are all but linear. For example the dynamics of a robot often include sines and cosines which are not linear functions. This section covers basic ideas to overcome this issue and \autoref{c:approximateOptimalControl} will cover advanced methods in more detail.
 
-			\subsubsection{Local Solutions by Linearization} % 3b.37, 3b.38, 3b.39
-				\todo{Content}
+			\subsubsection{Local Solutions by Linearization}
+				The simplest idea for approximating nonlinear systems is to locally linearize them. This means Taylor-expanding the transition function around a point \( (\tilde{\vec{x}}_t, \tilde{\vec{u}}_t) \) as
+				\begin{equation*}
+					\vec{x}_{t + 1}
+						= \vec{f}(\vec{x}_t, \vec{u}_t)
+						\approx \vec{f}(\tilde{\vec{x}}_t, \tilde{\vec{u}}_t) + \pdv{\vec{f}}{\vec{x}} \bigg\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} (\vec{x}_t - \tilde{\vec{x}}_t) + \pdv{\vec{f}}{\vec{u}} \bigg\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} (\vec{u}_t - \tilde{\vec{u}}_t)
+						= \mat{A}_t \vec{x}_t + \mat{B}_t \vec{u}_t + \vec{b}_t
+				\end{equation*}
+				with \(\mat{A}_t = \pdv{\vec{f}}{\vec{x}} \big\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} \), \( \mat{B}_t = \pdv{\vec{f}}{\vec{u}} \big\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} \) and \( \vec{b}_t = \vec{f}(\tilde{\vec{x}}_t, \tilde{\vec{u}}_t) - \mat{A}_t \tilde{\vec{x}}_t - \mat{B}_t \tilde{\vec{u}}_t \). Similarly the reward can be linearized using a second-order Taylor expansion
+				\begin{align*}
+					r_t(\vec{x}_t, \vec{u}_t)
+						\approx\,& \eqmakebox[optimalControlApproxNonLin][l]{\( r_t(\tilde{\vec{x}}_t, \tilde{\vec{u}}_t) \)} + \pdv{r}{\vec{x}} \bigg\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} (\vec{x}_t - \tilde{\vec{x}}_t) + (\vec{x}_t - \tilde{\vec{x}}_t)^T \pdv[2]{r}{\vec{x}} \bigg\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} (\vec{x}_t - \tilde{\vec{x}}_t) \\
+						&\eqmakebox[optimalControlApproxNonLin][l]{} + \pdv{r}{\vec{u}} \bigg\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} (\vec{x}_t - \tilde{\vec{x}}_t) + (\vec{x}_t - \tilde{\vec{x}}_t)^T \pdv[2]{r}{\vec{u}} \bigg\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} (\vec{x}_t - \tilde{\vec{x}}_t) \\
+						=\,& -\vec{x}_t^T \mat{R}_t \vec{x}_t + 2 \vec{r}_t^T \vec{x} - \vec{u}_t^T \mat{H}_t \vec{u}_t + 2 \vec{h}_t^T \vec{u} + \mathrm{const}
+				\end{align*}
+				with \( \mat{R}_t = -\pdv[2]{r}{\vec{x}} \big\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} \), \( \mat{H}_t = -\pdv[2]{r}{\vec{u}} \big\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} \), \( \vec{r}_t = \frac{1}{2} \pdv{r}{\vec{x}} \big\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} + \mat{R}_t \tilde{\vec{x}}_t \) and \( \vec{h}_t = \frac{1}{2} \pdv{r}{\vec{u}} \big\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} + \mat{H}_t \tilde{\vec{u}}_t \).
+
+				This is again the linear optimal control case that is solvable (the LQR problem), see \autoref{subsec:lqr}. This yields an iterative algorithm for solving locally linear optimal control problems:
+				\begin{enumerate}
+					\item Compute the optimal control law using LQR (backwards in time).
+					\item Run a simulator with the control law and linearize the dynamics subsequently.
+					\item If not converged, go to 1.
+				\end{enumerate}
+				Using linearization problems that are not too nonlinear can be solved quite well, however the linearization may lead to oscillations of the state. Also they often do not transfer well to the real robot due to bad models.
 			% end
 		% end
 
-		\subsection{Optimal Control with Learned Models} % 3b.42, 3b.43, 3b.44, 3b.45, 3b.46, 3b.48, 3b.51
-			\todo{Content}
+		\subsection{Optimal Control with Learned Models}
+			The problem with local linearization is that it only really works in simulation and not on the real robot. This is caused by the fact that the models for robots are often really bad. So learning models instead of hand-crafting them would be a good alternative\footnote{Model learning will be covered in more detail in \autoref{c:modelLearning}.}!
 
-			\subsubsection{State-Of-The-Art Approaches} % 3b.52, 3b.55
-				\todo{Content}
+			Major challenges in model-based policy learning are that the methods mainly work for balancing tasks where the state space is highly restricted. For more complex problems, using learned models becomes a lot harder. The main cause for this is that the model is likely to be inaccurate the further the robot moves away from known locations. Such inaccuracies can be exploited by the optimizer, causing the policy to not work on the real system. Jumping to an area off the state space by exploiting the model can again make the policy inherently unstable.
+
+			\subsubsection{Questions in Model Learning}
+				When learning or designing models, a lot of questions have to be answered, for example what the actions \(\vec{u}\) are. They might be motor torques, but this requires a good forward dynamics model for control. Other options are e.g. the joint accelerations, which requires a good inverse dynamics model, or the accelerations in task space. The latter is ideal for control, but requires a good task-space control law.
+
+				Another big question is how to design the reward. It can encode basic information like whether the task was successful or not (using a binary reward) or more task knowledge like how far the end-effector is away from the goal. Typically a mixture is needed with usually hand-crafted weighting between them.
+			% end
+
+			\subsubsection{Human Motor Cost Functions}
+				Research in cognitive science shows that also human movements can be explained very well using cost (or reward) functions! Reaching movements for example include minimum jerk, minimum torque change, minimum end-point variance. Even complicated things like locomotion can be explained with minimum metabolic energy consumption.
+			% end
+
+			\subsubsection{State-Of-The-Art Approaches}
+				Probabilistic Inference for Learning Control (PILCO):
+				\begin{itemize}
+					\item Learn Gaussian process forward models.
+					\item Use uncertainty predicted by the GP model to predict the long-term reward.
+					\item Policy optimization with analytical gradient of the expected reward.
+				\end{itemize}
+				Guided Policy Search by Trajectory Optimization:
+				\begin{itemize}
+					\item Learn time-dependent linear forward models.
+					\item LQR-like algorithm for trajectory optimization with the additional constraint that the new trajectory should stay close to the data. This increases the stability!
+					\item Use the optimized trajectories to train a generalizing neural network policy.
+				\end{itemize}
 			% end
 		% end
-	% end
-
-	\section{Wrap-Up} % 3a.39, 3a.40, 3a.41, 3a.42, 3b.59
-		\todo{Content}
 	% end
 % end
 
 \chapter{Approximate Optimal Control} % {3a.41, 3a.42}
+	\label{c:approximateOptimalControl}
+
 	\todo{Content}
 
 	\section{Differential Dynamic Programming (DDP)} % 4a.1, 4a.2, 4a.3, 4a.12
@@ -1372,13 +1491,15 @@
 % end
 
 \chapter{Model Learning} % 7.1, 7.2
+	\label{c:modelLearning}
+
 	\todo{Content}
 
 	\section{Models in Robotics} % 7.4, 7.5, 7.6, 7.7, 7.8, 7.9
 		\todo{Content}
 	% end
 
-	\section{Modling Assumptions: White, Black and Gray} % 7.10, 7.11
+	\section{Modeling Assumptions: White, Black and Gray} % 7.10, 7.11
 		\todo{Content}
 
 		\subsection{White-Box Strategy} % 7.12

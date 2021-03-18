@@ -63,7 +63,7 @@
 	% end
 
 	\section{Optimal Control}
-		\subsection{Discrete Optimal Control} % 3a.43
+		\subsection{Discrete Optimal Control}
 			\paragraph{What is an MDP, a policy, a value function, a state-action value function?}
 			\answer{An MDP, a Markov decision process, is a system with discrete states and actions that behaves Markovian, i.e. a state only depends on the previous state and the action taken and not on any other states. The initial state is drawn from the initial state distribution. A policy (that can be either deterministic or stochastic) prescribed what action to take given an action. The value function assesses the quality of a state, i.e. it gives the expected long-term reward when following a given policy. The state-action function, also called the Q-function, assesses the quality of state-action pairs, i.e. it gives the expected long-term reward when taking the said action in said state and subsequently following a policy. Maximizing the optimal Q-function yields the optimal policy.}
 
@@ -86,8 +86,21 @@
 			\answer{Dynamic programming as discussed in this chapter is only applicable for discrete state-action spaces. This can be achieved by separating the world in buckets, but this would cause an exponential explosion in the memory required to store the value function. Using LQR (next chapter), dynamic programming can also be used for continuous state-action spaces, but this requires the system to be linear and the reward to be quadratic with Gaussian noise. But the world and therefore robots are not linear, but in most cases highly nonlinear.}
 		% end
 
-		\subsection{Continuous Optimal Control} % 3b.60
-			\todo{Content}
+		\subsection{Continuous Optimal Control}
+			\paragraph{What is the LQR problem?}
+			\answer{An LQR problem is given with continuous states and actions with linear state transition dynamics with Gaussian noise, i.e. \( p(\vec{x}_{t + 1} \given \vec{x}_t, \vec{u}_t) = \mathcal{N}\big( \vec{x}_{t + 1} \biggiven \mat{A}_t \vec{x}_t + \mat{B}_t \vec{u}_t\, \mat{\Sigma}_t \big) \). The reward function is quadratic in the states and actions, i.e. \( r_t(\vec{x}, \vec{u}) = -\vec{x}^T \mat{R}_t \vec{x} - \vec{u}^T \mat{H}_t \vec{u} \) with symmetric and positive definite matrices \( \mat{R}_t \) and \( \mat{H}_t \). The optimal policy \(\pi^\ast\) then maximizes the cumulative reward \( J_\pi \) over a finite horizon \(T\). This is, besides the discrete case, the only solvable optimal control problem.}
+
+			\paragraph{Derive the LQR value function and optimal policy for the basic case.}
+			\answer{This can be done by following the principle of dynamic programming, i.e. first compute the value function for the last time step and subsequently calculate the Q-function, the optimal policy and the value function for the previous time step. This is done by applying the Bellman equation. See \autoref{subsec:lqr} for the full derivation.}
+
+			\paragraph{What is the form of the solution (value function and policy)? What is their interpretation (qualitatively)?}
+			\answer{The value function is of the form \( V_t(\vec{x}) = \vec{x}^T \mat{V}_t \vec{x} + \vec{x}^T \vec{v}_t \), i.e. it is quadratic-linear. The optimal control input is of the form \( \vec{u}_t^\ast = \mat{K}_t (\vec{x}_t - \vec{x}_d) + \vec{k}_t \), i.e. it is a time-varying P-controller!}
+
+			\paragraph{What to do when dynamics and/or rewards are not linear? What the pitfalls?}
+			\answer{It is possible to linearize the dynamics and/or the rewards using a Taylor expansion and cutting off the higher-order terms. This, however, leads to oscillations and does only work for systems that are not too nonlinear. This also causes the policies to often not work on the real system due to modeling errors.}
+
+			\paragraph{What are the potential issues when using learning models for trajectory optimization?}
+			\answer{One major issue is that the optimizer is prone to exploit error in the model. When using learned models, this might mean to jump out of the space the system learned in, causing unpredictable behaviors. Such policies will most likely never work on the real system as it does not exhibit the same errors.}
 		% end
 	% end
 

@@ -73,6 +73,9 @@
 \HREF{url}#n
 \circled{%|}
 
+% Reference the matrix cookbook - always a good idea.
+\matrixcookbook#n
+
 % We need to go deeper!
 \subsubparagraph#n
 

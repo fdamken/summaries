@@ -262,6 +262,8 @@
 			\end{equation}
 
 			\subsubsection{Computing the Forces}
+				\label{subsubsec:robotsDynamics}
+
 				To compute the rigid body forces, there are two central methods:
 				\begin{enumerate}
 					\item Newton-Euler Method
@@ -347,6 +349,8 @@
 	% end
 
 	\section{Representing Trajectories}
+		\label{sec:roboticsRepresentingTrajectories}
+
 		A trajectory \( \vec{q}_d(t) \)/\( \dot{\vec{q}}_d(t) \)/\( \ddot{\vec{q}}_d(t) \) specifies the joint positions/velocities/accelerations at any point in time and is used to specify movements for the robot to execute. A common way to specify trajectories is to specify via-points the robot has to reach and to interpolate between them as shown in \autoref{fig:robotsViaPoints}. But as the motor commands can only influence the acceleration direction and the velocities and positions are found with integration, the trajectory and the time-derivative of the trajectory must not jump! This can be achieved with polynomial spline-interpolation which will be discussed further in the next sections.
 
 		\begin{figure}
@@ -992,7 +996,7 @@
 			\item action space \( \vec{a} \in \mathcal{A} \),
 			\item transition dynamics \( p_t(\vec{s}_{t + 1} \given \vec{s}_t, \vec{a}_t) \),
 			\item reward function \( r_t : \mathcal{S} \times \mathcal{A} \to \R \), and
-			\item initial state distribution \( \mu_0(\vec{s}) \).
+			\item initial state distribution \( \mu(\vec{s}) \).
 		\end{itemize}
 		The \emph{Markov property} describes that the transition dynamics are only dependent on the previous state and the taken action, but not on any previous states or actions, i.e.
 		\begin{equation*}
@@ -1005,12 +1009,12 @@
 		\begin{figure}
 			\centering
 			\begin{tikzpicture}[state/.style = { draw, circle, minimum width = 1cm, minimum height = 1cm }]
-				\node [state] (s0) {\( s_{\,\mathclap{0}} \)};
-				\node [state, right = 1.5 of s0] (s1) {\( s_{\,\mathclap{1}} \)};
+				\node [state] (s0) {\( s_{\,\mathclap{1}} \)};
+				\node [state, right = 1.5 of s0] (s1) {\( s_{\,\mathclap{2}} \)};
 
-				\draw [->] (s0) to[out=180+20, in=180-20, looseness=8] node[left]{\( a_0 \)} (s0);
-				\draw [->] (s0) to[out=-20, in=180+20] node[below]{\( a_21\)} (s1);
-				\draw [->] (s1) to[out=180-20, in=20] node[above]{\( a_0 \), \( a_1 \)} (s0);
+				\draw [->] (s0) to[out=180+20, in=180-20, looseness=8] node[left]{\( a_1 \)} (s0);
+				\draw [->] (s0) to[out=-20, in=180+20] node[below]{\( a_2 \)} (s1);
+				\draw [->] (s1) to[out=180-20, in=20] node[above]{\( a_1 \), \( a_2 \)} (s0);
 			\end{tikzpicture}
 			\caption{Simple Markov decision process with two states and actions.}
 			\label{fig:smallMdp}
@@ -1019,9 +1023,9 @@
 		\subsection{Finite-Horizon Optimal Control}
 			For optimal control with a finite horizon \(T\), the cumulative reward over \(T\) time steps is maximized. That is, a policy \(\pi(\vec{a} \given \vec{s})\) is searched that maximizes the expected reward
 			\begin{equation}
-				J_\pi = \E_{\mu_0, p, \pi}\Bigg[ r_T(\vec{s}_T) + \sum_{t = 0}^{T - 1} r_t(\vec{s}_t, \vec{a}_t) \Bigg]\!,  \label{eq:expectedLongTermReward}
+				J_\pi = \E_{\mu, p, \pi}\Bigg[ r_T(\vec{s}_T) + \sum_{t = 1}^{T - 1} r_t(\vec{s}_t, \vec{a}_t) \Bigg]\!,  \label{eq:expectedLongTermReward}
 			\end{equation}
-			where \( \E_{\mu_0, p, \pi}[\cdot] \) is a short form for \( \E_{\vec{s}_0 \sim \mu_0(\cdot),\, \vec{s}_{t + 1} \sim p(\cdot \given \vec{s}_t, \vec{a}_t),\, \vec{a}_t \sim \pi(\cdot \given \vec{s}_t) } \). The final reward \( r_T(\vec{s}_T) \) does not depend on the action as there is no action to take in the last state. In all of the following, the final reward might also be referred to as \( r_T(\vec{s}_T, \vec{a}_T) \), but it does still only depend on \( \vec{s}_T \) as there is no \( \vec{a}_T \)! It is convenient as it clears up some of the summations.
+			where \( \E_{\mu, p, \pi}[\cdot] \) is a short form for \( \E_{\vec{s}_1 \sim \mu(\cdot),\, \vec{s}_{t + 1} \sim p(\cdot \given \vec{s}_t, \vec{a}_t),\, \vec{a}_t \sim \pi(\cdot \given \vec{s}_t) } \). The final reward \( r_T(\vec{s}_T) \) does not depend on the action as there is no action to take in the last state. In all of the following, the final reward might also be referred to as \( r_T(\vec{s}_T, \vec{a}_T) \), but it does still only depend on \( \vec{s}_T \) as there is no \( \vec{a}_T \)! It is convenient as it clears up some of the summations.
 
 			\subsubsection{Value and State-Action Value Functions}
 				To assess the "quality" of a state or state-action pair, two functions are defined: The value and the state-action value functions, where the latter is often called the Q-function. For some policy \(\pi\), they are defined as follows:
@@ -1062,7 +1066,7 @@
 
 				\begin{algorithm}  \DontPrintSemicolon
 					\( V_T^\ast(\vec{s}) \gets r_T(\vec{s}) \) for all \( \vec{s} \in \mathcal{S} \) \;
-					\For{\( t = \dotsrange{T - 1}{0} \)}{
+					\For{\( t = \dotsrange{T - 1}{1} \)}{
 						\tcp{Compute Q-Function for time step \(t\) for all \( \vec{s} \in \mathcal{S} \) and \( \vec{a} \in \mathcal{A} \):}
 						\( Q_t^\ast(\vec{s}, \vec{a}) \gets r_t(\vec{s}, \vec{a}) + \sum_{\vec{s}'} p_t(\vec{s}' \given \vec{s}, \vec{a}) V_{t + 1}^\ast(\vec{s}') \)  \label{algline:valueIterationFiniteHorizon-qComputation} \;
 
@@ -1087,12 +1091,12 @@
 
 			The simplest and most straightforward approach is to introduce a \emph{discount factor} \( \gamma \in [0, 1) \) that trades of the long term vs. the immediate reward. The optimization objective, the discounted sum of rewards, now is
 			\begin{equation*}
-				J_\pi = \E_{\mu_0, p, \pi} \Bigg[ \sum_{t = 0}^{\infty} \gamma^t r(\vec{s}_t, \vec{a}_t) \Bigg]  \label{eq:expectedDiscountedLongTermReward}
+				J_\pi = \E_{\mu, p, \pi} \Bigg[ \sum_{t = 1}^{\infty} \gamma^t r(\vec{s}_t, \vec{a}_t) \Bigg]  \label{eq:expectedDiscountedLongTermReward}
 			\end{equation*}
 			analogous to the objective for the finite horizon \eqref{eq:expectedLongTermReward}. The value and state-action value functions are defined accordingly as
 			\begin{align*}
-				V^\pi(\vec{s}) &= \E_{p, \pi}\Bigg[ \sum_{t = 0}^{\infty} \gamma^t r(\vec{s}_t, \vec{a}_t) \Bigggiven \vec{s}_0 = \vec{s} \Bigg] \\
-				Q^\pi(\vec{s}, \vec{a}) &= \E_{p, \pi}\Bigg[ \sum_{t = 0}^{\infty} \gamma^t r(\vec{s}_t, \vec{a}_t) \Bigggiven \vec{s}_0 = \vec{s},\, \vec{a}_0 = \vec{a} \Bigg]\!,
+				V^\pi(\vec{s}) &= \E_{p, \pi}\Bigg[ \sum_{t = 1}^{\infty} \gamma^t r(\vec{s}_t, \vec{a}_t) \Bigggiven \vec{s}_1 = \vec{s} \Bigg] \\
+				Q^\pi(\vec{s}, \vec{a}) &= \E_{p, \pi}\Bigg[ \sum_{t = 1}^{\infty} \gamma^t r(\vec{s}_t, \vec{a}_t) \Bigggiven \vec{s}_1 = \vec{s},\, \vec{a}_1 = \vec{a} \Bigg]\!,
 			\end{align*}
 			with the relations
 			\begin{align*}
@@ -1200,14 +1204,14 @@
 			\begin{equation*}
 				r_t(\vec{x}, \vec{u}) = -(\vec{x} - \vec{x}_d)^T \mat{R}_t (\vec{x} - \vec{x}_d) - \vec{u}_t^T \mat{H}_t \vec{u}_t,
 			\end{equation*}
-			with symmetric and positive-definite matrices \(\mat{R}_t\) and \(\mat{H}_t\), and the initial state distribution \( \mu_0(\vec{x}) = \mathcal{N}(\vec{x} \given \vec{\mu}_0, \mat{\Sigma}_0) \). The final reward is given as \( r_T(\vec{x}) = r_T(\vec{x}, \vec{0}) \). The objective is to maximize the expected long-term reward with a finite time horizon \(T\):
+			with symmetric and positive-definite matrices \(\mat{R}_t\) and \(\mat{H}_t\), and the initial state distribution \( \mu(\vec{x}) = \mathcal{N}(\vec{x} \given \vec{\mu}, \mat{\Sigma}) \). The final reward is given as \( r_T(\vec{x}) = r_T(\vec{x}, \vec{0}) \). The objective is to maximize the expected long-term reward with a finite time horizon \(T\):
 			\begin{equation*}
-				J_\pi = \E_{\mu_0, p, \pi}\Bigg[ r_T(\vec{x}) + \sum_{t = 0}^{T - 1} r_t(\vec{x}_t, \vec{u}_t) \Bigg]
+				J_\pi = \E_{\mu, p, \pi}\Bigg[ r_T(\vec{x}) + \sum_{t = 1}^{T - 1} r_t(\vec{x}_t, \vec{u}_t) \Bigg]
 			\end{equation*}
 			The value \(\vec{x}_d\) can be seen as the desired state. Deviations from \(\vec{x}_d\) punish the system with a highly negative reward.
 
 			\subsection{Solving the Optimal Control Problem}
-				Applying the principle of optimal control now says to start with the last time step \(T\) by setting \( V_T^\ast(\vec{x}) = r_T(\vec{x}) \) for all states. Subsequently, iterate over \( t = \dotsrange{T - 1}{0} \) and compute
+				Applying the principle of optimal control now says to start with the last time step \(T\) by setting \( V_T^\ast(\vec{x}) = r_T(\vec{x}) \) for all states. Subsequently, iterate over \( t = \dotsrange{T - 1}{1} \) and compute
 				\begin{equation*}
 					V_t^\ast(\vec{x}) = \max_{\vec{u}} \, \Big( r_t(\vec{x}_t, \vec{u}_t) + \E_{\vec{x}' \sim p(\cdot \given \vec{x}, \vec{u})}\big[ V_{t + 1}^\ast(\vec{x}') \biggiven \vec{x}, \vec{u} \big] \Big).
 				\end{equation*}
@@ -1229,7 +1233,7 @@
 						\begin{equation*}
 							V_t^\ast(\vec{x}) = Q_t^\ast\big(\vec{x}, \pi_t^\ast(\vec{x})\big)
 						\end{equation*}
-					\item Repeat from 2 until \( t = 0 \) is reached.
+					\item Repeat from 2 until \( t = 1 \) is reached.
 				\end{enumerate}
 				The next paragraphs will focus on these steps separately.
 
@@ -1415,6 +1419,8 @@
 % end
 
 \chapter{State Estimation} % 6.1, 6.2, 6.5, 6.6
+	\label{c:stateEstimation}
+
 	\todo{Content}
 
 	\section{Kalman Filter as an Optimal Filter} % 6.8
@@ -1490,157 +1496,427 @@
 	% end
 % end
 
-\chapter{Model Learning} % 7.1, 7.2
+\chapter{Model Learning}
 	\label{c:modelLearning}
 
-	\todo{Content}
+	This chapter focuses on why learning models is needed in robotics and how this can be done. Also a specific algorithm for linear Gaussian dynamical systems is studied in \autoref{subsec:lgds}. Models have a wide range of applications in robotics, e.g. to simulate control and motion planning algorithms, detect faults, assess stability and safety, use them for state estimations (see \autoref{c:stateEstimation}) and to design controllers using control theory and trajectory optimization. One of the first decisions to make is which model to learn as there are a lot of models that are frequently used in robotics, for example:
+	\begin{itemize}
+		\item \eqmakebox[modelsInRobotics][l]{continuous-time dynamics:}       \( \vec{F}(\vec{q}, \dot{\vec{q}}, \ddot{\vec{q}}, \vec{u}) = \vec{0} \)
+		\item \eqmakebox[modelsInRobotics][l]{discrete-time forward dynamics:} \( \vec{x}_{t + 1} = \vec{f}(\vec{x}_t, \vec{u}_t) \)
+		\item \eqmakebox[modelsInRobotics][l]{discrete-time inverse dynamics:} \( \vec{u}_t = \vec{f}^{-1}(\vec{x}_t, \vec{x}_{t + 1}) \)
+		\item \eqmakebox[modelsInRobotics][l]{kinematics:}                     \( \vec{x} = \vec{f}(\vec{q}) \)
+		\item \eqmakebox[modelsInRobotics][l]{sensors:}                        \( \vec{y} = \vec{f}(\vec{x}) \)
+	\end{itemize}
+	But getting a good model is hard! There are three major approaches for this:
+	\begin{enumerate}
+		\item Use the data-sheet of the robot and derive the dynamics using physics.
+		\item Disassemble the system and measure every component.
+		\item Learn the model from data.
+	\end{enumerate}
+	The first approach might be the fastest, but often the data given from the manufacturer is not correct or has a wide confidence region, e.g. in the friction. Disassembling the systems and measuring everything might yield the best model, but is also time-intensive. This also has to be redone quite often as the systems changes (e.g. due to wear of the motor). This chapter focuses on learning the model from data, which might be a good tradeoff between the former two approaches.
 
-	\section{Models in Robotics} % 7.4, 7.5, 7.6, 7.7, 7.8, 7.9
-		\todo{Content}
-	% end
+	\section{Modeling Assumptions: White, Black and Gray}
+		When creating models, assumptions have to be made. The spectrum of assumptions ranges from white-box models (lots of usage of prior knowledge) to black-box models (no usage of prior knowledge) with gray-box models in between. The spectrum of different modeling strategies is quite large with lots of intermediate stages.
 
-	\section{Modeling Assumptions: White, Black and Gray} % 7.10, 7.11
-		\todo{Content}
+		\subsection{White-Box Strategy}
+			For white-box models, lots of prior literature and domain knowledge is used, e.g. in the recursive Newton-Euler algorithm. The physical parameters (e.g. the center of mass) is retrieved from the data-sheet or by disassembling and measuring the system (with all the caveats discussed before). These parameters can then be fine-tuned using data from the real system. Some up- and downsides of this strategy are shown in \autoref{tab:whiteBox}.
 
-		\subsection{White-Box Strategy} % 7.12
-			\todo{Content}
+			\begin{table}
+				\centering
+				\begin{tabular}{l|l}
+					\textbf{Positives}     & \textbf{Negatives}                                   \\ \hline
+					Leverages prior work   & Lots of manual labor                                 \\
+					Interpretable          & Unmodeled phenomena (e.g. friction) may cause issues \\
+					Should generalize well &
+				\end{tabular}
+				\caption{Positives and negatives of the white-box modeling strategy.}
+				\label{tab:whiteBox}
+			\end{table}
 		% end
 
-		\subsection{Black-Box Strategy} % 7.13
-			\todo{Content}
+		\subsection{Black-Box Strategy}
+			The black-box strategy is the opposite end of the spectrum compared to white-box models. No prior work or domain knowledge is used, instead lots of training data is collected and then a model (e.g. a neural network, Gaussian process) is fit to the data. Some up- and downsides of this strategy are shown in \autoref{tab:blackBox}.
+
+			\begin{table}
+				\centering
+				\begin{tabular}{l|l}
+					\textbf{Positives}          & \textbf{Negatives}                                \\ \hline
+					Only required training data & Amount of data needed is unknown                  \\
+					Quick to implement          & Generalization is questionable                    \\
+					                            & May be computationally expensive to train and use
+				\end{tabular}
+				\caption{Positives and negatives of the black-box modeling strategy.}
+				\label{tab:blackBox}
+			\end{table}
 		% end
 
-		\subsection{Gray-Box Strategy} % 7.14
-			\todo{Content}
-		% end
-	% end
-
-	\section{System Identification and Signal Processing} % 7.15, 7.16, 7.17
-		\todo{Content}
-
-		\subsection{Impulse Response} % 7.18, 7.19, 7.20, 7.21, 7.22, 7.23
-			\todo{Content}
-		% end
-
-		\subsection{Step Response} % 7.24, 7.25
-			\todo{Content}
-		% end
-
-		\subsection{Characterization of Dynamical Systems} % 7.26, 7.27
-			\todo{Content}
-		% end
-
-		\subsection{Frequency Analysis} % 7.28, 7.29
-			\todo{Content}
-		% end
-
-		\subsection{Ornstein-Uhlenbeck Process} % 7.30, 7.31
-			\todo{Content}
-		% end
-
-		\subsection{Active Learning} % 7.32, 7.33, 7.34
-			\todo{Content}
-		% end
-	% end
-
-	\section{Learning Models} % 7.36, 7.37
-		\todo{Content}
-
-		\subsection{Linear Gaussian Dynamical Systems (LGDS)} % 7.38, 7.39, 7.40, 7.41, 7.42, 7.43, 7.44
-			\todo{Content}
-		% end
-	% end
-
-	\section{Case Studies} % 7.47
-		\todo{Content}
-
-		\subsection{Combining Rigid Body Dynamics and GPs} % 7.48, 7.49, 7.50
-			\todo{Content}
-		% end
-
-		\subsection{Deep Lagrangian Networks} % 7.51, 7.52, 7.53, 7.54, 7.55
-			\todo{Content}
-		% end
-
-		\subsection{The Differentiable Recusive Newton-Euler Algorithm} % 7.56, 7.57, 7.58, 5.59, 7.60, 7.61, 7.62, 7.63
-			\todo{Content}
+		\subsection{Gray-Box Strategy}
+			Gray-box models combine aspects of the white- and black-box models, for example:
+			\begin{itemize}
+				\item Fit a white-box model and handle the remaining error with a black-box model (e.g. a Gaussian process with a physics-based mean).
+				\item Fit a black-box model with special constraints (e.g. ensure energy conservation in a closed system).
+				\item Construct a model with white- and black-box components that can be trained "end-to-end" (e.g. a differentiable physics model combined with a neural network friction model, jointly trained with gradient decent).
+			\end{itemize}
 		% end
 	% end
 
-	\section{Wrap-Up} % 7.65
-		\todo{Content}
+	\section{Collecting the Data for Training the Model}
+		One big problem in model learning is to get the data from the real robot. The main question is what input signal is the best for learning models, i.e. what controls should the robot be given to perform interesting movements?
+
+		For linear systems, so-called \emph{responses} are identified, which are the output given a certain signal as an input. These signals used for identifying the responses usually are the simplest component of a broader class of signals. For analog signals, usually delta functions are a good signal. For digital and periodic signals, step functions and sinusoidal harmonics are used, respectively.
+
+		\subsection{Impulse Response}
+			The delta function (an \emph{impulse}) is widely used in physics and signal processing. It is defined to have the following properties:
+			\begin{align*}
+				\delta(t - \tau) =
+					\begin{cases}
+						1 & \text{if } t = \tau \\
+						0 & \text{otherwise}
+					\end{cases}
+				&&
+				\int_{-\infty}^{\infty} \! \delta(t - \tau) \dd{t} = 1
+				&&
+				\int_{-\infty}^{\infty} \! f(t) \delta(t - \tau) \dd{t} = f(\tau)
+			\end{align*}
+			Impulse functions can be used to approximate an arbitrary function as a sequence of impulses as
+			\begin{equation*}
+				f(t) \approx \sum_{n = -\infty}^{\infty} f(n\Delta_t) \delta(t - n\Delta_t)
+			\end{equation*}
+			where \(\Delta_t\) is a time step. As \(\Delta_t \to 0\), the function is approximated perfectly, i.e. the approximation becomes an equality. This is the main idea of a \emph{convolution}, which is an important part of signal processing and system identification theory.
+		% end
+
+		\subsection{Step Response}
+			The step function (also called \emph{Heaviside step function}) is closely related to the impulse, however ot contains a jump and is defined as:
+			\begin{align*}
+				\mathit{step}(t - \tau) =
+					\begin{cases}
+						1 & \text{if } t \geq \tau \\
+						0 & \text{otherwise}
+					\end{cases}
+				&&
+				\dv{t} \mathit{step}(t - \tau) = \delta(t - \tau)
+			\end{align*}
+			Similarly to the impulse, the step function can be used to represent digital (quantized) signals.
+		% end
+
+		\subsection{Characterization of Dynamical Systems}
+			Dynamical systems are usually characterized using the terms \emph{damping} and \emph{resonant frequencies}, which both origin in linear system theory:
+			\begin{description}
+				\item[Damping] Describes how the system dissipates energy.
+					\begin{itemize}
+						\item Heavily damped: Energy is lost quickly, the dynamics are "slow".
+						\item Lightly damped: Energy is lost fast, the dynamics are "quick" and oscillations are common.
+						\item "Critically" damped: Energy is lost "ideally", that is, as fast as possible without oscillations.
+					\end{itemize}
+				\item[Resonant Frequencies] These are the frequencies that maximally excite a system. This is important when designing structures like bridges, where hitting the resonant frequencies may cause catastrophic accidents.
+			\end{description}
+			This intuition holds locally for nonlinear system by linear approximation (Taylor-expansion), but the properties vary with the state (and thus the time)!
+		% end
+
+		\subsection{Frequency Analysis}
+			Another viewpoint to analyze whether a signal is good for system identification is their frequency spectrum. The broader the bandwidth is, the more informative the response becomes. These frequencies can be obtained with a Fourier transform. For an impulse signal, all frequencies are covered and for sinusoidal harmonics only specific frequencies are covered. Motivate from this, other signal types are studied, for example chirps and white Gaussian noise. Chirps describe an oscillation of which the frequency gets higher and higher, like \( \sin(x^2) \). White Gaussian noise also covers a wide range of frequencies, however both of these signals are impractical in reality: Physical systems require smooth inputs for safety, limiting the frequency. A practical solution to this problem is to low-pass the original signal, but this obviously causes a loss in the amount of frequencies that are covered.
+		% end
+
+		\subsection{Ornstein-Uhlenbeck Process and Active Learning}
+			The frequency analysis motivates the \emph{Ornstein-Uhlenbeck process} for identification, which is smoothed noise:
+			\begin{equation*}
+				\vec{u}_{t + 1} = \alpha \vec{u}_t + \vec{\eta},\quad \vec{\eta} \sim p(\cdot)
+			\end{equation*}
+			For higher \(\alpha\), this causes more movements in the actions.
+
+			Another approach in machine learning is to use the model itself to identifying the signals. This task of choosing the data points which inform the model the most is called \emph{active learning} and it is highly coupled with \emph{information theory}. There are several objectives that can be used for selecting the data point, for example:
+			\begin{itemize}
+				\item Uncertainty: Variance/Entropy: \( \Var[\vec{x}_t] \), \( H[\vec{x}_t] \)
+				\item Expected Variance Reduction: \( \Var\big[ \mathcal{M} \biggiven \mathcal{D} \cup (\vec{x}_{1:T}, \vec{u}_{1:T - 1}) \big] \) \\ "Variance reduction in model \(\mathcal{M}\) by adding the trajectory to the dataset \(\mathcal{D}\)."
+				\item Information Gain: \( \frac{1}{2} \log \frac{\Var[\vec{x}_t]}{\Var_\mathrm{noise}} \) \\ Equivalent to \( H[\vec{x}] - H_\mathrm{min} \) for Gaussian beliefs.
+			\end{itemize}
+			Active learning require a model that is capable of expressing the model uncertainty, hence it requires a Bayesian model, e.g. a Gaussian process. Optimizing the trajectories with active learning is still an open research topic!
+
+			In practice, out-of-phase sinuses on every joint create very diverse end-effector trajectories that are useful for learning.
+		% end
+	% end
+
+	\section{Learning Models}
+		Now given good training data, what is the best objective \(L\) for learning a good model? There are multiple options, e.g.
+		\begin{itemize}
+			\item \eqmakebox[learningModels][l]{One-step regression, i.e.}           \( L = \big\lVert \vec{x}_{t + 1} - \vec{f}(\vec{x}_t) \big\rVert_2^2 \)
+			\item \eqmakebox[learningModels][l]{Multi-step regression, i.e.}         \( L = \big\lVert \vec{x}_{t + k} - \vec{f}^k(\vec{x}_t) \big\rVert_2^2 \)
+			\item \eqmakebox[learningModels][l]{Inference over the trajectory, i.e.} \( L = \log p(\vec{x}_{1:T}) \)
+		\end{itemize}
+		where \( \vec{f}^k(\vec{x}_k) \) refers to applying \( \vec{f}(\vec{x}_k) \) \(k\) times to the state \( \vec{x}_t \), or rather the respective result of the previous application. In general an objective that considers a longer prediction horizon (a higher \(k\)) should yield models that have a better long-horizon prediction, but are more expensive to train. It becomes even harder when the problem is only partially observed. One such interesting (and solvable!) case are Linear Gaussian Dynamical Systems (LGDS) which are covered in the next section.
+
+		\subsection{Linear Gaussian Dynamical Systems (LGDS)}
+			\label{subsec:lgds}
+
+			Linear Gaussian dynamical systems are given as linear state transitions in an unobserved (latent) space \(\vec{x}_t\) from which measurements \(\vec{y}_t\) are taken (also linearly). Both of these parts underlie additive Gaussian noise, forming the following probabilistic model
+			\begin{align*}
+				p(\vec{x}_{t + 1} \given \vec{x}_t) &= \mathcal{N}\big( \vec{x}_{t + 1} \biggiven \mat{A} \vec{x}_t,\, \mat{\Sigma}_\eta \big) \\
+				p(\vec{y}_t \given \vec{x}_t) &= \mathcal{N}\big( \vec{y}_t \biggiven \mat{C} \vec{x}_t,\, \mat{\Sigma}_\zeta \big)
+			\end{align*}
+			with the initial state distribution \( \vec{x}_1 \sim \mathcal{N}(\cdot \given \vec{\mu}_1, \mat{\Sigma}_1) \). The model parameters are defined as
+			\begin{equation*}
+				\vec{\theta} \coloneqq \big\{\, \mat{A},\, \mat{C},\, \mat{\Sigma}_\eta,\, \mat{\Sigma}_\zeta,\, \vec{\mu}_1,\, \mat{\Sigma}_1 \,\big\}
+			\end{equation*}
+			which are to be estimated from a sequence of measurements \( \vec{y}_{1:T} \). This is done using an EM algorithm that in the E-step uses the model to infer the hidden states \(\vec{x}_t\) using a Kalman filter and in the M-step maximizes the expected log-likelihood to improve the model.
+
+			As the system behaves Markovian (the next state only depends on the current state and not the past), the likelihood can be factorized as
+			\begin{equation*}
+				p(\vec{x}_{1:T}, \vec{y}_{1:T}) = p(\vec{x}_1) \prod_{t = 1}^{T - 1} p(\vec{x}_{t + 1} \given \vec{s}_t) \prod_{t = 1}^{T} p(\vec{y}_t \given \vec{x}_t).
+			\end{equation*}
+			Hence, the log-likelihood is
+			\begin{equation*}
+				\log p(\vec{x}_{1:T}, \vec{y}_{1:T}) = \log p(\vec{x}_1) + \sum_{t = 1}^{T - 1} \log p(\vec{x}_{t + 1} \given \vec{x}_t) + \sum_{t = 1}^{T} \log p(\vec{y}_t \given \vec{x}_t).
+			\end{equation*}
+			As the latent states \(\vec{x}_t\) are unknown, it is not possible to maximize the log-likelihood directly, but rather the \emph{expected} log-likelihood over \(\vec{x}_t\), conditioned on the observations, has to be maximized. This can be done straightforwardly by exploiting the invariance of the trace under cycling permutations. This (rather ugly) process\footnote{See \url{https://www.ias.informatik.tu-darmstadt.de/uploads/Team/JoeWatson/Damken_Bsc_2020.pdf}, pages 75 to 82 for the full derivation.} yields the expected log-likelihood
+			\begin{align*}
+				\E_{\vec{x}_{1:T}}\big[\! \log p(\vec{x}_{1:T}, \vec{y}_{1:T}) \biggiven \vec{y}_{1:T} \big] =\,
+					& \underbrace{-\frac{T (k + p)}{2} \log(2\pi) - \frac{1}{2} \log \lvert \mat{\Sigma}_1 \rvert - \frac{T - 1}{2} \log \lvert \mat{\Sigma}_\eta \rvert - \frac{T}{2} \log \lvert \mat{\Sigma}_\zeta \rvert}_\text{Entropies} \\
+					& \underbrace{-\frac{1}{2} \tr\Big( \mat{P}_1^{-1} \Big(\! \mat{\Sigma}_1 - \hat{\vec{x}}_1 \vec{\mu}_1^T - \vec{\mu}_1 \hat{\vec{x}}_1^T + \vec{\mu}_1 \vec{\mu}_1^T \Big) \!\Big)}_\text{Initial State Error} \\
+					& \underbrace{-\frac{1}{2} \tr\Big( \mat{\Sigma}_\eta^{-1} \Big(\! \textstyle\sum_{t = 2}^{T}\displaystyle \mat{P}_t - \mat{P}_{t, t - 1} \mat{A}^T - \mat{A} \mat{P}_{t, t - 1} + \mat{A} \mat{P}_{t - 1} \mat{A}^T \Big) \!\Big)}_\text{Dynamics Error} \\
+					& \underbrace{-\frac{1}{2} \tr\Big( \mat{\Sigma}_\zeta^{-1} \Big(\! \textstyle\sum_{t = 1}^{T}\displaystyle \vec{y}_t \vec{y}_t^T - \vec{y}_t \hat{\vec{x}}_t^T \mat{C}^T - \mat{C} \hat{\vec{x}}_t \vec{y}_t^T + \mat{C} \mat{P}_t \mat{C}^T \Big) \!\Big)}_\text{Observation Error}
+			\end{align*}
+			with the expectations
+			\begin{align*}
+				\mat{P}_t \coloneqq \E_{\vec{x}_{1:T}}\big[ \vec{x}_t \vec{x}_t^T \biggiven \vec{y}_{1:T} \big]
+				&&
+				\mat{P}_{t, t - 1} \coloneqq \E_{\vec{x}_{1:T}}\big[ \vec{x}_t \vec{x}_{t - 1}^T \biggiven \vec{y}_{1:T} \big]
+				&&
+				\hat{\vec{x}}_t \coloneqq \E_{\vec{x}_{1:T}}[ \vec{x}_t \given \vec{y}_{1:T} ]
+			\end{align*}
+			that encode the self and cross correlation and the expected states, respectively. By maximizing the expected log-likelihood, closed-form update rules for the parameters can be derived given an expected latent trajectory. This yields the following update rules:
+			\begin{align*}
+				\mat{A}^\mathrm{new} &= \Bigg(\! \sum_{t = 2}^{T} \mat{P}_{t, t - 1} \!\Bigg) \Bigg(\! \sum_{t = 2}^{T} \mat{P}_{t - 1} \!\Bigg)^{-1} \\
+				\mat{C}^\mathrm{new} &= \Bigg(\! \sum_{t = 1}^{T} \vec{y}_t \hat{\vec{x}}_t^T \!\Bigg) \Bigg(\! \sum_{t = 1}^{T} \mat{P}_t \!\Bigg) \\
+				\mat{\Sigma}_\eta^\mathrm{new} &= \frac{1}{T - 1} \Bigg( \sum_{t = 2}^{T} \mat{P}_t - \mat{A}^\mathrm{new} \sum_{t = 2}^{T} \mat{P}_{t, t - 1} \Bigg) \\
+				\mat{\Sigma}_\zeta^\mathrm{new} &= \frac{1}{T} \sum_{t = 1}^{T} \vec{y}_t \vec{y}_t^T - \mat{C}^\mathrm{new} \hat{\vec{x}}_t \vec{y}_t^T \\
+				\vec{\mu}_1^\mathrm{new} &= \hat{\vec{x}}_1 \\
+				\mat{\Sigma}_1^\mathrm{new} &= \mat{P}_1 - \hat{\vec{x}}_1 \hat{\vec{x}}_1^T
+			\end{align*}
+
+			Plugging this together with the Kalman smoother, this yields an expectation-maximization (EM) algorithm with the E-step being the Kalman smoother and the M-step being the above update rules. For the LGDS, this guarantees monotonic improvement in the expected log-likelihood! For nonlinear settings, it is possible to approximate the expectations (e.g. using cubature rules or particle methods) and update the parameters using gradient descent. This is called \emph{approximate} EM.
+		% end
+	% end
+
+	\section{Case Studies}
+		This section looks into some specific examples of model learning that go beyond LGDS.
+
+		\subsection{Combining Rigid Body Dynamics and Gaussian Processes}
+			Inverse rigid body dynamics can be expressed as a linear equation \( \vec{\tau} = \mat{\Phi}(\vec{q}, \dot{\vec{q}}, \ddot{\vec{q}}) \vec{\beta} \) where the matrix \( \mat{\Phi} \) contains nonlinear functions of the joint angles/velocities/accelerations. The weights \(\vec{\beta}\) contain physical parameters like masses. However, this model misses nonlinear effects like friction! One method to handle this is to combine the rigid body model with a Gaussian process to fit the residual error (with \( \vec{x} = \{ \vec{q}, \dot{\vec{q}}, \ddot{\vec{q}} \} \) for brevity):
+			\begin{equation*}
+				\vec{\tau}(\vec{x}) \sim \mat{\Phi}(\vec{x}) \vec{\beta} + \mathcal{GP}\big( \vec{0},\, k(\vec{x}, \vec{x}') \big)
+			\end{equation*}
+			While standard kernels are not well-suited for this problem, it is possible to define a linear kernel using the feature functions \(\vec{\phi}_k\) of \(\mat{\Phi}\):
+			\begin{equation*}
+				k_\mathrm{rbd}^k(\vec{x}_p, \vec{x}_q) = \vec{\phi}_k^T(\vec{x}_p) \mat{W}_k \vec{\phi}_k(\vec{x}_q) + \sigma_k^2 \delta_{pq}
+			\end{equation*}
+			This kernel was found to have superior performance in handling the residual error.
+		% end
+
+		\subsection{Deep Lagrangian Networks}
+			Deep Lagrangian networks (DeLaNs) use neural networks to model the Lagrangian equations of motions, resulting in the inductive bias of energy conservation. This should yield to more physically plausible model predictions. See Lutter et al., "Deep Lagrangian Networks: Using Physics as Model Prior for Deep Learning" (2019) for more information on this.
+		% end
+
+		\subsection{The Differentiable Recursive Newton-Euler Algorithm}
+			Implementing the recursive Newton-Euler algorithm that was introduced in \autoref{subsubsec:robotsDynamics} in an automatic differentiation library, physical models can be trained with gradient decent! However, care has to be taken on the parameters, e.g. to enforce positive masses (this can be done, for example, by training the square-root instead of the parameter itself). As it is trained with gradient decent, black-box models can be easily integrated. Some example (where \( f_\mathrm{NN} \) is a feedforward neural network) are:
+			\begin{description}[leftmargin=3.5cm]
+				\item[Friction]       \( \tau = \tau_d - \sign(\dot{q}) \big\lVert f_\mathrm{NN}(q, \dot{q}; \psi_F) \big\rVert_1 \)
+				\item[Residual Error] \( \tau = \tau_d - f_\mathrm{NN}(q, \dot{q}; \psi_R) \)
+				\item[Full NN]        \( \tau = f_\mathrm{NN}(\tau-d, q, \dot{q}; \psi_M) \)
+			\end{description}
+
+			Nonholonomic systems can also be modeled by using maximal rather than intrinsic coordinates:
+			\begin{description}
+				\item[Holonomic] Only constrained in position.
+				\item[Non-Holonomic] Also constrained on differential terms, e.g. velocities.
+				\item[Intrinsic Coordinates] Internal reference frame.
+				\item[Maximal Coordinates] External reference frame.
+			\end{description}
+			One example for a non-holonomic constraint is the string in the ball-in-cup environment. Black-box models like neural networks or recurrent neural networks fail on this, and the learned policies are not transferable to the real system. The differential recursive Newton-Euler algorithm can plan with the string constraint, and the resulting policies work on the real robot!
+		% end
 	% end
 % end
 
-\chapter{Policy Representations} % 8.1, 8.4
-	\todo{Content}
+\chapter{Policy Representations}
+	To train a policy \( \pi(\vec{a} \given \vec{s}) \), this policy has to be represented somehow. In control theory, this policy is commonly known as the \emph{controller} and has the form of a PID controller, for example. In robot learning, however, these policies have to be represented in a "learnable" way. This chapter covers parametric policies with off-the-shelf methods like neural networks and movement primitives which can encode complex behavior in a modular fashion. This chapter focuses on parametric policies, i.e. policies that is represented by a conditional probability distribution \( \pi(\vec{a} \given \vec{s}; \vec{\theta}) \) with the parameters \(\vec{\theta}\). Desirable properties for policy representations are:
+	\begin{description}[leftmargin=3.5cm]
+		\item[Compactness]   The number of parameters should be low.
+		\item[Learnability]  Easy to learn from demonstrations and by reinforcement learning.
+		\item[Stochasticity] Ability to encode exploration and variability.
+		\item[Optimality]    Should be able to encode the optimal behavior.
+		\item[Scalability]   Usable for a high number of degrees of freedom.
+		\item[Modularity]    Adaptability for a new environment and co-activation and blending of movements.
+		\item[Usability]     Should be usable for stroke-based (point-to-point) and rhythmic movement.
+	\end{description}
+	A stochastic policy is useful as it can be used for exploration in reinforcement learning and can capture variability in the movements. Different exploration models are for example:
+	\begin{itemize}
+		\item \eqmakebox[policyRepr][l]{No exploration:}       \eqmakebox[policyReprPol][l]{\( \vec{a} = \pi(\vec{s}) = \vec{f}_{\vec{w}}(\vec{s}) \),}\quad \( \vec{\theta} = \vec{w} \)
+		\item \eqmakebox[policyRepr][l]{Uncorrelated:}         \eqmakebox[policyReprPol][l]{\( \vec{a} \sim \pi(\cdot \given \vec{s}; \vec{\theta}) = \mathcal{N}\big(\cdot \given \vec{f}_{\vec{w}}(\vec{s}), \sigma^2 \mat{I}\big) \),}\quad \( \vec{\theta} = \{ \vec{w}, \sigma^2 \} \)
+		\item \eqmakebox[policyRepr][l]{Correlated:}           \eqmakebox[policyReprPol][l]{\( \vec{a} \sim \pi(\cdot \given \vec{s}; \vec{\theta}) = \mathcal{N}\big(\cdot \given \vec{f}_{\vec{w}}(\vec{s}), \mat{\Sigma}\big) \),}\quad \( \vec{\theta} = \{ \vec{w}, \mat{\Sigma} \} \)
+		\item Complex distributions like Gaussian mixture models, normalizing flows, \dots
+	\end{itemize}
 
-	\section{Parametric Policies} % 8.3, 8.7, 8.8, 8.9
-		\todo{Content}
-	% end
+	\section{Off-The-Shelf Policies}
+		Some examples for off-the-shelf policies are neural networks, radial basis functions (RBF) networks, Gaussian processes and locally weighted regression models. While they are easy to use, off-the-self policies have some major drawbacks: they usually generalize bad if the controller has not been trained in the requested area of the state space, they are not robust (so also small changes in the system may lead to catastrophic failures), and they are often really sample-inefficient.
 
-	\section{Off-The-Shelf Policies} % 8.10, 8.16
-		\todo{Content}
-
-		\subsection{Linear Basis Functions} % 8.11, 8.12, 8.13
-			\todo{Content}
+		\subsection{Linear Basis Functions}
+			Linear controllers \( \vec{a} = \vec{f}_{\vec{w}}(\vec{s}) = \vec{\phi}^T(\vec{s}) \vec{w} \), in the simplest case a PD-controller with \( \vec{\phi}^T(\vec{s}) = \begin{bmatrix} 1 & \vec{s}^T \end{bmatrix} \), may yield really good policies using a very compact representation. Also they are easy to learn with linear regression. Whoever, a food feature representation has to be used! This representation was successfully applied to balancing a pole on a cart, but even learning the swing-up can be hard.
 		% end
 
-		\subsection{Radial Basis Functions (RBFs)} % 8.14, 8.15
-			\todo{Content}
-		% end
-	% end
-
-	\section{Movement Primitives} % 8.17, 8.18, 8.20, 8.21, 8.22, 8.23, 8.24, 8.25
-		\todo{Content}
-
-		\subsection{Dynamic Movement Primitives (DMDs)} % 8.26, 8.27, 8.28
-			\todo{Content}
-
-			\subsubsection{Temporal Scaling} % 8.29, 8.30, 8.34
-				\todo{Content}
-			% end
-
-			\subsubsection{Multiple Degrees of Freedom} % 8.33
-				\todo{Content}
-			% end
-
-			\subsubsection{Imitation Learning} % 8.35
-				\todo{Content}
-			% end
+		\subsection{Radial Basis Functions (RBFs)}
+			A more expressive policy representation are weighted radial basis functions (RBFs) \( \vec{f}_{\vec{w}}(\vec{s}) = \vec{\phi}^T(\vec{s}) \vec{\beta} \) with the features
+			\begin{equation*}
+				\phi_i(\vec{s}) = \exp{ -\frac{1}{2} \sum_{j = 1}^{D} \frac{(s_j - \mu_{ij})^2}{h_ij} }.
+			\end{equation*}
+			The parameters in are \( \vec{w} = \{ \vec{\beta}, \vec{\mu}_{1:K}, \vec{h}_{1:K} \} \), where \(K\) is the number of RBFs and \(\vec{\mu}_{1:K}\) and \(\vec{h}_{1:K}\) are the locations and bandwidths of the RBFs, respectively. But as the features are really localized, it might be possible that no basis function is active at some point. This can be fixed by using normalized RBFs,
+			\begin{equation*}
+				\vec{f}_{\vec{w}}^\mathit{norm}(\vec{s}) = \frac{\sum_{i = 1}^{K} \phi_i(\vec{s} \beta_i)}{\sum_{j = 1}^{K} \phi_i(\vec{s})},
+			\end{equation*}
+			which do not suffer from this problem. However, this can lead to numerically issues as the denominator gets really small if every basis function is far from being active. Also, this problem is really hard to optimize as the optimization for \( \vec{h}_{1:K} \) is non-convex!
 		% end
 
-		\subsection{Probabilistic Movement Primitives (ProMPs)} % 8.40, 8.41, 8.42, 8.43, 8.44, 8.45
-			\todo{Content}
-
-			\subsubsection{Conditioning} % 8.46
-				\todo{Content}
-			% end
-
-			\subsubsection{Combination} % 8.47
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Time-Independent Stable Movement Primitives} % 8.51
-			\todo{Content}
-
-			\subsubsection{Nonlinear Stable Dynamical Systems} % 8.52, 8.53, 8.54
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Imitation Flows} % 8.55, 8.56, 8.57
-			\todo{Content}
-		% end
-
-		\subsection{Libraries of Primitives} % 8.59, 8.60, 8.61
-			\todo{Content}
+		\subsection{Trajectory Following Controller}
+			Another method for policy representation is to use the previously discussed methods for representing a trajectory (see \autoref{sec:roboticsRepresentingTrajectories}) and use a feedback controller
+			\begin{equation*}
+				\pi(\vec{q}, \dot{\vec{q}}, t; \vec{w}) = \mat{K}_P\big( \vec{q}_d(\vec{q}, \dot{\vec{q}}, t; \vec{w}) - \vec{w} \big) + \mat{K}_D\big( \dot{\vec{q}}_d(\vec{q}, \dot{\vec{q}}, t; \vec{w}) - \dot{\vec{q}} \big)
+			\end{equation*}
+			to follow the desired trajectory \( \big( \vec{q}_d(\vec{q}, \dot{\vec{q}}, t; \vec{w}), \dot{\vec{q}}_d(\vec{q}, \dot{\vec{q}}, t; \vec{w}) \big) \). Usually the matrices \( \mat{K}_P \) and \( \mat{K}_D \) are hand-tuned, but they may also be learned.
 		% end
 	% end
 
-	\section{Wrap-Up} % 8.64
-		\todo{Content}
+	\section{Movement Primitives}
+		\emph{Movement primitives} are a compact representation of movements that are often represented as trajectory generators \( \vec{\tau} = \vec{f}(\vec{w}) \) with the parameters \( \vec{w} \) of the primitive. They can represent both stroke-based and rhythmic movements and can be time-dependent, state-dependent or both. The basic idea is to use dynamical systems to represent trajectories as integrating it results in a trajectory. Dynamical systems (defined by a second-order differential equation) can encode various different movements and the whole class of stability analysis from ODEs can be used to generate e.g. stroke-based movements by exploiting a single-point attractor. These movement primitives are known as \emph{dynamic} movement primitives (DMPs).
+
+		\subsection{Dynamic Movement Primitives (DMPs)}
+			Dynamic movement primitives can encode lots of desirable properties like stability, perturbation robustness and stroke-based and rhythmic behaviors. They are also really easy to learn and scale well with a high number of degrees of freedom. By intelligent parametrization, they can also encode temporal scaling, i.e. it is possible to execute a movement slower.
+
+			Starting from the model of a spring-damper system, \( \ddot{y} = \alpha \big( \beta (g - y) - \dot{y} \big) \), which always converges to the goal attractor \(g\) as time goes by\footnote{More formally, \( \lim_{t \to \infty} y(t) = g \).}, a \emph{forcing function} \( f_{\vec{w}}(t) \) can be added to obtain a moving attractor
+			\begin{equation}
+				\ddot{y} = \alpha \big( \beta (g - y) - \dot{y} \big) + f_{\vec{w}}(t) = \alpha \Bigg(\! \beta \bigg(\! g + \frac{f_{\vec{w}}(t)}{\alpha \beta} - y \!\bigg) - \dot{y} \!\Bigg)  \label{eq:nonTemporalScaledDMP}
+			\end{equation}
+			that converges to \( g + f_{\vec{w}}(t) / (\alpha \beta) \). The forcing function \( f_{\vec{w}} \) is a learnable function with parameters \(\vec{w}\) to adapt to all kinds of movements.
+
+			Using DMPs for multiple degrees of freedom is also possible by using an individual DMP per DoF, while sharing the phase variable \(z\). For periodic movements, periodic phase variables can be used as these control the trajectory.
+
+			\subsubsection{Temporal Scaling}
+				To achieve temporal scaling, a phase variable \( z(t) \) is added to the system to replace the time \(t\) in \eqref{eq:nonTemporalScaledDMP}:
+				\begin{align*}
+					\ddot{y} &= \tau^2 \alpha \big( \beta (g - y) - \dot{y} / \tau \big) + \tau^2 f_{\vec{w}}(z) \\
+					 \dot{z} &= -\tau \alpha_z z
+ 				\end{align*}
+				The variable \(\tau\) is the \emph{temporal scaling variable} and \(z\) is called the \emph{phase}. Higher values of \(\tau\) correspond to higher movement speeds and a value of \( \tau = 1 \) corresponds to the "original" movement speed.
+			% end
+
+			\subsubsection{Representation of the Forcing Function}
+				One approach for representing the forcing function is to use the function
+				\begin{equation*}
+					f_{\vec{w}} = \vec{\psi}^T(z) \vec{w}
+				\end{equation*}
+				with \(K\) normalized RBF basis functions\footnote{Notice the multiplication with the phase variable \(z\) in the RBF! This is used to make the DMP stable and is just more convenient to put it there instead of in the forcing function itself.}
+				\begin{align}
+					\psi_i(z) = \frac{\phi_i(z) z}{\sum_{j = 1}^{K} \phi_j(z)}
+					&&
+					\phi_i(z) = \exp{ -\frac{1}{2} \frac{(z - c_i)^2}{h_i} }  \label{eq:normRbf}
+				\end{align}
+				with the locations \(c_{1:K}\) and the bandwidths \(h_{1:K}\). These dynamics movement primitives are stable by design as for \( t \to \infty \) the forcing function vanishes\footnote{This is due to \( z \to 0 \) for \( t \to \infty \) as \( \dot{z} = -\tau \alpha_z z \) and \( \tau, \alpha_z > 0 \).} and the  becomes a PD controller.
+			% end
+
+			\subsubsection{Imitation Learning}
+				Dynamic movement primitives with radial basis functions can be easily used for imitation learning using linear (ridge) regression. Given a trajectory \( (\vec{q}_{1:T}, \dot{\vec{q}}_{1:T}, \ddot{\vec{q}}_{1:T}) \), a goal attractor \(g\), parameters \(\alpha\), \(\beta\), \(\alpha_z\) and a temporal scaling variable \(\tau\), first compute the target values of the forcing function for each \(t\):
+				\begin{equation*}
+					f_t = \frac{\ddot{\vec{q}}_t}{\tau^2} - \alpha \big( \beta (g - q_t) - \dot{q}_t / \tau^2 \big),
+				\end{equation*}
+				Subsequently, compute the weights \(\vec{w}\) of \( f_{\vec{w}} \) with
+				\begin{equation*}
+					\vec{w} = \big( \mat{\Psi}^T \mat{\Psi} + \sigma^2 \mat{I} \big)^{-1} \mat{\Psi} \vec{f}
+				\end{equation*}
+				where \( \mat{\Psi} = \begin{bmatrix} \vec{\psi}_1 & \vec{\psi}_2 & \cdots & \vec{\psi}_T \end{bmatrix} \) is the feature matrix and \(\vec{f}\) is the vector of target values. The parameter \(\sigma^2\) is used for regularization and can also be chosen \( \sigma^2 = 0 \) for non-ridge regression.
+			% end
+		% end
+
+		\subsection{Probabilistic Movement Primitives (ProMPs)}
+			Another approach on movement primitives are \emph{probabilistic movement primitives} (ProMPs), a stochastic representation of trajectories \( \vec{\tau} \sim p(\cdot \given \vec{w}) \). This is represented by learning a (parameterized) distribution \( p(\vec{w} \given \vec{\theta}) \) over the parameters \(\vec{w}\), each representing a single trajectory
+			\begin{equation*}
+				\vec{\tau} = \vec{f}(\vec{w}) + \vec{\epsilon}
+			\end{equation*}
+			with noise \(\epsilon\). The weights can then be integrated out to obtain \( p(\vec{\tau \given \vec{\theta}}) \). Stochastic movement primitives are useful as it allows to represent uncertainty which gives information on the importance of time points. Also probabilistic operations can be applied.
+
+			One possible representation of a trajectory is to use multiple normalized RBF basis, one for each degree of freedom. Let
+			\begin{equation*}
+				\psi_i^{(d)}(z) = \frac{\phi_i^{(d)}(z) z}{\sum_{j = 1}^{K} \phi_j^{(d)}(z)}
+				\qquad\text{with}\qquad
+				\phi_i^{(d)}(z) = \exp{ -\frac{1}{2} \frac{(z - c_i)^2}{h_i} }
+			\end{equation*}
+			be the \(i\)-th RBF feature (\( i = \dotsrange{1}{K} \)) of the \(d\)-th degree of freedom (\( d = \dotsrange{1}{D} \)). Then let
+			\begin{equation*}
+				\mat{\Psi}_t^T \coloneqq
+					\begin{bmatrix}
+						\psi_1^{(1)}(z_t) & \psi_2^{(1)}(z_t) & \cdots & \psi_K^{(1)}(z_t) \\
+						\psi_1^{(2)}(z_t) & \psi_2^{(2)}(z_t) & \cdots & \psi_K^{(2)}(z_t) \\
+						\vdots            & \vdots            & \ddots & \vdots            \\
+						\psi_1^{(D)}(z_t) & \psi_2^{(D)}(z_t) & \cdots & \psi_K^{(D)}(z_t)
+					\end{bmatrix}
+			\end{equation*}
+			be the phase-dependent basis for the ProMP. One trajectory is given as
+			\begin{equation*}
+				\vec{y}_t \sim \mathcal{N}\big( \cdot \biggiven \mat{\Psi}_t^T \vec{w},\, \mat{\Sigma}_y \big),
+			\end{equation*}
+			with additive Gaussian noise, where \( \vec{y}_t \) is the value of the trajectory at time step \(t\). This can e.g. be the positions and velocities of the joints. Then the probabilistic model for the whole trajectory therefore is given as
+			\begin{equation*}
+				p(\vec{\tau} \given \vec{w}) = \prod_t \mathcal{N}\big( \vec{y}_t \biggiven \mat{\Psi}_t^T \vec{w},\, \mat{\Sigma}_y \big).
+			\end{equation*}
+			Given the distribution \( p(\vec{w} \given \vec{\theta}) \) of the weights, the trajectory distribution \( p(\vec{\tau} \given \vec{\theta}) \) can be obtained by marginalization:
+			\begin{equation*}
+				p(\vec{\tau} \given \vec{\theta}) = \int\! p(\vec{\tau} \given \vec{w}) p(\vec{w} \given \vec{\theta}) \dd{\vec{w}}
+			\end{equation*}
+			By using a Gaussian \( p(\vec{w} \given \vec{\theta}) = \mathcal{N}(\vec{w} \given \vec{\mu}_w, \mat{\Sigma}_w) \) with \( \vec{\theta} = \{ \vec{\mu}_w, \mat{\Sigma}_w \} \) for the weight distribution, the trajectory distribution can be computed in closed form for a time step \(t\):
+			\begin{align*}
+				p(\vec{y}_t \given \vec{\theta})
+					&= \int\! p(\vec{y}_t \given \vec{w}) p(\vec{w} \given \vec{\theta}) \dd{\vec{w}} \\
+					&= \int\! \mathcal{N}\big( \vec{y}_t \biggiven \mat{\Psi}_t^T \vec{w},\, \mat{\Sigma}_y \big) \, \mathcal{N}(\vec{w} \given \vec{\mu}_w, \mat{\Sigma}_w) \dd{\vec{w}} \\
+					&= \mathcal{N}\big( \vec{y}_t \biggiven \mat{\Psi}_t^T \vec{\mu}_w,\, \mat{\Psi}_t^T \mat{\Sigma}_w \mat{\Psi}_t + \mat{\Sigma}_y \big)
+			\end{align*}
+
+			\subsubsection{Conditioning}
+				It is possible to condition the distribution over the parameters on a position \( \vec{y}_{t^\ast}^\ast \) at time step \(t^\ast\) with covariance \( \mat{\Sigma}_y^\ast \) by using Bayes rule:
+				\begin{equation*}
+					p(\vec{w} \given \vec{y}_{t^\ast}^\ast, \mat{\Sigma}_y^\ast) \propto \mathcal{N}\big( \vec{y}_{t^\ast}^\ast \biggiven \mat{\Psi}_{t^\ast}^T \vec{w},\, \mat{\Sigma}_y^\ast \big) p(\vec{w})
+				\end{equation*}
+				This allows ProMPs to generalize to other end-points of the movement or reaching intermediate points. Using Gaussian weight distributions, Bayes rule can be computed in closed form:
+				\begin{align*}
+					\vec{\mu}_w^\mathrm{new} &= \vec{\mu}_w + \mat{\Sigma} \mat{\Psi}_{t^\ast} \big( \mat{\Psi}_{t^\ast}^T \mat{\Sigma}_w \mat{\Sigma}_{t^\ast} + \mat{\Sigma}_y^\ast \big)^{-1} \big( \vec{y}_{t^\ast}^\ast - \mat{\Psi}_{t^\ast}^T \vec{\mu}_w \big) \\
+					\mat{\Sigma}_w^\mathrm{new} &= \mat{\Sigma}_w - \mat{\Sigma}_w \mat{\Psi}_{t^\ast} \big( \mat{\Psi}_{t^\ast}^T \mat{\Sigma}_w \mat{\Psi}_{t^\ast} + \mat{\Sigma}_y^\ast \big)^{-1} \mat{\Psi}_{t^\ast}^T \mat{\Sigma}_w
+				\end{align*}
+			% end
+
+			\subsubsection{Combination}
+				It is possible to combine multiple ProMPs into one movement to solve a combination of tasks. For the distributions \( \{ p_i(\vec{y}_t) \}_{i = 1}^{N} \), the combined ProMP \( p_\mathrm{co}(\vec{y}_t) \) is given as
+				\begin{equation*}
+					p^\mathrm{co}(\vec{y}_t) \propto \prod_{i = 1}^{N} p_i(\vec{y}_t)^{\alpha_i(t)}
+				\end{equation*}
+				with the activation factors \( \alpha_i(t) \). For Gaussian distributions \( p_i(\vec{y}_t) = \mathcal{N}\big( \vec{y}_t \biggiven \vec{\mu}_t^{[i]}, \mat{\Sigma}_y^{[i]} \big) \), the combined distribution has the following mean and covariance:
+				\begin{align*}
+					\vec{\mu}_t^\mathrm{co} &= \big( \mat{\Sigma}_t^\mathrm{co} \big)^{-1} \Bigg( \sum_{i = 1}^{N} \Big( \mat{\Sigma}_t^{[i]} / \alpha_t^{[i]} \Big)^{-1} \vec{\mu}_t^{[i]} \Bigg) \\
+					\mat{\Sigma}_t^\mathrm{co} &= \Bigg( \sum_{i = 1}^{N} \Big( \mat{\Sigma}_t^{[i]} / \alpha_t^{[i]} \Big)^{-1} \Bigg)^{-1}
+				\end{align*}
+				Using the time-varying activation factors \( \alpha_i(t) \), it is also possible to achieve \emph{blending}, i.e. shifting smoothly from one primitive (movement) to another.
+			% end
+		% end
+
+		\subsection{Time-Independent Stable Movement Primitives}
+			Both the DMPs and ProMPs consider the time as part of the state, however, knowing the exact time is hard and required external algorithms for phase estimation. It is possible to eliminate the dependency on the time in the state by learning \emph{nonlinear stable dynamical systems}
+			\begin{equation*}
+				\ddot{\vec{q}} = \vec{f}(\vec{q}, \dot{\vec{q}}; \vec{w}).
+			\end{equation*}
+			For linear dynamical systems, it is easy to construct them stable by choosing the state dynamics matrix to be negative definite. For nonlinear systems this is harder. But by combining a linear system with an invertible transformation \( \vec{y} = \vec{f}(\vec{z}) \), it is possible to create stable nonlinear systems from linear systems. This is due to the fact that the potential energy will be the same in both systems, i.e. \( V(\vec{z}) = V(\vec{y}) \). Examples for such invertible transformations are scalar multiplication or translations in the state-space (this will change the equilibrium!).
+
+			\subsubsection{Imitation Flows}
+				A wide range of such invertible transformations can be found by using invertible flows. Invertible flows are a set of neural networks that can be computed forward and backward, i.e. they are bijective. These can represent very complex nonlinear, yet stable, dynamics and are capable of representing both stroke-based and rhythmic movements.
+			% end
+		% end
+
+		\subsection{Libraries of Primitives}
+			Usually, one primitive is not enough. Ideally, the robot has a library of primitives which are all good at what they do and the robot "just" has to decide which movement to make by choosing the corresponding primitive.
+		% end
 	% end
 % end
 

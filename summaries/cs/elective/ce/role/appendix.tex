@@ -112,12 +112,55 @@
 		\todo{Content}
 	% end
 
-	\section{Model Learning} % 7.66
-		\todo{Content}
+	\section{Model Learning}
+		\paragraph{Why do we need to learn models?}
+		\answer{Building models by hand requires a lot of work (e.g. for disassembling and measuring the robot) and can often not cover complex behavior like friction. But not modeling e.g. friction may result in policies that are not transferable to the real robot, or the motion planning to fail. Learning models from data can overcome these issues.}
+
+		\paragraph{What models exist in robotics?}
+		\answer{Forward/inverse kinematics, forward/inverse dynamics, sensor models, discrete-time models, continuous-time models, \dots}
+
+		\paragraph{What's a white-box? What's a black-box? What's a gray-box?}
+		\answer{In a white-box model, lots of prior domain knowledge is used to build the model. Example are using physics-based approaches like Lagrangian mechanics to find the equations and then utilize system identification to find e.g. the masses. A black-box model is the opposite, where no prior knowledge is used and the complete model is inferred from data, e.g. using a neural network. A gray-box combined both worlds. It used some prior knowledge (like energy conservation), but also uses a black-box model for learning non-modeled behavior (e.g. friction or handling the residual error).}
+
+		\paragraph{How to excite a system to get good data for model learning?}
+		% TODO: Discuss the answer below with Joe.
+		\answer{Use impulse responses for analog signals and step functions for digital signals. As these are not practical (due to high frequencies that may damage the robot), a low-pass filter has to be used. But this again limits the diversity of signals. Another approach is active learning, i.e. letting the model decide where to get new data is also a good option. In practice, out-of-phase sinuses create very diverse end-effector trajectories that are good for model learning.}
+
+		\paragraph{How to learn a linear Gaussian dynamical system model?}
+		\answer{The LGDS system model can be learned using an expectation-maximization algorithm that in the E-step uses a Kalman smoother for finding the expected latent states and subsequently maximized the expected log-likelihood in the M-step. This guarantees monotonic improvement.}
+
+		\paragraph{How to make black-box models physically safe to learn?}
+		% TODO: Discuss the answer below with Joe.
+		\answer{This can be done by impose inductive biases, e.g. energy conservation, on the model. This way it is less likely for the model to be unsafe on the real system. Also for generating data, it is required to low-pass filter the frequencies as high frequencies may cause unsafe movements of the robot.}
+
+		\paragraph{How can differentiable physics help?}
+		\answer{Differentiable physics makes it possible to use black-box models combined with white-box models like the Newton-Euler algorithm. By implementing the algorithm in an autograd engine, the parameters can be trained with gradient decent, making it simple to add a neural network, e.g. for handling the residual error by adding it to the result of the Newton-Euler algorithm.}
 	% end
 
-	\section{Policy Representations} % 8.65
-		\todo{Content}
+	\section{Policy Representations}
+		\paragraph{What is a policy?}
+		\answer{A policy maps a state \(\vec{s}\) to an action \(\vec{a}\). By using a probabilistic policy \( \pi(\vec{a} \given \vec{s}) \), lot of difference behaviors like exploration can be encoded.}
+
+		\paragraph{What off-the-shelf representations can be used for robot learning?}
+		\answer{A lot of standard machine learning regression models can be used to represent policies, e.g. neural networks, linear regression with RBF features, Gaussian process, \dots}
+
+		\paragraph{How do off-the-self representations compare to trajectory-based representations?}
+		\answer{Off-the-shelf policies often do not generalize well which can lead to drastic failures. Also it is hard to encode inductive biases, achieve scalability for a high number of degrees of freedom, combine movements. Sample efficiency is also a problem as off-the-shelf methods usually require lots of training data.}
+
+		\paragraph{What are potential advantages of movement primitives?}
+		\answer{With movement primitives, it is usually easy to learn a specific movement from demonstrations using simple linear regression. As the forcing function vanishes over time, they are stable by design, and they can encode temporal scaling to execute a movement faster/slower as needed. Also they scale really well for a higher number of degrees of freedom.}
+
+		\paragraph{What are the main ideas of using movement primitives?}
+		\answer{The stability of a second-order linear dynamical systems can be easily assured by choosing the eigenvalues accordingly. To produce a moving attractor, a forcing function is added to the dynamical system, causing the goal attractor to move accordingly. As the forcing function is designed to vanish over time, the stability of the system is assured as it becomes a PD-controller for \( t \to \infty \).}
+
+		\paragraph{Why to use dynamical systems? What are advantages and disadvantages?}
+		\answer{Dynamical systems are highly expressive in terms of the trajectories they can generate. Also they usually only need a few parameters for generating a variety of different trajectories, exhibiting a desirable parsimonious parameter space. Advantages are that for linear systems, stability analysis is well-studied and simple. For nonlinear dynamics, however, this is different: stability analysis is not well studied and can in most cases only be analyzed using Lyapunov functions which are hard to find. Hence, instability is a real problem with using dynamical systems as trajectory representations!}
+
+		\paragraph{Why use a probabilistic representation?}
+		\answer{Using probabilistic representations enables quantifying the uncertainty on the trajectory, marking how important certain via-points are for executing the trajectory by choosing the variance low. A high variance allows variability in the movement and allows for combining and blending trajectories using probabilistic operators. Also, using conditioning, it is possible to specialize the primitive on visiting a specific state.}
+
+		\paragraph{How can nonlinear stable dynamics be obtained?}
+		\answer{This is possible using an (easily achievable) stable linear systems and combining it with a bijective transformation function. Because of the bijectivity, the potential energy is not changed and the nonlinear system is stable too. Using invertible flows (bijective neural networks), a huge range of different nonlinear transformations are possible, allowing for various nonlinear stable dynamics.}
 	% end
 
 	\section{Model-Based Reinforcement Learning} % 9.59

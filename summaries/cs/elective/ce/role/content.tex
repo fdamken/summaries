@@ -861,6 +861,8 @@
 			\todo{Content}
 
 			\subsubsection{Stochastic Gradient Descent} % 5c.45, 11.19, 11.20
+				\label{subsubsec:sgd}
+
 				\todo{Content}
 			% end
 
@@ -990,6 +992,8 @@
 	This principle leads to the principle of \emph{dynamic programming}. It breaks down the problem into small sub-problems which are then solved optimally. All sub-solutions together than constitute an optimal (global) policy. Famous examples for algorithms implementing the paradigm of dynamic programming are for example Dijkstra's algorithm for the shortest-path-problem.
 
 	\section{Discrete State-Action Space}
+		\label{sec:discreteOptimalControl}
+
 		Optimal control for discrete state-action spaces are based on \emph{Markov decision processes} (MDPs) which are defined by
 		\begin{itemize}
 			\item state space \( \vec{s} \in \mathcal{S} \),
@@ -1601,7 +1605,7 @@
 
 		\subsection{Characterization of Dynamical Systems}
 			Dynamical systems are usually characterized using the terms \emph{damping} and \emph{resonant frequencies}, which both origin in linear system theory:
-			\begin{description}
+			\begin{description}[leftmargin=5cm]
 				\item[Damping] Describes how the system dissipates energy.
 					\begin{itemize}
 						\item Heavily damped: Energy is lost quickly, the dynamics are "slow".
@@ -1921,6 +1925,8 @@
 % end
 
 \chapter{Model-Based Reinforcement Learning} % 9.1, 9.2, 9.5, 9.6
+	\label{c:modelBasedRL}
+
 	\todo{Content}
 
 	\section{Differentiation of Model-Based and Model-Free} % 9.7, 9.8
@@ -2011,51 +2017,283 @@
 	% end
 % end
 
-\chapter{Value Function Methods} % 11.1, 11.2
-	\todo{Content}
+\chapter{Value Function Methods}
+	This chapter covers \emph{value function methods}, a variant of model-free reinforcement learning. Often learning a good model is too hard, and the controller may only achieve good results by exploiting the model. Additionally, most optimal control methods are based on linearizations that only work moderately for nonlinear tasks. \emph{Model-free reinforcement learning} does not impose any assumptions on the structure on the model but rather learns the policy directly. In most model-free RL methods, this means learning the value function to solve the optimal control problem. The value function is learned from samples\footnote{The samples can (and should) be drawn from multiple episodes or sequences, hence the index is called \(i\) rather than \(t\). It does not necessarily refer to the time step!} \( \mathcal{D} = \big\{ \vec{s}_i, \vec{a}_i, r_i, \vec{s}_i' \}_{i = 1}^{N} \) with the state \(\vec{s}_i\), action \(\vec{a}_i\), immediate reward \(r_i\), and the next state \(\vec{s}_i'\).
 
-	\section{Recap of Dynamic Programming} % 11.4, 11.5, 11.6, 11.7
-		\todo{Content}
+	\section{Temporal Difference Tabular Learning}
+		For discrete states and actions, the Q-function can simply be tabulated. This is called \emph{tabular learning}. Given a transition \( (\vec{s}_i, \vec{a}_i, r_i, \vec{s}_i') \), the idea of \emph{temporal difference learning} is to use the current approximation \( V(\vec{s}_i) \) and the one-step prediction of the current value,
+		\begin{equation*}
+			\hat{V}(\vec{s}_i) \coloneqq \E_{\vec{a} \sim \pi(\cdot \subgiven \vec{s}_i)} \Big[ r(\vec{s}_i, \vec{a}) + \E_{\vec{s}' \sim p(\cdot \subgiven \vec{s}_i, \vec{a})}\big[ V(\vec{s}') \big] \Big] \approx r_i + \gamma V(\vec{s}_i'),
+		\end{equation*}
+		to update the current value function. This is done with the temporal difference (TD) error
+		\begin{equation}
+			\delta_i^V \coloneqq \hat{V}(\vec{s}_i) - V(\vec{s}_i) \doteq r_i + \gamma V(\vec{s}_i') - V(\vec{s}_i)  \label{eq:tdVError}
+		\end{equation}
+		by updating the value function with a "step size" \( \alpha \in [0, 1] \):
+		\begin{equation}
+			V^\mathrm{new}(\vec{s}_i) = V(\vec{s}_i) + \alpha \delta_i^V \doteq (1 - \alpha) V(\vec{s}_i) + \alpha \hat{V}(\vec{s}_i)  \label{eq:tdVFunction}
+		\end{equation}
+		The value \(\alpha\) describes the amount of trust in the prediction. For \(\alpha = 1\), the value function directly jumps to the prediction, and for \(\alpha = 0\) the value function always stays the same. This part of the algorithm can be seen as the \emph{policy evaluation} with temporal differences. To form a complete RL algorithm, also policy improvement is needed. As the algorithm has to also reach areas unseen before, exploration is needed in the policy. Two basic approaches for this problem are \(\epsilon\)-greedy policies
+		\begin{equation*}
+			\pi(\vec{a} \given \vec{s}) =
+				\begin{cases}
+					\arg\max_{\vec{a}'} \, Q^\pi(\vec{s}, \vec{a}') & \text{with probability } 1 - \epsilon \\
+					\text{any action } \vec{a}                      & \text{with probability } \epsilon
+				\end{cases}
+		\end{equation*}
+		and soft-max policies, enabling also learning the exploration (with a parameter \(\beta\)):
+		\begin{equation*}
+			\pi(\vec{a} \given \vec{s}) = \frac{\exp{ \beta Q(\vec{s}, \vec{a}) }}{\sum_{\vec{a}'} \exp{ \beta Q(\vec{s}, \vec{a}') }}
+		\end{equation*}
+		Both of these policies need a Q-function which can also be learned in a TD-fashion, similar to \eqref{eq:tdVFunction}. Let \( (\vec{s}_i, \vec{a}_i, r_i, \vec{s}_i') \) again be a transition of the system. Then the TD-error for the Q-function is defined as
+		\begin{equation}
+			\delta_i^Q \coloneqq \hat{Q}(\vec{s}_i, \vec{a}_i) - Q(\vec{s}_i) \doteq r_i + \gamma Q(\vec{s}_i', \vec{a}_?) - Q(\vec{s}_i)  \label{eq:tdQError}
+		\end{equation}
+		with the one-step prediction \( \hat{Q}(\vec{s}_i) \coloneqq r_i + \gamma Q(\vec{s}_i', \vec{a}_?) \), analogous to \eqref{eq:tdVError}. The update of the Q-function is then
+		\begin{equation*}
+			Q^\mathrm{new}(\vec{s}_i, \vec{a}_i) = Q(\vec{s}_i, \vec{a}_i) + \alpha \delta_i^Q \doteq (1 - \alpha) Q(\vec{s}_i, \vec{a}_i) + \alpha \hat{Q}(\vec{s}_i, \vec{a}_i).
+		\end{equation*}
+		Other than for updating the V-function, now an action \( \vec{a}_? \) has to be selected to compute the TD-error \eqref{eq:tdQError}. There are two common methods for estimating \(\vec{a}_?\), both forming separate algorithms:
+		\begin{description}[leftmargin=3cm]
+			\item[Q-Learning] \( \vec{a}_? = \arg\max_{\vec{a}} \, Q(\vec{s}_i', \vec{a}) \)
+				\begin{itemize}
+					\item Estimates the Q-function of the optimal policy.
+					\item Generates off-policy samples, i.e. \( \vec{a}_? \neq \vec{a}_i' \).
+					\item Equivalent to learning the value function.
+					\item See \autoref{alg:tabularQLearning} for an algorithmic description.
+				\end{itemize}
+			\item[SARSA]      \( \vec{a}_? = \vec{a}_i' \), where \( \vec{a}_i' \sim \pi(\cdot \given \vec{s}_i') \), so quintuples \( (\vec{s}_i, \vec{a}_i, r_i, \vec{s}_i', \vec{a}_i') \) are used for learning
+				\begin{itemize}
+					\item Estimates the Q-function of the exploration policy.
+					\item Generates on-policy samples.
+					\item \emph{SARSA} stands for \emph{state-action-reward-state-action}.
+				\end{itemize}
+		\end{description}
+		Note that, as the policy depends on the Q-function, the policy is non-stationary.
+
+		\begin{algorithm}  \DontPrintSemicolon
+			\( Q^\ast(\vec{s}, \vec{a}) \gets 0 \) for all \( \vec{s} \in \mathcal{S} \) and \( \vec{a} \in \mathcal{A} \) \;
+			\( i \gets 0 \) \;
+			\Repeat{convergence of \( Q^\ast \)}{
+				\( i \gets i + 1 \) \;
+				\If{episode finished}{
+					Start new episode. \;
+				}
+				Observe a transition \( (\vec{s}_i, \vec{a}_i, r_i, \vec{s}_i') \). \;
+				\eqmakebox[algTabQLearn][r]{\( \vec{a}_? \gets \)} \eqmakebox[algTabQLearnR][l]{\( \arg\max_{\vec{a}} \, Q^\ast(\vec{s}_i', \vec{a}) \)}
+				\quad\tcp{Compute the exploration action.}
+				\eqmakebox[algTabQLearn][r]{\( \hat{Q}^\ast(\vec{s}_i, \vec{a}_i) \gets \)} \eqmakebox[algTabQLearnR][l]{\( r_i + \gamma Q^\ast(\vec{s}_i', \vec{a}_?) \)}
+				\quad\tcp{Compute the one-step prediction.}
+				\eqmakebox[algTabQLearn][r]{\( \delta_i \gets \)} \eqmakebox[algTabQLearnR][l]{\( \hat{Q}^\ast(\vec{s}_i, \vec{a}_i) - Q^\ast(\vec{s}_i, \vec{a}_i) \)}
+				\quad\tcp{Compute the TD-error.}
+				\eqmakebox[algTabQLearn][r]{\( Q^\ast(\vec{s}_i, \vec{a}_i) \gets \)} \eqmakebox[algTabQLearnR][l]{\( Q^\ast(\vec{s}_i, \vec{a}_i) + \alpha \delta_i \)}
+				\quad\tcp{Update the Q-Function.}
+			}
+
+			\caption{Tabular Q-Learning for Discrete States}
+			\label{alg:tabularQLearning}
+		\end{algorithm}
 	% end
 
-	\section{Temporal Differences} % 11.8, 11.9, 11.10
-		\todo{Content}
+	\section{Approximate Temporal Difference Learning}
+		If the states are continuous, it is no longer possible to tabulate them\footnote{Of course discretizing is an option, but the state space becomes really big really quick.}. To keep it simple, use a linear function approximator for the value function:
+		\begin{equation*}
+			V(\vec{s}) \approx V_{\vec{w}}(\vec{s}) = \vec{\phi}^T(\vec{s}) \vec{w}
+		\end{equation*}
+		The optimal weights \(\vec{w}\) can again be found using temporal difference learning! With \emph{bootstrapping}, that is using the old approximation values to measure the new approximation error as for tabular TD learning, the goal is to minimize the mean-squared error
+		\begin{equation*}
+			\MSE(\vec{w}) \approx \MSE_\mathrm{BS}(\vec{w}) = \sum_{i = 1}^{N} \big( \hat{V}^\pi(\vec{s}_i) - V_{\vec{w}}(\vec{s}_i) \big)^2  \label{eq:approxTdMse}
+		\end{equation*}
+		for samples \( \big\{ (\vec{s}_i, \vec{a}_i, r_i, \vec{s}_i') \big\}_{i = 1}^{N} \) of \(\vec{w}\) with
+		\begin{equation*}
+			\hat{V}^\pi(\vec{s}_i) = \E_{\vec{a} \sim \pi(\cdot \subgiven \vec{s}_i)} \Big[ r(\vec{s}_i, \vec{a}) + \E_{\vec{s}' \sim p(\cdot \subgiven \vec{s}_i, \vec{a})}\big[ V_{\vec{w}_\mathrm{old}}(\vec{s}') \big] \Big] \approx r_i + \gamma V_{\vec{w}_\mathrm{old}}(\vec{s}_i').
+		\end{equation*}
+		This objective can be optimized with (stochastic) gradient descent (see \autoref{subsubsec:sgd}) by approximating the bootstrapped objective \eqref{eq:approxTdMse} with a single sample \( (\vec{s}_i, \vec{a}_i, r_i, \vec{s}_i') \):
+		\begin{equation}
+			\MSE_\mathrm{BS}(\vec{w})
+				\approx \big( \hat{V}^\pi(\vec{s}_i) - V_{\vec{w}}(\vec{s}_i) \big)^2
+				\approx \big( r_i + \gamma V_{\vec{w}_\mathrm{old}}(\vec{s}_i') - V_{\vec{w}}(\vec{s}_i) \big)^2  \label{eq:approxValueError}
+		\end{equation}
+		The gradient descent step is then given as
+		\begin{align*}
+			\vec{w}_{i + 1}
+				&= \vec{w}_i + \tilde{\alpha}_i \pdv{\MSE_\mathrm{BS}}{\vec{w}} \bigg\vert_{\vec{w} \,=\, \vec{w}_i,\, \vec{w}_\mathrm{old} \,=\, \vec{w}_i} \\
+				&= \vec{w}_i + \alpha_i \underbrace{\big( r_i + \gamma V_{\vec{w}_i}(\vec{s}_i') - V_{\vec{w}_i}(\vec{s}_i) \big)}_{\delta_i} \vec{\phi}(\vec{s}_i) \\
+				&= \vec{w}_i + \alpha_i \delta_i \vec{\phi}(\vec{s}_i)
+		\end{align*}
+		for a linear approximation \( V_{\vec{w}}(\vec{s}) = \vec{\phi}^T(\vec{s}) \vec{w} \) and the derivative
+		\begin{equation}
+			\pdv{\MSE_\mathrm{BS}}{\vec{w}}
+				= 2 \big( r_i + \gamma V_{\vec{w}_\mathrm{old}}(\vec{s}_i') - V_{\vec{w}}(\vec{s}_i) \big) \pdv{V_{\vec{w}}(\vec{s}_i)}{\vec{w}}
+				= 2 \big( r_i + \gamma V_{\vec{w}_\mathrm{old}}(\vec{s}_i') - V_{\vec{w}}(\vec{s}_i) \big) \vec{\phi}(\vec{s}_i)  \label{eq:approxValueErrorPrime}
+		\end{equation}
+		of the function approximator\footnote{The multiplication with two is absorbed into \( \alpha_i = 2 \tilde{\alpha}_i \).}. Of course this can be readily extended for deep function approximators like neural networks by replacing the derivative \( \pdv{V_{\vec{w}}(\vec{s}_i)}{\vec{w}} \) in \eqref{eq:approxValueErrorPrime} with e.g. an autograd engine or backpropagation. As for tabular TD methods, similar update rules can be achieved for the Q-function, enabling approximate Q-learning and SARSA with \( Q_{\vec{w}}(\vec{s}, \vec{a}) = \vec{\phi}^T(\vec{s}, \vec{a}) \vec{w} \):
+		\begin{equation*}
+			\vec{w}_{i + 1} = \vec{w}_i + \alpha \big( r_i + \gamma Q_{\vec{w}_i}(\vec{s}_i', \vec{a}_?) - Q_{\vec{w}_i}(\vec{s}_i, \vec{a}_i) \big) \vec{\phi}(\vec{s}_i, \vec{a}_i)
+		\end{equation*}
+		Note that, even though an index \(t\) is used here, it is possible (and often needed) to train over multiple episodes by resetting the environment once an episode is done. This process of resetting the environment, observing samples, and training the V-/Q-function is repeated until convergence. A procedural description of approximate Q-learning is shown in \autoref{alg:approxQLearning}
 
-		\subsection{Policy Evaluation} % 11.11, 11.12, 11.13
-			\todo{Content}
+		\begin{algorithm}  \DontPrintSemicolon
+			\( \vec{w}_0 \gets \vec{0} \) \;
+			\( t \gets 0 \) \;
+			\Repeat{convergence of \( \vec{w}_i \)}{
+				\( t \gets t + 1 \) \;
+				\If{episode finished}{
+					Start new episode. \;
+				}
+				Observe a transition \( (\vec{s}_i, \vec{a}_i, r_i, \vec{s}_i') \). \;
+				\eqmakebox[algApproxQLearn][r]{\( \vec{a}_? \gets \)} \eqmakebox[algApproxQLearnR][l]{\( \arg\max_{\vec{a}} \, Q_{\vec{w}}(\vec{s}_i', \vec{a}) \)}
+				\quad\tcp{Compute the exploration action.}
+				\eqmakebox[algApproxQLearn][r]{\( \hat{Q}_{\vec{w}}(\vec{s}_i, \vec{a}_i) \gets \)} \eqmakebox[algApproxQLearnR][l]{\( r_i + \gamma Q_{\vec{w}}(\vec{s}_i', \vec{a}_?) \)}
+				\quad\tcp{Compute the one-step prediction.}
+				\eqmakebox[algApproxQLearn][r]{\( \delta_i \gets \)} \eqmakebox[algApproxQLearnR][l]{\( \hat{Q}_{\vec{w}}(\vec{s}_i, \vec{a}_i) - Q_{\vec{w}}(\vec{s}_i, \vec{a}_i) \)}
+				\quad\tcp{Compute the TD-error.}
+				\eqmakebox[algApproxQLearn][r]{\( \vec{w}_{i + 1} \gets \)} \eqmakebox[algApproxQLearnR][l]{\( \alpha_i \delta_i \vec{\phi}(\vec{s}_i, \vec{a}_i) \)}
+				\quad\tcp{Update the Q-Function.}
+			}
+
+			\caption{Approximate Q-Learning for Continuous States}
+			\label{alg:approxQLearning}
+		\end{algorithm}
+
+		\paragraph{Remarks on Approximate TD Learning}
+			\begin{itemize}
+				\item When using a tabular encoding for \( \vec{\phi}(\vec{s}) \), the function approximation is equivalent with discretizing the state-space and using tabular TD learning methods.
+				\item Approximate TD learning is not proper stochastic gradient descent!
+					\begin{itemize}
+						\item Firstly, the target values \( \hat{V}^\pi(\vec{s}) \) change after a parameter update due to bootstrapping. This actually introduces a bias and changes the optimization objective such that not the mean-squared error is optimized anymore.
+						\item Secondly, the samples are not statistically independent if draw from a sequence of states and actions. Instead, a \emph{replay memory} should be built that holds samples from multiple trajectories and in each iterative step, one sample should be drawn from the memory.
+					\end{itemize}
+				\item It is possible to draw multiple samples at once and to a combined GD (mini-batch) step to improve convergence.
+				\item Due to e.g. off-policy updates, convergence is not guaranteed every time. For linear approximations, however, certain convergence properties hold given that the convergence properties of SGD (see \autoref{subsubsec:sgd}) are fulfilled.
+				\item Temporal difference learning is fast in computation time (i.e. fast convergence), but it is not sample-efficient as every sample is only used once!
+			\end{itemize}
+		% end
+	% end
+
+	\section{Batch Reinforcement Learning Methods}
+		One major problem of online temporal difference methods is that they are typically highly data-inefficient as every sample is only used once. This property can be improved by using a batch of data to increase the data-efficiency. This section will look into two exemplary algorithms,
+		\begin{itemize}
+			\item Least-Squares Temporal Differences (LSTD), and
+			\item Fitted Q-Iteration,
+		\end{itemize}
+		that make use of this technique. But compared to TD methods, batch methods are usually computationally much more expensive, so there is a tradeoff here.
+
+		\subsection{Least-Squares Temporal Differences (LSTD)}
+			For \emph{least-squares temporal differences}, the bootstrapped mean-squared error \eqref{eq:approxTdMse} is solved analytically for \(N\) samples. Let
+			\begin{align*}
+				\vec{r} \coloneqq
+					\begin{bmatrix}
+						r_1 \\
+						r_2 \\
+						\vdots \\
+						r_N
+					\end{bmatrix}
+				&&
+				\vec{\Phi}^T \coloneqq
+					\begin{bmatrix}
+						\vec{\phi}^T(\vec{s}_1) \\
+						\vec{\phi}^T(\vec{s}_2) \\
+						\vdots \\
+						\vec{\phi}^T(\vec{s}_N)
+					\end{bmatrix}
+				&&
+				\vec{\Phi}_+^T \coloneqq
+					\begin{bmatrix}
+						\vec{\phi}^T(\vec{s}_1') \\
+						\vec{\phi}^T(\vec{s}_2') \\
+						\vdots \\
+						\vec{\phi}^T(\vec{s}_N')
+					\end{bmatrix}
+			\end{align*}
+			be the rewards, steps and next steps, respectively. Then the bootstrapped objective \eqref{eq:approxTdMse} can be rewritten as
+			\begin{align*}
+				\MSE_\mathrm{BS}(\vec{w})
+					&\approx \sum_{i = 1}^{N} \big( r_i + \gamma V_{\vec{w}_\mathrm{old}}(\vec{s}_i') - V_{\vec{w}}(\vec{s}_i) \big)^2 \\
+					&= \sum_{i = 1}^{N} \big( r_i + \gamma \vec{\phi}^T(\vec{s}_i') \vec{w}_\mathrm{old} - \vec{\phi}^T(\vec{s}_i) \vec{w} \big)^2 \\
+					&= \big( \vec{r} + \gamma \mat{\Phi}_+^T \vec{w}_\mathrm{old} - \mat{\Phi}^T \vec{w} \big)^T \big( \vec{r} + \gamma \mat{\Phi}_+^T \vec{w}_\mathrm{old} - \mat{\Phi}^T \vec{w} \big).
+			\end{align*}
+			By taking the derivative of the mean-squared error and setting it to zero\footnote{\( -\frac{1}{2} \pdv{\vec{w}} \big\lVert \vec{r} + \gamma \mat{\Phi}_+^T \vec{w}_\mathrm{old} - \mat{\Phi}_+^T \vec{w} \big\rVert_2^2 = \mat{\Phi} \big( \vec{r} + \gamma \mat{\Phi}_+^T \vec{w}_\mathrm{old} - \mat{\Phi}^T \vec{w} \big) = \mat{\Phi} \big( \vec{r} + \gamma \mat{\Phi}_+^T \vec{w}_\mathrm{old} \big) - \mat{\Phi} \mat{\Phi}^T \vec{w} \overset{!}{=} \vec{0} \)}, the least-squares solution is
+			\begin{equation}
+				\vec{w} = \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \big( \vec{r} + \gamma \mat{\Phi}_+^T \vec{w}_\mathrm{old} \big).  \label{eq:lstdLeastSquaresSol}
+			\end{equation}
+			However, this equation still contains \( \vec{w}_\mathrm{old} \). For convergence, \( \vec{w} = \vec{w}_\mathrm{old} \) should hold. Plugging this into the least-squares solution \eqref{eq:lstdLeastSquaresSol} yields the solution to the complete least-squares temporal differences algorithm:
+			\begin{align}
+				&&
+				\vec{w} &= \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \big( \vec{r} + \gamma \mat{\Phi}_+^T \vec{w}_\mathrm{old} \big) &  \nonumber \\
+				\overset{\mathclap{\raisebox{1pt}{\scriptsize \( \vec{w}_\mathrm{old} \,\overset{!}{=}\, \vec{w} \)}}}{\quad\implies} &&
+				\vec{w} &= \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \big( \vec{r} + \gamma \mat{\Phi}_+^T \vec{w} \big) &  \nonumber \\
+				\iff &&
+				\vec{w} &= \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \vec{r} + \gamma \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi}_+^T \vec{w} &  \nonumber \\
+				\iff &&
+				\Big( \mat{I} - \gamma \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi}_+^T \Big) \vec{w} &= \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \vec{r} &  \nonumber \\
+				\iff &&
+				\Big(\! \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \mat{\Phi}^T - \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \gamma \mat{\Phi}_+^T \Big) \vec{w} &= \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \vec{r} &  \nonumber \\
+				\iff &&
+				\big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \big( \mat{\Phi}^T - \gamma \mat{\Phi}_+^T \big) \vec{w} &= \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \vec{r} &  \nonumber \\
+				\iff &&
+				\mat{\Phi} \big( \mat{\Phi}^T - \gamma \mat{\Phi}_+^T \big) \vec{w} &= \mat{\Phi} \vec{r} &  \nonumber \\
+				\iff &&
+				\vec{w} &= \Big(\! \mat{\Phi} \big( \mat{\Phi}^T - \gamma \mat{\Phi}_+^T \big) \!\Big)^{-1} \mat{\Phi} \vec{r} &  \label{eq:lstdSolution}
+			\end{align}
+			Equation \eqref{eq:lstdSolution} is the solution of LSTD. By analyzing the convergence properties of TD-learning it can be seen that this is the same solution as the fixed point of TD-learning. Hence, with enough samples, it is possible to calculate the V-function approximation weights in one shot without iterations. As for TD learning, it is also possible to adapt this for learning the Q-function by altering the matrices \( \mat{\Phi} \) and \( \mat{\Phi}_+ \) accordingly. The algorithm is then called least-squares Q-learning (LSQ) and is used for least-squares policy iteration (LSPI).
+
+			However, as opposed to TD learning, LSTD is computationally much more expensive!
 		% end
 
-		\subsection{Policy Improvement} % 11.14, 11.15
-			\todo{Content}
+		\subsection{Fitted Q-Iteration}
+			When using batch RL it is also easier to use nonlinear function approximators as many of them only work in a batch setup, e.g. regression trees. Also using just a single sample could lead to catastrophic forgetting, e.g. for neural networks that do not "remember" the states seen previously. \emph{Fitted Q-iteration} is a method that uses some nonlinear regression model \( \mathrm{Regress}(\mat{X}, \vec{y}) \) with input data \(\mat{X}\) and target values \(\vec{y}\) for approximate value iteration. A procedural representation is shown in \autoref{alg:fittedQIteration}. Invoking the regression model performs the required expectation for the Q-function implicitly. But is it still hard to solve the maximization operator on \autoref{algline:fittedQIterationMaxOpt} for continuous actions. See for example \href{https://proceedings.neurips.cc/paper/2008/hash/f79921bbae40a577928b76d2fc3edc2a-Abstract.html}{Neumann and Peters: "Fitted Q-Iteration by Advantage Weighted Regression", NIPS (2008)}.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{Dataset \( \mathcal{D} = \big\{ (\vec{s}_i, \vec{a}_i, r_i, \vec{s}_i') \big\}_{i = 1}^{N} \)}
+				\eqmakebox[fittedQIterationI][r]{\( \mat{X} \gets \)} \(
+					\begin{bmatrix}
+						\vec{s}_1 & \vec{s}_2 & \cdots & \vec{s}_N \\
+						\vec{a}_1 & \vec{a}_2 & \cdots & \vec{a}_N
+					\end{bmatrix}^T
+				\) \;
+				\eqmakebox[fittedQIterationI][r]{\( Q(\vec{s}, \vec{a}) \gets \)} \( 0 \) for all \( \vec{s} \in \mathcal{S} \) and \( \vec{a} \in \mathcal{A} \) \;
+				\Repeat{convergence of \(Q\)}{
+					\eqmakebox[fittedQIteration][r]{\( q_i \gets \)} \eqmakebox[fittedQIterationR][l]{\( r_i + \gamma \max_{\vec{a}'} \, Q(\vec{s}_i', \vec{a}') \)}  \label{algline:fittedQIterationMaxOpt}
+					\quad\tcp{Generate target values for each \( i = \dotsrange{1}{N} \).}
+					\eqmakebox[fittedQIteration][r]{\( Q(\vec{s}, \vec{a}) \gets \)} \eqmakebox[fittedQIterationR][l]{\( \mathrm{Regress}(\mat{X}, \vec{q}) \)}
+					\quad\tcp{Learn new Q-Function.}
+				}
+
+				\caption{Fitted Q-Iteration with Regression Model \texorpdfstring{\( \mathrm{Regress}(\mat{X}, \vec{y}) \)}{Regress(X, y)}}
+				\label{alg:fittedQIteration}
+			\end{algorithm}
 		% end
 	% end
 
-	\section{Value Function Approximation} % 11.16, 11.17, 11.18, 11.21, 11.22, 11.23
-		\todo{Content}
-	% end
+	\section{Wrap-Up}
+		This chapter covered value function methods with have been the driving reinforcement learning approach in the 90s. They can be applied to lots of problems, e.g. chess at professional level, robot soccer, etc. However, they are not always the method of choice as the state-action space has to be filled up with a sufficient amount of samples (the amount of data needed grows exponentially with the dimension) and errors in the value function approximation can cause drastic failures that can be very hard to control.
 
-	\section{Batch Reinforcement Learning Methods} % 11.25, 11.26
-		\todo{Content}
-
-		\subsection{Least-Squares Temporal Differences (LSTD)} % 11.27, 11.28, 11.29, 11.30
-			\todo{Content}
-		% end
-
-		\subsection{Fitted Q-Iteration} % 11.31, 11.32, 11.33
-			\todo{Content}
-		% end
-	% end
-
-	\section{Case Study: Robot Soccer} % 11.34, 11.35, 11.36, 11.37, 11.38, 11.39
-		\todo{Content}
-	% end
-
-	\section{Wrap-Up} % 11.41, 12.64
-		\todo{Content}
+		For a comparison with the other discussed reinforcement learning methods (model-based, see \autoref{c:modelBasedRL} and policy search, see \autoref{c:policySearch}), the following list gives an overview over the main benefits and drawbacks of value function methods:
+		\begin{description}
+			\item[Model Complexity] OK
+				\begin{itemize}
+					\item Only the Q-function \( Q : \R^{\lvert \mathcal{S} \rvert + \lvert \mathcal{A} \rvert} \to \R \) is learned.
+					\item But small function approximation errors can have a big effect on the policy.
+				\end{itemize}
+			\item[Scalability] Poor (with some positive exceptions)
+				\begin{itemize}
+					\item Approximating the Q-function in high dimensions is difficult.
+					\item Policy is hard to obtain in high-dimensional action spaces due to the maximization.
+				\end{itemize}
+			\item[Data Efficiency] OK (online TD learning) to good (batch methods)
+				\begin{itemize}
+					\item Online: every transition is only used once.
+					\item Batch: every transition is reused.
+				\end{itemize}
+			\item[Other Limitations] Policy update is unbounded, might lead to oscillations.
+		\end{description}
 	% end
 % end
 
 \chapter{Policy Search} % N/A
+	\label{c:policySearch}
+
 	\todo{Content}
 
 	\section{Categorization of Policy Search} % 10.6, 10.7, 10.8

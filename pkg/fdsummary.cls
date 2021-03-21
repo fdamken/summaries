@@ -304,6 +304,7 @@
 % Top-left index, e.g. for transformation matrices.
 \newcommand{\inreferenceto}[2]{\prescript{#1}{}{#2}}
 % One vertical line for probabilities, densities, expectations, etc.
+\newcommand{\subgiven}{\vert}
 \newcommand{\given}{\,\vert\,}
 \newcommand{\biggiven}{\,\big\vert\,}
 \newcommand{\Biggiven}{\,\Big\vert\,}

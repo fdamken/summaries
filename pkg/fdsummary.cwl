@@ -185,6 +185,7 @@
 % Top-left index, e.g. for transformation matrices.
 \inreferenceto{reference-frame}{obj}}#m
 % One vertical line for probabilities, densities, expectations, etc.
+\subgiven#m
 \given#m
 \biggiven#m
 \Biggiven#m

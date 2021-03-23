@@ -2022,6 +2022,8 @@
 % end
 
 \chapter{Value Function Methods}
+	\label{c:valueFunctionMethods}
+
 	This chapter covers \emph{value function methods}, a variant of model-free reinforcement learning. Often learning a good model is too hard, and the controller may only achieve good results by exploiting the model. Additionally, most optimal control methods are based on linearizations that only work moderately for nonlinear tasks. \emph{Model-free reinforcement learning} does not impose any assumptions on the structure on the model but rather learns the policy directly. In most model-free RL methods, this means learning the value function to solve the optimal control problem. The value function is learned from samples\footnote{The samples can (and should) be drawn from multiple episodes or sequences, hence the index is called \(i\) rather than \(t\). It does not necessarily refer to the time step!} \( \mathcal{D} = \big\{ \vec{s}_i, \vec{a}_i, r_i, \vec{s}_i' \}_{i = 1}^{N} \) with the state \(\vec{s}_i\), action \(\vec{a}_i\), immediate reward \(r_i\), and the next state \(\vec{s}_i'\).
 
 	\section{Temporal Difference Tabular Learning}
@@ -2273,7 +2275,7 @@
 	\section{Wrap-Up}
 		This chapter covered value function methods with have been the driving reinforcement learning approach in the 90s. They can be applied to lots of problems, e.g. chess at professional level, robot soccer, etc. However, they are not always the method of choice as the state-action space has to be filled up with a sufficient amount of samples (the amount of data needed grows exponentially with the dimension) and errors in the value function approximation can cause drastic failures that can be very hard to control.
 
-		For a comparison with the other discussed reinforcement learning methods (model-based, see \autoref{c:modelBasedRL} and policy search, see \autoref{c:policySearch}), the following list gives an overview over the main benefits and drawbacks of value function methods:
+		For a comparison with the other discussed reinforcement learning methods (model-based, see \autoref{c:modelBasedRL} and policy search, see \autoref{c:policySearch}), the following list gives an overview over the main benefits and drawbacks of \emph{value function methods}:
 		\begin{description}
 			\item[Model Complexity] OK
 				\begin{itemize}
@@ -2581,7 +2583,7 @@
 	\section{Probabilistic Policy Search}
 		\emph{Probabilistic policy search} (a subset of episodic policy search methods) addresses the problems of policy gradient methods, namely the high amount of samples that are needed and the fact that the learning rate still has to be tuned. It is based on the \emph{success matching principle} by Arrow, 1958: "When learning from a set of their own trials in iterated decision problems, humans attempt to match not the best taken action but the reward-weighted frequency of their actions and outcomes." This means that not only the reward, but also the frequency of this reward and the action is relevant. If a state is not very common, it might not be worth it to optimize the policy here.
 
-		This idea can be formalized as \emph{episode-based success matching}. In each iteration \(k\), first sample parameters \( \vec{\theta}^{[i]} \sim \pi(\cdot) \) and evaluate them \( R^{[i]} = \sum_{t = 1}^{T} r_t^{[i]} \). Then somehow compute the \emph{success probability}
+		This idea can be formalized as \emph{episode-based success matching}. In each iteration \(k\), first sample parameters \( \vec{\theta}^{[i]} \sim \pi(\cdot; \vec{\omega}_k) \) and evaluate them: \( R^{[i]} = \sum_{t = 1}^{T} r_t^{[i]} \). Then somehow compute the \emph{success probability}
 		\begin{equation*}
 			w^{[i]} = f\big( R^{[i]} \big)
 		\end{equation*}
@@ -2589,29 +2591,29 @@
 		\begin{equation*}
 			p\big( \vec{\theta}^{[i]} \big) \propto w^{[i]} \pi\big( \vec{\theta}^{[i]}; \vec{\omega}_k \big)
 		\end{equation*}
-		of each sample. This is only a proportionality to indicate that the distribution has to be normalized. Finally, fit a new policy \( \pi^\mathrm{new}\big( \vec{\theta}^{[i]} \big) \) that best approximates \( p\big( \vec{\theta}^{[i]} \big) \). The two open issues in this algorithm are:
+		of each sample. This is only a proportionality to indicate that the distribution has to be normalized. Finally, fit a new policy \( \pi\big( \vec{\theta}^{[i]}; \vec{\omega}_{k + 1} \big) \) that best approximates \( p\big( \vec{\theta}^{[i]} \big) \). The two open issues in this algorithm are:
 		\begin{itemize}
 			\item how to compute \( w^{[i]} = f\big( R^{[i]} \big) \) and
-			\item how to fit the policy \( \pi^\mathrm{new}\big( \vec{\theta}^{[i]} \big) \).
+			\item how to fit the policy \( \pi\big( \vec{\theta}^{[i]}; \vec{\omega}_{k + 1} \big) \).
 		\end{itemize}
 
 		\subsection{Policy Fitting by Weighted Maximum Likelihood}
-			A first idea to find the policy \( \pi^\mathrm{new}\big(\vec{\theta}^{[i]}\big) \) that best fits the distribution \( p\big(\vec{\theta}^{[i]}\big) \propto w^{[i]} \pi\big(\vec{\theta}^{[i]}\big) \big) \) is to minimize the KL divergence between the two:
+			A first idea to find the policy \( \pi\big(\vec{\theta}^{[i]}; \vec{\omega}_{k + 1}\big) \) that best fits the distribution \( p\big(\vec{\theta}^{[i]}\big) \propto w^{[i]} \pi\big(\vec{\theta}^{[i]}; \vec{\omega}_{k + 1}\big) \) is to minimize the KL divergence between the two:
 			\begin{align}
-				\pi^\mathrm{new}(\vec{\theta})
-					&= \arg\min_\pi\, D_\mathrm{KL}\big( p(\vec{\theta}) \Vert \pi(\vec{\theta}) \big)
-					 = \arg\min_\pi\, \int\! p(\vec{\theta}) \ln \frac{p(\vec{\theta})}{\pi(\vec{\theta})} \dd{\vec{\theta}}  \nonumber \\
-					&= \arg\min_\pi\, \underbrace{\int\! p(\vec{\theta}) \ln p(\vec{\theta}) \dd{\vec{\theta}}}_\text{constant w.r.t. \(\pi\)} - \int\! p(\vec{\theta}) \ln \pi(\vec{\theta}) \dd{\vec{\theta}}  \nonumber \\
-					&= \arg\max_\pi\, \int\! p(\vec{\theta}) \ln \pi(\vec{\theta}) \dd{\vec{\theta}}
-					 = \arg\max_\pi\, \int\! \pi(\vec{\theta}) \frac{p(\vec{\theta})}{\pi(\vec{\theta})} \ln \pi(\vec{\theta}) \dd{\vec{\theta}}  \nonumber \\
-					&\approx \arg\max_\pi\, \frac{1}{N} \sum_{i = 1}^{N} \underbrace{\frac{p\big(\vec{\theta}^{[i]}\big)}{\pi\big(\vec{\theta}^{[i]}\big)}}_{=\, w^{[i]}} \ln \pi\big(\vec{\theta}^{[i]}\big)
-					 = \arg\max_\pi\frac{1}{N} \sum_{i = 1}^{N} w^{[i]} \ln \pi\big(\vec{\theta}^{[i]}\big)  \label{eq:weightedMaxLikelihoodObjective}
+				\vec{\omega}_{k + 1}
+					&= \arg\min_{\vec{\omega}}\, D_\mathrm{KL}\big( p(\vec{\theta}) \Vert \pi(\vec{\theta}; \vec{\omega}) \big)
+					 = \arg\min_{\vec{\omega}}\, \int\! p(\vec{\theta}) \ln \frac{p(\vec{\theta})}{\pi(\vec{\theta}; \vec{\omega})} \dd{\vec{\theta}}  \nonumber \\
+					&= \arg\min_{\vec{\omega}}\, \underbrace{\int\! p(\vec{\theta}) \ln p(\vec{\theta}) \dd{\vec{\theta}}}_\text{constant w.r.t. \(\pi\)} - \int\! p(\vec{\theta}) \ln \pi(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}}  \nonumber \\
+					&= \arg\max_{\vec{\omega}}\, \int\! p(\vec{\theta}) \ln \pi(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}}
+					 = \arg\max_{\vec{\omega}}\, \int\! \pi(\vec{\theta}; \vec{\omega}) \frac{p(\vec{\theta})}{\pi(\vec{\theta}; \vec{\omega})} \ln \pi(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}}  \nonumber \\
+					&\approx \arg\max_{\vec{\omega}}\, \frac{1}{N} \sum_{i = 1}^{N} \underbrace{\frac{p\big(\vec{\theta}^{[i]}\big)}{\pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big)}}_{=\, w^{[i]}} \ln \pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big)
+					 = \arg\max_{\vec{\omega}} \frac{1}{N} \sum_{i = 1}^{N} w^{[i]} \ln \pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big)  \label{eq:weightedMaxLikelihoodObjective}
 			\end{align}
-			This estimate of \( \pi^\mathrm{new}(\vec{\theta}) \) is called the \emph{weighted maximum likelihood estimate}. For a (parametric) Gaussian policy \( \pi(\vec{\theta}) = \pi(\vec{\theta}; \vec{\omega}) = \mathcal{N}(\vec{\theta} \given \vec{\mu}, \mat{\Sigma}) \) parameterized by \( \vec{\omega} = \{ \vec{\mu}, \mat{\Sigma} \} \), the estimates can be computed in closed form
+			This estimate of \( \pi^\mathrm{new}(\vec{\theta}) \) is called the \emph{weighted maximum likelihood estimate}. For a Gaussian policy \( \pi(\vec{\theta}) = \pi(\vec{\theta}; \vec{\omega}) = \mathcal{N}(\vec{\theta} \given \vec{\mu}, \mat{\Sigma}) \) with \( \vec{\omega} = \{ \vec{\mu}, \mat{\Sigma} \} \), the estimates can be computed in closed form
 			\begin{align*}
-				\vec{\mu}^\mathrm{new} = \frac{1}{W} \sum_{i = 1}^{N} w^{[i]} \vec{\theta}^{[i]}
+				\vec{\mu}_{k + 1} = \frac{1}{W} \sum_{i = 1}^{N} w^{[i]} \vec{\theta}^{[i]}
 				&&
-				\mat{\Sigma}^\mathrm{new} = \frac{1}{W} \sum_{i = 1}^{N} w^{[i]} \big( \vec{\theta}^{[i]} - \vec{\mu}^\mathrm{new} \big) \big( \vec{\theta}^{[i]} - \vec{\mu}^\mathrm{new} \big)^T
+				\mat{\Sigma}_{k + 1} = \frac{1}{W} \sum_{i = 1}^{N} w^{[i]} \big( \vec{\theta}^{[i]} - \vec{\mu}_{k + 1} \big) \big( \vec{\theta}^{[i]} - \vec{\mu}_{k + 1} \big)^T
 			\end{align*}
 			with \( W \coloneqq \sum_{i = 1}^{N} w^{[i]} \). Closed-form solutions also exist for more complicated policies like Gaussian mixture models and Gaussian processes. With closed-form solutions, no learning rates are needed!
 
@@ -2653,11 +2655,11 @@
 		% end
 
 		\subsection{Relative Entropy Policy Search (REPS)}
-			Choosing the next policy inherently requires choosing a got step size. A too low step size would converge too slow and a too high step size would directly jump to a single sample and does not explore enough. This is a variant of the exploration-exploitation tradeoff. As for vanilla policy gradients, this can again be addressed using a metric to control the jump in the policy. The metric of choice for \emph{relative entropy policy search} (REPS) is, as obvious from the name, the KL divergence
+			Choosing the next policy inherently requires choosing a got temperature \(\beta\). A too low temperature would converge too slow and a too high temperature would directly jump to a single sample and does not explore enough. This is a variant of the exploration-exploitation tradeoff. As for vanilla policy gradients, this can again be addressed using a metric to control the jump in the policy. The metric of choice for \emph{relative entropy policy search} (REPS) is, as obvious from the name, the KL divergence
 			\begin{equation*}
 				D_\mathrm{KL}\big( \pi(\vec{\theta}) \,\Vert\, q(\vec{\theta}) \big) \leq \epsilon
 			\end{equation*}
-			constraining the information loss between the new policy \(\pi(\vec{\theta})\) and the old policy \(q(\vec{\theta})\) to be at most \(\epsilon\). The REPS optimization problem is:
+			constraining the information loss between the new policy\footnote{Note REPS does not assume the policy to be parametric. In the following, an upper-level policy is optimized, but it is also possible to directly optimize a policy that produces actions dependent on states. See Peters, Mülling, Altün: "Relative Entropy Policy Search" (2010).} \(\pi(\vec{\theta})\) and the old policy \(q(\vec{\theta})\) to be at most \(\epsilon\). The REPS optimization problem is:
 			\begin{equation}
 				\begin{aligned}
 					\max_\pi \,& \int\! \pi(\vec{\theta}) R(\vec{\theta}) \dd{\vec{\theta}} \\
@@ -2902,7 +2904,47 @@
 	\section{Wrap-Up}
 		Policy search is a powerful and practical alternative to value function and model-based methods as learning a model is really hard and a small error in either the model or the value function can have catastrophic consequences. Policy search gradients have been the go-to methods for policy search for a long time, but they still need lots of samples and the learning rate has to be tuned (learning the learning rate is still an open problem). Newer methods are probabilistic policy search methods.
 
-		They reduce the policy update to a weighted maximum likelihood estimate of the policy (this works best for parametric policies). The weights are calculated using an exponential transformation with a temperature \(\beta\). This temperature has to be hand-tuned when using plain weighted ML estimates. The REPS algorithm optimizes the temperature by imposing an upper bound on the KL divergence of the new and old policy. Various extensions of REPS have been discussed like contextual REPS, HiREPS and Sequential REPS.
+		They reduce the policy update to a weighted maximum likelihood estimate of the policy parameters. The weights are calculated using an exponential transformation with a temperature \(\beta\). This temperature has to be hand-tuned when using plain weighted ML estimates. The REPS algorithm optimizes the temperature by imposing an upper bound on the KL divergence of the new and old policy. Various extensions of REPS have been discussed like contextual REPS, HiREPS and Sequential REPS.
+
+
+		For a comparison with the other discussed reinforcement learning methods (model-based, see \autoref{c:modelBasedRL} and value function, see \autoref{c:valueFunctionMethods}), the following list gives an overview over the main benefits and drawbacks of \emph{episode-based policy search methods}:
+		\begin{description}
+			\item[Model Complexity] None (no approximation errors)
+				\begin{itemize}
+					\item Need to evaluate total reward \( R \).
+				\end{itemize}
+			\item[Scalability] Good
+				\begin{itemize}
+					\item Parameterized policies are compact.
+					\item Also allows learning for high-dimensional robots.
+					\item Only works for a moderate amount of parameter.
+				\end{itemize}
+			\item[Data Efficiency] Poor
+				\begin{itemize}
+					\item Each rollout is just one sample.
+					\item High variance in rewards for stochastic environments.
+				\end{itemize}
+			\item[Other Limitations] Mainly used for learning single trajectories (e.g. DMPs).
+		\end{description}
+		And for \emph{step-based policy search}:
+		\begin{description}
+			\item[Model Complexity] None (no approximation errors)
+				\begin{itemize}
+					\item Need to evaluate reward to come \( Q_t \).
+				\end{itemize}
+			\item[Scalability] Good
+				\begin{itemize}
+					\item Parameterized policies are compact.
+					\item Also allows learning for high-dimensional robots.
+					\item Only works for a moderate amount of parameter.
+				\end{itemize}
+			\item[Data Efficiency] Poor
+				\begin{itemize}
+					\item Uses every state-action pair with reward to come.
+					\item High variance in reward to come.
+				\end{itemize}
+			\item[Other Limitations] Mainly used for learning single trajectories (e.g. DMPs).
+		\end{description}
 	% end
 % end
 

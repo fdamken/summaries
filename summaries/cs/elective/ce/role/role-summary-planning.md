@@ -2,23 +2,23 @@
 
 ## Slides
 
-Done/Structured/Total: 0/1160/1160; 0%/100%/100%
+Done/Structured/Total: 388/1160/1160; 33%/100%/100%
 
 * [x] Chapter  1 : Introduction (47); Core
-* [x] Chapter  2 : Robotics in a Nutshell (112); Core
-* [x] Chapter  3a: Optimal Control; Discrete State-Action (43); Core
-* [x] Chapter  3b: Optimal Control; Continuous State-Action (60); Core
+* [X] Chapter  2 : Robotics in a Nutshell (112); Core
+* [X] Chapter  3a: Optimal Control; Discrete State-Action (43); Core
+* [X] Chapter  3b: Optimal Control; Continuous State-Action (60); Core
 * [x] Chapter  4a: Approximate Optimal Control; Differential Dynamic Programming (31); Wider
 * [x] Chapter  4b: Approximate Optimal Control; Approximate Dynamic Programming (29); Wider
 * [–] Chapter  5a: Machine Learning; Probabilistic Graphical Models (67); Advanced (**Dropped**)
 * [x] Chapter  5b: Machine Learning; Foundations (140); Core
 * [x] Chapter  5c: Machine Learning; Neural Networks (96); Wider
 * [x] Chapter  6 : State Estimation (64); Advanced
-* [x] Chapter  7 : Model Learning (66); Wider
-* [x] Chapter  8 : Policy Models, Movement Primitives (65); Core
+* [X] Chapter  7 : Model Learning (66); Wider
+* [X] Chapter  8 : Policy Models, Movement Primitives (65); Core
 * [x] Chapter  9 : Model-Based Reinforcement Learning (59); Wider
 * [x] Chapter 10 : Policy Gradient Methods (59); Core
-* [x] Chapter 11 : Value Function Methods (42); Core
+* [X] Chapter 11 : Value Function Methods (42); Core
 * [x] Chapter 12 : Probabilistic Policy Search (66); Core
 * [x] Chapter 13 : Imitation Learning, Behavioral Cloning and Inverse RL (96); Core
 * [x] Chapter 14 : Bayesian Reinforcement Learning (54); Advanced

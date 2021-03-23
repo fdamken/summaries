@@ -40,9 +40,13 @@
 	% end
 
 	\section{Kullback-Leibler Divergence} % 10.36, 10.37, 10.38
+		\label{sec:klDivergence}
+
 		\todo{Content}
 
 		\subsection{Fisher Information Matrix} % 10.39, 10.40
+			\label{subsec:fisherInformationMatrix}
+
 			\todo{Content}
 		% end
 	% end
@@ -2291,87 +2295,281 @@
 	% end
 % end
 
-\chapter{Policy Search} % N/A
+\chapter{Policy Search Methods}
 	\label{c:policySearch}
 
-	\todo{Content}
+	This chapter covers \emph{policy search methods} which do not use value functions or similar as a intermediate step for finding an optimal policy but rather search the policy directly. This is motivated by the problems that arise with value function methods as they do not handle continuous actions well (due to the required maximization of the Q-function) and the amount of samples needed grows exponentially with the dimensionality of the state-space. Also, an error in the value function propagates and arbitrarily distorts the policy update. Many of these problems can be fixed by using parametric policies and policy search, i.e. finding the policy directly instead of using a value function. The policies are improved upon demonstrations and it is even possible to use task-appropriate policies or to train on the real system.
 
-	\section{Categorization of Policy Search} % 10.6, 10.7, 10.8
-		\todo{Content}
+	\section{Categorization of Policy Search}
+		In value-based methods, the action to execute is often chosen using an \(\epsilon\)-greedy of soft-max approach, both requiring to either maximize w.r.t. or sum over the actions, both of which is difficult for continuous state spaces. Policy search methods instead use parameterized policies for action selection, for example Gaussian policies
+		\begin{equation*}
+			\pi(\vec{a} \given \vec{s}; \vec{\theta}) = \mathcal{N}(\vec{a} \given \vec{f}_{\vec{w}}(\vec{s}),\, \sigma^2 \mat{I}),\quad \vec{\theta} = \{ \vec{w}, \sigma^2 \}
+		\end{equation*}
+		with a learnable mean function \( \vec{f}_{\vec{w}}(\vec{s}) \). The problem if policy search not is to find parameters \( \vec{\theta} \) that constitute a good policy. Model-free approaches can be broken down into three main steps:
+		\begin{enumerate}
+			\item \eqmakebox[modelFreePolicySearch][l]{Exploration:} Sample trajectories \( \vec{\tau}^{[i]} \) following the current policy \( \pi_k \).
+			\item \eqmakebox[modelFreePolicySearch][l]{Policy Evaluation:} Asses the quality of the trajectories, either \emph{step-based} or \emph{episode-based}.
+			\item \eqmakebox[modelFreePolicySearch][l]{Policy Improvement:} Compute the next policy \( \pi_{k + 1} \) from the trajectories and evaluations.
+			\item If not converged, go to 1.
+		\end{enumerate}
+		There are two types of policy evaluation: \emph{step-based} and \emph{episode-based}, which will be explained further in the following sections.
 
-		\subsection{Episode- vs. Step-Based Evaluation} % 10.9, 10.10, 10.11
-			\todo{Content}
+		\subsection{Episode-Based Policy Search}
+			\label{subsec:episodeBasedPolicySearch}
+
+			In \emph{episode-based} policy evaluation, the quality of parameters \( \vec{\theta}^{[i]} \) is directly assessed using the (undiscounted) total reward
+			\begin{equation*}
+				R^{[i]} = \sum_{t = 1}^{T} r_t^{[i]}.
+			\end{equation*}
+			The data for the policy update is
+			\begin{equation*}
+				\mathcal{D} = \Big\{ \vec{\theta}^{[i]}, R^{[i]} \Big\}_{i \,=\, \subdotsrange{1}{N}}.
+			\end{equation*}
+			This but causes a high variance in \( R^{[i]} \) as it is the sum of \(T\) random variables, but works well for a moderate amount of parameters. Other properties of the episode-based strategy are:
+			\begin{itemize}
+				\item Explores in the parameter space (the data to learn from contains the parameters).
+				\item Allows more sophisticated exploration strategies.
+				\item Often efficient for a small amount of parameters.
+				\item Generalization and multi-task learning, e.g. for policies like DMPs.
+				\item Structure-less black-box optimization of the policy.
+			\end{itemize}
+
+			For episodic policy search, an upper-level policy \( \pi(\vec{\theta}; \vec{\omega}) \) over the parameters of the low-level control policy \( \pi(\vec{a} \given \vec{s}; \vec{\theta}) \) is learned. This can, for example, be a Gaussian \( \pi(\vec{\theta}; \vec{\omega}) = \mathcal{N}(\vec{\theta} \given \vec{\mu}, \mat{\Sigma}) \) with the parameters \( \vec{\omega} = \{ \vec{\mu}, \mat{\Sigma} \} \). To reduce the variance in the returns, the upper-level policy is often chosen to be deterministic. Then a policy \( \pi(\vec{\theta}; \vec{\omega}) \) is searched that maximizes the expected reward
+			\begin{equation}
+				J(\vec{\omega})
+					= \E_{\pi(\vec{\theta}; \vec{\omega})}\big[ R_{\vec{\theta}} \big]
+					= \int\! \pi(\vec{\theta}; \vec{\omega}) R_{\vec{\theta}} \dd{\vec{\theta}}  \label{eq:upperLevelReward}
+			\end{equation}
+			with the expected long-term reward
+			\begin{equation*}
+				R_{\vec{\theta}} = \E_{p, \pi}\Bigg[ \sum_{t = 1}^{T} r_t \Bigggiven \vec{\theta} \Bigg].
+			\end{equation*}
+			The exploration is encoded in the upper-level policy \( \pi(\vec{\theta}; \vec{\omega}) \) from which parameters are sampled to generate the trajectories in the exploration step of policy search.
 		% end
 
-		\subsection{Epsiode-Based Policy Search} % 10.12, 10.13, 10.14
-			\todo{Content}
+		\subsection{Step-Based Policy Search}
+			In \emph{step-based} policy evaluation, the quality of single state-action pairs is assessed using the (undiscounted) reward to come
+			\begin{equation}
+			Q_t^{[i]} = \sum_{\tau = r}^{T} r_\tau^{[i]}.  \label{eq:policyGradientRewardToCome}
+			\end{equation}
+			The data for the policy update is
+			\begin{equation*}
+			\mathcal{D} = \Big\{ \vec{s}_t^{[i]}, \vec{a}_t^{[i]}, Q_t^{[i]} \Big\}_{t \,=\, \subdotsrange{1}{T}}^{i \,=\, \subdotsrange{1}{N}}.
+			\end{equation*}
+			This causes less variance in \( Q_t^{[i]} \) as it is the sum of only \( T - t + 1 \) random variables. Other properties of the step-based strategy are:
+			\begin{itemize}
+				\item Explores in the action space (the data to learn from contains the actions).
+				\item Less variance in the quality assessment compared to episode-based evaluation.
+				\item More data points to fit the policy (one for each time step and episode).
+				\item Less likely to create unstable policies.
+				\item Uses the structure of the RL problem.
+				\item Decomposed into single time steps.
+			\end{itemize}
+
+			For step-based policy search, the lower-level policy \( \pi(\vec{a} \given \vec{s}; \vec{\theta}) \) is learned directly. This is done by maximizing the expected reward
+			\begin{equation}
+				J(\vec{\theta})
+					= \E_{p(\vec{\tau}; \vec{\theta})}\big[ R_{\vec{\tau}} \big]
+					= \int\! p(\vec{\tau}; \vec{\theta}) R_{\vec{\tau}} \dd{\vec{\tau}}  \label{eq:policyGradientStepBasedObjective}
+			\end{equation}
+			with the trajectory distribution
+			\begin{equation}
+				p(\vec{\tau}; \vec{\theta}) = p(\vec{s}_1) \prod_{t = 1}^{T - 1} p(\vec{s}_{t + 1} \given \vec{s}_t, \vec{a}_t) \pi(\vec{a}_t \given \vec{s}_t; \vec{\theta})  \label{eq:policyGradientTrajectoryDistribution}
+			\end{equation}
+			and the return for a single trajectory \( R_{\vec{\tau}} = \sum_{t = 1}^{T} r_t \). The exploration has to be encoded directly into the lower-level policy \( \pi(\vec{a} \given \vec{s}; \vec{\theta}) \) in contrast to episode-based policy search.
 		% end
 
-		\subsection{Exploration vs. Exploitation} % 10.15, 10.16, 10.17, 10.18, 10.19
-			\todo{Content}
+		\subsection{Exploration vs. Exploitation}
+			The exploration vs. exploitation tradeoff describes the tradeoff between continuing to explore in the next iteration (exploration) and maximizing the reward on the existing samples (exploitation). The fundamental question for policy search is how to control this tradeoff. This requires a quantification of the difference of two policies which will be discussed in more detail in \autoref{subsec:policySearchMetrics}. Usually this leads to limiting the distance between two subsequent policies for the policy update as greedy updates
+			\begin{equation*}
+				\vec{\theta}^\mathrm{new} = \arg\max_{\tilde{\vec{\theta}}} \, \E_{p, \pi_{\tilde{\vec{\theta}}}}\big[ Q^\pi(\vec{s}, \vec{a}) \big]
+			\end{equation*}
+			will usually lead to an unstable learning process with large jumps.
 		% end
 	% end
 
-	\section{Policy Gradient Methods} % 10.1, 10.2, 10.5
-		\todo{Content}
+	\section{Policy Gradient Methods}
+		This section covers \emph{policy gradient methods}, a class of policy search methods that use the gradient of the expected long-term reward w.r.t. parameters for updating the policy. The first subsection focuses on plain gradient methods and the second covers more sophisticated methods using relative entropy and natural gradients.
 
-		\subsection{Policy Gradients} % 10.20, 10.21
-			\todo{Content}
+		\subsection{Policy Gradients}
+			The basic idea of policy gradients is to optimize the policy in a gradient descent-fashion using an estimate of the gradient \( \grad_{\!\vec{\theta}} J(\vec{\theta}) \) of the expected long-term reward. This splits policy gradient methods into two steps: computing the gradient and subsequently improving the policy.
 
-			\subsubsection{Gradient Computation} % N/A
-				\todo{Content}
+			\subsubsection{Gradient Computation}
+				Computing (and approximating) the gradient \( \grad_{\!\vec{\theta}} J(\vec{\theta}) \) is an important part of policy gradient methods. This section covers two methods of computing the gradient: finite differences and likelihood ratio gradients. Additionally, baselines are introduces that reduce the variance in the gradient to improve learning.
 
-				\paragraph{Finite Differences} % 10.22
-					\todo{Content}
+				\paragraph{Finite Differences}
+					Finite difference gradient approximation is the most straightforward way of approximating the derivative using a first-order Taylor approximation around \(\vec{\theta}\):
+					\begin{align*}
+						&&
+						J(\vec{\theta} + \vec{\delta}_\theta) &\approx J(\vec{\theta}) + \pdv{J(\vec{\theta})}{\vec{\theta}} \vec{\delta}_\theta & \\
+						\iff &&
+						\pdv{J(\vec{\theta})}{\vec{\theta}} \vec{\delta}_\theta &\approx J(\vec{\theta} + \vec{\delta}_\theta) - J(\vec{\theta}) & \\
+						\iff &&
+						\pdv{J(\vec{\theta})}{\vec{\theta}} \vec{\delta}_\theta \vec{\delta}_\theta^T &\approx \vec{\delta}_\theta^T \big( J(\vec{\theta} + \vec{\delta}_\theta) - J(\vec{\theta}) \big) & \\
+						\iff &&
+						\pdv{J(\vec{\theta})}{\vec{\theta}} &\approx \vec{\delta}_\theta^T \big( \vec{\delta}_\theta \vec{\delta}_\theta^T \big)^{-1} \big( J(\vec{\theta} + \vec{\delta}_\theta) - J(\vec{\theta}) \big) &
+					\end{align*}
+					This can be used to update a single parameter estimate, e.g. the mean. A large class of algorithms uses this technique: Kiefer-Wolfowitz Procedure, Robbins-Monroe, Simultaneous Perturbation Stochastic Approximation (SPSA), Random Search, \dots
 				% end
 
-				\paragraph{Likelihood Policy Gradients} % 10.23
-					\todo{Content}
+				\paragraph{Episode-Based Likelihood Ratio Gradient}
+					For an upper-level policy \( \pi(\vec{\theta}; \vec{\omega}) \) and the expected long-term reward \( R_{\vec{\theta}} \) for a single \(\vec{\theta}\), it is possible to approximate the gradient of the expected reward \eqref{eq:upperLevelReward} using the log-ratio trick. That is, for an arbitrary function \( f(\vec{x}) \), the following holds:
+					\begin{equation*}
+						\grad_{\!\vec{x}} \ln f(\vec{x}) = \frac{1}{f(\vec{x})} \grad_{\!\vec{x}} f(\vec{x}) \quad\implies\quad \grad_{\!\vec{x}} f(\vec{x}) = f(\vec{x}) \grad_{\!\vec{x}} \ln f(\vec{x})
+					\end{equation*}
+					BY applied this to the gradient of the expected return, the gradient turns into an expectation that can be approximated using Monte-Carlo integration
+					\begin{align}
+						\grad_{\!\vec{\omega}} J(\vec{\omega})
+							&= \grad_{\!\vec{\omega}} \!\int\! \pi(\vec{\theta}; \vec{\omega}) R_{\vec{\theta}} \dd{\vec{\theta}}
+							 = \int\! \grad_{\!\vec{\omega}} \pi(\vec{\theta}; \vec{\omega}) R_{\vec{\theta}} \dd{\vec{\theta}}  \nonumber \\
+							&= \int\! \pi(\vec{\theta}; \vec{\omega}) R_{\vec{\theta}} \grad_{\!\vec{\omega}} \ln \pi(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}}  \nonumber \\
+							&\approx \frac{1}{N} \sum_{i = 1}^{N} R^{[i]} \, \grad_{\!\vec{\omega}} \ln \pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big) \eqqcolon \grad_{\!\vec{\omega}}^\mathrm{MC} J(\vec{\omega})  \label{eq:episodicPolicyGradientGradient}
+					\end{align}
+					with \(N\) samples \( \vec{\theta}^{[i]} \sim \pi(\cdot; \vec{\omega}) \) and the respective rewards \( R^{[i]} \coloneqq R_{\vec{\theta}^{[i]}} \). This gradient is called the \emph{Parameter Exploring Policy Gradient} (PGPE). The log-ratio trick is needed and Monte-Carlo estimation can not directly be applied to the expectation as that would require differentiation of the sampling which is not possible.
 				% end
 
-				\paragraph{Baselines} % 10.24
-					\todo{Content}
+				\paragraph{Step-Based Likelihood Ratio Policy Gradient}
+					As mentioned in \autoref{subsec:episodeBasedPolicySearch}, the total undiscounted reward \( R_{\vec{\theta}} \) in episode-based evaluation exhibits a very high variance. This variance can be reduced by using step-based evaluation and the reward to come \( Q_t^{[i]} \) as defined in \eqref{eq:policyGradientRewardToCome} instead. This requires maximizing the expected reward \( J(\vec{\theta}) \) as defined in \eqref{eq:policyGradientStepBasedObjective} instead as step-based policy gradient methods to not work with upper- and lower-level policies but rather optimize the policy \( \pi(\vec{a} \given \vec{s}; \vec{\theta}) \) directly. By again using the log-ratio trick, the gradient \( \grad_{\!\vec{\theta}} J(\vec{\theta}) \) can be approximated as
+					\begin{align}
+						\grad_{\!\vec{\theta}} J(\vec{\theta})
+							&= \grad_{\!\vec{\theta}} \!\int\! p(\vec{\tau}; \vec{\theta}) R_{\vec{\tau}} \dd{\vec{\tau}}
+							 = \int\! \grad_{\!\vec{\theta}} p(\vec{\tau}; \vec{\theta}) R_{\vec{\tau}} \dd{\vec{\tau}}  \nonumber \\
+							&= \int\! p(\vec{\tau}; \vec{\theta}) R_{\vec{\tau}} \grad_{\!\vec{\theta}} \ln p(\vec{\tau}; \vec{\theta}) \dd{\vec{\tau}}  \nonumber \\
+							&\approx \frac{1}{N} \sum_{i = 1}^{N} R^{[i]} \grad_{\!\vec{\theta}} \ln p\big(\vec{\tau}^{[i]}; \vec{\theta}\big) \eqqcolon \grad_{\!\vec{\omega}}^\mathrm{MC} J(\vec{\omega})  \label{eq:policyGradientStepBasedMonteCarlo}
+					\end{align}
+					with the trajectory distribution \( p(\vec{\tau}; \vec{\theta}) \) and \(N\) samples \( \vec{\tau}^{[i]} \sim p(\cdot; \vec{\theta}) \) and the respective rewards \( R^{[i]} \coloneqq R_{\vec{\tau}^{[i]}} \). What remains is to calculate the gradient of logarithm of the trajectory distribution. Applying the logarithm to the distribution \eqref{eq:policyGradientTrajectoryDistribution} yields
+					\begin{equation*}
+						\ln p(\vec{\tau}; \vec{\theta}) = \sum_{t = 1}^{T - 1} \ln \pi(\vec{a}_t \given \vec{s}_t; \vec{\theta}) + \underbrace{\ln p(\vec{s}_1) + \sum_{t = 1}^{T - 1} \ln p(\vec{s}_{t + 1} \given \vec{s}_t, \vec{a}_t)}_{\text{Constant}}
+					\end{equation*}
+					where the last terms are constant w.r.t. \(\vec{\theta}\). Hence, these terms vanish when taking the gradient w.r.t. \(\vec{\theta}\). Plugging this result into the Monte-Carlo approximation \eqref{eq:policyGradientStepBasedMonteCarlo} yields
+					\begin{equation*}
+						\grad_{\!\vec{\omega}}^\mathrm{MC} J(\vec{\omega})
+							= \frac{1}{N} \sum_{i = 1}^{N} \sum_{t = 1}^{T - 1} R^{[i]} \, \grad_{\!\vec{\theta}} \ln \pi\big(\vec{a}_t^{[i]} \Biggiven \vec{s}_t^{[i]}; \vec{\theta}\big)
+					\end{equation*}
+					which is called the REINFORCE algorithm. But this still used the total rewards with high variance! As the rewards in the past are not correlated with the actions in the future, i.e.
+					\begin{equation*}
+						\E_{p(\vec{\tau})}\big[ r_t \grad_{\!\vec{\theta}} \ln \pi(\vec{a}_h \given \vec{s}_h; \vec{\theta}) \big]
+							\,\oversetfootnotemark{=}\, \E_{p(\vec{\tau})}[r_t] \, \underbrace{\E_{p(\vec{\tau}; \vec{\theta})}\big[ \grad_{\!\vec{\theta}} \ln \pi(\vec{a}_h \given \vec{s}_h; \vec{\theta}) \big]}_{\mathclap{=\, \grad_{\!\vec{\theta}} \E_{p(\vec{\tau}; \vec{\theta})}[1] \,=\, \grad_{\!\vec{\theta}} 1 \,=\, 0}}
+							= 0
+					\end{equation*}
+					holds for all \( h > t \), replacing the total reward with the reward to come only scales the gradient. This is called the \emph{policy gradient theorem}. The result gradient then is
+					\begin{equation*}
+						\grad_{\!\vec{\omega}}^\mathrm{MC} J(\vec{\omega})
+							\propto \grad_{\!\vec{\theta}}^\mathrm{PG} J(\vec{\theta})
+							= \frac{1}{N} \sum_{i = 1}^{N} \sum_{t = 1}^{T - 1} Q_t^{[i]} \, \grad_{\!\vec{\theta}} \ln \pi\big(\vec{a}_t^{[i]} \Biggiven \vec{s}_t^{[i]}; \vec{\theta}\big).
+					\end{equation*}
+
+					\footnotetext{As \(r_t\) and \(\vec{a}_h\) are independent for \(h > t\).}
 				% end
-			% end
 
-			\subsubsection{Step-Based Policy Gradient Methods} % 10.25, 10.26
-				\todo{Content}
-
-				\paragraph{Likelihood Ratio Gradient} % 10.27, 10.28
-					\todo{Content}
+				\paragraph{Baselines}
+					A big problem with likelihood ratio policy gradients is that they exhibit a high variance. But this variance can be reduced by subtracting a baseline \(b_i\) from the reward:
+					\begin{equation}
+						\grad_{\!\vec{\omega}}^\mathrm{MC} J(\vec{\omega})
+							= \frac{1}{N} \sum_{i = 1}^{N} \big(R^{[i]} - b^{[i]}\big) \grad_{\!\vec{\omega}} \ln \pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big)  \label{eq:policyGradientWithBaseline}
+					\end{equation}
+					If the baseline is good, this trick can lower the variance of the estimate. It is still an unbiased estimator as the expectation of the baseline \(b\) vanishes:
+					\begin{align*}
+						\E_{p(\vec{\theta}; \vec{\omega})}\big[ \grad_{\!\vec{\omega}} \ln p(\vec{\theta}; \vec{\omega}) b \big]
+							&= \int\! p(\vec{\theta}; \vec{\omega}) \grad_{\!\vec{\omega}} \ln p(\vec{\theta}; \vec{\omega}) b \dd{\vec{\theta}}
+							 = b \int\! p(\vec{\theta}; \vec{\omega}) \grad_{\!\vec{\omega}} \ln p(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}} \\
+							&= b \int\! \grad_{\!\vec{\omega}} p(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}}
+							 = b \grad_{\!\vec{\omega}} \!\int\!  p(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}}
+							 = b \grad_{\!\vec{\omega}} 1
+							 = b \cdot 0
+							 = 0
+					\end{align*}
+					A usually good baseline is the average reward, but there also exists an optimal baseline for each algorithm that minimizes the variance of the gradient estimate. The principle of subtracting baselines can analogously be applied to step-based gradients
+					\begin{equation*}
+						\grad_{\!\vec{\theta}}^\mathrm{PG} J(\vec{\theta})
+							= \frac{1}{N} \sum_{i = 1}^{N} \sum_{t = 1}^{T - 1} \big( Q_t^{[i]} - b_i\big(\vec{s}_t^{[i]}\big) \!\big) \grad_{\!\vec{\theta}} \ln \pi\big(\vec{a}_t^{[i]} \given \vec{s}_t^{[i]}; \vec{\theta}\big).
+					\end{equation*}
+					where the baseline might even vary with the state. As long as the baseline does not change with the action, the expectation vanishes and the estimator is unbiased.
 				% end
-
-				\paragraph{Using the Rewards to Come} % 10.29
-					\todo{Content}
-				% end
-			% end
-
-			\subsubsection{Choosing the Step Size, Metrics in Standard Gradients} % 10.30, 10.31, 10.32, 10.33
-				\todo{Content}
 			% end
 		% end
 
-		\subsection{Relative Entropy and Natural Gradient} % 10.34, 10.35, 10.41, 10.42, 10.43
-			\todo{Content}
+		\subsection{Step Sizes, Metrics, Relative Entropy and Natural Gradient} % 10.34, 10.35, 10.41, 10.42, 10.43
+			\label{subsec:policySearchMetrics}
 
-			\subsubsection{Computing the Natural Gradient} % N/A
-				\todo{Content}
+			An important factor when using policy gradient methods is the step size \(\alpha\) in the policy update
+			\begin{align*}
+				\vec{\omega}_{k + 1} = \vec{\omega}_k + \alpha \grad_{\!\vec{\omega}} J(\vec{\omega})
+				&&
+				\vec{\theta}_{k + 1} = \vec{\theta}_k + \alpha \grad_{\!\vec{\theta}} J(\vec{\theta})
+			\end{align*}
+			for episode- or step-based evaluation, respectively. The simplest (naive) idea is to constrain the policy update using a distance metric in the parameter space, for example the Euclidean distance \( L_2(\pi_{k + 1}, \pi_k) \) defined as
+			\begin{align*}
+				L_2(\pi_{k + 1}, \pi_k) \coloneqq \lVert \vec{\omega}_{k + 1} - \vec{\omega}_k \rVert
+				&&
+				L_2(\pi_{k + 1}, \pi_k) \coloneqq \lVert \vec{\theta}_{k + 1} - \vec{\theta}_k \rVert
+			\end{align*}
+			for the episode- and step-based evaluation, respectively. With a constraint
+			\begin{equation*}
+				L_2(\pi_{k + 1}, \pi_k) \leq \epsilon
+			\end{equation*}
+			on the policy update, the step size is given as \( \alpha_k = \lVert \grad{J} \rVert^{-1} \epsilon \). But the Euclidean metric has the big problem if not being invariant to scaling of the variables! Take for example the policy \( \pi(a \given \vec{s}; \vec{\theta}) = \mathcal{N}(a \given \vec{s}^T \vec{\theta}, \sigma^2) \) with \( \vec{s} \in [0, 1] \times [0, 1000] \) and the different parameters \( \vec{\theta}_1 = [1, 1]^T \), \( \vec{\theta}_2 = [1.1, 1]^T \) and \( \vec{\theta}_3 = [1, 1.1] \). Then the distances \( \lVert \vec{\theta}_1 - \vec{\theta}_2 \rVert \) and \( \lVert \vec{\theta}_1 - \vec{\theta}_3 \rVert \) are equivalent, but the policies \( \pi(a \given \vec{s}; \vec{\theta}_1) \) and \( \pi(a \given \vec{s}; \vec{\theta}_2) \) are less different than \( \pi(a \given \vec{s}; \vec{\theta}_1) \) and \( \pi(a \given \vec{s}; \vec{\theta}_3) \) due to the different scaling in \(\vec{s}\).
 
-				\paragraph{Episode-Based} % 10.44
-					\todo{Content}
-				% end
+			Hence, a metric that is invariant to transformations of the parameters would be better. Let \(\mat{M}\) be a matrix that captures the "influence" of the parameters of the policy, then \(\mat{M}\) can be used to defined a new metric that incorporates this influence:
+			\begin{equation*}
+				L_M(\pi_{k + 1}, \pi_k) \coloneqq (\vec{\theta}_{k + 1} - \vec{\theta}_k)^T \mat{M} (\vec{\theta}_{k + 1} - \vec{\theta}_k)
+			\end{equation*}
+			By choosing a good matrix \(\mat{M}\), different influence like in the example above can be captured. Using this metric can be incorporated into the gradient ascent with a separate optimization problem for the ascent direction \( \vec{\delta}_\theta \):
+			\begin{equation}
+				\begin{aligned}
+					\vec{\delta}_\theta^\ast = \arg\max_{\vec{\delta}_\theta} \,& \big( \grad_{\!\vec{\theta}} J(\vec{\theta}) \big)^T \vec{\delta}_\theta \\
+					\mathrm{s.t.} \quad&
+						\begin{aligned}[t]
+							\vec{\delta}_\theta^T \mat{M} \vec{\delta}_\theta & \leq \epsilon
+						\end{aligned}
+				\end{aligned}  \label{eq:policyGradientAscentOpt}
+			\end{equation}
+			This optimization problem encodes that the actual ascent direction should stay as close as possible to the steepest ascent direction, i.e. the gradient, but should not create jumps in the policy. The solution to this optimization problem is
+			\begin{equation*}
+				\vec{\delta}_\theta^\ast = \lambda \mat{M}^{-1} \grad_{\!\vec{\theta}} J(\vec{\theta}) \propto \mat{M}^{-1} \grad_{\!\vec{\theta}} J(\vec{\theta})
+			\end{equation*}
+			with the Lagrangian multiplier \(\lambda\).
 
-				\paragraph{Step-Based} % 10.45
-					\todo{Content}
+			\subsubsection{Relative Entropy and Natural Gradient}
+				An alternative way of measuring the distance between two policies is to use the "distance" of the distributions. A well-known measure for this is \emph{relative entropy}, also known as the Kullback-Leibler divergence
+				\begin{equation*}
+					D_\mathrm{KL}(p \Vert q) = \int\! p(\vec{x}) \ln \frac{p(\vec{x})}{q(\vec{x})} \dd{\vec{x}}
+				\end{equation*}
+				introduced in \autoref{sec:klDivergence}. An important property of the KL divergence is that is that the distance of two parametric distributions \( p_{\vec{\theta} + \vec{\delta}_\theta} \) and \( p_{\vec{\theta}} \) can be approximated by
+				\begin{equation*}
+					D_\mathrm{KL}(p_{\vec{\theta} + \vec{\delta}_\theta} \Vert p_{\vec{\theta}}) \approx \vec{\delta}_\theta^T \mat{G}(\vec{\theta}) \vec{\delta}_\theta
+				\end{equation*}
+				with the Fisher information matrix \( \mat{G}(\vec{\theta}) \) (see \autoref{subsec:fisherInformationMatrix} for a thorough introduction). The \emph{natural gradient} uses the fisher information matrix as a metric, i.e. \( \mat{M} = \mat{G}(\vec{\theta}) \), in the optimization problem \eqref{eq:policyGradientAscentOpt}. As every parameter has the same influence under this metric, the natural gradient is invariant to linear transformations of the parameter space! The ascent direction computed with this optimization problem corresponds to the steepest ascent in the policy space and not in the parameter space, hence the name \emph{natural gradient}. It also guarantees converges to a local minimum!
+
+				\paragraph{Computing the Natural Gradient}
+					In the episode-based setting, it is easy to introduce the natural Gradient if the upper-level policy is a Gaussian. First the gradient \( \grad_{\!\vec{\omega}}^\mathrm{MC} J(\vec{\omega}) \) and subsequently the natural gradient \( \grad_{\!\vec{\omega}}^\mathrm{NG} J(\vec{\omega}) = \mat{G}^{-1}(\vec{\omega}) \grad_{\!\vec{\omega}} J(\vec{\omega}) \) is computed, where the latter can be done in closed form for Gaussians. The natural gradient is then used for updating the parameters
+					\begin{equation*}
+						\vec{\omega}_{k + 1} = \vec{\omega}_k + \eta \grad_{\!\vec{\omega}}^\mathrm{NG} J(\vec{\omega})
+					\end{equation*}
+					with a step size \(\eta\). For the step-based setting, this is not so easy and will be covered in \autoref{subsubsec:compatibleFunctionApproximation}.
 				% end
 			% end
 
-			\subsubsection{Compatible Function Approximation} % 10.46, 10.47, 10.48
-				\todo{Content}
+			\subsubsection{Compatible Function Approximation} % 10.45, 10.46, 10.47, 10.48, 10.49, 10.50, 10.51
+				\label{subsubsec:compatibleFunctionApproximation}
 
-				\paragraph{Connection to Value Function Approximation} % 10.49, 10.50, 10.51
-					\todo{Content}
-				% end
+				For the step-based policy gradient with a baseline
+				\begin{equation*}
+					\grad_{\!\vec{\theta}}^\mathrm{PG} J(\vec{\theta})
+						= \frac{1}{N} \sum_{i = 1}^{N} \sum_{t = 1}^{T - 1} \big(Q_t^{[i]} - b_i\big(\vec{s}_t^{[i]}\big)\big) \grad_{\!\vec{\theta}} \ln \pi\big(\vec{a}_t^{[i]} \given \vec{s}_t^{[i]}; \vec{\theta}\big),
+				\end{equation*}
+				the gradient estimate can be improved by estimating the reward to come with a function approximator
+				\begin{equation*}
+					f_{\vec{w}}(\vec{s}, \vec{a}) = \vec{\psi}^T(\vec{s}, \vec{a}) \vec{w} \approx Q_t^{[i]} - b_i\big(\vec{s}_t^{[i]}\big).
+				\end{equation*}
+				This approximator works only on the states and actions and does not depend on the time step or the sample sequence. The function approximation (FA) gradient is
+				\begin{equation*}
+					\grad_{\!\vec{\theta}}^\mathrm{FA} J(\vec{\theta})
+						\coloneqq \frac{1}{N} \sum_{i = 1}^{N} \sum_{t = 1}^{T - 1} f_{\vec{w}}\big( \vec{s}_t^{[i]}, \vec{a}_t^{[i]} \big) \, \grad_{\!\vec{\theta}} \ln \pi\big(\vec{a}_t^{[i]} \given \vec{s}_t^{[i]}; \vec{\theta}\big),
+				\end{equation*}
+				which is still unbiased for the features \( \vec{\psi}(\vec{s}, \vec{a}) = \grad_{\!\vec{\theta}} \ln \pi(\vec{a} \given \vec{s}; \vec{\theta}) \).
+
+				\todo{Continue compatible function approximation!}
 
 				\paragraph{Episodic Natural Actor-Critic} % 10.52, 10.53, 10.54
 					\todo{Content}
@@ -2380,96 +2578,331 @@
 		% end
 	% end
 
-	\section{Probabilistic Policy Search} % 12.1, 12.2
-		\todo{Content}
+	\section{Probabilistic Policy Search}
+		\emph{Probabilistic policy search} (a subset of episodic policy search methods) addresses the problems of policy gradient methods, namely the high amount of samples that are needed and the fact that the learning rate still has to be tuned. It is based on the \emph{success matching principle} by Arrow, 1958: "When learning from a set of their own trials in iterated decision problems, humans attempt to match not the best taken action but the reward-weighted frequency of their actions and outcomes." This means that not only the reward, but also the frequency of this reward and the action is relevant. If a state is not very common, it might not be worth it to optimize the policy here.
 
-		\subsection{Success Matching Principle} % 12.5, 12.6, 12.7
-			\todo{Content}
-		% end
+		This idea can be formalized as \emph{episode-based success matching}. In each iteration \(k\), first sample parameters \( \vec{\theta}^{[i]} \sim \pi(\cdot) \) and evaluate them \( R^{[i]} = \sum_{t = 1}^{T} r_t^{[i]} \). Then somehow compute the \emph{success probability}
+		\begin{equation*}
+			w^{[i]} = f\big( R^{[i]} \big)
+		\end{equation*}
+		of each sample. This is essentially a transformation of the reward to a non-negative weight (an improper probability distribution). Next, compute the success-weighted policy
+		\begin{equation*}
+			p\big( \vec{\theta}^{[i]} \big) \propto w^{[i]} \pi\big( \vec{\theta}^{[i]}; \vec{\omega}_k \big)
+		\end{equation*}
+		of each sample. This is only a proportionality to indicate that the distribution has to be normalized. Finally, fit a new policy \( \pi^\mathrm{new}\big( \vec{\theta}^{[i]} \big) \) that best approximates \( p\big( \vec{\theta}^{[i]} \big) \). The two open issues in this algorithm are:
+		\begin{itemize}
+			\item how to compute \( w^{[i]} = f\big( R^{[i]} \big) \) and
+			\item how to fit the policy \( \pi^\mathrm{new}\big( \vec{\theta}^{[i]} \big) \).
+		\end{itemize}
 
-		\subsection{Weighted Maximum Likelihood} % 12.8, 12.9, 12.10, 12.11
-			\todo{Content}
+		\subsection{Policy Fitting by Weighted Maximum Likelihood}
+			A first idea to find the policy \( \pi^\mathrm{new}\big(\vec{\theta}^{[i]}\big) \) that best fits the distribution \( p\big(\vec{\theta}^{[i]}\big) \propto w^{[i]} \pi\big(\vec{\theta}^{[i]}\big) \big) \) is to minimize the KL divergence between the two:
+			\begin{align}
+				\pi^\mathrm{new}(\vec{\theta})
+					&= \arg\min_\pi\, D_\mathrm{KL}\big( p(\vec{\theta}) \Vert \pi(\vec{\theta}) \big)
+					 = \arg\min_\pi\, \int\! p(\vec{\theta}) \ln \frac{p(\vec{\theta})}{\pi(\vec{\theta})} \dd{\vec{\theta}}  \nonumber \\
+					&= \arg\min_\pi\, \underbrace{\int\! p(\vec{\theta}) \ln p(\vec{\theta}) \dd{\vec{\theta}}}_\text{constant w.r.t. \(\pi\)} - \int\! p(\vec{\theta}) \ln \pi(\vec{\theta}) \dd{\vec{\theta}}  \nonumber \\
+					&= \arg\max_\pi\, \int\! p(\vec{\theta}) \ln \pi(\vec{\theta}) \dd{\vec{\theta}}
+					 = \arg\max_\pi\, \int\! \pi(\vec{\theta}) \frac{p(\vec{\theta})}{\pi(\vec{\theta})} \ln \pi(\vec{\theta}) \dd{\vec{\theta}}  \nonumber \\
+					&\approx \arg\max_\pi\, \frac{1}{N} \sum_{i = 1}^{N} \underbrace{\frac{p\big(\vec{\theta}^{[i]}\big)}{\pi\big(\vec{\theta}^{[i]}\big)}}_{=\, w^{[i]}} \ln \pi\big(\vec{\theta}^{[i]}\big)
+					 = \arg\max_\pi\frac{1}{N} \sum_{i = 1}^{N} w^{[i]} \ln \pi\big(\vec{\theta}^{[i]}\big)  \label{eq:weightedMaxLikelihoodObjective}
+			\end{align}
+			This estimate of \( \pi^\mathrm{new}(\vec{\theta}) \) is called the \emph{weighted maximum likelihood estimate}. For a (parametric) Gaussian policy \( \pi(\vec{\theta}) = \pi(\vec{\theta}; \vec{\omega}) = \mathcal{N}(\vec{\theta} \given \vec{\mu}, \mat{\Sigma}) \) parameterized by \( \vec{\omega} = \{ \vec{\mu}, \mat{\Sigma} \} \), the estimates can be computed in closed form
+			\begin{align*}
+				\vec{\mu}^\mathrm{new} = \frac{1}{W} \sum_{i = 1}^{N} w^{[i]} \vec{\theta}^{[i]}
+				&&
+				\mat{\Sigma}^\mathrm{new} = \frac{1}{W} \sum_{i = 1}^{N} w^{[i]} \big( \vec{\theta}^{[i]} - \vec{\mu}^\mathrm{new} \big) \big( \vec{\theta}^{[i]} - \vec{\mu}^\mathrm{new} \big)^T
+			\end{align*}
+			with \( W \coloneqq \sum_{i = 1}^{N} w^{[i]} \). Closed-form solutions also exist for more complicated policies like Gaussian mixture models and Gaussian processes. With closed-form solutions, no learning rates are needed!
 
-			\subsubsection{Difference to Policy Gradients} % 12.12
-				\todo{Content}
+			\subsubsection{Gradient Ascent for Non-Closed-Forms and Similarity to Policy Gradients}
+				If no closed-form solution exists for a parametric policy \( \pi(\vec{\theta}; \vec{\omega}) \), it is always possible to take the gradient of the objective \eqref{eq:weightedMaxLikelihoodObjective} as
+				\begin{equation*}
+					\grad_{\!\vec{\omega}}\Bigg(\! \frac{1}{N} \sum_{i = 1}^{N} w^{[i]} \ln \pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big) \!\!\Bigg)
+						= \frac{1}{N} \sum_{i = 1}^{N} w^{[i]} \grad_{\!\vec{\omega}} \ln \pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big)
+				\end{equation*}
+				and maximize the objective with gradient ascent. The form of the gradient is very similar to the gradient to \eqref{eq:episodicPolicyGradientGradient}, the gradient of the episodic policy gradient method. The difference is that instead of the total reward \( R^{[i]} \), the success probabilities \( w^{[i]} \) are used for weighting the samples. If the rewards are directly used for the weights (e.g. if the reward already is an improper probability distribution), policy gradient and weighted maximum likelihood are actually equivalent.
 			% end
 
-			\subsubsection{Computing the Weights} % 12.13
-				\todo{Content}
+			\subsubsection{Computing the Weights}
+				The next problem is to compute the weights (success probabilities) \( w^{[i]} = f\big(R^{[i]}\big) \). The simplest way is to use an exponential transformation
+				\begin{equation*}
+					w^{[i]} = \exp{ \big( R^{[i]} - R^{[i]}_\mathrm{max} \big) \beta }
+				\end{equation*}
+				with a \emph{temperature} \( \beta \). This temperature is usually set by heuristics, e.g. \( \beta = 10 / \big( R^{[i]}_\mathrm{max} - R^{[i]}_\mathrm{min} \big) \). Different algorithms emerged from this idea, for example:
+				\begin{itemize}
+					\item \eqmakebox[probPolicySearchWeights][l]{EM-Algorithms:}   PoWER, Reward-Weighted Regression
+					\item \eqmakebox[probPolicySearchWeights][l]{Optimal Control:} PI2
+					\item Relative Entropy Policy Search (REPS)
+				\end{itemize}
+				A downside of the exponential transformation is that in a stochastic environment, the no longer the expected reward is maximized as
+				\begin{equation*}
+					\E_{p(\vec{\tau})}\Big[\! \exp\big\{R(\vec{\tau})\big\} \Big] \neq \exp\Big\{ \E_{p(\vec{\tau})}\big[ R(\vec{\tau}) \big] \Big\}.
+				\end{equation*}
+				This has the effect that the objective gets "risk attracted". However, it still works well for moderately stochastic environments.
 
-				\paragraph{Notes on Expectation Maximization} % 12.14
-					\todo{Content}
-				% end
-
-				\paragraph{Notes on the Exponential Transformation} % 12.15
-					\todo{Content}
-				% end
-			% end
-
-			\subsubsection{Illustration and Results} % 12.16, 12.17, 12.19, 12.21
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Relative Entropy Policy Search (REPS)} % 12.22, 12.23
-			\todo{Content}
-
-			\subsubsection{Optimization Problem} % 12.24
-				\todo{Content}
-
-				\paragraph{Solving} % 12.25, 12.26
-					\todo{Content}
-				% end
-			% end
-		% end
-
-		\subsection{REPS for Contextual Policy Search} % 12.28, 12.29, 12.30
-			\todo{Content}
-
-			\subsubsection{Optimization Problem} % 12.31
-				\todo{Content}
-
-				\paragraph{Solving} % 12.32, 12.33, 12.34, 12.35
-					\todo{Content}
-				% end
-			% end
-
-			\subsubsection{Contextual Policies with Weighted ML} % 12.36
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Learning Versatile Solutions} % 12.40, 12.41, 12.47
-			\todo{Content}
-
-			\subsubsection{Illustration} % 12.42, 12.43
-				\todo{Content}
-			% end
-
-			\subsubsection{Hierarchy} % 12.44
-				\todo{Content}
-
-				\paragraph{Naive Hierarichal Approach} % 12.45, 12.46
-					\todo{Content}
-				% end
-
-				\paragraph{Hierarichal REPS (HiREPS)} % 12.48, 12.49
-					\todo{Content}
+				\paragraph{Notes on Expectation Maximization}
+					The expectation-maximization (EM) algorithm is a method for maximum likelihood estimation in the presence of latent variables. In this setting, the observed variables are the reward and the unobserved variables are the trajectories (or parameters) that lead to the reward. The algorithm is split into two steps:
+					\begin{description}[leftmargin=2cm]
+						\item[E-Step] Estimate the new desired distribution.
+						\item[M-Step] Estimate new (policy) parameters from weighted samples.
+					\end{description}
+					Algorithms that are based on the EM-principle are Reward-Weighted Regression (Peters, 2007) and PoWER\footnote{PoWER stands for "Policy Learning by Weighting Exploration with the Returns".} (Kober, 2008).
 				% end
 			% end
 		% end
 
-		\subsection{Sequencing Movement Primitives} % 12.54, 12.55, 12.56
-			\todo{Content}
+		\subsection{Relative Entropy Policy Search (REPS)}
+			Choosing the next policy inherently requires choosing a got step size. A too low step size would converge too slow and a too high step size would directly jump to a single sample and does not explore enough. This is a variant of the exploration-exploitation tradeoff. As for vanilla policy gradients, this can again be addressed using a metric to control the jump in the policy. The metric of choice for \emph{relative entropy policy search} (REPS) is, as obvious from the name, the KL divergence
+			\begin{equation*}
+				D_\mathrm{KL}\big( \pi(\vec{\theta}) \,\Vert\, q(\vec{\theta}) \big) \leq \epsilon
+			\end{equation*}
+			constraining the information loss between the new policy \(\pi(\vec{\theta})\) and the old policy \(q(\vec{\theta})\) to be at most \(\epsilon\). The REPS optimization problem is:
+			\begin{equation}
+				\begin{aligned}
+					\max_\pi \,& \int\! \pi(\vec{\theta}) R(\vec{\theta}) \dd{\vec{\theta}} \\
+					\mathrm{s.t.} \quad&
+						\begin{aligned}[t]
+							D_\mathrm{KL}\big( \pi(\vec{\theta}) \,\Vert\, q(\vec{\theta}) \big) &\leq \epsilon \\
+							\int\! \pi(\vec{\theta}) \dd{\vec{\theta}} &= 1
+						\end{aligned}
+				\end{aligned}
+			\end{equation}
+			The analytical solution to this optimization problem is
+			\begin{equation*}
+				\pi(\vec{\theta}) \propto q(\vec{\theta}) \exp{ \frac{R(\vec{\theta})}{\eta} }
+			\end{equation*}
+			where \( R(\vec{\theta}) \) is the total reward for a parameter \( \vec{\theta} \) and \(\eta\) is the Lagrangian multiplier for the KL constraint. This the same result as for the weighted maximum likelihood approach using the exponential transformation with temperature \( \beta = 1/\eta \). The scaling factor \(\eta\) is determined by the optimization problem and specified by the KL bound \(\epsilon\). To get \(\eta\), the dual objective (approximated with Monte-Carlo integration, \( \vec{\theta}_i \sim q(\cdot) \))
+			\begin{equation*}
+				\eta\epsilon + \ln \int\! q(\vec{\theta}) \exp{\frac{R(\vec{\theta})}{\eta}} \dd{\vec{\theta}}
+					\approx \eta\epsilon + \ln \Bigg(\! \frac{1}{N} \sum_{i = 1}^{N} \exp{\frac{R(\vec{\theta}_i)}{\eta}} \!\Bigg)
+			\end{equation*}
+			has to be minimized (subject to \( \eta \geq 0 \)). This can be done with standard numerical optimization algorithms like trust-region methods or similar.
 
-			\subsubsection{Sequential REPS} % 12.57, 12.65, 12.66
-				\todo{Content}
+			For discrete \(\vec{\theta}\), the optimization problem is
+			\begin{equation}
+				\begin{aligned}
+					\max_\pi \,& \sum_{\vec{\theta}} \pi(\vec{\theta}) R(\vec{\theta}) \\
+					\mathrm{s.t.} \quad&
+						\begin{aligned}[t]
+							D_\mathrm{KL}\big( \pi(\vec{\theta}) \,\Vert\, q(\vec{\theta}) \big) &\leq \epsilon \\
+							\sum_{\vec{\theta}} \pi(\vec{\theta}) &= 1
+						\end{aligned}
+				\end{aligned}
+			\end{equation}
+			where now the KL divergence is discrete too.
+
+			\subsubsection{Derivation of REPS}
+				With the multipliers \( \lambda \) and \( \eta \), the Lagrangian of this problem is
+				\begin{align}
+					L[\pi, \lambda, \eta] &=
+						  \int\! \pi(\vec{\theta}) R(\vec{\theta}) \dd{\vec{\theta}}
+						+ \lambda \bigg(\! 1 - \int\! \pi(\vec{\theta}) \dd{\vec{\theta}} \!\!\bigg)
+						+ \eta \big( \epsilon - D_\mathrm{KL}\big( \pi(\vec{\theta}) \,\Vert\, q(\vec{\theta}) \big) \big)  \nonumber \\
+					&=
+						  \int\! \pi(\vec{\theta}) R(\vec{\theta}) \dd{\vec{\theta}}
+						+ \lambda \bigg(\! 1 - \int\! \pi(\vec{\theta}) \dd{\vec{\theta}} \!\!\bigg)
+						+ \eta \bigg(\! \epsilon - \int\! \pi(\vec{\theta}) \ln \frac{\pi(\vec{\theta})}{q(\vec{\theta})} \dd{\vec{\theta}} \!\!\bigg)  \nonumber \\
+					&= (\lambda + \eta \epsilon)
+						+ \int\! \pi(\vec{\theta}) R(\vec{\theta}) \dd{\vec{\theta}}
+						- \lambda \int\! \pi(\vec{\theta}) \dd{\vec{\theta}}
+						- \eta \int\! \pi(\vec{\theta}) \ln \frac{\pi(\vec{\theta})}{q(\vec{\theta})} \dd{\vec{\theta}}  \label{eq:repsLagrangian} \\
+					&= (\lambda + \eta\epsilon)
+						+ \int\! \pi(\vec{\theta}) \bigg[ R(\vec{\theta}) - \lambda - \eta \ln \frac{\pi(\vec{\theta})}{q(\vec{\theta})} \bigg] \dd{\vec{\theta}}.  \nonumber
+				\end{align}
+				To maximize this Lagrangian w.r.t. the primal variable \( \pi(\vec{\theta}) \), the term can be discarded as it does not depend on the primal variable. The remaining integral is a function over the primal variable that can be solved using variational calculus. Let
+				\begin{equation*}
+					\mathcal{L}[\pi, \lambda, \eta] = \pi(\vec{\theta}) \bigg[ R(\vec{\theta}) - \lambda - \eta \ln \frac{\pi(\vec{\theta})}{q(\vec{\theta})} \bigg]
+				\end{equation*}
+				be the respective Lagrangian. As \(\mathcal{L}\) does not depend on \( \pi'(\vec{\theta}) \), the Euler-Lagrange equation becomes \( \pdv{\mathcal{L}}{\pi(\vec{\theta})} = 0 \). This yields the algebraic equation
+				\begin{equation*}
+					\pdv{\mathcal{L}}{\pi(\vec{\theta})}
+						= R(\vec{\theta}) - \lambda - \eta \ln \frac{\pi(\vec{\theta})}{q(\vec{\theta})} - \eta \pi(\vec{\theta}) \frac{1}{\pi(\vec{\theta})}
+						= R(\vec{\theta}) - \eta \ln \pi(\vec{\theta}) + \eta \ln q(\vec{\theta}) - (\eta + \lambda)
+						\overset{!}{=} 0
+				\end{equation*}
+				that is easily solvable for \( \pi(\vec{\theta}) \):
+				\begin{align*}
+					&&
+					0 &= R(\vec{\theta}) - \eta \ln \pi(\vec{\theta}) + \eta \ln q(\vec{\theta}) - (\eta + \lambda) & \\
+					\iff&&
+					\eta \ln \pi(\vec{\theta}) &= R(\vec{\theta}) + \eta \ln q(\vec{\theta}) - (\eta + \lambda) & \\
+					\iff&&
+					\ln \pi(\vec{\theta}) &= \frac{R(\vec{\theta})}{\eta} + \ln q(\vec{\theta}) - \frac{\eta + \lambda}{\eta} & \\
+					\iff&&
+					\pi(\vec{\theta}) &= q(\vec{\theta}) \exp{\frac{R(\vec{\theta})}{\eta}} \exp{-\frac{\eta + \lambda}{\eta}} &
+				\end{align*}
+				But the last exponential term is just a normalization factor! Hence, it can also be written as
+				\begin{equation*}
+					\exp{\frac{\eta + \lambda}{\eta}} = \int\! q(\vec{\theta}) \exp{\frac{R(\vec{\theta})}{\eta}} \dd{\vec{\theta}}
+					\quad\iff\quad
+					\frac{\eta + \lambda}{\eta} = \ln \int\! q(\vec{\theta}) \exp{\frac{R(\vec{\theta})}{\eta}} \dd{\vec{\theta}}.
+				\end{equation*}
+				To get the dual objective \( h(\lambda, \eta) \), the solution of the primal variable has to be plugged into the Lagrangian \eqref{eq:repsLagrangian}:
+				\begin{align*}
+					h(\lambda, \eta)
+						&= L[\pi^\ast, \lambda, \eta]
+						 = (\lambda + \eta\epsilon)
+							+ \int\! \pi^\ast(\vec{\theta}) R(\vec{\theta}) \dd{\vec{\theta}}
+							- \lambda \underbrace{\int\! \pi^\ast(\vec{\theta}) \dd{\vec{\theta}}}_{=\, 1}
+							- \,\eta \int\! \pi(\vec{\theta}) \ln \frac{\pi^\ast(\vec{\theta})}{q(\vec{\theta})} \dd{\vec{\theta}} \\
+						&= \eta\epsilon + \int\! \pi^\ast(\vec{\theta}) \bigg[ R(\vec{\theta}) - \eta \ln \frac{\pi^\ast(\vec{\theta})}{q(\vec{\theta})} \bigg] \dd{\vec{\theta}} \\
+						&= \eta\epsilon + \int\! \pi^\ast(\vec{\theta}) \bigg[ R(\vec{\theta}) - \eta \ln \frac{q(\vec{\theta}) \exp{\frac{R(\vec{\theta})}{\eta}} \exp{-\frac{\eta + \lambda}{\eta}}}{q(\vec{\theta})} \bigg] \dd{\vec{\theta}} \\
+						&= \eta\epsilon + \int\! \pi^\ast(\vec{\theta}) \bigg[ R(\vec{\theta}) - \eta \ln \bigg(\!\! \exp{\frac{R(\vec{\theta})}{\eta}} \exp{-\frac{\eta + \lambda}{\eta}} \!\bigg) \bigg] \dd{\vec{\theta}} \\
+						&= \eta\epsilon + \int\! \pi^\ast(\vec{\theta}) \bigg[ R(\vec{\theta}) - \eta \frac{R(\vec{\theta})}{\eta} + \eta \frac{\eta + \lambda}{\eta} \bigg] \dd{\vec{\theta}} \\
+						&= \eta\epsilon + \eta \frac{\eta + \lambda}{\eta} \underbrace{\int\! \pi^\ast(\vec{\theta}) \dd{\vec{\theta}}}_{=\, 1}
+						 = \eta\epsilon + \eta \frac{\eta + \lambda}{\eta}
+						 = \eta\epsilon + \ln \int\! q(\vec{\theta}) \exp{\frac{R(\vec{\theta})}{\eta}} \dd{\vec{\theta}}
+				\end{align*}
+				By approximating this integral with Monte-Carlo integration, the Lagrangian multiplier \(\eta\) can be calculated.
 			% end
+		% end
+
+		\subsection{REPS for Contextual Policy Search}
+			In contextual policy search, the task is dependent on a context \(\vec{c}\) that is fixed before executing (e.g. the target location when throwing a ball). This can be introduced to the policy by conditioning the upper-level policy on the context: \( \pi(\vec{\theta} \given \vec{c}) \). The dataset for the policy update is changed to \( \mathcal{D} = \big\{ \vec{\theta}^{[i]}, \vec{c}^{[i]}, R^{[i]} \big\}_{i \,=\, \subdotsrange{1}{N}} \), taking care of the context. The objective is also changed to maximize the expected reward over all parameters and all contexts with the context distribution \( \mu_0(\vec{c}) \) and the reward \( R(\vec{c}, \vec{\theta}) \):
+			\begin{equation*}
+				J_\pi = \iint\! \mu_0(\vec{c}) \pi(\vec{\theta} \given \vec{c}) R(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}}
+			\end{equation*}
+			The REPS optimization problem for contextual policy search directly optimized the joint distribution \( p(\vec{c}, \vec{\theta}) = \mu_0(\vec{c}) \pi(\vec{\theta} \given \vec{c}) \) instead of conditioning the optimization problem:
+			\begin{equation*}
+				\begin{aligned}
+					\max_p \,& \iint\! p(\vec{c}, \vec{\theta}) R(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} \\
+					\mathrm{s.t.} \quad&
+						\begin{aligned}[t]
+							D_\mathrm{KL}\big( p(\vec{c}, \vec{\theta}) \,\Vert\, q(\vec{c}, \vec{\theta}) \big) &\leq \epsilon \\
+							\iint\! p(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} &= 1 \\
+							\forall \vec{c} : \int\! p(\vec{c}, \vec{\theta}) \dd{\vec{\theta}} &= \mu_0(\vec{c})
+						\end{aligned}
+				\end{aligned}
+			\end{equation*}
+			Some major problems with this approach are that the context distributions cannot be freely chosen by the algorithm, there are an infinite amount of constraints and for each context a lot of parameter samples are needed.
+
+			\subsubsection{Feature Matching}
+				Instead of perfectly matching the context distribution which emits an infinite amount of constraints, one idea is to instead match certain features \( \vec{\phi}(\vec{c}) \), for example the first- and second-order moments \( \vec{\phi}^T(c) = \begin{bmatrix} c & c^2 \end{bmatrix} \). This would be equivalent to matching mean and variance which, for Gaussian distributions, is exact (mean and variance are sufficient statistics). With the target features \( \hat{\vec{\phi}} \), the the optimization problem is given as:
+				\begin{equation*}
+					\begin{aligned}
+						\max_p \,& \iint\! p(\vec{c}, \vec{\theta}) R(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} \\
+						\mathrm{s.t.} \quad&
+							\begin{aligned}[t]
+								D_\mathrm{KL}\big( p(\vec{c}, \vec{\theta}) \,\Vert\, q(\vec{c}, \vec{\theta}) \big) &\leq \epsilon \\
+								\iint\! p(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} &= 1 \\
+								\iint\! p(\vec{c}, \vec{\theta}) \vec{\phi}(\vec{c}) \dd{\vec{c}} \dd{\vec{\theta}} &= \hat{\vec{\phi}}
+							\end{aligned}
+					\end{aligned}
+				\end{equation*}
+				This optimization problem can again be solved in closed form
+				\begin{equation*}
+					p(\vec{c}, \vec{\theta})
+						= \mu_0(\vec{c}) \pi(\vec{\theta} \given \vec{c})
+						\propto q(\vec{c}, \vec{\theta}) \exp{ \frac{R(\vec{c}, \vec{\theta}) - V(\vec{c})}{\eta} }
+				\end{equation*}
+				with \( V(\vec{c}) = \vec{\phi}^T(\vec{c}) \vec{v} \) with the Lagrangian multipliers \(\eta\) and \(\vec{v}\). Those are for the KL and the moment matching constraints, respectively. The Lagrangian multipliers are again given as the solution of the dual optimization problem. The dual function is
+				\begin{align*}
+					h(\eta, \vec{v})
+						&= \eta\epsilon + \hat{\vec{\phi}}^T \vec{v} + \eta \ln \int\! q(\vec{c}, \vec{\theta}) \exp{ \frac{R(\vec{c}, \vec{\theta}) - \vec{\phi}^T(\vec{c}) \vec{v}}{\eta} } \\
+						&\approx \eta\epsilon + \hat{\vec{\phi}}^T \vec{v} + \eta \ln \Bigg(\! \frac{1}{N} \sum_{i = 1}^{N} q(\vec{c}_i, \vec{\theta}_i) \exp{ \frac{R(\vec{c}_i, \vec{\theta}_i) - \vec{\phi}^T(\vec{c}_i) \vec{v}}{\eta} } \!\Bigg)
+				\end{align*}
+				with Monte-Carlo samples \( (\vec{c}_i, \vec{\theta}_i) \) drawn from \( q(\vec{c}, \vec{\eta}) \).
+
+				For discrete \(\vec{c}\) and \(\vec{\theta}\), the optimization problem is
+				\begin{equation*}
+					\begin{aligned}
+						\max_p \,& \sum_{\vec{c}, \vec{\theta}} p(\vec{c}, \vec{\theta}) R(\vec{c}, \vec{\theta}) \\
+						\mathrm{s.t.} \quad&
+							\begin{aligned}[t]
+								D_\mathrm{KL}\big( p(\vec{c}, \vec{\theta}) \,\Vert\, q(\vec{c}, \vec{\theta}) \big) &\leq \epsilon \\
+								\sum_{\vec{c}, \vec{\theta}} p(\vec{c}, \vec{\theta}) &= 1 \\
+								\sum_{\vec{c}, \vec{\theta}} p(\vec{c}, \vec{\theta}) \vec{\phi}(\vec{c}) &= \hat{\vec{\phi}}
+							\end{aligned}
+					\end{aligned}
+				\end{equation*}
+				where now the KL divergence is discrete too.
+			% end
+
+			\subsubsection{Contextual Policies with Weighted ML}
+				It is also possible to get contextual policies using the weighted maximum likelihood approach. For a Gaussian policy
+				\begin{equation*}
+					\pi_{\vec{\omega}}(\vec{\theta} \given \vec{c}) = \mathcal{N}(\vec{\theta} \given \mat{K} \vec{c} + \vec{k},\, \mat{\Sigma}),\quad \vec{\omega} = \{ \mat{K}, \vec{k}, \mat{\Sigma} \}
+				\end{equation*}
+				with parameters \(\vec{\omega}\), the solution is given as
+				\begin{align*}
+					\begin{bmatrix}
+						\vec{k}^T \\
+						\mat{K}^T
+					\end{bmatrix} = \big( \mat{C}^T \mat{D} \mat{C} \big)^{-1} \mat{C}^T \mat{D} \mat{A}
+					&&
+					\mat{\Sigma} = \frac{1}{\sum_{i = 1}^{N} w_i} \sum_{i = 1}^{N} w^{[i]} \big( \vec{\theta}^{[i]} - \vec{\mu}^{[i]} \big) \big( \vec{\theta}^{[i]} - \vec{\mu}^{[i]} \big)
+					&&
+					\vec{\mu}^{[i]} \coloneqq \mat{K} \vec{c}^{[i]} + \vec{k}
+				\end{align*}
+				where the weights \( w^{[i]} \) are computed some how (e.g. using the exponential transformation) and the samples \( \vec{c}^{[i]} \) and \( \vec{\theta}^{[i]} \) are drawn from the previous distribution. Here, \(\mat{C}\) is the input data matrix (with an appended \(1\) for the bias), \(\mat{D}\) is a diagonal weighting matrix and \(\mat{A}\) is the parameter matrix.
+			% end
+		% end
+
+		\subsection{Learning Versatile Solutions and Hierarchical REPS (HiREPS)}
+			In many motor tasks, multiple solutions to the same problem are possible. One problem with the current formulation is that either only one of the solutions is found or the policy averages over multiple solutions. As these solutions may lie far apart, that creates a rather unstable policy. One idea to solve this is to use a hierarchical approach where an upper-level \emph{gating policy} \( \pi(o \given \vec{c}) \) chooses the option \(o\) that then selects an \emph{option policy} \( \pi(\vec{\theta} \given \vec{c}, o_i) \) to handle the task.
+
+			The naive hierarchical approach is to define the joint distribution \( p(\vec{c}, \vec{\theta}, o) = \mu_0(\vec{c}) \pi(\vec{\theta} \given \vec{c}, o) \pi(o \given \vec{c}) \) and solve the optimization problem
+			\begin{equation*}
+				\begin{aligned}
+					\max_p \,& \sum_o \iint\! p(\vec{c}, \vec{\theta}, o) R(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} \\
+					\mathrm{s.t.} \quad&
+						\begin{aligned}[t]
+							D_\mathrm{KL}\big( p(\vec{c}, \vec{\theta}, o) \,\Vert\, q(\vec{c}, \vec{\theta}, o) \big) &\leq \epsilon \\
+							\sum_o \iint\! p(\vec{c}, \vec{\theta}, o) \dd{\vec{c}} \dd{\vec{\theta}} &= 1 \\
+							\sum_o \iint\! p(\vec{c}, \vec{\theta}, o) \vec{\phi}(\vec{c}) \dd{\vec{c}} \dd{\vec{\theta}} &= \hat{\vec{\phi}}
+						\end{aligned}
+				\end{aligned}
+			\end{equation*}
+			while still matching the features. But this optimization problem does not enforce versatile solutions, i.e. multiple options are learned, but no separated between them is done. The insight to solve this is that versatile solutions are characterized by a small overlap in the solutions. This can be represented as limiting the entropy of \( p(o \given \vec{c}, \vec{\theta}) \). This leads to the optimization problem underlying \emph{Hierarchical REPS} (HiREPS):
+			\begin{equation*}
+				\begin{aligned}
+					\max_p \,& \sum_o \iint\! p(\vec{c}, \vec{\theta}, o) R(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} \\
+					\mathrm{s.t.} \quad&
+						\begin{aligned}[t]
+							D_\mathrm{KL}\big( p(\vec{c}, \vec{\theta}, o) \,\Vert\, q(\vec{c}, \vec{\theta}, o) \big) &\leq \epsilon \\
+							\sum_o \iint\! p(\vec{c}, \vec{\theta}, o) \dd{\vec{c}} \dd{\vec{\theta}} &= 1 \\
+							\sum_o \iint\! p(\vec{c}, \vec{\theta}, o) \vec{\phi}(\vec{c}) \dd{\vec{c}} \dd{\vec{\theta}} &= \hat{\vec{\phi}} \\
+							\sum_o \iint\! p(\vec{c}, \vec{\theta}, o) \big[\! -p(o \given \vec{c}, \vec{\theta}) \ln p(o \given \vec{c}, \vec{\theta}) \big] \dd{\vec{c}} \dd{\vec{\theta}} &\leq \kappa
+						\end{aligned}
+				\end{aligned}
+			\end{equation*}
+			Of course this can readily be adapted to discrete states and parameters by swapping the integrals for sums. The solution of this optimization problem actually learns versatile solutions!
+		% end
+
+		\subsection{Sequencing Movement Primitives and Sequential REPS}
+			For many motor tasks it is also necessary to execute different elementary building blocks in a sequence to fulfill a task. This also means that the context of blocks executed later also depends on previously executed blocks! So the long-term effects have to be learned. Similar to the hierarchical approach, this changes the goal from maximizing the expected reward to maximize the expected reward over \(K\) decision steps, i.e. building blocks. For each block an upper-level policy \( \pi_k(\vec{\theta} \given \vec{c}) \) is learned where the \(k\)-th block has to react to the outcome of block \(k\). The objective function is
+			\begin{equation*}
+				J_\pi = \sum_{k = 1}^{K} \iint\! \mu_k(\vec{c}) \pi_k(\vec{\theta} \given \vec{c}) R_k(\vec{c}, \vec{\theta}) \dd{\vec{c}} \vec{\theta}
+			\end{equation*}
+			where the context distributions \( \mu_k(\vec{c}) \) are specified by the previous policies \( \pi_{l < k}(\vec{\theta} \given \vec{c}) \):
+			\begin{equation*}
+				\mu_k(\vec{c}') = \iint\! \mu_{k - 1}(\vec{c}) \pi_{k - 1}(\vec{\theta} \given \vec{c}) p(\vec{c}' \given \vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}}
+			\end{equation*}
+			With \( p_k(\vec{c}, \vec{\theta}) = \mu_k(\vec{c}) \pi(\vec{\theta} \given \vec{c}) \), the optimization problem of \emph{Sequential REPS} is
+			\begin{equation*}
+				\begin{aligned}
+					\max_p \,& \sum_{k = 1}^{K} \iint\! p_k(\vec{c}, \vec{\theta}) R_k(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} \\
+					\mathrm{s.t.} \quad&
+						\begin{aligned}[t]
+							D_\mathrm{KL}\big( p_k(\vec{c}, \vec{\theta}) \,\Vert\, q_k(\vec{c}, \vec{\theta}) \big) &\leq \epsilon,\, \forall k \\
+							\iint\! p_k(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} &= 1,\, \forall k \\
+							\iint\! p_{k - 1}(\vec{c}, \vec{\theta}) p(\vec{c}' \given \vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} &= p_k(\vec{c}'),\, \forall k > 1
+						\end{aligned}
+				\end{aligned}
+			\end{equation*}
+			with the solution
+			\begin{equation*}
+				p_k(\vec{c}, \vec{\theta}) \propto q_k(\vec{c}, \vec{\theta}) \exp{ \frac{R_k(\vec{c}, \vec{\theta}) + \E_{p(\vec{c}' \subgiven \vec{c}, \vec{\theta})}\big[ V_{k + 1}(\vec{c}') \big] - V_k(\vec{c})}{\eta_k} }
+			\end{equation*}
+			where \( \E_{p(\vec{c}' \subgiven \vec{c}, \vec{\theta})}\big[ V_{k + 1}(\vec{c}') \big] \) encoded the long-term reward.
 		% end
 	% end
 
-	\section{Wrap-Up} % 10.55, 10.56, 10.58, 12.60
-		\todo{Content}
+	\section{Wrap-Up}
+		Policy search is a powerful and practical alternative to value function and model-based methods as learning a model is really hard and a small error in either the model or the value function can have catastrophic consequences. Policy search gradients have been the go-to methods for policy search for a long time, but they still need lots of samples and the learning rate has to be tuned (learning the learning rate is still an open problem). Newer methods are probabilistic policy search methods.
+
+		They reduce the policy update to a weighted maximum likelihood estimate of the policy (this works best for parametric policies). The weights are calculated using an exponential transformation with a temperature \(\beta\). This temperature has to be hand-tuned when using plain weighted ML estimates. The REPS algorithm optimizes the temperature by imposing an upper bound on the KL divergence of the new and old policy. Various extensions of REPS have been discussed like contextual REPS, HiREPS and Sequential REPS.
 	% end
 % end
 

@@ -292,6 +292,15 @@
 \DeclareMathOperator{\PK}{PK}
 \DeclareMathOperator{\DB}{DB}
 
+% Footnotes.
+\newcommand{\oversetfootnotemark}[1]{\stepcounter{footnote} \overset{\mathclap{(\thefootnote)}}{#1}}
+\let\realfootnote\footnote
+\let\realfootnotetext\footnotetext
+\renewcommand{\footnote}[1]{\realfootnote{#1}}
+\renewcommand{\footnotetext}[1]{\realfootnotetext{#1}}
+\newcommand{\doublefootnotetext}[2]{\addtocounter{footnote}{-1} \footnotetext{#1} \stepcounter{footnote} \footnotetext{#2}}
+\newcommand{\triplefootnotetext}[3]{\addtocounter{footnote}{-2} \footnotetext{#1} \stepcounter{footnote} \footnotetext{#2} \stepcounter{footnote} \footnotetext{#3}}
+
 % Other mathy stuff.
 % Numbers sets.
 \newcommand{\N}{\mathbb{N}}
@@ -303,6 +312,9 @@
 \newcommand{\E}{\mathbb{E}}
 % Top-left index, e.g. for transformation matrices.
 \newcommand{\inreferenceto}[2]{\prescript{#1}{}{#2}}
+% Approximate proportional to.
+\newcommand{\approxproptoinn}[2]{\mathrel{\vcenter{\offinterlineskip\halign{\hfil$##$\cr#1\propto\cr\noalign{\kern2pt}#1\sim\cr\noalign{\kern-2pt}}}}}
+\newcommand{\approxpropto}{\mathpalette\approxproptoinn\relax}
 % One vertical line for probabilities, densities, expectations, etc.
 \newcommand{\subgiven}{\vert}
 \newcommand{\given}{\,\vert\,}
@@ -318,6 +330,7 @@
 \newcommand{\Biggforwhich}{\,\Bigg\vert\,}
 % Short forms.
 \newcommand{\dotsrange}[2]{#1,\,\cdots\!,#2}
+\newcommand{\subdotsrange}[2]{#1,\,\cdots\!,\,#2}
 \newcommand{\liminfty}[1][n]{\lim_{#1 \to \infty}}
 \newcommand{\suminfty}[1][n]{\sum_{#1 = 0}^\infty}
 \newcommand{\limx}[1][x]{\lim_{#1 \to #1_0 }}

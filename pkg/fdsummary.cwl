@@ -173,6 +173,15 @@
 \PK#m
 \DB#m
 
+% Footnotes.
+\oversetfootnotemark{argument}#m
+\realfootnote{text}#S
+\realfootnotetext{text}#S
+\footnote{text}#
+\footnotetext{text}#
+\doublefootnotetext{text}{text}#
+\triplefootnotetext{text}{text}{text}#
+
 % Other mathy stuff.
 % Numbers sets.
 \N#
@@ -184,7 +193,10 @@
 \E#
 % Top-left index, e.g. for transformation matrices.
 \inreferenceto{reference-frame}{obj}}#m
-% One vertical line for probabilities, densities, expectations, etc.
+% One vertical line for probabilities, densities, ex
+% Approximate proportional to.
+\approxproptoinn#S
+\approxpropto#m
 \subgiven#m
 \given#m
 \biggiven#m
@@ -199,6 +211,7 @@
 \Biggforwhich#m
 % Short forms.
 \dotsrange{from}{to}#m
+\subdotsrange{from}{to}#m
 \liminfty[variable]#m
 \suminfty[variable]#m
 \limx#m

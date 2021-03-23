@@ -205,8 +205,55 @@
 		\answer{Value function methods require to maximize the Q-function w.r.t. the action, which is a really hard problem for itself. For continuous actions, only numerical methods can be used which are computationally expensive for high-dimensional data.}
 	% end
 
-	\section{Policy Search} % 10.59, 12.61
-		\todo{Content}
+	\section{Policy Search}
+		\subsection{Policy Gradient Methods}
+			\paragraph{When to use episode-based and when to use step-based methods?}
+			\answer{Episode-based methods exhibit a higher variance in the total reward as it is the sum of \(T\) random variables. For step-based methods, the reward to come can be used that has lower variance as it is only the sum of \(T - t + 1\) random variables for the \(t\)-th reward. So for a noisy reward, step-based methods are better suited. However, episode-based methods have the advantage that task-specific policies can be used due to the upper- and lower-level policy structure. Step-based methods, on the other hand, provide more data to learn the parameters from as every state-action-reward pair is a data point as opposed to only parameter-reward pairs for episode-based methods.}
+
+			\paragraph{How do finite difference gradient estimators work?}
+			\answer{Finite difference gradient estimators compute the function once for the value in questions and once for a perturbed value. The difference of both is then divided by the perturbation. The method can be derived by Taylor-expanding the function around the value and rearranging the terms in the equation. While this is very simple, it requires evaluation of the objective two times which might be very costly or even problematic if the function is not deterministic.}
+
+			\paragraph{What are likelihood ratio gradient estimators?}
+			\answer{Likelihood ratio gradient estimators use the log-ratio trick that from the derivative of the logarithm, \( \dv{\ln f(x)}{x} = \frac{1}{f(x)} \dv{f(x)}{x} \), the derivative of \( f(x) \) can be written as \( \dv{f(x)}{x} = f(x) \dv{\ln f(x)}{x} \). If \( f(x) \) is a probability density under an integral, the integral can now be approximated using Monte-Carlo integration, i.e. sampling from the density and computing the gradient. This method of estimating a gradient is called the likelihood ratio gradient estimator.}
+
+			\paragraph{Why do baselines lower the variance of the gradient estimate?}
+			% TODO: Explain _why_ baselines lower the variance!
+			\answer{Subtracting a variance can reduce the variance of the gradient estimate while leaving the estimator unbiased. Good baselines are for example the average reward or, for step-based methods, the value function.}
+
+			\paragraph{Why is the Fisher information matrix so important? How does it relate to the KL divergence?}
+			\answer{The Fisher information matrix describes how much influence certain distribution parameters have. This is important as it can be used to make the metric for policy gradient methods invariant to linear transformations of the parameters. The KL divergence can be approximated by using the second-order Taylor-expansion where the Fisher information matrix is used.}
+
+			\paragraph{What is a natural gradient? Why is natural gradient ascent invariant to reparametrization?}
+			\answer{Natural gradients are the ascent direction that is closest to the steepest ascent direction (the gradient) while constraining the policy to not diverge too far. The latter is done by using the Fisher information matrix as an approximation of the KL divergence. This is also the reason why it is invariant to reparametrization which is included by the FIM. It represents the steepest ascent direction in the policy space rather than the parameter space.}
+
+			\paragraph{What is the compatible function approximation? How is it connected to natural policy gradients?}
+			\todo{Answer}
+		% end
+
+		\subsection{Probabilistic Policy Search}
+			\paragraph{What is the idea behind success matching?}
+			\answer{The idea of success matching is that humans tend to not jump directly to the optimal policy, but rather make this dependent on how frequent an event is. If an event would yields a really high reward but is relatively uncommon, it might not be worth it to optimize the policy to do that event if it costs on other ends.}
+
+			\paragraph{What is the weighted maximum likelihood solution for Gaussian policies?}
+			Gaussian policies are one of the policy types where closed-form solutions exist. With the weights \( w^{[i]} \) for each sample \( \vec{\theta}^{[i]} \) and the total weights \( W \coloneqq \sum_{i = 1}^{N} w^{[i]} \), the update rules for the mean and covariance are:
+			\begin{align*}
+				\vec{\mu}^\mathrm{new} = \frac{1}{W} \sum_{i = 1}^{N} w^{[i]} \vec{\theta}^{[i]}
+				&&
+				\mat{\Sigma}^\mathrm{new} = \frac{1}{W} \sum_{i = 1}^{N} w^{[i]} \big( \vec{\theta}^{[i]} - \vec{\mu}^\mathrm{new} \big) \big( \vec{\theta}^{[i]} - \vec{\mu}^\mathrm{new} \big)^T
+			\end{align*}
+
+			\paragraph{What is an exponential transformation? And why and how is it used in the context of policy search?}
+			\answer{The exponential transformation \( \exp{\beta R^{[i]}} \) is used to transform rewards \(R^{[i]}\) to an improper probability distribution. In policy search, it is used to compute the weights for the weighted maximum likelihood estimate. The parameter \(\beta\) is the \emph{temperature} of the transformation and has to be hand-tuned.}
+
+			\paragraph{What is the main contribution on REPS? How is it different from gradient-based methods?}
+			\answer{The main contribution of REPS is to constrain the KL divergence of the policy update to not exceed a given threshold \(\epsilon\). This eliminates the temperature as a hyperparameter. The temperature is now chosen using an optimization problem and equals the reciprocal of the Lagrangian multiplier for the KL constraint. It differs from gradient-based methods in a way that no step-size has to be chosen.}
+
+			\paragraph{Why does matching feature averages help in solving the constrained optimization problem in contextual policy search?}
+			\answer{Without feature matching, i.e. requiring perfect reproduction of the contextual distribution, the optimization problem has an infinite amount of constraint. Using feature matching with \(M\) features, this is reduced to \(M\) constraints for distribution reproduction. When using Gaussians, this is even exact for the first- and second-order moments as they are sufficient statistics for a Gaussian distribution.}
+
+			\paragraph{How does HiREPS ensure learning of different solutions?}
+			\answer{HiREPS constraints the entropy of the option distribution. As a high entropy means high overlap, this constraints the overlap in the options, thus enforcing separate solutions.}
+		% end
 	% end
 
 	\section{Imitation Learning} % N/A

@@ -256,8 +256,40 @@
 		% end
 	% end
 
-	\section{Imitation Learning} % N/A
-		\todo{Content}
+	\section{Imitation Learning}
+		\paragraph{What are the strengths and weaknesses of behavioral cloning?}
+		\answer{Behavioral cloning is simple to implement and imposes no assumptions on the model. However, it generalizes badly and lots of samples are needed. It also suffers from the covariate shift problem and the policies are not really transferable.}
+
+		\paragraph{What makes DAGGER and DART different?}
+		\answer{DAGGER requires a teacher to be present to generate new samples if the robot asks for it. DART on the other hand adds noise to the inputs to achieve better generalization without the need of a teacher.}
+
+		\paragraph{What is the covariate shift and how does it affect imitation learning?}
+		\answer{The covariate shift is the name of the phenomenon that the robot does not know how to recover if it ends up in an unseen state. The effect of this is that also imperfect samples have to be demonstrated for showing the robot how to recover.}
+
+		\paragraph{What is inverse RL often more suitable than direct imitation learning?}
+		\answer{Direct imitation learning requires lots of samples and the teacher might be imperfect. That way, the robot often has problems of surpassing the teacher or generalize to new situations. Inverse RL tackles this by learning the reward function and building an own policy from it under the assumption that the reward function describes the task the best. Also reward functions are a lot more transferable than complete policies.}
+
+		\paragraph{What are algorithmic challenges in IRL?}
+		\answer{
+			\begin{itemize}
+				\item Data Availability (often only samples and not the expert policy are available)
+				\item Ill-Posed (e.g. the null-reward is a feasible solution)
+				\item Expert Suboptimality
+				\item Computation (too many constraints, impossible to enumerate policies)
+			\end{itemize}
+		}
+
+		\paragraph{What are different methods for IRL?}
+		% TODO: Was this really the question?
+		\answer{Some methods for IRL are e.g. (Structured) Max. Margin and Max. Entropy.}
+
+		\paragraph{Why use the maximum margin approach?}
+		% TODO: I'm not happy with the answer below. Understand max. margin more!
+		\answer{One problem of IRL is that the problem is ill-posed. This can be solved by altering the constraints such that at least a margin of \(1\) is enforced. This margin can be absorbed into the weights, so it does not change the solution much. However, it makes the null-reward an invalid solution as it violates the constraints.}
+
+		\paragraph{What is the max. entropy approach?}
+		% TODO: I'm not happy with the answer below. Understand max. entropy more!
+		\answer{In max. entropy approaches, the entropy of the policy is maximized while keeping the constraints valid.}
 	% end
 
 	\section{Bayesian Reinforcement Learning} % 14.54

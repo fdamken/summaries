@@ -671,18 +671,48 @@
 	% end
 % end
 
-\chapter{Machine Learning Foundations} % 5b.1, 5b.2, 5b.21, 5b.22, 5b.23, 5b.24, 5b.25, 5b.26
-	\todo{Content}
+\chapter{Machine Learning Foundations}
+	This chapter is a basic introduction into the foundations of machine learning, focusing on the tools that are important for robot learning. Machine learning has become the best approach to various problems (e.g. in robotics and computer vision) in terms of speed, engineering time and robustness due to the shear amount of data that is generated on a daily basis. The goal of machine learning is to \emph{describe} data make \emph{predictions}, and make \emph{decisions} based on data. To learn from previously seen data, several assumptions has to be made like all training data is i.i.d., queries are drawn from the same distribution as the training data or that the answer comes from a set of possible answers known in advance. Of course different machine learning models and algorithms impose different assumptions and some impose severe while others impose mild conditions. In general, there are two core problems when building a machine learning model:
+	\begin{description}[leftmargin=3.5cm]
+		\item[Estimation] Is it possible to obtain an uncertain quantity of interest?
+		\item[Generalization] Is it possible to predict results for previously unseen situations?
+	\end{description}
 
-	\section{The Six Machine Learning Choices} % 5b.27, 5b.28, 5b.62
-		\todo{Content}
+	\section{The Six Machine Learning Choices}
+		When building a model, there are six choices to be made, the former three of them describing the problem and the latter three describing the solution:
+		\begin{enumerate}
+			\item \textbf{Problem Class} \\
+				What is the nature of the training data and what kind of queries can be made?
+			\item \textbf{Problem Assumptions} \\
+				What is known about the source of the data or the form of the solution?
+			\item \textbf{Evaluation Criteria} \\
+				What is the goal? How to evaluate answers to specific queries? \\
+				How to measure the overall performance?
+			\item \textbf{Model Type} \\
+				Will there be an intermediate model? \\
+				What aspects of the problem will be modeled? \\
+				How will the model be used?
+			\item \textbf{Model Class} \\
+				What (parametric) class of models will be used? \\
+				What criteria are used to pick a particular model from the class?
+			\item \textbf{Algorithm} \\
+				What process is used to fit the model to the data and to make predictions?
+		\end{enumerate}
 
 		\subsection{Problem Class} % 5b.30, 5b.31, 5b.32, 5b.33, 5b.34, 5b.35
 			\todo{Content}
 		% end
 
-		\subsection{Problem Assumptions} % 5b.36
-			\todo{Content}
+		\subsection{Problem Assumptions}
+			Typical assumptions are for example:
+			\begin{itemize}
+				\item Learning is actually possible (e.g. there exists a causal structure).
+				\item There is some smoothness in the solution, e.g. for regression.
+				\item The process generating the data is stationary.
+				\item Process assumptions, e.g. i.i.d., Markovian, \dots
+				\item Observability.
+				\item Frequentist assumption: there exists a true model.
+			\end{itemize}
 		% end
 
 		\subsection{Evaluation} % 5b.37, 5b.38, 5b.39, 5b.40, 5b.41
@@ -934,7 +964,7 @@
 				\todo{Content}
 			% end
 
-			\subsubsection{Dtopout} % 5c.70
+			\subsubsection{Dropout} % 5c.70
 				\todo{Content}
 			% end
 
@@ -2949,114 +2979,249 @@
 % end
 
 \chapter{Imitation Learning: Behavioral Cloning and Inverse RL} % 13.1, 13.3, 13.4, 13.5, 13.8, 13.9, 13.10, 13.11, 13.12
-	\todo{Content}
+	Ot is often very hard or even impossible and time-consuming to learn policies from scratch using reinforcement learning, e.g. as the search space is too large to explore it in a reasonable amount of time. A human export, for example a professional table tennis player, takes years for perfecting its policy and the robot can avoid that by cloning his policy. This is called \emph{imitation learning} and is discussed in this chapter. Two different types of imitation learning are discussed: behavioral closing, where the actions are reproduced given the state, and inverse reinforcement learning, which is learning the reward function from demonstrations, given the optimal policy. Both of them rely on demonstrations, so a crucial question is how to demonstrate movements? A few possibilities are
+	\begin{itemize}
+		\item Teleoperation: \\
+			Use a joystick to train an RC car, The steering wheel of a car to train a car, Data cloves for an artificial hand, \dots
+		\item Kinesthetic Teach-In: \\
+			Take the robot "by the hand" and demonstrate the movement, like a tennis teacher teaches a student.
+		\item Sensuits: \\
+			Suits with encoders and accelerometers that are attached to humans to capture the movement.
+		\item Marker-Based Tracking: \\
+			Use markers and a basic skeleton to obtain precise data from the movement (motion capturing suits).
+		\item Vision: \\
+			Video-based tracking of humans.
+	\end{itemize}
 
-	\section{Distribution Matching} % 13.13
-		\todo{Content}
+	\section{Distribution Matching}
+		\subsection{Behavioral Cloning}
+			\emph{Behavioral cloning} is the simplest form of imitation learning where demonstrations \( \big\{ \vec{s}_{1:T}^{[i]}, \vec{a}_{1:T}^{[i]} \big\}_{i \,=\, \subdotsrange{1}{N}} \), generated by experts, that follow an optimal policy \( \pi^\ast(\vec{a} \given \vec{s}) \) with the long-term behavior \( \mu^\ast(\vec{s}) \), are used to estimate a policy \( \hat{\pi}(\vec{a} \given \vec{s}) \). This is, in principle, a supervised regression problem.
 
-		\subsection{Behavioral Cloning} % 13.14, 13.43
-			\todo{Content}
+			Direct behavioral cloning directly applies supervised learning methods (e.g. linear regression, Gaussian processes or neural networks) to the dataset \(\mathcal{D}\) to extract a policy \( \pi(\vec{a} \given \vec{s}) \), boiling down it to a regression problem. This often causes the \emph{clean-up effect}: due to regularization in the ML model, noise in the demonstrations is often not exhibited by the reproduction. Hence, the student often surpassed the quality of the expert/teacher.
 
-			\subsubsection{Direct Behavioral Cloning} % 13.15, 13.16, 13.17, 13.18, 13.19, 13.20
-				\todo{Content}
+			While this is a rather simple approach, it has a few major problems:
+			\begin{itemize}
+				\item It requires lots of demonstrations to generalize, and these demonstrations often exhibit a high variance.
+				\item The estimated policy always has an approximation error and small errors in the policy may lead to large error in the long-term behavior \( \hat{\mu}(\vec{s}) \).
+				\item The agent does not know how to recover from previously unseen states, which is problematic as the agent is prone to make mistakes due to the residual error! This problem is called the \emph{covariate shift}.
+			\end{itemize}
+
+			\subsubsection{DAGGER: New Samples to Learn to Recover}
+				In the \emph{DAGGER} (\emph{Dataset Aggregation}, see Ross, Gordon and Bagnell: "A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning" (2010)) algorithm, the robot is given the ability to ask for new demonstrations if it ends up in an unseen states. The teacher then provides new data and the robot aggregates it with the previously seen demonstrations.
 			% end
 
-			\subsubsection{DAGGER: New Samples to Learn to Recover} % 13.21
-				\todo{Content}
-			% end
-
-			\subsubsection{DART: Robustness in Imitation Learning} % 13.22
-				\todo{Content}
+			\subsubsection{DART: Robustness in Imitation Learning}
+				In the \emph{DART} (\emph{Disturbances for Augmenting Robot Trajectories}, see Laskey, et al.: "DART: Noise Injection for Robust Imitation Learning" (2017)) method, noise is added to the demonstrations to learn how the teacher adapts. In consequence, the learned policy will be more robust with respect to unexpected variations. This is an improvement over DAGGER as it does not require a teacher to present which is time consuming.
 			% end
 		% end
 
-		\subsection{Generative Adversarial Learning} % 13.23, 13.24, 13.25
-			\todo{Content}
+		\subsection{Generative Adversarial Learning}
+			In \emph{generative adversarial learning}, not the distance between the agents and the experts policy is minimized, but the \emph{occupancy measure}
+			\begin{equation*}
+				\rho_\pi(\vec{s}, \vec{a}) = \pi(\vec{s} \given \vec{a}) \sum_{t = 1}^{\infty} \gamma^t \Pr(\vec{s}_t = \vec{s} \given \pi)
+			\end{equation*}
+			is matched. It can be interpreted as the distribution of state-action pairs that the agent encounters when navigating through the environment with policy \(\pi\). The probability \( \Pr(\vec{s}_t = \vec{s} \given \pi) \) is the probability of encountering state \(\vec{s}\) in time step \(t\) when following policy \(\pi\). The matching is done by minimizing the KL divergence between the policy \(\pi_E\) of the expert and the estimated policy \(\hat{\pi}\):
+			\begin{equation*}
+				\hat{\pi} = \arg\min_{\hat{\pi}'}\, D_\mathrm{KL}\big( \rho_{\pi_E}(\vec{s}, \vec{a}) \,\big\Vert\, \rho_{\hat{\pi}'}(\vec{s}, \vec{a}) \big)
+			\end{equation*}
+			This is solved by GAIL (Generative Adversarial Imitation Learning) with a minmax game
+			\begin{equation*}
+				\max_{\hat{\pi}'} \, \min_D \, \E_{\hat{\pi}'}\big[\! \ln D(\vec{s}, \vec{a}) \big] + \E_{\pi_E}\big[\! \ln\big( 1 - D(\vec{s}, \vec{a}) \big) \big] - \lambda H(\hat{\pi}')
+			\end{equation*}
+			with a discriminator \(D\) and the policy \(\hat{\pi}'\). The algorithm is composed of two steps:
+			\begin{enumerate}
+				\item The discriminator is trained for a high probability in the experts demonstrations.
+				\item The policy is trained for maximize the discriminator, considering the discriminator as the reward.
+			\end{enumerate}
 		% end
 	% end
 
-	\section{Inverse Reinforcement Learning} % 13.26, 13.27, 13.42, 13.44
-		\todo{Content}
+	\section{Inverse Reinforcement Learning}
+		In \emph{inverse reinforcement learning} (IRL), the problem if imitation learning is tackled from a different point of view: assuming the reward function provides the most informative and transferable definition of the task, learn the reward function from demonstrations given a model and a policy and subsequently recover the reward function. This reward function can then be used to further improve the policy or to learn a different policy (apprenticeship learning).
 
-		\subsection{Basic Principle} % 13.46, 13.49, 13.55
-			\todo{Content}
+		The problem setup uses demonstrations \( \big\{ \vec{s}_{1:T}^{[i]}, \vec{a}_{1:T}^{[i]} \big\}_{i \,=\, \subdotsrange{1}{N}} \) from an expert that encode the teachers policy \( \pi^\ast(\vec{a} \given \vec{s}) \) and the long-term behavior \( \mu^\ast(\vec{s}) \) and a transition model \( r(\vec{s}_{t + 1} \given \vec{s}_t, \vec{a}_t) \) but no reward function as inputs. The problem of inverse RL is now to recover the reward function \( r(\vec{s}) \) that best explains the policy \( \pi^\ast(\vec{a} \given \vec{s}) \) and the long-term behavior \( \mu^\ast(\vec{s}) \).
 
-			\subsubsection{Feature-Based Reward Function} % 13.47, 13.48
-				\todo{Content}
+		\subsection{Basic Principle}
+			The problem can be formulated as a feasibility problem: find a reward function \( r^\ast(\vec{s}) \) such that
+			\begin{equation}
+				\E_{p, \pi^\ast}\Bigg[ \sum_{t = 1}^{\infty} \gamma^t r^\ast(\vec{s}_t) \Bigg]
+				\geq
+				\E_{p, \pi}\Bigg[ \sum_{t = 1}^{\infty} \gamma^t r^\ast(\vec{s}_t) \Bigg]
+				\label{eq:inverseRLBasicPrinciple}
+			\end{equation}
+			holds for all policies \(\pi\). While this problem is convex, it still has many challenges:
+			\begin{description}[leftmargin=4.5cm]
+				\item[Limited Data]         Often only traces from the experts behavior are given, not the entire optimal policy.
+				\item[Ill-Posed]            Reward \( r^\ast(\vec{s}) \equiv 0 \) is a solution, there is ambiguity in the reward function.
+				\item[Expert Suboptimality] Assumes that the expert is indeed optimal. If this is not the case, the problem becomes infeasible.
+				\item[Computation]          Assumes that the policies can be enumerated.
+			\end{description}
+
+			\subsubsection{Addressing the "Limited Data" Challenge: Feature-Based Reward Function}
+				Assuming the reward function is linear in some features \( \vec{\phi}(\vec{s}) \), i.e. \( r(\vec{s}) = \vec{w}^T \vec{\phi}(\vec{s}) \), the right hand side of \eqref{eq:inverseRLBasicPrinciple} becomes
+				\begin{equation*}
+					\E_{p, \pi}\Bigg[ \sum_{t = 1}^{\infty} \gamma^t r(\vec{s}_t) \Bigg]
+						= \E_{p, \pi}\Bigg[ \sum_{t = 1}^{\infty} \gamma^t \vec{w}^T \vec{\phi}(\vec{s}) \Bigg]
+						= \vec{w}^T \underbrace{\E_{p, \pi}\Bigg[ \sum_{t = 1}^{\infty} \gamma^t \vec{\phi}(\vec{s}) \Bigg]}_{\vec{\psi}(\pi) \,\coloneqq}
+						\doteq \vec{w}^T \vec{\psi}(\pi)
+				\end{equation*}
+				with \( \vec{\psi}(\pi) \) being the expected discounted features of policy \(\pi\). The feasibility problem \eqref{eq:inverseRLBasicPrinciple} now is for find some \( \vec{w}^\ast \) such that
+				\begin{equation*}
+					(\vec{w}^\ast)^T \vec{\psi}(\pi^\ast) \geq (\vec{w}^\ast)^T \vec{\psi}(\pi)
+				\end{equation*}
+				holds for all policies \(\pi\). This solves the \emph{limited data} challenge as the expectation \( \vec{\psi}(\pi^\ast) \) can be estimated from the sampled trajectories (the distributions). The amount of data obviously scales with the number of features in the reward function, but does not depend on the size of the state space of the complexity of the experts policy!
 			% end
 
-			\subsubsection{Constraint Generation} % 13.50, 13.51, 13.58
-				\todo{Content}
+			\subsubsection{Addressing the "Ill-Posed" Challenge: (Structured) Max. Margin Solution}
+				To deal with the challenge that the problem is ill-posed, it is possible to enforce a predefined reward margin of \(1\) in the optimization problem. The optimization problem can be written as
+				\begin{equation*}
+					\begin{aligned}
+						\min_{\vec{w}} \,& \vec{w}^T \vec{w} \\
+						\mathrm{s.t.} \quad&
+							\begin{aligned}
+								\forall\pi : \vec{w}^T \vec{\psi}(\pi^\ast) &\geq \vec{w}^T \vec{\psi}(\pi) + 1
+							\end{aligned}
+					\end{aligned}
+				\end{equation*}
+				where the optimization objective serves as regularization of the parameters. This enforced margin does not change the problem much as it can be absorbed in the weights/features (e.g. by introducing a bias feature), but does not allow \( \vec{w} = \vec{0} \) as solution anymore. This is called the \emph{max. margin} solution.
+
+				A more sophisticated approach is to use a metric \( m(\pi^\ast, \pi) \) to measure the distance between two policies (e.g. the sum of minimum distances from the path generated by \(\pi^\ast\) for the path generated by \(\pi\)) and use this metric as the minimum reward margin:
+				\begin{equation*}
+					\begin{aligned}
+						\min_{\vec{w}} \,& \vec{w}^T \vec{w} \\
+						\mathrm{s.t.} \quad&
+							\begin{aligned}
+								\forall\pi : \vec{w}^T \vec{\psi}(\pi^\ast) &\geq \vec{w}^T \vec{\psi}(\pi) + m(\pi^\ast, \pi)
+							\end{aligned}
+					\end{aligned}
+				\end{equation*}
+				The justification for this is that the reward margin should be larger for policies that are very different for \(\pi^\ast\).
 			% end
 
-			\subsubsection{Ill-Posed Problem} % 13.52, 13.54
-				\todo{Content}
+			\subsubsection{Addressing the "Expert Suboptimality" Challenge: Slack Variables}
+				Instead of enforcing all constraints, it is possible to add slack variables \(\xi\) to the inequality constraints to allow them to be violate a bit:
+				\begin{equation*}
+					\begin{aligned}
+						\min_{\vec{w}, \xi} \,& \vec{w}^T \vec{w} + C \xi \\
+						\mathrm{s.t.} \quad&
+							\begin{aligned}
+								\forall\pi : \vec{w}^T \vec{\psi}(\pi^\ast) &\geq \vec{w}^T \vec{\psi}(\pi) + m(\pi^\ast, \pi) - \xi
+							\end{aligned}
+					\end{aligned}
+				\end{equation*}
+				The altering of the objective ensures that the slack variables do not get too high which could lead allowing improper solutions. This resolved the challenge of expert suboptimality.
+
+				\todo{Slide 13.60, Suboptimal Expert Case}
 			% end
 
-			\subsubsection{(Structured) Max. Margin Solution} % 13.53, 13.56
-				\todo{Content}
-			% end
-
-			\subsubsection{Expert Suboptimality} % 13.57, 13.60
-				\todo{Content}
+			\subsubsection{Addressing the "Computation" Challenge: Constraint Generation}
+				One method of dealing with the too much constraints is \emph{constraint generation}. Instead of using all policies \(\pi\) as constraints, only a certain set \( \Pi \) of policies is used as constraints. Policies are added iteratively (with the iteration variable \(k\)) to this set by computing the most-violated constraint
+				\begin{equation*}
+					\pi^{(k)} = \arg\max_\pi\, \vec{w}^{(k), T} \vec{\psi}(\pi) + m(\pi^\ast, \pi).
+				\end{equation*}
+				If no violations have been found, the iteration stops.
 			% end
 		% end
 
-		\subsection{Feature Matching by Max. Entropy} % 13.61
-			\todo{Content}
+		\subsection{Feature Matching by Max. Entropy}
+			The classical approach to statistical modeling is the principle of maximum entropy. The premise is that modeling should be performed with the least commitment possible, i.e. using the distribution with the maximum entropy (subject to certain constraints).
 
-			\subsubsection{Max. Entropy Approach to Inference} % 13.62
-				\todo{Content}
+			\subsubsection{Max. Entropy Approach to Inference}
+				Given the first- and second-order moments \(m_1\) and \(m_2\), the distribution with the maximum entropy is given as the solution of
+				\begin{equation*}
+					\begin{aligned}
+						\max_p \,& \int\! p(x) \big[\! -\!\ln p(x) \big] \dd{x} \\
+						\mathrm{s.t.} \quad&
+							\begin{aligned}[t]
+								\int\! p(x) \dd{x} &= 1 \\
+								\int\! p(x) x \dd{x} &= m_1 \\
+								\int\! p(x) x^2 \dd{x} &= m_2
+							\end{aligned}
+					\end{aligned}
+				\end{equation*}
+				where the first constraint specifies that \(p(x)\) is actually a distribution. The solution to this problem is
+				\begin{equation*}
+					p(x) \propto \exp{ \lambda_1 x + \lambda_2 x^2 }
+				\end{equation*}
+				with the Lagrangian multipliers \(\lambda_{1, 2}\). This is a Gaussian distribution! So the Gaussian is the max. entropy distribution with given mean and variance.
 			% end
 
-			\subsubsection{Max. Entropy Approach to Inverse RL} % 13.63
-				\todo{Content}
+			\subsubsection{Max. Entropy Approach to Inverse RL}
+				Similarly to inference, the max. entropy approach can be applied to inverse RL with a trajectory distribution \( p(\vec{\tau}) \) and certain features \( \vec{\psi}(\vec{\tau}) \) that have to match \( \vec{\psi}(\pi^\ast) \). The optimization problem is
+				\begin{equation*}
+					\begin{aligned}
+						\max_p \,& \int\! p(\vec{\tau}) \big[\! -\!\ln p(\vec{\tau}) \big] \dd{\vec{\tau}} \\
+						\mathrm{s.t.} \quad&
+							\begin{aligned}[t]
+								\int\! p(\vec{\tau}) \dd{\vec{\tau}} &= 1 \\
+								\int\! p(\vec{\tau}) \vec{\psi}(\vec{\tau}) \dd{\vec{\tau}} &= \vec{\psi}(\pi^\ast)
+							\end{aligned}
+					\end{aligned}
+				\end{equation*}
+				and has the solution
+				\begin{equation*}
+					p(\vec{\tau}) \propto \exp{ \vec{w}^T \vec{\psi}(\vec{\tau}) }
+				\end{equation*}
+				with the Lagrangian multipliers \(\vec{w}\). This is a softmax distribution over the trajectories with the return \( r(\vec{\tau}) = \vec{w}^T \vec{\psi}(\vec{\tau}) \). The problem is that the optimization does not take the transition dynamics into account, i.e. there might be trajectories with a huge return that are unlikely due to the dynamics.
 			% end
 
-			\subsubsection{Maximum-Casual-Entropy Inverse RL} % 13.64, 13.65
-				\todo{Content}
+			\subsubsection{Maximum-Casual-Entropy Inverse RL}
+				In contrast for "normal" max. entropy for inverse RL, \emph{maximum-causal-entropy inverse RL} also includes the state dynamics as a constraint:
+				\begin{equation*}
+					\begin{aligned}
+						\max_\pi \,& \sum_t \iint\! \mu_t(\vec{s}) \pi_t(\vec{a} \given \vec{s}) \ln \pi_t(\vec{a} \given \vec{s}) \dd{\vec{s}} \dd{\vec{a}} \\
+						\mathrm{s.t.} \quad&
+							\begin{aligned}[t]
+								\forall \vec{s} : \int\! \pi(\vec{a} \given \vec{s}) &= 1 \\
+								\sum_t \int\! \mu_t(\vec{s}) \vec{\phi}(\vec{s}) &= \vec{\psi}(\pi^\ast) \\
+								\iint\! \mu_{t - 1}(\vec{s}) \pi_{t - 1}(\vec{a} \given \vec{s}) p(\vec{s}' \given \vec{s}, \vec{a}) \dd{\vec{s}} \dd{\vec{a}} &= \mu_t(\vec{s}_t')
+							\end{aligned}
+					\end{aligned}
+				\end{equation*}
+				As usual, the first constraint specifies that \(\pi\) is actual a distribution. The second and third constraint specify that the features are matched and that the transition dynamics distribution is consistent. The solution to this optimization problem is
+				\begin{equation*}
+					\pi_t(\vec{a} \given \vec{s}) \propto \exp{ \vec{w}^T \vec{\phi}(\vec{s}) + \E\big[ V_{t + 1}(\vec{s}') \biggiven \vec{s}, \vec{a} \big] }
+				\end{equation*}
+				where \( \vec{w} \) and \( V_t(\vec{s}) \) are Lagrangian multipliers. If \( r(\vec{s}) = \vec{w}^T \vec{\phi}(\vec{s}) \) is the reward, then this is a softmax over the Q-function:
+				\begin{equation*}
+					\pi_t(\vec{a} \given \vec{s}) \propto \exp{ Q(\vec{s}, \vec{a}; \vec{w}) }
+				\end{equation*}
+				As this is still a convex problem, the solution can be obtained by solving the dual relatively efficiently.
 			% end
 		% end
 
-		\subsection{Reward-Parameterized Policies} % 13.66, 13.67
-			\todo{Content}
+		\subsection{Reward-Parameterized Policies}
+			Alternatively, it is also possible to assume that the policy is a softmax over the Q-function
+			\begin{equation*}
+				\pi_t(\vec{a} \given \vec{s}; r, \alpha) \propto \exp{ \alpha Q^\ast(\vec{s}, \vec{a}; r) }
+			\end{equation*}
+			where \(Q^\ast\) is the optimal Q-function for the reward \(r(\vec{s})\). Then the likelihood of a set of state-action pairs can be evaluated as
+			\begin{equation*}
+				\log p(\mathcal{D} \given r, \alpha) = \sum_i \log \pi(\vec{a}_i \given \vec{s}_i; r, \alpha).
+			\end{equation*}
+			This is like a "smarter" approach to behavioral cloning. In fact, it can be shown that this is equivalent. It can also be extended to a Bayesian setup by introducing a prior \( p(r, \alpha) \):
+			\begin{equation*}
+				p(r, \alpha \given \mathcal{D}) \propto p(\mathcal{D} \given r, \alpha) p(r, \alpha)
+			\end{equation*}
 		% end
 	% end
 
-	\section{Case Studies} % 13.68, 13.69
-		\todo{Content}
+	\section{Behavioral Cloning vs. Inverse RL}
+		Behavioral cloning is
+		\begin{itemize}
+			\item simple to implement
+			\item imposes no assumptions on the model, but
+			\item it might not be possible to reproduce the long-term behavior.
+		\end{itemize}
+		For representation a \emph{policy} is used which is hard to generalize and that needs many samples.
 
-		\subsection{Highway Driving} % 13.70
-			\todo{Content}
-		% end
-
-		\subsection{Max. Margin} % 13.71, 13.72
-			\todo{Content}
-		% end
-
-		\subsection{Parking Lot Navigation} % 13.73, 13.74, 13.75, 13.76, 13.77
-			\todo{Content}
-		% end
-
-		\subsection{Human Path Planning} % 13.78, 13.79, 13.80, 13.81, 13.82, 13.83
-			\todo{Content}
-		% end
-
-		\subsection{Goal Inference} % 13.84, 13.85
-			\todo{Content}
-		% end
-
-		\subsection{Quadruped} % 13.86, 13.87, 13.88
-			\todo{Content}
-		% end
-
-		\subsection{Extreme Helicopter Flight} % 13.89, 13.90, 13.91, 13.92
-			\todo{Content}
-		% end
-	% end
-
-	\section{Wrap-Up} % 13.45, 13.94
-		\todo{Content}
+		Inverse RL is
+		\begin{itemize}
+			\item harder to implement and
+			\item requires solving a Markov decision process which is hard for many interesting MDPs.
+			\item But if successful, reproducing the long-term behavior is possible.
+		\end{itemize}
+		For representation the reward function is used which is a compact description and easily transfers to new tasks.
 	% end
 % end
 

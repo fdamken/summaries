@@ -2,7 +2,7 @@
 
 ## Slides
 
-Done/Structured/Total: 513/1160/1160; 44%/100%/100%
+Done/Structured/Total: 609/1160/1160; 52%/100%/100%
 
 * [x] Chapter  1 : Introduction (47); Core
 * [X] Chapter  2 : Robotics in a Nutshell (112); Core
@@ -20,7 +20,7 @@ Done/Structured/Total: 513/1160/1160; 44%/100%/100%
 * [X] Chapter 10 : Policy Gradient Methods (59); Core
 * [X] Chapter 11 : Value Function Methods (42); Core
 * [X] Chapter 12 : Probabilistic Policy Search (66); Core
-* [x] Chapter 13 : Imitation Learning, Behavioral Cloning and Inverse RL (96); Core
+* [X] Chapter 13 : Imitation Learning, Behavioral Cloning and Inverse RL (96); Core
 * [x] Chapter 14 : Bayesian Reinforcement Learning (54); Advanced
 * [x] Chapter 15 : Outlook (31); Core
 

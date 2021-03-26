@@ -2,7 +2,7 @@
 
 ## Slides
 
-Done/Structured/Total: 609/1160/1160; 52%/100%/100%
+Done/Structured/Total: 668/1160/1160; 58%/100%/100%
 
 * [x] Chapter  1 : Introduction (47); Core
 * [X] Chapter  2 : Robotics in a Nutshell (112); Core
@@ -16,7 +16,7 @@ Done/Structured/Total: 609/1160/1160; 52%/100%/100%
 * [x] Chapter  6 : State Estimation (64); Advanced
 * [X] Chapter  7 : Model Learning (66); Wider
 * [X] Chapter  8 : Policy Models, Movement Primitives (65); Core
-* [x] Chapter  9 : Model-Based Reinforcement Learning (59); Wider
+* [X] Chapter  9 : Model-Based Reinforcement Learning (59); Wider
 * [X] Chapter 10 : Policy Gradient Methods (59); Core
 * [X] Chapter 11 : Value Function Methods (42); Core
 * [X] Chapter 12 : Probabilistic Policy Search (66); Core

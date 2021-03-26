@@ -274,6 +274,7 @@
 \DeclareMathOperator{\sign}{sign}
 \DeclareMathOperator{\Sig}{Sig}
 \DeclareMathOperator{\sinc}{sinc}
+\DeclareMathOperator{\sort}{sort}
 \DeclareMathOperator{\val}{val}
 \DeclareMathOperator{\Var}{Var}
 \DeclareMathOperator{\Vf}{Vf}

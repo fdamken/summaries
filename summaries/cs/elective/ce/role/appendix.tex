@@ -163,8 +163,31 @@
 		\answer{This is possible using an (easily achievable) stable linear systems and combining it with a bijective transformation function. Because of the bijectivity, the potential energy is not changed and the nonlinear system is stable too. Using invertible flows (bijective neural networks), a huge range of different nonlinear transformations are possible, allowing for various nonlinear stable dynamics.}
 	% end
 
-	\section{Model-Based Reinforcement Learning} % 9.59
-		\todo{Content}
+	\section{Model-Based Reinforcement Learning}
+		\paragraph{How does model-based reinforcement learning relate to optimal control?}
+		\answer{MBRL is essentially optimal control with learned models.}
+
+		\paragraph{How does model-free contrast to model-based? Does it really have no models?}
+		\answer{In model-based RL, an explicit dynamics model is learned. In model-free RL, the value function (or the policy) is learned directly. But these are also models of the environment and implicitly encode the dynamics. So MFRL does have models!}
+
+		\paragraph{Is model-based RL generally better?}
+		\answer{No. While MBRL can be really sample-efficient and can even directly train on the real system due to this, it suffers in generalization. Outside of already seen regions, MBRL methods are usually brittle. Also they suffer from modeling errors which is discussed in more detail in the next questions.}
+
+		\paragraph{Why does domain knowledge help model-based RL?}
+		\answer{Domain knowledge can be used to encode relevant properties of the environment, for example encoding rotational symmetries like in the pendulum using sine/cosine transformations. This enables better generalization.}
+
+		\paragraph{Can modeling errors harm model-based RL?}
+		\answer{Yes. If a model has errors (which every model has), the optimizer might be able to exploit those errors in its favor. This could lead to robots walking through walls in the simulation, but just accelerating into them in a real environment. Other modeling problems are for example energy generation if some friction coefficient is negative.}
+
+		\paragraph{What are aleatoric and epistemic uncertainty?}
+		\answer{Aleatoric uncertainty describes the noise of a variable. Epistemic uncertainty describes the uncertainty on the model itself, for example the uncertainty on the state dynamics matrix in a LGDS. The latter it often connected to Bayesian models while the former can also be found the frequentist models.}
+
+		\paragraph{How does model-based RL relate to Model-Predictive Control?}
+		\answer{In MPC, a model is used for replanning a action by looking a few steps ahead in time. This enables the robot to adapt to new situations if some previous action was not executed correctly, for example.}
+
+		\paragraph{What are PILCO and Guided Policy Search?}
+		% TODO: Also answer for Guided Policy Search after looking at the respective slides!
+		\answer{PILCO uses a Gaussian process dynamics model to quantify epistemic uncertainty and use that uncertainty to regularize the reward.}
 	% end
 
 	\section{Value Function Methods}

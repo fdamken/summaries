@@ -155,6 +155,7 @@
 \sign#m
 \Sig#m
 \sinc#m
+\sort#m
 \val#m
 \Var#m
 \Vf#m

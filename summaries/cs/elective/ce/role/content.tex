@@ -1012,6 +1012,8 @@
 % end
 
 \chapter{Optimal Control}
+	\label{c:optimalControl}
+
 	In lots of scenarios it is too costly to program a desired behavior. This phenomenon is none from e.g. image understanding where the state-of-the-art approach is to use machine learning. So supervised learning is not enough for acquiring certain behaviors, e.g. due to imperfect demonstrations, the correspondence problem and the simple fact that it is impossible to demonstrate everything. The correspondence problem describes the fact that the robot works differently than humans, i.e. the transfer from a human motion to joint movements or a robot is not straightforward.
 
 	Hence, self-improvement is needed! The robot explores the environment by trial-and-error and the environment (or the engineers of the environment) give feedback based on the current states and the executed actions. This is called the \emph{reward}. In optimal control and reinforcement learning settings, it is common to talk about the \emph{reward}, whereas in other literature it is more common to talk about the \emph{cost}, which is just an inverted notion of the same concept, so \( \mathit{Reward} = -\mathit{Cost} \) and maximizing the reward is equivalent to minimizing the cost.
@@ -1396,6 +1398,8 @@
 	\todo{Content}
 
 	\section{Differential Dynamic Programming (DDP)} % 4a.1, 4a.2, 4a.3, 4a.12
+		\label{sec:ddp}
+
 		\todo{Content}
 
 		\subsection{Locally Nonlinear LQR} % 4a.13, 4a.14
@@ -1797,7 +1801,7 @@
 		Some examples for off-the-shelf policies are neural networks, radial basis functions (RBF) networks, Gaussian processes and locally weighted regression models. While they are easy to use, off-the-self policies have some major drawbacks: they usually generalize bad if the controller has not been trained in the requested area of the state space, they are not robust (so also small changes in the system may lead to catastrophic failures), and they are often really sample-inefficient.
 
 		\subsection{Linear Basis Functions}
-			Linear controllers \( \vec{a} = \vec{f}_{\vec{w}}(\vec{s}) = \vec{\phi}^T(\vec{s}) \vec{w} \), in the simplest case a PD-controller with \( \vec{\phi}^T(\vec{s}) = \begin{bmatrix} 1 & \vec{s}^T \end{bmatrix} \), may yield really good policies using a very compact representation. Also they are easy to learn with linear regression. Whoever, a food feature representation has to be used! This representation was successfully applied to balancing a pole on a cart, but even learning the swing-up can be hard.
+			Linear controllers \( \vec{a} = \vec{f}_{\vec{w}}(\vec{s}) = \vec{\phi}^T(\vec{s}) \vec{w} \), in the simplest case a PD-controller with \( \vec{\phi}^T(\vec{s}) = \begin{bmatrix} 1 & \vec{s}^T \end{bmatrix} \), may yield really good policies using a very compact representation. Also they are easy to learn with linear regression. Whoever, a good feature representation has to be used! This representation was successfully applied to balancing a pole on a cart, but even learning the swing-up can be hard.
 		% end
 
 		\subsection{Radial Basis Functions (RBFs)}
@@ -1958,96 +1962,200 @@
 	% end
 % end
 
-\chapter{Model-Based Reinforcement Learning} % 9.1, 9.2, 9.5, 9.6
+\chapter{Model-Based Reinforcement Learning}
 	\label{c:modelBasedRL}
 
-	\todo{Content}
+	This chapter introduces model-based reinforcement learning methods. In reinforcement learning, the goal is to maximize the expected long-term reward like in optimal control (see \autoref{c:optimalControl} and \ref{c:approximateOptimalControl}), however, no knowledge about the environment is given in comparison to solving a given MDP. This has lead to two strategies: model-based RL and model-free RL. In the former a dynamics model of the environment is learned which is then used for solving the optimal control problem. In the latter to (explicit) model is learned but rather the policy is learned directly from data. But the distinction of model-based and model-free RL is not very clean: model-based RL could still use model-free methods to optimize the policy, e.g. by using the learned model to improve accuracy (e.g. DYNA algorithm), use the dynamics to generate data for MFRL or to perturb the parameters to generate robust MFRL policies (sim-to-real). Analogously, MFRL methods often also use models: the V- and Q-function implicitly encode the dynamics of the system, but through the cumulative reward rather than the state.
 
-	\section{Differentiation of Model-Based and Model-Free} % 9.7, 9.8
-		\todo{Content}
+	A typical distinction between MBRL and MFRL is as follows: "MBRL is more sample-efficient than MFRL, but MFRL has better asymptotic performance, due to modeling errors introducing performance bias. Modeling errors can be catastrophic for MBRL so the algorithms are brittle." This gives rise to three questions which will be addresses in the following sections:
+	\begin{itemize}
+		\item \emph{When} is MBRL more sample-efficient than MFRL?
+		\item \emph{Why} does MBRL have a performance bias?
+		\item \emph{When} are modeling errors catastrophic?
+	\end{itemize}
 
-		\subsection{Sample Efficiency} % 9.9, 9.10, 9.11
-			\todo{Content}
+	\section{Sample Efficiency}
+		The key distinction of MBRL and MFRL is the availability of an inductive bias to generalize outside of the data (OOD). While in a discrete MDP the transition matrix usually has to structure, an LQR system has -- and this structure can be exploited by MBRL. Therefore, MBRL only benefits in terms of sample efficiency if there is domain knowledge that can be exploited.
+
+		\paragraph{Discrete MDP}
+			For a discrete MDP with state space \(\mathcal{S}\) and action space \(\mathcal{A}\) and a time horizon \(T\), the \emph{minimum}\footnote{The actual amount of samples required is more evolved and an active are of research.} amount of samples required to solve the MDP are:
+			\begin{itemize}
+				\item \eqmakebox[mbrlSamplEffDiscrete][l]{for model-free RL:}
+					\( \mathcal{O}\big( \lvert \mathcal{S} \rvert^2 \cdot \lvert \mathcal{A} \rvert \big) \)
+				\item \eqmakebox[mbrlSamplEffDiscrete][l]{for model-based RL:}
+					\( \mathcal{O}\big( \lvert \mathcal{S} \rvert^2 \cdot \lvert \mathcal{A} \rvert \big) \)
+			\end{itemize}
+			So both MFRL and MBRL have the same sample efficiency as they both have to traverse the whole state-action space!
+		% end
+
+		\paragraph{Continuous Linear System (LQR)}
+			For a continuous linear LQR system with state dimensionality \(n_s\) and action dimensionality \(n_a\) and time horizon \(T\), the \emph{minimum} amount of samples required to solve the MDP are:
+			\begin{itemize}
+				\item \eqmakebox[mbrlSamplEffContinuous][l]{for model-free RL:}
+					\eqmakebox[mbrlSamplEffContinuousR][l]{\( \mathcal{O}\big( (n_s + 1) \cdot n_a \cdot T \big) \)} \quad[optimal trajectory]
+				\item \eqmakebox[mbrlSamplEffContinuous][l]{for model-based RL:}
+					\eqmakebox[mbrlSamplEffContinuousR][l]{\( \mathcal{O}\big( n_s \cdot (n_s + n_a + 1) \big) \)}   \quad[any trajectory]
+			\end{itemize}
+			As usually \( T \gg n_s \), MBRL is considerable more sample-efficient than MFRL for the LQR case as the amount of samples needed is independent from the time horizon!
 		% end
 	% end
 
-	\section{Domain Knowledge in Reinforcement Learning} % 9.13, 9.14
-		\todo{Content}
+	\section{Models in Reinforcement Learning}
+		To use a model in RL, there has to be useful domain knowledge. This is available in a variety of settings, for example in well understood physics-based problems (e.g. it lots of robotics applications), for "smooth" dynamical systems where Gaussian processes and neural networks can extrapolate locally, or games with simple transition rules, e.g. using Monte Carlo tree search for Go. Some shallow domain knowledge can also be used to encode symmetries in feature transformations, e.g. using sine features for angles to encode the "full rotation" symmetry. But there are also various settings where no or little domain knowledge is available: e.g. most discrete MDPs that have arbitrary structure and complex, stochastic, partially observed environments (Atari games from pixels, table tennis with low-frequency tracking, \dots).
 
-		\subsection{Performance Bias} % 9.15, 9.16, 9.17, 9.22, 9.25
-			\todo{Content}
-		% end
+		Problems in MBRL include that a performance bias might get introduced by modeling errors or even the optimizer itself. Modeling errors are especially bad as it is never possible to remove them completely. The famous quote "All models are wrong, but some are useful." (George E. P. Box) is no less true in MBRL: There might be models that are useful for reinforcement learning, but they always have the problem of being wrong. If the optimizer gets to exploit these errors, the resulting policy will not work on a real system! This directly leads to the second source of performance biases: problematic optimizers. Issues in the optimizer are mainly produced by two problems: local optima and numerical stability. The following sections will address these problems separately.
 
-		\subsection{Local Optima and Sample-Based Methods} % 9.18, 9.21
-			\todo{Content}
+		\subsection{Local Optima and Sample-Based Methods}
+			In \autoref{sec:ddp}, differential dynamic programming (DDP) was discussed. This is a method of dynamic programming that used linearizations to find an optimal policy. But these linearizations are susceptible to local optima! A common method for escaping local optima are sample-based methods of which some are discussed in the following sections. But they have the major problem of not scaling well to high-dimensional search (state-action) spaces which makes them infeasible for most problems. Some of these scaling issues can be overcome by combining the method with replanning which will be covered in \autoref{sec:mbrlReplanning}.
 
-			\subsubsection{The Cross-Entropy Method (CEM)} % 9.19
-				\todo{Content}
+			\subsubsection{The Cross-Entropy Method (CEM)}
+				The \emph{cross-entropy method} is a relatively simple reinforcement learning method that works similar to evolutionary algorithms: first sample parameters \( {\vec{\theta}_k}_{k \,=\, \subdotsrange{1}{K}} \) from a parametric distribution \( p_{\vec{\omega}}(\vec{\theta}) \) and evaluate them somehow (e.g. by generating a corresponding trajectory and calculating the total reward) using an objective \( J(\vec{\theta}) \). Then select the best \( K_\mathrm{top} \) samples and fit the distribution parameters \(\vec{\omega}\) accordingly (e.g. using a maximum likelihood estimator). This converges to the optimal parameters \(\vec{\omega}^\ast\) parameters for the parameter distribution. For (optimal) control, the parameters are a sequence of actions. A procedural description for a Gaussian distribution \( p_{\vec{\omega}}(\vec{\theta}) = \mathcal{N}(\vec{\theta} \given \vec{\mu}, \mat{\Sigma}) \) with \( \vec{\omega} = \{ \vec{\mu}, \mat{\Sigma} \} \) is shown in \autoref{alg:cemGaussian}.
+
+				The CEM can also be extended for using a more complex policy, e.g. a neural network. Then the parameters are updated using gradient descent instead of directly fitting the new data. To avoid overfitting, only a single GD step is done per iteration.
+
+				\begin{algorithm}  \DontPrintSemicolon
+					\( \vec{\mu} \gets \vec{0} \),\, \( \mat{\Sigma} \gets \mat{I} \)
+					\quad\tcp{Exemplary initialization.}
+					\Repeat{convergence of \(\vec{\mu}\) and \(\mat{\Sigma}\)}{
+						\eqmakebox[cemGaussian][r]{\( \vec{\theta}_{k \,=\, \subdotsrange{1}{K}} \sim \)} \eqmakebox[cemGaussianR][l]{\( \mathcal{N}(\vec{\mu}, \mat{\Sigma}) \)}
+						\quad\tcp{Sample parameters.}
+						\eqmakebox[cemGaussian][r]{\( J_k \gets \)} \eqmakebox[cemGaussianR][l]{\( J(\vec{\theta}_k) \)}
+						\quad\tcp{Evaluate parameters for \( k = \dotsrange{1}{K} \)}
+						\eqmakebox[cemGaussian][r]{\( \vec{\theta}_{(k) \,=\, \subdotsrange{(1)}{(K)}} \gets \)} \eqmakebox[cemGaussianR][l]{\( \sort\limits_J\, \vec{\theta}_{k \,=\, \subdotsrange{1}{K}} \)}
+						\quad\tcp{Sort parameters w.r.t. the performance.}
+						\BlankLine
+						\tcp{Fit new distribution parameters:}
+						\eqmakebox[cemGaussian][r]{\( \vec{\mu}^\mathrm{new} \gets \)} \( K_\mathrm{top}^{-1} \sum_{k = 1}^{K_\mathrm{top}} \vec{\theta}_{(k)} \) \;
+						\eqmakebox[cemGaussian][r]{\( \mat{\Sigma}^\mathrm{new} \gets \)} \( K_\mathrm{top}^{-1} \sum_{k = 1}^{K_\mathrm{top}} (\vec{\theta}_k - \vec{\mu}^\mathrm{new}) (\vec{\theta}_k - \vec{\mu}^\mathrm{new})^T \) \;
+					}
+
+					\caption{Cross-Entropy Method for Gaussian Parameter Distribution}
+					\label{alg:cemGaussian}
+				\end{algorithm}
 			% end
 
-			\subsubsection{(Model Predictive) Path Integral Control (MPPI)} % 9.20
-				\todo{Content}
+			\subsubsection{(Model-Predictive) Path Integral Control (MPPI)}
+				\emph{Path integral control} is a control-as-inference method initially derived for continuous time. For discrete time it is really similar to CEM: first sample a control sequence from a prior distribution, then compute a rollout of the dynamics and compute the "likelihood". Afterwards the parameters can be updated in a weighted fashion.
 			% end
 		% end
 
-		\subsection{Numerical Sensitivity} % 9.23
-			\todo{Content}
+		\subsection{Numerical Sensitivity}
+			Previously, the optimal control problem
+			\begin{equation*}
+				\begin{aligned}
+					\max_{\vec{a}_{1:T - 1}} \,& \sum_{t = 1}^{T} r(\vec{s}_t, \vec{a}_t) \\
+					\mathrm{s.t.} \quad&
+						\begin{aligned}
+							\vec{s}_{t + 1} &= \vec{f}(\vec{s}_t, \vec{a}_t)
+						\end{aligned}
+				\end{aligned}
+			\end{equation*}
+			with \( r(\vec{s}_T, \vec{a}_T) \coloneqq r(\vec{s}_T) \) was assessed from a dynamic programming perspective (DDP). Other techniques are for example \emph{backpropagation-through-time} or \emph{sequential dynamic programming} (check out the optimization of static and dynamical systems summary\footnote{\url{https://projects.frisp.org/documents/32}} for more details on SQP methods).
 
-			\subsubsection{Backprop-Through-Time} % 9.24
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Catastrophic Model Errors} % 9.26
-			\todo{Content}
+			In backpropagation-through-time, the trajectory is seen as a computation graph
+			\begin{equation*}
+				\vec{s}_2 = \vec{f}(\vec{s}_1, \vec{a}_1)
+				\quad\implies\quad
+				\vec{s}_3 = \vec{f}(\vec{s}_2, \vec{a}_2) = \vec{f}\big(\vec{f}(\vec{s}_1, \vec{a}_1), \vec{a}_2\big)
+				\quad\implies\quad
+				\cdots
+			\end{equation*}
+			with the objective \( J = \sum_{t = 0}^{T} r(\vec{s}_t, \vec{a}_t) \). To optimize the objective, it is possible to take the derivative w.r.t. the actions through time. For example for \(\vec{a}_1\):
+			\begin{equation*}
+				\pdv{J}{\vec{a}_1}
+					= \pdv{r}{\vec{a}_1} + \bigg(\! \pdv{r}{\vec{s}_2} + \pdv{r}{\vec{s}_3} \pdv{\vec{s}_3}{\vec{s}_2} + \cdots + \pdv{r}{\vec{s}_T} \pdv{\vec{s}_T}{\vec{s}_{T - 1}} \cdots \pdv{\vec{s}_3}{\vec{s}_2} \pdv{\vec{s}_2}{\vec{s}_1} \!\bigg) \pdv{\vec{s}_2}{\vec{a}_1}
+			\end{equation*}
+			But this gradient is very poorly conditioned as very small changed in \(\vec{a}_1\) have large effects in \(\vec{s}_t\) if \(t\) is large!
 		% end
 	% end
 
-	\section{Optimism and Pessimism in Reinforcement Learning} % 9.27, 9.28, 9.29
-		\todo{Content}
+	\section{Optimism, Pessimism and Uncertainty in Reinforcement Learning}
+		In reinforcement learning, \emph{optimism} is similar to \emph{greediness}, describing for aggressive the algorithm pursues the optimal solution compared to exploring the environment more. For model-based RL, too much optimism leads to exploitation of modeling errors that benefit control, for example energy generation if a friction parameter is negative and constraint violation (e.g. solving a maze by walking through walls). Such exploitation may have catastrophic consequences, e.g. robots that accelerate into walls. This issue of algorithms being too optimistic has to be resolved for practical methods. Three main approaches are currently used to tackle this:
+		\begin{itemize}
+			\item Inductive biases to impose additional structure, e.g. energy conservation.
+			\item Regularization to dissuade the optimizer from exploiting modeling errors.
+			\item Replanning over short horizons to constantly adapt to the state at additional computational costs.
+		\end{itemize}
+		Another method for dealing with too optimistic models is to "automatically" regularize the policy by incorporating uncertainty into the model. There are two types of uncertainty:
+		\begin{description}[leftmargin=3cm]
+			\item[Aleatoric] Inherent statistical uncertainty, e.g. additive noise like in the LGDS.
+			\item[Epistemic] Model uncertainty of a Bayesian model arising from a lack of data to estimate the parameters, e.g. when putting a distribution on the state dynamics matrix of a LGDS.
+		\end{description}
 
-		\subsection{Aleatoric and Epistemic Uncertainty} % 9.30, 9.31
-			\todo{Content}
-		% end
-
-		\subsection{Optimism Under Uncertainty} % 9.31, 9.32, 9.33, 9.34, 9.35, 9.39
-			\todo{Content}
-
-			\subsubsection{Neural Linear Models} % 9.36
-				\todo{Content}
-			% end
-
-			\subsubsection{Variational Inference} % 9.37
-				\todo{Content}
-			% end
-
-			\subsubsection{Ensembles} % 9.38
-				\todo{Content}
-			% end
+		\subsection{Optimism Under Uncertainty}
+			Adding uncertainty to the model has the effect of softening the reward for uncertain states. For example in a Gaussian setting with the reward \( r(x) = -x^2 \) where \( x \sim \mathcal{N}(\mu, \sigma^2) \), the expected reward include the variance: \( \E\big[r(x)\big] = -(\mu^2 +\sigma^2) \). Therefore the higher the (epistemic) uncertainty, the lower the reward. This is the idea behind Bayesian dynamics models: the epistemic uncertainty should anticipate prediction errors. For Bayesian linear regression models, including Gaussian processes, the decomposition of the uncertainty into aleatoric and epistemic uncertainty is obvious. Take for example Gaussian Bayesian linear regression with the features \( \vec{\phi}(\vec{x}) \):
+			\begin{align*}
+				y(\vec{x}) &= \vec{\phi}^T(\vec{x}) \vec{w} + \vec{\eta},\quad
+					\vec{w} \sim \mathcal{N}(\vec{\mu}_w, \mat{\Sigma}_w),\quad
+					\vec{\eta} \sim \mathcal{N}(\vec{0}, \sigma_\eta^2 \mat{I}) \\
+				\mu_y(\vec{x}) &= \vec{\phi}^T(\vec{x}) \vec{\mu}_w \\
+				\sigma_y^2 &= \underbrace{\sigma_\eta^2}_\text{aleatoric} + \underbrace{\sigma_\eta^2 \vec{\phi}^T(\vec{x}) \mat{\Sigma}_w \vec{\phi}(\vec{x})}_\text{epistemic}
+			\end{align*}
+			Some other approaches are:
+			\begin{itemize}
+				\item \emph{Bayesian Neural Networks:} Require approximate inference which limits theirs performance. They are an active area of research!
+				\item \emph{Neural Linear Models:} Bayesian linear regression with neural features. These are trained to maximize the marginal likelihood, so they overfit the data and uncertainty quantification is poor outside of data.
+				\item \emph{Variational Inference:} The predictive distribution is a sample estimate generated by sampling the network weights from a variational weight distribution. Mean field variational inference (MFVI) methods scale better than Markov chain Monte-Carlo (MCMC) methods, but the inference is less accurate.
+				\item \emph{Ensembles:} Several neural networks, each trained with different mini-batches. The predictive distribution is computed over all the models. While these are popular, how "Bayesian" this method really is is questionable.
+			\end{itemize}
 		% end
 	% end
 
-	\section{Replanning} % 9.40, 9.41, 9.42
-		\todo{Content}
+	\section{Replanning}
+		\label{sec:mbrlReplanning}
+
+		For replanning, the optimization problem for a single action \( \vec{a}_t \) takes the next \(T\) time steps into account\footnote{The notation of \(\arg\max\) is abused a bit here as only the first action is used as the result of the optimization problem. But the other steps can be used as a "warm start" for the upcoming optimization problems.}:
+		\begin{equation*}
+			\begin{aligned}
+				\vec{a}_t^\ast = \arg\max_{\vec{a}_{t:t + T}} \,& \sum_{\tau = t}^{t + T} r(\vec{s}_\tau, \vec{a}_\tau) \\
+				\mathrm{s.t.} \quad&
+					\begin{aligned}
+						\vec{s}_{t + 1} &= \vec{f}(\vec{s}_t, \vec{a}_t)
+					\end{aligned}
+			\end{aligned}
+		\end{equation*}
+		This is known as \emph{Model-Predictive Control} (MPC) or \emph{Receding Horizon Control} (RHC).
+
+		A huge benefit of replanning is that the controllers can react to disturbances and model errors. But doing the replanning is really costly and limits real-time execution. Also often a good terminal reward function is needed to prevent overly greedy planning.
 	% end
 
-	\section{Case Studies} % 9.43
-		\todo{Content}
-
-		\subsection{Probabilistic Learning for Control (PILCO)} % 9.44, 9.45, 9.46
-			\todo{Content}
+	\section{Case Studies}
+		\subsection{Probabilistic Learning for Control (PILCO)}
+			The PILCO algorithm uses a Gaussian process for the dynamics model with decent sample efficiency and good uncertainty quantification. The policy is represented using e.g. an RBF network and a backpropagation-through-time algorithm is used for computing the gradients. The key idea is that the epistemic uncertainty of the dynamics model regularizes the expected reward. But as backpropagation-through-time is used, the algorithm is a little brittle for large planning horizons, so only small \(T\) may be used.
+		% end
 
 		\subsection{Guided Policy Search (GPS)} % 9.48, 9.49, 9.50, 9.51, 9.52
 			\todo{Content}
 		% end
 
-		\subsection{Model Predictive Control (MPC)} % 9.54, 9.56
-			\todo{Content}
+		\subsection{Probabilistic Ensemble Trajectory Sampling (PETS)}
+			PETS uses neural network ensembles with CEM MPC where instead of propagating the distributions with moment matching, particles and randomly selected models from the ensemble are propagated.
 		% end
 	% end
 
-	\section{Wrap-Up} % 9.58, 12.63
-		\todo{Content}
+	\section{Wrap-Up}
+		This chapter covered some topics of MBRL. The core of MBRL is to combine model learning with methods from optimal control in various ways. It is often useful if the RL task has some kind of structure that can be incorporated into the model specification, e.g. energy conservation. In practice, regularization is often needed to prevent the optimizer from exploiting beneficial modeling errors like energy generation. Popular methods include inductive biases in these models and uncertainty-based regularization using Bayesian models and replanning.
+
+
+		For a comparison with the other discussed reinforcement learning methods (value function methods, see \autoref{c:valueFunctionMethods} and policy search, see \autoref{c:policySearch}), the following list gives an overview over the main benefits and drawbacks of \emph{model-based reinforcement learning}:
+		\begin{description}
+			\item[Model Complexity] Very High
+				\begin{itemize}
+					\item A forward model \( \vec{f} : \R^{n_s + n_a} \to \R^{n_s} \) has to be learned.
+					\item Dynamic programming has to be applicable (e.g. LQR).
+					\item Small errors in the model can have a big impact on the policy.
+				\end{itemize}
+			\item[Scalability] Poor (with some positive exceptions)
+				\begin{itemize}
+					\item Learning high-dimensional (or discontinuous) models is very hard.
+				\end{itemize}
+			\item[Data Efficiency] Excellent
+				\begin{itemize}
+					\item Every transition is used to learn the model.
+					\item Model can be reused for different tasks.
+				\end{itemize}
+			\item[Other Limitations] Distance between two policies is hard to control; huge computation times.
+		\end{description}
 	% end
 % end
 
@@ -2978,7 +3086,7 @@
 	% end
 % end
 
-\chapter{Imitation Learning: Behavioral Cloning and Inverse RL} % 13.1, 13.3, 13.4, 13.5, 13.8, 13.9, 13.10, 13.11, 13.12
+\chapter{Imitation Learning: Behavioral Cloning and Inverse RL}
 	Ot is often very hard or even impossible and time-consuming to learn policies from scratch using reinforcement learning, e.g. as the search space is too large to explore it in a reasonable amount of time. A human export, for example a professional table tennis player, takes years for perfecting its policy and the robot can avoid that by cloning his policy. This is called \emph{imitation learning} and is discussed in this chapter. Two different types of imitation learning are discussed: behavioral closing, where the actions are reproduced given the state, and inverse reinforcement learning, which is learning the reward function from demonstrations, given the optimal policy. Both of them rely on demonstrations, so a crucial question is how to demonstrate movements? A few possibilities are
 	\begin{itemize}
 		\item Teleoperation: \\

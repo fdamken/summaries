@@ -2,28 +2,6 @@
 
 
 
-\chapter{Introduction} % 1.1, 1.2, 1.7
-	Most of the content in this summary, the ideas, the underlying structure and the image ideas are taken from the lecture \href{https://www.ias.informatik.tu-darmstadt.de/Teaching/RobotLearningLecture}{"Robot Learning"} by \href{https://www.ias.informatik.tu-darmstadt.de/Team/JanPeters}{Prof. Jan Peters}. It is really just a \emph{summary} of the contents of the lecture.
-
-	\todo{Content}
-
-	\section{History} % 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19, 1.20
-		\todo{Content}
-
-		\subsection{Deep Learning} % 1.21, 1.22, 1.23
-			\todo{Content}
-		% end
-
-		\subsection{How Long Does Learning Take?} % 1.24, 1.25
-			\todo{Content}
-		% end
-
-		\subsection{Inductive Biases} % 1.26, 1.27, 1.28
-			\todo{Content}
-		% end
-	% end
-% end
-
 \chapter{Statistics, Linear Algebra and Calculus Refresher} % 5b.4
 	\todo{Content}
 
@@ -1027,7 +1005,7 @@
 	\end{enumerate}
 	This principle leads to the principle of \emph{dynamic programming}. It breaks down the problem into small sub-problems which are then solved optimally. All sub-solutions together than constitute an optimal (global) policy. Famous examples for algorithms implementing the paradigm of dynamic programming are for example Dijkstra's algorithm for the shortest-path-problem.
 
-	\section{Discrete State-Action Space}
+	\section{Discrete State-Action Space: Dynamic Programming}
 		\label{sec:discreteOptimalControl}
 
 		Optimal control for discrete state-action spaces are based on \emph{Markov decision processes} (MDPs) which are defined by
@@ -1094,7 +1072,7 @@
 				\end{equation*}
 				for every state \(\vec{s}\) (this has to be evaluated). Then \emph{value iteration} iterates backwards in time, by maximizing the Q-function that is computed from the value function for \( t = \dotsrange{T - 1}{1} \):
 				\begin{equation*}
-					V_t^\ast(\vec{s}) = \max_{\vec{a}} \, Q_t(\vec{s}, \vec{a}) = \max_{\vec{a}} \, \Big( r_t(\vec{s}, \vec{a}) + \E_{\vec{s}' \sim p(\cdot \given \vec{s}, \vec{a})}\big[ V_{t + 1}^\ast(\vec{s}') \biggiven \vec{s}, \vec{a} \big] \Big)
+					V_t^\ast(\vec{s}) = \max_{\vec{a}} \, Q_t(\vec{s}, \vec{a}) = \max_{\vec{a}} \, \Big(\! r_t(\vec{s}, \vec{a}) + \E_{\vec{s}' \sim p(\cdot \given \vec{s}, \vec{a})}\big[ V_{t + 1}^\ast(\vec{s}') \biggiven \vec{s}, \vec{a} \big] \!\Big)
 				\end{equation*}
 				Following this pattern, the optimal value function for time step \(t\) is obtained after \( T - t + 1 \) iterations. The (deterministic) optimal policy \( \pi_t^\ast : \mathcal{S} \to \mathcal{A} \) is then obtained by maximizing the Q-function
 				\begin{equation*}
@@ -1226,7 +1204,7 @@
 		% end
 	% end
 
-	\section{Continuous State-Action Space}
+	\section{Continuous State-Action Space: Linear Quadratic Regulator}
 		In this section the application of the principle of dynamic programming will be applied to continuous state-action spaces. For continuous systems, this is often just called \emph{optimal control} and a slightly different notation is used, namely \(\vec{x}\) for the state and \(\vec{u}\) for the action. This section will stick to this convention.
 
 		Sadly, the optimal control problem of maximizing the expected long-term reward is not tractable for almost all systems. In fact, the only system where it is is for linear transition dynamics with additive Gaussian noise and a quadratic reward. The resulting optimal policy is called the \emph{Linear Quadratic Regulator} (LQR). The first part of this section will focus on these tractable systems, following by an approach for approximating nonlinear systems and optimal control with learned models.
@@ -1253,7 +1231,7 @@
 			\subsection{Solving the Optimal Control Problem}
 				Applying the principle of optimal control now says to start with the last time step \(T\) by setting \( V_T^\ast(\vec{x}) = r_T(\vec{x}) \) for all states. Subsequently, iterate over \( t = \dotsrange{T - 1}{1} \) and compute
 				\begin{equation*}
-					V_t^\ast(\vec{x}) = \max_{\vec{u}} \, \Big( r_t(\vec{x}_t, \vec{u}_t) + \E_{\vec{x}' \sim p(\cdot \given \vec{x}, \vec{u})}\big[ V_{t + 1}^\ast(\vec{x}') \biggiven \vec{x}, \vec{u} \big] \Big).
+					V_t^\ast(\vec{x}) = \max_{\vec{u}} \, \Big(\! r_t(\vec{x}_t, \vec{u}_t) + \E_{\vec{x}' \sim p(\cdot \given \vec{x}, \vec{u})}\big[ V_{t + 1}^\ast(\vec{x}') \biggiven \vec{x}, \vec{u} \big] \!\Big).
 				\end{equation*}
 				For applying this to continuous state-action spaces, the expectation and the maximization have to be solved. And this step is only possible for LQR problems! Applying dynamic programming can be split further into the following steps:
 				\begin{enumerate}
@@ -1329,36 +1307,6 @@
 			% end
 		% end
 
-		\subsection{Approximating Nonlinear Systems}
-			Being able to solve the optimal control problem for LQR-systems is nice, but almost all systems in robotics are all but linear. For example the dynamics of a robot often include sines and cosines which are not linear functions. This section covers basic ideas to overcome this issue and \autoref{c:approximateOptimalControl} will cover advanced methods in more detail.
-
-			\subsubsection{Local Solutions by Linearization}
-				The simplest idea for approximating nonlinear systems is to locally linearize them. This means Taylor-expanding the transition function around a point \( (\tilde{\vec{x}}_t, \tilde{\vec{u}}_t) \) as
-				\begin{equation*}
-					\vec{x}_{t + 1}
-						= \vec{f}(\vec{x}_t, \vec{u}_t)
-						\approx \vec{f}(\tilde{\vec{x}}_t, \tilde{\vec{u}}_t) + \pdv{\vec{f}}{\vec{x}} \bigg\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} (\vec{x}_t - \tilde{\vec{x}}_t) + \pdv{\vec{f}}{\vec{u}} \bigg\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} (\vec{u}_t - \tilde{\vec{u}}_t)
-						= \mat{A}_t \vec{x}_t + \mat{B}_t \vec{u}_t + \vec{b}_t
-				\end{equation*}
-				with \(\mat{A}_t = \pdv{\vec{f}}{\vec{x}} \big\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} \), \( \mat{B}_t = \pdv{\vec{f}}{\vec{u}} \big\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} \) and \( \vec{b}_t = \vec{f}(\tilde{\vec{x}}_t, \tilde{\vec{u}}_t) - \mat{A}_t \tilde{\vec{x}}_t - \mat{B}_t \tilde{\vec{u}}_t \). Similarly the reward can be linearized using a second-order Taylor expansion
-				\begin{align*}
-					r_t(\vec{x}_t, \vec{u}_t)
-						\approx\,& \eqmakebox[optimalControlApproxNonLin][l]{\( r_t(\tilde{\vec{x}}_t, \tilde{\vec{u}}_t) \)} + \pdv{r}{\vec{x}} \bigg\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} (\vec{x}_t - \tilde{\vec{x}}_t) + (\vec{x}_t - \tilde{\vec{x}}_t)^T \pdv[2]{r}{\vec{x}} \bigg\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} (\vec{x}_t - \tilde{\vec{x}}_t) \\
-						&\eqmakebox[optimalControlApproxNonLin][l]{} + \pdv{r}{\vec{u}} \bigg\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} (\vec{x}_t - \tilde{\vec{x}}_t) + (\vec{x}_t - \tilde{\vec{x}}_t)^T \pdv[2]{r}{\vec{u}} \bigg\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} (\vec{x}_t - \tilde{\vec{x}}_t) \\
-						=\,& -\vec{x}_t^T \mat{R}_t \vec{x}_t + 2 \vec{r}_t^T \vec{x} - \vec{u}_t^T \mat{H}_t \vec{u}_t + 2 \vec{h}_t^T \vec{u} + \mathrm{const}
-				\end{align*}
-				with \( \mat{R}_t = -\pdv[2]{r}{\vec{x}} \big\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} \), \( \mat{H}_t = -\pdv[2]{r}{\vec{u}} \big\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} \), \( \vec{r}_t = \frac{1}{2} \pdv{r}{\vec{x}} \big\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} + \mat{R}_t \tilde{\vec{x}}_t \) and \( \vec{h}_t = \frac{1}{2} \pdv{r}{\vec{u}} \big\vert_{\vec{x} = \tilde{\vec{x}},\, \vec{u} = \tilde{\vec{u}}} + \mat{H}_t \tilde{\vec{u}}_t \).
-
-				This is again the linear optimal control case that is solvable (the LQR problem), see \autoref{subsec:lqr}. This yields an iterative algorithm for solving locally linear optimal control problems:
-				\begin{enumerate}
-					\item Compute the optimal control law using LQR (backwards in time).
-					\item Run a simulator with the control law and linearize the dynamics subsequently.
-					\item If not converged, go to 1.
-				\end{enumerate}
-				Using linearization problems that are not too nonlinear can be solved quite well, however the linearization may lead to oscillations of the state. Also they often do not transfer well to the real robot due to bad models.
-			% end
-		% end
-
 		\subsection{Optimal Control with Learned Models}
 			The problem with local linearization is that it only really works in simulation and not on the real robot. This is caused by the fact that the models for robots are often really bad. So learning models instead of hand-crafting them would be a good alternative\footnote{Model learning will be covered in more detail in \autoref{c:modelLearning}.}!
 
@@ -1392,71 +1340,263 @@
 	% end
 % end
 
-\chapter{Approximate Optimal Control} % {3a.41, 3a.42}
+\chapter{Approximate Optimal Control}
 	\label{c:approximateOptimalControl}
 
-	\todo{Content}
+	In contrast to the discrete and linear systems covered in \autoref{c:optimalControl}, optimal control problems are usually not solvable in closed form for nonlinear continuous systems. Hence, approximations are needed to control these systems.
 
-	\section{Differential Dynamic Programming (DDP)} % 4a.1, 4a.2, 4a.3, 4a.12
+	\section{Discrete State-Action Space: Approximate Dynamic Programming}
+		This section covers \emph{approximate dynamic programming}, so an extension of \autoref{sec:discreteOptimalControl} using function approximators for the V- or Q-function. These are needed as dynamic programming suffers from both the curse of dimensionality in the number of states and dimensionality of the state representation and in the "curse of modeling" as there often is no model. The idea is to use an approximation \( \hat{V}_{\vec{\theta}}(\vec{s}) \) to approximate the true \( V(\vec{s}) \) where \( \vec{\theta} \in \Theta \) are the parameters to be optimized. This way, the size of the state space \( \lvert \mathcal{S} \rvert \) is reduced to the size of the parameter space, \( \lvert \Theta \rvert \), so less parameters have to be estimated. But this advantage comes at the drawback of questionable expressiveness of \( \hat{V}_{\vec{\theta}}(\vec{s}) \), i.e. there might not be a \( \vec{\theta} \in \Theta \) to approximate an arbitrary \( V(\vec{s}) \). As this is essentially a regression problem, lots of models from machine learning can be used with the usual drawbacks like linear models being easier to learn, but neural networks are more expressive but prone to overfit.
+
+		\subsection{Approximate Value Iteration}
+			In order to get the target values for fitting the regression model (by minimizing the MSE), value iteration with value function approximation invokes classical value iteration for a subset of the states. Subsequently the value function is fitted and the procedure starts over. A procedural description is shown on \autoref{alg:approxVIteration}.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				Initialize \( \vec{\theta} \) somehow. \;
+				\Repeat{convergence of \(\vec{\theta}\)}{
+					Get a subset \( \mathcal{S}' \subseteq \mathcal{S} \) with \( \lvert \mathcal{S}' \rvert \ll \lvert \mathcal{S} \rvert \). \;
+					Calculate \( V(\vec{s}') \) for all \( \vec{s}' \in \mathcal{S} \) using value/policy iteration. \;
+					Minimize MSE:\,\, \(\displaystyle \vec{\theta}^\mathrm{new} \gets \arg\min_{\vec{\theta}'}\, \frac{1}{\lvert \mathcal{S}' \rvert} \sum_{\vec{s}' \,\in\, \mathcal{S}'} \big( \hat{V}_{\vec{\theta}'}(\vec{s}') - V(\vec{s}') \big)^2 \) \;
+				}
+
+				\caption{Approximate Value Iteration}
+				\label{alg:approxVIteration}
+			\end{algorithm}
+
+			\subsubsection{Convergence Analysis}
+				While the algorithm seems simple, a big question is whether it actually converges. To analyze convergence, the \emph{Bellman operator} \(T\) has to be defined. Applied to a value function \(V\), the Bellman operator has the form
+				\begin{equation*}
+					T V(\vec{s}) = \max_{\vec{a} \,\in\, \mathcal{A}}\, \Big(\! r(\vec{s}, \vec{a}) + \gamma \!\sum_{\vec{s}' \,\in\, \mathcal{S}} p(\vec{s}' \given \vec{s}, \vec{a}) V\big(\vec{s}'\big) \!\Big),
+				\end{equation*}
+				i.e. an application of the Bellman equation. If the Bellman operator is a contraction w.r.t. the infinite norm
+				\begin{equation*}
+					\lVert V \rVert_\infty \coloneqq \max_{\vec{s} \,\in\, \mathcal{S}}\, \big\lvert V(\vec{s}) \big\rvert
+				\end{equation*}
+				with contraction number \( \gamma^k \),
+				\begin{equation*}
+					\big\lVert T V_k - T V^\ast \big\rVert_\infty \leq \gamma^k \big\lVert V_k - V^\ast \big\lVert_\infty,
+				\end{equation*}
+				it ensures convergence to a fixed point:
+				\begin{equation*}
+					\lim\limits_{k \,\to\, \infty} V_k = V^\ast
+				\end{equation*}
+				So convergence is guaranteed if the function approximator ensures that the Bellman operator is a contraction! Extensive research focused on the fixed-point view of certain algorithms. e.g. TD, Q-Learning, SARSA, \dots Recent work from Dai et al. (2018) proposed the SBEED algorithm that uses nonlinear function approximations with convergence guarantees.
+			% end
+
+			\subsubsection{Approximation Error and Performance Loss}
+				Another big question when dealing with function approximations is how the approximation error
+				\begin{equation*}
+					\big\lVert \hat{V} - V^\ast \big\lVert_\infty
+				\end{equation*}
+				relates to the performance loss
+				\begin{equation*}
+					\big\lVert V^\pi - V^\ast \big\lVert_\infty
+				\end{equation*}
+				with the greedy policy
+				\begin{equation*}
+					\pi(\vec{s}) = \arg\max_{\vec{a} \,\in\, \mathcal{A}}\, \Big(\! r(\vec{s}, \vec{a}) + \gamma \!\sum_{\vec{s}' \,\in\, \mathcal{S}}^ p(\vec{s}' \given \vec{s}, \vec{a}) \hat{V}\big(\vec{s}'\big) \!\Big).
+				\end{equation*}
+				For approximate value iteration, an upper bound on the performance loss is
+				\begin{equation*}
+					\big\lVert V^\pi - V^\ast \big\lVert_\infty \leq \frac{2 \gamma}{1 - \gamma} \big\lVert \hat{V} - V^\ast \big\lVert_\infty,
+				\end{equation*}
+				so if for any \(\varepsilon\), \( \big\lVert V^\pi - V^\ast \big\lVert_\infty \leq \varepsilon \) can be achieved, the policy is optimal.
+			% end
+		% end
+
+		\subsection{Approximate Policy Iteration}
+			For policy iteration, only policy evaluation has to be altered from the vanilla policy iteration algorithm. But given a policy \(\pi\), it is only possible to estimate \(V^\pi\) from samples or estimate the Bellman operator \( T^\pi \hat{V}_{\vec{\theta}} \), which are both not in the function approximation space \(\Theta\), so the fixed point theorem is not applicable! Hence, projection back to the space \(\Theta\) is needed. Two methods are possible for this:
+			\begin{itemize}
+				\item \emph{Direct Policy Evaluation:} Directly minimize the projected cost function (e.g. MSE).
+				\item \emph{Indirect Policy Evaluation:} Solve the projected form of the value function \( \Pi V = \Pi T_\Pi V \), where \(\Pi\) is the projection.
+			\end{itemize}
+
+			The approximation error again draws an upper bound on the performance loss:
+			\begin{equation*}
+				\limsup\limits_{k \,\to\, \infty} \big\lVert V^{\pi_k} - V^\ast \big\lVert_\infty \leq \frac{2 \gamma}{(1 - \gamma)^2} \limsup\limits_{k \,\to\, \infty} \big\lVert V^{\pi_k} - V_k \big\lVert_\infty
+			\end{equation*}
+		% end
+	% end
+
+	\section{Continuous State-Action Space: Differential Dynamic Programming}
 		\label{sec:ddp}
 
-		\todo{Content}
+		For continuous optimal control problems, the LQR case (i.e. linear dynamics and quadratic reward functions) is the only solvable system. However, in robotics the dynamics as well as the cost functions are often nonlinear (e.g. by defining the reward function in task-space). So a big question is whether it is possible to perform LQR-like control for nonlinear systems with approximations?
 
-		\subsection{Locally Nonlinear LQR} % 4a.13, 4a.14
-			\todo{Content}
-		% end
+		The simplest idea for approximating nonlinear systems is to locally linearize them. This means Taylor-expanding the dynamics \( \vec{x}_{t + 1} = \vec{f}_t(\vec{x}_t, \vec{a}_t) \) around a point \( (\tilde{\vec{x}}_t, \tilde{\vec{u}}_t) \) as
+		\begin{equation*}
+			\vec{f}_t(\vec{x}, \vec{u})
+				\approx \underbrace{\vec{f}_t(\tilde{\vec{x}}_t, \tilde{\vec{u}}_t)}_{\tilde{\vec{f}}_t \,\coloneqq}
+					+ \underbrace{\pdv{\vec{f}_t}{\vec{x}} \bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t}}_{\mat{B}_t \,\coloneqq} \vec{\Delta x}_t
+					+ \underbrace{\pdv{\vec{f}_t}{\vec{u}} \bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t}}_{\mat{B}_t \,\coloneqq} \vec{\Delta u}_t
+				\doteq \tilde{\vec{f}}_t + \mat{A}_t \vec{\Delta x}_t + \mat{B}_t \vec{\Delta u}_t
+		\end{equation*}
+		with \( \vec{\Delta x}_t \coloneqq \vec{x}_t - \tilde{\vec{x}}_t \) and \( \vec{\Delta u}_t \coloneqq \vec{u}_t - \tilde{\vec{u}}_t \). Similarly the reward can be linearized using a second-order Taylor expansion
+		\begin{align*}
+			r_t(\vec{x}_t, \vec{u}_t) \approx\,
+					&\eqmakebox[optimalControlApproxNonLin][l]{\(\underbrace{r_t(\tilde{\vec{x}}_t, \tilde{\vec{u}}_t)}_{\mathclap{r_t \,\coloneqq}}\)} + \pdv{r_t}{\vec{x}}\bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t} \vec{\Delta x}_t + \vec{\Delta x}_t^T \pdv[2]{r_t}{\vec{x}}\bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t} \vec{\Delta x}_t \\
+					&\eqmakebox[optimalControlApproxNonLin][l]{} + \pdv{r_t}{\vec{u}}\bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t} \vec{\Delta u}_t + \vec{\Delta u}_t^T \pdv[2]{r_t}{\vec{u}}\bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t} \vec{\Delta u}_t \\
+					&\eqmakebox[optimalControlApproxNonLin][l]{} + \vec{\Delta x}_t^T \pdv{r_t}{\vec{x}}{\vec{u}}\bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t} \vec{\Delta u}_t + \vec{\Delta u}_t^T \pdv{r_t}{\vec{u}}{\vec{x}}\bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t} \vec{\Delta x}_t \\
+				\doteq\,& r_t +
+					\begin{bmatrix}
+						\vec{\Delta x}_t^T & \vec{\Delta u}_t^T
+					\end{bmatrix}
+					\begin{bmatrix}
+						r_t^{\vec{x}} \\
+						r_t^{\vec{u}}
+					\end{bmatrix}
+					+
+					\begin{bmatrix}
+						\vec{\Delta x}_t^T & \vec{\Delta u}_t^T
+					\end{bmatrix}
+					\underbrace{\begin{bmatrix}
+						r_t^{\vec{x} \vec{x}} & r_t^{\vec{x} \vec{u}} \\
+						r_t^{\vec{x} \vec{u}, T} & r_t^{\vec{u} \vec{u}}
+					\end{bmatrix}}_{\mat{R} \,\coloneqq}
+					\begin{bmatrix}
+						\vec{\Delta x}_t \\
+						\vec{\Delta u}_t
+					\end{bmatrix}
+		\end{align*}
+		with the gradients \( r_t^{\vec{x}} \) and \( r_t^{\vec{u}} \) and Hessians \( r_t^{\vec{x} \vec{x}} \), \( r_t^{\vec{u} \vec{u}} \), and \( r_t^{\vec{x} \vec{u}} \) w.r.t. the respective parameters evaluated at \( (\tilde{\vec{x}}_t, \tilde{\vec{u}}_t) \).
 
-		\subsection{Differential Dynamic Programming} % 4a.15, 4a.16, 4a.17
-			\todo{Content}
+		This is again the linear optimal control problem\footnote{Note that in this case the matrix \(\mat{R}\) has to be negative definite as there is no minus in front of the quadratic term!} which is solvable (the LQR problem), see \autoref{subsec:lqr}. But it suffers from one big problem: the LQR problem can be constructed locally around the optimal trajectory, but the local LQR parameters are needed to compute the optimal trajectory! Hence, the optimal solver is iterative, updating the approximation until it converges to a (locally) optimal solution. This algorithm is known as \emph{differential dynamic programming} (DDP).
 
-			\subsubsection{Implementation Details} % 4a.18, 4a.19, 4a.20
-				\todo{Content}
+		\subsection{Differential Dynamic Programming}
+			In \emph{differential dynamic programming} (DDP) it is, in contrast to LQR, often useful to work with the Q-function instead of the value function. For an arbitrary value function \( V_t(\vec{s}) \) and an arbitrary reward function \( r_t(\vec{s}, \vec{a}) \), the Q-function is given as
+			\begin{equation*}
+				Q_t(\vec{s}, \vec{a}) = r_t(\vec{s}, \vec{a}) + V_{t + 1}\big(\vec{f}_t(\vec{s}, \vec{a})\big).
+			\end{equation*}
+			The first- and second-order derivatives are therefore:
+			\begin{equation}
+				\begin{aligned}
+					Q_t^{\vec{x}} \coloneqq \pdv{Q_t}{\vec{x}} &= \pdv{r_t}{\vec{x}} + \pdv{\vec{f}_t}{\vec{x}} \pdv{V_{t + 1}}{\vec{s}} \\
+					Q_t^{\vec{u}} \coloneqq \pdv{Q_t}{\vec{u}} &= \pdv{r_t}{\vec{u}} + \pdv{\vec{f}_t}{\vec{u}} \pdv{V_{t + 1}}{\vec{s}} \\
+					Q_t^{\vec{x} \vec{x}} \coloneqq \pdv[2]{Q_t}{\vec{x}} &= \pdv[2]{r_t}{\vec{x}} + \bigg(\! \pdv{\vec{f}_t}{\vec{x}} \!\bigg)^{\!T} \pdv[2]{V_{t + 1}}{\vec{x}} \pdv{\vec{f}_t}{\vec{x}} + \pdv{V_{t + 1}}{\vec{s}} \cdot \pdv[2]{\vec{f}_t}{\vec{x}} \\
+					Q_t^{\vec{x} \vec{u}} \coloneqq \pdv[2]{Q_t}{\vec{u}} &= \pdv[2]{r_t}{\vec{u}} + \bigg(\! \pdv{\vec{f}_t}{\vec{u}} \!\bigg)^{\!T} \pdv[2]{V_{t + 1}}{\vec{u}} \pdv{\vec{f}_t}{\vec{u}} + \pdv{V_{t + 1}}{\vec{s}} \cdot \pdv[2]{\vec{f}_t}{\vec{u}} \\
+					Q_t^{\vec{x} \vec{u}} \coloneqq \pdv{Q_t}{\vec{x}}{\vec{u}} &= \pdv{r_t}{\vec{x}}{\vec{u}} + \bigg(\! \pdv{\vec{f}_t}{\vec{x}} \!\bigg)^{\!T} \pdv{V_{t + 1}}{\vec{x}}{\vec{u}} \pdv{\vec{f}_t}{\vec{u}} + \pdv{V_{t + 1}}{\vec{x}} \cdot \pdv{\vec{f}_t}{\vec{x}}{\vec{u}}
+				\end{aligned}  \label{eq:ddpDerivatives}
+			\end{equation}
+			These derivatives can now be used to solve the optimization problem
+			\begin{equation*}
+				\vec{\delta u}^\ast(\vec{\delta x}) = \arg\max_{\vec{\delta u}}\, \tilde{Q}_t(\vec{\delta x}, \vec{\delta u}),
+			\end{equation*}
+			which describes the optimal action perturbation \( \vec{\delta u}^\ast \) at a point \( (\vec{x}, \vec{u}) \) with the Q-function for a perturbation defined as
+			\begin{align}
+				\tilde{Q}_t(\vec{\delta x}, \vec{\delta u})
+					\coloneqq&\, Q(\vec{x} + \vec{\delta x}, \vec{u} + \vec{\delta u}) - Q(\vec{x}, \vec{u})  \nonumber \\
+					=&\, r_t(\vec{x} + \vec{\delta x}, \vec{u} + \vec{\delta u}) - r_t(\vec{x}, \vec{u}) + V_{t + 1}\big( \vec{f}(\vec{x} + \vec{\delta x}, \vec{u} + \vec{\delta u}) \big) -  V_{t + 1}\big( \vec{f}(\vec{x}, \vec{u}) \big)  \nonumber \\
+				\intertext{and the second-order Taylor approximation}
+					\approx&\, \frac{1}{2}
+						\begin{bmatrix}
+							1 & \vec{\delta x}^T & \vec{\delta u}^T
+						\end{bmatrix}
+						\begin{bmatrix}
+							0             & Q_t^{\vec{x}, T}      & Q_t^{\vec{u}, T}      \\
+							Q_t^{\vec{x}} & Q_t^{\vec{x} \vec{x}} & Q_t^{\vec{x} \vec{u}} \\
+							Q_t^{\vec{u}} & Q_t^{\vec{u} \vec{x}} & Q_t^{\vec{u} \vec{u}}
+						\end{bmatrix}
+						\begin{bmatrix}
+							1 \\
+							\vec{\delta x} \\
+							\vec{\delta u}
+						\end{bmatrix}  \label{eq:qTildeApprox}
+			\end{align}
+			This optimization problem can be solved in closed form by taking the derivative of the quadratic expansion \eqref{eq:qTildeApprox} and setting it to zero:
+			\begin{align}
+				&& \pdv{\tilde{Q}_t}{\vec{\delta u}}
+					&\approx
+						\begin{bmatrix}
+							0 & 0 & 1
+						\end{bmatrix}
+						\begin{bmatrix}
+							0             & Q_t^{\vec{x}, T}      & Q_t^{\vec{u}, T}      \\
+							Q_t^{\vec{x}} & Q_t^{\vec{x} \vec{x}} & Q_t^{\vec{x} \vec{u}} \\
+							Q_t^{\vec{u}} & Q_t^{\vec{u} \vec{x}} & Q_t^{\vec{u} \vec{u}}
+						\end{bmatrix}
+						\begin{bmatrix}
+							1 \\
+							\vec{\delta x} \\
+							\vec{\delta u}
+						\end{bmatrix}
+					=
+						\begin{bmatrix}
+							Q_t^{\vec{u}} & Q_t^{\vec{u} \vec{x}} & Q_t^{\vec{u} \vec{u}}
+						\end{bmatrix}
+						\begin{bmatrix}
+							1 \\
+							\vec{\delta x} \\
+							\vec{\delta u}
+						\end{bmatrix} &  \nonumber \\
+					&&&= Q_t^{\vec{u}} + Q_t^{\vec{u} \vec{x}} \vec{\delta x} + Q_t^{\vec{u} \vec{u}} \vec{\delta u} \vec{\delta u} \overset{!}{=} \vec{0}  \nonumber \\
+				\implies && Q_t^{\vec{u} \vec{u}} \vec{\delta u} &= -Q_t^{\vec{u}} - Q_t^{\vec{u} \vec{x}} \vec{\delta x} &  \nonumber \\
+				\iff && \vec{\delta u}^\ast &= -\big(Q_t^{\vec{u} \vec{u}}\big)^{-1} \big(Q_t^{\vec{u}} + Q_t^{\vec{u} \vec{x}} \vec{\delta x}\big) \doteq \vec{k}_t + \mat{K}_t \vec{\delta x} &  \label{eq:ddpFeedbackControlLaw}
+			\end{align}
+			Here, \( \vec{k}_t \coloneqq -\big(Q_t^{\vec{u} \vec{u}}\big)^{-1} Q_t^{\vec{u}} \) and \( \mat{K}_t \coloneqq -\big(Q_t^{\vec{u} \vec{u}}\big)^{-1} Q_t^{\vec{u} \vec{x}} \vec{\delta x} \). Plugging this result back into \eqref{eq:qTildeApprox} yields a quadratic model for the value function:
+			\begin{align*}
+				V_t(\vec{x}) = -\frac{1}{2} \vec{k}_t^T Q_t^{\vec{u} \vec{u}} \vec{k}
+				&&
+				V_t^{\vec{x}}(\vec{x}) = Q_t^{\vec{x}} - \mat{K}_t^T Q_t^{\vec{u} \vec{u}} \vec{k}
+				&&
+				V_t^{\vec{x} \vec{x}}(\vec{x}) = Q_t^{\vec{x} \vec{x}} - \mat{K}^T Q_t^{\vec{u} \vec{u}} \mat{K}
+			\end{align*}
+			This can be iterated backwards in time to compute a local approximation of the value function.
+
+			The DDP algorithm then consists of three steps:
+			\begin{enumerate}
+				\item Execute \( \vec{u}_{1:T - 1} \) forward in time, linearize the dynamics \(\vec{f}\) and quadratize the reward \(r\).
+				\item Update the local Q- and V-functions backwards in time, via dynamic programming. Compute the time-varying control law.
+				\item Update the new action sequence using line search.
+			\end{enumerate}
+
+			\subsubsection{Implementation Details}
+				\paragraph{Computing the Quadratic Expansion}
+					There are multiple different methods of computing the quadratic expansion \eqref{eq:qTildeApprox}:
+					\begin{itemize}
+						\item Analytical solution (exact, computationally efficient but personally expensive).
+						\item Automatic differentiation (exact, computationally expensive but personally cheap).
+						\item Finite difference approximation (inexact, computationally okay-ish and personally cheap).
+					\end{itemize}
+				% end
+
+				\paragraph{Line Search}
+					As the update is only valid locally, a line search is used to optimize the step size of the update. Each DDP iteration \(i\) gives a local update \( \vec{\delta u}^{(i)} \), so the updated control law is
+					\begin{equation*}
+						\hat{\vec{u}}^{(i)} = \vec{u}^{(i)} + \alpha \vec{k}^{(i)} + \mat{K}^{(i)} \big( \hat{\vec{x}}^{(i)} - \vec{x}^{(i)} \big) \\
+					\end{equation*}
+					where usually \(\alpha\) is evaluated over a range of values to maximize the reward improvement
+					\begin{equation*}
+						\grad{J(\alpha)} = \alpha \sum_{i = 1}^{N - 1} \vec{k}^{(i), T} Q_t^{\vec{u}, (i)} + \frac{\alpha^2}{2} \sum_{i = 1}^{N} \vec{k}^{(i), T} Q_t^{\vec{u} \vec{u}, (i)} \vec{k}^{(i)}.
+					\end{equation*}
+				% end
+			% end
+
+			\subsubsection{Issues with DDP}
+				Differential dynamic programming has two major issues:
+				\begin{enumerate}
+					\item The local approximation is only valid along the optimized trajectory. So if the state diverges (e.g. due to modeling errors or disturbances), future controllers are invalid. \\
+						This can be solved by updating the controllers online using model-predictive control.
+					\item The Hessian terms are expensive to compute, prohibiting online computation. \\
+						This can be solved by using Hessian approximations (e.g. BFGS).
+				\end{enumerate}
 			% end
 		% end
 
-		\subsection{Iterative LQR} % 4a.22, 4a.23, 4a.24
-			\todo{Content}
+		\subsection{Iterative LQR}
+			When using Gauss-Newton optimization, the Hessians are approximated from the Jacobians (i.e. the Gradients). By leaving out the second-order derivatives of the state dynamics in the derivatives of the Q-function \eqref{eq:ddpDerivatives}, computation time is saved and the DDP model is effectively transformed into a Gauss-Newton equivalent. This is called \emph{iterative LQR} (iLQR). In DDP it is often necessary to regularize \( Q_t^{\vec{u} \vec{u}} \): \( \hat{Q}_t^{\vec{u} \vec{u}} \coloneqq Q_t^{\vec{u} \vec{u}} + \mu \mat{I} \). But this regularization affects the controller as \( Q_t^{\vec{u} \vec{u}} \) defines the feedback control law \eqref{eq:ddpFeedbackControlLaw}. As \( \mu \to \infty \), \( \mat{K}_t \to \mat{O} \). In iLQR the regularization is directly applied to the Hessian of the value function in \eqref{eq:ddpDerivatives} with the motivation of reducing the trajectory update rather than the controller specifically.
 		% end
 
-		\subsection{Stochastic DDP} % 4a.25, 4a.26
-			\todo{Content}
+		\subsection{Stochastic DDP}
+			In stochastic DDP, a state-action dependent disturbance \( F(\vec{x}, \vec{u}) \) is considered. This yields equations similar to DDP with additional differential terms due to the disturbances. For constant noise, however, the solution is equivalent to DDP and for state-action dependent noise, the optimal solution seeks lower disturbance regions.
 		% end
 
-		\subsection{Guided Policy Search} % 4a.27, 4a.28
-			\todo{Content}
+		\subsection{Guided Policy Search}
+			Guided Policy Search (GPS) mitigates the problem of DDP only being valid along a trajectory by using a DDP-like algorithm for generating multiple controllers which are then used to train a neural network controller. GPS will be discussed in more detail in \autoref{subsec:gps}.
 		% end
 	% end
 
-	\section{Approximate Dynamic Programming} % 4b.1, 4b.2, 4b.6
-		\todo{Content}
-
-		\subsection{Function Approximation} % 4b.7, 4b.8, 4b.9, 4b.10, 4b.11, 4b.12
-			\todo{Content}
-		% end
-
-		\subsection{Approximate Value Iteration} % 4b.13, 4b.14
-			\todo{Content}
-
-			\subsubsection{Theoretical Analysis and Bellman Operator} % 4b.15, 4b.16, 4b.17
-				\todo{Content}
-			% end
-
-			\subsubsection{Approximation Error and Performance Loss} % 4b.18, 4b.19, 4b.20
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Approximate Policy Iteration} % 4b.21, 4b.23, 4b.24, 4b.25
-			\todo{Content}
-
-			\subsubsection{Approximation Error and Performance Loss} % 4b.26
-				\todo{Content}
-			% end
-		% end
-	% end
-
-	\section{Wrap-Up} % 4a.30, 4b.28
-		\todo{Content}
+	\section{Wrap-Up}
+		This chapter covered two methods for solving nonlinear optimal control problems: differential and approximate dynamic programming. The former applies LQR to nonlinear problems by iteratively linearizing the dynamics around the current trajectory to get time-varying linear controllers. As the algorithm is a bit brittle and only valid along a single trajectory, it is often used online in a model-predictive control fashion. In practice, approximations are used to compute the Hessians which is expensive to do otherwise (e.g. iLQR). These local controllers can then also be used to fit a global controller (guided policy search). The latter uses function approximators to find a global value function while using vanilla value/policy iteration to find local value functions.
 	% end
 % end
 
@@ -2125,6 +2265,8 @@
 		% end
 
 		\subsection{Guided Policy Search (GPS)} % 9.48, 9.49, 9.50, 9.51, 9.52
+			\label{subsec:gps}
+
 			\todo{Content}
 		% end
 
@@ -3389,14 +3531,32 @@
 	% end
 % end
 
-\chapter{Outlook} % 15.1
-	\todo{Content}
+\chapter{Outlook}
+	This "summary" covered lots of topics in the intersection of robotics and machine learning. Separated by chapter, the key terms that should now be known are:
+	\begin{description}[leftmargin=5cm]
+		\item[Robotics] Kinematics, Dynamics, DH Parameters, Inverse Kinematics, Feedback, Feedforward, PID Control, Splines, Task-Space Control, Null Space, Singularities
+		\item[Machine Learning] Bayes Rule, Regression, Classification, Maximum Likelihood, Bias, Variance, Gaussian Processes, Neural Networks, Backpropagation, Gradient Estimation
+		\item[Optimal Control] Dynamic Programming, Bellman Equation, Policy Iteration, Value Iteration, Policy Evaluation, Linear Quadratic Regulator, Riccati Equation
+		\item[Approximate OC] Differential Dynamic Programming, Gauss-Newton Approximation, Line Search, Approximate Dynamic Programming
+		\item[State Estimation] % TODO
+		\item[Model Learning] White-Box, Black-Box, Gray-Box, System Identification, Impulse Response, Active Learning, Linear Gaussian Dynamical System, Differentiable Physics
+		\item[Policy Representations] Out-of-the-Box Policies, Dynamical Systems, Movement Primitives, Stability, Stochastic Dynamical Systems
+		\item[Model-Based RL] Sample Efficiency, Optimism, Aleatoric Uncertainty, Epistemic Uncertainty, Model-Predictive Control
+		\item[Value Function Methods] Temporal Difference, Q-Learning, SARSA, Batch RL, Least Squares Temporal Differences (LSTD), Fitted Q-Iteration
+		\item[Policy Gradient] Step-Based, Episode-Based, Finite Differences, Likelihood Ratio, Baselines, REINFORCE, Fisher Information Matrix, Natural Gradient
+		\item[Probabilistic Policy Search] Weighted Maximum Likelihood, Relative Entropy, Contexts, Hierarchy
+		\item[Imitation Learning] Distribution Matching, Covariate Shift, Behavioral Cloning, Inverse Reinforcement Learning
+		\item[Bayesian RL] % TODO
+	\end{description}
 
-	\section{Recap} % 15.4, 15.5, 15.6, 15.7, 15.8, 15.9, 15.10, 15.11
-		\todo{Content}
-	% end
-
-	\section{Open Research Question} % 15.13
-		\todo{Content}
-	% end
+	But still, there are a lot of open research questions, for example:
+	\begin{itemize}
+		\item How to derive robot learning algorithms with guarantees (e.g. convergence, stability, optimality)?
+		\item How to make interpretable robot learning algorithms (explainable AI)?
+		\item How to combine and balance model-free and model-based methods?
+		\item How to incorporate robustness into machine learning methods?
+		\item What are good inductive biases and prior?
+		\item What are good tasks for benchmarking robot learning algorithms?
+		\item Will dual control ever be tractable?
+	\end{itemize}
 % end

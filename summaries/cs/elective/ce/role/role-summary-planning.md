@@ -2,14 +2,14 @@
 
 ## Slides
 
-Done/Structured/Total: 668/1160/1160; 58%/100%/100%
+Done/Structured/Total: 806/1160/1160; 69%/100%/100%
 
 * [x] Chapter  1 : Introduction (47); Core
 * [X] Chapter  2 : Robotics in a Nutshell (112); Core
 * [X] Chapter  3a: Optimal Control; Discrete State-Action (43); Core
 * [X] Chapter  3b: Optimal Control; Continuous State-Action (60); Core
-* [x] Chapter  4a: Approximate Optimal Control; Differential Dynamic Programming (31); Wider
-* [x] Chapter  4b: Approximate Optimal Control; Approximate Dynamic Programming (29); Wider
+* [X] Chapter  4a: Approximate Optimal Control; Differential Dynamic Programming (31); Wider
+* [X] Chapter  4b: Approximate Optimal Control; Approximate Dynamic Programming (29); Wider
 * [–] Chapter  5a: Machine Learning; Probabilistic Graphical Models (67); Advanced (**Dropped**)
 * [x] Chapter  5b: Machine Learning; Foundations (140); Core
 * [x] Chapter  5c: Machine Learning; Neural Networks (96); Wider
@@ -22,7 +22,7 @@ Done/Structured/Total: 668/1160/1160; 58%/100%/100%
 * [X] Chapter 12 : Probabilistic Policy Search (66); Core
 * [X] Chapter 13 : Imitation Learning, Behavioral Cloning and Inverse RL (96); Core
 * [x] Chapter 14 : Bayesian Reinforcement Learning (54); Advanced
-* [x] Chapter 15 : Outlook (31); Core
+* [X] Chapter 15 : Outlook (31); Core
 
 
 ## Structure

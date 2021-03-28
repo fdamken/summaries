@@ -2,9 +2,9 @@
 
 ## Slides
 
-Done/Structured/Total: 806/1160/1160; 69%/100%/100%
+Done/Structured/Total: 860/1160/1160; 74%/100%/100%
 
-* [x] Chapter  1 : Introduction (47); Core
+* [X] Chapter  1 : Introduction (47); Core
 * [X] Chapter  2 : Robotics in a Nutshell (112); Core
 * [X] Chapter  3a: Optimal Control; Discrete State-Action (43); Core
 * [X] Chapter  3b: Optimal Control; Continuous State-Action (60); Core
@@ -21,7 +21,7 @@ Done/Structured/Total: 806/1160/1160; 69%/100%/100%
 * [X] Chapter 11 : Value Function Methods (42); Core
 * [X] Chapter 12 : Probabilistic Policy Search (66); Core
 * [X] Chapter 13 : Imitation Learning, Behavioral Cloning and Inverse RL (96); Core
-* [x] Chapter 14 : Bayesian Reinforcement Learning (54); Advanced
+* [X] Chapter 14 : Bayesian Reinforcement Learning (54); Advanced
 * [X] Chapter 15 : Outlook (31); Core
 
 

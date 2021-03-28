@@ -54,8 +54,63 @@
 		\answer{For example for saving energy by being in rest postures in a redundant robot. In a redundant prismatic robot, this may be that no joint is fully stretched but all joint are located around the center.}
 	% end
 
-	\section{Machine Learning Foundations} % 5b.139, 5c.96
-		\todo{Content}
+	\section{Machine Learning Foundations}
+		\paragraph{Why does statistics matter to machine learning?}
+		\answer{The real world is often not deterministic, hence it has to be necessary to model stochastic processes. Additionally, a probabilistic treatment of the models allows to quantify the uncertainty, making risk-aware predictions possible.}
+
+		\paragraph{What are the three branches of machine learning?}
+		\answer{Supervised Learning, Unsupervised Learning, Reinforcement Learning -- and various combinations.}
+
+		\paragraph{How to derive linear regression? What is ridge regression?}
+		\answer{By minimizing the MSE between the predictions and the targets. Ridge regression is regularized linear regression where the parameters are also part of the objective to keep them small.}
+
+		\paragraph{How do priors change the solution?}
+		\answer{Priors have the effect of regularizing the solution in a principled way. For linear regression, placing a Gaussian prior on the parameters yields the same solution as empirical ridge regression.}
+
+		\paragraph{What is maximum a-priori? What is maximum likelihood? What is MAP?}
+		\answer{For a maximum likelihood estimator, the likelihood \( p(\mathcal{D} \given \vec{\theta}) \) is maximized w.r.t. to the parameters \(\vec{\theta}\). For a maximum a-posteriori estimator (MAP), the posterior \( p(\vec{\theta} \given \mathcal{D}) \) is maximized. This requires placing a prior on the parameters. Maximum a-priori doesn't really make sense.}
+
+		\paragraph{What is overfitting and how does it relate to the bias-variance tradeoff?}
+		\answer{Overfitting describes the effect if the model perfectly resembles the training data but fails to make out-of-data predictions (e.g. on a training dataset). It relates to the bias-variance tradeoff as a model that overfits has a low bias and high variance while an ideal model has low bias and low variance -- which is usually not really achievable. The equation for relating the squared error with bias and variance is
+		\begin{equation*}
+			L_{\hat{f}}(\vec{x})
+				= \E_{\mathcal{D}}\big[ (y(\vec{x}) - \hat{f}_{\mathcal{D}}(\vec{x}))^2 \big]
+				= \sigma_\epsilon^2 + \Bias^2\big[ \hat{f}_{\mathcal{D}}(\vec{x}) \big] + \Var\big[ \hat{f}_{\mathcal{D}}(\vec{x}) \big]
+		\end{equation*}
+		where \( y(\vec{x}) = f(\vec{x}) + \epsilon \) are the real values with noise \( \epsilon \sim \mathcal{N}(0, \sigma_\epsilon^2) \) and \( \hat{f}_{\mathcal{D}} \) is the model learned from dataset \(\mathcal{D}\).}
+
+		\paragraph{How do Frequentists differ from Bayesians?}
+		\answer{Frequentists belief that there is a true model / there are true parameters while Bayesians assume parameters to be random variables.}
+
+		\paragraph{What does non-parametric mean?}
+		\answer{A non-parametric model uses every data point as a parameter, so it really has indefinitely many parameters.}
+
+		\paragraph{What are Kernels? What is Gaussian Process regression?}
+		\answer{Kernels are functions that represent inner products of feature transformations. Using the kernel trick (replacing all inner products with kernels), it is also possible to use infinite-dimensional feature transformations implicitly. Gaussian Process regression is a non-parametric Bayesian regression model that uses kernels for the mean and gauges the uncertainty dependent on the input variable.}
+
+		\paragraph{What are neural networks and how relate them to the brain?}
+		\answer{Neural networks are a set of artificial neurons that are interconnected. Each input to a neuron gets weighted and the weighted sum is put through an activation function. They resemble the human brain which also has activation functions and weights the inputs. A neuron sheet in the brain the represented by a layer in the artificial neural network.}
+
+		\paragraph{How do neural networks build stacks of feature representations?}
+		\answer{Using multiple layers. Each layer can be seen as a feature transformation, producing features for the next layer.}
+
+		\paragraph{If a network with one layer is enough, why is it in practice not a good idea?}
+		\answer{The amount of hidden neurons in that layer rises exponentially with the complexity of the function that has to be represented. By using deep networks, the amount of parameters and the computational cost can be reduced.}
+
+		\paragraph{How to do forward- and backpropagation?}
+		\answer{Forwardpropagation is straightforward using matrix multiplications and invoking the activation functions with the weighted vectors. Backpropagation is equivalent to an iterative application of the chain rule for each layer to compute the gradient of a loss function w.r.t. all parameters of the network.}
+
+		\paragraph{What are different ways of doing fast gradient descent? Full, stochastic, mini-batch? Learning rate adaptation? How to initialize the parameters?}
+		\answer{Instead of using all samples for one gradient descent step (full GD), it is also possible to use only some (mini-batch GD) or even just one (stochastic GD) sample. With learning rate adaption (e.g. Adadelta, Adagrad or Adam), it is possible to accelerate learning by using a higher learning rate in flat regions and using a smaller learning rate in steep regions of the loss function. There are multiple ways of initializing the weights, e.g. by drawing them from a Gaussian distribution or using Xavier initialization which samples from a uniform distribution.}
+
+		\paragraph{Why do neural networks overfit and what to do about it?}
+		\answer{Usually neural networks have a lot more parameters than data is available for training, making it easy for the network to memorize the data instead of learning correlations. This can be fought e.g. using dropout (disabling certain connections in the network with a certain probability) or noise augmentation (make the input data noise).}
+
+		\paragraph{Why are convolutional neural networks used for spatially correlated data?}
+		\answer{Convolutional neural networks use convolution filters which are really good in processing spatially correlated data. For example in images in a non-ML setting, convolutions are used to detect edges in the image.}
+
+		\paragraph{Why are recurrent neural networks used for time series data?}
+		\answer{Recurrent neural networks feed the output back as an input just like time series data usually does (e.g. in a dynamical system \( \vec{s}_{t + 1} = \mat{A} \vec{s}_t \), the output of time step \(t\) is feed as an input for time step \(t + 1\)).}
 	% end
 
 	\section{Optimal Control}

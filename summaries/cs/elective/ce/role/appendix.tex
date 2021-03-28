@@ -1,10 +1,6 @@
 \chapter{Self-Test Questions}
 	The text below also contains answers for the self-test questions! Make sure to not spoiler you!
 
-	\section{Introduction} % KI-Campus
-		\todo{Content}
-	% end
-
 	\section{Robotics}
 		\paragraph{How to compute the racket position, orientation and velocity in a game of table tennis?}
 		\answer{The position and orientation can directly be computed using the forward kinematics model, e.g. using the Denavit-Hartenberg convention. To compute the velocity of the racket, the forward kinematics model has to be differentiated w.r.t. to the time. By using the chain rule, only the Jacobian of the model has to be computed w.r.t. the joint displacements. Multiplying this with the joint velocities gives the racket velocities.}
@@ -152,14 +148,12 @@
 		\answer{In a white-box model, lots of prior domain knowledge is used to build the model. Example are using physics-based approaches like Lagrangian mechanics to find the equations and then utilize system identification to find e.g. the masses. A black-box model is the opposite, where no prior knowledge is used and the complete model is inferred from data, e.g. using a neural network. A gray-box combined both worlds. It used some prior knowledge (like energy conservation), but also uses a black-box model for learning non-modeled behavior (e.g. friction or handling the residual error).}
 
 		\paragraph{How to excite a system to get good data for model learning?}
-		% TODO: Discuss the answer below with Joe.
-		\answer{Use impulse responses for analog signals and step functions for digital signals. As these are not practical (due to high frequencies that may damage the robot), a low-pass filter has to be used. But this again limits the diversity of signals. Another approach is active learning, i.e. letting the model decide where to get new data is also a good option. In practice, out-of-phase sinuses create very diverse end-effector trajectories that are good for model learning.}
+		\answer{Use impulse responses for analog signals and step functions for digital signals. As these are not practical (due to high frequencies that may damage the robot), a low-pass filter has to be used. But this again limits the diversity of signals. Another approach is to use active learning for guiding exploration, i.e. letting the model decide where to get new data is also a good option. In practice, out-of-phase sinuses create very diverse end-effector trajectories that are good for model learning.}
 
 		\paragraph{How to learn a linear Gaussian dynamical system model?}
 		\answer{The LGDS system model can be learned using an expectation-maximization algorithm that in the E-step uses a Kalman smoother for finding the expected latent states and subsequently maximized the expected log-likelihood in the M-step. This guarantees monotonic improvement.}
 
 		\paragraph{How to make black-box models physically safe to learn?}
-		% TODO: Discuss the answer below with Joe.
 		\answer{This can be done by impose inductive biases, e.g. energy conservation, on the model. This way it is less likely for the model to be unsafe on the real system. Also for generating data, it is required to low-pass filter the frequencies as high frequencies may cause unsafe movements of the robot.}
 
 		\paragraph{How can differentiable physics help?}
@@ -344,7 +338,23 @@
 		\answer{In max. entropy approaches, the entropy of the policy is maximized while keeping the constraints valid.}
 	% end
 
-	\section{Bayesian Reinforcement Learning} % 14.54
-		\todo{Content}
+	\section{Bayesian Reinforcement Learning}
+		\paragraph{Why is Bayesian RL an interesting problem for robotics? Why is it hard?}
+		\answer{Bayesian RL is a principled way of solving the exploration-exploitation tradeoff by imposing epistemic uncertainty on the model. This uncertainty also serves as a regularization on the policy and makes the policy more robust, which is especially important in robotics. It also serves as risk-sensitive control which is important e.g. in hazardous environments. But Bayesian methods are in general hard as they often need approximate inference due to nonlinear transformations (even when using conjugate priors) requiring sampling which is not really feasible in an online fashion.}
+
+		\paragraph{Why are Bandits so frequently covered in Bayesian RL?}
+		\answer{Bandits are really simple MDPs which can model an astonishing amount of tasks, e.g. targeted advertisement. Due to their simplicity, it is a nice setting for analyzing the exploration-exploitation tradeoff and the effect of Bayesian RL methods, i.e. how they do this optimally.}
+
+		\paragraph{What is Thompson sampling?}
+		\answer{In Thompson sampling, exploration is done by sampling from the posterior. The data that was collected in a response to this sampling is then used for updating the likelihood and subsequently the posterior. This converges to the optimal policy (the posterior), but only works for really simple systems.}
+
+		\paragraph{What makes Bayesian RL different from regular MBRL?}
+		\answer{Bayesian RL methods do not necessarily require a dynamics model, and MBRL is not necessarily Bayesian.}
+
+		\paragraph{What is dual control?}
+		\answer{In dual control, a model of the environment is learned in a Bayesian fashion while simultaneously optimizing the actions to be optimal. This is useful as often a baseline controller is needed in order to get the data to learn a model and a model is needed for learning a controller. However, dual control is quasi-intractable in practice.}
+
+		\paragraph{How does Bayesian RL relate to exploration?}
+		\answer{Bayesian RL trades exploration and exploitation off optimally by imposing an epistemic uncertainty quantification on the model. This uncertainty then "tells" the policy where to explore and where exploitation is safe.}
 	% end
 % end

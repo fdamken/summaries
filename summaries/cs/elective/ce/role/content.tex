@@ -730,7 +730,7 @@
 		% end
 	% end
 
-	\section{Frequentis vs. Bayesian Assumptions} % 5b.74, 5b.75
+	\section{Frequentist vs. Bayesian Assumptions} % 5b.74, 5b.75
 		\todo{Content}
 
 		\subsection{Maximum Likelihood Estimation} % 5b.76, 5b.77, 5b.78, 5b.79
@@ -2210,6 +2210,8 @@
 	% end
 
 	\section{Optimism, Pessimism and Uncertainty in Reinforcement Learning}
+		\label{sec:mbrlBayesian}
+
 		In reinforcement learning, \emph{optimism} is similar to \emph{greediness}, describing for aggressive the algorithm pursues the optimal solution compared to exploring the environment more. For model-based RL, too much optimism leads to exploitation of modeling errors that benefit control, for example energy generation if a friction parameter is negative and constraint violation (e.g. solving a maze by walking through walls). Such exploitation may have catastrophic consequences, e.g. robots that accelerate into walls. This issue of algorithms being too optimistic has to be resolved for practical methods. Three main approaches are currently used to tackle this:
 		\begin{itemize}
 			\item Inductive biases to impose additional structure, e.g. energy conservation.
@@ -3475,59 +3477,176 @@
 	% end
 % end
 
-\chapter{Bayesian Reinforcement Learning} % 14.1, 14.2, 14.15, 15.16, 14.17, 14.18
-	\todo{Content}
+\chapter{Bayesian Reinforcement Learning}
+	This chapter covers how to apply Bayesian methods to reinforcement learning. If applicable, they provide a principled way to handle the exploration-exploitation tradeoff by introducing (epistemic) uncertainty on the model or the policy. This can also be seen as regularization on greedy policy updates avoiding aggressive model exploitation. Active learning can also be used for guided exploration with information-theoretic objectives. Bayesian RL can also be used to create risk-sensitive and robust controllers as risk as well as perturbations of certain parameters and be encoded as uncertainty in the model. For MBRL, this was already briefly covered in \autoref{sec:mbrlBayesian}.
 
-	\section{Recap of Bayesian Methods} % 14.4, 14.5, 14.6, 14.7, 14.8, 14.9, 14.14
-		\todo{Content}
+	The major problem with Bayesian methods is that they are really complicated. In Bayesian linear regression, for example, the distribution over the output variables is given as the marginalization over the weights
+	\begin{equation*}
+		p(\vec{y} \given \vec{x}, \mathcal{D}) = \int\! p(\vec{y} \given \vec{x}, \vec{w}, \mathcal{D}) p(\vec{w} \given \mathcal{D}) \dd{\vec{w}}
+	\end{equation*}
+	with the dataset \(\mathcal{D}\) and the posterior
+	\begin{equation*}
+		p(\vec{w} \given \mathcal{D}) = \frac{p(\mathcal{D} \given \vec{w}) p(\vec{w})}{\int\! p(\mathcal{D} \given \vec{w}') p(\vec{w}') \dd{\vec{w}'}}.
+	\end{equation*}
+	These two integrals are often hard to solve as they involve integrating over all dimensions of \(\vec{w}\) and over nonlinear distributions. This motivates the concept of \emph{conjugate priors}: a prior \( p(\vec{w}) \) is \emph{conjugate} to the likelihood \( p(\mathcal{D} \given \vec{w}) \), if both the prior and the posterior belong to the same family of distributions. This allows (per definition) closed form solutions for Bayes rule which has the advantage that an update can be computed in real-time which is important to execute policies online. Some likelihoods and their respective conjugate priors are shown in \autoref{tab:conjugatePrior}.
 
-		\subsection{Conjugate Prior} % 14.10, 14.11, 14.12, 14.13
-			\todo{Content}
+	Take a Bernoulli likelihood \( \mathrm{Bernoulli}(y \given p) = p^y (1 - p)^{1 - y} \) with \( y \in \{ 0, 1 \} \) for example. The conjugate prior is a Beta distribution \( \mathrm{Beta}(p; \alpha, \beta) \) distribution with the hyperparameters \( (\alpha, \beta) \). The posterior then is the updated Beta distribution \( p(p \given y) = \mathrm{Beta}(p; \alpha + y, \beta - y + 1) \).
+
+	But even when using conjugate priors, being Bayesian is still hard: most interesting Bayesian models include nonlinear transformations requiring approximate inference (e.g. a Gaussian process has no closed-form solution for regression due to the required nonlinear transformation into categorical labels). This problem has already been discussed in \autoref{c:stateEstimation}.
+
+	\begin{table}
+		\centering
+		\begin{tabular}{c|c|c}
+			\textbf{Likelihood} \( p(\mathcal{D} \given \vec{w}) \) & \textbf{Parameter} \( \vec{w} \) & \textbf{Conjugate Prior} \( p(\vec{w}) \) \\ \hline
+			                       Bernoulli                        &              \(p\)               &                   Beta                    \\
+			                        Poisson                         &           \(\lambda\)            &                   Gamma                   \\
+			                       Gaussian                         &             \(\mu\)              &                 Gaussian                  \\
+			                       Gaussian                         &           \(\sigma^2\)           &               Inverse Gamma
+		\end{tabular}
+		\caption{Examples for Conjugate Likelihood-Prior-Pairs}
+		\label{tab:conjugatePrior}
+	\end{table}
+
+	\section{Bandits and Thompson Sampling}
+		Bandits are (due to their simplicity) great settings for exploring Bayesian policies and the exploration-exploitation tradeoff. They are essentially stateless MDPs with a reward distribution \( p(r \given a) \) that can be used to model various environments like targeted advertising. The optimization problem is. A \(k\)-armed bandit is a bandit with \(k\) actions \( \dotsrange{a_1}{a_k} \). The idea of \emph{Thompson sampling} is to build a model \( p(r \given a) \) of the reward and use it decision making. In Thompson sampling, the actions are sampled from a \emph{belief}. While it was originally not motivated for a Bayesian setting, it can be used to perform Bayesian RL.
+
+		\subsection{Restaurant Selection}
+			Consider three restaurants \(a_1\), \(a_2\), and \(a_3\) and the binary reward \( r \in \{ 0, 1 \} \) where \(1\) encodes that the meal was delicious and \(0\) encodes that it was not. Let the reward be
+			\begin{equation*}
+				p(r = 1 \given a) =
+					\begin{cases}
+						0.05 & \text{for } a = a_1 \\
+						0.1  & \text{for } a = a_2 \\
+						0.85 & \text{for } a = a_3
+					\end{cases}
+			\end{equation*}
+			so every restaurant is capable of serving delicious meals, but with different odds. Three strategies for maximizing the reward are now:
+			\begin{enumerate}
+				\item Choose randomly every day.
+				\item Build an empirical model of \( p(r \given a) \) and use \(\epsilon\)-greedy sampling.
+				\item Build a Bayesian model of \( p(r \given a) \) and sample from the posterior \( p(a \given r) \).
+			\end{enumerate}
+			Obviously the first approach will not maximize the reward. This section focuses on the third approach. For the model for \( p(r \given a) \), simply calculate the frequencies of the past rewards for each restaurant -- this yields a binomial likelihood distribution. Then put a Prior \( \mathrm{Beta}(p_a; \alpha_a, \beta_a) \) on the probabilities \( p_a \) for each restaurant. With \( \alpha_a = \beta_a = 2 \), the prior has a mean and mode of \(0.5\) which facilitates exploration. The posterior \( p(a \given r) = \mathrm{Beta}(a \given r; \tilde{\alpha}_a, \tilde{\beta}_a) \) can then be computed in closed form as the Beta distribution is a conjugate prior for the Binomial likelihood. The new parameters are
+			\begin{align*}
+				\tilde{\alpha}_a = \alpha_a + \sum_{i = 1}^{n_a} r_a^{[i]}
+				&&
+				\tilde{\beta}_a = \beta_a + n_a - \sum_{i = 1}^{n_a} r_a^{[i]}
+			\end{align*}
+			where \( (\alpha_a, \beta_a) \) are the parameters of the prior, \(n_a\) are the frequencies and \(r_a^{[i]}\) are the reward for each restaurant \(a\). In practice, it is easier to compute the joint distribution for each restaurant and marginalize as needed.
+
+			This Bayesian approach does not require tuning any hyperparameters and converges to the optimal policy! While \(\epsilon\)-greedy methods can be tuned to have faster convergence, it is suboptimal due to constant exploration. To achieve the same optimality, more sophisticated \(\epsilon\)-greedy methods are needed where the exploration rate decreases over time (e.g. linear annealed exploration).
 		% end
 	% end
 
-	\section{Bandits and Thompson Sampling} % 14.19, 14.20, 14.21
-		\todo{Content}
+	\section{Model-Based Bayesian RL for Discrete MDPs}
+		In model-based Bayesian RL, an MDP with unknown model parameters (the transition and reward functions) are solved. This section will only give a shallow overview on Bayesian MBRL for discrete MDPs and for exploration and exploitation work together to find an optimal policy. An MDP \( \mathcal{M} = (\mathcal{S}, \mathcal{A}, r, P) \) is build from the discrete state space \(\mathcal{S}\), the discrete action space \(\mathcal{A}\), the reward function \( r : \mathcal{S} \times \mathcal{A} \to \R \), and the transition probabilities \( P : \mathcal{S} \times \mathcal{A} \to [0, 1] \) as a distribution over the states. If \(P\) is known, this is a rather easy problem where the value function and the optimal policy can be found using dynamic programming. In the RL setting, \(P\) is unknown, but it can be parameterized by \(\vec{\theta}\): \( P(s' \given s, a; \vec{\theta}) \). For Bayesian RL, the state space is expanded with a \emph{belief} distribution \( b(\vec{\theta}) \) over the transition parameters. The modified MDP -- a Bayes Adaptive MDP (BAMDP) -- has the new state space \( \mathcal{S} \times \mathcal{B} \) where \(\mathcal{S}\) are the MDP states and \(\mathcal{B}\) are the belief states. The transition distribution then becomes \( P(s', b' \given s, b, a) \) and is known! As \(P\) is known, the MDP becomes a "simple" planning problem with a value function \( V : \mathcal{S} \times \mathcal{B} \to \R \).
 
-		\subsection{Restaurant Selection} % 14.22, 14.23, 14.24, 14.25, 14.26, 14.27, 14.28, 14.29
-			\todo{Content}
+		The two remaining questions on BAMDPs are:
+		\begin{itemize}
+			\item What exactly is a belief \(b(\vec{\theta})\)?
+			\item Why is the transition distribution \(P(s', b' \given s, b, a)\) known?
+		\end{itemize}
+
+		\subsection{Belief}
+			The belief \(b(\vec{\theta})\) is a distribution over the parameters \(\vec{\theta}\) of the transition model. For discrete states, the transition distribution is simply a multinomial and the parameters are the transition probabilities
+			\begin{equation*}
+				\theta_{s, a, s'} = P(s' \given s, a) \in [0, 1].
+			\end{equation*}
+			As \(\vec{\theta}\) groups all the transitions, its dimensionality is \( \lvert \mathcal{S} \rvert^2 \cdot \lvert \mathcal{A} \rvert \). The distribution \( b(\vec{\theta}) \) can be chosen freely, but as the transition distribution is a multinomial, it is wise to choose the conjugate prior, a Dirichlet distribution, for the belief. A Dirichlet distribution \( \mathrm{Dir}(\vec{\alpha}) \) is parameterized by \( \alpha_i > 0 \), \( i = \dotsrange{1}{k} \), \( k \geq 2 \) and the probability density function is
+			\begin{equation*}
+				\mathrm{Dir}(\vec{\theta}; \vec{\alpha}) \propto \prod_{s, a, s'} \theta_{s, a, s'}^{\alpha_{s, a, s'} - 1}.
+			\end{equation*}
+			When choosing a Dirichlet distribution as the prior for \( \vec{\theta} \), i.e. the belief \( b(\vec{\theta}) = \mathrm{Dir}(\vec{\theta}; \vec{\alpha}) \), the parameters \( \vec{\alpha} \) are hyperparameters.
+		% end
+
+		\subsection{State Transition Model}
+			The state transition model \( P(s', b' \given s, b, a) \) decomposes into a belief and a physical model:
+			\begin{equation*}
+				P(s', b' \given s, b, a) = \underbrace{P(b' \given s, b, a, s')}_\text{Belief Model} \underbrace{P(s' \given s, b, a)}_\text{Physical Model}
+			\end{equation*}
+			The physical model is known as the parameters \(\vec{\theta}\) of the transition model \( P(s' \given s, a; \vec{\theta}) \) can be integrated out over the belief \( b(\vec{\theta}) \):
+			\begin{equation*}
+				P(s' \given s, b, a) = \E_{b(\vec{\theta})}\big[ P(s' \given s, a; \vec{\theta}) \big] = \int\! b(\vec{\theta}) P(s' \given s, a; \vec{\theta}) \dd{\vec{\theta}}
+			\end{equation*}
+			This leaves the belief model to be unknown. But as \(b(\vec{\theta})\) is a conjugate prior for the likelihood \( P(s' \given s, a; \vec{\theta}) \), it is possible to just set the believe model to one if the next belief equals the posterior belief:
+			\begin{equation*}
+				P(b' \given s, b, a, s') =
+					\begin{cases}
+						1 & \text{if } b'(\vec{\theta}) = b(\vec{\theta} \given s, a, s') \\
+						0 & \text{otherwise}
+					\end{cases}
+			\end{equation*}
+
+		% end
+
+		\subsection{Optimal Value Function for BAMDPs}
+			The Bellman equation for BAMDPs is
+			\begin{equation*}
+				V^\ast(s, b) = \max_a\, \Big(\! r(s, a) + \gamma \!\sum_{\substack{s' \,\in\, \mathcal{S} \\ b' \,\in\, \mathcal{B}}} P(s' \given s, b, a) V^\ast(s', b') \!\Big),
+			\end{equation*}
+			for which all components are known decently! Hence, the BE can be solved using dynamic programming. This maximization selects actions that maximize the reward and actions that further explore the environment in a natural way by incorporating the belief in the objective. If only the current belief \(b\) would be used in the maximization, pure exploitation would be done as the change in the belief would be taken into account.
+
+			The BAMDP can be recast as a POMDP with the belief as the hidden variable. In practice, these problems do not scale well with the number of states, making direct implementations infeasible for most problems. Instead different ways are used to approximate the value function and solving the Bellman equation, for example in the BEETLE algorithm\footnote{Poupart et al.: "An Analytic Solution to Discrete Bayesian Reinforcement Learning" (2006)}.
 		% end
 	% end
 
-	\section{Model-Based Bayesian RL for Discrete MDPs} % 14.30, 14.31, 14.32, 14.33
-		\todo{Content}
+	\section{Continuous MDPs and Dual Control}
+		In continuous optimal control, the idea of trading off exploration and exploitation in a principled way is older than for discrete MDPs. Active learning was already covered in \autoref{c:modelLearning} for optimal exploration, and this section covers the combination of optimal control and optimal exploration: \emph{dual control}. Learning from sequential interactions is also known as \emph{continual learning}. Similar to discrete MDPs, the dynamics model \( p(\vec{s}_{t + 1} \given \vec{s}_t, \vec{a}_t) \) is parameterized, making it possible to put a prior on the parameters \(\vec{w}\):
+		\begin{equation*}
+			p(\vec{s}_{t + 1} \given \vec{s}_t, \vec{a}_t) = \int\! p(\vec{s}_{t + 1} \given \vec{s}_t, \vec{a}_t, \vec{w}) p(\vec{w}) \dd{\vec{w}}
+		\end{equation*}
+		By also adding a prior \(p(\vec{s}_t)\) on the state, it is possible to integrate the state out too (where \( \vec{z}_t \coloneqq (\vec{s}_t, \vec{w}) \)):
+		\begin{equation*}
+			p(\vec{s}_{t + 1})
+				= \iint\! p(\vec{s}_{t + 1} \given \vec{s}_t, \vec{a}_t, \vec{w}) p(\vec{s}_t) p(\vec{w}) \dd{\vec{s}_t} \dd{\vec{w}}
+				\doteq \int\! p(\vec{s}_{t + 1} \given \vec{z}_t, \vec{a}_t) p(\vec{z}_t) \dd{\vec{z}_t}
+		\end{equation*}
+		This way incremental learning can be incorporated into the dynamics model
+		\begin{equation*}
+			p(\vec{w} \given \vec{s}_{t + 1}) \propto p(\vec{s}_{t + 1} \given \vec{w}) p(\vec{w})
+		\end{equation*}
+		where now \( \vec{w} \) changes with the state, so it becomes time-dependent too: \( \vec{w} \to \vec{w}_t \), \( \vec{z}_t = (\vec{s}_t, \vec{w}) \). Maximizing the reward whilst anticipating the future \( p(\vec{w}_t) \) then allows optimal exploration. Unfortunately, dual control is rather intractable\dots
 
-		\subsection{Belief} % 14.34, 14.35
-			\todo{Content}
+		\subsection{One-Dimensional Linear Gaussian Dual Control}
+			Assume a one-dimensional stationary LQR problem with the transition distribution
+			\begin{equation*}
+				p(s_{t + 1} \given s_t, a_t) = \mathcal{N}\big( s_{t + 1} \biggiven A s_t + B a_t,\, \sigma_\eta^2 \big)
+			\end{equation*}
+			and the reward function\footnote{The reward gain \(R\) was omitted as a one-dimensional reward function can be normalized w.r.t. \(R\) by dividing both errors by \(R\).} \( r(s_{t + 1}, a_t) = -s_{t + 1}^2 - H a_t^2 \). The optimal one-step action can be derived by maximizing \( r(s_{t + 1}, a_t) \):
+			\begin{align*}
+				&& \pdv{\E_{s_{t + 1}}\big[ r(s_{t + 1}, a_t) \biggiven a_t \big]}{a_t}
+					&= -\pdv{a_t} \Big( \E_{s_{t + 1}}\big[ s_{t + 1}^2 \biggiven a_t \big] + H a_t^2 \Big)
+					= -\pdv{a_t} \Big(\! \big( A s_t + B a_t \big)^2 + \sigma_\eta^2 + H a_t^2 \Big) & \\
+					&&&= -\pdv{a_t} \Big(\! \big( A s_t + B a_t \big)^2 + H a_t^2 \Big)
+					\propto (A s_t + B a_t) B + H a_t \overset{!}{=} 0 & \\
+				&&\implies a_t^\ast &= -\frac{A B s_t}{H + B^2} &
+			\end{align*}
+			Considering a Bayesian time-varying uncertainty model \( B_t \sim \mathcal{N}(\mu_{B, t}, \sigma_{B, t}^2) \), the "certainty equivalent" optimal one-step control is:
+			\begin{align*}
+				&& \pdv{\E_{s_{t + 1}, B_t}\big[ r(s_{t + 1}, a_t) \biggiven a_t \big]}{a_t}
+					&= -\pdv{a_t} \Big( \E_{s_{t + 1}, B_t}\big[ s_{t + 1}^2 \biggiven a_t \big] + H a_t^2 \Big) & \\
+					&&&= -\pdv{a_t} \Big( \E_{\eta, B_t}\big[ (A s_t + B_t a_t + \eta)^2 \biggiven a_t \big] + H a_t^2 \Big) & \\
+					&&&\oversetfootnotemark{=} -\pdv{a_t} \Big(\! \big( A s_t + \mu_{B, t} a_t \big)^2 + \sigma_{B, t}^2 a_t^2 + \sigma_\eta^2 + H a_t^2 \Big) & \\
+					&&&\propto (A s_t + \mu_{B, t} a_t) \mu_{B, t} + \sigma_{B, t}^2 a_t + H a_t \overset{!}{=} 0 & \\
+				&&\implies a_t^\mathrm{CE} &= -\frac{A \mu_{B, t} s_t}{H + \mu_{B, t}^2 + \sigma_{B, t}^2}
+			\end{align*}
+			This result has the interesting property that as the uncertainty \( \sigma_{B, t}^2 \) increases, the control input decreases! This is the uncertainty-based regularization that was introduced earlier on and is usually known as the "caution" or "turn-off phenomenon".
+			\footnotetext{
+				The expectation can be computed by considering the joint distribution \( \mathcal{N}(\vec{z} \given \vec{\mu}_z, \mat{\Sigma}_z) \) with \( \vec{z} \coloneqq \begin{bmatrix} B_t & \eta \end{bmatrix}^T \), \( \vec{\mu}_z \coloneqq \begin{bmatrix} \mu_{B, t} & 0 \end{bmatrix}^T \) and \( \mat{\Sigma} = \diag\!\big(\sigma_{B, t}^2, \sigma_\eta^2\big) \) and then computing the expectation \( \E\big[ (\vec{z} - \vec{s})^T \mat{M} (\vec{z} - \vec{s}) \big] \) with \( \vec{s} \coloneqq \begin{bmatrix} 0 & -As_t \end{bmatrix}^T \) and \( \mat{M} \coloneqq \begin{bmatrix} a_t^2 & a \\ a & 1 \end{bmatrix} \) using equation (380) from the matrix cookbook.
+			}
+
+			% TODO: Finish 1D LQR Dual Control! Slides: 14.47, 14.48, 14.49, 14.50
 		% end
 
-		\subsection{State Transition Model} % 14.36, 14.37
-			\todo{Content}
-		% end
-
-		\subsection{Optimal Value Function for BAMPDs} % 14.38, 14.39
-			\todo{Content}
-		% end
-
-		\subsection{Solving for the Optimal Value Function} % 14.40
-			\todo{Content}
+		\subsection{Practical Dual Control}
+			Achieving dual control in practice is an open research topic due to the quasi-intractable nature of dual control. One current approaches are to perform certainty equivalence actions while computing the local uncertainties in an inner loop, and approximating dual control in an outer loop (in a MPC fashion). Another approach is to relax the continual learning requirement by focusing on the episodic setting, which is closer to a planning problem with active learning.
 		% end
 	% end
 
-	\section{Continuous MDPs and Dual Control} % 14.41, 14.42, 14.43, 14.44
-		\todo{Content}
+	\section{Wrap-Up}
+		This chapter covered Bayesian reinforcement learning methods which have a lot to offer, especially regarding exploration, regularization and robustness of policies. But while theoretically appealing, these methods are hard to implement in practice. In a discrete setting, the MDP can be modified into an BAMDP, a kind of POMDP, with a belief over the model parameters. This makes it possible to solve the MDP in a Bayesian fashion, but is computationally very expensive. In continuous control, the problem of exploring and planning simultaneously is older and is known as dual control. But this can not be achieved in closed form\dots
 
-		\subsection{One-Dimensional Linear Gaussian Dual Control} % 14.45, 14.46, 14.47, 14.48, 14.49, 14.50
-			\todo{Content}
-		% end
-
-		\subsection{Practical Dual Control} % 14.51
-			\todo{Content}
-		% end
-	% end
-
-	\section{Wrap-Up} % 14.53
-		\todo{Content}
+		A common method for Bayesian exploration is Thompson sampling which samples from the posterior policy to achieve said optimal exploration.
 	% end
 % end
 
@@ -3546,7 +3665,7 @@
 		\item[Policy Gradient] Step-Based, Episode-Based, Finite Differences, Likelihood Ratio, Baselines, REINFORCE, Fisher Information Matrix, Natural Gradient
 		\item[Probabilistic Policy Search] Weighted Maximum Likelihood, Relative Entropy, Contexts, Hierarchy
 		\item[Imitation Learning] Distribution Matching, Covariate Shift, Behavioral Cloning, Inverse Reinforcement Learning
-		\item[Bayesian RL] % TODO
+		\item[Bayesian RL] Bandits, Thompson Sampling, Belief Space, Dual Control, Continual Learning, Caution, Turn-Off Phenomenon, Certainty Equivalence
 	\end{description}
 
 	But still, there are a lot of open research questions, for example:

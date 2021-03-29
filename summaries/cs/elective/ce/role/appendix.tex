@@ -413,3 +413,175 @@
 		\answer{Bayesian RL trades exploration and exploitation off optimally by imposing an epistemic uncertainty quantification on the model. This uncertainty then "tells" the policy where to explore and where exploitation is safe.}
 	% end
 % end
+
+\chapter{Mock Exam}
+	\paragraph{Question 1}
+		What is a null space? What is task-prioritization with null space? Give a minimal example.
+
+		\subparagraph{Answer}
+			The \emph{null space} of a robot is the joint space of redundant solutions for a target pose in task space, i.e. all joint configurations that would not violate the constraints of the problem. Task-prioritization with null space uses that space to move the robot in a resting position (e.g. to consume less energy) while remaining in a steady position with the end-effector. A minimal example is the a one-dimensional two-join prismatic robot where the movements of one joint can be compensated by the other. If e.g. a balanced state is less energy-consuming, it would be desirable to prioritize movement that would keep the robot close to this position.
+		% end
+	% end
+
+	\paragraph{Question 2}
+		Write down and explain the equations for: a) P-controller, b) PD-controller and c) PD + gravity compensation. Intuitively explain what are the limitations/problems of each of these controllers.
+
+		\subparagraph{Answer}
+			Let \(\vec{x}_d\)/\(\dot{\vec{x}}_d\) and \(\vec{x}\)/\(\dot{\vec{x}}\), be the desired and actual position/velocity, respectively.
+			\begin{itemize}
+				\item The equation of the P controller is \( \vec{u} = \mat{K}_P (\vec{x}_d - \vec{x}) \). The control input is computed based on the position error and amplified by the gain \(\mat{K}_P\). This controller has the problem that it does not handle errors in the velocity, causing oscillations around the target.
+				\item The equation of the PD controller is \( \vec{u} = \mat{K}_P (\vec{x}_d - \vec{x}) + \mat{K}_D (\dot{\vec{x}}_d - \dot{\vec{x}}) \). In addition to the position error, it also handles errors in the velocity and amplifies them by the gain \(\mat{K}_D\). This controller has the limitation that there remains a steady-state error caused by gravity, i.e. the robot will always remain slightly off target.
+				\item The equation of the PD controller with gravity compensation is \( \vec{u} = \mat{K}_P (\vec{x}_d - \vec{x}) + \mat{K}_D (\dot{\vec{x}}_d - \dot{\vec{x}}) + \vec{g}(\vec{x}) \), where \(\vec{g}(\vec{x})\) is a model of the gravitational forces. While this controller can compensate for the steady-state gravitational error, it requires an accurate model of the gravity which might not be available..
+			\end{itemize}
+		% end
+	% end
+
+	\paragraph{Question 3}
+		Make an illustrative sketch that shows and connects the following terms: dynamics, control, trajectory, kinematics, desired states, and actual states. Label all connections.
+
+		\subparagraph{Answer}
+			The following sketch shows the connection of the terms:
+			\begin{center}
+				\begin{tikzpicture}[block/.style = { draw, rectangle, minimum height = 1.5cm, minimum width = 2.5cm }]
+					\node [block] (t) {\textbf{Trajectory}};
+					\node [block, right = 2 of t] (c) {\textbf{Controller}};
+					\node [block, right = 2 of c] (d) {\textbf{Dynamics}};
+					\node [block, right = 2 of d] (k) {\textbf{Kinematics}};
+
+					\coordinate [below = 1 of d] (needle1);
+					\coordinate [right = 0.5 of c.south] (needle3);
+					\coordinate [left = 0.5 of c.south] (needle4);
+					\coordinate [below = 1 of needle3] (needle2);
+					\coordinate [below = 2 of needle4] (needle5);
+					\coordinate [below = 2 of k] (needle6);
+
+					\draw [->] (t) -- node[above]{Desired} node[below]{States} (c);
+					\draw [->] (c) -- node[above]{Control} node[below]{Inputs} (d);
+					\draw [->] (d) -- node[above]{Joint} node[below]{States} (k);
+					\draw [->] (d) -- (needle1) -- node[above]{Actual Joint States} (needle2) -- (needle3);
+					\draw [->] (k) -- (needle6) -- node[above]{Actual Task States} (needle5) -- (needle4);
+				\end{tikzpicture}
+			\end{center}
+		% end
+	% end
+
+	\paragraph{Question 4}
+		Write down Bayes theorem for estimating the probability of \(A\) given the observation \(B\). Define (i.e. name) the terms.
+
+		\subparagraph{Answer}
+			\begin{equation*}
+				\underbrace{p(A \given B)}_\text{Posterior} = \frac{\overbrace{p(B \given A)}^\text{Likelihood} \overbrace{p(A)}^\text{Prior}}{\underbrace{p(B)}_{\substack{\text{Normalization/}\\\text{Confidence}}}}
+			\end{equation*}
+		% end
+	% end
+
+	\paragraph{Question 5}
+		Describe the main idea behind Bayesian linear regression. Define all the relevant distributions. How do we perform predictions? Why is it useful?
+
+		\subparagraph{Answer}
+			Instead of assuming there are true parameters \(\vec{w}\), Bayesian linear regression puts a prior \(p(\vec{w})\) on the parameters and marginalizes them out as the really important thing in regression are the predictions, not the parameters. This treatment of the weights being random variables is useful to gauge the uncertainty of the model (a high variance in the prediction means large uncertainty). For a dataset \(\mathcal{D}\), parameters \(\vec{w}\), the input variable \(\vec{x}\), and the predictive variable \(y\), the posterior predictive distribution is
+			\begin{equation*}
+				p(y \given \vec{x}, \mathcal{D}) = \int\! p(y \given \vec{x}, \vec{w}) p(\vec{w} \given \mathcal{D}) \dd{\vec{w}}.
+			\end{equation*}
+			This results in \(\vec{x}\)-dependent variance in mean which can be computed in closed form for linear Gaussian models.
+		% end
+	% end
+
+	\paragraph{Question 6}
+		A dynamic motor primitive (DMP) is based on the dynamical system
+		\begin{align*}
+			\ddot{y} &= \tau^2 \Big( \alpha \big( \beta (g - y) - \dot{y} / \tau \big) + f_w(z) \Big) \\
+			 \dot{z} &= -\tau \alpha_z z
+		\end{align*}
+		where \(z\) represents the canonical system. Give an equivalent definition in which you formalize the DMP as a PD-controller with a feedforward term that acts on the acceleration \(\ddot{y}\) of the system.
+
+		\subparagraph{Answer}
+			\begin{align*}
+				\ddot{y}
+					&= \tau^2 \Big( \alpha \big( \beta (g - y) - \dot{y} / \tau \big) + f_w(z) \Big) \\
+					&= \tau^2 \alpha \big( \beta (g - y) - \dot{y} / \tau \big) + \tau^2 f_w(z) \\
+					&= \tau^2 \alpha \beta (g - y) - \tau \alpha \dot{y} + \tau^2 f_w(z) \\
+					&= \underbrace{\tau^2 \alpha \beta}_{K_P} (\underbrace{g}_{y_d} - y) + \underbrace{\tau \alpha}_{K_D} (\underbrace{0}_{\dot{y}_d} - \dot{y}) + \underbrace{\tau^2 f_w(z)}_{u_\mathrm{ff}} \\
+					&= K_P (y_d - y) + K_D (\dot{y}_d - \dot{y}) + u_\mathrm{ff}
+			\end{align*}
+		% end
+	% end
+
+	\paragraph{Question 7}
+		What are the advantages of using a probabilistic representation for trajectories?
+
+		\subparagraph{Answer}
+			This allows representing how important it is to reach certain points and certain time steps by quantifying the variance at that point accordingly. Also it allows probabilistic operations on the trajectories like conditioning and blending.
+		% end
+	% end
+
+	\paragraph{Question 8}
+		You want to train your robot to reach a desired position with reinforcement learning. You decide to use a reward of \num{1} when it reaches the desired position and \num{0} otherwise. Why is this reward not a good idea?
+
+		\paragraph{Answer}
+			This reward yields a large exploration problem. The robot would have to reach the exact position by chance at least once in order to recognize that there's a way to increase the reward. As that event is very unlikely, the robot would most likely not learn anything.
+		% end
+	% end
+
+	\paragraph{Question 9}
+		Updating the Q-Function using Temporal Differences is defined with the following equation:
+		\begin{equation*}
+			Q_{t + 1}(s_t, a_t) = Q_t(s_t, a_t) + \alpha \delta_t
+			\quad\text{with}\quad
+			\delta_t = r_t + \gamma Q_t(s_t, a_?) - Q_t(s_t, a_t)
+		\end{equation*}
+		In the lecture the following two different ways of choosing \(a_?\) where discussed, resulting in two algorithms. Name the corresponding algorithms and discuss their differences.
+		\begin{itemize}
+			\item[A:] \( a_? = \arg\max_a\, Q_t(s_t, a) \)
+			\item[B:] \( a_? = a_{t + 1} \) where \( a_{t + 1} \sim \pi(\cdot \given s_{t + 1}) \)
+		\end{itemize}
+
+		\subparagraph{Answer}
+			Method (A) is called \emph{Q-Learning} and is an off-policy method as the predictive action is not sampled from the policy. Method (B) is called \emph{SARSA} and is an on-policy method. SARSA also requires not only state-action-reward-state data but state-action-reward-state-action data to be trained. Also it does not require an explicit maximization and has stronger convergence guarantees as opposed to Q-Learning.
+		% end
+	% end
+
+	\paragraph{Question 10}
+		Write down (with detail) the optimization problem for the Linear-Quadratic Regulator with discrete-time and infinite-horizon, assuming there is no noise in the transition to the next state.
+
+		\subparagraph{Answer}
+			The optimization problem is
+			\begin{equation*}
+				\begin{aligned}
+					\min_{\vec{u}_{1:T}} \,& \sum_{t = 1}^{\infty} (\vec{x}_d - \vec{x}_t)^T \mat{R}_t (\vec{x}_d - \vec{x}_t) + \vec{u}_t^T \mat{H}_t \vec{u}_t \\
+					\mathrm{s.t.} \quad&
+						\begin{aligned}
+							\vec{x}_{t + 1} &= \mat{A}_t \vec{x}_t + \mat{B}_t \vec{u}_t
+						\end{aligned}
+				\end{aligned}
+			\end{equation*}
+			where \(\mat{R}_t\) and \(\mat{H}_t\) are symmetric and positive definite metrics for weighting the state error and to penalize taking actions. The matrices \(\mat{A}_t\) and \(\mat{B}_t\) define the dynamics of the system.
+		% end
+	% end
+
+	\paragraph{Question 11}
+		When deriving the likelihood ration gradient in the class, we started with the derivative of the cost function \( J(\vec{\theta}) \), which is given by
+		\begin{equation*}
+			\grad_{\!\vec{\theta}} J(\vec{\theta}) = \int\! R(\vec{\tau}) \grad_{\!\vec{\theta}} p_{\vec{\theta}}(\vec{\tau} \given \pi) \dd{\vec{\tau}}
+		\end{equation*}
+		where \(\vec{\tau}\) is a trajectory, \(\vec{\theta}\) are the parameters that we want to optimize, \(\pi\) is the parameterized policy, and \(R(\vec{\tau})\) is the return of the trajectory. Using a log-trick, we could approximate this derivative using \(N\) sample trajectory by
+		\begin{equation*}
+			\grad_{\!\vec{\theta}} J(\vec{\theta})
+				= \int\! R(\vec{\tau}) p_{\vec{\theta}}(\vec{\tau} \given \pi) \grad_{\!\vec{\theta}} \log p_{\vec{\theta}}(\vec{\tau} \given \pi) \dd{\vec{\tau}}
+				\approx \frac{1}{N} \sum_{i = 1}^{N} R(\vec{\tau}_i) \grad_{\!\vec{\theta}} \log p_{\vec{\theta}_i}(\vec{\tau} \given \pi)
+		\end{equation*}
+		Apart from using a sample-based approximation, what is the key benefit of the log-trick?
+
+		\subparagraph{Answer}
+			It is often easier to take the derivative of a log-density instead of the density itself as the logarithm turns products into sums. Hence, lots of terms that are constant w.r.t. the parameters vanish, yielding a simple gradient. This is especially useful in the step-based setting where the trajectory distribution is factorized into the transition and policy distribution, where only the latter is dependent on the parameters: the former disappears in the gradient due to the logarithm.
+		% end
+	% end
+
+	\paragraph{Question 12}
+		What is the role of the learning rate in policy gradient methods? What is the role of the temperature in probabilistic policy search methods?
+
+		\subparagraph{Answer}
+			Both the learning rate and the temperature affect the convergence speed of the algorithm. As the learning rate is used as the step size for gradient ascent, the usual properties apply: a too low rate could lead to premature stops during the optimization while a too high rater could lead to oscillations, jumps and probably divergence. The same is true for the temperature. they define how "trustworthy" the update is.
+		% end
+	% end
+% end

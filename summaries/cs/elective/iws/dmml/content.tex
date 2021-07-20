@@ -387,31 +387,117 @@
 	% end
 % end
 
-\chapter{k-Nächste Nachbarn (kNN)} % 2.2, 2.3, 2.7, 2.8, 2.9
-	\todo{Content}
+\chapter{k-Nächste Nachbarn (kNN)}
+	Im Allgemeinen können Verfahren des maschinellen Lernens in \emph{globale} und \emph{lokale} Modelle unterteilt werden: Lokale Modelle Klassifizieren einen Datenpunkt nur Anhand seiner Umgebung, globale Modelle hingegen finden ein global Gültiges Entscheidungskriterium, beispielsweise eine trennende Hyperebene. Das verfahren der \emph{k-Nächsten Nachbarn} (kNN) gehört zu den lokalen Modelle. Bei diesem Ansatz wird ein Beispiel anhand der \(k\) nächsten Nachbarn (nach irgendeiner Ähnlichkeitsmetrik) klassifiziert: Ein Datenpunkt gehört einer bestimmten Klasse an, wenn der Großteil der umliegenden Datenpunkte auch dieser Klasse angehören. Leicht formalisiert ergibt sich folgendes Vorgehen (wobei \( f(\cdot) \) die tatsächliche Kategorie beschreibt):
+	\begin{enumerate}
+		\item Berechne den Abstand zwischen dem Datenpunkt \( \vec{x}_\ast \) und jedem Trainingsdatenpunkt.
+		\item Wähle die \(k\) nächsten Nachbarn \( \dotsrange{\vec{n}_1}{\vec{n}_k} \) bezüglich einem Ähnlichkeitsmaß \( \mathit{dist}(\vec{x}, \vec{y}) \).
+		\item Berechne die Vorhersage \( A\big( \vec{x}_\ast;\, \dotsrange{f(\vec{n}_1)}{f(\vec{n}_k)} \big) \).
+	\end{enumerate}
+	Hier werden sofort einige Schwierigkeiten ersichtlich:
+	\begin{itemize}
+		\item Welches Ähnlichkeitsmaß \( \mathit{dits}(\cdot, \cdot) \) sollte verwendet werden?
+		\item Wie viele Nachbarn \(k\) sollten verwendet werden?
+		\item Was passiert, wenn die Werte der Nachbarn nicht überein stimmen oder es ein Unentschieden gibt?
+		\item Wie kann die Suche effizient gestaltet werden?
+	\end{itemize}
 
-	\section{Globale und Lokale Modelle} % 2.2
-		\todo{Content}
+	\section{Ähnlichkeitsmaße}
+		Wie bereits beschrieben ist ein Problem die Auswahl eines Ähnlichkeitsmaßes. Die zwei wichtigsten Eigenschaften des Ähnlichkeitsmaßes sind, dass dieses kleiner werden sollte, wenn zwei Datenpunkte sich ähnlicher sind und genau dann Null ist, wenn zwei Datenpunkte identisch sind. Eine Möglichkeit ist beispielsweise der euklidische Abstand
+		\begin{equation}
+			\mathit{dist}(\vec{x}, \vec{y}) = \lVert \vec{x} - \vec{y} \rVert_2 = \sqrt{\textstyle \sum_{i = 1}^{n} (x_i - y_i)^2}
+		\end{equation}
+		oder der Kosinus-Abstand
+		\begin{equation}
+			\mathit{dist}(\vec{x}, \vec{y}) = \cos(\vec{x}, \vec{y}) = \frac{\braket{\vec{x}}{\vec{y}}}{\lvert \vec{x} \rvert \, \lvert \vec{y} \rvert} = \frac{\sum_{i = 1}^{n} x_i y_i}{\sqrt{\sum_{i = 1}^{n} x_i^2} \, \sqrt{\sum_{i = 1}^{n} y_i^2}},
+		\end{equation}
+		welcher Invariant gegenüber Skalierungen der Vektoren ist. Andere Ähnlichkeitsmaße für binäre (0/1) Daten sind \zB:
+		\begin{itemize}
+			\item Matching Koeffizient:
+		\end{itemize}
+		\begin{equation}
+			\lvert \vec{x} \cap \vec{y} \rvert
+		\end{equation}
+		\begin{itemize}
+			\item Dice Koeffizient:
+		\end{itemize}
+		\begin{equation}
+			\frac{2 \lvert \vec{x} \cap \vec{y} \rvert}{\lvert \vec{x} \rvert + \lvert \vec{y} \rvert}
+		\end{equation}
+		\begin{itemize}
+			\item Jaccard Koeffizient.
+		\end{itemize}
+		\begin{equation}
+			\frac{\lvert \vec{x} \cap \vec{y} \rvert}{\lvert \vec{x} \cup \vec{y} \rvert}
+		\end{equation}
+		\begin{itemize}
+			\item Overlap Koeffizient:
+		\end{itemize}
+		\begin{equation}
+			\frac{\lvert \vec{x} \cap \vec{y} \rvert}{\min \{ \lvert \vec{x} \rvert, \lvert \vec{y} \rvert \}}
+		\end{equation}
+		\begin{itemize}
+			\item Kosinus:
+		\end{itemize}
+		\begin{equation}
+			\frac{\lvert \vec{x} \cap \vec{y} \rvert}{\sqrt{\lvert \vec{x} \rvert} \, \sqrt{\lvert \vec{x} \rvert}}
+		\end{equation}
+		Dabei beschreibt \( \cap \) eine komponentenweise Und-Aggregation und \( \cup \) eine Oder-Aggregation:
+		\begin{align}
+			\begin{bmatrix}
+				0 \\ 0 \\ 1 \\ 1
+			\end{bmatrix}
+			\cap
+			\begin{bmatrix}
+				0 \\ 1 \\ 0 \\ 1
+			\end{bmatrix}
+			&=
+			\begin{bmatrix}
+				0 \\ 0 \\ 0 \\ 1
+			\end{bmatrix}
+			&
+			\begin{bmatrix}
+				0 \\ 0 \\ 1 \\ 1
+			\end{bmatrix}
+			\cup
+			\begin{bmatrix}
+				0 \\ 1 \\ 0 \\ 1
+			\end{bmatrix}
+			&=
+			\begin{bmatrix}
+				0 \\ 1 \\ 1 \\ 1
+			\end{bmatrix}
+		\end{align}
+
+		Trotz dieser vielen Ähnlichkeitsmaße ist es im Allgemeinen aber sehr schwer zu entscheiden, ob sich zwei Datenpunkte (\zB Bilder) ähnlich sind -- die Bedeutung von "ähnlich" scheint an dieser Stelle eher ein philosophisches Problem zu sein, im maschinellen Lernen wird der Begriff hingegen eher pragmatisch genutzt.
 	% end
 
-	\section{Beispiel} % 2.4, 2.5
-		\todo{Content}
+	\section{Auswahlfunktion}
+		Wie auch für das Ähnlichkeitsmaß gibt es für die Auswahlfunktion verschiedene Möglichkeiten. Bei der Klassifikation wird üblicherweise eine einfache Mehrheitsentscheidung verwendet, bei der Regression gibt es hingegen mehrere vernünftige Ansätze. Die einfachste ist eine Mittlung
+		\begin{equation}
+			A\big( \vec{x}_\ast;\, \dotsrange{f(\vec{n}_1)}{f(\vec{n}_k)} \big) = \frac{1}{k} \sum_{i = 1}^{k} f(\vec{n}_i),
+		\end{equation}
+		wobei \( f(\vec{n}_i) \) den Funktionswert des Trainingsbeispiels \( \vec{n}_i \) darstellt. Andere Möglichkeiten sind gewichtete Varianten
+		\begin{equation}
+			A\big( \vec{x}_\ast;\, \dotsrange{f(\vec{n}_1)}{f(\vec{n}_k)} \big) = \sum_{i = 1}^{k} \mathit{sim}(\vec{n}_i, \vec{x}_\ast) \, f(\vec{n}_i)
+		\end{equation}
+		oder
+		\begin{equation}
+			A\big( \vec{x}_\ast;\, \dotsrange{f(\vec{n}_1)}{f(\vec{n}_k)} \big) = \frac{1}{\sum_{i = 1}^{k} w_i} \sum_{i = 1}^{k} w_i \, f(\vec{n}_i)
+		\end{equation}
+		mit \( w_i = \mathit{dist}^{-2}(\vec{n}_i, \vec{x}_\ast) \), wobei \( \mathit{sim}(\vec{n}_i, \vec{x}_\ast) \) ein Ähnlichkeitsmaß ist.
 	% end
 
-	\section{Ähnlichkeitsmaße} % 2.6, 2.10, 2.11
-		\todo{Content}
+	\section{Überanpassung}
+		Die Wahl eines "guten" \(k\) ist im Allgemeinen schwierig, aber auch sehr wichtig. Der Wert \( k = 1 \) liefert beispielsweise eine Perfekte vorhersage auf den Trainingsdaten, da der nächste Datenpunkt immer der Abfragedatenpunkt ist, es wird also immer der selbe Wert zugeordnet. Werden jedoch andere Daten verwendet, ist der Fehler vermutlich sehr groß! Die ist bekannt als das Problem der \emph{Überanpassung} (Englisch: \emph{Overfitting}) und stellt eine große Herausforderung im maschinellen Lernen dar. Dieses Problem wird neben weiteren Möglichkeiten zur Evaluation eines Modells im \autoref{c:evaluation} behandelt.
 	% end
 
-	\section{Auswahlfunktion} % 2.12
-		\todo{Content}
-	% end
-
-	\section{Überanpassung} % 2.13, 2.14
-		\todo{Content}
-	% end
-
-	\section{Asymptotische Ergebnisse und Fluch der hohen Dimension} % 2.15, 2.16, 2.17
-		\todo{Content}
+	\section{Asymptotische Ergebnisse und Fluch der hohen Dimension}
+		Konvergiert \( k/N \) gegen \(0\) während \(k\) und \(N\) (die Anzahl Trainingsdatenpunkte) gegen unendlich laufen, \dh
+		\begin{equation}
+			\lim\limits_{\substack{k \,\to\, \infty \\ N \,\to\, \infty}} \frac{k}{N} = 0,
+		\end{equation}
+		dann konvergiert die Vorhersage von kNN gegen die zu erwartende Vorhersage (Hastie et al., 2001). Das bedeutet für unendlich viele Datenpunkte und unendliche viele vergleiche ist kNN perfekt. Dies birgt aber ein Problem: Die Dichte der Beispiele ist reziprok proportional zu \( N^n \), wobei \(n\) die Dimension der Datenpunkte ist. Daher steigt die Menge benötigter Daten \emph{exponentiell} mit der Dimension des Zustandsraums. Dies ist bekannt als der \emph{Fluch der hohen Dimension}, der \emph{Curse of Dimensionality}. Diesem Fluch unterliegen sehr viel (wenn nicht gar alle) Modelle des maschinellen Lernens!
 	% end
 % end
 
@@ -460,6 +546,8 @@
 % end
 
 \chapter{Modellselektion und Evaluierung} % 2.18, 2.19, 2.20, 3.1, 3.2, 3.10, 3.11
+	\label{c:evaluation}
+
 	\todo{Content}
 
 	\section{Aufteilung in Test- und Trainingsmenge} % 2.21, 2.22, 2.23

@@ -1,56 +1,349 @@
-\chapter{Einleitung} % 1.1, 1.2, 1.3, 1.4
-	\todo{Content}
+% !TeX spellcheck = de_DE
 
-	\section{Was ist Künstliche Intelligenz?} % 1.5, 1.6, 1.7, 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16
-		\todo{Content}
-	% end
 
-	\section{Was ist ein Algorithmus} % 1.17, 1.18, 1.19
-		\todo{Content}
-	% end
+\chapter{Einleitung}
+	Die Veranstaltung "Data Mining und Maschinelles Lernen" behandelt, ebenso wie diese Zusammenfassung, den Teilbereich des maschinellen Lernens der künstlichen Intelligenz. Dabei werden Algorithmen entwickelt, durch die ein Computer sich selbstständig verbessert. Ein Teilgebiet dieses maschinellen Lernens ist das \emph{tiefe Lernen} (DL, für \emph{Deep Learning}), bei dem tiefe künstliche neuronale Netzwerke genutzt werden (dies wird im \autoref{c:deepLearning} näher behandelt). Dieser Zusammenhang ist in \autoref{fig:aiMlDl} dargestellt.
 
-	\section{Maschinelles Lernen} % 1.20, 1.21, 1.22
-		\todo{Content}
-	% end
+	Diese Zusammenfassung wird in die folgenden Bereiche einführen: k-Nächste Nachbarn, Lineare Modelle und Funktionsapproximation, Modellselektion und Evaluierung, Entscheidungsbäume, Ensemble-Methoden, Naive Bayes und Bayes-Netzwerke, die Stützvektormethode, Clusteranalyse und Assoziationsregeln und (Tiefe) Neuronale Netzwerke. Viele andere Bereiche werden allerdings auch nicht abgedeckt, \bspw Variational Learning, Details des Deep Learning, Gaussian Processes, Graphische Modelle, Kausalität, \dots Diese Inhalte sind zu Teilen in den Zusammenfassungen für die Kurse "Statistical Machine Learning", "Probabilistic Graphical Models" (noch nicht verfügbar, voraussichtlich im Wintersemester 2021/22), "Statistical Relational AI" (noch nicht verfügbar, voraussichtlich im Wintersemester 2021/22) sowie "Deep Learning: Architectures and Methods" (bald verfügbar) zu finden.
 
-	\section{Geschichte} % 1.23, 1.24, 1.25, 1.26, 1.46, 1.47, 1.48, 1.49, 1.50, 1.51, 1.52, 1.53
-		\todo{Content}
+	\begin{figure}
+		\centering
+		\begin{tikzpicture}[align = center]
+			\node (dl) {Tiefes \\ Lernen};
+			\node [right = 1 of dl] (ml) {Maschinelles \\ Lernen};
+			\node [right = 1 of ml] (ai) {Künstliche Intelligenz};
 
-		\subsection{Das Perzeptron} % 1.27, 1.44, 1.45
-			\todo{Content}
+			\path (dl) -- coordinate(needle) (ml);
 
-			\subsubsection{Aufbau} % 1.28, 1.29, 1.30, 1.31, 1.32, 1.33, 1.34, 1.35, 1.36
-				\todo{Content}
-			% end
+			\node [draw, ellipse, minimum height = 1.5cm, minimum width = 2cm] at (dl) {};
+			\node [draw, ellipse, minimum height = 3cm, minimum width = 7cm] at (needle) {};
+			\node [draw, ellipse, minimum height = 5cm, minimum width = 13cm] at (ml) {};
+		\end{tikzpicture}
+		\caption{Zusammenhang von künstlicher Intelligenz, maschinellem Lernen und tiefem Lernen.}
+		\label{fig:aiMlDl}
+	\end{figure}
 
-			\subsubsection{Lernalgorithmus} % 1.37, 1.38, 1.39, 1.40, 1.41, 1.42
-				\todo{Content}
-			% end
+	\section{Geschichte}
+		Im Gegensatz zu den meisten Vermutungen hat die künstliche Intelligenz bereits eine lange Vergangenheit:
+		\begin{description}[leftmargin = 2cm]
+			\item[1950er] Geburt der künstlichen Intelligenz
+			\item[1960er] Ära der Perzeptrons
+			\item[1970er] Erster KI-Winter
+			\item[1980er] Ära der Expertensysteme
+			\item[1990er] Zweiter KI-Winter
+			\item[2000er] Ära des statistischen maschinellen Lernens
+			\item[2000er] Ära des tiefen Lernens
+		\end{description}
+		Das Perzeptron, welches im folgenden Abschnitt vorgestellt wird, hat die ersten großen Ergebnisse in der KI-Forschung produziert. Es hat zwar eine sehr mächtige Vorhersagekraft, es gibt jedoch Probleme, die nicht mit einem Perzeptron lösbar sind (Minsky, 1969). Diese Tatsache hat anschließend zu dem ersten KI-Winter geführt, in dem wenig geforscht wurde und das öffentliche Interesse abgeebbt ist. Gefolgt ist die Ära der Expertensysteme, Fall- und Regal-basierte KI-Systeme, die durch einen Menschen und logisches Schlussfolgern erstellt wurden. Jedoch haben auch diese Systeme zu viel versprochen und das öffentliche Interesse ist schnell abgeebbt.
 
-			\subsubsection{Mehrschichtige Netzwerke} % 1.43
-				\todo{Content}
-			% end
+		Nun betrat das moderne maschinelle Lernen mit dem \emph{statistischen} maschinellen Lernen das Feld, welches durch komplizierte statistische Modelle angetrieben und motiviert wurde. Die Ergebnisse haben sehr viele Erfolge gebracht, es gab jedoch kein großes Pressecho. Dies könnte unter anderem daher kommen, dass der Grundsatz der Forschung quantitative und messbare Ergebnisse waren und keine großen Ansprüche zur "Intelligenz" gestellt wurden. Darauf folgte die Ära des tiefen Lernens, also neuronale Netzwerke mit "vielen" Schichten, welches ein große Aufmerksamkeit von der Presse und Politik bekommt.
+
+		\subsection{Das Perzeptron}
+			Das von Frank Rosenblatt entwickelte \emph{Perzeptron} war das erste Modell, welches durch das menschliche Gehirn motiviert war, ein künstliches neuronales Netzwerk. Dabei werden viele kleine und einfache Einheiten (Neuronen) zu einem größeren Modell verbunden und das Lernen findet durch Anpassung der Verbindungsstärken (Synapsen) und -gewichten statt. Eine Darstellung eines solchen Perzeptrons ist in \autoref{fig:perceptron} gegeben. Dabei werden die Eingaben in der Neuronenschicht gewichtet und die Neuronen \emph{feuern}. Diese Ausgabe wird anschließend an das Ausgabeneuron weitergegeben, welches die \emph{Aktivierungen} akkumuliert und, sofern der akkumulierte Wert über einen gewissen Schwellenwert liegt, feuert. So kann eine binäre Klassifikation durchgeführt werden.
+
+			Zum trainieren eines Perzeptrons werden bekannte Daten verwendet, in das Perzeptron eingegeben und die vorhergesagten Ergebnisse mit den echten verglichen. War die Vorhersage korrekt, wird nicht geändert. War die Vorhersage jedoch falsch, so werden die Verbindungsstärken so geändert, dass das Richtige vorhergesagt wird. Dies wird so lange wiederholt, bis keine Fehler mehr gemacht werden.
+
+			Mit dem Wechsel zu tiefem Lernen werden diese einschichtigen nicht mehr verwendet, sondern es werden mehrere Neuronenschichten verwendet, die aufeinander Aufbauen (in \autoref{fig:mlp} in ein solches Netzwerk gezeigt). Neben der Nachteile des höheren Speicherverbrauchs, mehr benötigter Rechenkraft und der Anforderung an mehr Daten haben solche Modelle den großen Vorteil, dass sie eine deutlich höhere Vorhersagekraft besitzen.
+
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[->]
+					\node [input neuron] (a) {};
+					\node [input neuron, below = 0.1 of a] (b) {};
+					\node [input neuron, below = 0.1 of b] (c) {};
+					\node [input neuron, below = 0.1 of c] (d) {};
+					\node [input neuron, below = 0.1 of d] (e) {};
+
+					\node [left = 2 of c] (I) {Input};
+
+					\node [output neuron, right = 2 of c] (o) {};
+					\node [right = 1 of o] (O) {Output};
+
+					\draw (a) to[bend left = 10] (o);
+					\draw (b) to[bend left = 5] (o);
+					\draw (c) to (o);
+					\draw (d) to[bend right = 5] (o);
+					\draw (e) to[bend right = 10] (o);
+
+					\draw (I) to[bend left = 10] (a);
+					\draw (I) to[bend left = 5] (b);
+					\draw (I) to (c);
+					\draw (I) to[bend right = 5] (d);
+					\draw (I) to[bend right = 10] (e);
+
+					\draw (o) to (O);
+				\end{tikzpicture}
+				\caption{Darstellung eines einschichtigen Perzeptrons.}
+				\label{fig:perceptron}
+			\end{figure}
+
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}
+					\node [input neuron] (a) {};
+					\node [input neuron, below = 0.1 of a] (b) {};
+					\node [input neuron, below = 0.1 of b] (c) {};
+					\node [input neuron, below = 0.1 of c] (d) {};
+					\node [input neuron, below = 0.1 of d] (e) {};
+
+					\node [neuron, right = 1.5 of a] (l11) {};
+					\node [neuron, right = 1.5 of b] (l12) {};
+					\node [neuron, right = 1.5 of c] (l13) {};
+					\node [neuron, right = 1.5 of d] (l14) {};
+					\node [neuron, right = 1.5 of e] (l15) {};
+
+					\node [neuron, right = 1.5 of l11] (l21) {};
+					\node [neuron, right = 1.5 of l12] (l22) {};
+					\node [neuron, right = 1.5 of l13] (l23) {};
+					\node [neuron, right = 1.5 of l14] (l24) {};
+					\node [neuron, right = 1.5 of l15] (l25) {};
+
+					\node [neuron, right = 1.5 of l21] (l31) {};
+					\node [neuron, right = 1.5 of l22] (l32) {};
+					\node [neuron, right = 1.5 of l23] (l33) {};
+					\node [neuron, right = 1.5 of l24] (l34) {};
+					\node [neuron, right = 1.5 of l25] (l35) {};
+
+					\node [output neuron, right = 1 of l33] (o) {};
+
+					\draw (l31) to (o);
+					\draw (l32) to (o);
+					\draw (l33) to (o);
+					\draw (l34) to (o);
+					\draw (l35) to (o);
+
+					\draw (a) to (l11);
+					\draw (a) to (l12);
+					\draw (a) to (l13);
+					\draw (a) to (l14);
+					\draw (a) to (l15);
+					\draw (b) to (l11);
+					\draw (b) to (l12);
+					\draw (b) to (l13);
+					\draw (b) to (l14);
+					\draw (b) to (l15);
+					\draw (c) to (l11);
+					\draw (c) to (l12);
+					\draw (c) to (l13);
+					\draw (c) to (l14);
+					\draw (c) to (l15);
+					\draw (d) to (l11);
+					\draw (d) to (l12);
+					\draw (d) to (l13);
+					\draw (d) to (l14);
+					\draw (d) to (l15);
+					\draw (e) to (l11);
+					\draw (e) to (l12);
+					\draw (e) to (l13);
+					\draw (e) to (l14);
+					\draw (e) to (l15);
+
+					\draw (l11) to (l21);
+					\draw (l11) to (l22);
+					\draw (l11) to (l23);
+					\draw (l11) to (l24);
+					\draw (l11) to (l25);
+					\draw (l12) to (l21);
+					\draw (l12) to (l22);
+					\draw (l12) to (l23);
+					\draw (l12) to (l24);
+					\draw (l12) to (l25);
+					\draw (l13) to (l21);
+					\draw (l13) to (l22);
+					\draw (l13) to (l23);
+					\draw (l13) to (l24);
+					\draw (l13) to (l25);
+					\draw (l14) to (l21);
+					\draw (l14) to (l22);
+					\draw (l14) to (l23);
+					\draw (l14) to (l24);
+					\draw (l14) to (l25);
+					\draw (l15) to (l21);
+					\draw (l15) to (l22);
+					\draw (l15) to (l23);
+					\draw (l15) to (l24);
+					\draw (l15) to (l25);
+
+					\draw (l21) to (l31);
+					\draw (l21) to (l32);
+					\draw (l21) to (l33);
+					\draw (l21) to (l34);
+					\draw (l21) to (l35);
+					\draw (l22) to (l31);
+					\draw (l22) to (l32);
+					\draw (l22) to (l33);
+					\draw (l22) to (l34);
+					\draw (l22) to (l35);
+					\draw (l23) to (l31);
+					\draw (l23) to (l32);
+					\draw (l23) to (l33);
+					\draw (l23) to (l34);
+					\draw (l23) to (l35);
+					\draw (l24) to (l31);
+					\draw (l24) to (l32);
+					\draw (l24) to (l33);
+					\draw (l24) to (l34);
+					\draw (l24) to (l35);
+					\draw (l25) to (l31);
+					\draw (l25) to (l32);
+					\draw (l25) to (l33);
+					\draw (l25) to (l34);
+					\draw (l25) to (l35);
+				\end{tikzpicture}
+				\caption{Darstellung eines mehrschichtigen Perzeptrons.}
+				\label{fig:mlp}
+			\end{figure}
 		% end
 	% end
 
-	\section{KI Heute} % 1.54, 1.55, 1.56, 1.57, 1.58, 1.59, 1.60, 1.61, 1.62, 1.63, 1.64, 1.65, 1.79
-		\todo{Content}
+	\section{KI Heute}
+		Heute gibt es vier entscheidende Unterschiede zu vergangenen KI-Systemen:
+		\begin{enumerate}
+			\item Die Modelle sind größer.
+				\begin{itemize}
+					\item Früher wurden neuronale Netzwerke mit ein bis drei Schichten und hunderte bis tausende Neuronen verwendet.
+					\item Heutige Modelle haben hunderte Schichten und hunderttausende Neuronen.
+				\end{itemize}
+			\item Es sind mehr Daten verfügbar.
+				\begin{itemize}
+					\item Früher waren tausende Bilder, hunderte Stunden Audiomaterial und hunderttausende Wörter verfügbar.
+					\item Heute sind es Milliarden Bilder, Milliarden Stunden Audiomaterial und hunderte Milliarden Wörter.
+					\item Diese Daten werden dabei in vielen großen Firmen gesammelt, \bspw hat YouTube mehr als zehn Milliarden Videos, Alibaba tätigt mehr als zwölf Milliarden Verkäufe pro Jahr, Facebook-Nutzer laden hunderte Milliarden Bilder pro Jahr hoch und Google kennt mehr als hundert Billionen Webseiten.
+				\end{itemize}
+			\item Heute Computer sind Leistungsfähiger.
+				\begin{itemize}
+					\item Früher konnte eine CPU \ca eine Millionen Operationen pro Sekunde ausführen und es gab keine GPUs.
+					\item Heutige CPUs können mehr als eine Billionen Operationen pro Sekunde und heutige GPUs können mehr als zehn Billionen Operationen pro Sekunde ausführen.
+				\end{itemize}
+			\item Die Systeme funktionieren und lösen viele Aufgaben.
+		\end{enumerate}
+		Dabei ist der Hauptmotor der künstlichen Intelligenz aktuell das maschinelle Lernen.
 	% end
 
-	\section{Was ist Maschinelles Lernen?} % 1.80, 1.81, 1.82, 1.83, 1.84, 1.85, 1.92
-		\todo{Content}
+	\section{Was ist Maschinelles Lernen?}
+		\emph{Maschinelles Lernen} ist die Automatisierung von Automatisierung, es werden Teile des Computers so programmiert, dass sie sich anschließend selbstständig "programmieren". Das ist nötig, da das Schreiben von Software oftmals der Flaschenhals in der Entwicklung ist, da die Daten so schnell mehr werden. Es ist also klug, die Daten zu nutzen, um die Software selbst zu erstellen. Im Gegensatz zur traditionellen Programmierung werden also keine Ausgaben durch ein Programm erstellt, sondern es wird ein Programm aus Ausgaben erstellen (siehe \autoref{fig:traditionalVsMl}). Die Entwicklung von ML-Komponenten ist dabei ein Kreislauf, dargestellt in \autoref{fig:mlPipeline}.
 
-		\subsection{Kurzgefasst} % 1.86, 1.87, 1.88, 1.89
-			\todo{Content}
+		Anwendungsgebiete von maschinellem Lernen sind beispielsweise Websuche, Computational Biologie/Cognitive Science/Social Science/\dots, Finanzwelt, E-Commerce, Robotik, Debugging, Industrie 4.0 und viele mehr.
+
+		\begin{figure}
+			\centering
+			\begin{subfigure}{0.49\linewidth}
+				\centering
+				\begin{tikzpicture}
+					\node [draw, rectangle, minimum height = 1cm, minimum width = 2.5cm] (a) {Computer};
+					\coordinate [above = 0.3 of a.west] (b);
+					\coordinate [below = 0.3 of a.west] (c);
+					\node [left = 0.75 of b] (d) {Daten};
+					\node [left = 0.75 of c] (e) {Programm};
+					\node [right = 0.75 of a.east] (f) {Ausgabe};
+					\draw [->] (d) to (b);
+					\draw [->] (e) to (c);
+					\draw [->] (a.east) to (f);
+				\end{tikzpicture}
+				\caption{Traditionelle Programmierung}
+			\end{subfigure}
+			~
+			\begin{subfigure}{0.49\linewidth}
+				\centering
+				\begin{tikzpicture}
+					\node [draw, rectangle, minimum height = 1cm, minimum width = 2.5cm] (a) {Computer};
+					\coordinate [above = 0.3 of a.west] (b);
+					\coordinate [below = 0.3 of a.west] (c);
+					\node [left = 0.75 of b] (d) {Daten};
+					\node [left = 0.75 of c] (e) {Ausgabe};
+					\node [right = 0.75 of a.east] (f) {Programm};
+					\draw [->] (d) to (b);
+					\draw [->] (e) to (c);
+					\draw [->] (a.east) to (f);
+				\end{tikzpicture}
+				\caption{Maschinelles Lernen}
+			\end{subfigure}
+			\caption{Traditionelle Programmierung (links) im Vergleich zu maschinellem Lernen (rechts).}
+			\label{fig:traditionalVsMl}
+		\end{figure}
+
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[->, align = center, every node/.style = { draw, circle, minimum height = 2cm, minimum width = 3.6cm }]
+				\node (a) at (-288:4cm) {Fragestellung};
+				\node (b) at (-  0:4cm) {Datenerhebung und \\ -bereitstellung};
+				\node (c) at (- 72:4cm) {Lernen des Modells};
+				\node (d) at (-144:4cm) {Begutachtung und \\ Interpretation der \\ Ergebnisse};
+				\node (e) at (-216:4cm) {Einsatz};
+				\draw (a) to (b);
+				\draw (b) to (c);
+				\draw (c) to (d);
+				\draw (d) to (e);
+				\draw (e) to (a);
+			\end{tikzpicture}
+			\caption{Kreislauf der Erstellung von ML-Komponenten.}
+			\label{fig:mlPipeline}
+		\end{figure}
+
+		\subsection{Kurzgefasst}
+			Im Bereich des maschinellen Lernens gibt es viele tausende Algorithmen und hunderte neue Algorithmen pro Jahr. Dabei adressiert jeder Algorithmus die folgenden drei Fragestellungen:
+			\begin{enumerate}
+				\item Wie wird das Modell \emph{repräsentiert}? \\
+					Entscheidungsbäume, Regeln/logische Programme, Instanzen, Probabilistische Graphische Modelle, Neuronale Netzwerke, Stützvektormaschinen, Ensembles, \dots
+				\item Wie wird das Modell \emph{optimiert}? \\
+					Kombinatorische Optimierung (\zB Greedy-Suche), Konvexe und nichtlineare Optimierung (\zB Gradientenabstieg), Optimierung unter Randbedingungen (\zB lineare Programmierung), \dots
+				\item Wie wird das Modell \emph{evaluiert} und \emph{beurteilt}? \\
+					Korrektklassifikationsrate (Accuracy), Genauigkeit (Precision) und Trefferquote (Recall), Quadrierter Fehler, Likelihood, A-Posteriori Wahrscheinlichkeit, Kosten/Nutzen, Margin, Entropie, KL-Divergenz, \dots
+			\end{enumerate}
+
+			Dabei gibt es vier große Kategorien des maschinellen Lernens:
+			\begin{description}
+				\item[Überwacht (Induktiv)] Die Trainingsdaten erhalten neben Eingaben auch gewünschten Ausgaben. \\
+					Englisch: \emph{Supervised Learning}
+				\item[Unüberwacht] Die Trainingsdaten erhalten nur Eingaben und \emph{keine} Ausgaben. \\
+					Englisch: \emph{Unsupervised Learning}
+				\item[Teilweise Überwacht] Die Trainingsdaten \emph{einige} gewünschte Ausgaben, aber nicht alle. \\
+					Englisch: \emph{Semi-supervised Learning}
+				\item[Verstärkend] Der Algorithmus wird belohnt nachdem er eine Reihe an Aktionen ausgeführt hat und die Belohnung wird maximiert. \\
+					Englisch: \emph{Reinforcement Learning}
+			\end{description}
+			Die Bereiche des überwachten und unüberwachten Lernens lassen sich dann noch weiter einordnen, was in \autoref{fig:mlTypes} gezeigt ist.
+
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[
+							->,
+							align = center,
+							block/.style = {
+								draw,
+								rectangle,
+								minimum width = 3.25cm,
+								minimum height = 1.5cm,
+							},
+								small/.style = {
+								minimum height = 0.8cm,
+							},
+						]
+					\node [block] (ml) {Maschinelles \\ Lernen};
+					\node [block, right = 2 of ml, yshift = +3cm] (supervised) {Überwachtes \\ Lernen};
+					\node [block, right = 2 of ml] (unsupervised) {Unüberwachtes \\ Lernen};
+					\node [block, right = 2 of ml, yshift = -3cm] (rl) {Verstärkendes \\ Lernen};
+
+					\node [block, small, right = 2 of supervised, yshift = +0.75cm] (class) {Klassifikation};
+					\node [block, small, right = 2 of supervised, yshift = -0.75cm] (regress) {Regression};
+
+					\node [block, small, right = 2 of unsupervised, yshift = +0.75cm] (dimred) {Dim.-Reduktion};
+					\node [block, small, right = 2 of unsupervised, yshift = -0.75cm] (cluster) {Clustering};
+
+					\draw (ml.east) to [bend right, out = -45+10, in = +180-45] (supervised.west);
+					\draw (ml.east) to (unsupervised.west);
+					\draw (ml.east) to [bend left,  out = +45-10, in = -180+45] (rl.west);
+
+					\draw (supervised.east) to [bend right, out = -45+30, in = +180-45+30] (class.west);
+					\draw (supervised.east) to [bend left,  out = +45-30, in = -180+45-30] (regress.west);
+
+					\draw (unsupervised.east) to [bend right, out = -45+30, in = +180-45+30] (dimred.west);
+					\draw (unsupervised.east) to [bend left,  out = +45-30, in = -180+45-30] (cluster.west);
+				\end{tikzpicture}
+				\caption{Arten des maschinellen Lernens.}
+				\label{fig:mlTypes}
+			\end{figure}
 		% end
-
-		\subsection{Arten des Maschinellen Lernens} % 1.90, 1.91
-			\todo{Content}
-		% end
-	% end
-
-	\section{Ausblick} % 1.93, 1.94, 1.95
-		\todo{Content}
 	% end
 % end
 
@@ -367,6 +660,8 @@
 % end
 
 \chapter{Deep Learning und Faltende Neuronale Netzwerke} % 7.1, 7.5, 7.6, 7.7, 7.67, 7.68, 7.69, 8.41
+	\label{c:deepLearning}
+
 	\todo{Content}
 
 	\section{Modellierung eines Neurons} % 7.8, 7.12, 7.53

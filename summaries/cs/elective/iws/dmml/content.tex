@@ -347,42 +347,129 @@
 	% end
 % end
 
-\chapter{Grundlagen} % N/A
-	\todo{Content}
+\chapter{Grundlagen}
+	Dieses Kapitel behandelt einige Grundlagen, die für das maschinelle Lernen benötigt werden.
 
-	\section{CRISP: Verlaufsmodell der Wissensentdeckung} % 2.25, 2.26
-		\todo{Content}
+	\section{CRISP-DM: Verlaufsmodell des Data Mining}
+		Die Schritte des CRISP-DM (Cross-Industry Standard Process for Data Mining), dem Verlaufsmodell des Data Mining, sind:
+		\begin{description}
+			\item[Problem Verstehen] Analyseziele, Situationsbewertung, Datenanalyseziele, Projektplan
+			\item[Daten Verstehen] Sammeln, Beschreiben, Untersuchen, Qualität von Rohdaten
+			\item[Daten Aufbereiten] Ein- und Ausschluss, Bereinigung, Transformation von Variablen
+			\item[Modellierung] Methoden- und Testdesignwahl, Schätzung, Modellqualität
+			\item[Evaluierung] Modell akzeptieren, Prozess überprüfen, Nächste Schritte festlegen
+			\item[Nachbereitung] Anwendungs- und Wartungsplan, Präsentation, Bericht
+		\end{description}
+		Diese Schritte sind grafisch in \autoref{fig:crisp} dargestellt.
+
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.5\linewidth]{img/crisp-dm}
+			\caption{Grafische Übersicht über das CRISP-DM. \\ Autor: Kenneth Jensen \\ Lizenz: CC BY-SA 3.0 \\ Quelle: Wikipedia Commons, Datei CRISP-DM\_Process\_Diagram.png}
+			\label{fig:crisp}
+		\end{figure}
 	% end
 
-	\section{Klassifikation und Regression} % 2.31, 2.32, 2.33, 2.34
-		\todo{Content}
+	\section{Klassifikation und Regression}
+		Bei überwachtem maschinellen Lernen wird jeder Beobachtung \(\vec{x}\) ein Label \(y\) zugeordnet, \dh die Datenpunkte sind gegeben als \( (\vec{x}, y) \in X \times Y \), wobei \(X\) und \(Y\) die Mengen aller möglichen Beobachtungen/Labels sind. Im Teilbereich der \emph{Klassifikation} sind die Labels diskret, \dh es wird eine \emph{qualitative} Beschreibung gesucht. Im Gegensatz dazu steht die \emph{Regression}, bei der die Labels kontinuierlich sind und eine \emph{quantitative} Beschreibung gesucht wird.
+
+		Das Ziel ist immer eine \emph{wahre Funktion} \( f : X \to Y \) zu finden, die für alle Eingaben \( \vec{x} \in X \) und Labels \( y \in Y \) den korrekten Wert liefert, \dh \( f(\vec{x}) = y \). Das Problem ist im Allgemeinen, dass nur eine Teilmenge aller Beobachtungen gegeben ist, die \emph{Trainingsdaten}. Auf Basis dieser Trainingsdaten wird nun eine Annäherung \( \hat{f} \) an die wahre Funktion \(f\) gesucht, welche als \emph{Modell} bezeichnet wird. Wurde ein Modell gefunden, so liefert dieses über
+		\begin{equation}
+			\hat{y} = \hat{f}(\vec{x})
+		\end{equation}
+		eine \emph{Vorhersage} \( \hat{y} \in Y \) für ein Datum \( \vec{x} \in X \).
+
+		Dabei kann zur Klassifikation sowohl ein spezifisches als auch ein Regressionsmodell genutzt werden. Es können zum Beispiel alle Werte oberhalb eines Schwellenwertes \(\theta\) der einen und alle anderen Werte der anderen Klasse (im Fall von binären Klassifikationsproblemen) zugeordnet werden:
+		\begin{equation}
+			\hat{y} =
+				\begin{cases}
+					+1 & \text{falls } \hat{f}(\vec{x}) \geq \theta \\
+					-1 & \text{sonst}
+				\end{cases}
+		\end{equation}
+		Diese Art der Zuordnung ist nur eine Möglichkeit, ein Regressionsmodell als Klassifikationsmodell zu nutzen.
+		% TODO: Referenzieren, wo mehr vorgestellt werden!
 	% end
 
-	\section{Statistik} % N/A
-		\todo{Content}
+	\section{Statistik}
+		In diesem Abschnitt werden benötigte grundlegenden Begriffe der Statistik eingeführt.
 
-		\subsection{Erwartungswert, 2.24, 3.12, 3.13} % 2.49, 2.50, 2.51, 2.52
-			\todo{Content}
+		\subsection{Erwartungswert, Varianz und Standardabweichung}
+			Für eine diskrete Zufallsvariable \(X\) mit Werten \( x_i \) ist der \emph{Erwartungswert} gegeben durch
+			\begin{equation}
+				\E[X] = \sum_i x_i P(X = x_i).
+			\end{equation}
+			Für eine kontinuierliche Zufallsvariable \(X\) mit der Wahrscheinlichkeitsdichte \(p\) wird die Summe durch ein Integral ersetzt:
+			\begin{equation}
+				\E[X] = \int_{-\infty}^{\infty} \! x f(x) \dd{x}
+			\end{equation}
+			Oftmals werden dabei die Integrationsgrenzen weggelassen.
+
+			Eine wichtige Eigenschaft des Erwartungswerts ist, dass dieser linear ist, \dh es gilt
+			\begin{equation}
+				\E[aX + bY] = a \E[X] + b \E[Y]
+			\end{equation}
+			für zwei Zufallsvariablen \(X\), \(Y\) und skalare \(a\), \(b\). Sind die Zufallsvariablen \(X\), \(Y\) stochastisch unabhängig, so gilt
+			\begin{equation}
+				\E[XY] = \E[X] \E[Y]
+			\end{equation}
+
+			Die \emph{Varianz} einer Zufallsvariablen ist gegeben durch die mittlere quadratische Abweichung vom Mittelwert,
+			\begin{equation}
+				\Var[X] = \E\big[ (X - \E[X])^2 \big].
+			\end{equation}
+			Sie wird oft auch mit \(\sigma^2\) bezeichnet. Die \emph{Standardabweichung} einer Zufallsvariable ist dann \(\sigma = \sqrt{\Var[X]}\). Nach dem \emph{Verschiebungssatz} gilt, wie einfach herzuleiten ist:
+			\begin{equation}
+				\Var[X] = \E\big[ (X - \E[X])^2 \big] = \E\big[ X^2 \big] - \big( \E[X] \big)^2.
+			\end{equation}
 		% end
 
-		\subsection{Bias} % 2.53, 2.54
-			\todo{Content}
+		\subsection{Bias}
+			Der \emph{Bias} eines Schätzers \(\hat{y}\) für eine Zufallsvariable \(Y\) bezeichnet die mittlere Verzerrung
+			\begin{equation}
+				\Bias[\hat{y}] = \E[Y - \hat{y}] = \E[Y] - \hat{y}
+			\end{equation}
+			des Schätzers. Ein Schätzer mit einem Bias von Null wird als \emph{Erwartungstreu} oder \emph{Unbiased} bezeichnet.
+
+			Oftmals kann bei einem Schätzer nur entweder die Varianz oder der Bias reduziert werden, was als \emph{Bias-Varianz Trade-Off} bezeichnet wird.
 		% end
 
-		\subsection{Normalverteilung} % 3.6
-			\todo{Content}
+		\subsection{Normalverteilung}
+			Die \emph{Normalverteilung} (auch \emph{Gauß-Verteilung}) ist eine der wichtigsten Wahrscheinlichkeitsverteilungen in der Statistik. Dabei heißt eine Zufallsvariable \(X\) \emph{normalverteilt} mit Mittelwert \(\mu\) und Varianz \(\sigma^2\), wenn sie die Wahrscheinlichkeitsdichte
+			\begin{equation}
+				p(x) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp\bigg\{\!\! -\frac{1}{2} \frac{(x - \mu)^2}{\sigma^2} \bigg\}
+			\end{equation}
+			besitzt.
 		% end
 
-		\subsection{Bayes-Statistik} % 3.14
-			\todo{Content}
+		\subsection{Bedingte Wahrscheinlichkeiten}
+			Bedingte Wahrscheinlichkeiten, geschrieben \( P(X = x \given Y = y) \), beschreiben die Wahrscheinlichkeit einer Zufallsvariable \(X\) den Wert \(x\) anzunehmen, wenn eine andere Zufallsvariable \(Y\) den Wert \(y\) hat. Zufallsvariablen \(X\), \(Y\) heißen \emph{stochastisch unabhängig}, wenn \( P(X = x \given Y = y) = P(X = x) \) gilt. Im Allgemeinen gilt
+			\begin{equation}
+				P(X \given Y = y) = \frac{P(X = x, Y = y)}{P(Y = y)},
+			\end{equation}
+			wobei \( P(X = x, Y = y) \) die \emph{Verbundwahrscheinlichkeit} ist.
 		% end
 
-		\subsection{Bedingte Wahrscheinlichkeiten} % 4.11
-			\todo{Content}
+		\subsection{Bayes-Statistik}
+			Eine der wichtigsten Formeln in der Statistik in die Bayes-Formel
+			\begin{equation}
+				p(x \given y) = \frac{p(y \given x) \, p(x)}{p(y)},
+			\end{equation}
+			die den Zusammenhang zwischen der Likelihood \( p(y \given x) \), der A-Priori Wahrscheinlichkeit \( p(x) \) und der A-Posteriori Wahrscheinlichkeit \( p(x \given y) \) beschreibt. Der Faktor \( p(y) \) dient dabei nur der Normalisierung, weshalb die Bayes-Formel oft auch als
+			\begin{equation}
+				p(x \given y) \propto p(y \given y) \, p(x)
+			\end{equation}
+			geschrieben wird.
 		% end
 
-		\subsection{Konfidenzintervalle} % 4.26
-			\todo{Content}
+		\subsection{Konfidenzintervalle}
+			Ein \emph{Konfidenzintervall} ist ein Intervall \( [\ell, u] \), welches aus einer gegebenen Irrtumswahrscheinlichkeit \(\alpha\) erzeugt wird. Es gibt den Bereich an, in dem der Wert der Zufallsvariable mit Wahrscheinlichkeit \( 1 - \alpha \) liegt:
+			\begin{equation}
+				P(\ell \leq X \leq u) = 1 - \alpha
+			\end{equation}
+			Eine häufige Wahl ist die Bildung eines Konfidenzintervalls für den Erwartungswert. So können Aussagen wie "Mit \SI{90}{\percent} Wahrscheinlichkeit liegt der Mittelwert im Intervall \( [\ell, u] \)." getätigt werden (hier mit \( \alpha = 0.01 \)).
+
+			Konfidenzintervalle sind ein mächtiges Werkzeug in der Bewertung von Verfahren, was in \autoref{c:trees} weiter behandelt wird.
 		% end
 	% end
 % end
@@ -604,6 +691,8 @@
 % end
 
 \chapter{Baumbasierte Verfahren} % 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.45
+	\label{c:trees}
+
 	\todo{Content}
 
 	\section{Information und Informationsgewinn} % 4.12

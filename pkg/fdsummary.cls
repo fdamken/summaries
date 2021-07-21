@@ -49,6 +49,7 @@
 \RequirePackage{amsmath}
 \RequirePackage{amssymb}
 \RequirePackage{attachfile}
+\RequirePackage{bbm}
 \RequirePackage{bitpattern}
 \RequirePackage{bm}
 \RequirePackage{bytefield}

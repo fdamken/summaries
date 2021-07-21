@@ -588,47 +588,179 @@
 	% end
 % end
 
-\chapter{Lineare Modelle und Funktionsapproximation} % 2.63, 3.2, 3.3, 3.4, 3.24
-	\todo{Content}
+\chapter{Lineare Modelle und Funktionsapproximation}
+	Die Grundlage des maschinellen Lernens ist im Allgemeinen die Approximation einer "wahren" Funktion durch ein (einfacheres) Modell. Dabei wird das Modell in Bezug auf ein \emph{Gütekriterium} optimiert. Dieses Gütekriterium kann beispielsweise ein Fehler, \zB der quadratische Fehler, oder eine Wahrscheinlichkeit, \zB die Likelihood, sein. Diese Gütekriterien werden in \autoref{sec:optCriteria} vorgestellt.
 
-	\section{Lineare Modelle} % 2.28, 2.30, 2.37, 2.38, 2.39, 2.47
-		\todo{Content}
+	Dieses Kapitel behandelt grundlegende Begriffe zur Funktionsapproximation und stellt als eines der ersten Modelle lineare Modelle vor, die sehr einfach in geschlossener Form optimiert werden können. Damit stellen sie den Grundbaustein zu mächtigeren Modellen wie Neuronalen Netzwerken und Gauß-Prozessen dar. Neuronale Netzwerke werden in \autoref{c:deepLearning} behandelt, Gauß-Prozesse werden in dieser Zusammenfassung nicht behandelt.
 
-		\subsection{Modell-Anpassung} % 2.42, 2.43, 2.44, 2.45, 2.46
-			\todo{Content}
+	\section{Lineare Modelle}
+		Bei linearen Modellen
+		\begin{equation}
+			\hat{y} = \hat{f}(\vec{x}) = \sum_{i = 1}^{k} \beta_i h_i(\vec{x})  \label{eq:linearRegr}
+		\end{equation}
+		hängt der Ausgabewert nur in linearer Form von den Parametern \( \vec{\beta} \coloneqq \begin{bmatrix} \beta_1 & \beta_2 & \cdots & \beta_k \end{bmatrix}^T \in \R^k \) und beliebigen \emph{Basisfunktionen} \( h_{1:k}(\cdot) \) ab. Wird \( h_i(\vec{x}) = x_i \) mit \( k = n \), wobei \(n\) die Dimension des Eingaberaums ist, gewählt, so hängen die Ausgabewerte sogar nur linear von den Eingabewerten ab. Oftmals wird ein \emph{Bias} eingeführt, der ausschließlich auf das Ergebnis addiert wird (als Achsenverschiebung). Dies kann \zB durch eine Basisfunktion \( h(\vec{x}) = 1 \) modelliert werden.
+
+		Zur Optimierung dieses Modells werden nun optimale Parameter \( \vec{\beta} \) gesucht, die ein bestimmtes Gütekriterium minimieren oder maximieren. Zur einfacheren Darstellung sei im Folgenden \( \vec{h}(\vec{x}) \) der Vektor aller Basisfunktionswerte (\emph{Features}) für eine Eingabe \(\vec{x}\), \dh \( \vec{h} : \R^n \to \R^k \). Dadurch vereinfacht sich \eqref{eq:linearRegr} zu
+		\begin{equation}
+			\hat{y} = \vec{h}^T(\vec{x}) \vec{\beta}.
+		\end{equation}
+		Um die optimalen Parameter \( \vec{\beta} \) zu finden muss nun ein Gütekriterium ausgewählt werden. Oft wird hierbei der quadratische Fehler (die \emph{Sum of Squared Residuals}, RSS)
+		\begin{equation}
+			\mathit{RSS}(\vec{\beta})
+				= \sum_{i = 1}^{N} \big( y_i - \vec{h}^T(\vec{x}_i) \vec{\beta} \big)^2
+				= (\vec{y} - \mat{X} \vec{\beta})^T (\vec{y} - \mat{X} \vec{\beta})
+		\end{equation}
+		verwendet, wobei \( \big\{ (\vec{x}_i, y_i) \big\}_{i \,=\, \subdotsrange{1}{N}} \) die Trainingsbeispiele sind. Dieses Kriterium hat die schöne Eigenschaft, dass es an jeder Stelle differenzierbar ist (in Bezug auf \(\vec{\beta}\)) und ein eindeutiges Minimum besitzt. Im letzten Schritt wurde die Summe mit \( \vec{y} \coloneqq \begin{bmatrix} y_1 & y_2 & \cdots & y_N \end{bmatrix}^T \in \R^N \) und \( \mat{X} \coloneqq \begin{bmatrix} \vec{h}(\vec{x}_1) & \vec{h}(\vec{x}_2) & \cdots & \vec{h}(\vec{x}_N) \end{bmatrix}^T \in \R^{N \times k} \) zusammengefasst, um die folgende Herleitung zu vereinfachen. Zur Minimierung des Fehlers wird nun die Ableitung bezüglich \(\vec{\beta}\) gebildet und Null gesetzt, um die optimalen Parameter \( \vec{\beta}^\ast \) zu finden:
+		\begin{equation}
+			\pdv{\vec{\beta}} \mathit{RSS}(\vec{\beta}) = 2 \mat{X}^T (\vec{y} - \mat{X} \vec{\beta}) = 2 \mat{X}^T \vec{y} - 2 \mat{X}^T \mat{X} \vec{\beta} \overset{!}{=} \vec{0}
+			\quad\implies\quad
+			\vec{\beta}^\ast = (\mat{X}^T \mat{X})^{-1} \mat{X}^T \vec{y}
+		\end{equation}
+		Die Invertierung der Matrix \( \mat{X}^T \mat{X} \) ist natürlich nur möglich, wenn diese regulär ist. Ansonsten existiert kein eindeutiges Minimum. Der der Praxis ist dies jedoch meistens der Fall und Falls nicht kann die Matrix durch Addieren kleiner Werte auf der Diagonale regularisiert werden.
+
+		Dies Vorgehen hat zwar ein großes Potential und kann durch die Freiheit in den Basisfunktionen \( \vec{h}(\cdot) \) weitreichend eingesetzt werden, jedoch gibt es einige Limitierungen:
+		\begin{itemize}
+			\item Die Matrix \( \mat{X}^T \mat{X} \) hat die Dimension \( k \times k \), wobei \(k\) die Anzahl Basisfunktionen ist (die üblicherweise über der Dimension der Eingabedaten, \(n\), liegt). Die Invertierung dieser Matrix hat die Komplexität \( \mathcal{O}(k^3) \), \dh die benötigte Zeit steigt kubisch mit der Anzahl Basisfunktionen. Auch dies ist ein Auftreten des Fluches der hohen Dimension.
+			\item Bei linearen Basisfunktionen \(\vec{h}(\cdot)\) kann es auftreten, dass die Daten überhaupt nicht linear modellierbar sind. Dann müssen stärkere Basisfunktionen oder ein anderes Verfahren eingesetzt werden.
+			\item Es ist nicht ausreichend, den Fehler zu minimieren. Dies kann zu Überanpassung un instabilen Lösungen führen.
+		\end{itemize}
+		Der letzte Punkt wird im folgenden Abschnitt weiter betrachtet.
+	% end
+
+	\section{Fehler}
+		Der bisher betrachtete Fehler betrachtet nur die aktuell vorliegenden Trainingsdaten -- es wäre jedoch deutlich interessanter, den Fehler über \emph{alle} Daten zu betrachten. Dies ist durch die Betrachtung des Erwartungswertes über die Ein- und Ausgabedaten möglich. Ein gegebener Trainingsdatensatz stellt dann eine Stichprobe dar.
+
+		Der erwartete quadratische Fehler eines beliebigen Modells \( \hat{f} \), ist
+		\begin{equation}
+			\mathit{EPE}(\vec{X}) = \E\Big[ (Y - \hat{f}(\vec{X}))^2 \Big],  \label{eq:rssMean}
+		\end{equation}
+		wobei \(\vec{X}\) und \(Y\) die Zufallsvariablen der Ein- \bzw Ausgabewerte sind. Nun wird für jeden Eingabewert \(\vec{x}\) als Realisierung von \(\vec{X}\) ein Optimierungproblem formuliert:
+		\begin{equation}
+			\hat{f}(\vec{x}) = \arg\min_y \E\big[ (Y - y)^2 \biggiven \vec{X} = \vec{x} \big]
+		\end{equation}
+		Dabei ist \(y\) anschließend die Vorhersage des Modells. Die Lösung dieses Optimierungsproblems ist gegeben durch den Erwartungswert von \(Y\) gegeben die Realisierung \(\vec{x}\) von \(\vec{X}\):
+		\begin{equation}
+			\hat{f}(\vec{x}) = \E\big[ Y \biggiven \vec{X} = \vec{x} \big]
+		\end{equation}
+		Dieser Erwartungswert ist jedoch \iA nicht berechenbar, weshalb der Weg über die Stichproben gemacht wird. Das liegt daran, dass die Wahrscheinlichkeitsverteilungen von \(\vec{X}\) und \(Y\) nicht bekannt sind. Während sie bekannt, könnte man sich den gesamten Lernprozess sparen.
+
+		\subsection{Bias und Varianz}
+			Der erwartete quadratische Fehler \eqref{eq:rssMean} kann in einen Bias- und einen Varianz-Term aufgespalten werden, die eine größere Interpretation liefern. Dafür wird zunächst ein beliebiger Testpunkt \( \vec{x}_0 \) (mit Wert \( y_0 \)) ausgewählt, an dem der Fehler berechnet werden soll. Es wird außerdem davon ausgegangen, dass die Trainingsdaten eines beliebigen Datensatzes \(\mathcal{T}\) verrauscht sind, \dh es gibt einen Messfehler \( \epsilon \sim \mathcal{N}(0, \sigma_\epsilon^2) \) mit Varianz \(\sigma_\epsilon^2\) und Erwartungswert \(0\). Der erwartete quadratische Fehler teilt sich dann wie folgt auf:
+			\begin{equation}
+				\mathit{EPE}(\vec{x}_0)
+					= \underbrace{\E_Y\!\Big[ (Y - y_0)^2 \Big]}_\text{Rauschen}
+					+ \underbrace{\E_{\mathcal{T}}\Big[ \big( y_0 - \E_{\mathcal{T}}\big[ \hat{f}(\vec{x}_0) \big] \big)^2 \Big]}_{\text{Bias}^2}
+					+ \underbrace{\E_{\mathcal{T}}\Big[ \big( \E_{\mathcal{T}}\big[ \hat{f}(\vec{x}_0) \big] - \hat{f}(\vec{x}_0) \big)^2 \Big]}_\text{Varianz}
+			\end{equation}
+			Der Fehler setzt sich also aus dem Rauschen, dem quadratischen Bias sowie der Varianz zusammen. Der Bias ist dabei unabhängig von dem Datensatz und Null bei einem perfektem lernen. Die Varianz hingegen ist nicht abhängig vom wahren Wert und ebenfalls Null bei einem perfektem Lerner. Ein Modell ohne Bias und ohne Varianz ist jedoch im Allgemeinen nicht erreichbar!
+
+			Da der Bias quadratisch in den Gesamtfehler einfließt und somit stärker als die Varianz, erklärt, wieso Modelle sehr schnell zu Überanpassung\footnote{Bei einem überangepasstem Modell liegt ein niedriger Bias aber eine hohe Varianz vor.} neigen: Die Optimierung des Bias ist "lohnenswerter", da dieser so stark gewichtet wird. Dem kann dadurch entgegengewirkt werden, indem beispielsweise das Rauschen in den Ursprungsdaten erhöht wird oder indem mehr Daten verwendet werden.
+
+			Für ein lineares Modell ist der erwartete Fehler gegeben durch
+			\begin{equation}
+				\mathit{EPE}(\vec{x}_0)
+					= \sigma_\epsilon^2
+					+ \Big[ y_0 - \E\big[ \hat{f}(x_0) \big] \Big]^2
+					+ \Var\!\big[ \hat{f}(\vec{x}_0) \big],
+			\end{equation}
+			wobei die Varianz von \(x_0\) abhängt. Im Mittel über alle Trainingseingabewerte \( \vec{x}_i \) hat die Varianz den Wert
+			\begin{equation}
+				\frac{1}{N} \sum_{i = 1}^{N} \Var\!\big[ \hat{f}(\vec{x})_i \big] = \frac{k}{N} \sigma_\epsilon^2.
+			\end{equation}
+			Wird der Trainingsfehler über einen Trainingsdatensatz mit \(N\) Beispielen gemittelt, ergibt sich der folgende erwartete Fehler:
+			\begin{equation}
+				\frac{1}{N} \sum_{i = 1}^{N} \mathit{EPE}(\vec{x}_0)
+					= \frac{1}{N} \sigma_\epsilon^2
+					+ \frac{1}{N} \sum_{i = 1}^{N} \Big[ y_0 - \E\big[ \hat{f}(x_0) \big] \Big]^2
+					+ \frac{k}{N} \sigma_\epsilon^2
+			\end{equation}
+			Der Fehler nimmt also im Allgemeinen mit steigender Trainingsdatensatzgröße ab und mit steigender Dimension (steigendem \(k\)) zu.
+
+			Da nicht bekannt ist, welches Modell und welche Basisfunktionen gut zu den Daten passt, muss meist eine hohe Anzahl an Basisfunktionen genutzt werden. Durch die kubische Berechnungskomplexität können lineare Modelle dann trotz ihrer Einfachheit schnell langsam werden.
 		% end
 	% end
 
-	\section{Fehler} % 2.48, 2.55, 2.56
-		\todo{Content}
+	\section{Gütekriterien}
+		\label{sec:optCriteria}
 
-		\subsection{Bias und Varianz} % 2.57, 2.58, 2.59, 2.60
-			\todo{Content}
+		Das Gütekriterium, \bzw das Optimierungsziel\footnote{Englisch: \emph{Objective}}, ist eine der wichtigsten Modellentscheidungen. Wird das falsche Kriterium optimiert, lernt ein Modell eventuell keine sinnvolle Repräsentation. Dabei gibt es grundlegend zwei Typen von Gütekriterien:
+		\begin{description}
+			\item[Verlustfunktion] Das Gütekriterium beschreibt den Fehler, also den Abstand, des vorhergesagten Ergebnisses im Vergleich zu den tatsächlichen (Trainings-) Daten. Ein Beispiel ist der quadratische Fehler. Eine Verlustfunktion wird immer minimiert.
+			\item[Likelihood] Es wird die Wahrscheinlichkeit der Parameter oder der Trainingsdaten maximiert. Dies ist \zB der Ansatz bei einem Maximum Likelihood-Schätzer. Eine Likelihood wird immer maximiert.
+		\end{description}
+		Im allgemeinen kann eine Likelihood auch immer als Verlustfunktion gesehen werden, wenn das Vorzeichen geändert wird. Dadurch wird aus einem Maximierungs- ein Minimierungsproblem\footnote{Dies ist beispielsweise notwendig wenn zur Implementierung eines Modells eine Bibliothek verwendet wird, die ausschließlich Minimierungsprobleme unterstützt (\zB SciPy und PyTorch).}.
+
+		\subsection{Verlustfunktionen}
+			Es gibt sehr viele unterschiedliche Verlustfunktionen, die für unterschiedliche Dinge gut sind. Für die Regression ist der quadratische Fehler
+			\begin{equation}
+				\sum_{i = 1}^{N} (y_i - \hat{y}_i)^2
+			\end{equation}
+			üblich, aber auch der absolute Fehler
+			\begin{equation}
+				\sum_{i = 1}^{N} \lvert y_i - \hat{y}_i \rvert
+			\end{equation}
+			wird gelegentlich verwendet. Dieser hat den zentralen Nachteil, dass er nicht überall Differenzierbar ist.
+
+			Zur Klassifikation werden meistens andere Verlustfunktionen eingesetzt, die die diskreten Eigenschaften der Klassifizierung berücksichtigen. Ein Beispiel ist der 0-1-Fehler
+			\begin{equation}
+				\sum_{i = 1}^{N} \mathbbm{1}[y = \hat{y}],
+			\end{equation}
+			wobei \( \mathbbm{1}[\cdot] \) die Auswahlfunktion ist (sie ist genau dann \num{1}, wenn die Aussage in den eckigen Klammern wahr ist, sonst ist sie \num{0}). Wie bei dem absoluten Fehler besteht auch hier das Problem, dass die Verlustfunktion nicht differenzierbar ist. Eine bessere Verlustfunktion ist in diesem Fall die \emph{Kreuzentropie}
+			\begin{equation}
+				-\sum_{i = 1}^{N} P(Y = y_i \given \vec{X} = \vec{x}_i) \, \log(P(Y = y_i \given \vec{X} = \vec{x}_i)),
+			\end{equation}
+			wobei dabei ein stochastisches Modell angenommen werden muss, um die Wahrscheinlichkeiten zu erhalten.
+		% end
+
+		\subsection{Likelihood}
+			Beschreibt das Modell eine Wahrscheinlichkeitsverteilung \( P_\theta(Y \given \vec{X}) \) über die Ausgaben (mit den Parameter \(\theta\)), so kann statt der Minimierung einer Verlustfunktion auch die Wahrscheinlichkeit der Daten maximiert werden. Die Gesamtwahrscheinlichkeit aller Trainingsdaten ist, unter der Annahme, dass die Trainingsdaten stochastisch unabhängig und identisch verteilt sind, gegeben durch die Faktorisierung
+			\begin{equation}
+				P_\theta(\dotsrange{y_1}{y_N} \given \dotsrange{\vec{x}_1}{\vec{x}_N}) = \prod_{i = 1}^{N} P_\theta(y_i \given \vec{x}_i).
+			\end{equation}
+			An dieser Stelle wird zur kürze die genaue Zuweisung zur Zufallsvariablen (also \( Y = y_i \) und \( \vec{X} = \vec{x}_i \)) weggelassen. Da dieses Produkt schwer zu optimieren ist, wird üblicherweise die Log-Likelihood
+			\begin{equation}
+				L(\theta) = \log P_\theta(\dotsrange{y_1}{y_N} \given \dotsrange{\vec{x}_1}{\vec{x}_N}) = \sum_{i = 1}^{N} \log P_\theta(y_i \given \vec{x}_i).  \label{eq:logLikelihood}
+			\end{equation}
+			verwendet, wodurch das Produkt zu einer Summe wird. Das Ziel ist nun jene Parameter \(\theta^\ast\) zu finden, die diese Summe maximal werden lassen. Dafür muss eine Verteilung angenommen werden, da die wahre Verteilung nicht bekannt ist.
+
+			Es kann beispielsweise eine Normalverteilung \( p(Y \given \vec{X}) = \mathcal{N}\big( f_\theta(\vec{X}), \sigma^2 \big) \) angenommen werden, die nur eine Varianz hinzufügt. Der Ausgabe des Modells \( \hat{f}(\vec{X}) \) wird somit ein Rauschen \( \epsilon \sim \mathcal{N}(0, \sigma^2) \) hinzugefügt, wodurch die Ausgabe eine Wahrscheinlichkeitsverteilung darstellt. Einsetzen in die Log-Likelihood \eqref{eq:logLikelihood} liefert nun
+			\begin{align}
+				L(\theta)
+					&= \sum_{i = 1}^{N} \log\!\bigg(\! \frac{1}{\sqrt{2\pi \sigma^2}} \exp\bigg\{\!\! -\frac{1}{2} \frac{\big( y_i - \hat{f}_\theta(\vec{x}_i) \big)^2}{\sigma^2} \bigg\} \!\bigg) \\
+					&= -\sum_{i = 1}^{N} \log(\!\sqrt{2\pi \sigma^2}) + \frac{1}{2 \sigma^2} \big( y_i - \hat{f}_\theta(\vec{x}_i) \big)^2
+					 = \underbrace{-N \log(\!\sqrt{2\pi \sigma^2})}_{C_2 \,\coloneqq} - \underbrace{\frac{1}{2 \sigma^2}}_{C_1 \,\coloneqq} \sum_{i = 1}^{N} \big( y_i - \hat{f}_\theta(\vec{x}_i) \big)^2 \\
+					&= C_2 - C_1 \sum_{i = 1}^{N} \big( y_i - \hat{f}_\theta(\vec{x}_i) \big)^2
+					 = C_2 - C_1 \, \mathit{RSS}(\theta),
+			\end{align}
+			wobei die Konstanten \( C_1 \) und \( C_2 \) unabhängig von den Parametern \(\theta\) des Modells sind. Die Minimierung des quadratischen Fehlers ist also äquivalent zur Maximierung der Likelihood unter Annahme einer Normalverteilung mit konstanter Varianz!
 		% end
 	% end
 
-	\section{Gütekriterien} % N/A
-		\todo{Content}
-
-		\subsection{Maximum Likelihood} % 3.5
-			\todo{Content}
-
-			\subsubsection{Maximum Likelihood für Lineare Modelle} % 3.7, 3.8
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Kreuzentropie} % 3.9
-			\todo{Content}
-		% end
-	% end
-
-	\section{Fluch der hohen Dimension} % 2.61
-		\todo{Content}
-	% end
-
-	\section{Logistische Regression} % 3.36, 3.37
-		\todo{Content}
+	\section{Logistische Regression}
+		Im allgemeinen kann jedes Regressionsmodell auch zur Klassifikation verwendet werden, indem eine Entscheidungsfunktion an das Ende gehängt wird. Ein Beispiel ist die logistische Funktion (auch \emph{Sigmoid})
+		\begin{equation}
+			\sigma(y) = \frac{1}{1 + e^{-y}},
+		\end{equation}
+		welche durch die Annahme hergeleitet werden kann, dass der Quotient der Klassenwahrscheinlichkeiten als log-lineares Modell berechnet werden kann:
+		\begin{gather}
+			y = \log( \frac{P(Y = +1)}{P(Y = -1)} ) = \log( \frac{P(Y = +1)}{1 - P(Y = +1)} )
+%			\quad\iff\quad  e^y = \frac{P(Y = +1)}{1 - P(Y = +1)}
+%			\quad\iff\quad  \big( 1 - P(Y = +1) \big) e^y = P(Y = +1)
+%			\quad\iff\quad  e^y - P(Y = +1) e^y = P(Y = +1)
+%			\quad\iff\quad  e^y = P(Y = +1) + P(Y = +1) e^y
+%			\quad\iff\quad  1 = P(Y = +1) e^{-y} + P(Y = +1)
+%			\quad\iff\quad  1/P(Y = +1) = e^{-y} + 1
+			\quad\iff\quad  P(Y = +1) = \frac{1}{1 + e^{-y}}
+		\end{gather}
+		Das Ergebnis gibt dann also die Wahrscheinlichkeit an, dass der Eingabedatenpunkt zur Klasse \num{1} gehört. Eine andere Möglichkeit zur binären Klassifikation basiert auf einem Schwellenwert \(\theta\). Liegt die Ausgabe des Regressionsmodells über diesem Schwellenwert, wird dem Datenpunkt die Klasse \num{+1} und sonst die Klasse \num{-1} zugeordnet:
+		\begin{equation}
+			y =
+				\begin{cases}
+					+1 & \text{falls } \hat{f}(\vec{x}) \geq \theta \\
+					-1 & \text{sonst}
+				\end{cases}
+		\end{equation}
+		Dabei muss nun ein Wert für \(\theta\) festgelegt werden, was \zB basierend auf den Kosten für ein falsch-positives, \bzw falsch-negatives, Ergebnis geschehen kann. Wird \(\theta\) erhöht, treten mehr falsch-negative Ergebnisse auf, wird \(\theta\) verringert, mehr falsch-positive.
 	% end
 % end
 

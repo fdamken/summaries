@@ -14,6 +14,7 @@
 #include:amsmath
 #include:amssymb
 #include:attachfile
+#include:bbm
 #include:bitpattern
 #include:bm
 #include:bytefield

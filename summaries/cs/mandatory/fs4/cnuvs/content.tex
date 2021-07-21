@@ -778,9 +778,9 @@ reverof
     % end
 
     \section{Adressierung}
-        Da flaches Adressieren mittels MAC-Adressen nicht auf große Netzwerke skaliert (es gibt zu viele Geräte und es müsste für jedes Gerät eine Routing-Tabelle vorgehalten werden), hat IP eigene Adresse, welche hierarchisch (bzw. topologisch) strukturiert sind (in sogenannte Netze).
+        Da flaches Adressieren mittels MAC-Adressen nicht auf große Netzwerke skaliert (es gibt zu viele Geräte und es müsste für jedes Gerät eine Routing-Tabelle vorgehalten werden), hat IP eigene Adressen, welche hierarchisch (bzw. topologisch) strukturiert sind (in sogenannte Netze).
         
-        Eine IP Adresse ist eine folge von 32 Bits, wobei jedes \textit{Interface} eine solche zugewiesen bekommt. Ein Interface ist eine Netzwerkschnittstelle und in Knoten kann mehrere Interfaces haben (folglich mehrere IP-Adressen), dies ist zum Beispiel bei Routern üblich, welche die Interfaces dann verbinden und die Pakete zwischen diesen weiterleiten.
+        Eine IP Adresse ist eine Folge von 32 Bits, wobei jedes \textit{Interface} eine solche zugewiesen bekommt. Ein Interface ist eine Netzwerkschnittstelle und ein Knoten kann mehrere Interfaces haben (folglich mehrere IP-Adressen), dies ist zum Beispiel bei Routern üblich, welche die Interfaces dann verbinden und die Pakete zwischen diesen weiterleiten.
         
         Da es sehr anstrengend wäre, IP Adressen immer in binär (oder dezimal) anzugeben, werden sie in vier 8 Bit Blöcke unterteilt, welche mit einem Punkt getrennt Dezimal aufgeschrieben werden:
         \begin{align*}
@@ -937,7 +937,7 @@ reverof
         	\item Ende-zu-Ende Kommunikation, Authentifizierung und Verschlüsselung auf IP Ebene sind möglich.
         \end{itemize}
 
-        \subsection{IPv4 Paketformat}
+        \subsection{IPv6 Paketformat}
             \begin{figure}[H]
             	\centering
                 \begin{bytefield}[bitwidth = 1.2em]{32}
@@ -1212,7 +1212,7 @@ reverof
 	            	\node[anchor = west] (f) at (10, -6) {};
 	            	\draw (a) to node[above]{CR} (b);
 	            	\draw (c) to node[above]{CC} (d);
-	            	\draw (e) to node[above]{AK} node[below](dt){DT} (f);
+	            	\draw (e) to node[above]{ACK} node[below](dt){DT} (f);
 	            	
 	            	\node [below = 0.5 of dt] {\textbf{Verbindung Hergestellt}};
             	\end{tikzpicture}
@@ -1601,8 +1601,7 @@ reverof
 	            		\bitbox{16}{Source Port} & \bitbox{16}{Destination Port} \\
 	            		\bitbox{32}{Sequence Number} \\
 	            		\bitbox{32}{Acknowledge Number} \\
-	            		\bitbox{4}{Header Length} \\
-	            		\bitbox{4}{Reserved} \\
+	            		\bitbox{4}{Header Length} & \bitbox{4}{Reserved} &
 	            		\bitbox{8}{Flags} & \bitbox{16}{Window} \\
 	            		\bitbox{16}{Checksum} & \bitbox{16}{Urgent Pointer} \\
 			            \bitbox{26}{Options \textit{(optional)}} & \bitbox{6}{Padding}

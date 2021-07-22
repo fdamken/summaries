@@ -2,11 +2,11 @@
 
 ## Folien
 
-Fertig/Strukturiert/Gesamt: 0/544/544; 0%/100%/100%
+Fertig/Strukturiert/Gesamt: 213/544/544; 39%/100%/100%
 
-* [x] Kapitel 1: Einleitung (104)
-* [x] Kapitel 2: kNN, Überanpassung, Kreuzvalidierung und Datenanalyse-Zyklus (63)
-* [x] Kapitel 3: Modellselektion und Evaluierung (45)
+* [X] Kapitel 1: Einleitung (104)
+* [X] Kapitel 2: kNN, Überanpassung, Kreuzvalidierung und Datenanalyse-Zyklus (63)
+* [X] Kapitel 3: Modellselektion und Evaluierung (45)
 * [x] Kapitel 4: Baumbasierte Verfahren (45)
 * [x] Kapitel 5: Ensemble Methoden (52)
 * [x] Kapitel 6: Probabilistische Graphische Modelle, Stützvektormethode und Clustering (94)

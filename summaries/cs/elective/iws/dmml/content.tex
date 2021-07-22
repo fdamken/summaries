@@ -425,6 +425,8 @@
 		% end
 
 		\subsection{Bias}
+			\label{subsec:foundationsBias}
+
 			Der \emph{Bias} eines Schätzers \(\hat{y}\) für eine Zufallsvariable \(Y\) bezeichnet die mittlere Verzerrung
 			\begin{equation}
 				\Bias[\hat{y}] = \E[Y - \hat{y}] = \E[Y] - \hat{y}
@@ -470,6 +472,63 @@
 			Eine häufige Wahl ist die Bildung eines Konfidenzintervalls für den Erwartungswert. So können Aussagen wie "Mit \SI{90}{\percent} Wahrscheinlichkeit liegt der Mittelwert im Intervall \( [\ell, u] \)." getätigt werden (hier mit \( \alpha = 0.01 \)).
 
 			Konfidenzintervalle sind ein mächtiges Werkzeug in der Bewertung von Verfahren, was in \autoref{c:trees} weiter behandelt wird.
+		% end
+
+		\subsection{Entropie}
+			Die Entropie einer Wahrscheinlichkeitsverteilung \(P(X)\) gibt an, wie viel Informationsgehalt in dieser steckt. Für eine diskrete Zufallsvariable \(X\) mit den möglichen Werten \(\mathcal{X}\) wird die Entropie wie folgt berechnet:
+			\begin{equation}
+				H(X) = -\!\sum_{x \,\in\, \mathcal{X}} P(x) \,\log P(x)
+			\end{equation}
+			Für eine kontinuierliche Zufallsvariable \(X\) mit Wahrscheinlichkeitsdichte \(p(X)\) gilt
+			\begin{equation}
+				H(X) = -\!\int\! p(x) \,\log p(x) \dd{x}\!,
+			\end{equation}
+			wobei wie vorher beschrieben die Integrationsgrenzen zur Übersichtlichkeit weggelassen werden. Wird der Logarithmus zur Basis \num{2} verwendet, so kann die Entropie einer Verteilung auch als die Anzahl Bits angesehen werden, die mindestens zur Übertragung benötigt werden.
+
+			\subparagraph{Beispiel}
+				Es werden Nachrichten \(X\) mit den Werten \(a\), \(b\), \(c\) und \(d\) versendet. Eine Aufzeichnung des Netzwerkverlaufs stellt fest, dass die Nachrichten mit den folgenden Häufigkeiten gesendet werden:
+				\begin{center}
+					\begin{tabular}{c|c|c|c}
+						\(a\) & \(b\) & \(c\) & \(d\) \\ \hline
+						 25   &   7   &  14   &  54
+					\end{tabular}
+				\end{center}
+				Bei einer Gesamtanzahl von \( 25 + 7 + 14 + 54 = 100 \) ergeben sich also die folgenden relativen Häufigkeiten, \bzw die folgende empirische Verteilung:
+				\begin{equation}
+					\begin{aligned}
+						P(X = a) &= 25\% &
+						P(X = b) &= 7\%  \\
+						P(X = c) &= 14\% &
+						P(X = d) &= 54\%
+					\end{aligned}
+				\end{equation}
+				Der Informationsgehalt \( -\log_2 P(X) \) je Symbol ist:
+				\begin{equation}
+					\begin{aligned}
+						-\log_2 P(X = a) &= 2      &
+						-\log_2 P(X = a) &= 3.8365 \\
+						-\log_2 P(X = a) &= 2.8365 &
+						-\log_2 P(X = a) &= 0.888969
+					\end{aligned}  \label{eq:entropyExampleInformation}
+				\end{equation}
+				Daraus ergibt sich die folgende Gesamtentropie:
+				\begin{align}
+					H(X)
+						&= -\big(
+								\begin{aligned}[t]
+									 &\, \eqmakebox[entropyExample][l]{\(\displaystyle P(X = a)\)} \,\log P(X = a) \\
+								   + &\, \eqmakebox[entropyExample][l]{\(\displaystyle P(X = b)\)} \,\log P(X = b) \\
+								   + &\, \eqmakebox[entropyExample][l]{\(\displaystyle P(X = c)\)} \,\log P(X = c) \\
+								   + &\, \eqmakebox[entropyExample][l]{\(\displaystyle P(X = d)\)} \,\log P(X = d) \quad\big)
+								\end{aligned}
+						\\
+						&= 0.25 \cdot 2 + 0.007 \cdot 3.8365 + 0.14 \cdot 2.8365 + 0.54 \cdot 0.888969 \\
+						&= 1.40401
+				\end{align}
+				Es werden also mindestens \num{2} Bits benötigt, um die Nachricht zu kodieren.
+
+				An dem Informationsgehalt \eqref{eq:entropyExampleInformation} ist zu sehen, dass as Symbol \(d\) die wenigsten Informationen überträgt, da es am häufigsten vorkommt. Dies kann Interpretiert werden als "Überraschungseffekt" beim Empfänger: Kommt ein \(d\) an, ist dies nicht überraschen, da dies in \SI{54}{\%} der Fälle passiert. Kommt jedoch ein \(b\) an, ist dies sehr ungewöhnlich.
+			% end
 		% end
 	% end
 % end
@@ -764,61 +823,196 @@
 	% end
 % end
 
-\chapter{Modellselektion und Evaluierung} % 2.18, 2.19, 2.20, 3.1, 3.2, 3.10, 3.11
+\chapter{Modellselektion und Evaluation}
 	\label{c:evaluation}
 
-	\todo{Content}
+	Eine Problematik (wenn nicht die größte) ist, dass immer nur eine endliche Menge an Beispielen vorhanden und die wahr Verteilung der Beispiele nicht bekannt ist. Daher ist es wichtig, einen geeigneten Weg zur Beurteilung der Lernergebnisse zu finden. Eine Bewertung auf den Trainingsdaten selbst ist nicht ausreichend, da das Modell dann "einfach" alle Beispiele auswendig lernen könnte und so immer perfekte Vorhersagen trifft, auf echten Daten aber versagt. In diesem Fall wurde dann kein logischer Zusammenhang zwischen Ein- und Ausgabe gelernt. Ein Beispiel hierfür ist die Verwendung in kNN mit \( k = 1 \). Dieses Auswendig lernen wird auch \emph{Überanpassung} genannt und äußert sich durch einen niedrigen Bias und eine hohe Varianz des Modells. Dies ist eine Äußerung des \emph{Bias-Varianz Trade-Off} von Schätzern (siehe \autoref{subsec:foundationsBias}). Die Evaluation von Modellen ist auch bei der Selektion von Modellen wichtig: Wie wird aus Modellen das beste ausgewählt? Dieses Kapitel wird sich mit diesen beiden Themen, Modellselektion und Evaluation, beschäftigen.
 
-	\section{Aufteilung in Test- und Trainingsmenge} % 2.21, 2.22, 2.23
-		\todo{Content}
+	\section{Aufteilung in Trainings- und Testmenge: Kreuzvalidierung}
+		Zur Bewertung eines Modells ist es zunächst hilfreich, die Daten in eine Trainings- und eine Testmenge aufzuteilen. Die Daten in der Trainingsmenge werden dem Algorithmus zum Trainieren übergeben, die restlichen Daten (die Testmenge) werden zum Vergleich der Vorhersage der Modelle verwendet. Im Allgemeinen wird allerdings nicht nur eine Aufteilung verwendet, sondern die Daten werden mehrmals geteilt, um eine möglichst hohe Varianz in den verwendeten Daten zu erhalten. Dadurch wird vermieden zufällig ausschließlich auf Ausnahmen gelernt zu haben und anschließend auf den "normalen" Fällen zu testen.
 
-		\subsection{Kreuzvalidierung} % 2.24, 3.12, 3.13
-			\todo{Content}
+		Aus Zeitgründen ist es allerdings meist zu aufwendig, auf allen möglichen Kombinationen der Daten zu trainieren, \bzw zu evaluieren. Daher wird häufig die \emph{Kreuzvalidierung} eingesetzt, bei der die Lernmenge zufällig in \(n\) Mengen aufgeteilt wird. Der Algorithmus wird anschließend auf \(n - 1\) dieser Mengen trainiert und die verbleibende Menge wird zur Evaluation verwendet. Dies wird \(n\) mal wiederholt, sodass jede Menge einmal als Testmenge verwendet wurde. Ein Extremfall von Kreuzvalidierung ist die Leave-One-Out Kreuzvalidierung, bei der \( n = N \) gesetzt wird, wobei \(N\) die Anzahl Trainingsbeispiele ist. Es wird also immer auf nur einem Datenpunkt evaluiert.
+	% end
+
+	\section{Bayes'sche Modellselektion}
+		Ein sehr anderer und statistisch motivierter Ansatz zur Modellselektion ist die \emph{Bayes'sche Modellselektion}, bei der die Modelle anhand der A-Posteriori Wahrscheinlichkeit verglichen werden. Sei dazu \( \{ \mathcal{M}_m \}_{m \,=\, \subdotsrange{1}{M}} \) die Menge aller Modelle und sei \(\mathcal{T}\) die Trainingsdaten. Dann ist die A-Posteriori Wahrscheinlichkeit eines Modells \( \mathcal{M}_m \) gegeben durch
+		\begin{equation}
+			P(\mathcal{M}_m \given \mathcal{T}) \propto P(\mathcal{T} \given \mathcal{M}_m) \, P(\mathcal{M}_m)  \label{eq:bayesModelSelectionPosterior}
+		\end{equation}
+		mit der Likelihood \( P(\mathcal{T} \given \mathcal{M}_m) \) und der A-Priori Wahrscheinlichkeit \( P(\mathcal{M}_m) \). Zum Vergleich von zwei Modellen \( \mathcal{M}_m \) und \( \mathcal{M}_{m'} \) werden nun die A-Posteriori Wahrscheinlichkeiten verglichen:
+		\begin{align}
+			P(\mathcal{M}_m) > P(\mathcal{M}_{m'})
+			\quad\iff&\quad  P(\mathcal{T} \given \mathcal{M}_m) \, P(\mathcal{M}_m) > P(\mathcal{T} \given \mathcal{M}_{m'}) \, P(\mathcal{M}_{m'}) \\
+			\quad\iff&\quad  \frac{P(\mathcal{T} \given \mathcal{M}_m)}{P(\mathcal{T} \given \mathcal{M}_{m'})} \, \frac{P(\mathcal{M}_m)}{P(\mathcal{M}_{m'})} > 1  \label{eq:bayesModelSelection}
+		\end{align}
+		Die erste Umformung ist dabei gültig, der in \eqref{eq:bayesModelSelectionPosterior} ausgelassene Normalisierungsfaktor \( P(\mathcal{T}) \) für beide Modelle gleich ist. In \eqref{eq:bayesModelSelection} ist zu sehen, dass die A-Priori Wahrscheinlichkeiten verschwinden, wenn sie für beide Modelle gleich ist.
+
+		\subsection{Approximation der Modell-Likelihood und Bayes'sches Informationskriterium}
+			Hat das Modell \( \mathcal{M}_m \) die Parameter \( \theta_m \) mit dem Maximum Likelihood Ergebnis \( \hat{\theta}_m \), so kann die Log-Likelihood des Modells durch
+			\begin{equation}
+				\log P(\mathcal{T} \given \mathcal{M}_m) = \underbracket{\log P(\mathcal{T} \given \mathcal{M}_m, \hat{\theta}_m)} - \frac{d_m}{2} \log N + \mathcal{O}(q)  \label{eq:bayesModelSeletcionApproxLikelihood}
+			\end{equation}
+			angenähert werden. Dabei beschreibt \( d_m \) die Anzahl Parameter in dem Modell \(\mathcal{M}_m\) und \(N\) ist die Anzahl der Trainingsbeispiele. Die unterklammerte Wahrscheinlichkeit ist dabei die Log-Likelihood, die durch die Parameter \(\hat{\theta}_m\) bei gegebenem Modell maximiert wurde.
+
+			Aus dieser Approximation der Modell-Likelihood ergibt sich das \emph{Bayes'sche Informationskriterium} (Englisch: \emph{Bayes Information Criterion}, BIC). Dies entspricht den Approximationstermen der Log-Modell-Likelihood \eqref{eq:bayesModelSeletcionApproxLikelihood} mit gedrehtem Vorzeichen und skalierten Faktoren:
+			\begin{equation}
+				\mathit{BIC}(\mathcal{M}_m) = -2 P(\mathcal{T} \given \mathcal{M}_m, \hat{\theta}_m) + d_m \log N
+			\end{equation}
+			Die Wahl eines Modells mit kleinstem BIC entspricht also der Wahl des Modells mit der höchsten A-Posteriori Wahrscheinlichkeit. Dabei bevorzugt das BIC durch den Einfluss der Parameteranzahl \(d_m\) einfachere Modelle. Die Auswahl unter Nutzung des BIC ist dabei auch zuverlässig: Aus einer Familie an Modellen, unter denen sich das richtige befindet, konvergiert die Wahrscheinlichkeit, dass das BIC das korrekte Modell identifiziert mit \( N \to \infty \) gegen \num{1}.
+
+			Wird das BIC für jedes Modell \(\mathcal{M}_m\) berechnet, so können (wie bei der Kreuzvalidierung), die Modelle relativ zueinander bewertet werden:
+			\begin{equation}
+				\frac{\exp{-\frac{1}{2} \mathit{BIC}(\mathcal{M}_m)}}{\sum_{i = 1}^{M} \exp{-\frac{1}{2} \mathit{BIC}(\mathcal{M}_i)}}
+			\end{equation}
+		% end
+
+		\subsection{Minimale Beschreibungslänge}  % TODO: Besser verstehen!
+			Einen anderen Weg zur Bewertung von Modellen stellt die \emph{Minimale Beschreibungslänge} (Englisch: \emph{Minimum Description Length}, MDL) dar. Dabei wird die Entropie der Modellverteilung \( P(\mathcal{T} \given \mathcal{M}_m, \theta_m) \) verwendet. Das Kriterium der minimalen Beschreibungslänge lautet dann
+			\begin{equation}
+				\mathit{MDL}(\mathcal{M}_m) = -\log P(\mathcal{T} \given \mathcal{M}_m, \theta_m) - \log P(\theta_m \given \mathcal{M}_m),
+			\end{equation}
+			welche es zu minimieren gilt. Eine Minimierung dieses Kriteriums entspricht der Minimierung der aufgewandten Modellgröße unter Einbeziehung der Vorhersagekraft. Dabei wird implizit die A-Posteriori Wahrscheinlichkeit maximiert, weshalb auch durch Minimierung des BIC das Modell mit der kleinsten Beschreibungslänge gefunden werden kann. Bei normalverteilten Ausgabewerten und Parametern führt das MDL-Kriterium zu einer Minimierung der Varianz.
 		% end
 	% end
 
-	\section{Bayes'sche Modellselektion} % 3.15
-		\todo{Content}
+	\section{Evaluierungsmaße}
+		In diesem Abschnitt werden weitere (empirische) Evaluierungsansätze beschrieben, die zusätzlich zu den bereits vorgestellten Ansätzen zur Modellselektion genutzt werden (sollten).
 
-		\subsection{Approximation der A-Posteriori Wahrscheinlichkeit} % 3.16
-			\todo{Content}
+		Eine offensichtliche Möglichkeit ist die Evaluierung durch Experten, \dh die Vorhersagen des Modells werden von Menschen geprüft, die sich sehr gut mit der Anwendungsdomäne auskennen. Dies ist leider oft die einzige Möglichkeit, aber subjektiv, kostspielig und zeitaufwendig. Eine andere Möglichkeit ist die online-Evaluierung, wo das Modell direkt eingesetzt und in der Praxis evaluiert wird. Dies ergibt die beste Schätzung für die Funktionalität des Modells, kann aber kostspielig werden, wenn das Modell falsche Vorhersagen trifft. Ein Beispiel ist die direkte Anwendung eines Aktienhandel-Modells an der Börse. Dies kann sehr gut funktionieren, kann aber im schlimmsten Fall zu dem kompletten finanziellen Ruin führen.
+
+		In der Praxis sollten nach einer Evaluation immer empirische Gütemaße angegeben werden. Einige dieser werden in den folgenden Abschnitten vorgestellt.
+
+		\subsection{Konfusionsmatrix und Gütemaße}
+			In der \emph{Konfusionsmatrix} (Englisch: \emph{Confusion Matrix}) werden fast alle wichtigen Informationen (in der Klassifikation) zusammengefasst, indem die Anzahl korrekt-positiven, korrekt-negativen, falsch-positiven und falsch-negativen Klassifikationen zusammengefasst wird:
+			\begin{center}
+				\begin{tabular}{c|c|c|c}
+					            &    Klassifiziert als Positiv     &    Klassifiziert als Negativ    &      \(\sum\)      \\ \hline
+					Ist Positiv &      Korrekt-Positive (TP)       &      Falsch-Negative (FN)       & Alle Positiven (P) \\ \hline
+					Ist Negativ &       Falsch-Positive (FP)       &      Korrekt-Negative (TP)      & Alle Negativen (N) \\ \hline
+					 \(\sum\)   & Alle als Positiv klassifizierten & Alle als Negativ klassifizierte &  Anzahl Bespiele
+				\end{tabular}
+			\end{center}
+			Aus dieser Matrix lassen sich fast alle Gütemaße ablesen, wie beispielsweise:
+			\begin{itemize}
+				\item \emph{Korrekt-Positiv Rate} (TPR): \( \displaystyle  \frac{\text{TP}}{(\text{TP} + \text{FN})} \) \\
+					Anteil der korrekt klassifizierten positiven Beispiele.
+				\item \emph{Falsch-Positiv Rate} (FPR): \( \displaystyle  \frac{\text{FP}}{\text{FP} + \text{TN}} \) \\
+					Anteil der negativen Beispiele, die als positiv Klassifiziert werden.
+				\item \emph{Falsch-Negativ Rate} (TNR): \( \displaystyle  \frac{\text{FN}}{\text{TP} + \text{FN}} = 1 - \text{TPR} \) \\
+					Anteil der positiven Beispiele, die als negativ Klassifiziert werden.
+				\item \emph{Korrekt-Negativ Rate} (FNR): \( \displaystyle  \frac{\text{TN}}{\text{FP} + \text{TN}} = 1 - \text{FPR} \) \\
+					Anteil der korrekt klassifizierten negativen Beispiele.
+				\item \emph{Genauigkeit}/\emph{Accuracy} (Acc): \( \displaystyle  \frac{\text{TP} + \text{TN}}{\text{N} + \text{P}} \) \\
+					Anteil der korrekt klassifizierten Beispiele.
+				\item \emph{Fehler} (Err): \( \displaystyle  \frac{\text{FP} + \text{FN}}{\text{N} + \text{P}} = 1 - \text{Acc} \) \\
+					Anteil der falsch klassifizierten Beispiele.
+			\end{itemize}
+			Auch für mehrere Klassen kann eine Konfusionsmatrix erstellt werden, in diesem Fall werden die Zeilen und Spalten entsprechend erweitern. Die Genauigkeit ergibt sich dann als Summe der Diagonaleinträge geteilt durch die Gesamtanzahl.
 		% end
 
-		\subsection{Bayes Information Criterion (BIC)} % 3.17, 3.18
-			\todo{Content}
+		\subsection{ROC-Analyse und -Kurve}
+			Häufig ist es nicht aussagekräftig, die Fehlklassifikationsrate zu verwenden, da die Gesamtzahl der positiven Datenpunkte im Vergleich zu den negativen sehr klein ist. Dies führt zu einer guten Genauigkeit, \bzw einem kleinen Fehler, und suggeriert ein gutes Modell. Dennoch ist es möglich, dass viele positiven Fälle nicht entdeckt werden, was \bspw bei einer Krebserkrankung fatale Auswirkungen haben kann. Ein ausführliches Beispiel hierzu wird in \autoref{subsubsec:accuracyProblems} beschrieben.
+
+			Eine Alternative bietet die \emph{Receiver Operating Characteristic}, die direkt die Entscheidungsfunktion bewertet (dies ergibt die sogenannte \emph{ROC-Kurve}). Bei dieser Kurve entspricht jeder Punkt einem Schwellenwert \(\theta\), \dh es muss ein Klassifikator
+			\begin{equation}
+				y =
+					\begin{cases}
+						+1 & \text{falls } \hat{f}(\vec{x}) \geq \theta \\
+						-1 & \text{sonst}
+					\end{cases}
+			\end{equation}
+			mit Regressionsmodell \(\hat{f}\) genutzt werden. Der Fehler hängt also vom Schwellenwert ab: Bei einem hohen Schwellenwert sind mehr positive Beispiele falsch, bei einem kleinen Schwellenwert sind mehr negative Beispiele falsch. Die ROC-Analyse verschafft hier Abhilfe, indem sie unabhängig von dem Schwellenwert arbeitet, \dh das Verhalten des Klassifikators wird für alle möglichen Schwellenwerte untersucht.
+
+			% TODO: Beispiel ROC-Kurve.
+			Zur Erstellung der ROC-Kurve wird auf der \(x\)-Achse die FPR und auf der \(y\)-Achse die TPR angegeben. Ein perfekter Klassifikator stellt dann einen einzigen Punkt in der oberen linken Ecke (mit einer TPR von Eins und einer FPR von Null) dar, ein zufälliger Klassifikator eine diagonale Linie von unten links nach oben rechts. Die Fläche unter der ROC-Kurve gibt dann die Wahrscheinlichkeit an, dass ein positives Beispiel einen höheren Wert \(\hat{f}(\vec{x})\) als ein negatives Beispiel hat.
+
+			In \autoref{alg:rocCurve} ist schematisch der Ablauf der Erstellung einer ROC-Kurve gezeigt. Anschließend kann der Flächeninhalt der ROC-Kurve durch numerische Integration ermittelt werden. Für ein Positivbeispiel \( \vec{x}_+ \) und ein Negativbeispiel \( \vec{x}_- \) gibt der Flächeninhalt zwischen diesen Werten die Wahrscheinlichkeit \( P\big( \hat{f}(\vec{x}_+) > \hat{f}(\vec{x}_-) \big) \) an.
+
+			\begin{algorithm}
+				Generiere eine Liste \(L\) mit allen Beispielen \(\vec{x}\), aufsteigend sortiert nach \( \hat{f}(\vec{x}) \). \;
+				Sei \(P\) die Anzahl positiver und \(N\) die Anzahl negativer Bespiele. \;
+				Setze \( \mathit{TP} \gets 0 \) und \( \mathit{FP} \gets 0 \). \;
+				\For{\( i = 1 \) bis zure Länge von \(L\)}{
+					Sie \(\vec{x}_i\) das \(i\)-te Element von \(L\). \;
+					\If{\(\vec{x}\) positive Instanz}{
+						\( \mathit{TP} \gets \mathit{TP} + 1 \) \;
+					}
+					\Else{
+						\( \mathit{FP} \gets \mathit{FP} + 1 \) \;
+					}
+					Zeichne einen neuen Punkt mit den Koordinaten \( (\mathit{FP} / N,\, \mathit{TP} / P) \). \;
+				}
+				\caption{Erstellung einer ROC-Kurve}
+				\label{alg:rocCurve}
+			\end{algorithm}
 		% end
 
-		\subsection{Minimum Description Length (MDL)} % 3.19, 3.20, 3.21, 3.22
-			\todo{Content}
-		% end
+		\subsection{Präzision, Sensitivität und F1-Wert}
+			Eine weitere Alternative zur Ergebnisanalyse mit der Genauigkeit neben der ROC-Analyse stellen die häufig verwendeten Gütemaße \emph{Präzision} und \emph{Sensitivität} (Englisch: \emph{Recall}) dar. Diese werden wie folgt berechnet:
+			\begin{align}
+				\text{Präzision} &= \frac{\text{TP}}{\text{TP} + \text{FP}}
+				&
+				\text{Sensitivität} &= \frac{\text{TP}}{\text{TP} + \text{FN}}
+			\end{align}
+			Sie beschreiben also die Wahrscheinlichkeiten \( P(\text{positiv} \given \text{positiv vorhergesagt}) \) und \( P(\text{positiv vorhergesagt} \given \text{positiv}) \). Da im allgemeinen nicht beide dieser Werte vollständig optimiert werden können (dies ist der sogenannte Precision-Recall Trade-Off), ist es hilfreich, die beiden Werte in einen einzigen zusammenzufassen. Eine Möglichkeit der Zusammenfassung ist das harmonische Mittel von Präzision und Sensitivität, welche \emph{F1-Wert} genannt wird:
+			\begin{equation}
+				\text{F1} = \frac{2 \cdot \text{Präzision} \cdot \text{Sensitivität}}{\text{Präzision} + \text{Sensitivität}}
+			\end{equation}
+			Werden Präzision und Sensitivität gegeneinander als Scatter-Plot aufgetragen, bilden sich zwei Kurven, die sich immer schneiden dieser Schnittpunkt ist der \emph{Breakeven-Punkt} von Präzision und Sensitivität, an dem beide Maße den gleichen Wert annehmen.
 
-		\subsection{Zusammenhang zwischen BIC und MDL} % 3.23
-			\todo{Content}
+			\subsubsection{Probleme des Genauigkeits-Maß und Nutzen des F1-Werts}
+				\label{subsubsec:accuracyProblems}
+
+				Im Vergleich zu der naheliegenden Genauigkeit liefert der F1-Wert ein sehr viel besseres Maß für die Güte eines Modells, da die Genauigkeit eine sehr hohe Güte suggerieren kann, da die Gesamtzahl positiver/negativer Fälle stark überwiegt. Beispiel: Weltweit sind ca. \(T = 14\) Millionen Menschen an Krebs erkrankt bei einer Grundmenge von \(T + N = 7500\) Millionen Menschen (\dh \(N = 7486\)). Klassifiziert ein Modell nun eine Millionen Menschen korrekt als erkrankt, \dh positiv, und alle anderen negativ, gibt keine falsch-positiven Ergebnisse. Die Genauigkeit ist demnach
+				\begin{equation}
+					\text{Genauigkeit}
+						= \frac{\text{TP} + \text{TN}}{\text{P} + \text{N}}
+						= \frac{1 + 7486}{14 + 7486}
+						= \frac{7487}{7500}
+						\approx 99.83\%.
+				\end{equation}
+				Jedoch ist der Schaden durch \(13\) Millionen nicht erkannte Erkrankungen sehr hoch, das Genauigkeits-Maß suggeriert aber, dass das Modell sehr gut ist. Präzision und Sensitivität sind
+				\begin{equation}
+					\text{Präzision}
+						= \frac{\text{TP}}{\text{TP} + \text{FP}}
+						= \frac{1}{1 + 0} = 100\%
+					\qquad\text{und}\qquad
+					\text{Sensitivität}
+						= \frac{\text{TP}}{\text{TP} + \text{FN}}
+						= \frac{1}{1 + 13} \approx 7.14\%,
+				\end{equation}
+				das heißt alle als positiv klassifizierten Personen sind tatsächlich krebs-erkrankt, es werden jedoch nicht ansatzweise alle erkrankten Personen erkannt. Daraus ergibt sich ein F1-Wert von
+				\begin{equation}
+					\text{F1}
+						= \frac{2 \cdot \text{Präzision} \cdot \text{Sensitivität}}{\text{Präzision} + \text{Sensitivität}}
+						= \frac{2 \cdot 1 \cdot 0.0714}{1 + 0.0714}
+						\approx 13.32\%,
+				\end{equation}
+				was das Modell deutlich schlechter bewertet. Daher ist der F1-Wert im Allgemeinen besser geeignet, um die Güte eines Modells abzuschätzen.
+			% end
 		% end
 	% end
 
-	\section{Evaluierungsmaße} % 3.25, 3.26, 3.27, 3.28
-		\todo{Content}
+	\section{Vergleichen von Algorithmen}  % TODO: Folie 3.30 verstehen.
+		Um Algorithmen fair zu vergleichen, kann die Nutzung eines statistischen Tests hilfreich sein, da die bereits vorgestellten Maße häufig trügerisch sein können. Bei einem statistischen Test wird eine \emph{Nullhypothese} aufgestellt, welche dann durch ein stochastisches Verfahren verworfen oder akzeptiert wird. In diesem Abschnitt wird ein Vorzeichen-Test vorgestellt, der für eine Nullhypothese der Form "A und B sind gleich" geeignet ist. Eine Beispielhypothese adressiert die Wahrscheinlichkeiten für Kopf (A) und Zahl (A) bei einem Münzwurf. In diesem Fall ist die Nullhypothese "Die Münze ist fair, \dh \( P(A) = P(B) \)." Ähnlich kann die Nullhypothese formuliert werden als "Die Algorithmen A und B sind gleich". Insgesamt werden \(N\) Versuche durchgeführt, \(i\) mal gewinnt A und \(N - i\) mal gewinnt B.
 
-		\subsection{ROC-Analyse und -Kurve} % 3.38, 3.39, 3.40, 3.41, 3.42
-			\todo{Content}
-		% end
+		Nach der Binomialverteilung mit \(p = 0.5\) ist die Wahrscheinlichkeit für einen \(i\)-fachen Erfolg gegeben durch
+		\begin{equation}
+			P(i) = {N\, \choose i} p^i (1 - p)^{N - 1},
+		\end{equation}
+		wobei \( N\, \choose i \) den Binomialkoeffizienten darstellt. Bei einem einseitigen Test wird die Wahrscheinlichkeit genutzt, dass \emph{höchstens} \(k\) Erfolge eintreten:
+		\begin{equation}
+			P(i \leq k) = \sum_{i = 1}^{k} {N\, \choose i} \frac{1}{2^i} \frac{1}{2^{N - i}} = \frac{1}{2^N} \sum_{i = 1}^{k} {N\, \choose i}
+		\end{equation}
+		Analog kann auch ein zweiseitiger Test verwendet werden, bei dem die Wahrscheinlichkeit genutzt wird, dass die Anzahl Erfolge höchstens \(k\) und mindestens \(N - k\) ist:
+		\begin{equation}
+			P(N - k \leq i \leq k) = \frac{1}{2^N} \sum_{i = 1}^{k} {N\, \choose i} + \frac{2}{N} \sum_{i = 1}^{k} {N \choose N - i} = \frac{1}{2^{N - 1}} \sum_{i = 1}^{k} {N\, \choose i}
+		\end{equation}
+		Ist \(N\) groß, so kann für den Test eine Normalverteilung genutzt werden.
 
-		\subsection{Präzision und Recall} % 3.43, 3.44
-			\todo{Content}
-		% end
+		Der Vorzeichen-Tests ist insbesondere wegen seiner Einfachheit und der nicht-Annahme einer zugrundeliegenden Verteilung gut geeignet für derlei statistische Tests. Allerdings ist er eher konservativ, dass bedeutet, er lehnt die Nullhypothese nicht schnell ab. Dies hat einerseits den Vorteil, dass das Ergebnis im Falle der Ablehnung sehr sicher ist. Andererseits wird aber oft auch kein Unterschied detektiert, \dh ein anderer Test könnte einen signifikanten Unterschied feststellen. Eine Alternative ist der zweiseitige t-Test, bei dem die Größe des Unterschieds unter der Annahme einer Normalverteilung derselben betrachtet wird.
 
-		\subsection{F-Measure, Breakeven Point} % 3.45
-			\todo{Content}
-		% end
-	% end
-
-	\section{Zusammenfassung von Experimentellen Ergebnissen} % 3.29, 3.30
-		\todo{Content}
-
-		\subsection{Vorzeichen-Test} % 3.31, 3.32, 3.33, 3.34
-			\todo{Content}
-		% end
+		Als Faustregel gilt: Der Vorzeichen-Test beantwortet die Frage "Wie häufig sind A und B unterschiedlich?" und der t-Test beantwortet die Frage "Um wie viel sind A und B unterschiedlich?"
 	% end
 % end
 

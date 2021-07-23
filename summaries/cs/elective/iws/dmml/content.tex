@@ -387,8 +387,7 @@
 					-1 & \text{sonst}
 				\end{cases}
 		\end{equation}
-		Diese Art der Zuordnung ist nur eine Möglichkeit, ein Regressionsmodell als Klassifikationsmodell zu nutzen.
-		% TODO: Referenzieren, wo mehr vorgestellt werden!
+		Diese Art der Zuordnung ist nur eine Möglichkeit, ein Regressionsmodell als Klassifikationsmodell zu nutzen. Eine weitere ist \zB die logistische Regression, siehe \autoref{sec:logisticRegression}.
 	% end
 
 	\section{Statistik}
@@ -796,6 +795,8 @@
 	% end
 
 	\section{Logistische Regression}
+		\label{sec:logisticRegression}
+
 		Im allgemeinen kann jedes Regressionsmodell auch zur Klassifikation verwendet werden, indem eine Entscheidungsfunktion an das Ende gehängt wird. Ein Beispiel ist die logistische Funktion (auch \emph{Sigmoid})
 		\begin{equation}
 			\sigma(y) = \frac{1}{1 + e^{-y}},
@@ -913,6 +914,8 @@
 		\subsection{ROC-Analyse und -Kurve}
 			Häufig ist es nicht aussagekräftig, die Fehlklassifikationsrate zu verwenden, da die Gesamtzahl der positiven Datenpunkte im Vergleich zu den negativen sehr klein ist. Dies führt zu einer guten Genauigkeit, \bzw einem kleinen Fehler, und suggeriert ein gutes Modell. Dennoch ist es möglich, dass viele positiven Fälle nicht entdeckt werden, was \bspw bei einer Krebserkrankung fatale Auswirkungen haben kann. Ein ausführliches Beispiel hierzu wird in \autoref{subsubsec:accuracyProblems} beschrieben.
 
+			Es ist natürlich bei jedem Lernverfahren möglich, gewisse Klassen höher zu Gewichten, um eine falsche Einschätzung aufgrund der Klassenhäufigkeiten zu vermeiden.
+
 			Eine Alternative bietet die \emph{Receiver Operating Characteristic}, die direkt die Entscheidungsfunktion bewertet (dies ergibt die sogenannte \emph{ROC-Kurve}). Bei dieser Kurve entspricht jeder Punkt einem Schwellenwert \(\theta\), \dh es muss ein Klassifikator
 			\begin{equation}
 				y =
@@ -1016,53 +1019,111 @@
 	% end
 % end
 
-\chapter{Baumbasierte Verfahren} % 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.45
+\chapter{Baumbasierte Verfahren}
 	\label{c:trees}
 
-	\todo{Content}
+	Baumbasierte Verfahren stellen einen grundlegend anderen Ansatz zur Klassifikation dar als bisheriger Verfahren. Dabei wird ein Baum, der sogenannte \emph{Entscheidungsbaum}, konstruiert, dessen Knoten abfragen der Form "Hat das Attribut \(X\) den Wert \(x\)?" oder "Ist der Wert des Attributs \(X\) kleiner als \(x\)?" darstellen. Die Blätter des Baumes repräsentieren dann die abschließende Klassifikation. Entscheidungsbäume gehören dabei zu den \emph{globalen Modelle}, \dh sie Teilen des gesamten Merkmalsraum in verschieden Gruppen (Klassen) ein. Diese Aufteilung erfolgt rekursiv und die Aufteilung wird automatisch aus den Trainingsdaten bestimmt. Die Entscheidungen werden dabei so gewählt, dass die Blätter möglichst "reine" Klassen darstellen, \dh dass sich keine Beispiele mehrerer Klassen in den Blättern wiederfinden.
 
-	\section{Information und Informationsgewinn} % 4.12
-		\todo{Content}
+	Das Lernen und Trainieren von Entscheidungsbäumen ist dabei sehr effizient und skaliert gut. Soll ein Entscheidungsbaum für \(p\) kategorische (nicht-numerische) Merkmale aus \(N\) Trainingsbeispielen erstellt werden, so liegt die Komplexität des im nächsten Abschnitt vorgestellten ID3-Algorithmus in \( \mathcal{O}(p N \log N) \).
 
-		\subsection{Numerische Werte} % 4.15
-			\todo{Content}
+	Das resultierende Modell hat den großen Vorteil, dass es direkt eine Begründung für eine Entscheidung mitliefert, indem die Entscheidungsreihenfolge betrachtet wird. Dies hat den Anschein als seien Baumlernverfahren im Allgemeinen gut interpretierbar, allerdings lässt diese Interpretierbarkeit mit der Größe des Baumes nach.
+
+	Es ist auch möglich, Baumverfahren zur Regression einzusetzen und sie \bspw mit linearen Modellen zu kombinieren.
+
+	\section{Top-Down Induction of Decision Trees (TDIDT): ID3}
+		Ein einfacher Algorithmus zur Erstellung von Entscheidungsbäumen ist der \emph{ID3-Algorithmus}, welcher ein TDIDT-Verfahren darstellt. In jeder Iteration des ID3-Algorithmus wird genau eine Entscheidung erstellt, \dh es wird ein Merkmal ausgewählt, an dem der Baum geteilt wird. Dabei ist die Idee stets das Merkmal zu wählen, welches die höchste Güte hat. Die Güte kann \bspw der Informationsgewinn sein (einige Gütemaße werden in \autoref{sec:treeQualityMeasures} vorgestellt).
+
+		Ein Merkmal \(M_j\) mit \(k\) möglichen Werten (\bspw das Merkmal "Luftfeuchtigkeit" mit den zwei Werten "hoch" und "niedrig") teilt die Gesamtdatenmenge \( \mathcal{X} \) in genau \(k\) Mengen \( \dotsrange{\mathcal{X}_1}{\mathcal{X}_k} \) auf. Für jede dieser Teildatenmengen wird der ID3-Algorithmus nun erneut ausgeführt, wobei das Merkmal \(M_j\) entfernt wird. Dieser Algorithmus ist in \autoref{alg:id3} skizziert.
+
+		Einer besonderen Behandlung bedürfen numerische Werte, da diese nicht direkt in endlich viele Kategorien eingeteilt werden können. Die einfachste Lösung ist hier jedoch, die Werte in Töpfe einzuteilen, für das Merkmal "Temperatur" beispielsweise die Intervall \( (-\infty, 0) \), \( [0, 30) \) und \( [30, \infty) \). Im Allgemeinen ist diese Einteilung jedoch willkürlich und muss oft händisch optimiert werden, was bei der Baumbildung ein Problem darstellt.
+
+		\begin{algorithm}  \DontPrintSemicolon
+			\KwIn{Datenmenge \(\mathcal{X}\), Merkmalsmenge \( \{ \dotsrange{M_1}{M_p} \} \)}
+			\KwOut{Entscheidungsbaum \(T\)}
+			\If{\(\mathcal{X}\) enthält nur Datenpunkt einer Klasse \(y\)}{
+				\Return Terminalknoten für Klasse \(y\). \;
+			}
+			\Else{
+				Wähle \( M_j \gets \arg\max_{M \,\in\, \{ \subdotsrange{M_1}{M_p} \}} \textit{Güte}(M, \mathcal{X}) \) \;
+				Teile \(\mathcal{X}\) in \( \dotsrange{\mathcal{X}_1}{\mathcal{X}_k} \) auf \;
+				\For{\( i = \dotsrange{1}{k} \)}{
+					Rufe den ID3-Algorithmus erneut auf: \( \textit{ID3}\Big( \mathcal{X}_i,\, \{ \dotsrange{M_1}{M_p} \} \setminus \{ M_j \} \Big) \) \;
+				}
+				\Return Entscheidungsknoten für Merkmal \(M_j\) mit den Teilbäumen \( \{ T_i \}_{i \,=\, \subdotsrange{1}{k}} \) \;
+			}
+			\caption{ID3-Algorithmus}
+			\label{alg:id3}
+		\end{algorithm}
+	% end
+
+	\section{Gütemaße}
+		\label{sec:treeQualityMeasures}
+
+		Das Herz des ID3-Algorithmus ist die Wahl eines Gütemaßes zur Auswahl des (nächsten) Entscheidungsmerkmals. In diesem Abschnitt werden die zwei wichtigsten Kriterien, der Informationsgewinn und der Gini-Index, beschrieben.
+
+		\subsection{Informationsgewinn}
+			Das naheliegendste Maß für die Güte einer bestimmten Aufteilung ist der durch das Merkmal induzierte Informationsgewinn. Das Maß des Informationsgewinns basiert auf der Entropie \( H(\mathcal{X}) \) des Datensatzes in Bezug auf die Klasse \(y\). Dabei ist die Information \(I\), die durch ein Merkmal \(M_j\) induziert wird, gegeben durch
+			\begin{equation}
+				I(M_j, \mathcal{X}) = -\!\sum_{i = 1}^{k} \frac{\lvert \mathcal{X}_i \rvert}{\lvert \mathcal{X} \rvert} H(\mathcal{X}_i).
+			\end{equation}
+			Das bedeutet die Entropie des Datensatzes wird für jede durch das Merkmal hervorgerufene Aufteilung \( \mathcal{X}_i \), \( i = \dotsrange{1}{k} \), berechnet. Der Informationsgewinn ist dann die Differenz zwischen der Information mit und ohne die Aufteilung, also
+			\begin{equation}
+				\Delta I(M_j, \mathcal{X}) = I(M_j, \mathcal{X}) - I(-, \mathcal{X}),
+			\end{equation}
+			wobei \( I(-, \mathcal{X}) = -H(\mathcal{X}) \) ist.
+
+			Im ID3-Algorithmus wird dann das Merkmal verwendet, welches den Informationsgewinn \( \Delta I(M_j, \mathcal{X}) \) maximiert.
+		% end
+
+		\subsection{Gini-Index}
+			Eine andere Möglichkeit zur Bewertung der Güte ist der \emph{Gini-Index}, welcher quantifiziert, wie "rein" die Klasse ist, die ein Knoten darstellt. Er wird berechnet als
+			\begin{equation}
+				\textit{Gini}(\mathcal{X}) = 1 - S(\mathcal{X})
+				\qquad
+				S(\mathcal{X}) = \sum_{y \in \mathcal{Y}} \big( P_{\mathcal{X}}(y) \big)^2,
+			\end{equation}
+			wobei \(S\) die \emph{Reinheitsfunktion} darstellt. Die Wahrscheinlichkeit \( P_{\mathcal{X}}(y \given t) \) stellt den Anteil der Beispiele dar, die im Datensatz \(\mathcal{X}\) der Klasse \(y\) angehören. Die Menge \(\mathcal{Y}\) bezeichnet dabei alle möglichen Klassen.
+
+			Der Gini-Index nimmt sein Maximum an, wenn alle Klassen gleich wahrscheinlich sind und sein Minimum, wenn ausschließlich eine Klasse vorkommt. Ein hoher Gini-Index spricht charakterisiert also einen unreinen und ein niedriger einen reinen Knoten.
+
+			Ein baumbasiertes Verfahren, welches den Gini-Index verwendet, ist \emph{Classification and Regression Trees} (CART). Aber auch für ID3 kann der Gini-Index angewandt werden. In diesem Fall wird er als Unreinheitsmaß verwendet und die Reduzierung der Unreinheit
+			\begin{equation}
+				\Delta \textit{Gini}(M_j, \mathcal{X}) = \textit{Gini}(\mathcal{X}) - \sum_{i = 1}^{k} \frac{\lvert \mathcal{X}_i \rvert}{\lvert \mathcal{X} \rvert} \textit{Gini}(\mathcal{X}_i).
+			\end{equation}
+			Dabei beschreiben \( \mathcal{X}_i \), \( i = \dotsrange{1}{k} \) die durch das Merkmal \(M_j\) hervorgerufenen Teilmengen. Im Gegensatz zum Informationsgewinn soll der Gini-Index also minimiert, \dh die Reinheit maximiert, werden. Dies ist bei der Implementierung zu beachten und kann \bspw durch Negierung des Informationsmaßes geschehen.
+		% end
+
+		\subsection{Regression}
+			Bei der Regression ist das Ziel die Minimierung der Fehlerquadrate
+			\begin{equation}
+				\textit{SSE}(t) = \sum_{(\vec{x}, y) \,\in\, t} (y - \bar{y})^2
+				\qquad\text{mit}\qquad
+				\bar{y} = \frac{1}{\lvert t \rvert} \sum_{(\vec{x}, y) \,\in\, t} y,
+			\end{equation}
+			wobei \(t\) ein Knoten, \bzw die Menge der Trainingsdaten in diesem Knoten, ist. Werden Knoten der Form \( x \leq z \), also mit einem Schwellenwert \(z\) \bzgl eines Merkmals \(x\), verwendet, ist die SSE-Reduktion gegeben durch
+			\begin{equation}
+				\Delta \textit{SSE}(t) = \textit{SSE}(t) - \big( \textit{SSE}(t_-) + \textit{SSE}(t_+) \big),
+			\end{equation}
+			wobei \(t_-\) und \(t_+\) den linken, \bzw rechten, Teilbaum beschreiben.
+
+			Es ist außerdem Sinnvoll eine Mindestreduktion einzuführen, um Blättern zu erzeugen und den Baum nicht zu stark wachsen zu lassen.
 		% end
 	% end
 
-	\section{Top-Down Induction of Decision Trees (TDIDT): ID3} % 4.21, 4.22
-		\todo{Content}
-	% end
+	\section{Stutzen (Pruning) des Baumes}
+		Ein Problem der vorgestellten Baumlernverfahren ist, dass die Bäume sehr groß werden können. Dies kann zu zwei Problem führen:
+		\begin{itemize}
+			\item Sie erzeugen eine hohe Fehlerrate auf neuen Datensätzen, \dh der Baum wird auf die Trainingsdaten überangepasst.
+			\item Die Interpretierbarkeit ist bei großen Bäumen mit vielen Blättern schwer bis nicht möglich.
+		\end{itemize}
+		Das heißt die "beste" Größe eines Baumes liegt irgendwo zwischen nur einem Blatt und dem größtmöglichen Baum. Ein gelernter Baum muss also eventuell gestutzt werden, \dh es müssen Blätter und Entscheidungsknoten entfernt werden. Ein Stutzungsschritt führt die folgenden zwei Operationen aus: Zunächst wird ein Knoten an die Stelle eines Teilbaums gesetzt, anschließend wird der Teilbaum eine Ebene höher gezogen.
 
-	\section{Stutzen (Pruning) des Baumes} % 4.23, 4.24, 4.25
-		\todo{Content}
+		Die Suche nach dem Baum mit der "richtigen" Größe beginnt dabei mit der Stutzung der Äste aus der Richtung der Blätter ("von unten nach oben"). Die Unterknoten eines Knotens können dabei weggestutzt werden, wenn die Summe der Fehler der Unterknoten größer ist als der Fehler des betrachteten Knotens.
 
-		\subsection{Fehlerschätzung} % 4.27, 4.28, 4.29, 4.30, 4.31
-			\todo{Content}
-		% end
+		Dieser Fehler kann jedoch nur geschätzt werden, weshalb hier auch die Sicherheit (Konfidenz) der Schätzung berücksichtigt werden sollte. Dies kann beispielsweise dadurch geschehen, keinen Punktwert zu schätzen, sondern ein Konfidenzintervall. Anschließend kann die obere Schranke des Konfidenzintervalls verwendet werden um den Baum zu Schätzen.
 
-		\subsection{Anwendung zum Stutzen} % 4.32
-			\todo{Content}
-		% end
-	% end
-
-	\section{Andere Gütemaße} % N/A
-		\todo{Content}
-
-		\subsection{Gini-Index} % 4.33, 4.34
-			\todo{Content}
-		% end
-
-		\subsection{Regression} % 4.35
-			\todo{Content}
-		% end
-	% end
-
-	\section{Evaluierung} % 4.36, 4.37, 4.38
-		\todo{Content}
-
-		\subsection{Fehlergewichtung} % 4.39
-			\todo{Content}
-		% end
+		% TODO: Bäume: Obere Schranke der Fehlerschätzung; Folie 4.31.
+		% TODO: Bäume: Fehlerschätzung und Konfidenzintervalle; Folien 4.26, 4.27, 4.28, 4.29, 4.30, 4.31.
 	% end
 % end
 

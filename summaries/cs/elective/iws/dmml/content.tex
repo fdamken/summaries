@@ -1127,31 +1127,204 @@
 	% end
 % end
 
-\chapter{Ensemble-Methoden} % 5.1, 5.2, 5.3, 5.4, 5.52
-	\todo{Content}
+\chapter{Ensemble-Methoden}
+	In diesem Kapitel werden \emph{Ensemble-Methoden} behandelt, die im Vergleich zu den bisher vorgestellten Verfahren eine Meta-Ebene höher liegen, indem sie mehrere Verfahren kombinieren. Die Idee hinter Ensembles ist, mehrere "schwache" Lerner zu einem mächtigeren Lerner zu kombinieren. Dabei gibt es in der Grundform zwei Möglichkeiten: Bagging und Boosting. Beim Bagging werden mehrere Modelle parallel trainiert die Vorhersagen anschließend \bspw mittels Mehrheitsentscheid kombiniert. Beim Boosting werden die Modelle nacheinander trainiert und der Fehler des vorherigen Modells wird zur Gewichtung der Trainingsdaten für das nächste Modell verwendet. Dabei wird ein Mitspracherecht errechnet, mit dem anschießend Vorhersagen getroffen werden.
 
-	\section{Zufallswälder (Random Forests)} % 5.5, 5.6, 5.7, 5.8, 5.9, 5.10, 5.11, 5.12, 5.13, 5.14
-		\todo{Content}
-	% end
+	Der Ausgangspunkt von Ensembles ist der Zusammenhang von Bias und Varianz: Dabei weißt ein überangepasstes Modell einen niedrigen Bias, aber eine hohe Varianz auf und ein unterangepasstes Modell einen hohen Bias, aber eine niedrige Varianz. Das bedeutet, dass ein unterangepasstes Modell nicht flexibel und ein überangepasstes Modell zu flexibel ist. Ensemble-Methoden versuchen, diese Probleme zu bekämpfen. Dabei geht Adaptives Boosting (AdaBoost) gegen Unteranpassung, und Bagging gegen Überanpassung vor. Weitere verbesserte Ensembles sind beispielsweise Gradienten Boosting, was sowohl Über- als auch Unteranpassung verbessert, und Zufallswälder, bei denen Baumlernverfahren verwendet werden.
 
-	\section{Bagging} % 5.22, 5.23
-		\todo{Content}
-	% end
+	Im Folgenden werden zunächst Zufallswälder und an diesem Beispiel Bagging und anschließend Boosting behandelt.
 
-	\section{Boosting} % 5.25, 5.26, 5.27, 5.28, 5.29, 5.35, 5.38, 5.39
-		\todo{Content}
+	\begin{figure}
+		\centering
+		\begin{subfigure}{0.49\linewidth}
+			\centering
+			\begin{tikzpicture}[->, model/.style = { draw, rectangle, minimum height = 1cm, minimum width = 2cm }]
+				\node (input) {Eingabe};
+				\node [model, right = 1 of input] (model2) {Modell 2};
+				\node [model, above = 1 of model2] (model1) {Modell 1};
+				\node [model, below = 1 of model2] (model3) {Modell 3};
 
-		\subsection{AdaBoost} % 5.30, 5.31, 5.32, 5.33, 5.34
-			\todo{Content}
+				\node [right = 1 of model1] (output1) {Ausgabe 1};
+				\node [right = 1 of model2] (output2) {Ausgabe 2};
+				\node [right = 1 of model3] (output3) {Ausgabe 3};
+
+				\coordinate [left = 0.5 of model1] (needle1);
+				\coordinate [left = 0.5 of model3] (needle3);
+
+				\draw (input) -| (needle1) -- (model1);
+				\draw (input) -- (model2);
+				\draw (input) -| (needle3) -- (model3);
+
+				\draw (model1) -- (output1);
+				\draw (model2) -- (output2);
+				\draw (model3) -- (output3);
+			\end{tikzpicture}
+			\caption{Bagging}
+		\end{subfigure}
+		~
+		\begin{subfigure}{0.49\linewidth}
+			\centering
+			\begin{tikzpicture}[->, model/.style = { draw, rectangle, minimum height = 1cm, minimum width = 2cm }]
+				\node (input) {Eingabe};
+				\node [model, right = 1 of input] (model2) {Modell 2};
+				\node [model, above = 1 of model2] (model1) {Modell 1};
+				\node [model, below = 1 of model2] (model3) {Modell 3};
+
+				\node [right = 1 of model1] (output1) {Ausgabe 1};
+				\node [right = 1 of model2] (output2) {Ausgabe 2};
+				\node [right = 1 of model3] (output3) {Gesamtausgabe};
+
+				\coordinate [left = 0.5 of model1] (needle1);
+				\coordinate [left = 0.5 of model3] (needle3);
+
+				\path (model1) -- coordinate (needle10) (model2);
+				\path (model2) -- coordinate (needle11) (model3);
+
+				\draw (input) -| (needle1) -- (model1);
+				\draw (input) -- (model2);
+				\draw (input) -| (needle3) -- (model3);
+
+				\draw (model1) -- (output1);
+				\draw (output1) |- (needle10) -- (model2);
+				\draw (model2) -- (output2);
+				\draw (output2) |- (needle11) -- (model3);
+				\draw (model3) -- (output3);
+			\end{tikzpicture}
+			\caption{Boosting}
+		\end{subfigure}
+		\caption{Illustration von Bagging und Boosting.}
+		\label{fig:baggingBoosting}
+	\end{figure}
+
+	\section{Zufallswälder (Random Forests)}
+		\emph{Zufallswälder} (Englisch: \emph{Random Forests}) sind eine Variante verschiedener \emph{Bagging}-Algorithmen und klassifizieren Daten auf Basis von mehreren Klassifikationsbäumen, wobei das Lernen der Bäume randomisiert geschieht. Um die Entscheidungen der Bäume zu aggregieren, wird ein einfacher Mehrheitsentscheid verwendet, \dh ein Datenpunkt wird in die Klasse gesteckt, in die sie die meisten Bäume einordnen.
+
+		Um unterschiedliche einzelne Bäume zu erhalten werden nicht jedem Baum die gleichen Merkmale zur Verfügung gestellt, sondern jeder Baum erhält nur eine zufällige Stichprobe aus den Merkmalen. Ebenfalls werden, als weiterer Zufallsaspekt, nicht alle Merkmale in der Bestimmung der nächsten Verzweigung verwendet, sondern ebenfalls nur eine Stichprobe aus den dem Baum zur Verfügung stehenden Merkmalen. Im Gegensatz zur Verwendung von nur einem Baum wird bei Zufallswäldern der Baum nicht gestutzt, \dh jeder Baum hat (auf den gezogenen Stichproben) den kleinstmöglichem Trainingsfehler.
+
+		Der offensichtliche Hyperparameter bei Zufallswäldern ist die zu verwendende Anzahl an Entscheidungsbäumen. Im Allgemeinen ist die Gesamtklassifikationskraft um so besser, je mehr einzelne Bäume verwendet werden. Da die Überanpassung aufgrund des Zufallsaspekts nicht mit der Anzahl der Bäume steigt, spricht also aus theoretischer Sicht nichts gegen die Wahl von sehr vielen Bäumen. Praktisch ist diese Anzahl jedoch einerseits durch die Rechenkraft limitiert, auch wenn dieses Limit sehr hoch liegt, andererseits kann die Anzahl möglicher Merkmalskombinationen schnell ausgeschöpft sein, wenn nicht viele Merkmale vorliegen. Daher ist es in der Praxis oft ratsam, nicht allzu viele Bäume zu verwenden.
+
+		Im Vergleich zu nur einem Entscheidungsbäumen haben Zufallswälder den Vorteil, dass jede Variable, die zur Klassentrennung beiträgt, irgendwann auch verwendet wird. Ein großer Nachteil ist jedoch, dass die Verständlichkeit der Regeln verloren geht, was insbesondere an dem abschließenden Mehrheitsentscheid liegt. Dieser Verlust der Verständlichkeit offenbart jedoch wieder eine andere Möglichkeit zur Interpretation der Daten: Da jedes Merkmal auf verschiedenste Weise zu der Klassifikation beitragen kann, kann die Wichtigkeit der Merkmale abgeschätzt werden. Eine Möglichkeit ist
+		\begin{equation}
+			I = \frac{\mathit{VG}}{\mathit{NV}},
+		\end{equation}
+		wobei \(\mathit{VG}\) die Summe der Verminderungen des Gütemaßes für das Merkmal und \(\mathit{NV}\) die Anzahl an Verzweigungen im gesamten Wald ist.
+
+		\subsection{Bagging Allgemein}
+			Im Allgemeinen ist \emph{Bagging} (\emph{Bootstrap Aggregation}) immer dann besser, wenn jeder einzelne Klassifikator etwas besser ist als zufälliges Raten. Beispiel: Hat bei \num{25} Modellen jeder Klassifikator eine Fehlerrate von \(\epsilon = 0.35\), \dh es werden nur \SI{65}{\percent} der Daten korrekt klassifiziert, dann liegt die Wahrscheinlichkeit, dass das Mehrheitsentscheid-Ensemble einen Fehler macht bei nur \SI{6}{\percent}:
+			\begin{equation}
+				P(\text{falsche Vorhersage}) = \sum_{i = 13}^{25} { 25 \choose i } \epsilon^i (1 - \epsilon)^{25 - i} = 0.06
+			\end{equation}
+			Aber auch für Regression ist Bagging nützlich: Werden \(M\) verschiedene Regressionsmodelle genutzt, die alle sehr flexibel, \dh überangepasst, sind, haben alle einen geringen Bias, aber eine hohe Varianz. Durch Mittlung der Ergebnisse bleibt der Erwartungswert nach dem zentralen Grenzwertsatz gleich, die Varianz wird aber um den Faktor \(\sqrt{M}\) reduziert. Im Fall von \(M = 25\) Modellen wird die Varianz also schon um den Faktor \(\sqrt{M} = \sqrt{25} = 5\) reduziert.
+
+			Bagging-Verfahren sind also insgesamt geeignet, um die Aussagestärke einer Modellfamilie zu erhöhen, indem mehrere einfachere Modelle auf einem zufälligem Anteil der Daten trainiert werden. Die Ergebnisse werden anschließend durch einen Mehrheitsentscheid (in der Klassifikation) oder mittels Durchschnittsbildung (in der Regression) zusammengefasst.
 		% end
 	% end
 
-	\section{Vergleich} % 5.40
-		\todo{Content}
+	\section{Boosting}
+		Im \emph{Boosting} werden die einzelnen Modelle im Gegensatz zum Bagging nicht nebeneinander, sondern hintereinander trainiert. Die Idee ist, dass es leichter ist, ein paar Faustregeln statt einer Gesamtlösung für ein Problem zu finden. Beim Boosting werden also keine mächtigen Lerner kombiniert, sondern es werden einfache Verfahren wie Naive Bayes, Logistische Regression, Entscheidungsstümpfe oder flache Entscheidungsbäume kombiniert. Das Ergebnis ist dann ein starker Lerner.
+
+		In jeder des Boosting werden die Trainingsbeispiele neu gewichtet, je nach, "wie falsch" es im vorherigen Schritt klassifiziert wurde. Der nächste Lerner wird dann auf den gewichteten Beispielen trainiert und es wird ein Mitspracherecht auf Basis des Fehlers berechnet. Kann der Lerner nicht mit gewichteten Beispielen, so können die (auf Eins normierten) Gewichte als Wahrscheinlichkeiten betrachtet werden, sodass zum trainieren jedes Lerners nur eine Stichprobe der eigentlichen Daten verwendet wird. Das funktioniert allerdings nur dann, wenn der schwache Lerner mit einer unterschiedlichen Anzahl an Trainingsdaten umgehen kann.
+
+		Boosting ist also im allgemeinen sehr mächtig und funktioniert bei vielen Problemen, unter einigen technischen Voraussetzungen gibt es bei einigen Algorithmen sogar Konvergenzgarantien. So konvergiert \bspw AdaBoost zu einem Fehler von Null, wenn die Anzahl Iterationen steigt.
+
+		\subsection{AdaBoost}
+			In diesem Abschnitt wird \emph{AdaBoost}, ein Boosting-Algorithmus beschrieben und Teile des Algorithmus hergeleitet. Die Grundform zur Klassifikation von Daten in die zwei Klassen \( -1 \) und \( +1 \) ist in \autoref{alg:adaBoost} gezeigt. Die Auswahl von \(M\), der maximalen Anzahl AdaBoost-Iterationen, geschieht empirische wie die Wahl sämtlicher anderer Hyperparameter im maschinellen Lernen auch (\zB auf Basis eines Testdatensatzes).
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{Trainingsdaten \( \big\{ (\vec{x}_i, y_i) \big\}_{i \,=\, \subdotsrange{1}{N}} \) mit binären Labels \( y_i \in \{ -1, +1 \} \)}
+				\KwOut{Starker Klassifikator}
+				\( w_i^{(1)} \gets 1/N \) für \( i = \dotsrange{1}{N} \) \;
+				\For{\( m = \dotsrange{1}{M} \)}{
+					Anpassen des Modells \( \hat{f}^{(m)}(\vec{x}) \) unter Einbeziehung der Gewichte \( \vec{w}_{1:N}^{(m)} \). \;
+					\tcp{Berechnung des Fehlers:}
+					\( \displaystyle  \epsilon^{(m)} \gets \sum_{i = 1}^{N} w_i^{(m)} \cdot \mathbbm{1}\!\big[ y_i \neq \hat{f}^{(m)}(\vec{x}_i) \big] \) \;
+					\tcp{Berechnung des Mitspracherechts:}
+					\( \displaystyle  \alpha^{(m)} \gets \frac{1}{2} \log\!\bigg(\frac{1 - \epsilon^{(m)}}{\epsilon^{(m)}}\bigg) \) \;
+					\tcp{Berechung der neuen (nicht normalisierten) Gewichte:}
+					\( \displaystyle  \tilde{w}_i^{(m + 1)} \gets w_i^{(m)} \exp( \alpha^{(m)} \cdot \mathbbm{1}\!\big[ y_i \neq \hat{f}^{(m)}(\vec{x}_i) \big] ) \) für \( i = \dotsrange{1}{N} \) \;
+					\tcp{Normalisieren der Gewichte:}
+					\( \displaystyle  w_i^{(m + 1)} \gets \frac{\tilde{w}_i^{(m + 1)}}{\sum_{i = 1}^{N} \tilde{w}_i^{(m + 1)}} \) \;
+				}
+				\Return Klassifikator \( \hat{F}^{(M)}(\vec{x}) = \sign\!\Big(\! \sum_{m = 1}^{M} \alpha^{(m)} \hat{f}^{(m)}(\vec{x}) \Big) \) \;
+				\caption{AdaBoost (für zwei Klassen)}
+				\label{alg:adaBoost}
+			\end{algorithm}
+
+			\subsubsection{Herleitung der Gewichte und des Mitspracherechts}
+				Bei einem Blick auf den AdaBoost-Algorithmus stellt sich die Frage, warum die Gewichte und das Mitspracherecht gerade so gewählt werden. Dies ist darauf zurück zu führen, dass AdaBoost (in der Grundform) des Exponentialverlust \( \exp\big\{ -y \hat{f}(\vec{x}) \big\} \) annimmt, welcher eine obere Schranke für den 0-1-Verlust darstellt. Der Vorteil des Exponentialverlusts ist, dass dieser Differenzierbar ist. Es wäre auch möglich, andere differenzierbare Verlustfunktionen zu verwenden, wodurch AdaBoost zu Gradienten Boosting verallgemeinert wird (siehe \autoref{sec:gradientBoosting}).
+
+				Im \(m\)-ten Schritt hat der Gesamtverlust des starken Lerners, also der aggregierten Teilmodelle, die Form
+				\begin{align}
+					E
+						&= \sum_{i = 1}^{N} \exp\Big\{ { \textstyle -y_i \sum_{j = 1}^{m} \alpha^{(j)} \hat{f}^{(j)}(\vec{x}_i) } \Big\}, \\
+					\intertext{wobei das aktuell zu lernende Modell \( \hat{f}^{(m)} \) wie folgt separiert werden kann:}
+						&= \sum_{i = 1}^{N} \exp\Big\{ { \textstyle -y_i \sum_{j = 1}^{m - 1} \alpha^{(j)} \hat{f}^{(j)}(\vec{x}_i) - y_i \alpha^{(m)} \hat{f}^{(m)} } \Big\} \\
+						&= \sum_{i = 1}^{N} \underbrace{\exp\Big\{ { \textstyle  -y_i \sum_{j = 1}^{m - 1} \alpha^{(j)} \hat{f}^{(j)}(\vec{x}_i) } \Big\}}_{w_i^{(m)} \,\coloneqq} \, \exp\Big\{ { \textstyle  -y_i \alpha^{(m)} \hat{f}^{(m)} } \Big\} \\
+						&= \sum_{i = 1}^{N} w_i^{(m)} \exp\Big\{ { \textstyle  -y_i \alpha^{(m)} \hat{f}^{(m)} } \Big\}
+				\end{align}
+				Es ergeben sich also die in AdaBoost beschriebenen Gewichte aus der Wahl des Exponentialverlusts als obere Schranke für den 0-1-Verlust.
+
+				Zur Herleitung des neuen Mitspracherechts \( \alpha^{(m)} \) wird nun der Fehler nochmals weiter umgeschrieben und anschließend nach \(\alpha^{(m)}\) abgeleitet und Null gesetzt, um den Fehler zu minimieren:
+				\begin{align}
+					E
+						&= \sum_{i = 1}^{N} w_i^{(m)} \exp\Big\{ { \textstyle  -y_i \alpha^{(m)} \hat{f}^{(m)} } \Big\} \\
+						&= \sum_{i = 1}^{N} w_i^{(m)} e^{-\alpha^{(m)}} \cdot \mathbbm{1}\!\big[ y_i = \hat{f}^{(m)}(\vec{x}_i) \big] + \sum_{i = 1}^{N} w_i^{(m)} e^{\alpha^{(m)}} \cdot \mathbbm{1}\!\big[ y_i \neq \hat{f}^{(m)}(\vec{x}_i) \big] \\
+						&= \sum_{i = 1}^{N} w_i^{(m)} e^{-\alpha^{(m)}} \Big(\! 1 - \mathbbm{1}\!\big[ y_i \neq \hat{f}^{(m)}(\vec{x}_i) \big] \!\Big) + \sum_{i = 1}^{N} w_i^{(m)} e^{\alpha^{(m)}} \cdot \mathbbm{1}\!\big[ y_i \neq \hat{f}^{(m)}(\vec{x}_i) \big] \\
+						&= \sum_{i = 1}^{N} w_i^{(m)} e^{-\alpha^{(m)}} - \sum_{i = 1}^{N} w_i^{(m)} e^{-\alpha^{(m)}} \cdot \mathbbm{1}\!\big[ y_i \neq \hat{f}^{(m)}(\vec{x}_i) \big] + \sum_{i = 1}^{N} w_i^{(m)} e^{\alpha^{(m)}} \cdot \mathbbm{1}\!\big[ y_i \neq \hat{f}^{(m)}(\vec{x}_i) \big] \\
+						&= \Big( e^{\alpha^{(m)}} - e^{-\alpha^{(m)}} \Big) \underbrace{\sum_{i = 1}^{N} w_i^{(m)} \cdot \mathbbm{1}\!\big[ y_i \neq \hat{f}^{(m)}(\vec{x}_i) \big]}_{=\, \epsilon^{(m)}} + e^{-\alpha^{(m)}} \underbrace{\sum_{i = 1}^{N} w_i^{(m)}}_{=\, 1} \\
+						&= \Big( e^{\alpha^{(m)}} - e^{-\alpha^{(m)}} \Big) \epsilon^{(m)} + e^{-\alpha^{(m)}} \\
+				\end{align}
+				Ableiten nach \( \alpha^{(m)} \) und Null setzen:
+				\begin{gather}
+					\pdv{E}{\alpha^{(m)}} = \Big( e^{\alpha^{(m)}} + e^{-\alpha^{(m)}} \Big) \epsilon^{(m)} - e^{-\alpha^{(m)}} \overset{!}{=} 0 \\
+					\begin{aligned}[t]
+						\implies\quad&&
+						0 &= e^{\alpha^{(m)}} \epsilon^{(m)} + e^{-\alpha^{(m)}} \epsilon^{(m)} - e^{-\alpha^{(m)}} \\
+						\iff\quad&&
+						e^{\alpha^{(m)}} \epsilon^{(m)} &= e^{-\alpha^{(m)}} \Big( 1 - \epsilon^{(m)} \Big) \\
+						\iff\quad&&
+						\alpha^{(m)} + \log \epsilon^{(m)} &= -\alpha^{(m)} + \log( 1 - \epsilon^{(m)} ) \\
+						\iff\quad&&
+						\alpha^{(m)} &= \frac{1}{2} \log( \frac{1 - \epsilon^{(m)}}{\alpha^{(m)}} )
+					\end{aligned}
+				\end{gather}
+				Das ergibt genau das Mitspracherecht in AdaBoost.
+			% end
+		% end
 	% end
 
-	\section{Gradient Boosting} % 5.41, 5.42, 5.43, 5.44, 5.45, 5.46
-		\todo{Content}
+	\section{Gradienten Boosting} % 5.41, 5.42, 5.43, 5.44, 5.45, 5.46
+		\label{sec:gradientBoosting}
+
+		Bei AdaBoost wird der Gradient des Verlusts verwendet, um das Mitbestimmungsrecht Herzuleiten. Als Verallgemeinerung davon werden bei \emph{Gradienten Boosting} nicht die Daten gewichtet neu zum Lernen genutzt, sondern es werden die Residuen trainiert. Der Vorgang ist dabei wie folgt:
+		\begin{enumerate}
+			\item Trainiere ein einfaches Regressionsmodell \( \hat{f}^{(1)}(\vec{x}) \).
+			\item Trainiere ein weiteres Regressionsmodell \( \hat{f}^{(2)}(\vec{x}) \) auf den Residuen \( y - \hat{y} \), wobei \(\hat{y}\) die vom Modell vorhergesagten Labels sind. Daraus ergibt sich das folgende Regressionsmodell \( \hat{F}^{(2)}(\vec{x}) = \hat{f}^{(1)}(\vec{x}) + \eta \gamma_2 \hat{f}^{(2)}(\vec{x}) \), wobei \(\gamma_2\) eine Lernrate und \(\eta \in (0, 1]\) eine Regularisierungs-Lernrate ist.
+			\item Anschließend werden weitere Modelle auf den Residuen von \(\hat{F}^{(2)}\) trainiert, bis die Daten gut dargestellt werden.
+		\end{enumerate}
+		Das finale Modell ist dann gegeben als die gewichtete Summe der nacheinander gelernten Modelle:
+		\begin{equation}
+			\hat{F}^{(M)}(\vec{x}) = \hat{f}^{(1)}(\vec{x}) + \eta \sum_{m = 1}^{M} \hat{f}^{(m)}(\vec{x})
+		\end{equation}
+		Je näher die Lernrate \(\eta\) auf \num{1} gesetzt wird, desto schneller geschieht das Lernen und desto höher ist die Gefahr von Überanpassung. Analog kann auch bei AdaBoost eine Lernrate eingeführt werden.
+
+		\subsection{Funktionaler Gradient}
+			Als weitere Verallgemeinerung kann statt der Residuen der negative Gradient einer Verlustfunktion in Richtung des Modells verwendet werden. In diesem Fall werden die nachfolgenden Modelle auf den negativen Wert des Gradienten angepasst. Diese Idee stammt daher, dass der negative (funktionale) Gradient des quadratischen Fehlers gerade die Residuen sind:
+			\begin{equation}
+				L = \frac{1}{2} \sum_{i = 1}^{N} \big( y_i - \hat{f}(\vec{x}_i) \big)
+				\quad\implies\quad
+				\pdv{L}{\hat{f}(\vec{x}_i)} = -\big( y_i - \hat{f}(\vec{x}_i) \big)
+			\end{equation}
+			Analog können andere Gradienten Boosting-Verfahren hergeleitet werden, indem ein anderer Verlust verwendet wird. Beispiele sind unter anderem:
+			\begin{itemize}
+				\item \eqmakebox[gradientBoostingLoss][l]{Fehlklassifikation:}    \( L(y, F) = \mathbbm{1}\!\big[ y = \sign F \big] \)
+				\item \eqmakebox[gradientBoostingLoss][l]{Exponentiell/AdaBoost:} \( L(y, F) = \exp\{ -yF \} \)
+				\item \eqmakebox[gradientBoostingLoss][l]{Binomial:}              \( L(y, F) = \log\!\big(1 + \exp\{ -2yF \}\big) \)
+				\item \eqmakebox[gradientBoostingLoss][l]{Quadratisch/\(L_2\):}   \( L(y, F) = (y - F)^2 \)
+				\item \eqmakebox[gradientBoostingLoss][l]{Stützvektormaschine:}   \( L(y, F) = y (1 - yF) \)
+			\end{itemize}
+			Eine Realisierung von Gradienten Boosting ist \emph{Extreme Gradient Boosting} (xgboost), die Regularisierung etwas mehr betont. Bei der Variante ist auch eine verteilte Berechnung möglich, wodurch der Algorithmus etwas zehn mal schneller ist als auf einer einzelnen Maschine.
+		% end
 	% end
 % end
 

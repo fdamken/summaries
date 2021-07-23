@@ -2,13 +2,13 @@
 
 ## Folien
 
-Fertig/Strukturiert/Gesamt: 258/544/544; 47%/100%/100%
+Fertig/Strukturiert/Gesamt: 310/544/544; 57%/100%/100%
 
 * [X] Kapitel 1: Einleitung (104)
 * [X] Kapitel 2: kNN, Überanpassung, Kreuzvalidierung und Datenanalyse-Zyklus (63)
 * [X] Kapitel 3: Modellselektion und Evaluierung (45)
 * [X] Kapitel 4: Baumbasierte Verfahren (45)
-* [x] Kapitel 5: Ensemble Methoden (52)
+* [X] Kapitel 5: Ensemble Methoden (52)
 * [x] Kapitel 6: Probabilistische Graphische Modelle, Stützvektormethode und Clustering (94)
 * [x] Kapitel 7: Deep Learning; Faltende Neuronale Netzwerke (70)
 * [x] Kapitel 8: Deep Learning; Trainieren von faltenden Neuronalen Netzwerken (41)

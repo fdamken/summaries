@@ -16,3 +16,4 @@ Example:
 summary_root=$PWD
 cd summaries/cs/mandatory/fs4/cnuvs  
 DARK_MODE=1 $summary_root/bin/compile-summary
+```

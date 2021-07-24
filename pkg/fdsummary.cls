@@ -14,6 +14,47 @@
 
 \let\fdsummary@author=\@author
 
+% dark Mode
+\ExplSyntaxOn
+\RequirePackage{pagecolor,xcolor, graphicx} % Used for dark Mode
+\bool_gset_false:N \g_dark_mode_bool % Disable by default
+\newcommand{\enableDarkMode}{ %Command to enable Dark Mode (Color Model has to be selected before LoadClass)
+	\pagecolor{black}
+	\color{white}
+	\selectcolormodel{RGB}
+	\bool_gset_true:N \g_dark_mode_bool
+    % Prefer inverted Logo with dark Mode
+	\IfFileExists{tuda_logo_inverted.pdf}{
+        \PassOptionsToClass{logofile = tuda_logo_inverted}{tudapub}
+    }{} 
+}
+
+% dark Mode Makros
+\prg_new_conditional:Nnn \__ptxcd_if_dark_mode: {T,F,TF} { % Conditional to check if dark Mode is active
+	\bool_if:NTF \g_dark_mode_bool
+	{\prg_return_true:}
+	{\prg_return_false:}
+}
+
+\cs_set_eq:NN\IfDarkModeT \__ptxcd_if_dark_mode:T % Easy dark Mode check for use in document
+\cs_set_eq:NN\IfDarkModeF \__ptxcd_if_dark_mode:F
+\cs_set_eq:NN\IfDarkModeTF \__ptxcd_if_dark_mode:TF
+
+\newcommand{\includeinvertablegraphics}[2][]{% Grafik wird beim Dark Mode automatisch Invertiert (rgb)
+	\IfDarkModeTF{\includegraphics[decodearray={1.0~0.0~1.0~0.0~1.0~0.0},#1]{#2}}{\includegraphics[#1]{#2}}
+}
+\newcommand{\includeinvertablegrayscalegraphics}[2][]{% Grafik wird beim Dark Mode automatisch Invertiert (grayscale)
+	\IfDarkModeTF{\includegraphics[decodearray={1.0 0.0},#1]{#2}}{\includegraphics[#1]{#2}}
+}
+
+% DARK_MODE environment check (enable if DARK_MODE=1)
+\sys_get_shell:nnN { kpsewhich ~ --var-value ~ DARK_MODE } { } \l_dark_mode_env_var_tl
+\tl_trim_spaces:N \l_dark_mode_env_var_tl
+\tl_if_eq:NnT \l_dark_mode_env_var_tl {1} {\enableDarkMode{}}
+\ExplSyntaxOff
+
+\LoadClass[a4paper, fontsize=11pt, accentcolor=3b, class=report, custommargins=false, marginpar=false, pdfa=false]{tudapub}
+
 
 % Packages and commands required for class definition.
 \newread\fdsummary@metadata
@@ -114,16 +155,17 @@
 \colorlet{lstkeywords}{TUDa-9d}
 \colorlet{lstlinenumbers}{TUDa-0c}
 \colorlet{lststrings}{TUDa-2c}
+\colorlet{fgcolor}{.} % If we need the default Font Color but . is currently overwritten
 
 % Description-list styling.
 \SetLabelAlign{parright}{\parbox[t]{\labelwidth}{\raggedleft#1}}
 \setlist[description]{style = multiline, leftmargin = 4cm, align = parright}
 
 % Some stuff for statistics and neural networks.
-\tikzstyle{neuron}        = [circle,fill=black!25,minimum size=17pt,inner sep=0pt]
-\tikzstyle{input neuron}  = [neuron, fill=green!50]
-\tikzstyle{output neuron} = [neuron, fill=red!50]
-\tikzstyle{hidden neuron} = [neuron, fill=blue!50]
+\tikzstyle{neuron}        = [circle,fill=.!25!\thepagecolor,minimum size=17pt,inner sep=0pt]
+\tikzstyle{input neuron}  = [neuron, fill=green!50!\thepagecolor]
+\tikzstyle{output neuron} = [neuron, fill=red!50!\thepagecolor]
+\tikzstyle{hidden neuron} = [neuron, fill=blue!50!\thepagecolor]
 \tikzstyle{annot}         = [text width=4em, text centered]
 \tikzstyle{density}       = [colorDensity, line width = 2pt]
 \tikzset{declare function = { gaussian(\x,\m,\S) = 1/sqrt(2*pi*\S) * e^(-1/(2*\S) * (\x-\m)^2); }}
@@ -155,8 +197,8 @@
     moredelim = **[is][\color{changedpurple}]{@@?}{@@@}
 }
 \lstset{
-    backgroundcolor = \color{white},
-    basicstyle = \ttfamily\scriptsize\color{black},
+    backgroundcolor = \color{\thepagecolor},
+    basicstyle = \ttfamily\scriptsize\color{.},
     breakatwhitespace = true,
     breaklines = true,
     breakautoindent = true,
@@ -311,6 +353,7 @@
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\Q}{\mathbb{Q}}
 \newcommand{\R}{\mathbb{R}}
+\providecommand{\C}{} % Make Sure \C exists
 \renewcommand{\C}{\mathbb{C}}
 % Expectation.
 \newcommand{\E}{\mathbb{E}}

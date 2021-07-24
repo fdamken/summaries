@@ -1328,53 +1328,392 @@
 	% end
 % end
 
-\chapter{Probabilistische Graphische Modelle und Stützvektormethode} % 6.1, 6.23, 6.34
-	\todo{Content}
+\chapter{Probabilistische Graphische Modelle und Stützvektormethode}
+	In diesem Abschnitt werden Probabilistische Graphische Modelle (PGMs), eine allgemeine Methode zur Darstellung von bedingten Wahrscheinlichkeiten, vorgestellt. Als Motivation dient dabei der naive Bayes-Klassifikator, bei dem die exponentielle Komplexität zur Schätzung der Wahrscheinlichkeiten eine starke Einschränkung darstellt. Insbesondere in der statistischen Inferenz, der Wissensgewinnung aus Daten, sind PGMs die Haupttriebkraft, da sie einen strukturierten Weg der Inferenz darstellen.
 
-	\section{Naive Bayes Klassifikator} % 6.2, 6.13, 6.15, 6.16, 6.17, 6.18, 6.19, 6.20, 6.21, 6.22
-		\todo{Content}
+	\section{(Naiver) Bayes-Klassifikator}
+		Der naive Bayes-Klassifikator ist eine Methode zur Klassifizierung, die nicht nur auf der Likelihood aufbaut, sondern zusätzlich eine A-Priori Wahrscheinlichkeit in die Klassifikation mit einbezieht. Dabei steht der Satz von Bayes,
+		\begin{equation}
+			P(y \given \vec{x}) \propto P(\vec{x} \given y) \, P(y),
+		\end{equation}
+		im Mittelpunkt. Dieser stellt einen Zusammenhang zwischen der A-Posteriori Wahrscheinlichkeit \( P(y \given \vec{x}) \), der Likelihood \( P(\vec{x} \given y) \) und der A-Priori Wahrscheinlichkeit \( P(y) \) her. Die Proportionalitätskonstante \( 1 / P(\vec{x}) \) ist dabei nur von \(\vec{x}\) abhängig und somit für unterschiedliche \(y\), die die Klassen darstellen, gleich. Daher kann dieser \iA ignoriert werden.
 
-		\subsection{Beispiel} % 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 6.10, 6.11, 6.14
-			\todo{Content}
+		Zur Klassifikation wird nun die A-Posteriori Wahrscheinlichkeit, \bzw das Produkt aus Likelihood und A-Priori Wahrscheinlichkeit, maximiert:
+		\begin{equation}
+			y^\ast = \arg\max_y \, P(y \given \vec{x}) = \arg\max_y \, P(\vec{x} \given y) \, P(y)
+		\end{equation}
+		Zur Angabe der Konfidenz, also der Wahrscheinlichkeit, dass \(y^\ast\) die korrekte Klasse ist, kann \(P(\vec{x})\) durch Marginalisierung berechnet werden:
+		\begin{equation}
+			P(\vec{x}) = \sum_{i = 1}^{k} P(\vec{x} \given y_i)
+		\end{equation}
+		Zum "Lernen" dieses Klassifikators muss also die Likelihood \( P(\vec{x} \given y) \) geschätzt werden. Dabei nimmt der \emph{naive} Bayes-Klassifikator an, dass die einzelnen Merkmale \( \dotsrange{x_1}{x_n} \), die einen Datenpunkt \(\vec{x}\) ausmachen, stochastisch unabhängig sind. Unter dieser Annahme ist die Likelihood \( P(\vec{x} \given y) \) gegeben durch die Faktorisierung
+		\begin{equation}
+			P(\vec{x} \given y) = \prod_{i = 1}^{n} P(x_i \given y),
+		\end{equation}
+		\dh die einzelnen Verteilungen können einzeln geschätzt werden.
+
+		Der (naive) Bayes-Klassifikator hat dabei drei zentrale Vorteile:
+		\begin{itemize}
+			\item Es kann Vorwissen in Form der A-Priori Wahrscheinlichkeit verwendet werden.
+			\item Unter den getroffenen Annahmen liefert er optimale Ergebnisse im Sinne der Fehlklassifikationswahrscheinlichkeit \( P(y \neq \hat{y}) \).
+			\item Die Konfidenz der Klassifikation kann als Wahrscheinlichkeit angegeben werden.
+		\end{itemize}
+		Die Annahme der Unabhängigkeit der Merkmale, gegeben der Klasse, ist jedoch im Allgemeinen nicht korrekt und oftmals falsch! Der naive Bayes-Klassifikator liefert dennoch oft gute Ergebnisse, diese sind jedoch statistisch nicht immer einwandfrei erklärbar.
+
+		Ein Problem der Schätzung der Klassenwahrscheinlichkeiten aus Daten ist auch, dass dies (für diskrete Merkmale) einer exponentiellen Laufzeit- und Speicherkomplexität unterliegt. Der Bayes-Klassifikator ist also für eine große Anzahl Merkmale nicht geeignet.
+
+		Hinweis: Trotz seines Namens ist der Bayes-Klassifikator keine Methode der Bayes'schen Statistik im Sinne des maschinellen Lernens. Bei Bayes'schen Methoden werden A-Priori Wahrscheinlichkeiten genutzt, um die Parameter eines Modells im Vorhinein einzuschränken, \bspw um die Gewichte eines linearen Klassifikators klein zu halten. Da der Bayes-Klassifikator keine solche Wahrscheinlichkeiten nutzt (und nicht einmal Parameter hat), zählt er nicht zu den Bayes'schen Methoden. Die vorhandene A-Priori Wahrscheinlichkeit trifft direkt Aussagen über die Daten.
+	% end
+
+	\section{Bayes'sche Netzwerke}
+		\emph{Bayes'sche Netzwerke} (oder auch \emph{Bayes-Netzwerke}) sind eine Ausprägung von der allgemeinen Klasse der \emph{Probabilistischen Graphischen Modelle}. Die bestehen aus einem qualitativem Teil, dem Graph, der die Abhängigkeiten zwischen den Zufallsvariablen darstellt, und einem quantitativem Teil, den Mengen der Wahrscheinlichkeitsverteilungen. Zusammengenommen bilden sie eine faktorisierte Wahrscheinlichkeitsverteilung als Produkt aller bedingten Wahrscheinlichkeiten. Dabei repräsentiert eine Kante immer eine Abhängigkeit, \dh geht eine Kante von Zufallsvariable \(X\) zu Zufallsvariable \(Y\), so ist \(Y\) von \(X\) abhängig. Ein Bayes'sches Netz ist dabei immer gerichtet und azyklisch. In \autoref{fig:bayesNetExample} in ein Beispiel für einen solchen Graph gegeben, der die Verbundwahrscheinlichkeit
+		\begin{equation}
+			P(A, B, C, D, E) = P(A) \, P(B) \, P(C \given A, B) \, P(D \given B) \, P(E \given C)
+		\end{equation}
+		charakterisiert. Im Allgemeinen ist die Verbundwahrscheinlichkeit eines Bayes'schen Netzwerks mit den Zufallsvariablen \( \vec{X} = \{ \dotsrange{X_1}{X_n} \} \) gegeben durch das Produkt
+		\begin{equation}
+			P(\vec{X}) = \prod_{i = 1}^{n} P\big( X_i \given \mathrm{Pa}(X_i) \big),  \label{eq:bayesNetJoint}
+		\end{equation}
+		wobei \( \mathrm{Pa}(X_i) \) die Menge der Elternknoten von \( X_i \) darstellt. Im obigen Beispiel ist also \( \mathrm{Pa}(C) = \{ A, B \} \).
+
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[->, every node/.style = { draw, circle, minimum width = 1cm, minimum height = 1cm }]
+				\node (a) {\(A\)};
+				\node [below = 1.5 of a] (b) {\(B\)};
+				\node [right = 1.5 of a] (c) {\(C\)};
+				\node [right = 1.5 of b] (d) {\(D\)};
+				\node [right = 1.5 of c] (e) {\(E\)};
+
+				\draw (a) -> (c);
+				\draw (b) -> (c);
+				\draw (b) -> (d);
+				\draw (c) -> (e);
+			\end{tikzpicture}
+			\caption{Beispiel für ein Bayes'sches Netzwerk mit den Zufallsvariablen \(A\), \(B\), \(C\), \(D\) und \(E\).}
+			\label{fig:bayesNetExample}
+		\end{figure}
+
+		\subsection{Variablenelimination}
+			Die \emph{Variablenelimination} ein Algorithmus zur Berechnung von marginalisierten Abfragen innerhalb eines Bayes'schen Netzwerkes. Die Grundlagen für den Algorithmus bietet die allgemeine Form der Marginalisierung
+			\begin{equation}
+				P(\vec{Y}) = \sum_{X_i \not\in \vec{Y}}^{\text{marg}} P(X_1, \,\cdots\!, X_i, \,\cdots\! X_n),
+			\end{equation}
+			wobei die Summe über eine Zufallsvariable die Summe über die einzelnen Ausprägungen der entsprechenden Zufallsvariable entspricht (dies wird durch das "marg" über der Summe angezeigt). Wird die Faktorisierung der Verbundwahrscheinlichkeit \eqref{eq:bayesNetJoint} eingesetzt,
+			\begin{equation}
+				P(\vec{Y}) = \sum_{X_i \,\not\in\, \vec{Y}}^{\text{marg}} \prod_{j = 1}^{n} P\big( X_j \given \mathrm{Pa}(X_j) \big),  \label{eq:bayesNetMarginal}
+			\end{equation}
+			so sind Summe und Produkt vertauschbar, sofern der entsprechende Summand in einem Faktor nicht auftaucht. Dann kann dieser Faktor vor die Summe gezogen werden: \( \sum_i (2i) = 2 \sum_i i \). Es muss zur Berechnung einer marginalisierten Wahrscheinlichkeit also nicht die gesamte Verbundwahrscheinlichkeit berechnet werden sondern es reicht aus, mit den bedingten Wahrscheinlichkeiten zur arbeiten und nach und nach zu summieren. Durch die Summation wird die entsprechende Variable aus dem Produkt eliminiert, was den Namen des Algorithmus erklärt.
+
+			Trotz dass dieser Algorithmus effizienter ist als die gesamte Verbundwahrscheinlichkeit, ist das Schlussfolgern in Bayes'schen NP-schwer.
+
+			\paragraph{Beispiel}
+				Es wird das Bayes-Netz aus \autoref{fig:variableEliminationExample} betrachtet. Die Verbundwahrscheinlichkeit ist demnach gegeben durch
+				\begin{equation}
+					P(G, A, R, V, K, L, S) = P(G) \, P(A) \, P(R \given G, A) \, P(V \given A) \, P(K \given R, V) \, P(L \given K) \, P(S \given K).
+				\end{equation}
+				Daraus werden nun nacheinander die Variablen eliminiert, um \( P(L) \) zu berechnen. Im ersten Schritt bietet es sich an, die Verbundwahrscheinlichkeit \( P(R, G \given A) \) zu berechnen und \(G\) zu eliminieren:
+				\begin{align}
+						P(R, G \given A) &= P(G) \, P(R \given G, A) &
+						&\implies&
+						P(R \given A) &= \sum_{G}^{\text{marg}} P(R, G \given A) \\
+					\intertext{Anschließend kann \(A\) eliminiert werden:}
+						P(A, R, V) &= P(A) \, P(V \given A) \, P(R \given A) &
+						&\implies&
+						P(R, V) &= \sum_{A}^{\text{marg}} P(A, R, V) \\
+					\intertext{Weiter geht es mit der Elimination von \(R\) und \(V\):}
+						P(K, R, V) &= P(K \given R, V) \, P(R, V) &
+						&\implies&
+						P(K) &= \sum_{R, V}^{\text{marg}} P(K, R, V) \\
+%					\intertext{Num muss von \(S\) eliminiert werden, wobei sich hierbei \num{1} als Faktor ergibt. Dieser Schritt muss dennoch getan werden, damit die Rechnung äquivalent zu \eqref{eq:bayesNetMarginal} ist:}
+%						P(S, K) &= P(S \given K) \, P(K) &
+%						&\implies&
+%						1 &= \sum_{S, K}^{\text{marg}} P(S, k) \\
+					\intertext{Durch die finale Elimination von \(K\) wird \(P(L)\) berechnet:}
+						P(L, K) &= P(L \given K) \, P(K) &
+						&\implies&
+						P(L) &= \sum_{K}^{\text{marg}} P(L, K)
+				\end{align}
+				Diese Berechnung kann auch grafisch dargestellt werden, siehe \autoref{fig:variableElimination}.
+
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}[->, every node/.style = { draw, circle, minimum width = 1cm, minimum height = 1cm }]
+						\node (g) {G};
+						\node [below = 1.5 of g] (a) {A};
+						\node [right = 1.5 of g] (r) {R};
+						\node [right = 1.5 of a] (v) {V};
+						\coordinate [right = 1.5 of r] (needle1);
+						\coordinate [right = 1.5 of v] (needle2);
+						\path (needle1) -- node (k) {K} (needle2);
+						\node [right = 1.5 of needle1] (l) {L};
+						\node [right = 1.5 of needle2] (s) {S};
+
+						\draw (g) -> (r);
+						\draw (a) -> (r);
+						\draw (a) -> (v);
+						\draw (r) -> (k);
+						\draw (v) -> (k);
+						\draw (k) -> (l);
+						\draw (k) -> (s);
+					\end{tikzpicture}
+					\caption{Bayes-Netz als Beispiel zur Variablenelimination.}
+					\label{fig:variableEliminationExample}
+				\end{figure}
+
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}[
+								->,
+								align = center,
+								mult/.style = {
+									draw,
+									rectangle,
+									minimum width = 1cm,
+									minimum height = 1cm,
+									inner sep = 0
+								},
+								marg/.style = {
+									draw,
+									rectangle,
+									minimum width = 1cm,
+									minimum height = 1.5cm,
+									inner sep = 0
+								}
+							]
+						\node [mult                ] (a) {\( \displaystyle  \prod \)};
+						\node [marg, below = 2 of a] (A) {\( \displaystyle  \sum_{G}^{\text{marg}} \)};
+						\node [mult, right = 3 of a] (b) {\( \displaystyle  \prod \)};
+						\node [marg, below = 2 of b] (B) {\( \displaystyle  \sum_{A}^{\text{marg}} \)};
+						\node [mult, right = 3 of b] (c) {\( \displaystyle  \prod \)};
+						\node [marg, below = 2 of c] (C) {\( \displaystyle  \sum_{R, V}^{\text{marg}} \)};
+						\node [mult, right = 3 of c] (d) {\( \displaystyle  \prod \)};
+						\node [marg, below = 2 of d] (D) {\( \displaystyle  \sum_{K}^{\text{marg}} \)};
+						\node [above = 1 of a, xshift = -0.9cm] (a1) {\( P(G) \)};
+						\node [above = 1 of a, xshift = +0.9cm] (a2) {\( P(R \given G, A) \)};
+						\node [above = 1 of b, xshift = -0.75cm] (b1) {\( P(A) \)};
+						\node [above = 1 of b, xshift = +0.75cm] (b2) {\( P(V \given A) \)};
+						\node [above = 1 of c] (c1) {\( P(K \given R, V) \)};
+						\node [above = 1 of d] (d1) {\( P(L \given K) \)};
+						\coordinate [above = 0.5 of a] (ab);
+						\coordinate [above = 0.5 of b] (bb);
+						\coordinate [above = 0.5 of c] (cb);
+						\coordinate [above = 0.5 of d] (db);
+						\path (a) -- node(an){\( P(R, G \given A) \)} (A);
+						\path (b) -- node(bn){\( P(A, R, V) \)} (B);
+						\path (c) -- node(cn){\( P(K, R, V) \)} (C);
+						\path (d) -- node(dn){\( P(L, K) \)} (D);
+						\coordinate [below = 0.5 of A] (An);
+						\coordinate [below = 0.5 of B] (Bn);
+						\coordinate [below = 0.5 of C] (Cn);
+						\coordinate [below = 0.5 of D] (Dn);
+						\node [below = 0 of An] {\( P(R \given A) \)};
+						\node [below = 0 of Bn] {\( P(R, V) \)};
+						\node [below = 0 of Cn] {\( P(K) \)};
+						\node [below = 0 of Dn] {\( P(L) \)};
+						\path (a) -- coordinate(aN) (b);
+						\path (b) -- coordinate(bN) (c);
+						\path (c) -- coordinate(cN) (d);
+
+						\draw (a1) |- (ab) -- (a);
+						\draw (a2) |- (ab) -- (a);
+						\draw (b1) |- (bb) -- (b);
+						\draw (b2) |- (bb) -- (b);
+						\draw (c1) -- (c);
+						\draw (d1) -- (d);
+
+						\draw (a) -- (an) -- (A);
+						\draw (A) -- (An) -| (aN) -- (b);
+						\draw (b) -- (bn) -- (B);
+						\draw (B) -- (Bn) -| (bN) -- (c);
+						\draw (c) -- (cn) -- (C);
+						\draw (C) -- (Cn) -| (cN) -- (d);
+						\draw (d) -- (dn) -- (D);
+						\draw (D) -- (Dn);
+					\end{tikzpicture}
+					\caption{Durchführung der Variablenelimination für das Bayes-Netz aus \autoref{fig:variableEliminationExample}.}
+					\label{fig:variableElimination}
+				\end{figure}
+			% end
 		% end
 	% end
 
-	\section{Bayes'sche Netzwerke} % 6.24, 6.25, 6.26, 6.27, 6.28
-		\todo{Content}
+	\section{Parameterschätzung}
+		Ein Problem von Bayes'schen Netzen ist, dass diese zum Schlussfolgern zunächst erstellt werden müssen (sowohl der qualitative als auch der quantitative Teil). Eine Möglichkeit ist, die Netze durch Experten aufbauen zu lassen, allerdings ist dies oft sehr teuer oder sogar unmöglich. Eine andere Möglichkeit besteht in der Nutzung von Algorithmen des maschinellen Lernens, also der Nutzung von Daten, zum Aufbau des Netzwerkes. Dieser Abschnitt beschäftigt sich dabei mit zwei möglichen Fällen -- vollständige und unvollständige Daten.
+
+		\subsection{Vollständige Daten: Maximum Likelihood}
+			Eine Möglichkeit der Parameterschätzung bei vollständigen Daten sind Maximum Likelihood-Schätzer. Dabei wird angenommen, dass der qualitative Teil des Bayes-Netzes gegeben ist und nur der quantitative Teil, also die Wahrscheinlichkeiten selbst, geschätzt werden müssen. Dazu werden einfach die Häufigkeiten gezählt und die Wahrscheinlichkeiten so abgeschätzt.
+
+			Sei \( \theta_{x_i \subgiven \mathrm{Pa}_i(X)} \) der Parameter, der die Wahrscheinlichkeit \( P\big( X = x_i \given \mathrm{Pa}(X) = \mathrm{Pa}_i(X) \big) \) beschreibt, wobei \(X\) die betrachtete Zufallsvariable, \( \mathrm{Pa}(X) \) die übergeordneten Zufallsvariablen und \(x_i\) und \(\mathrm{Pa}_i(X)\) ihre entsprechenden (\bzw eine der) Ausprägungen sind. Sei dann \( N\big( x_i, \mathrm{Pa}_i(X) \big) \) die Anzahl der Beispiele mit dieser Ausprägung und sei \( N\big( \mathrm{Pa}_i(X) \big) \) die Anzahl der Beispiele mit der Ausprägung der übergeordneten Zufallsvariablen. Dann wird der Parameter \( \theta_{x_i \subgiven \mathrm{Pa}_i(X)} \) durch
+			\begin{equation}
+				\hat{\theta}_{x_i \subgiven \mathrm{Pa}_i(X)} = \frac{N\big( x_i, \mathrm{Pa}_i(X) \big)}{N\big( \mathrm{Pa}_i(X) \big)}
+			\end{equation}
+			abgeschätzt. Dieser Schätzer ist asymptotisch konsistent und kann auch für große Datenmengen berechnet werden.
+		% end
+
+		\subsection{Unvollständige Daten: Expectation Maximization (EM)}
+			In der Praxis kommt es leider häufiger vor, dass nicht alle Daten vorhanden sind. Dies können \bspw einzelne Merkmale sein, die komplett Fehlen oder einzelne Datenpunkte, bei denen nicht alle Merkmale vorhanden sind. Ein Algorithmus, \bzw eine Familie von Algorithmen, um damit umzugehen sind \emph{Expectation Maximization} (EM) Algorithmen. Diese basieren auf der Intuition, dass, wenn die wahren Zählungen bekannt wären, die Parameter direkt bestimmt werden könnten. Die wahren Zählungen sind jedoch nicht bekannt. Daher iteriert der EM-Algorithmus zwischen zwei Schritten, dem E- und dem M-Schritt:
+			\begin{description}
+				\item[E-Schritt] Die Zählungen werden durch statistisches Schlussfolgern vervollständigt, \dh die Daten werden aus einem vorhandenen Modell abgeleitet.
+				\item[M-Schritt] Die vervollständigten Zählungen werden als korrekt angenommen und das Modell wird verbessert.
+			\end{description}
+			Diese zwei Schritte werden bis zur Konvergenz wiederholt.
+		% end
 	% end
 
-	\section{Parameterschätzung bei Vollständigen Daten: Maximum Likelihood} % 6.29, 6.30
-		\todo{Content}
-	% end
+	\section{Diskriminative Ansätze}
+		Der (naive) Bayes-Klassifikator gehört, da die darunterliegenden Verteilungen geschätzt werden, zu den sogenannten \emph{generativen} Modelle. Im Gegensatz dazu stehen die \emph{diskriminativen}, bei denen keine Wahrscheinlichkeitsverteilung, sondern direkt eine Entscheidungsregel, geschätzt wird. Beispielsweise gilt bei einem Bayes-Klassifikator die Entscheidungsregel, dass ein Datenpunkt \(\vec{x}\) der Klasse \(y_1\) angehört, wenn
+		\begin{equation}
+			P(\vec{x} \given y_1) \, P(y_1) > P(\vec{x} \given y_2) \, P(y_2)
+		\end{equation}
+		gilt. Daraus motiviert existiert also ein Schwellenwert \(\vec{x}_0\), bei dem
+		\begin{equation}
+			P(\vec{x}_0 \given y_1) \, P(y_1) = P(\vec{x}_0 \given y_2) \, P(y_2)
+		\end{equation}
+		gilt. Dieser Schwellenwert stellt ein lineares diskriminatives Modell dar, welches zur Klassifikation dient. Bei einem Merkmal ist der Diskriminator ein einfacher Schwellenwert, bei zwei Merkmalen eine Gerade, bei drei Merkmalen eine Ebene und bei \(n\) Merkmalen eine eine \(n\)-dimensionale Hyperebene.
 
-	\section{Parameterschätzung bei Unvollständigen Daten: Expectation Maximization (EM)} % 6.31, 6.32, 6.33
-		\todo{Content}
-	% end
+		Diskriminative Modelle versuchen direkt den Schwellenwert zu finden ohne die darunterliegende Verteilung zu schätzen. Dabei wird, da weder die echte Funktion noch die echte Verteilung bekannt ist, Auch die \emph{empirische Risikominimierung} (ERM) zurück gegriffen. Das bedeutet, vereinfacht, dass eine hinreichend große Lernmenge genommen und der Fehler auf dieser minimiert wird. Dies führt allerdings auf das Problem, dass potentiell mehrere Funktionen für den minimalen Fehler existieren. Außerdem kann immer das Problem der Überanpassung auftreten, sodass verrauschte oder neue Daten zu falschen Ergebnissen führen.
 
-	\section{Diskriminative Ansätze} % 6.35, 6.36, 6.37, 6.40
-		\todo{Content}
+		\subsection{Stützvektormethode}
+			Die \emph{Stützvektormethode} ist ein Weg zur Findung einer optimalen Trennung bei der Klassifikation. Dabei wird ein Ähnlichkeitsmaß \( k(\vec{x}, \vec{x}') \) verwendet, welches zwei Trainingspunkten \(\vec{x}\) und \(\vec{x}'\) vergleicht. Dieses Ähnlichkeitsmaß wird auch \emph{Kernel} oder \emph{Kernfunktion} genannt. Ein Beispiel ist das Skalarprodukt \( k(\vec{x}, \vec{x}') = \braket{\vec{x}}{\vec{x}'} \). Es ist auch möglich, zusätzliche eine Transformation \( \phi : X \to \mathcal{H} \) vom Merkmalsraum \(X\) in einen Vektorraum \(\mathcal{H}\) zu verwenden, \bspw wenn der Merkmalsraum keinen Vektorraum darstellt. Es kann aber auch hilfreich sein, eine (nichtlineare) Transformation anzuwenden, bevor	die Stützvektormethode angewandt wird.
 
-		\subsection{Stützvektormethode} % 6.42, 6.43, 6.44, 6.45, 6.51, 6.52, 6.62
-			\todo{Content}
+			Ein einfacher diskriminativer Ansatz ist \zB die Zuweisung eines neuen Datenpunkts zu der Klasse, derer Durchschnitt am nächsten an dem neuen Punkt liegt. Dazu werden die Klassenzentroiden
+			\begin{align}
+				\vec{c}_+ &= \frac{1}{m_+} \sum_{\substack{i = 1 \\ y_i = +1}}^{n} \vec{x}_i
+				&
+				\vec{c}_- &= \frac{1}{m_-} \sum_{\substack{i = 1 \\ y_i = -1}}^{n} \vec{x}_i
+			\end{align}
+			verwendet, die jeweils den Durchschnitt der Datenpunkte von Klasse \(+1\) und \(-1\) darstellen. Zwischen den beiden Zentroiden liegt dann der Punkt \( \vec{c} = \frac{1}{2} (\vec{c}_+ + \vec{c}_-) \), der zur Vorhersage verwendet werden kann. Dazu wird der Winkel zwischen \( \vec{w} = \vec{c}_+ - \vec{c}_- \) und \( \vec{x} - \vec{c} \) verwendet, wobei \(\vec{x}\) der zuzuweisende Datenpunkt ist:
+			\begin{equation}
+				\hat{y} = \sign \braket{\vec{w}}{\vec{x} - \vec{c}}
+			\end{equation}
+			Intuition: Der Vektor \( \vec{w} \) verbindet genau die Zentroiden \(\vec{c}_+\) und \(\vec{c}_-\), während der Vektor \(\vec{c}\) auf den Mittelpunkt zwischen diesen zeigt. Durch die Verschiebung \( \vec{x} - \vec{c} \) des neuen Datenpunkts wird der Vektor in den Mittelpunkt der beiden Zentroiden verschoben. Das Skalarprodukt \( \braket{\vec{w}}{\vec{x} - \vec{c}} \) ist proportional zum Kosinus des Winkels \(\varphi\) zwischen den Vektoren:
+			\begin{equation}
+				\braket{\vec{w}}{\vec{x} - \vec{c}} \propto \cos(\vec{w},\, \vec{x} - \vec{c}) = \frac{\braket{\vec{w}}{\vec{x} - \vec{c}}}{\lvert \vec{w} \rvert \, \lvert \vec{x} - \vec{c} \rvert}
+			\end{equation}
+			Dabei ist der Kosinus genau dann negativ, wenn der Winkel im Bereich \( (-\pi/2, +\pi/2) \) liegt. Dies entspricht genau der Region, die der Klasse \(-1\) zugewiesen wird. Dieser Ansatz entspricht schon fast der Stützvektormethode, jedoch ist die Wahl des Mittelpunkts zwischen den beiden Klassen zur Zuweisung der Klassen nicht optimal. Der nächste Abschnitt wird sich mit der optimalen Wahl eines Hyperebene beschäftigen, die die beiden Klassen trennt.
 
-			\subsubsection{Optimalität der Hyperebene} % 6.53, 6.54, 6.55, 6.56
-				\todo{Content}
+			\begin{figure}
+				\centering
+				\resizebox{0.5\linewidth}{!}{
+					\begin{tikzpicture}
+						\coordinate (center) at (0:0);
+						\coordinate (cMinus) at (10:2cm);
+						\coordinate (cPlus) at (10+180:2cm);
+						\coordinate (boundary1) at (90+10:1.5cm);
+						\coordinate (boundary2) at (90+10+180:2cm);
+						\coordinate (x) at (90+10+20+180+2:1.5cm);
+						\coordinate (origin) at (-3, -2);
+						\coordinate [above = 3 of origin] (yAxis);
+						\coordinate [right = 6 of origin] (xAxis);
+
+						\draw [->, thick] (origin) -- (yAxis);
+						\draw [->, thick] (origin) -- (xAxis);
+						\draw [->, color = TUDa-3d] (cMinus) -- node[above, pos = 0.75]{\(\vec{w}\)} (cPlus);
+						\draw [->, color = TUDa-11b] (origin) -- node[below]{\(\vec{c}_-\)} (cMinus);
+						\draw [->, color = TUDa-11b] (origin) -- node[above, xshift = -3pt]{\(\vec{c}_+\)} (cPlus);
+						\draw [->, color = TUDa-11b] (origin) -- node[above]{\(\vec{c}\)} (center);
+						\draw [->, color = TUDa-1b] (origin) -- node[below]{\(\vec{x}\)} (x);
+						\draw [->, color = TUDa-9c] (center) -- node[above, pos = 0.8, xshift = 12pt]{\(\vec{x} - \vec{c}\)} (x);
+						\draw [dotted] (boundary1) -- (boundary2);
+						\pic [draw] { angle = x--center--cMinus };
+						\node [xshift = 9pt, yshift = -5pt] at (center) {\(\varphi\)};
+					\end{tikzpicture}
+				}
+				\caption{Illustration eines einfachen Klassifikationsalgorithmus.}
+			\end{figure}
+
+			\subsubsection{Optimalität der Hyperebene}
+				Eine Hyperebene wird als optimal bezeichnet, wenn der Abstand zu dem nächsten positivem/negativem Beispiel maximal ist. existiert für jeden linear trennbaren Datensatz\footnote{An sich müssen die Daten nicht selbst linear trennbar sein. Es ist ausreichend, wenn sie in dem gewählten Feature-Raum, der durch eine Feature-Funktion \(\phi\) aufgespannt wird, linear separierbar sind.} eine eindeutig bestimmte optimale Hyperebene, die es zu finden gilt. Seien \(\vec{w}\) die Gewichte der Hyperebene, \(\vec{x}\) die Merkmale (\bzw die Werte der Features, wenn eine Feature-Transformation verwendet wird) und \(b\) ein Bias. Dann lautet das Modell \( \hat{f}(\vec{x}) = \braket{\vec{w}}{\vec{x}} + b \) und das Vorzeichen des Modells wird als Klassifikation verwendet. Ist \( \hat{f}(\vec{x}_0) = 0 \), so liegt der Datenpunkt \( \vec{x}_0 \) direkt auf der Hyperebene und es kann keine Entscheidung getroffen werden.
+
+				Um nun die optimale Hyperebene zu finden wird verlangt, dass für die am nächsten an der Hyperebene liegenden Beispiele \( \lvert \braket{\vec{w}}{\vec{x}} + b \rvert = 1 \) gilt. Dies ergibt zwei neue parallele Hyperebenen, die durch die nächstliegenden Punkte gehen. Sei nun \( x_- \) ein Punkt auf der Hyperebene \( \braket{\vec{w}}{\vec{x}} + b = -1 \). Da \( \vec{w} \) der Normalvektor zu dieser Hyperebene ist, ist auch \( \vec{w} / \lVert \vec{w} \rVert_2 \) ein Normalvektor zu der Hyperebene, wobei letzterer auf die Länge \num{1} normiert ist. Sei \(d\) die Distanz zwischen der positiven und der negativen Hyperebene. Dann liegt der Punkt \( \vec{x}_+ = \vec{x}_- +	 d \vec{w} / \lVert \vec{w} \rVert_2 \) genau auf der Hyperebene \( \braket{\vec{w}}{\vec{x}} + b = +1 \). Daraus folgt:
+				\begin{gather}
+					\braket{\vec{w}}{\vec{x}_+} + b = 1
+					\quad\iff\quad
+					\braket{\vec{w}}{\vec{x}_- + d \frac{\vec{w}}{\lVert \vec{w} \rVert_2}} + b = 1
+					\quad\iff\quad
+					\braket{\vec{w}}{\vec{x}_-} + d \frac{\braket{\vec{w}}{\vec{w}}}{\lVert \vec{w} \rVert_2} + b = 1 \\
+					\quad\iff\quad
+					\braket{\vec{w}}{\vec{x}_-} + d \frac{\lVert \vec{w} \rVert_2^2}{\lVert \vec{w} \rVert_2} + b = 1
+					\quad\iff\quad
+					\underbrace{\braket{\vec{w}}{\vec{x}_-} + b}_{=\, -1} + d \, \lVert \vec{w} \rVert_2 = 1
+%					\quad\iff\quad
+%					d \lVert \vec{w} \rVert_2 = 2
+					\quad\iff\quad
+					d = \frac{2}{\lVert \vec{w} \rVert_2}
+				\end{gather}
+				Es gilt also \( \lVert \vec{w} \rVert_2 = 2/d \), wobei \(d\) die Breite des optimalen Margins ist.
+
+				Zur Maximierung des Margins \(d\) muss also die Norm der Gewichte, \(\lVert \vec{w} \rVert_2\), maximiert werden. Da jedoch auch die Trainingsdaten richtig klassifiziert werden sollen, müssen die Nebenbedingungen
+				\begin{equation}
+					\braket{\vec{w}}{\vec{x}_i} + b \geq +1
+					\qquad\text{und}\qquad
+					\braket{\vec{w}}{\vec{x}_i} + b \leq -1
+				\end{equation}
+				gelten, wobei die erste für Beispiele mit \(y_i = +1\) und die zweite für Beispiele mit \(y_i = -1\) herangezogen werden. Diese Nebenbedingungen lassen sich kombinieren zu der Bedingung
+				\begin{equation}
+					y_i (\braket{\vec{w}}{\vec{x}_i} + b) - 1 \geq 0.
+				\end{equation}
+				Der nächste Abschnitt wird die Lösung dieses Optimierungsproblems behandeln.
 			% end
 
 			\subsubsection{Optimierungsproblem} % 6.57, 6.58, 6.59, 6.60, 6.61, 6.63
-				\todo{Content}
+				Wie im vorangehenden Abschnitt gezeigt ist das zu lösende Optimierungsproblem für die Stützvektormethode gegeben durch\footnote{Hier wird statt der \num{2}-Norm die halbierte quadrierte \num{2}-Norm verwendet, da dies das optimale \(\vec{w}\) nicht ändert, aber zu einer angenehmeren Lösung des Optimierungsproblems führt. Es muss beispielsweise keine Wurzelfunktion differenziert werden.}:
+				\begin{align}
+					\min_{\vec{w}, b} \quad& \frac{1}{2} \lVert \vec{w} \rVert_2^2 \\
+					\text{sodass} \quad&
+						\begin{aligned}
+							y_i (\braket{\vec{w}}{\vec{x}_i} + b) - 1 &\geq 0, \quad i = \dotsrange{1}{N}
+						\end{aligned}
+				\end{align}
+				Dies ist ein konvexes Optimierungsproblem, dass eindeutig in \( \mathcal{O}(N^3) \) lösbar ist, wobei \(N\) die Anzahl Trainingsbeispiele (und damit Nebenbedingungen) darstellt.
+
+				Statt des primalen Problems ist es jedoch hilfreich, dass duale Probleme zu lösen, da dies mehr Einsichten in die Lösung offenbart. Dazu wird zunächst die Lagrange-Funktion
+				\begin{equation}
+					L_P(\vec{w}, b, \vec{\alpha}) = \frac{1}{2} \lVert \vec{w} \rVert_2^2 - \sum_{i = 1}^{M} \alpha_i \big( y_i (\braket{\vec{w}}{\vec{x}_i} + b) - 1 \big)  \label{eq:svmLagrangian}
+				\end{equation}
+				aufgestellt. Um das duale Problem zu erhalten, wird diese Funktion nach \(\vec{w}\) und \(b\) abgeleitet und die Ableitungen Null gesetzt. Das ergibt:
+				\begin{gather}
+					\pdv{L_P}{\vec{w}} = \vec{w} - \sum_{i = 1}^{N} \alpha_i y_i \vec{x}_i \overset{!}{=} \vec{0}
+					\quad\implies\quad
+					\vec{w}^\ast = \sum_{i = 1}^{N} \alpha_i y_i \vec{x}_i \\
+					\pdv{L_P}{b} = -\!\sum_{i = 1}^{N} \alpha_i y_i \overset{!}{=} 0
+				\end{gather}
+				Werden diese Bedingungen zurück in \eqref{eq:svmLagrangian} eingesetzt, ergibt sich die folgende duale Lagrange-Funktion:
+				\begin{align}
+					L_D(\vec{\alpha})
+						&= \frac{1}{2} \lVert \vec{w} \rVert_2^2 - \sum_{i = 1}^{M} \alpha_i \big( y_i (\braket{\vec{w}}{\vec{x}_i} + b) - 1 \big) \\
+						&= \frac{1}{2} \lVert \vec{w} \rVert_2^2 - \sum_{i = 1}^{M} \alpha_i y_i \braket{\vec{w}}{\vec{x}_i} - b \underbrace{\sum_{i = 1}^{M} \alpha_i y_i}_{=\, 0} + \sum_{i = 1}^{M} \alpha_i \\
+						&= \frac{1}{2} \braket{\vec{w}}{\vec{w}} - \sum_{i = 1}^{M} \alpha_i y_i \braket{\vec{w}}{\vec{x}_i} + \sum_{i = 1}^{M} \alpha_i \\
+						&= \frac{1}{2} \sum_{i = 1}^{N} \sum_{j = 1}^{N} \alpha_i \alpha_j y_i y_j \braket{\vec{x}_i}{\vec{x}_j} - \sum_{i = 1}^{M} \sum_{j = 1}^{N} \alpha_i \alpha_j y_i y_j \braket{\vec{x}_i}{\vec{x}_j} + \sum_{i = 1}^{M} \alpha_i \\
+						&= \sum_{i = 1}^{M} \alpha_i - \frac{1}{2} \sum_{i = 1}^{M} \sum_{j = 1}^{N} \alpha_i \alpha_j y_i y_j \braket{\vec{x}_i}{\vec{x}_j}
+				\end{align}
+				Die Maximierung dieser Funktion \bzgl \(\vec{\alpha}\) unter den Nebenbedingungen \( \alpha_i \geq 0 \), \( i = \dotsrange{1}{N} \) und \( \sum_{i = 1}^{N} \alpha_i y_i = 0 \) liefert die duale Lösung und somit auch die Lösung für das Optimierungsproblem der Stützvektormaschine. Die optimalen Gewichte
+				\begin{equation}
+					\vec{w}^\ast = \sum_{i = 1}^{N} \alpha_i y_i \vec{x}_i
+				\end{equation}
+				sind dabei eine Linearkombination aus den Trainingsdaten. Ist der Lagrange-Multiplikator \( \alpha_i \) für den \(i\)-ten Datenpunkt Null, so liegt dieser innerhalb einer Entscheidungsregion ist der Multiplikator größer Null, so liegt das Beispiel auf einer der beiden Hyperebenen und stellt somit einen \emph{Stützvektor} dar.
 			% end
 		% end
 
-		\subsection{Nicht linear trennbare Daten} % 6.64, 6.65, 6.69
-			\todo{Content}
+		\subsection{Nicht linear trennbare Daten}
+			Es ist möglich, dass die Daten eines Problems nicht linear separierbar sind, \dh es kann keine Hyperebene gefunden werden, die die Daten ohne Verlust in zwei Klassen einteilt. Liegt das Problem nur darin, dass die Daten verrauscht sind, aber größtenteils einer linearen Trennung folgen, so können \emph{Schlupfvariablen} (Englisch: \emph{Slack Variables}) \(\vec{\xi}\) eingeführt werden, die das Problem relaxieren. Das Optimierungsproblem lautet dann
+			\begin{align}
+				\min_{\vec{w}, b, \vec{\xi}} \quad& \frac{1}{2} \lVert \vec{w} \rVert_2^2 + C \sum_{i = 1}^{N} \xi_i \\
+				\text{sodass} \quad&
+				\begin{aligned}
+					y_i (\braket{\vec{w}}{\vec{x}_i} + b) - 1 &\geq 1 - \xi_i, \quad i = \dotsrange{1}{N} \\
+					\xi_i &\geq 0, \quad i = \dotsrange{1}{N}
+				\end{aligned}
+			\end{align}
+			wobei der Faktor \(C\) zur Bestrafung der Variablen eingeführt wird. Ein hoher \(C\)-Faktor führt somit dazu, dass weniger Schlupf erlaubt wird.
 
-			\subsubsection{Transformation in ein lineares Problem} % 6.66, 6.67
-				\todo{Content}
-			% end
-
-			\subsubsection{Kernel-Trick} % 6.68
-				\todo{Content}
+			\subsubsection{Kernel-Trick}
+				Dies ist jedoch keine Lösung für Daten, die tatsächlich nicht linear trennbar sind. Hier gibt es einerseits die Möglichkeit einer Feature-Transformation vom Merkmalsraum \(X\) einen Feature-Raum \(\mathcal{H}\) vorzunehmen mit einer Funktion \( \phi : X \to \mathcal{H} \), andererseits ist es Möglich eine Kernfunktion (Englisch: \emph{Kernel})
+				\begin{equation}
+					k(\vec{x}, \vec{x}') = \braket{\phi(\vec{x})}{\phi(\vec{x}')}
+				\end{equation}
+				zu definieren, die direkt das Skalarprodukt im Feature-Raum berechnet. Dabei ist es allerdings nicht zwingend notwendig, die Transformation in den Feature-Raum tatsächlich zu berechnen! Es reicht aus eine Funktion zu finden, die das Skalarprodukt berechnet. Dafür muss die Funktion die folgende Bedingung erfüllen (\emph{Mercer's Theorem}): Eine Funktion \( k : X \times X \to \R \) ist genau dann eine (positiv definite) Kernfunktion, wenn die Gram-Matrix \( \mat{K} = \big( k(\vec{x}_i, \vec{x}_j) \big)_{i, j = \subdotsrange{1}{N}} \) für alle möglichen Datenpunkte symmetrisch und positiv semi-definit ist. Umgekehrt gilt auch, dass für jede Kernfunktion ein Feature-Raum existiert, in der die Kernfunktion das Skalarprodukt berechnet. Dieser Feature-Raum kann jedoch auch unendlich-dimensional sein. Das bedeutet durch eine Kernfunktion kann eine implizite Transformation in einen hoch- und sogar unendlich-dimensionalen Feature-Raum berechnet werden, in dem die Daten linear separierbar sind! Dies ist bekannt als der \emph{Kernel-Trick}.
 			% end
 		% end
 	% end

@@ -8,13 +8,11 @@
 \def\fdsummary@todoopts{}
 
 \DeclareOption{notodo}{\def\fdsummary@todoopts{disable}}
-\DeclareOption{german}{\def\fdsummary@language{german}}
+\DeclareOption{german}{\def\fdsummary@language{ngerman}}
 \DeclareOption{english}{\def\fdsummary@language{english}}
 \ProcessOptions\relax
 
 \let\fdsummary@author=\@author
-
-\LoadClass[a4paper, fontsize=11pt, accentcolor=3b, class=report, custommargins=false, marginpar=false, pdfa=false]{tudapub}
 
 
 % Packages and commands required for class definition.
@@ -33,9 +31,13 @@
 \RequirePackage{ifthen}
 \ifthenelse{\equal{\fdsummary@language}{none}}
     {\PackageError{fdsummary}{No language given.}{Provide either option 'german' or 'english'.}}
-    {\ifthenelse{\equal{\fdsummary@language}{german}}
+    {\ifthenelse{\equal{\fdsummary@language}{ngerman}}
         {\newcommand{\fdsummary@ifde}[1]{#1} \newcommand{\fdsummary@ifen}[1]{}}
         {\newcommand{\fdsummary@ifen}[1]{#1} \newcommand{\fdsummary@ifde}[1]{}}}
+
+
+% Load the parent class.
+\LoadClass[\fdsummary@language, a4paper, fontsize=11pt, accentcolor=3b, class=report, custommargins=false, marginpar=false, pdfa=false]{tudapub}
 
 
 % Core Packages.

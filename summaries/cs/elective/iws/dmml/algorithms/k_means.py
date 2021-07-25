@@ -1,10 +1,11 @@
-from typing import List
+from typing import Callable, List
 
 import numpy as np
 from tabulate import tabulate
 
 
-def k_means(data: np.ndarray, initial_centroids: np.ndarray, data_labels: List[str], class_labels: List[str], max_iterations: int = 5):
+def k_means(data: np.ndarray, initial_centroids: np.ndarray, data_labels: List[str], class_labels: List[str], dist: Callable[[np.ndarray, np.ndarray], np.ndarray],
+            max_iterations: int = 5):
     assert len(data) == len(data_labels), "length of data does not match length of data labels"
     assert len(initial_centroids) == len(class_labels), "length of initial centroids does not match length of class labels"
 
@@ -22,9 +23,9 @@ def k_means(data: np.ndarray, initial_centroids: np.ndarray, data_labels: List[s
         distances = []
         clusters = {n: [] for n in range(len(initial_centroids))}
         for data_label, data_point in zip(data_labels, data):
-            dist = np.sqrt(((centroids - data_point[np.newaxis, :]) ** 2).sum(axis=1))
-            distances.append(dist)
-            clusters[np.argmin(dist)].append((data_label, data_point))
+            distance = np.array([dist(centroid, data_point) for centroid in centroids])
+            distances.append(distance)
+            clusters[np.argmin(distance)].append((data_label, data_point))
 
         print("\nDistances:")
         print(tabulate(np.asarray(distances).T, headers=data_labels, showindex=class_labels, tablefmt="github"))
@@ -36,6 +37,9 @@ def k_means(data: np.ndarray, initial_centroids: np.ndarray, data_labels: List[s
 
 
 def main():
+    euclidian_dist = lambda a, b: np.sqrt((a - b) ** 2).mean()
+    absolute_dist = lambda a, b: np.abs(a - b).mean()
+
     data = np.array([[2, 8],
                      [2, 5],
                      [1, 2],
@@ -49,7 +53,7 @@ def main():
                                   [8, 4]])
     data_labels = ["1", "2", "3", "4", "5", "6", "7", "8"]
     class_labels = ["A", "B", "C"]
-    k_means(data, initial_centroids=initial_centroids, data_labels=data_labels, class_labels=class_labels)
+    k_means(data, initial_centroids=initial_centroids, data_labels=data_labels, class_labels=class_labels, dist=euclidian_dist)
 
 
 if __name__ == '__main__':

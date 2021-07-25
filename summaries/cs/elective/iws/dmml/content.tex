@@ -1719,19 +1719,191 @@
 	% end
 % end
 
-\chapter{Cluster-Analyse} % 6.70, 6.71, 6.72, 6.81, 6.94
-	\todo{Content}
+\chapter{Cluster-Analyse}
+	In der \emph{Cluster-Analyse} wird versucht, Muster in Daten zu erkennen, ohne dass diese Labels aufweisen. Daher gehören diese Verfahren in die Gruppe der unüberwachten Lernmethoden. Dabei gibt es grundsätzlich zwei Ansätze: Partitionierung und Hierarchie. Bei der Partitionierung werden die Daten direkt in einem Schritt aufgeteilt, bei dem Ansatz der Hierarchie werden viele kleine Partitionierungen vorgenommen und ein Baum aufgebaut, bei dem die Verzweigungen die Cluster und die Blätter die Datenpunkte darstellen. Bei beiden Ansätzen wird, wie schon bei kNN, eine Distanzfunktion \( D(A, B) \) benötigt, die die folgenden Eigenschaften erfüllt:
+	\begin{itemize}
+		\item \eqmakebox[clusteringDist][l]{Symmetrie:}            \( D(A, B) = D(B, A) \)
+		\item \eqmakebox[clusteringDist][l]{Dreiecksungleichung:}  \( D(A, B) + D(B, C) \geq D(A, C) \)
+		\item \eqmakebox[clusteringDist][l]{Positive Definitheit:} \( D(A, B) \geq 0 \) und \( D(A, B) = 0 \text{ gdw. } A = B \)
+		\item \eqmakebox[clusteringDist][l]{Reflexivität:}         \( D(A, A) = 0 \)
+	\end{itemize}
+	Die Bedingung der Reflexivität und \( D(A, B) \geq 0 \) können aus der Definition ausgeklammert werden, da diese bereits aus den restlichen Axiomen folgen. Zur Übersichtlichkeit bleiben sie jedoch inkludiert. Es ist jedoch auch mit einer sehr guten Distanzfunktion nicht klar, wie die Distanz zwischen einem Datenpunkt und einem Cluster an Datenpunkten definiert wird. Dabei gibt es grundlegend vier Ansätze:
+	\begin{description}[leftmargin = 5cm]
+		\item[Single Linkage] Es wird die Distanz zu den Punkten genutzt, die sich (in dem entsprechenden Cluster) am nächsten zum betrachteten Datenpunkt befinden.
+		\item[Complete Linkage] Es wird die Distanz zu den Punkten genutzt, die sich (in dem entsprechenden Cluster) am weitesten entfernt vom betrachteten Datenpunkt befinden.
+		\item[Group Average Linkage] Es wird der Durchschnitt der Distanzen zu allen Punkten (in dem entsprechenden Cluster) genutzt.
+		\item[Wards Linkage] Es wird versucht, die Varianz zwischen den Clustern zu minimieren.
+	\end{description}
+	Dabei beziehen sich die Aussagen "am nächsten" und "am weitesten entfernt" wiederum selbst auf das genutzte Distanzmaß.
 
-	\section{Dendrogramme und Hierarchisches Clustering (Agglomerativ/Aufteilend)} % 6.73, 6.74, 6.75, 6.76, 6.77
-		\todo{Content}
+	In den folgenden Abschnitten werden nun konkrete Verfahren sowie Darstellungsweisen zur Cluster-Analyse vorgestellt. Dabei ist der Erfolg eines Verfahrens hängt sehr stark mit der Auswahl eines guten Distanzmaßes zusammen.
+
+	\section{Dendrogramme und Hierarchische Cluster-Analyse}
+		In einem \emph{Dendrogramm} wird eine vorliegende hierarchische Aufteilung in Cluster als Baum dargestellt. Dabei beschreiben die Blätter einzelne Datenpunkte und die Verzweigungen können als Cluster angesehen werden. Ein einfaches Dendrogramm ist in \autoref{fig:dendrogramm} gezeigt. Für ein Dendrogramm mit \(N\) Blättern, \dh für \(N\) Trainingsbeispiele, gibt es
+		\begin{equation}
+			\frac{(2n - 3)!}{2^{n - 2} (n - 2)!}
+		\end{equation}
+		unterschiedliche Möglichkeiten zur Aufteilung. Da dies viel zu viele sind, um sämtliche Aufteilungen zu testen, müssen Heuristiken verwendet werden. Dazu gibt zwei wesentliche Ansätze:
+		\begin{description}[leftmargin = 2.5cm]
+			\item[Bottom-Up] Zu Beginn befindet sicher jeder Datenpunkt in einem eigenen Cluster. Anschließend werden die beiden ähnlichsten Cluster gesucht und vereinigt, was eine Verzweigung im Dendrogramm darstellt. Dies wird so lange wiederholt, bis es nur noch einen Cluster -- den gesamten Datensatz -- gibt. Diese Ansätze werden auch \emph{agglomerativ} genannt.
+			\item[Top-Down] Zu Beginn befinden sich alle Datenpunkte im gleichen Cluster. Anschließend wird die bestmögliche Trennung gesucht und die Datenpunkte in mehrere Cluster aufgeteilt, \dh es wird eine Verzweigung im Dendrogramm eingeführt. Dies wird so lange wiederholt, bis sich jeder Datenpunkt in einem eigenen Cluster befindet, \dh ein Blatt im Dendrogramm bildet. Diese Ansätze werden auch \emph{aufteilend} genannt.
+		\end{description}
+
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}
+				\coordinate (root);
+				\coordinate [below = 0.5 of root] (a);
+				\coordinate [left = 3 of a] (aL);
+				\coordinate [right = 3 of a] (aR);
+				\coordinate [below = 0.5 of aR] (aRb);
+				\coordinate [left = 2 of aRb] (aRbL);
+				\coordinate [right = 2 of aRb] (aRbR);
+				\coordinate [below = 0.5 of aRbL] (aRbLc);
+				\coordinate [left = 1 of aRbLc] (aRbLcL);
+				\coordinate [right = 1 of aRbLc] (aRbLcR);
+				\coordinate [below = 0.5 of aRbR] (aRbRc);
+				\coordinate [left = 1 of aRbRc] (aRbRcL);
+				\coordinate [right = 1 of aRbRc] (aRbRcR);
+
+				\node [draw, circle, fill = black, inner sep = 3pt, below = 1.5 of aL] (aLb) {};
+				\node [draw, circle, fill = black, inner sep = 3pt, below = 0.5 of aRbLcL] (aRbLcLd) {};
+				\node [draw, circle, fill = black, inner sep = 3pt, below = 0.5 of aRbLcR] (aRbLcRd) {};
+				\node [draw, circle, fill = black, inner sep = 3pt, below = 0.5 of aRbRcL] (aRbRcLd) {};
+				\node [draw, circle, fill = black, inner sep = 3pt, below = 0.5 of aRbRcR] (aRbRcRd) {};
+
+				\draw (root) -- (a);
+				\draw (a) -- (aL);
+				\draw (a) -- (aR);
+				\draw (aR) -- (aRb);
+				\draw (aRb) -- (aRbL);
+				\draw (aRb) -- (aRbR);
+				\draw (aRbL) -- (aRbLc);
+				\draw (aRbLc) -- (aRbLcL);
+				\draw (aRbLc) -- (aRbLcR);
+				\draw (aRbR) -- (aRbRc);
+				\draw (aRbRc) -- (aRbRcL);
+				\draw (aRbRc) -- (aRbRcR);
+
+				\draw (aL) -- (aLb);
+				\draw (aRbLcL) -- (aRbLcLd);
+				\draw (aRbLcR) -- (aRbLcRd);
+				\draw (aRbRcL) -- (aRbRcLd);
+				\draw (aRbRcR) -- (aRbRcRd);
+			\end{tikzpicture}
+			\caption{Beispiel für ein einfaches Dendrogramm.}
+			\label{fig:dendrogramm}
+		\end{figure}
+
+		\subsection{(Vorgetäuschte) Strukturen, Anzahl Cluster und Ausreißer}
+			Die durch ein Dendrogramm erzeugte Struktur innerhalb der Daten kann sowohl Strukturen aufdecken, allerdings auch vortäuschen. In \autoref{fig:clusteringFlags} ist ein Dendrogramm basierend auf den Flaggen von Australien, St. Helena, Anguilla, Südgeorgien, Vereinigtes Königreich, Serbien, Frankreich, Niger, Indien, Irland und Brasilien gegeben. Dabei ist auffällig, dass es eine enge Gruppe um Länder gibt, die aus den ehemaligen britischen Kolonien hervorgegangen sind. Jedoch wird auch eine Nähe zwischen \bspw Niger, Indien und Irland angedeutet, die so nicht existiert.
+
+			Ein Dendrogramm kann über diese Strukturerkennung auch bei anderen Fragestellungen helfen, \bspw der Frage danach, wie viele Cluster es in den Daten gibt: Gibt es zwei (oder mehr) stark getrennte Teilbäume, so legt dies nahe, dass es ebenso viele Cluster in den Daten gibt. Auch legt ein einzelner Ast (wie im Beispiel in \autoref{fig:clusteringFlags} Brasilien) nahe, dass es sich um einen Ausreißer handelt.
+
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[every node/.style = { inner sep = 0 }]
+					\def\picDist{0.2}
+					\def\picHeight{0.71cm}
+					\node [minimum width = 2*\picHeight] (australia) {\(\includegraphics[height=\picHeight]{img/flags/compressed-australia.png}\)};
+					\node [minimum width = 2*\picHeight, right = \picDist of australia] (st-helena) {\(\includegraphics[height=\picHeight]{img/flags/compressed-st-helena.png}\)};
+					\node [minimum width = 2*\picHeight, right = \picDist of st-helena] (anguilla) {\(\includegraphics[height=\picHeight]{img/flags/compressed-anguilla.png}\)};
+					\node [minimum width = 2*\picHeight, right = \picDist of anguilla] (south-georgia) {\(\includegraphics[height=\picHeight]{img/flags/compressed-south-georgia.png}\)};
+					\node [minimum width = 2*\picHeight, right = \picDist of south-georgia] (united-kingdom) {\(\includegraphics[height=\picHeight]{img/flags/compressed-united-kingdom.png}\)};
+					\node [minimum width = 2*\picHeight, right = \picDist of united-kingdom] (serbia) {\(\includegraphics[height=\picHeight]{img/flags/compressed-serbia.png}\)};
+					\node [minimum width = 2*\picHeight, right = \picDist of serbia] (france) {\(\includegraphics[height=\picHeight]{img/flags/compressed-france.png}\)};
+					\node [minimum width = 2*\picHeight, right = \picDist of france] (niger) {\(\includegraphics[height=\picHeight]{img/flags/compressed-niger.png}\)};
+					\node [minimum width = 2*\picHeight, right = \picDist of niger] (india) {\(\includegraphics[height=\picHeight]{img/flags/compressed-india.png}\)};
+					\node [minimum width = 2*\picHeight, right = \picDist of india] (ireland) {\(\includegraphics[height=\picHeight]{img/flags/compressed-ireland.png}\)};
+					\node [minimum width = 2*\picHeight, right = \picDist of ireland] (brazil) {\(\includegraphics[height=\picHeight]{img/flags/compressed-brazil.png}\)};
+
+					\coordinate [above = 1.5 of australia] (n1);
+					\coordinate [above = 0.5 of st-helena] (n2);
+					\coordinate [above = 0.5 of anguilla] (n3);
+					\coordinate [above = 1.0 of south-georgia] (n4);
+					\coordinate [above = 2.0 of united-kingdom] (n5);
+					\coordinate [above = 0.5 of serbia] (n6);
+					\coordinate [above = 0.5 of france] (n7);
+					\coordinate [above = 0.5 of niger] (n8);
+					\coordinate [above = 0.5 of india] (n9);
+					\coordinate [above = 1.0 of ireland] (n10);
+					\coordinate [above = 3.5 of brazil] (n11);
+
+					\draw (n1) -- (australia);
+					\draw (n2) -- (st-helena);
+					\draw (n3) -- (anguilla);
+					\draw (n4) -- (south-georgia);
+					\draw (n5) -- (united-kingdom);
+					\draw (n6) -- (serbia);
+					\draw (n7) -- (france);
+					\draw (n8) -- (niger);
+					\draw (n9) -- (india);
+					\draw (n10) -- (ireland);
+					\draw (n11) -- (brazil);
+					\draw (n2) -- coordinate(n13) (n3);
+					\coordinate [above = 0.5 of n13] (n14);
+					\draw (n14) -- (n13);
+					\draw (n14) -- coordinate(n15) (n4);
+					\coordinate [above = 0.5 of n15] (n16);
+					\draw (n16) -- (n15);
+					\draw (n1) -- coordinate(n17) (n16);
+					\coordinate [above = 0.5 of n17] (n18);
+					\draw (n18) -- (n17);
+					\draw (n18) -- coordinate(n19) (n5);
+					\coordinate [above = 0.5 of n19] (n20);
+					\draw (n20) -- (n19);
+					\draw (n6) -- coordinate(n21) (n7);
+					\coordinate [above = 2.0 of n21] (n22);
+					\draw (n22) -- (n21);
+					\draw (n20) -- coordinate(n27) (n22);
+					\coordinate [above = 0.5 of n27] (n28);
+					\draw (n28) -- (n27);
+					\draw (n8) -- coordinate(n23) (n9);
+					\coordinate [above = 0.5 of n23] (n24);
+					\draw (n24) -- (n23);
+					\draw (n24) -- coordinate(n25) (n10);
+					\coordinate [above = 2.0 of n25] (n26);
+					\draw (n26) -- (n25);
+					\draw (n28) -- coordinate(n29) (n26);
+					\coordinate [above = 0.5 of n29] (n30);
+					\draw (n30) -- (n29);
+					\draw (n30) -- coordinate(n31) (n11);
+					\coordinate [above = 0.5 of n31] (n32);
+					\draw (n32) -- (n31);
+				\end{tikzpicture}
+				\caption{Dendrogramm für einige Flaggen.}
+				\label{fig:clusteringFlags}
+			\end{figure}
+		% end
 	% end
 
-	\section{(Vorgetäuschte) Strukturen, Anzahl Cluster und Ausreißer} % 6.78, 6.79, 6.80
-		\todo{Content}
-	% end
+	\section{Partitionierung und K-Means}
+		Bei Partitionierungsclustering wird jedes Objekt genau einem Cluster zugeordnet und es gibt keine Überlappung oder Hierarchie der Cluster. Ein Algorithmus der dies umsetzt ist \emph{K-Means}, wobei das \(K\) die Anzahl der Cluster im Vorhinein festlegt. Bei diesem Algorithmus werden die Mittelwerte in einem Cluster betrachtet und jeder Datenpunkt dem Cluster zugeordnet, dessen Mittelpunkt am nächsten (\bzgl irgendeines Abstandsmaßes) ist. Anschließend werden die Mittelwerte aus den Zuordnungen neu gebildet und der Algorithmus beginnt von vorn. Dies ist in \autoref{alg:kMean} skizziert.
 
-	\section{Partitionierung und K-Means} % 6.83, 6.84, 6.89, 6.90, 6.91, 6.92, 6.93
-		\todo{Content}
+		Trotz seiner Einfachheit ist K-Means ein sehr mächtiges Clusteringverfahren, welches Strukturen in den Daten findet. Dabei ist ein gutes Clustering mit kleinem \(K\) oftmals besser als ein schlechtes Clustering mit großem \(K\), \dh zum sinnvollen finden von Strukturen müssen nicht immer viele Strukturen gefunden werden. K-Means hat jedoch starke Probleme, wenn die Cluster unterschiedlich groß, dicht oder nicht sphärische sind. Außerdem ergeben sich Probleme bei Ausreißern, leeren Clustern (diese können nicht gefunden werden) und hochdimensionalen Daten, da hier exponentiell viele Daten benötigt werden. Auch ist K-Means stark von der Initialisierung der Zentroide abhängig. Die wichtigsten Probleme von K-Means sind also:
+		\begin{description}[leftmargin = 6cm]
+			\item[Initialisierung]
+				Zur Initialisierung gibt es im Grunde drei Möglichkeiten: Educated Guess, Zufällig und K-Means++. Bei ersterem wird die Initialisierung aufgrund einer Ahnung gesetzt, wo die Zentroide sein könnten. Im zweiten Fall werden die Zentroide rein zufällig gewählt, was zu unterschiedlichen Ergebnissen führen kann. Bei letzterer Methode werden die Zentroide weit von den Daten entfernt initialisiert, was zu besseren Ergebnissen führt als eine zufällige Initialisierung.
+			\item[Clusteranzahl]
+				Werden die Anzahl von Clustern, also der \(K\)-Wert, falsch (zu klein/groß) gewählt, so findet K-Means eventuell kein aussagekräftiges Clustering.
+			\item[Nicht-sphärische Cluster]
+				Wird der euklidische Abstand als Distanzmaß verwendet, so können nur sphärische Cluster gefunden werden. Andere Abstandsmaße können dem entgegen wirken, das Problem bleibt allerdings weiterhin bestehen, nur die Definition von "sphärisch" ändert sich.
+			\item[Cluster mit ungleicher Varianz]
+				K-Means nimmt an, dass alle Cluster die gleiche Varianz vorweisen. Ist dies nicht der Fall, wird K-Means falsche Cluster finden oder die Daten den Clustern falsch zuordnen.
+			\item[Erzwungene Clusterbildung]
+				K-Means wird immer genau \(K\) Cluster finden, auch wenn keine Cluster vorhanden sind. Dieses Phänomen sollte bedacht werden, wenn K-Means verwendet wird.
+		\end{description}
+		Möglichkeiten zur Bekämpfung dieser Schwierigkeiten sind \zB mehrfaches Durchführen des Clusterings mit unterschiedlichen Initialisierungen, "Over-Clustering" und Nachverarbeitung zum Zusammenfügen der Cluster und probabilistische oder Kernel-Varianten. Andere Verfahren zur Cluster-Analyse sind \zB Spectral Clustering, Random Projections, Cluster-Analyse mit Randbedingungen, DBSCAN, Bi-Clustering, LDA und Mean Shift Clustering.
+
+		\begin{algorithm}  \DontPrintSemicolon
+			Initialisiere jeden Zentroid \( \bar{\vec{x}}_i \), \( i = \dotsrange{1}{K} \), \bspw zufällig. \;
+			\While{nicht konvergiert}{
+				Ordne jeden Datenpunkt dem Cluster zu, dessen Mittelwert am nächsten liegt. \;
+				Ersetze die Zentroide durch die Mittelwerte der den Clustern zugeordneten Datenpunkte. \;
+			}
+			\caption{K-Means}
+			\label{alg:kMean}
+		\end{algorithm}
 	% end
 % end
 

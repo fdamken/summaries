@@ -16,7 +16,7 @@
 
 % dark Mode
 \ExplSyntaxOn
-\RequirePackage{pagecolor,xcolor, graphicx} % Used for dark Mode
+\RequirePackage{xcolor, pagecolor, graphicx} % Used for dark Mode
 \bool_gset_false:N \g_dark_mode_bool % Disable by default
 \newcommand{\enableDarkMode}{ %Command to enable Dark Mode (Color Model has to be selected before LoadClass)
 	\pagecolor{black}
@@ -53,7 +53,7 @@
 \tl_if_eq:NnT \l_dark_mode_env_var_tl {1} {\enableDarkMode{}}
 \ExplSyntaxOff
 
-\LoadClass[a4paper, fontsize=11pt, accentcolor=3b, class=report, custommargins=false, marginpar=false, pdfa=false]{tudapub}
+\LoadClass[a4paper, fontsize=11pt, accentcolor=3b, class=report, custommargins=false, marginpar=false, pdfa=false, T1]{tudapub}
 
 
 % Packages and commands required for class definition.
@@ -82,8 +82,6 @@
 
 
 % Core Packages.
-\RequirePackage[T1]{fontenc}
-\RequirePackage[utf8]{inputenc}
 \fdsummary@ifde{\RequirePackage[main = ngerman, english]{babel}}
 \fdsummary@ifen{\RequirePackage[main = english, ngerman]{babel}}
 % Other Packages.

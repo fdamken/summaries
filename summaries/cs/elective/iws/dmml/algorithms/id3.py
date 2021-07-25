@@ -69,7 +69,7 @@ def id3(data: List[Tuple[str, List[str], str]], features: List[Tuple[str, List[s
 
     print(f"\n\nBasiskriteriumswert: {criterion_base_val}")
     print("\nGewichteter Kriteriumswert:")
-    print(tabulate((-1 if criterion[2] else 1) * information_values.reshape((-1, 1)), headers=["Information"], showindex=[name for name, _ in features], tablefmt="github"))
+    print(tabulate((-1 if criterion[2] else 1) * information_values.reshape((-1, 1)), headers=[criterion[0]], showindex=[name for name, _ in features], tablefmt="github"))
     gains = []
     for (feature_name, _), information_value in zip(features, information_values):
         gains.append(information_value - criterion_base_val)
@@ -100,7 +100,7 @@ def id3(data: List[Tuple[str, List[str], str]], features: List[Tuple[str, List[s
 def main():
     # Last item describes if the value should be negated when printing the gain.
     entropy_criterion = ("Entropie", lambda p: -(p * log_allowing_zeros(p)).sum(axis=1), True)
-    gini_criterion = ("Gini-Index", lambda p: (p ** 2).sum(axis=1), False)
+    gini_criterion = ("Gini-Index", lambda p: 1 - (p ** 2).sum(axis=1), False)
 
     data = [
         ("T1", ["Sonnig", "Warm", "Hoch", "Schwach"], "Nein"),
@@ -142,7 +142,7 @@ def main():
     # ]
     classes = ["Ja", "Nein"]
 
-    tree = id3(data, features, classes, feature_indices={features[i][0]: i for i in range(len(features))}, criterion=entropy_criterion, title="Wurzel")
+    tree = id3(data, features, classes, feature_indices={features[i][0]: i for i in range(len(features))}, criterion=gini_criterion, title="Wurzel")
 
     print("\n\nResultierender Baum:")
     print(tree)

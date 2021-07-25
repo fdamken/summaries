@@ -2001,34 +2001,168 @@
 	% end
 % end
 
-\chapter{Data Mining: Apriori und PageRank} % 9.1, 9.2, 9.3, 9.18
-	\todo{Content}
+\chapter{Data Mining: Apriori und PageRank}
+	Im \emph{Data Mining} wird versucht aus großen Datenmengen Wissen zu gewinnen, beispielsweise \emph{Assoziationsregeln} bei Einkäufen. Dabei ist eine Menge von Einkäufen, also eine Menge von Mengen deren Inhalt Produkte sind, gegeben, und es sollen Regeln der Form "Wenn A gekauft wird, dann auch B" gefunden werden.
 
-	\section{Assoziationsregeln} % 9.4, 9.5, 9.8, 9.9, 9.10
-		\todo{Content}
+	Sei \(R\) eine Menge von Objekten, die binäre Werte haben ("wurde gekauft" und "wurde nicht gekauft"). Sei \( t \subseteq R \) eine Transaktion und \(r\) eine Menge von Transaktionen. Dies ist die Menge, die oben informell Beschrieben wurde. Dann sollen alle Regeln der Form \( X \to Y \) mit \( X \subseteq R \), \( Y \subseteq R \) und \( X \cap Y = \emptyset \) gefunden werden, für die gilt:
+	\begin{gather}
+		s(X \to Y) \equiv s(X \cup Y) \coloneqq \frac{\bigl\lvert \{ t \in r \,\vert\, X \cup Y \subseteq t \} \bigr\rvert}{\lvert r \rvert} \geq s_\mathrm{min} \\
+		c(X \to Y) \coloneqq \frac{\bigl\lvert \{ t \in r \,\vert\, X \cup Y \subseteq t \} \bigr\rvert}{\bigl\lvert \{ t \in r \,\vert\, X \subseteq t \} \bigr\rvert} \geq c_\mathrm{min}
+	\end{gather}
+	Dabei ist \(s_\mathrm{min} \in [0, 1] \) die minimale Unterstützung und \( c_\mathit{min} \in [0, 1] \) die minimale Konfidenz. Unterstützung und Konfidenz können dabei verstanden werden als der Anteil der Transaktionen, die der Assoziationsregel \(X \to Y\) genügen, an den Gesamttransaktionen (Unterstützung) und an den Transaktionen, die mindestens die "Prämisse" \(X\) enthalten (Konfidenz). Durch den Anspruch einer minimalen Unterstützung können irrelevante Assoziationsregeln ausgeschlossen werden, da diese nur selten anwendbar sind. Durch die minimale Konfidenz können unsichere Assoziationsregeln ausgeschlossen werden, da die Konklusion nur selten zutrifft.
 
-		\subsection{Binäre Datenbanken} % 9.6, 9.7
-			\todo{Content}
+	\section{Apriori}
+		Der \emph{Apriori-Algorithmus} ist ein Verfahren zur Extraktion von Assoziationsregeln aus einer Menge von Daten. Dabei werden \emph{häufige Mengen}\footnote{Eine Menge ist genau dann häufig, wenn ihre Unterstützung über dem Unterstützungs-Minimum \(s_\mathrm{min}\) liegt.} in einer Menge \( L_k \subseteq R^k \) gesammelt, die die häufigen Mengen mit \(k\) Elementen enthält. Dabei gilt:
+		\begin{itemize}
+			\item Ist eine Menge häufig, so sind auch alle ihre Teilmengen häufig (Anti-Monotonie).
+			\item Ist eine Menge nicht häufig, so sind auch alle Obermengen nicht häufig (Monotonie).
+		\end{itemize}
+		Der Kern des Algorithmus ist nun die Kandidatengenerierung, um aus einer Menge \(L_k\) die Menge \(L_{k + 1}\) zu bilden. Dazu werden alle Mengen aus \(L_k\), die \(k - 1\) Objekte gemeinsam haben, erschöpfend vereinigt, und bilden anschließend die Menge \(L_{k + 1}\). Daraus folgt für eine Menge \( X \in L_k \), dass alle echten Teilmengen \( S_i \subsetneq X \) auch ein \(L_{k - 1}\) liegen, \dh \( S_i \in L_{k - 1} \).
+
+		Zusammengesetzt besteht der Apriori-Algorithmus also aus den Schritten der Kandidatenerzeugung, die aus der Kandidatengenerierung und -kürzung, \dh entfernen der Kandidaten, welche die Anforderung an die Unterstützung nicht erfüllen, besteht, sowie der Regelerzeugung aus den häufigen Mengen.
+
+		Bei der Generierung der häufigen Mengen wird zunächst aus der Menge \(L_k\) eine Kandidatenmenge \(C_{k + 1}\) erstellt, die anschließend im Kürzungsschritt zu der Menge \(L_{k + 1}\) weiter verarbeitet wird. Dieser Schritt ist in \autoref{alg:aprioriFrequentSets} skizziert. Zusammen mit der Regelerzeugung in \autoref{alg:aprioriRuleGen} ergibt dies den Apriori-Algorithmus in \autoref{alg:apriori}.
+
+		Trotz seiner Einfachheit hat der Apriori-Algorithmus allerdings gravierende Nachteile: Im schlimmsten Fall ist der exponentiell in \(R\), da möglicherweise alle Teilmengen gebildet werden. In der Praxis ist dies aber oft nicht der Fall und die Beschneidung für die Mindestunterstützung und -konfidenz reicht meist aus. Des weiteren liefert Apriori unheimliche viele, stark redundante, Regeln. Dies erschwert die Interpretierbarkeit (Beispiel: Kaufen alle Kunden Produkt \(A\), kaufen auch Kunden, die Produkt \(B\) kaufen, Produkt \(A\)).
+
+		\begin{algorithm}  \DontPrintSemicolon
+			\SetKwProg{Fn}{Function}{:}{}
+
+			\Fn{\(\textit{Erzeuge-Kandidaten}(L_k)\)}{
+				\KwIn{Häufige Mengen \(L_k\)}
+				\KwOut{Kandidatenmenge \(C_{k + 1}\)}
+				\tcp{Initialisiere die Kandidatenmenge:}
+				\( \displaystyle  C_{k + 1} \gets \{\} \) \;
+				\ForEach{\( I_1, I_2 \in L_k \), die \(k - 1\) Objekte gemeinsam haben}{
+					Seien \( \{ \dotsrange{i_1}{i_{k - 1}} \} \) die gemeinsamen Objekte von \( I_1 \) und \( I_2 \). \;
+					Seien \( i_k \) und \( i_k' \) die unterschiedlichen Objekte von \( I_1 \), \bzw \( I_2 \). \;
+					\tcp{Konstruiere den potentiellen neuen Kandidaten:}
+					\( \displaystyle  I \gets \{ \dotsrange{i_1}{i_{k - 1}}, i_k, i_k' \} \) \;
+					\If{alle \(k\)-elementigen Teilmengen von \(I\) in \(L_k\) sind}{
+						\tcp{Erweitere die Kandidatenmenge:}
+						\( \displaystyle  C_{k + 1} \gets C_{k + 1} \cup { I } \) \;
+					}
+				}
+				\Return \( \displaystyle  C_{k + 1} \) \;
+			}
+
+			\Fn{\(\textit{Kürze}(C_{k + 1}, r, s_\mathrm{min})\)}{
+				\KwIn{Kandidatenmenge \(C_{k + 1}\), Transaktionsmenge \(r\), Mindestunterstützung \(s_\mathrm{min}\)}
+				\KwOut{Häufige Mengen \(L_{k + 1}\)}
+				\tcp{Initialisiere die häufigen Mengen:}
+				\( \displaystyle  L_{k + 1} \gets \{\} \) \;
+				\ForEach{\( I \in C_{k + 1} \)}{
+					\tcp{Berechne die Unterstützung:}
+					\( \displaystyle  s \gets \frac{\bigl\lvert \{ t \in r \,\vert\, I \subseteq t \} \bigr\rvert}{\lvert r \rvert} \) \;
+					\If{\( s \geq s_\mathrm{min} \)}{
+						\tcp{Nimm den Kandidaten in die häufigen Mengen auf:}
+						\( \displaystyle  L_{k + 1} \gets L_{k + 1} \cup \{ I \} \) \;
+					}
+				}
+				\Return \( \displaystyle  L_{k + 1} \) \;
+			}
+
+			\Fn{\(\textit{Häufige-Mengen}(R, r, s_\mathrm{min})\)}{
+				\KwIn{Objektgesamtheit \(R\), Transaktionsmenge \(r\), Mindestunterstützung \(s_\mathrm{min}\)}
+				\KwOut{Häufige Mengen}
+				\tcp{Initialisiere die häufigen Mengen mit allen einelementigen Kandidaten:}
+				\( \displaystyle  C_1 \gets \bigcup_{i \,\in\, R} i \) \;
+				\( \displaystyle  L_1 \gets \textit{Kürze}(C_1, r, s_\mathrm{min}) \) \;
+				\( \displaystyle  k \gets 1 \) \;
+				\While{\( L_k \neq \emptyset \)}{
+					\( \displaystyle  C_{k + 1} \gets \textit{Erzeuge-Kandidaten}(L_k) \) \;
+					\( \displaystyle  L_{k + 1} \gets \textit{Kürze}(C_{k + 1}, r, s_\mathrm{min}) \) \;
+					\( \displaystyle  k \gets k + 1 \) \;
+				}
+				\Return \( \displaystyle  \bigcup_{i = 1}^{k} L_k \)
+			}
+
+			\caption{Apriori: Berechnung der häufigen Mengen}
+			\label{alg:aprioriFrequentSets}
+		\end{algorithm}
+
+		\begin{algorithm}  \DontPrintSemicolon
+			\SetKwProg{Fn}{Function}{:}{}
+			\Fn{\(\textit{Erzeuge-Regeln}(L, c_\mathrm{min})\)}{
+				\KwIn{Häufige Mengen \(L\), Mindestkonfidenz \(c_\mathrm{min}\)}
+				\KwOut{Assoziationsregeln \(\mathcal{H}\)}
+				\tcp{Initialisiere die Assoziationsregeln:}
+				\( \displaystyle  \mathcal{H} = \{\} \) \;
+				\ForEach{\( I \in L \)}{
+					\tcp{Erzeuge alle einelementigen Konklusion:}
+					\( \displaystyle  H_1 \gets \{\} \) \;
+					\ForEach{\( i \in I \)}{
+						\If{\( c(I \setminus \{ i \} \to \{ i \}) \geq c_\mathrm{min} \)}{
+							\( \displaystyle  H_1 \gets H_1 \cup \big\{ \{ i \} \big\} \) \;
+						}
+					}
+					\tcp{Nutze die Kandidatengenerierung zur Generierung der nächsten Konklusionen:}
+					\( \displaystyle  k \gets 1 \) \;
+					\While{\( H_k \neq \emptyset \)}{
+						\( \displaystyle  H_{k + 1} \gets \textit{Erzeuge-Kandidaten}(H_k) \) \;
+						\ForEach{\( h \in H_{k + 1} \)}{
+							\If{\( c(I \setminus h \to h) \geq c_\mathrm{min} \)}{
+								\tcp{Entferne \(h\) aus \(H_{k + 1}\):}
+								\( \displaystyle  H_{k + 1} \gets H_{k + 1} \setminus \{ h \} \) \;
+							}
+						}
+						\( \displaystyle  k \gets k + 1 \) \;
+					}
+					\tcp{Erzeuge die Assoziationsregeln mit Prämisse:}
+					\( \displaystyle  H = \bigcup_{i = 1}^{k} H_k \) \;
+					\ForEach{\( h \in H \)}{
+						\( \displaystyle  \mathcal{H} \gets \mathcal{H} \cup \big\{ (I \setminus h) \to h \big\} \) \;
+					}
+				}
+				\Return \( \displaystyle  \mathcal{H} \) \;
+			}
+			\caption{Apriori: Regelerzeugung}
+			\label{alg:aprioriRuleGen}
+		\end{algorithm}
+
+		\begin{algorithm}  \DontPrintSemicolon
+			\KwIn{Objektgesamtheit \(R\), Transaktionsmenge \(r\), Mindestunterstützung \(s_\mathrm{min}\), Mindestkonfidenz \(c_\mathrm{min}\)}
+			\KwOut{Assoziationsregeln \(\mathcal{H}\)}
+			\( \displaystyle  L \gets \textit{Häufige-Mengen}(R, r, s_\mathrm{min}) \) \;
+			\( \displaystyle  \mathcal{H} \gets \textit{Erzeuge-Regeln}(L, c_\mathrm{min}) \) \;
+			\Return \( \displaystyle  \mathcal{H} \) \;
+			\caption{Apriori}
+			\label{alg:apriori}
+		\end{algorithm}
+
+		\subsection{Regelbewertung}
+			Ein relevanter Teil bei der Findung von Assoziationsregeln ist die Bewertung dieser. Dabei baut Apriori auf die Unterstützung und die Konfidenz auf, letzte erfüllt aber eine Ansprüche nicht, die an eine sinnvolle Bewertungsmetrik gestellt werden sollten:
+			\begin{itemize}
+				\item Unabhängige Mengen (\dh Prämisse und Konklusion sind unabhängig) sollten mit \num{0} bewertet werden.
+				\item Die Bewertung einer Regel sollte höher werden, wenn die Regel mehr Belege hat.
+				\item Die Bewertung einer Regel sollte niedriger werden, wenn die Regel weniger Belege hat.
+			\end{itemize}
+			% TODO: Apriori: Regelbewertung: Statistisches Maß, Formale Definition; 9.20, 9.21, 9.22, 9.23
 		% end
 	% end
 
-	\section{Apriori Algorithmus} % 9.11, 9.14, 9.15, 9.16, 9.17, 9.19
-		\todo{Content}
-	% end
+	\section{Web Mining}
+		Das Internet, \bzw konkret das World Wide Web, haben im Bereich des Data Mining zu vielen interessanten Forschungsfragen und Analysezielen geführt. Das ist zum Beispiel die Indexierung von Webseiten zur Suche, Analyse von Klick-Strömen, Ko-Zitations-Netzwerke, finden häufiger Muster in Informationsquellen und das Ranking von Webseiten. Dabei kann das Web als Graph interpretiert werden, dessen Knoten Webseiten und Kanten Verlinkungen sind.
 
-	\section{Regelbewertung} % 9.20, 9.21, 9.22, 9.23
-		\todo{Content}
-	% end
+		\subsection{PageRank}
+			Eine besonders wichtige spielt das Ranking und die Bewertung von Webseiten, \bspw um die Reihenfolge der Suchergebnisse bei einer Suchmaschine festzulegen. Dabei geht es insbesondere um die Feststellung, wann eine Seite besonders \emph{wichtig} ist. Eine Seite, die besonders viele andere Seiten verlinkt, heißt dabei \emph{expansiv} und eine Seite, die von besonders vielen anderen Seiten verlinkt wird heißt \emph{beliebt}. Es kann nun die Frage gestellt werden, mit welcher Wahrscheinlichkeit ein Nutzer auf die Seite \(i\) kommen würde, wenn er auf einer zufälligen Seite startet und den folgenden Regeln folgt:
+			\begin{itemize}
+				\item Mit der Wahrscheinlichkeit \(\alpha\) folgt der Nutzer einer Kante der aktuellen Seite (Übergangswahrscheinlichkeit).
+				\item Mit der Wahrscheinlichkeit \(1 - \alpha\) springt er auf eine zufällige Seite unter der Annahme, dass die Seiten gleich verteilt sind (Sprungwahrscheinlichkeit).
+			\end{itemize}
+			Der Rang einer Seite nach dem \emph{PageRank} (benannt nach dem Erfinder Larry Page) ist dabei der Anteil von \(i\) an den besuchten Knoten.
 
-	\section{Web Mining} % 9.24, 9.25
-		\todo{Content}
+			Zur Berechnung des PageRank wird eine Matrix \( \mat{M} \) aufgebaut, bei der der Eintrag \(M_{ij}\) die Wahrscheinlichkeit angibt, von Knoten \(j\) zum Knoten \(i\) über eine Kante überzugehen (Übergangswahrscheinlichkeit). Sei \( n(j) \) die Anzahl von \(j\) ausgehender Kanten, dann gilt \( M_{ij} = 1 / n(j) \). Eine zweite \(N \times N\)-Matrix \( \begin{bmatrix} 1/N \end{bmatrix} \) mit den Einträgen \(1/N\) gibt die Sprungwahrscheinlichkeiten für \(N\) Webseiten an. Die Wahrscheinlichkeit, eine Webseite zu besuchen, ist dann die Summe von Sprung- und Übergangswahrscheinlichkeit, zusammengefasst in der Matrix \(\mat{M}'\):
+			\begin{equation}
+				\mat{M}' = (1 - \alpha) \begin{bmatrix} 1/N \end{bmatrix} + \alpha \mat{M}
+			\end{equation}
+			Der PageRank ist dann der rekursive Algorithmus
+			\begin{equation}
+				\text{Rang}(i) = \frac{1 - \alpha}{N} + \alpha \sum_{j \,\in\, \{ (i, j) \}} \frac{\text{Rang}(i)}{n(j)},
+			\end{equation}
+			wobei mit \( j \in \big\{ (i, j) \big\} \) die Nachbarn von \(i\) gemeint sind. Die Lösungen dieses Algorithmus sind durch den Eigenvektor von \(\mat{M}'\) mit dem Eigenwert \( \lambda = 1 \) gegeben. Dieser Eigenwert ist nach dem Satz von Perron-Frobenius der eindeutig bestimmte Eigenwert, der (betragsmäßig) größer als alle anderen Eigenwerte ist.
 
-		\subsection{Ranking von Webseiten} % 9.26
-			\todo{Content}
-		% end
-
-		\subsection{PageRank} % 9.27, 9.28, 9.29, 9.30
-			\todo{Content}
+			Ein großer Nachteil des PageRank ist, dass nicht das Verhalten des Nutzers, sondern die Konfiguration der Webseite, also der Wille des Webseitenbetreibers, ausschlaggebend für das Ranking ist. So können sich große Firmen oder Webseitenbetreiber zum Beispiel Verlinkungen einkaufen, um den PageRank zu erhöhen.
 		% end
 	% end
 % end

@@ -2,7 +2,7 @@
 
 ## Folien
 
-Fertig/Strukturiert/Gesamt: 404/544/544; 74%/100%/100%
+Fertig/Strukturiert/Gesamt: 434/544/544; 80%/100%/100%
 
 * [X] Kapitel 1: Einleitung (104)
 * [X] Kapitel 2: kNN, Überanpassung, Kreuzvalidierung und Datenanalyse-Zyklus (63)
@@ -12,7 +12,7 @@ Fertig/Strukturiert/Gesamt: 404/544/544; 74%/100%/100%
 * [X] Kapitel 6: Probabilistische Graphische Modelle, Stützvektormethode und Clustering (94)
 * [x] Kapitel 7: Deep Learning; Faltende Neuronale Netzwerke (70)
 * [x] Kapitel 8: Deep Learning; Trainieren von faltenden Neuronalen Netzwerken (41)
-* [x] Kapitel 9: Apriori und Page Rank (30)
+* [X] Kapitel 9: Apriori und Page Rank (30)
 
 
 ## Struktur

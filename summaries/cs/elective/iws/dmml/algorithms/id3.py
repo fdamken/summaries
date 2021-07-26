@@ -142,7 +142,7 @@ def main():
     # ]
     classes = ["Ja", "Nein"]
 
-    tree = id3(data, features, classes, feature_indices={features[i][0]: i for i in range(len(features))}, criterion=gini_criterion, title="Wurzel")
+    tree = id3(data, features, classes, feature_indices={features[i][0]: i for i in range(len(features))}, criterion=entropy_criterion, title="Wurzel")
 
     print("\n\nResultierender Baum:")
     print(tree)

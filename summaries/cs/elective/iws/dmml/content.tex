@@ -39,6 +39,8 @@
 		Nun betrat das moderne maschinelle Lernen mit dem \emph{statistischen} maschinellen Lernen das Feld, welches durch komplizierte statistische Modelle angetrieben und motiviert wurde. Die Ergebnisse haben sehr viele Erfolge gebracht, es gab jedoch kein großes Pressecho. Dies könnte unter anderem daher kommen, dass der Grundsatz der Forschung quantitative und messbare Ergebnisse waren und keine großen Ansprüche zur "Intelligenz" gestellt wurden. Darauf folgte die Ära des tiefen Lernens, also neuronale Netzwerke mit "vielen" Schichten, welches ein große Aufmerksamkeit von der Presse und Politik bekommt.
 
 		\subsection{Das Perzeptron}
+			\label{subsec:perceptron}
+
 			Das von Frank Rosenblatt entwickelte \emph{Perzeptron} war das erste Modell, welches durch das menschliche Gehirn motiviert war, ein künstliches neuronales Netzwerk. Dabei werden viele kleine und einfache Einheiten (Neuronen) zu einem größeren Modell verbunden und das Lernen findet durch Anpassung der Verbindungsstärken (Synapsen) und -gewichten statt. Eine Darstellung eines solchen Perzeptrons ist in \autoref{fig:perceptron} gegeben. Dabei werden die Eingaben in der Neuronenschicht gewichtet und die Neuronen \emph{feuern}. Diese Ausgabe wird anschließend an das Ausgabeneuron weitergegeben, welches die \emph{Aktivierungen} akkumuliert und, sofern der akkumulierte Wert über einen gewissen Schwellenwert liegt, feuert. So kann eine binäre Klassifikation durchgeführt werden.
 
 			Zum trainieren eines Perzeptrons werden bekannte Daten verwendet, in das Perzeptron eingegeben und die vorhergesagten Ergebnisse mit den echten verglichen. War die Vorhersage korrekt, wird nicht geändert. War die Vorhersage jedoch falsch, so werden die Verbindungsstärken so geändert, dass das Richtige vorhergesagt wird. Dies wird so lange wiederholt, bis keine Fehler mehr gemacht werden.
@@ -867,7 +869,7 @@
 			\end{equation}
 		% end
 
-		\subsection{Minimale Beschreibungslänge}  % TODO: Besser verstehen!
+		\subsection{Minimale Beschreibungslänge}  % TODO: Minimale Beschreibungslänge: Verstehen!
 			Einen anderen Weg zur Bewertung von Modellen stellt die \emph{Minimale Beschreibungslänge} (Englisch: \emph{Minimum Description Length}, MDL) dar. Dabei wird die Entropie der Modellverteilung \( P(\mathcal{T} \given \mathcal{M}_m, \theta_m) \) verwendet. Das Kriterium der minimalen Beschreibungslänge lautet dann
 			\begin{equation}
 				\mathit{MDL}(\mathcal{M}_m) = -\log P(\mathcal{T} \given \mathcal{M}_m, \theta_m) - \log P(\theta_m \given \mathcal{M}_m),
@@ -996,7 +998,7 @@
 		% end
 	% end
 
-	\section{Vergleichen von Algorithmen}  % TODO: Folie 3.30 verstehen.
+	\section{Vergleichen von Algorithmen}  % TODO: Vergleichen von Algorithmen: Folie 3.30 verstehen.
 		Um Algorithmen fair zu vergleichen, kann die Nutzung eines statistischen Tests hilfreich sein, da die bereits vorgestellten Maße häufig trügerisch sein können. Bei einem statistischen Test wird eine \emph{Nullhypothese} aufgestellt, welche dann durch ein stochastisches Verfahren verworfen oder akzeptiert wird. In diesem Abschnitt wird ein Vorzeichen-Test vorgestellt, der für eine Nullhypothese der Form "A und B sind gleich" geeignet ist. Eine Beispielhypothese adressiert die Wahrscheinlichkeiten für Kopf (A) und Zahl (A) bei einem Münzwurf. In diesem Fall ist die Nullhypothese "Die Münze ist fair, \dh \( P(A) = P(B) \)." Ähnlich kann die Nullhypothese formuliert werden als "Die Algorithmen A und B sind gleich". Insgesamt werden \(N\) Versuche durchgeführt, \(i\) mal gewinnt A und \(N - i\) mal gewinnt B.
 
 		Nach der Binomialverteilung mit \(p = 0.5\) ist die Wahrscheinlichkeit für einen \(i\)-fachen Erfolg gegeben durch
@@ -1907,97 +1909,243 @@
 	% end
 % end
 
-\chapter{Deep Learning und Faltende Neuronale Netzwerke} % 7.1, 7.5, 7.6, 7.7, 7.67, 7.68, 7.69, 8.41
+\chapter{Tiefes Lernen und Faltende Neuronale Netzwerke}
 	\label{c:deepLearning}
 
-	\todo{Content}
+	Dieses Kapitel behandelt das \emph{tiefe Lernen}, eine Art des maschinellen Lernens bei dem sogenannte \emph{tiefe Neuronale Netzwerke} verwendet werden. Diese bauen auf der einfachen Idee des Perzeptrons (siehe \autoref{subsec:perceptron}) auf und schichten mehrere Perzeptron-Modelle aufeinander. Dieses Kapitel wird nur sehr knapp in die Thematik einführen, eine intensivere Behandlung ist in der Zusammenfassung von "Deep Learning: Architectures and Methods"\footnote{\url{https://frisp.org/cs}} zu finden.
 
-	\section{Modellierung eines Neurons} % 7.8, 7.12, 7.53
-		\todo{Content}
+	Die Idee der mehrschichtigen Modelle ist, dass Hierarchien von Features gelernt werden. Dabei dient also jede Schicht als Feature-Transformation in einen anderen Raum, auf dem dann die nächsten Schichten besser klassifizieren können. Dabei werden zwischen den Schichten nichtlineare Funktionen, die sogenannten \emph{Aktivierungsfunktionen}, eingebaut, um eine bessere Vorhersagekraft zu erreichen. Ein einzelnes Neuron mit den Eingabewerten \( \dotsrange{x_1}{x_m} \) aus der vorherigen Schicht, den Gewichten \( \dotsrange{w_1}{w_m} \), einem Bias \(b\) und der Aktivierungsfunktion \(f\) wird durch
+	\begin{equation}
+		a = f\Bigg(\! \sum_{i = 1}^{m} w_i x_i + b \!\Bigg) = f\big( \vec{w}^T \vec{x} + b \big)
+	\end{equation}
+	beschrieben, wobei \(a\) die \emph{Aktivierung} des Neurons genannt wird. Eine Schicht besteht üblicherweise aus mehreren Neuronen, was für eine Schicht mit \(n\) Neuronen durch
+	\begin{equation}
+		\vec{a} = \vec{f}\big( \mat{W}^T \vec{x} + \vec{b} \big)
+	\end{equation}
+	kompakt dargestellt werden kann. Dabei ist der Bias \( \vec{b} \in \R^n \) nun ein Vektor und die Gewichte \( \mat{W} \in \R^{m \times n} \) eine Matrix. Die Aktivierungsfunktion \(\vec{f} : \R^n \to \R^n\) ist in den meisten Fällen Komponentenweise zu verstehen (\zB bei Sigmoid, ReLU, Tanh), es gibt aber auch Aktivierungsfunktionen, die die Informationen aller Neuronen kombinieren (\zB Softmax).
+
+	\section{Faltungsschichten}
+		Werden durch ein neuronales Netzwerk Bilder verarbeitet, so ist die Nutzung von voll verbundenen Schichten (Englisch: \emph{Fully-Connected Layers}), bei denen jeder Eingabedatenpunkt mit jedem Neuron verbunden ist, oftmals zu aufwendig und nicht sinnvoll. Eine alternative Architektur sind \emph{Faltungsschichten} (Englisch: \emph{Convolutional Layers}), die wesentlich weniger Parameter haben und somit einfacher zu trainieren sind. Eine Faltungsschicht besteht dabei aus mehreren Filtern, die durch Kernel aus der Bildverarbeitung dargestellt werden. Dabei werden die Bilder nicht wie bei voll verbundenen Schichten flach, also eindimensional, dargestellt, sondern es werden die räumlichen Dimensionen (Höhe und Breite) sowie die \emph{Kanäle}, \bspw Farben, beachtet.
+
+		Ein Filter wird durch so viele \( F_x \times F_y \)-Matrizen dargestellt wie die Eingabe Kanäle hat. Dieser Filter wird anschließend Pixel für Pixel über das Bild geschoben. Es ist auch möglich den Filter nicht nur um einen, sondern mehrere, Pixel zu verschieben. Diese Eigenschaft wird durch den \emph{Stride} \( S_x \)/\( S_y \) charakterisiert und kann für die \(x\)- \bzw \(y\)-Richtung (\dh die Breite- \bzw die -Höhe) unterschiedlich sein. Da durch dieses verschieben die Daten kleiner werden und dies nicht immer gewünscht ist, kann ein Padding mit Nullen am Rand durchgeführt werden, \dh das Bild wird um \(P_x\)/\(P_y\) Nullen links, rechts, oben und unten erweitert. Die Breite, \bzw Höhe, des Ausgabevolumens ist dann
+		\begin{equation}
+			O_{x/y} = \frac{I_{x/y} - F_{x/y} + 2P_{x/y}}{S_{x/y}} + 1,
+		\end{equation}
+		wobei \(I\) die Eingabebreite/-höhe ist. Ein Filter ist also nur anwendbar, wenn diese Formel einen ganzzahligen Wert ausgibt. In einer Schicht werden dabei üblicherweise mehrere Filter eingesetzt, deren Anzahl dann die Anzahl Kanäle des Ausgabevolumens festlegt. Ein Filter besteht dabei aus mehreren einzelnen Filtern, einem für jeden Kanal, und die Ergebnisse werden addiert. Eine Filterschicht mit \(D\) hat demnach bei \(d\) Eingabekanälen
+		\begin{equation}
+			\text{\#Parameter} = d D F_x F_y + O_x \, O_y
+		\end{equation}
+		Parameter, wobei \( O_x \, O_y \) den Bias darstellt. Da Eingabedaten, Bilder, Filter, Stride und Zero-Padding üblicherweise quadratisch sind, gilt in dem Fall auch vereinfacht:
+		\begin{align}
+			O &= \frac{I - F + 2P}{S} + 1 &
+			\text{\#Parameter} = d D F^2 + O^2
+		\end{align}
+		Eine gute Visualisierung des Vorgehens ist hier zu finden:
+		\begin{center}
+			\url{https://cs231n.github.io/assets/conv-demo/index.html}
+		\end{center}
+		In einem Faltungsnetzwerk (Englisch: \emph{Convolutional Neural Network}, CNN) werden mehrere dieser Faltungsschichten (mit nachgelagerten Aktivierungsfunktionen) aufeinander geschichtet und bilden so das neuronale Netzwerk. Häufig werden diese anschließend mit einem Klassifizierungs- oder Regressions-"Kopf" versehen, \dh einem voll verbundenem Netzwerk, welches das letzte Aktivierungsvolumen des CNNs annimmt, auf eine Dimension "quetscht", und auf den so erstellten Features Klassifikation/Regression durchführt.
 	% end
 
-	\section{Aufeinanderschichten von Einheiten} % 7.14
-		\todo{Content}
+	\section{Räumliche Zusammenfassung: (Max) Pooling}
+		Als weitere Maßnahme zur Reduktion der Datengröße wird \emph{Pooling} angewendet. Beim Pooling werden wird das Aktivierungsvolumen verkleinert indem beieinander liegende Pixel zusammengefasst werden. Dabei arbeiten sie auf jedem Kanal unabhängig von den anderen Kanälen und haben häufig keine Parameter. Eine Möglichkeit des Pooling ist \emph{Max Pooling}, bei dem ein Filter über das Bild geschoben wird, der nur den maximalen Wert behält. Oft wird ein 2x2-Filter mit Stride 2 in jede Richtung verwendet, der die räumlichen Dimensionen (Höhe und Breite) des Bildes halbiert. Offensichtlich ist dies nur auf Daten mit gerader räumlichen Dimension anwendbar.
+
+		Andere Möglichkeiten des Poolings sind \zB Sum Pooling, Mean Pooling oder überlappendes Pooling.
 	% end
 
-	\section{Faltungsschichten} % 7.19, 7.20, 7.21, 7.22, 7.23, 7.24, 7.25, 7.26, 7.27, 7.49, 7.50
-		\todo{Content}
+	\section{Aktivierungsfunktionen}
+		\label{sec:activationFunctions}
 
-		\subsection{Räumliche Auflösung, Stride und Zero-Padding} % 7.29, 7.30, 7.31, 7.32, 7.33, 7.34, 7.35, 7.36, 7.37, 7.38, 7.39, 7.40, 7.41, 7.42, 7.43, 7.44, 7.45, 7.46, 7.47, 7.48
-			\todo{Content}
+		Die Wahl der Aktivierungsfunktion ist ein entscheidender Faktor für den Erfolg des Netzwerkes. In diesem Abschnitt werden die bekanntesten Aktivierungsfunktionen zusammengefasst, eine sehr ausführliche Liste ist unter
+		\begin{center}
+			\url{https://en.wikipedia.org/wiki/Activation_function}
+		\end{center}
+		zu finden.
+
+		\paragraph{Identität}
+			\begin{align}
+				f : \R \to (-\infty, \infty) : x \mapsto x &&
+				f'(x) = 1
+			\end{align}
+			Diese Aktivierungsfunktion wird im Allgemeinen nicht verwendet, da sie keinen wirklichen Mehrwert in Form von Nichtlinearität liefert.
+		% end
+
+		\paragraph{Sigmoid}
+			\begin{align}
+				f : \R \to (0, 1) : x \mapsto \frac{1}{1 + e^{-x}} &&
+				f'(x) = f(x) \big( 1 - f(x) \big)
+			\end{align}
+			Ein großer Nachteil der Sigmoid-Funktion ist, dass der Gradient nur im \( x = 0 \) von Null verschieden ist, sie selbst aber nur Werte \( f(x) > 0 \) produziert und an die nächsten Schichten weiter gibt. Dadurch kommt es durch Multiplikation mit Null zu "sterbende Gradienten" und es kann kein Lernen stattfinden.
+		% end
+
+		\paragraph{Tanh}
+			\begin{align}
+				f : \R \to (-1, 1) : x \mapsto \frac{e^x - e^{-x}}{e^x + e^{-x}} &&
+				f'(x) = 1 - \big( f(x) \big)^2
+			\end{align}
+			Der hyperbolische Tangens ist der Sigmoid-Funktion sehr ähnlich, produziert aber auch negative Werte. Da die Ableitung aber immer Werte im Intervall \( (0, 1) \) annimmt, werden die Gradienten immer kleiner, wenn sie durch eine solche Schicht fließen. Daher kann auch diese Aktivierungsfunktion zu sterbenden Gradienten führen.
+		% end
+
+		\paragraph{Rectified Linear Unit (ReLU)}
+			\begin{align}
+				f : \R \to [0, \infty) : x \mapsto \max \{ 0,\, x \} &&
+				f'(x) =
+					\begin{cases}
+						0 & \text{falls } x < 0 \\
+						1 & \text{falls } x > 0 \\
+						\text{undefiniert} & \text{falls } x = 0
+					\end{cases}
+			\end{align}
+			Die ReLU-Aktivierungsfunktion ist die bekannteste und meistgenutzte Aktivierungsfunktion im tiefen Lernen. Sie hat den Nachteil dass der Gradient für die Hälfte der Eingabewerte \(x \leq 0\) auf Null gesetzt wird, wodurch kein Lernen stattfinden kann. Außerdem ist sie an der Stelle \(x = 0\) nicht Differenzierbar, was in der Praxis aber kein großes Problem darstellt.
+		% end
+
+		\paragraph{Leaky ReLU}
+			Um die Null-Ableitungen der ReLU-Funktion zu vermeiden, kann setzt die Leaky ReLU-Funktion die Werte links von der Null nicht komplett auf Null:
+			\begin{align}
+				f : \R \to [0, \infty) : x \mapsto \max \{ 0.01x,\, x \} &&
+				f'(x) =
+					\begin{cases}
+						0.01 & \text{falls } x < 0 \\
+						1 & \text{falls } x > 0 \\
+						\text{undefiniert} & \text{falls } x = 0
+					\end{cases}
+			\end{align}
+			Dadurch wird eine Sättigung des Gradienten vermieden.
+		% end
+
+		\paragraph{Softmax und Maxout}
+			Die Softmax-Aktivierungsfunktion arbeitet im Gegensatz zu den herkömmlichen Funktionen nicht nur auf der Eingabe eines Neurons, sondern auf allen aus der Schicht. Sie weißt dabei jedem Eingabewert eines Ausgabewert im Intervall \( (0, 1) \) zu, die insgesamt auf \num{1} aufsummieren. Die Ausgabe kann demnach zur Klassifikation als Konfidenz verwendet werden, dass die Eingaben dieser Klasse zuzuordnen sind:
+			\begin{align}
+				f : \R^n \to (0, 1)^n : \vec{x} \mapsto
+					\Bigg[ \frac{e^{x_i}}{\sum_{j = 1}^{n} e^{x_j}} \Bigg]_{i \,=\, \subdotsrange{1}{n}} &&
+				\pdv{f_i(\vec{x})}{x_j} = f_i(\vec{x}) \big( \delta_{ij} - f_j(\vec{x}) \big)
+			\end{align}
+			Dabei ist \(\delta_{ij}\) das Kronecker-Delta. Ein großer Vorteil dieser Terminalaktivierungsfunktion ist, dass sie überall differenzierbar ist.
 		% end
 	% end
 
-	\section{Räumliche Zusammenfassung} % 7.55, 7.56, 7.57
-		\todo{Content}
-	% end
+	\section{Training}
+		In diesem Abschnitt wird das Training eins neuronalen Netzes, \dh die Optimierung der Parameter behandelt. Dabei wird zunächst auf die verwendeten numerischen Verfahren und anschließend auf die Berechnung der benötigten Gradienten eingegangen. Numerische Tricks zur Verbesserung des Lernprozesses werden dabei nicht ausführlich behandelt. Diese werden in der Zusammenfassung von "Deep Learning: Architectures and Methods"\footnote{\url{https://frisp.org/cs}} behandelt.
 
-	\section{Vollständig verbundene Schichten} % 7.59, 7.60, 7.61
-		\todo{Content}
-	% end
-
-	\section{Training} % 8.7
-		\todo{Content}
-
-		\subsection{Stochastic Gradient Descent} % 7.12, 7.13, 7.15, 7.16, 7.17, 7.63, 8.9, 8.10, 8.21, 8.22
-			\todo{Content}
+		\subsection{Initialisierung}
+			Die Initialisierung eines neuronalen Netzwerk ist einer der wichtigsten Faktoren dafür, ob das Netz nach dem Training vernünftig arbeitet \footnote{Jonathan Frankle und Michael Carbin (2018): "The Lottery Ticket Hypothesis: Finding Sparse, Trainable Neural Networks"}. Dabei ist es sehr wichtig, nicht einfach alle Gewichte mit Null oder einem anderen konstanten Wert (wobei Null der schlechteste ist, da die Gradienten sterben) zu initialisieren, da sich diese sonst in die gleiche Richtung entwickeln. Eine Möglichkeit der Initialisierung ist Stichproben aus einer Gleichverteilung \( U(-b, b) \) oder einer Normalverteilung zu ziehen. Viele Initialisierungsverfahren sind \zB in der Dokumentation von PyTorch zu finden:
+			\begin{center}
+				\url{https://pytorch.org/docs/stable/nn.init.html}
+			\end{center}
 		% end
 
-		\subsection{Backpropagation} % 7.18, 8.11
-			\todo{Content}
+		\subsection{Stochastischer Gradientenabstieg}
+			Beim \emph{stochastischen Gradientenabstieg} (Englisch: \emph{Stochastic Gradient Descent}) werden nun die folgenden Schritte so lange wiederholt, bis der Verlust konvergiert ist:
+			\begin{enumerate}
+				\item Wählen einer Stichprobe von Datenpunkten aus der Gesamtmenge.
+				\item Vorwärtspropagation der Daten durch das neuronale Netzwerk und Berechnung der Verlusts \(E\) durch Vergleich mit den vorliegenden Trainingsdaten.
+				\item Rückwärtspropagation zur Berechnung des Gradienten.
+				\item Aktualisierung der Parameter mittels des Gradienten (mit der Lernrate \( \alpha \in (0, 1) \)):
+					\begin{equation}
+						\vec{\theta}^{(k + 1)} = \vec{\theta}^{(k)} - \alpha \grad_{\vec{\theta}}{E}\big(\vec{\theta}^{(k)}\big)
+					\end{equation}
+			\end{enumerate}
+			Dies ist das Grundverfahren beim stochastischen Gradientenabstieg und dem Trainieren von neuronalen Netzwerken. Dazu kommen viele, viele weitere Tricks und Hilfsmittel, um das Lernen zu beschleunigen und zu verbessern.
+		% end
 
-			\subsubsection{Sequential Brick} % 8.12
-				\todo{Content}
+		\subsection{Rückwärtspropagation}
+			Während die Vorwärtspropagation zur Bestimmung der Ausgaben des Netzwerkes einfach ausgerechnet werden kann, bedarf es bei der Rückwärtspropagation, also der Berechnung der Gradienten in Richtung der Gewichte/Biases, mehr Denkarbeit. Die Grundlage besteht dabei in der mehrfachen Anwendung der Kettenregel
+			\begin{equation}
+				\dv{x} f\big( g(x) \big) = \pdv{f}{g} \dv{g}{x}
+			\end{equation}
+			durch die ein Baustein-System zur Berechnung von Vorwärts- und Rückwärtspropagation möglich ist. Dieses Baustein-System entspricht einem Berechnungsgraphen, der aus primitiven Operationen wie Summe und Multiplikation aufgebaut ist. Entlang diesem können schließlich die Gradienten sowie sämtliche Zwischenergebnisse berechnet werden. Ein Beispielhafter Berechnungsgraph inklusive Vor- und Rückwärtspropagation ist in \autoref{fig:compGraph} gegeben.
+
+			Im folgenden werden einige der Bausteine vorgestellt, die zum aufbauen eines neuronalen Netzwerkes genutzt werden können.
+
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[->, comp/.style = { draw, circle, minimum width = 0.8cm, minimum height = 0.8cm, inner sep = 0 }]
+					\node (x) {\(x\)};
+					\node [below = 1 of x] (y) {\(y\)};
+					\node [below = 1 of y] (z) {\(z\)};
+					\node [comp, right = 3 of x, label = above:{\(a\)}] (c1) {\(+\)};
+					\node [comp, right = 3 of c1, label = above:{\(b\)}] (c2) {\(\ast\)};
+					\node [comp, right = 3.5 of c2, label = above:{\(c\)}] (c3) {\(\cdot^2\)};
+					\coordinate [right = 2 of c3] (c4);
+
+					\draw (x) -- node[above, sloped, near start]{\(2\)} node[below, sloped, near start]{\(160\)} (c1);
+					\draw (y) -- node[above, sloped, near start]{\(3\)} node[below, sloped, near start]{\(160\)} (c1);
+					\draw (z) -- node[above, sloped]{\(4\)} node[below, sloped]{\( \pdv{c}{z} = \pdv{c}{b} \pdv{b}{c} = 40 \cdot a = 40 \cdot 5 = 200 \)} (c2);
+					\draw (c1) -- node[above, sloped, near start]{\(5\)} node[below, sloped, near start]{\(160\)} (c2);
+					\draw (c2) -- node[above, sloped]{\(20\)} node[below, sloped]{\(\pdv{c}{b} = \pdv{c}{c} \pdv{c}{b} = 1 \cdot 40\)} (c3);
+					\draw (c3) -- node[above, sloped]{\(400\)} node[below, sloped]{\(\pdv{c}{c} = 1\)} (c4);
+				\end{tikzpicture}
+				\caption{Berechnungsgraph für \( \big( (x + y) z \big)^2 \), wobei die Werte der Vorwärtspropagation über und die der Rückwärtspropagation unter den Kanten stehen. Für einige Ableitungen ist zusätzlich der Rechenweg notiert, der für die anderen Kanten analog gilt.}
+				\label{fig:compGraph}
+			\end{figure}
+
+			\subsubsection{Baustein: Sequenz}
+				Dieser Baustein setzt andere Bausteine \( \dotsrange{B_1}{B_n} \) zusammen, indem diese sequentiell angewandt werden. Vorwärts- und Rückwärtspropagation sind dabei durch eine Verkettung der Funktionen, \bzw der Kettenregel, gegeben.
+
+				\textbf{Vorwärtspropagation:}
+				\begin{equation}
+					B(x) = B_1 \bigl( B_2 \bigl( \cdots B_n(x) \bigr) \bigr)
+				\end{equation}
+
+				\textbf{Rückwärtspropagation:}
+				\begin{equation}
+					\grad{B}(x) = B_1'(x) B_2'\bigl( B_1(x) \bigr) \cdots B_n'\bigl( B_{n - 1}(\cdots) \bigr)
+				\end{equation}
 			% end
 
-			\subsubsection{Loss Bricks} % 8.13, 8.14
-				\todo{Content}
+			\subsubsection{Baustein: Verlust}
+				Dieser Baustein implementiert die Verlustfunktion, beispielsweise den quadratischen Verlust. Dabei ist neben der Ausgabe \(\hat{y}\) des Netzwerkes auch der Sollwert \(y\) gegeben. Viele andere Verlustfunktionen zur Klassifikation sind unter
+				\begin{center}
+					\url{https://en.wikipedia.org/wiki/Loss_functions_for_classification}
+				\end{center}
+				zu finden, zur Regression wird meistens der quadratische Verlust oder eine Likelihood verwendet.
+
+				\textbf{Vorwärtspropagation:}
+				\begin{equation}
+					E(\hat{y}, y) = \frac{1}{2} (\hat{y} - y)^2
+				\end{equation}
+
+				\textbf{Rückwärtspropagation:}
+				\begin{equation}
+					\pdv{E}{\hat{y}} = \hat{y} - y
+				\end{equation}
 			% end
 
-			\subsubsection{Linear Brick} % 8.15
-				\todo{Content}
+			\subsubsection{Baustein: Linear}
+				Dieser Baustein implementiert eine Schicht eines neuronalen Netzwerkes (ohne Aktivierungsfunktion) und ist einer der meist genutzten Blöcke.
+
+				\textbf{Vorwärtspropagation:}
+				\begin{equation}
+					\vec{y} = \mat{W} \vec{x} + \vec{b}
+				\end{equation}
+
+				\textbf{Rückwärtspropagation:}
+				\begin{align}
+					\pdv{\vec{y}}{\vec{x}} &= \mat{W} &
+					\pdv{y_i}{W_{jk}} &= \delta_{ij} x_k &
+					\pdv{\vec{y}}{\vec{b}} &= \mat{I}
+				\end{align}
+				Da die Ableitung des Blocks in Richtung der Gewichtsmatrix einen dreidimensionalen Tensor ergibt, ist die Ableitung Komponentenweise angegeben.
 			% end
 
-			\subsubsection{Activation Function Bricks} % 8.16, 8.17
-				\todo{Content}
-
-				\paragraph{Subgradienten} % 8.18
-					\todo{Content}
-				% end
-
-				\paragraph{Leaky ReLU} % 8.19
-					\todo{Content}
-				% end
+			\subsubsection{Baustein: Aktivierungsfunktion}
+				Der Baustein der Aktivierungsfunktion wird üblicherweise nach einer linearen Schicht, \bzw einer Faltungsschicht, eingesetzt, um Nichtlinearitäten in das Netzwerk einzufügen. Dabei gibt es viele verschiedene Aktivierungsfunktionen, die bereits in \autoref{sec:activationFunctions} vorgestellt wurden.
 			% end
 		% end
 	% end
 
-	\section{Vermeidung von Überanpassung} % 8.23
-		\todo{Content}
+	\section{Vermeidung von Überanpassung}
+		Da neuronale Netzwerke häufig viele Parameter haben kann es schnell passieren, dass diese auf die Daten überangepasst werden. Zur Vermeidung dessen gibt es viele unterschiedliche Möglichkeiten. Die einfachste ist die \emph{Datenaugmentierung}, bei der die ursprünglichen Trainingsdaten erweitert werden, \bspw durch Spiegelung oder Rotation der Bilder, das wählen Zufälliger Ausschnitte, Änderung der RGB-Wert oder andere Bildtransformationen.
 
-		\subsection{Dropout} % 8.24, 8.25, 8.26
-			\todo{Content}
-		% end
-
-		\subsection{Datenaugmentierung} % 8.27
-			\todo{Content}
-		% end
+		Eine andere Möglichkeit ist \emph{Dropout}, wobei während des Lernens die Eingaben von Neuronen zufällig (üblicherweise mit der Wahrscheinlichkeit \(1/2\)) Null gesetzt werden, sodass diese nicht zum Ergebnis beitragen. Dadurch sind die anderen Neuronen gezwungen, Robustere Merkmale zu lernen um ohne diese Neuronen auszukommen. Der Nachteil ist, dass das Training des Netzes in etwas doppelt so lange dauert. Eine Alternative sind Standardregularisierungen wie \zB L2-Regularisierung.
 	% end
 
-	\section{Fine-Tuning und Transfer Learning} % 8.28, 8.29, 8.30
-		\todo{Content}
+	\section{Fine-Tuning und Transfer Learning}
+		Eine Möglichkeit das Training zu beschleunigen ist, gar nicht erst zu trainieren. Es können vortrainierte Modelle (\zB auf ImageNet) genutzt werden, denen anschließend nur noch ein Klassifikationskopf angesetzt wird, welcher dann auf den vorliegenden Daten Fine-Tuned wird. Dieses vorgehen wird \emph{Transfer Learning} genannt.
 	% end
 
-	\section{Visualisierung} % 8.31, 8.32, 8.33, 8.34, 8.35, 8.36, 8.37, 8.38
-		\todo{Content}
-
-		\subsection{Täuschen von CNNs} % 8.39, 8.40
-			\todo{Content}
-		% end
-	% end
-
-	\section{Beispiele: LeNet-5, AlexNet, GoogLeNet} % 7.64, 7.65, 7.66, 8.2, 8.3, 8.4, 8.5, 8.6
-		\todo{Content}
+	\section{Täuschen von CNNs}
+		Ein Problem von CNNs und neuronalen Netzwerken allgemein ist, dass der Grund, wieso die Klassifikation so gut funktioniert, nicht bekannt ist: Die Netzwerke und deren Entscheidungen sind nicht erklär- und interpretierbar. Es gab in der Vergangenheit immer wieder Fälle, in denen ein Netzwerk getäuscht werden konnte, indem \bspw zufälliges Rauschen auf ein Bild addiert wurde.
 	% end
 % end
 

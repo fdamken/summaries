@@ -37,8 +37,8 @@ def k_means(data: np.ndarray, initial_centroids: np.ndarray, data_labels: List[s
 
 
 def main():
-    euclidian_dist = lambda a, b: np.sqrt((a - b) ** 2).mean()
-    absolute_dist = lambda a, b: np.abs(a - b).mean()
+    quadratic_dist = lambda a, b: ((a - b) ** 2).sum()
+    absolute_dist = lambda a, b: np.abs(a - b).sum()
 
     data = np.array([[2, 8],
                      [2, 5],
@@ -53,7 +53,7 @@ def main():
                                   [8, 4]])
     data_labels = ["1", "2", "3", "4", "5", "6", "7", "8"]
     class_labels = ["A", "B", "C"]
-    k_means(data, initial_centroids=initial_centroids, data_labels=data_labels, class_labels=class_labels, dist=euclidian_dist)
+    k_means(data, initial_centroids=initial_centroids, data_labels=data_labels, class_labels=class_labels, dist=quadratic_dist)
 
 
 if __name__ == '__main__':

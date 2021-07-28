@@ -2,11 +2,11 @@
 
 ## Slides
 
-Done/Structured/Total: 126/1350/1350; 9%/100%/100%
+Done/Structured/Total: 210/1350/1350; 9%/100%/100%
 
 * [X] Chapter  1 : Introduction (45)
 * [X] Chapter  2 : Optimization (81)
-* [x] Chapter  3 : Backpropagation (84)
+* [X] Chapter  3 : Backpropagation (84)
 * [x] Chapter  4 : Training Neural Networks 1 (102)
 * [x] Chapter  5 : Training Neural Networks 2 (48)
 * [x] Chapter  6 : Convolutional Neural Networks 1 (170)

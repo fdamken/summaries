@@ -20,12 +20,14 @@
 % end
 
 \chapter{Optimization}
+	\label{c:optimization}
+
 	This chapter covers basic (numerical) optimization techniques that are used in machine and deep learning. Hence, it mainly focuses in gradient descent variants and less on, for example, sequential quadratic programming or trust region methods. A first method when thinking of optimization is a random search: instead of using sophisticated update rules for the parameters, they are sampled randomly. Obviously, this does not yield robust results and most often does not even yield any useful results. One advantage nevertheless is that random search does not get stuck in local minima and is, with infinite time, capable of finding the global optimum.
 
 	\section{Gradient Descent}
 		The basic idea of gradient descent (GD) is to follow the slope of the curve, i.e. the gradient\footnote{In this case the gradient refers to the vector of partial derivatives of a function w.r.t. all parameters.}. The gradient always points in the direction of the steepest \emph{ascent}, so its negative direction points towards the steepest descent. Intuitively, GD works like standing on a hill (the function that is being optimized) and always walking into the direction where the slope is the steepest. One might find the valley that way, but it is also possible to get stuck in a small hole. Formally the update equation for GD is given as
 		\begin{equation}
-			\vec{\theta}^{(k + 1)} = \vec{\theta}^{(k)} - \alpha \cdot \grad_{\vec{\theta}} L\big( \vec{\theta}^{(k)} \big),
+			\vec{\theta}^{(k + 1)} = \vec{\theta}^{(k)} - \alpha \cdot \grad_{\vec{\theta}} L\bigl( \vec{\theta}^{(k)} \bigr),
 		\end{equation}
 		where \(\vec{\theta}\) are the parameters and \(L\) is the function to be minimized.
 
@@ -47,7 +49,7 @@
 	\section{Newton's Method and L-BFGS}
 		Instead of walking along the gradient, \emph{Newton's method} leverages further knowledge from calculus and uses not only the gradient but the Hessian, too. The update equation is
 		\begin{equation}
-			\vec{\theta}^{(k + 1)} = \vec{\theta}^{(k)} - \alpha \cdot \Big(\!\mat{H}_L\big( \vec{\theta}^{(k)} \big)\!\Big)^{-1} \, \grad_{\vec{\theta}} L\big( \vec{\theta}^{(k)} \big),
+			\vec{\theta}^{(k + 1)} = \vec{\theta}^{(k)} - \alpha \cdot \Bigl(\!\mat{H}_L\bigl( \vec{\theta}^{(k)} \bigr)\!\Bigr)^{-1} \, \grad_{\vec{\theta}} L\bigl( \vec{\theta}^{(k)} \bigr),
 		\end{equation}
 		where \(\mat{H}_L\) is the Hessian. Newton's method is capable of finding the minima of quadratic functions in one step and also converges fast for other problems. But due to its dependence on the Hessian, which is costly to compute, and due to the inverse of the said, it is rarely used in deep learning. The inversion has a time complexity of \( \mathcal{O}(d^3) \), where \(d\) are the number of parameters. As neural networks usually have millions of parameters, inverting the matrix is not practical. Also, matrix inversion is numerically unstable and the Hessian might even be singular.
 
@@ -57,7 +59,7 @@
 	\section{Convergence}
 		A method is said to converge \emph{quadratically} if the error \( \epsilon_k = x_\ast - x \) depends quadratically on the previous error:
 		\begin{equation}
-			\epsilon_{k + 1} = \mu \epsilon_k^2,\qquad \epsilon_k \in \mathcal{O}\big(\mu^{2^k}\big)
+			\epsilon_{k + 1} = \mu \epsilon_k^2,\qquad \epsilon_k \in \mathcal{O}\bigl(\mu^{2^k}\bigr)
 		\end{equation}
 		Analogously, a method converges \emph{linearly} if the error depends linearly on the previous error:
 		\begin{equation}
@@ -69,7 +71,7 @@
 	\section{Momentum}
 		When using SGD, the trajectory along the algorithm converges is very jittery on steep locations as the gradient is large and huge steps are made. On the other hand, only very slow progress is made at locations where the gradient is small. One approach for tackling this problem is \emph{momentum}. The formal definition is
 		\begin{align}
-			\vec{v}^{(k + 1)} &= \mu \vec{v}^{(k)} - \alpha \cdot \grad_{\vec{\theta}} L\big(\vec{\theta}^{(k)}\big) \\
+			\vec{v}^{(k + 1)} &= \mu \vec{v}^{(k)} - \alpha \cdot \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr) \\
 			\vec{\theta}^{(k + 1)} &= \vec{\theta}^{(k)} + \vec{v}^{(k + 1)}
 		\end{align}
 		with a "friction" coefficient \(\mu\) which is usually \num{0.5}, \num{0.9}, or \num{0.99} or annealed over time (e.g., from \num{0.5} to \num{0.99}). The intuition is that the gradient can build up velocity along shallow regions of the loss which gets damped in steep regions. This reduces the jittering at steep regions by reducing the size of the gradients and ramps up the speed on shallow regions.
@@ -79,12 +81,12 @@
 		\subsection{Nesterov Momentum}
 			A variant of the vanilla momentum is \emph{Nesterov momentum}, where the update is compute "one step ahead" by following the old momentum:
 			\begin{align}
-				\vec{v}^{(k + 1)} &= \mu \vec{v}^{(k)} - \alpha \cdot \grad_{\vec{\theta}} L\big( \vec{\theta}^{(k)} + \mu \vec{v}^{(k)} \big) \\
+				\vec{v}^{(k + 1)} &= \mu \vec{v}^{(k)} - \alpha \cdot \grad_{\vec{\theta}} L\bigl( \vec{\theta}^{(k)} + \mu \vec{v}^{(k)} \bigr) \\
 				\vec{\theta}^{(k + 1)} &= \vec{\theta}^{(k)} + \vec{v}^{(k + 1)}
 			\end{align}
 			Notice the change in the top equation when calculating the gradient. But this calculation is slightly inconvenient as usually the forward pass is computed for the current parameter settings anyway, e.g., for computing the predication accuracy. This inconvenience can be circumvented by a slight change of variables. Setting \( \vec{\phi}^{(k)} = \vec{\theta}^{(k)} + \mu \vec{v}^{(k)} \) and rearranging the formulas a bit, the update equation becomes:
 			\begin{align}
-				\vec{v}^{(k + 1)} &= \mu \vec{v}^{(k)} - \alpha \cdot \grad_{\vec{\theta}} L\big(\vec{\phi}^{(k)}\big) \\
+				\vec{v}^{(k + 1)} &= \mu \vec{v}^{(k)} - \alpha \cdot \grad_{\vec{\theta}} L\bigl(\vec{\phi}^{(k)}\bigr) \\
 				\vec{\phi}^{(k + 1)} &= \vec{\phi}^{(k)} - \mu \vec{v}^{(k)} + (1 + \mu) \vec{v}^{(k + 1)}
 			\end{align}
 			The disadvantage of this change of variables is that now the previous value of the momentum has to be kept in memory, but this is mainly an implementation pitfall one has to care for.
@@ -93,8 +95,8 @@
 		\subsection{AdaGrad}
 			Another variant of SGD is \emph{AdaGrad} which changes the update in a ways such that the gradients are normalized by the square-root of gradient norms. This reduces the learning rate when gradients are high and increases it when gradients are small. Hence, the algorithms moves faster in shallow and slower in steep regions:
 			\begin{align}
-				s^{(k + 1)} &= s^{(k)} + \Big\lVert \grad_{\vec{\theta}} L\big(\vec{\theta}^{(k)}\big) \Big\rVert_2^2 \\
-				\vec{\theta}^{(k + 1)} &= \vec{\theta}^{(k)} - \frac{\alpha}{\sqrt{s^{(k + 1)}} + \epsilon} \grad_{\vec{\theta}} L\big(\vec{\theta}^{(k)}\big)
+				s^{(k + 1)} &= s^{(k)} + \Big\lVert \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr) \Big\rVert_2^2 \\
+				\vec{\theta}^{(k + 1)} &= \vec{\theta}^{(k)} - \frac{\alpha}{\sqrt{s^{(k + 1)}} + \epsilon} \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr)
 			\end{align}
 			The "gradient cache" \(s\) is initialized with zero and \(\epsilon\) is a small number added to the denominator to prevent divisions by zero. Problems of AdaGrad are that the first step can be far off and that the learning rate vanishes over time due to \(s\) building up large values (as norms can never be negative), causing learning to stagnate.
 		% end
@@ -102,8 +104,8 @@
 		\subsection{RMSProp}
 			\emph{RMSProp} tackles the problem of AdaGrad that the learning rate vanishes by adding a decay rate \(\eta \in [0, 1)\) to it:
 			\begin{align}
-				s^{(k + 1)} &= s^{(k)} \beta s^{(k)} + (1 - \beta) \big\lVert \grad_{\vec{\theta}} L\big(\vec{\theta}^{(k)}\big) \big\rVert_2^2 \\
-				\vec{\theta}^{(k + 1)} &= \vec{\theta}^{(k)} - \frac{\alpha}{\sqrt{s^{(k + 1)}} + \epsilon} \cdot \grad_{\vec{\theta}} L\big(\vec{\theta}^{(k)}\big)
+				s^{(k + 1)} &= s^{(k)} \beta s^{(k)} + (1 - \beta) \big\lVert \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr) \big\rVert_2^2 \\
+				\vec{\theta}^{(k + 1)} &= \vec{\theta}^{(k)} - \frac{\alpha}{\sqrt{s^{(k + 1)}} + \epsilon} \cdot \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr)
 			\end{align}
 			With a decay of \( \beta = 0 \), RMSProp is equivalent to AdaGrad. The decay rate should be set to something high like \( \beta = 0.9 \) as small learning rates cause exploding updates in the first steps. Like for AdaGrad, the first few steps can be quite far off.
 		% end
@@ -111,8 +113,8 @@
 		\subsection{Adam}
 			\emph{Adam} is the state-of-the-art optimizer used nearly every time for training neural networks. It combines the idea of momentum with RMSProp
 			\begin{align}
-				\vec{v}^{(k + 1)} &= \beta_1 \vec{v}^{(k)} + (1 - \beta_1) \cdot \grad_{\vec{\theta}} L\big(\vec{\theta}^{(k)}\big) \\
-				s^{(k + 1)} &= \beta_2 s^{(k)} + (1 - \beta_2) \big\lVert \grad_{\vec{\theta}} L\big(\vec{\theta}^{(k)}\big) \big\rVert_2^2 \\
+				\vec{v}^{(k + 1)} &= \beta_1 \vec{v}^{(k)} + (1 - \beta_1) \cdot \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr) \\
+				s^{(k + 1)} &= \beta_2 s^{(k)} + (1 - \beta_2) \big\lVert \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr) \big\rVert_2^2 \\
 				\hat{\vec{v}}^{(k + 1)} &= \frac{\vec{v}^{(k + 1)}}{1 - \beta_1^{k + 1}} \\
 				\hat{s}^{(k + 1)} &= \frac{s^{(k + 1)}}{1 - \beta_2^{k + 1}} \\
 				\vec{\theta}^{(k + 1)} &= \vec{\theta}^{(k)} - \frac{\alpha}{\sqrt{\hat{s}^{(k + 1)}} + \epsilon} \vec{v}^{(k + 1)}
@@ -136,65 +138,175 @@
 	% end
 % end
 
-\chapter{Backpropagation} % 3.1, 3.2, 3.4, 3.5, 3.61, 4.3, 4.4
+\chapter{Backpropagation}
 	\label{c:backpropagation}
 
-	\todo{Content}
+	As already discussed in \autoref{c:optimization}, the gradient of the loss function has to be computed in order to update the parameters of a neural network. The best method for doing this is automatic differentiation which is both fast (compared to numerical evaluation) and not as error-prone as analytical derivatives which have to be both implemented and derived by hand. The heart of automatic differentiation is building a computational graph and applying the chain rule
+	\begin{equation}
+		\dv{x} f\bigl( g(x) \bigr) = \pdv{f\bigl( g(x) \bigr)}{g(x)} \dv{g(x)}{x}
+	\end{equation}
+	multiple times. As an example \autoref{fig:compGraph} shows the computational graph for \( \bigl( (x + y) z \bigr)^2 \), including a forward pass (for computing the output) as well as a backward pass (for computing the derivatives). Computing the derivative goes as follows: start with one on the output (this is the derivative of the output w.r.t. the output). Then subsequently compute the local derivatives for each node with respect to the node the edge is coming from. This local derivative is then multiplied with the \emph{upstream gradient}, i.e., the value of the derivative coming in from the right. This yields the derivative of the output w.r.t. the node the edge the current number is computed for is coming from.
 
-	\section{Differentiating a Computational Graph} % 3.7, 3.8, 3.9, 3.10, 3.11, 3.12, 3.13, 3.14, 3.15, 3.16, 3.17, 3.18, 3.19, 3.20, 3.21, 3.22, 3.23, 3.24, 3.25, 3.26, 3.27, 3.28, 3.29, 3.30, 3.31, 3.32, 3.33, 3.34, 3.35, 3.36, 3.37, 3.38, 3.39, 3.40, 3.41
-		\todo{Content}
-	% end
+	This exhibits some interesting properties of the gradient flow and the patterns several gates induce. First of all, an add gate distributes the gradient between the incoming paths:
+	\begin{align}
+		\pdv{x} (x + y) &= 1 &
+		\pdv{y} (y + y) &= 1
+	\end{align}
+	A product gate "switches" the gradient as the first downstream gradient gets multiplied by the value of the second flow:
+	\begin{align}
+		\pdv{x} (xy) &= y &
+		\pdv{y} (xy) &= y
+	\end{align}
+	Another interesting gate is the max gate which "routes" the gradient depending on the input values, i.e., the gradient of which the flow has the smaller variable vanishes:
+	\begin{align}
+		\pdv{x} \max(x, y) &=
+			\begin{cases}
+				1 & \text{if } x > y \\
+				0 & \text{if } x < y
+			\end{cases} &
+		\pdv{y} \max(x, y) &=
+			\begin{cases}
+				0 & \text{if } x > y \\
+				0 & \text{if } x < y
+			\end{cases}
+	\end{align}
+	An important property here is that the derivative for \(x = y\) is undefined as the maximum is not differentiable for \(x = y\). In practice, however, exact equality is rarely the case so this is not a real problem. Similarly a ReLU \( \max(0, x) \) works like a gradient switch where it can only pass through if the value was positive during the forward pass.
 
-	\section{Patterns in the Backward Flow} % 3.42, 3.43
-		\todo{Content}
-	% end
+	In is also possible go forward through the network. This is called \emph{forward differentiation} opposed to \emph{backward differentiation}. In forward differentiation, the derivative \( \pdv*{x}{y} \) is computed, in backward differentiation the derivative \( \pdv*{y}{x} \) is computed. As neural networks usually have a scalar loss as the output, backward differentiation is trivial and easy to calculate.
 
-	\section{Forward and Backward Differentiation} % 3.47, 3.48, 3.49, 4.5, 4.6, 4.7
-		\todo{Content}
-	% end
+	In real-world application, the backward pass would be computed in a batched/vectorized fashion for multiple input/output data and weights at once. This can be implemented efficiently using Einstein summation. \autoref{lst:forwardBackwardPass} shows a forward- and backward-pass through a multi-layer perceptron with two hidden layers and sigmoid nonlinearities after each hidden layer and no output nonlinearity.
 
-	\section{Vectorized Operations} % 3.55, 3.56, 3.57, 3.58, 3.59
-		\todo{Content}
-	% end
+	\begin{figure}
+		\centering
+		\begin{tikzpicture}[->, comp/.style = { draw, circle, minimum width = 0.8cm, minimum height = 0.8cm, inner sep = 0 }]
+			\node (x) {\(x\)};
+			\node [below = 1 of x] (y) {\(y\)};
+			\node [below = 1 of y] (z) {\(z\)};
+			\node [comp, right = 3 of x, label = above:{\(a\)}] (c1) {\(+\)};
+			\node [comp, right = 3 of c1, label = above:{\(b\)}] (c2) {\(\ast\)};
+			\node [comp, right = 3.5 of c2, label = above:{\(c\)}] (c3) {\(\cdot^2\)};
+			\coordinate [right = 2 of c3] (c4);
 
-	\section{Neural Networks} % 3.62, 3.63, 3.64, 3.65, 3.66, 3.67, 3.83, 3.84
-		\todo{Content}
+			\draw (x) -- node[above, sloped, near start]{\(2\)} node[below, sloped, near start]{\(160\)} (c1);
+			\draw (y) -- node[above, sloped, near start]{\(3\)} node[below, sloped, near start]{\(160\)} (c1);
+			\draw (z) -- node[above, sloped]{\(4\)} node[below, sloped]{\( \pdv{c}{z} = \pdv{c}{b} \pdv{b}{c} = 40 \cdot a = 40 \cdot 5 = 200 \)} (c2);
+			\draw (c1) -- node[above, sloped, near start]{\(5\)} node[below, sloped, near start]{\(160\)} (c2);
+			\draw (c2) -- node[above, sloped]{\(20\)} node[below, sloped]{\(\pdv{c}{b} = \pdv{c}{c} \pdv{c}{b} = 1 \cdot 40\)} (c3);
+			\draw (c3) -- node[above, sloped]{\(400\)} node[below, sloped]{\(\pdv{c}{c} = 1\)} (c4);
+		\end{tikzpicture}
+		\caption{Computational graph for \( \bigl( (x + y) z \bigr)^2 \). The numbers above the edges represent the forward pass, the numbers below the edges the backward pass (the derivatives). For some edges the application of the chain rule is written out explicitly. All other edges get computed analogous.}
+		\label{fig:compGraph}
+	\end{figure}
 
-		\subsection{Brain Analogies} % 3.72, 3.73, 3.74, 3.75, 3.76
-			\todo{Content}
+	\begin{lstlisting}[
+			language = Python,
+			caption = {Forward- and backward-pass for a multi-layer perceptron.},
+			label = lst:forwardBackwardPass
+		]
+# W1, W2, W3, b1, b2, b3 are the weights/biases of the layers.
+hid_1 = sigmoid(W1 @ X + b1[:, np.newaxis])
+hid_2 = sigmoid(W2 @ hid_1 + b2[:, np.newaxis])
+outputs = W3 @ hid_2 + b3[:, np.newaxis]
+
+dL  = deriv_squared_loss(outputs, targets)
+dW3 = np.einsum('ib,jb->ij', dL, hid_2)
+db3 = np.einsum('ib->i', dL)
+
+dS2 = deriv_sigmoid(W2 @ hid_1 + b2[:, np.newaxis])
+dL  = np.einsum('kb,ki,ib->ib', dL, W3, dS2)
+dW2 = np.einsum('ib,jb->ij', dL, hid_1)
+db2 = np.einsum('ib->i', dL)
+
+dS1 = deriv_sigmoid(W1 @ X + b1[:, np.newaxis])
+dL  = np.einsum('kb,ki,ib->ib', dL, W2, dS1)
+dW1 = np.einsum('ib,jb->ij', dL, X)
+db1 = np.einsum('ib->i', dL)
+	\end{lstlisting}
+
+	\section{Activation Functions}
+		The \emph{activation function} is the nonlinearity behind a linear layer of a neural network, enriching the prediction power of the network. The big problem with activation functions is that---as neural networks lack interpretability---it is not really known what nonlinearities are good for which task. This section discusses some of the most popular activation functions and their respective pros and cons.
+
+		\subsubsection{Sigmoid}
+			One of the first activation functions was \emph{sigmoid} which squashes all input numbers into a range from zero to one:
+			\begin{align}
+				\sigma : \R \to (0, 1) : x \mapsto \frac{1}{1 + e^{-x}} &&
+				\sigma'(x) = \sigma(x) \bigl( 1 - \sigma(x) \bigr)
+			\end{align}
+			Sigmoid is best for learning logical inputs, i.e., functions with binary inputs and is used for control signals in LSTM networks. But they can kill gradients for values \( \lvert x \rvert \lg 0 \) as the derivative is near zero for values far away from the center. Sigmoid is also not good for image networks (better use ReLU) and is not zero-centered. The latter is a problem because the sigmoid itself requires zero-centered input data for producing non-trivial (constant) results.
+
+			Additionally, an always-positive input to a neuron causes the gradients to always be all-positive or all-negative. this leads to a zigzag path through the parameter space (much like axial iteration) which is not near an optimal optimization trajectory. This is also why the input data shall always be zero-centered beforehand (i.e., the mean of the input data should be zero).
 		% end
 
-		\subsection{Activation Functions} % 3.77, 4.30, 4.31, 4.32, 4.46
-			\todo{Content}
-
-			\subsubsection{Sigmoid} % 4.33, 4.34, 4.35
-				\todo{Content}
-			% end
-
-			\subsubsection{Tanh} % 4.36
-				\todo{Content}
-			% end
-
-			\subsubsection{Rectified Linear Unit (ReLU)} % 4.37, 4.38, 4.39, 4.40, 4.41
-				\todo{Content}
-			% end
-
-			\subsubsection{Leaky and Parametric ReLU} % 4.42, 4.43
-				\todo{Content}
-			% end
-
-			\subsubsection{Exponential Linear Unit (ELU)} % 4.44
-				\todo{Content}
-			% end
-
-			\subsubsection{Maxout} % 4.45
-				\todo{Content}
-			% end
+		\subsubsection{Hyperbolic Tangent (Tanh)}
+			The shape of the \emph{hyperbolic tangent} (tanh) activation function is similar, but the numbers are squashed into a range from plus to minus one:
+			\begin{align}
+				\tanh : \R \to (-1, 1) : x \mapsto \frac{e^x - e^{-x}}{e^x + e^{-x}} &&
+				\tanh'(x) = 1 - \tanh^2(x)
+			\end{align}
+			Much like the sigmoid, gradients are killed for \(x\) values away from zero. But as the output is zero-centered, the tanh activation function is better suited for most problems as opposed to the sigmoid. It is also used for bounded, but signed, values in LSTM networks. But they are not as good as sigmoid for binary functions.
 		% end
 
-		\subsection{Regularization} % 3.81, 3.82
-			\todo{Content}
+		\subsubsection{Rectified Linear Unit (ReLU)}
+			The \emph{Rectified Linear Unit} (ReLU) is (at the moment) the go-to activation function for most problems:
+			\begin{align}
+				\mathrm{ReLU} : \R \to [0, \infty) : x \mapsto \max(0, x) &&
+				\mathrm{ReLU}'(x) =
+					\begin{cases}
+						1 & \text{if } x > 0 \\
+						0 & \text{if } x < 0
+					\end{cases}
+			\end{align}
+			It saturates on half of the real axis and kills the gradient there, but it does never kill the gradient on the other half and is thus better suited for most problems than sigmoid or tanh. This is also visible empirically: networks using ReLU activations converge around six times faster than networks using sigmoid/tanh activations. But it is also not suitable for logical functions or for control in recurrent networks. Also, the output is not zero-centered. Another (theoretical) problem is that the gradient at \(x = 0\) is not defined. In practice this is not a big problem as values are almost never exactly equal to zero. If they are, one usually chooses zero or one as a gradient value, it does not really matter.
+
+			To prevent the gradients from dying (a saturated ReLU is often called a \emph{dead ReLU}), the network is usually initialized with a slightly positive bias (e.g., \num{0.01}).
 		% end
+
+		\subsubsection{Leaky and Parametric ReLU}
+			An alternative to the vanilla ReLU are the \emph{leaky} and \emph{parametric} ReLU. The parametric ReLU is given as
+			\begin{align}
+				\mathrm{PReLU}_\alpha : \R \to (-\infty, \infty) : x \mapsto \max(\alpha x, x) &&
+				\mathrm{PReLU}_\alpha'(x) =
+					\begin{cases}
+						1      & \text{if } x > 0 \\
+						\alpha & \text{if } x < 0
+					\end{cases}
+			\end{align}
+			where for the leaky ReLU the parameter is fixed to \( \alpha = 0.01 \). This parameter is also learnable. Compared to all activation functions discussed before, the leaky and parametric ReLU do not saturate and have most advantages of the ReLU (e.g., faster convergence than sigmoid/tanh). Also the outputs are closer to zero-mean compared to a vanilla ReLU. But it is still not differentiable at \( x = 0 \).
+		% end
+
+		\subsubsection{Exponential Linear Unit (ELU)}
+			The \emph{exponential linear unit} (ELU) combines the pros of a ReLU with differentiability at \(x = 0\):
+			\begin{align}
+				\mathrm{ELU} : \R \to (-\alpha, \infty) : x \mapsto
+					\begin{cases}
+						x                          & \text{if } x > 0    \\
+						\alpha \big( e^x - 1 \big) & \text{if } x \leq 0
+					\end{cases} &&
+				\mathrm{ELU}'(x) =
+					\begin{cases}
+						\alpha e^x & \text{if } x > 0 \\
+						1          & \text{if } x < 0 \\
+						1          & \text{if } x = 0 \text{ and } \alpha = 1
+					\end{cases}
+			\end{align}
+			As can be seen from the derivative, if \(\alpha = 1\) is chosen, the function is continuously differentiable everywhere. Otherwise it is not differentiable at \(x = 0\). The value of \(\alpha\) defines the value of the ELU as \(x \to -\infty\).
+		% end
+
+		\subsubsection{Maxout Neuron}
+			The \emph{maxout neuron} is a special kind of neuron that combines the weighting and bias with the activation function:
+			\begin{align}
+				\max\bigl( \vec{w}_1^T \vec{x} + b_1,\, \vec{w}_2^T \vec{x} + b_2 \bigr)
+			\end{align}
+			It generalizes the parametric ReLU and works in the linear regime, and hence does not saturate. But it has the problem that it doubles the number of parameters as two weight matrices and biases have to be used.
+		% end
+
+		\subsubsection{In Practice\dots}
+			\dots everything should be tried, usually ReLU. But also try leaky ReLU, Maxout and ELU. For binary (logical) functions, use sigmoid and also try out tanh (but do not hope for much).
+		% end
+	% end
+
+	\section{Regularization}
+		The number of layers and neurons per layer has an extreme impact on the performance and capacity of a network. In general more layers work better over more neurons per layer and more layers/neurons in general work better than less. But large networks can lead to overfitting when there are a lot more parameters then there is data! But instead of regularizing the network using the network size, it is better to use a strong regularization on the weights instead, e.g., L1- or L2-regularization. In these regularization methods, the sum of the absolute (L1) or squared (L2) weights is added to the loss with a penalty factor \(\lambda\) (usually \num{0.1}, \num{0.01}, or \num{0.001}). This keeps the parameters small and thus reduces model complexity.
 	% end
 % end
 

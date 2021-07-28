@@ -19,71 +19,126 @@
 	% end
 % end
 
-\chapter{Basics} % N/A
-	\todo{Content}
+\chapter{Optimization}
+	This chapter covers basic (numerical) optimization techniques that are used in machine and deep learning. Hence, it mainly focuses in gradient descent variants and less on, for example, sequential quadratic programming or trust region methods. A first method when thinking of optimization is a random search: instead of using sophisticated update rules for the parameters, they are sampled randomly. Obviously, this does not yield robust results and most often does not even yield any useful results. One advantage nevertheless is that random search does not get stuck in local minima and is, with infinite time, capable of finding the global optimum.
 
-	\section{Linear Classifier} % 2.4, 2.5, 2.6, 2.7
-		\todo{Content}
-	% end
+	\section{Gradient Descent}
+		The basic idea of gradient descent (GD) is to follow the slope of the curve, i.e. the gradient\footnote{In this case the gradient refers to the vector of partial derivatives of a function w.r.t. all parameters.}. The gradient always points in the direction of the steepest \emph{ascent}, so its negative direction points towards the steepest descent. Intuitively, GD works like standing on a hill (the function that is being optimized) and always walking into the direction where the slope is the steepest. One might find the valley that way, but it is also possible to get stuck in a small hole. Formally the update equation for GD is given as
+		\begin{equation}
+			\vec{\theta}^{(k + 1)} = \vec{\theta}^{(k)} - \alpha \cdot \grad_{\vec{\theta}} L\big( \vec{\theta}^{(k)} \big),
+		\end{equation}
+		where \(\vec{\theta}\) are the parameters and \(L\) is the function to be minimized.
 
-	\section{Random Variables, Distributions, and Bayes Rule} % 10a.8, 10a.9, 10a.10, 10a.11, 10a.12
-		\todo{Content}
-	% end
+		\subsection{Evaluating the Gradient}
+			As GD needs the values of the gradient, it has to be evaluated. There are three ways of approaching this: numerical evaluation, analytical derivatives or automatic differentiation.
 
-	\section{Bias and Variance, Loss Functions, and Weight Regularization} % 2.8, 2.9, 2.10, 2.11
-		\todo{Content}
-	% end
-% end
+			Numerical evaluation is extraordinarily simple, but is only approximate and slow to evaluate (when using forward difference quotients, the function has to be evaluated two times for each parameter).
 
-\chapter{Optimization} % 2.1, 2.12, 2.13, 2.14, 2.81
-	\todo{Content}
+			Analytical derivatives is hard and time-consuming, but exact and fast. But it is also error-prone as both the original function and the derivative have to be both implemented and derived. To verify that an analytical gradient is correct one method used in practice is to also evaluate the gradient numerically and checking if the results are roughly equal.
 
-	\section{Gradient Descent} % 2.17, 2.33, 2.34
-		\todo{Content}
-
-		\subsection{Evaluating the Gradient} % 2.25, 2.26, 2.27, 2.28, 2.29, 2.30, 2.32, 3.4
-			\todo{Content}
+			As neural networks usually have lots of parameters and are fairly complex computational structures, neither of these methods are practical. Hence, automatic differentiation is used. In automatic differentiation, a computational graph is built and then the gradients are propagated backwards through it. This is called backpropagation and is covered in more detail in \autoref{c:backpropagation}.
 		% end
 
-		\subsection{Mini-Batch and Stochastic Gradient Descent} % 2.35, 2.36, 2.37, 2.38, 2.39, 2.40, 2.41, 4.2, 5.40
-			\todo{Content}
+		\subsection{Mini-Batch and Stochastic Gradient Descent}
+			In mini-batch GD, only a small portion (common sizes are \num{32}, \num{64}, or \num{128} samples) of the training set is used for computing the gradient. This technique is used as it might not be possible to compute the whole gradient due to memory limitations. This makes the gradient noisy, but the progress is still good on average. It is also called \emph{stochastic} GD as the gradient gets replaced by a Monte-Carlo estimate of the expectation of the gradient.
 		% end
 	% end
 
-	\section{Newton's Method and L-BFGS} % 2.42, 2.43, 2.44, 2.45, 2.46, 2.47, 2.48, 2.49, 2.50
-		\todo{Content}
+	\section{Newton's Method and L-BFGS}
+		Instead of walking along the gradient, \emph{Newton's method} leverages further knowledge from calculus and uses not only the gradient but the Hessian, too. The update equation is
+		\begin{equation}
+			\vec{\theta}^{(k + 1)} = \vec{\theta}^{(k)} - \alpha \cdot \Big(\!\mat{H}_L\big( \vec{\theta}^{(k)} \big)\!\Big)^{-1} \, \grad_{\vec{\theta}} L\big( \vec{\theta}^{(k)} \big),
+		\end{equation}
+		where \(\mat{H}_L\) is the Hessian. Newton's method is capable of finding the minima of quadratic functions in one step and also converges fast for other problems. But due to its dependence on the Hessian, which is costly to compute, and due to the inverse of the said, it is rarely used in deep learning. The inversion has a time complexity of \( \mathcal{O}(d^3) \), where \(d\) are the number of parameters. As neural networks usually have millions of parameters, inverting the matrix is not practical. Also, matrix inversion is numerically unstable and the Hessian might even be singular.
+
+		Arising from these problems, the L-BFGS algorithm was developed which directly approximates the inverse of the Hessian. Hence, neither calculating nor inverting it is necessary.
 	% end
 
-	\section{Convergence} % 2.51, 2.52, 2.53, 2.54
-		\todo{Content}
+	\section{Convergence}
+		A method is said to converge \emph{quadratically} if the error \( \epsilon_k = x_\ast - x \) depends quadratically on the previous error:
+		\begin{equation}
+			\epsilon_{k + 1} = \mu \epsilon_k^2,\qquad \epsilon_k \in \mathcal{O}\big(\mu^{2^k}\big)
+		\end{equation}
+		Analogously, a method converges \emph{linearly} if the error depends linearly on the previous error:
+		\begin{equation}
+			\epsilon_{k + 1} \leq \mu \epsilon_k,\qquad \epsilon_k \in \mathcal{O}(\mu^n)
+		\end{equation}
+		For SGD, when the learning rate is changed to \(1/n\), the convergence is \( \epsilon_k \in \mathcal{O}(1/n) \). So SGD is terrible compared to other methods, but still it is used in practice as one million iterations or so are still enough for reaching single point precision in the error and one million iterations are okay to compute.
 	% end
 
-	\section{Momentum} % 2.56, 2.57, 2.58, 2.59, 2.60
-		\todo{Content}
+	\section{Momentum}
+		When using SGD, the trajectory along the algorithm converges is very jittery on steep locations as the gradient is large and huge steps are made. On the other hand, only very slow progress is made at locations where the gradient is small. One approach for tackling this problem is \emph{momentum}. The formal definition is
+		\begin{align}
+			\vec{v}^{(k + 1)} &= \mu \vec{v}^{(k)} - \alpha \cdot \grad_{\vec{\theta}} L\big(\vec{\theta}^{(k)}\big) \\
+			\vec{\theta}^{(k + 1)} &= \vec{\theta}^{(k)} + \vec{v}^{(k + 1)}
+		\end{align}
+		with a "friction" coefficient \(\mu\) which is usually \num{0.5}, \num{0.9}, or \num{0.99} or annealed over time (e.g., from \num{0.5} to \num{0.99}). The intuition is that the gradient can build up velocity along shallow regions of the loss which gets damped in steep regions. This reduces the jittering at steep regions by reducing the size of the gradients and ramps up the speed on shallow regions.
 
-		\subsection{Nesterov Momentum} % 2.61, 2.62, 2.63, 2.64, 2.65, 2.66, 2.67
-			\todo{Content}
+		The momentum is usually initialized with zeros.
+
+		\subsection{Nesterov Momentum}
+			A variant of the vanilla momentum is \emph{Nesterov momentum}, where the update is compute "one step ahead" by following the old momentum:
+			\begin{align}
+				\vec{v}^{(k + 1)} &= \mu \vec{v}^{(k)} - \alpha \cdot \grad_{\vec{\theta}} L\big( \vec{\theta}^{(k)} + \mu \vec{v}^{(k)} \big) \\
+				\vec{\theta}^{(k + 1)} &= \vec{\theta}^{(k)} + \vec{v}^{(k + 1)}
+			\end{align}
+			Notice the change in the top equation when calculating the gradient. But this calculation is slightly inconvenient as usually the forward pass is computed for the current parameter settings anyway, e.g., for computing the predication accuracy. This inconvenience can be circumvented by a slight change of variables. Setting \( \vec{\phi}^{(k)} = \vec{\theta}^{(k)} + \mu \vec{v}^{(k)} \) and rearranging the formulas a bit, the update equation becomes:
+			\begin{align}
+				\vec{v}^{(k + 1)} &= \mu \vec{v}^{(k)} - \alpha \cdot \grad_{\vec{\theta}} L\big(\vec{\phi}^{(k)}\big) \\
+				\vec{\phi}^{(k + 1)} &= \vec{\phi}^{(k)} - \mu \vec{v}^{(k)} + (1 + \mu) \vec{v}^{(k + 1)}
+			\end{align}
+			The disadvantage of this change of variables is that now the previous value of the momentum has to be kept in memory, but this is mainly an implementation pitfall one has to care for.
 		% end
 
-		\subsection{AdaGrad} % 2.68, 2.69, 2.70
-			\todo{Content}
+		\subsection{AdaGrad}
+			Another variant of SGD is \emph{AdaGrad} which changes the update in a ways such that the gradients are normalized by the square-root of gradient norms. This reduces the learning rate when gradients are high and increases it when gradients are small. Hence, the algorithms moves faster in shallow and slower in steep regions:
+			\begin{align}
+				s^{(k + 1)} &= s^{(k)} + \Big\lVert \grad_{\vec{\theta}} L\big(\vec{\theta}^{(k)}\big) \Big\rVert_2^2 \\
+				\vec{\theta}^{(k + 1)} &= \vec{\theta}^{(k)} - \frac{\alpha}{\sqrt{s^{(k + 1)}} + \epsilon} \grad_{\vec{\theta}} L\big(\vec{\theta}^{(k)}\big)
+			\end{align}
+			The "gradient cache" \(s\) is initialized with zero and \(\epsilon\) is a small number added to the denominator to prevent divisions by zero. Problems of AdaGrad are that the first step can be far off and that the learning rate vanishes over time due to \(s\) building up large values (as norms can never be negative), causing learning to stagnate.
 		% end
 
-		\subsection{RMSProp} % 2.71, 2.72, 2.73, 2.74
-			\todo{Content}
+		\subsection{RMSProp}
+			\emph{RMSProp} tackles the problem of AdaGrad that the learning rate vanishes by adding a decay rate \(\eta \in [0, 1)\) to it:
+			\begin{align}
+				s^{(k + 1)} &= s^{(k)} \beta s^{(k)} + (1 - \beta) \big\lVert \grad_{\vec{\theta}} L\big(\vec{\theta}^{(k)}\big) \big\rVert_2^2 \\
+				\vec{\theta}^{(k + 1)} &= \vec{\theta}^{(k)} - \frac{\alpha}{\sqrt{s^{(k + 1)}} + \epsilon} \cdot \grad_{\vec{\theta}} L\big(\vec{\theta}^{(k)}\big)
+			\end{align}
+			With a decay of \( \beta = 0 \), RMSProp is equivalent to AdaGrad. The decay rate should be set to something high like \( \beta = 0.9 \) as small learning rates cause exploding updates in the first steps. Like for AdaGrad, the first few steps can be quite far off.
 		% end
 
-		\subsection{Adam} % 2.75, 2.76, 2.77, 2.78
-			\todo{Content}
+		\subsection{Adam}
+			\emph{Adam} is the state-of-the-art optimizer used nearly every time for training neural networks. It combines the idea of momentum with RMSProp
+			\begin{align}
+				\vec{v}^{(k + 1)} &= \beta_1 \vec{v}^{(k)} + (1 - \beta_1) \cdot \grad_{\vec{\theta}} L\big(\vec{\theta}^{(k)}\big) \\
+				s^{(k + 1)} &= \beta_2 s^{(k)} + (1 - \beta_2) \big\lVert \grad_{\vec{\theta}} L\big(\vec{\theta}^{(k)}\big) \big\rVert_2^2 \\
+				\hat{\vec{v}}^{(k + 1)} &= \frac{\vec{v}^{(k + 1)}}{1 - \beta_1^{k + 1}} \\
+				\hat{s}^{(k + 1)} &= \frac{s^{(k + 1)}}{1 - \beta_2^{k + 1}} \\
+				\vec{\theta}^{(k + 1)} &= \vec{\theta}^{(k)} - \frac{\alpha}{\sqrt{\hat{s}^{(k + 1)}} + \epsilon} \vec{v}^{(k + 1)}
+			\end{align}
+			where the hatted variables are a bias correction that compensates for the zero-initialization of \(\vec{v}\) and \(s\) and only really affects the process in the first few iterations where \(k\) i small.
 		% end
 	% end
 
-	\section{Learning Rate} % 2.79, 2.80
-		\todo{Content}
+	\section{Learning Rate}
+		All of the above optimizers share at least one hyperparameter: the learning rate \(\alpha\). This hyperparameter is usually the one with the most influence on the learning process. If the learning rate is too small, no learning happens. But if it is too high, the parameters blow up and the loss rises indefinitely. A good learning rate is somewhere im between. Tuning of the learning rate and hyperparameter search will also be covered in \autoref{sec:hyperparameterOpt}.
+
+		As usually most learning happens in the beginning and later on fine-tuning happens, it can be useful to decay the learning rate over time, i.e., make \(\alpha\) \(k\)-dependent: \(\alpha_k\). Two options are exponential decay
+		\begin{equation}
+			\alpha_k = \alpha_0 e^{-\eta k}
+		\end{equation}
+		with an initial learning rate \(\alpha_0\) and a decay rate \(\eta\). Another option is \(1/k\)-decay
+		\begin{equation}
+			\alpha_k = \frac{\alpha_0}{1 + \eta k},
+		\end{equation}
+		again with an initial learning rate \(\alpha_0\) and a decay rate \(\eta\). Other options are for example step-based decay (e.g., every \(n\) iterations, go done by a factor) or even manual decay.
 	% end
 % end
 
 \chapter{Backpropagation} % 3.1, 3.2, 3.4, 3.5, 3.61, 4.3, 4.4
+	\label{c:backpropagation}
+
 	\todo{Content}
 
 	\section{Differentiating a Computational Graph} % 3.7, 3.8, 3.9, 3.10, 3.11, 3.12, 3.13, 3.14, 3.15, 3.16, 3.17, 3.18, 3.19, 3.20, 3.21, 3.22, 3.23, 3.24, 3.25, 3.26, 3.27, 3.28, 3.29, 3.30, 3.31, 3.32, 3.33, 3.34, 3.35, 3.36, 3.37, 3.38, 3.39, 3.40, 3.41
@@ -171,6 +226,8 @@
 	% end
 
 	\section{Hyperparameter Optimization} % 4.84, 4.85, 4.86, 4.87, 4.88, 4.89, 4.90, 4.91, 4.92, 4.93, 4.94, 4.95, 4.96, 4.97, 4.98, 4.99, 4.100
+		\label{sec:hyperparameterOpt}
+
 		\todo{Content}
 	% end
 

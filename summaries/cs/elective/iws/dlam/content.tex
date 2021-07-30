@@ -123,8 +123,32 @@
 		% end
 	% end
 
+	\section{Gradient Clipping}
+		In gradient descent, big gradients cause divergence while small gradients cause slow convergence. As divergence is much worse and gradients can explode pretty fast, a technique called \emph{gradient clipping} can be used. Gradient clipping limits the magnitude of each gradient
+		\begin{equation}
+			\hat{g}_i = \min\big( g_\mathrm{max},\, \max(-g_\mathrm{max},\, g_i) \big)
+		\end{equation}
+		such that \( \lvert \hat{g}_i \rvert \leq g_\mathrm{max} \). Then a decreasing learning rate is used to converge to an optimum. Standard gradient clipping limits the larges gradient dimensions while others max be very small.
+
+		An alternative, \emph{extreme} gradient clipping which is used in AdaGrad and RMSProp scale all dimensions by the inverse standard deviation such that all dimensions have unit standard deviation. An even more extreme approach are one-bit gradients where all gradient dimensions are clipped such that only their sign is left. This actually works on some problems! But usually, gradient clipping is not used this aggressive.
+	% end
+
+	\section{Gradient Noise}
+		In stochastic gradient descent, the gradient resulting from the Monte Carlo approximations is noisy, but SGD still makes good progress on average. This gives the idea of whether it might be good to add a little noise to the gradients? Experiments have shown that this is actually the case, reducing overfitting in complex models. Usually the noise is additive
+		\begin{equation}
+			\hat{g}_i^{(k)} = g_i^{(k)} + \epsilon_t^{(k)},\quad \epsilon_t^{(k)} \sim \mathcal{N}(0, \sigma_k^2)
+		\end{equation}
+		with variance
+		\begin{equation}
+			\sigma_k^2 = \frac{\eta}{(1 + k) \gamma}
+		\end{equation}
+		where \( \eta \in \{ 0.01, 0.3, 1 \} \) and \( \gamma = 0.55 \). This way the noise added to the gradients is reduced over time, producing more stable gradients towards the end.
+
+		Gradient noise raises some interesting theoretical questions as it turns the model parameters into a Bayesian inference task where the noise magnitude controls the temperature of the distribution (higher noise \(\to\) higher temperature). Cf. momentum which reduces the level of detail.
+	% end
+
 	\section{Learning Rate}
-		All of the above optimizers share at least one hyperparameter: the learning rate \(\alpha\). This hyperparameter is usually the one with the most influence on the learning process. If the learning rate is too small, no learning happens. But if it is too high, the parameters blow up and the loss rises indefinitely. A good learning rate is somewhere im between. Tuning of the learning rate and hyperparameter search will also be covered in \autoref{sec:hyperparameterOpt}.
+		All of the above optimizers share at least one hyperparameter: the learning rate \(\alpha\). This hyperparameter is usually the one with the most influence on the learning process. If the learning rate is too small, no learning happens. But if it is too high, the parameters blow up and the loss rises indefinitely. A good learning rate is somewhere im between. Tuning of the learning rate and hyperparameter search will also be covered in \autoref{subsec:hyperparameterOpt}.
 
 		As usually most learning happens in the beginning and later on fine-tuning happens, it can be useful to decay the learning rate over time, i.e., make \(\alpha\) \(k\)-dependent: \(\alpha_k\). Two options are exponential decay
 		\begin{equation}
@@ -224,6 +248,8 @@ db1 = np.einsum('ib->i', dL)
 	\end{lstlisting}
 
 	\section{Activation Functions}
+		\label{sec:activationFunctions}
+
 		The \emph{activation function} is the nonlinearity behind a linear layer of a neural network, enriching the prediction power of the network. The big problem with activation functions is that---as neural networks lack interpretability---it is not really known what nonlinearities are good for which task. This section discusses some of the most popular activation functions and their respective pros and cons.
 
 		\subsubsection{Sigmoid}
@@ -310,69 +336,300 @@ db1 = np.einsum('ib->i', dL)
 	% end
 % end
 
-\chapter{Training Neural Networks} % 4.1, 4.29, 4.101, 4.102, 5.1, 5.2, 5.3, 5.48
-	\todo{Content}
+\chapter{Training Neural Networks}
+	This chapter covers the complete learning process of neural networks. Some quirks and tricks for data pre-processing and normalization are covered as well as hyperparameter optimization and regularization.
 
-	\section{History} % 4.24, 4.25, 4.26, 4.27, 4.28
-		\todo{Content}
+	% TODO: Training Neural Networks: History; 4.24, 4.25, 4.26, 4.27, 4.28
+
+	\section{Data Pre-Processing: Normalization}
+		As already seen during the discussion of activation functions in \autoref{sec:activationFunctions}, it is desirable to have zero-centered input data, i.e., data with a zero mean. Because of that it is common (and recommended) to first \emph{normalize} the input data before training by subtracting the mean. Additionally the data is also often \emph{standardized}, meaning the normalized data is divided by the standard deviation of all samples to get a variance of one in every direction. This way the data does not fluctuate much along all axis which eases the training. It is also common to \emph{whiten} the data by applying a PCA (Principal Component Analysis) transformation to it, producing a unit Gaussian and decorrelating the features by rotating the data (such that the covariance matrix is the identity matrix).
+
+		For images, however, it is common to not standardize or whiten the data but to just subtract the mean (e.g. the mean image in AlexNet of the per-channel mean in VGGNet). This is due to the numbers of an image being bounded by nature, e.g. to the interval from zero to one. Hence different variances along the different axis might even encode information that shall not be removed.
+
+		During test time, the test input data has to be shifted and scaled the same way the training data was, based on the mean/standard deviation/PCA matrix/\dots that was computed from the training data. So the mean is not re-computed during test time!
 	% end
 
-	\section{Data Pre-Processing} % 4.47, 4.48, 4.49, 4.50
-		\todo{Content}
-	% end
+	\section{Weight Initialization}
+		An important factor of training neural networks is the initialization of the weights and biases in the neurons. If, for example, all weights are initialized with zeros, all downstream gradients vanish as they get multiplied with the weights. Hence, no learning happens. Besides the methods proposed below, initialization remains an open topic in neural network research and is not well understood. What is well understood, however, is that initialization plays a really important role and more often than expected is the key factor for the success of a neural network\footnote{Jonathan Frankle and Michael Carbin (2018): "The Lottery Ticket Hypothesis: Finding Sparse, Trainable Neural Networks"}.
 
-	\section{Weight Initialization} % 4.51, 4.52, 4.53, 4.54, 4.63
-		\todo{Content}
+		\paragraph{Small or Big Random Numbers}
+			Another idea is to initialize all weights by sampling from a Gaussian distribution with a small standard deviation, e.g. \( \sigma = 0.01 \). This works fine for small networks, but for deep networks this initialization causes the mean and standard deviation of the activations in each layer to collapse quickly to zero. This is due to multiple small numbers getting multiplied together a lot of times. But activations with (near) zero values cause the gradient of the weights to vanish! Like for an initialization with all zeros, this causes no learning to happen.
 
-		\subsection{Activation Statistics} % 4.55, 4.56, 4.57, 4.58, 4.59, 4.60, 4.61, 4.62
-			\todo{Content}
+			So small numbers are not the key to success. On the other hand, using a variance of \( \sigma = 1 \) for generating the initial weights does not work out either because the activation functions saturate quickly, yielding vanishing gradients. Hence again, no learning happens. For ReLU, this can also lead to exploding values as ReLU is not bounded.
+
+			\autoref{fig:nnInitSmallRandom} shows the activation statistics of random data propagating through a ten-layer neural network with \num{300} neurons each. It can be seen that the mean and standard deviation saturate quickly, characterized by the histograms getting sharper. \autoref{fig:nnInitBigRandom} shows the same kind of plot, but for the big standard deviation. In this case the ReLU activation function is not shown in the mean/standard deviation plots because it blows up exponentially. But for sigmoid and tanh it can be seen that they saturate, too, causing the gradients to vanish.
+
+			\begin{figure}
+				\centering
+				\begin{subfigure}{\linewidth}
+					\includegraphics[width=\linewidth]{tmp-nn-init-normal-small.pdf}
+					\caption{Mean and standard deviation in each layer.}
+				\end{subfigure}
+				\begin{subfigure}{\linewidth}
+					\includegraphics[width=\linewidth]{tmp-nn-init-normal-small-Sigmoid-hist.pdf}
+					\caption{Histogram of the values in each layer for the sigmoid activation function.}
+				\end{subfigure}
+				\begin{subfigure}{\linewidth}
+					\includegraphics[width=\linewidth]{tmp-nn-init-normal-small-Tanh-hist.pdf}
+					\caption{Histogram of the values in each layer for the tanh activation function.}
+				\end{subfigure}
+				\begin{subfigure}{\linewidth}
+					\includegraphics[width=\linewidth]{tmp-nn-init-normal-small-ReLU-hist.pdf}
+					\caption{Histogram of the values in each layer for the ReLU activation function.}
+				\end{subfigure}
+				\caption{Activation statistics for weights initialized by a Gaussian with small variance. Layer zero is the input layer. For all activation functions it can be seen that the mean saturates quickly and the standard deviation vanishes.}
+				\label{fig:nnInitSmallRandom}
+			\end{figure}
+
+			\begin{figure}
+				\centering
+				\begin{subfigure}{\linewidth}
+					\includegraphics[width=\linewidth]{tmp-nn-init-normal-big.pdf}
+					\caption{Mean and standard deviation in each layer.}
+				\end{subfigure}
+				\begin{subfigure}{\linewidth}
+					\includegraphics[width=\linewidth]{tmp-nn-init-normal-big-Sigmoid-hist.pdf}
+					\caption{Histogram of the values in each layer for the sigmoid activation function.}
+				\end{subfigure}
+				\begin{subfigure}{\linewidth}
+					\includegraphics[width=\linewidth]{tmp-nn-init-normal-big-Tanh-hist.pdf}
+					\caption{Histogram of the values in each layer for the tanh activation function.}
+				\end{subfigure}
+				\begin{subfigure}{\linewidth}
+					\includegraphics[width=\linewidth]{tmp-nn-init-normal-big-ReLU-hist.pdf}
+					\caption{Histogram of the values in each layer for the ReLU activation function.}
+				\end{subfigure}
+				\caption{Activation statistics for weights initialized by a Gaussian with big variance. Layer zero is the input layer. For all activation functions it can be seen that the neurons saturates quickly. The standard deviation is not zero, but this is caused by the sigmoid and tanh activation to have two saturation values.}
+				\label{fig:nnInitBigRandom}
+			\end{figure}
 		% end
 
-		\subsection{Batch Normalization} % 4.64, 4.65, 4.66, 4.67, 4.68, 4.69
-			\todo{Content}
+		\paragraph{Xavier Initialization}
+			\emph{Xavier initialization} also uses normally distributed weights, but the standard deviation is reciprocally proportional to the square-root of the number of neurons in the previous layer (called \emph{fan in}): \( \sigma = 1/\sqrt{\textit{fan-in}} \). This is a reasonable activation and works well when using sigmoid or tanh activations. But when using ReLU activations, the gradients vanish again as nearly all activations get saturated in the left half of the ReLU (where it is flat). Instead, He et al. (2015) proposed to divide the fan in by two to get a better initialization, i.e., \( \sigma = 1/\sqrt{\textit{fan-in} / 2} \). This works reasonably well also for ReLU activations.
+
+			\autoref{fig:nnInitXavier} shows the activation statistics like before. For tanh the mean approaches zero, but this is a good thing as zero-centered data reduces saturation in the next layer as long as the histogram is sufficiently wide. But it does not work good for ReLU which saturates quickly. The alternative Xavier initialization proposed by He et al. is shown in \autoref{fig:nnInitHe}, yielding similar results for sigmoid and tanh. But even for the ReLU, the histogram is not as sharp as for vanilla Xavier initialization.
+
+			\begin{figure}
+				\centering
+				\begin{subfigure}{\linewidth}
+					\includegraphics[width=\linewidth]{tmp-nn-init-xavier.pdf}
+					\caption{Mean and standard deviation in each layer.}
+				\end{subfigure}
+				\begin{subfigure}{\linewidth}
+					\includegraphics[width=\linewidth]{tmp-nn-init-xavier-Sigmoid-hist.pdf}
+					\caption{Histogram of the values in each layer for the sigmoid activation function.}
+				\end{subfigure}
+				\begin{subfigure}{\linewidth}
+					\includegraphics[width=\linewidth]{tmp-nn-init-xavier-Tanh-hist.pdf}
+					\caption{Histogram of the values in each layer for the tanh activation function.}
+				\end{subfigure}
+				\begin{subfigure}{\linewidth}
+					\includegraphics[width=\linewidth]{tmp-nn-init-xavier-ReLU-hist.pdf}
+					\caption{Histogram of the values in each layer for the ReLU activation function.}
+				\end{subfigure}
+				\caption{Activation statistics for weights initialized using Xavier initialization. Layer zero is the input layer. Except for the ReLU activation, Xavier initialization works well and the neurons do not saturate.}
+				\label{fig:nnInitXavier}
+			\end{figure}
+
+			\begin{figure}
+				\centering
+				\begin{subfigure}{\linewidth}
+					\includegraphics[width=\linewidth]{tmp-nn-init-he.pdf}
+					\caption{Mean and standard deviation in each layer.}
+				\end{subfigure}
+				\begin{subfigure}{\linewidth}
+					\includegraphics[width=\linewidth]{tmp-nn-init-he-Sigmoid-hist.pdf}
+					\caption{Histogram of the values in each layer for the sigmoid activation function.}
+				\end{subfigure}
+				\begin{subfigure}{\linewidth}
+					\includegraphics[width=\linewidth]{tmp-nn-init-he-Tanh-hist.pdf}
+					\caption{Histogram of the values in each layer for the tanh activation function.}
+				\end{subfigure}
+				\begin{subfigure}{\linewidth}
+					\includegraphics[width=\linewidth]{tmp-nn-init-he-ReLU-hist.pdf}
+					\caption{Histogram of the values in each layer for the ReLU activation function.}
+				\end{subfigure}
+				\caption{Activation statistics for weights initialized using the modified Xavier initialization by He et al. Layer zero is the input layer. It can be seen that the histograms in the layers are sufficiently wide, enabling learning. Also the ReLU does not saturate.}
+				\label{fig:nnInitHe}
+			\end{figure}
+		% end
+
+		\subsection{Batch Normalization}
+			As already seen, unit Gaussian data is best as an input for most activation functions. The idea of batch normalization to just make the data unit Gaussian by subtracting the mean and dividing by the (empirical) standard deviation at each layer. This is done by averaging the incoming data along each dimension and computing the standard deviation for each dimension. Then element-wise subtraction and division is used for normalize and standardize the data. As the network then learns weights and biases on this data, it is theoretically possible that the networks learns to recover the original data by learning the values of the mean and standard deviation. Hence, no prediction power is taken away from the network by adding a batch normalization layer\footnote{Note that this is just a semi-theoretical argument to support batch normalization. In practice, the neural network nearly never learns the mean and standard deviation}.
+
+			Advantages of batch normalization is that it improves the gradient flow through the network, allows higher learning rates by high-quality gradients, and reduces the strong dependence on initialization. It also kind of works as a form of regularization and maybe reduces the need for dropout.
+
+			During test time, the mean and standard deviation that were computed during training are used to normalizing/standardizing the data---the test data is not used to compute the mean/standard deviation again.
 		% end
 	% end
 
-	\section{Babysitting the Learning Process} % 4.70, 4.71, 4.72, 4.73, 4.74, 4.75, 4.76, 4.77, 4.78, 4.79, 4.80, 4.81, 4.82, 4.82
-		\todo{Content}
-	% end
+	\section{Designing a Network and Hyperparameter Optimization}
+		This section covers the basic steps of designing a neural network, i.e., choosing the architecture, the loss, etc. The first step is to pre-process the data (normalization) as this is usually useful. The next step is to choose the architecture. This heavily depends on the task and prior intuition and knowledge are extremely helpful for settings up a good initial network. Furthermore, double check that the loss is reasonable: do not use cross-entropy for regression or quadratic loss for classification and remember to disable any regularization tricks. When enabling regularization, the loss should go up---that can be checked, too.
 
-	\section{Hyperparameter Optimization} % 4.84, 4.85, 4.86, 4.87, 4.88, 4.89, 4.90, 4.91, 4.92, 4.93, 4.94, 4.95, 4.96, 4.97, 4.98, 4.99, 4.100
-		\label{sec:hyperparameterOpt}
+		The next step is to train the network on a small portion of the training data to see if the model can overfit. If the model is not able to overfit on a very small dataset, its capacity is not high enough and the neural network has to be made larger. If that works, switch to training on the complete dataset and tuning of the learning rate. If the loss is not going down, the learning rate is usually too low. If the loss is exploding, the learning rate is usually too high. A principled way of finding a good learning rate is to use cross-validation on several learning rates that are magnitudes apart (a learning rate of \(0.0002\) usually performs similar to \(0.0001\), so try out \(0.1\), \(0.01\), \(0.001\), \dots). This boils down to hyperparameter optimization as the learning rate is a hyperparameter.
 
-		\todo{Content}
-	% end
+		\section{Hyperparameter Optimization}
+			\label{subsec:hyperparameterOpt}
 
-	\section{Ensemble Learning} % 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 5.10, 5.11, 5.12, 5.13, 5.14, 5.15, 5.16, 5.17
-		\todo{Content}
-	% end
+			\emph{Hyperparameter optimization} is a big topic in designing neural networks and deep learning in general. It usually boils down to trying out different hyperparameter settings in a principled way. As a first step, a coarse search for only a few epochs should be done to get a rough idea what parameter settings work. Afterwards, a finer search for more iterations is executed to get more precise parameters. To speed up this process it is often advisable to stop the learning if the loss gets more than three times as high as the original loss. Also, the update ratio, i.e., the ratio between the norm of the old weights and the norm of the new weights \( \lVert \vec{\theta}^{(k)} \rVert_2 / \lVert \vec{\theta}^{(k + 1)} \rVert_2 \), should be around \num{0.001} or so.
 
-	\section{Dropout Regularization} % 5.18, 5.19, 5.20, 5.21, 5.22, 5.23, 5.30
-		\todo{Content}
+			For the coarse search it is best to search in log-space. This is especially true for the learning rate which is the most important parameter. Other hyperparameters to try are for example the network architecture itself, the decay schedule of the learning rate and its update type, regularization (L2/dropout strength), etc. When looking at the accuracy, there should also be a small gap between the training and test accuracy. If the gap is too big, the model overfitted and the regularization strength should be increased. If these is no gap, the model capacity is most likely too low and the network should be enlarged.
 
-		\subsection{At Test Time} % 5.24, 5.25, 5.26, 5.27, 5.28, 5.29
-			\todo{Content}
+			\subsection{Grid vs. Random Search}
+				When evaluating multiple parameters at once, it is advisable to not evaluate them on a grid, but to sample each from a uniform distribution. It is often the case that one hyperparameter (e.g. the learning rate) has a higher influence on the result than another (e.g. the initialization of the bias). If one uses a grid, a lot of redundant computations will be performed for a single parameter. When using random values, this happens less frequent. This is illustrated in \autoref{fig:gridRandomSearch}.
+
+				\begin{figure}
+					\centering
+					\begin{subfigure}{0.49\linewidth}
+						\centering
+						\begin{tikzpicture}[
+									hp/.style = {
+										draw,
+										circle,
+										fill = black,
+										inner sep = 0,
+										minimum width = 5pt,
+										minimum height = 5pt
+									},
+									lv/.style = {
+										draw,
+										rectangle,
+										fill = black,
+										inner sep = 0,
+										minimum width = 1pt,
+										minimum height = 5pt
+									},
+									lh/.style = {
+										draw,
+										rectangle,
+										fill = black,
+										inner sep = 0,
+										minimum width = 5pt,
+										minimum height = 1pt
+									}
+								]
+							\coordinate (a) at (-1.75, -1.75);
+							\coordinate (b) at (+1.75, -1.75);
+							\coordinate (c) at (+1.75, +1.75);
+							\coordinate (d) at (-1.75, +1.75);
+
+							\node [hp] at (-1, -1) {};
+							\node [hp] at ( 0, -1) {};
+							\node [hp] at (+1, -1) {};
+							\node [hp] at (-1,  0) {};
+							\node [hp] at ( 0,  0) {};
+							\node [hp] at (+1,  0) {};
+							\node [hp] at (-1, +1) {};
+							\node [hp] at ( 0, +1) {};
+							\node [hp] at (+1, +1) {};
+
+							\node [lv] at (-1, +1.75) {};
+							\node [lv] at ( 0, +1.75) {};
+							\node [lv] at (+1, +1.75) {};
+
+							\node [lh] at (-1.75, -1) {};
+							\node [lh] at (-1.75,  0) {};
+							\node [lh] at (-1.75, +1) {};
+
+							\draw (a) -- (b) -- (c) -- (d) -- cycle;
+
+							\path (c) -- node[above, sloped]{Important Param.} (d);
+							\path (a) -- node[above, sloped]{Unimportant Param.} (d);
+						\end{tikzpicture}
+						\caption{Grid Search}
+					\end{subfigure}
+					~
+					\begin{subfigure}{0.49\linewidth}
+						\centering
+						\begin{tikzpicture}[
+									hp/.style = {
+										draw,
+										circle,
+										fill = black,
+										inner sep = 0,
+										minimum width = 5pt,
+										minimum height = 5pt
+									},
+									lv/.style = {
+										draw,
+										rectangle,
+										fill = black,
+										inner sep = 0,
+										minimum width = 1pt,
+										minimum height = 5pt
+									},
+									lh/.style = {
+										draw,
+										rectangle,
+										fill = black,
+										inner sep = 0,
+										minimum width = 5pt,
+										minimum height = 1pt
+									}
+								]
+							\coordinate (a) at (-1.75, -1.75);
+							\coordinate (b) at (+1.75, -1.75);
+							\coordinate (c) at (+1.75, +1.75);
+							\coordinate (d) at (-1.75, +1.75);
+
+							\node [hp] at (+1.43, +1.27) {};
+							\node [hp] at (+0.73, +1.49) {};
+							\node [hp] at (+0.11, -1.32) {};
+							\node [hp] at (-1.17, -0.50) {};
+							\node [hp] at (-1.10, +0.43) {};
+							\node [hp] at (+0.97, -0.77) {};
+							\node [hp] at (-0.68, -0.40) {};
+							\node [hp] at (+0.81, +0.49) {};
+							\node [hp] at (-0.05, -0.33) {};
+
+							\node [lv] at (+1.43, +1.75) {};
+							\node [lv] at (+0.73, +1.75) {};
+							\node [lv] at (+0.11, +1.75) {};
+							\node [lv] at (-1.17, +1.75) {};
+							\node [lv] at (-1.10, +1.75) {};
+							\node [lv] at (+0.97, +1.75) {};
+							\node [lv] at (-0.68, +1.75) {};
+							\node [lv] at (+0.81, +1.75) {};
+							\node [lv] at (-0.05, +1.75) {};
+
+							\node [lh] at (-1.75, +1.27) {};
+							\node [lh] at (-1.75, +1.49) {};
+							\node [lh] at (-1.75, -1.32) {};
+							\node [lh] at (-1.75, -0.50) {};
+							\node [lh] at (-1.75, +0.43) {};
+							\node [lh] at (-1.75, -0.77) {};
+							\node [lh] at (-1.75, -0.40) {};
+							\node [lh] at (-1.75, +0.49) {};
+							\node [lh] at (-1.75, -0.33) {};
+
+							\draw (a) -- (b) -- (c) -- (d) -- cycle;
+
+							\path (c) -- node[above, sloped]{Important Param.} (d);
+							\path (a) -- node[above, sloped]{Unimportant Param.} (d);
+						\end{tikzpicture}
+						\caption{Random Search}
+					\end{subfigure}
+					\caption{Comparison of grid search (left) and random search (right). It can be seen that for random search, more (nine) values of the important parameter are tried while when using grid search, only three values are tested.}
+					\label{fig:gridRandomSearch}
+				\end{figure}
+			% end
 		% end
-
-		\subsection{Inverted Dropout} % 5.31
-			\todo{Content}
-		% end
 	% end
 
-	\section{Gradient Clipping} % 5.32, 5.33, 5.34, 5.35, 5.36, 5.39
-		\todo{Content}
+	\section{Ensembles}
+		\emph{Ensembles} leverage multiple simpler models for constructing a single big model with strong prediction power. There are two basic types for ensembles: \emph{Bagging} (Bootstrap Aggregation) and \emph{Boosting}. In bagging, multiple models are trained on samples of the data and a majority vote (for classification) or average (for regression) is used for prediction. In \emph{boosting}, the learners are ordered and training takes place one after another. Then each learner tries to reduce the residual error of the previous trainers on the examples that where misclassified. Bagging usually reduces the variance whereas boosting reduces the bias of the model (and also probably the variance, but this is not true for every model). In both cases, the resulting prediction is a sum or vote of the base learner predictions.
 
-		\subsection{Extreme Gradient Clipping} % 5.37
-			\todo{Content}
-		% end
+		Usually bagging yields around \SI{2}{\percent} of extra accuracy, so models can be made better but one can not fix a broken model using bagging. Hence, neural networks are fairly often used with bagging. But they are only rarely used with boosting. The reason for this is that deep neural networks usually model global effects and wide networks model local effects, whereas boosting models from global to local. This means that the first models of a boosting sequence models the global effects and later models are used for fine-tuning locally. So boosting with the same network architecture does not yield good results because the shift from global to local is not representable. An open questions is if it is possible to move from deep to wide networks the further the process of boosting gets. The problem that arises in this case is that it is hard to detect whether the next model in a boosting process models global or local properties.
 
-		\subsection{One-Bit Gradient} % 5.38
-			\todo{Content}
-		% end
+		A common disadvantage of bagging and boosting is of course that it takes longer to train compared to a single model. One trick to circumvent this in bagging is to average multiple model checkpoints, i.e., the weights of a network at different iterations, rather than completely different models.
 	% end
 
-	\section{Gradient Noise} % 5.41, 5.42, 5.43, 5.44, 5.45, 5.46, 5.47
-		\todo{Content}
+	\section{Dropout Regularization}
+		As neural networks have lots of parameters, sometimes more than there is training data, overfitting is a big problem in deep learning. One regularization technique for tackling this is \emph{dropout}. The core concept of dropout is to randomly set some neurons to zero with probability \(p\) for each neuron during the forward pass, disabling them for the prediction. The idea is that this forces the network to learn redundant representations, making it more robust towards changes in the inputs. Another interpretation is that dropout trains a large ensemble of models that share parameters.
+
+		During test time, it would be ideal to integrate out all the noise, but in practice this is obviously intractable. Instead, the result will be approximated using Monte Carlo integration techniques: calculate multiple forward passes using different (random) dropout masks and average all predictions. But in fact this can be done (approximately) with a single forward pass with all neurons being active! To compensate for the inflation caused by roughly \(1/p\) more neurons being active during the fully activated forward pass, all activations have to be scaled by \(p\).
+
+		As scaling the activations at test time reveals details about the training process\footnote{Take, for example, a model that is deployed on lots on end-user devices (like a face detection model). If the developer finds a better way of training that improves the model, but uses dropout, the end-user model would have to be changed just because the training process changed.}, it is also possible to scale the activations by \(1/p\) in the training forward pass. This is called \emph{inverted dropout}.
 	% end
 % end
 

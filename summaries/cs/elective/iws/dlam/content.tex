@@ -888,39 +888,481 @@ db1 = np.einsum('ib->i', dL)
 	% end
 % end
 
-\chapter{Recurrent Neural Networks} % 8.1, 8.4, 8.5, 8.23, 8.24, 8.25, 8.26, 8.27, 8.28, 8.29, 8.98
-	\todo{Content}
+\chapter{Recurrent Neural Networks}
+	Until now, all discussed neural networks all have a clear topological ordering and a sensor of forward and backward and they can only process one input at a time, producing a single output. \emph{Recurrent neural networks} (RNNs) are a generalization of so-called \emph{feedforward networks} to networks that have a notion of "time" by introducing cycles. They are designed for processing a sequence \( \dotsrange{\vec{x}_1}{\vec{x}_n} \) of inputs and producing a sequence \( \dotsrange{\vec{y}_1}{\vec{y}_m} \) of outputs. \autoref{fig:rnnCell} shows a single RNN cell with its hidden state \(\vec{h}_t\) and how it processes a single input \(\vec{x}_t\). The computed hidden state is then stored and used for the next incoming vector.
 
-	\section{Unrolling and Backprop-Through-Time} % 8.6, 8.7, 8.8, 8.9, 8.10, 8.11, 8.12, 8.13, 8.14, 8.15, 8.16, 8.17, 8.18, 8.19, 8.20, 8.21, 8.22
-		\todo{Content}
+	To compute a forward- and backward-pass (i.e., computing the gradients), RNNs are usually unrolled in time, forming a computational graph that can be differentiated. \autoref{fig:rnnCellUnrolled} illustrates the unrolling for three time steps and a single RNN cell. It is also often done to stack multiple RNN layers on top of each other, i.e., multiple RNN cells, each with an own hidden state, computed after each other. This is shown in \autoref{fig:rnnMultipleCellsUnrolled} for two cells and again three time steps. The nodes on the same level share all parameters while the nodes behind each other (producing the two separate hidden states) do not share weights.
+
+	In general, the RNN formalism is extremely powerful and offers lots of flexibility. As it is a complete generalization of feedforward neural networks, they would theoretically also allow a one-to-one mapping, but this is usually not called an RNN. But they allow also for lots of other mapping types:
+	\begin{description}[leftmargin = 3cm]
+		\item[One-to-One]   This is equivalent to a vanilla neural network. A single input is mapped onto a single output. An example application is image classification.
+		\item[One-to-Many]  A single input is mapped onto multiple outputs. An example application is image captioning where the RNN gets features extracted by a CNN and generated a sequence of words that describe the image.
+		\item[Many-to-One]  Multiple inputs are mapped onto a single output. An example application is sentiment classification where a sequence of words is read and the RNN predicts the sentiment of the sentence (e.g. positive/negative).
+		\item[Many-to-Many] Multiple inputs are mapped onto multiple outputs. This mode can come in two variants: either an output for time \(t\) is generated directly after reading the input at time \(t\) or all outputs are generated after the last item has been read. Of course various mixtures and different delays may also be used. Example applications are model learning where the RNN learns to predict the next position/velocity of e.g. a pendulum (first variant) and machine translation (second variant).
+	\end{description}
+	These four/five variants are illustrated in \autoref{fig:rnnVariants}.
+
+	\begin{figure}
+		\centering
+		\begin{tikzpicture}[->]
+			\node [draw, rectangle, minimum width = 1cm, minimum height = 1cm, inner sep = 0] (b) {};
+			\coordinate [above = 0.25cm of b.west] (A1);
+			\coordinate [below = 0.25cm of b.west] (A2);
+			\coordinate [above = 0.25cm of b.east] (B1);
+			\coordinate [below = 0.25cm of b.east] (B2);
+			\node [left  = 1.5 of A1] (a) {\( \vec{x}_t \)};
+			\node [right = 1.5 of B1] (c) {\( \vec{y}_t \)};
+
+			\coordinate [right = 0.50 of B2] (n1);
+			\coordinate [below = 0.75 of n1] (n2);
+			\coordinate [left  = 0.50 of A2] (n4);
+			\coordinate [below = 0.75 of n4] (n3);
+
+			\draw (a) to (A1);
+			\draw (B1) to (c);
+			\draw [dashed] (B2) to (n1) to node[right]{\( \vec{h}_t \)} (n2) to (n3) to node[left]{\( \vec{h}_{t - 1} \)} (n4) to (A2);
+		\end{tikzpicture}
+		\caption{Illustration of a single RNN cell processing an input \(\vec{x}_t\), producing an output \(\vec{y}_t\) and a hidden state \(\vec{h}_t\) that is delayed one time step.}
+		\label{fig:rnnCell}
+	\end{figure}
+
+	\begin{figure}
+		\centering
+		\begin{subfigure}{0.49\linewidth}
+			\centering
+			\begin{tikzpicture}[->]
+				\node [draw, rectangle, minimum width = 1cm, minimum height = 1cm, inner sep = 0] (a1) {};
+				\coordinate [below = 0.25cm of a1.west] (a1L);
+				\coordinate [below = 0.25cm of a1.east] (a1R);
+				\node [left  = 1.5 of a1, yshift = -0.25cm] (a1x) {\( \vec{x}_0 \)};
+				\node [right = 1.5 of a1, yshift = +0.25cm] (a1y) {\( \vec{y}_0 \)};
+
+				\node [draw, rectangle, minimum width = 1cm, minimum height = 1cm, inner sep = 0, below = 1 of a1] (a2) {};
+				\coordinate [below = 0.25cm of a2.west] (a2L);
+				\coordinate [below = 0.25cm of a2.east] (a2R);
+				\node [left  = 1.5 of a2, yshift = -0.25cm] (a2x) {\( \vec{x}_1 \)};
+				\node [right = 1.5 of a2, yshift = +0.25cm] (a2y) {\( \vec{y}_1 \)};
+
+				\node [draw, rectangle, minimum width = 1cm, minimum height = 1cm, inner sep = 0, below = 1 of a2] (a3) {};
+				\coordinate [below = 0.25cm of a3.west] (a3L);
+				\coordinate [below = 0.25cm of a3.east] (a3R);
+				\node [left  = 1.5 of a3, yshift = -0.25cm] (a3x) {\( \vec{x}_2 \)};
+				\node [right = 1.5 of a3, yshift = +0.25cm] (a3y) {\( \vec{y}_2 \)};
+
+				\path (a1) to coordinate(A) (a2);
+				\path (a2) to coordinate(B) (a3);
+				\coordinate [below = 0.5 of a3] (C);
+
+				\draw (a1x) to ($ (a1.west) + (0, -0.25) $);
+				\draw ($ (a1.east) + (0, +0.25) $) to (a1y);
+				\draw (a2x) to ($ (a2.west) + (0, -0.25) $);
+				\draw ($ (a2.east) + (0, +0.25) $) to (a2y);
+				\draw (a3x) to ($ (a3.west) + (0, -0.25) $);
+				\draw ($ (a3.east) + (0, +0.25) $) to (a3y);
+
+				\draw ($ (a1.east) + (0, -0.25) $) to ($ (a1.east) + (0.5, -0.25) $) |- node[right, pos = 0.05]{\( \vec{h}_0 \)} (A) -| ($ (a2.west) + (-0.5, +0.25) $) to ($ (a2.west) + (0, +0.25) $);
+				\draw ($ (a2.east) + (0, -0.25) $) to ($ (a2.east) + (0.5, -0.25) $) |- node[right, pos = 0.05]{\( \vec{h}_1 \)} (B) -| ($ (a3.west) + (-0.5, +0.25) $) to ($ (a3.west) + (0, +0.25) $);
+				\draw ($ (a3.east) + (0, -0.25) $) to ($ (a3.east) + (0.5, -0.25) $) |- node[right, pos = 0.05]{\( \vec{h}_2 \)} (C) -| ($ (C) + (-1, -0.5) $);
+			\end{tikzpicture}
+			\caption{Unrolling with analogous notation to \autoref{fig:rnnCell}.}
+		\end{subfigure}
+		~
+		\begin{subfigure}{0.49\linewidth}
+			\centering
+			\begin{tikzpicture}[->]
+				\node [draw, rectangle, minimum width = 1cm, minimum height = 1cm, inner sep = 0] (a1) {};
+				\node [draw, rectangle, minimum width = 1cm, minimum height = 1cm, inner sep = 0, right = 1 of a1] (a2) {};
+				\node [draw, rectangle, minimum width = 1cm, minimum height = 1cm, inner sep = 0, right = 1 of a2] (a3) {};
+				\coordinate [right = 1 of a3] (a4);
+
+				\node [below = 1 of a1] (a1x) {\( \vec{x}_0 \)};
+				\node [below = 1 of a2] (a2x) {\( \vec{x}_1 \)};
+				\node [below = 1 of a3] (a3x) {\( \vec{x}_2 \)};
+
+				\node [above = 1 of a1] (a1y) {\( \vec{y}_0 \)};
+				\node [above = 1 of a2] (a2y) {\( \vec{y}_1 \)};
+				\node [above = 1 of a3] (a3y) {\( \vec{y}_2 \)};
+
+				\draw (a1x) to (a1);
+				\draw (a2x) to (a2);
+				\draw (a3x) to (a3);
+				\draw (a1) to (a1y);
+				\draw (a2) to (a2y);
+				\draw (a3) to (a3y);
+
+				\draw (a1) to node[above]{\( \vec{h}_0 \)} (a2);
+				\draw (a2) to node[above]{\( \vec{h}_1 \)} (a3);
+				\draw (a3) to node[above]{\( \vec{h}_2 \)} (a4);
+			\end{tikzpicture}
+			\caption{Unrolling how it is usually drawn.}
+		\end{subfigure}
+		\caption{First three node of an unrolled recurrent neural network with the hidden state \(\vec{h}_t\). The two pictures show the same model using two different notations.}
+		\label{fig:rnnCellUnrolled}
+	\end{figure}
+
+	\begin{figure}
+		\centering
+		\begin{tikzpicture}[->]
+			\node [draw, rectangle, minimum width = 1cm, minimum height = 1cm, inner sep = 0] (a1) {};
+			\node [draw, rectangle, minimum width = 1cm, minimum height = 1cm, inner sep = 0, right = 1 of a1] (a2) {};
+			\node [draw, rectangle, minimum width = 1cm, minimum height = 1cm, inner sep = 0, right = 1 of a2] (a3) {};
+			\coordinate [right = 1 of a3] (a4);
+
+			\node [draw, rectangle, minimum width = 1cm, minimum height = 1cm, inner sep = 0, above = 1 of a1] (b1) {};
+			\node [draw, rectangle, minimum width = 1cm, minimum height = 1cm, inner sep = 0, right = 1 of b1] (b2) {};
+			\node [draw, rectangle, minimum width = 1cm, minimum height = 1cm, inner sep = 0, right = 1 of b2] (b3) {};
+			\coordinate [right = 1 of b3] (b4);
+
+			\node [below = 1 of a1] (x1) {\( \vec{x}_0 \)};
+			\node [below = 1 of a2] (x2) {\( \vec{x}_1 \)};
+			\node [below = 1 of a3] (x3) {\( \vec{x}_2 \)};
+
+			\node [above = 1 of b1] (y1) {\( \vec{y}_{10} \)};
+			\node [above = 1 of b2] (y2) {\( \vec{y}_{11} \)};
+			\node [above = 1 of b3] (y3) {\( \vec{y}_{12} \)};
+
+			\draw (x1) to (a1);
+			\draw (x2) to (a2);
+			\draw (x3) to (a3);
+			\draw (a1) to node[left, near start]{\( \vec{x}_{00} \)} node[right, near end]{\( \vec{y}_{00} \)} (b1);
+			\draw (a2) to node[left, near start]{\( \vec{x}_{01} \)} node[right, near end]{\( \vec{y}_{01} \)} (b2);
+			\draw (a3) to node[left, near start]{\( \vec{x}_{02} \)} node[right, near end]{\( \vec{y}_{02} \)} (b3);
+			\draw (b1) to (y1);
+			\draw (b2) to (y2);
+			\draw (b3) to (y3);
+
+			\draw (a1) to node[above]{\( \vec{h}_{00} \)} (a2);
+			\draw (a2) to node[above]{\( \vec{h}_{01} \)} (a3);
+			\draw (a3) to node[above]{\( \vec{h}_{02} \)} (a4);
+			\draw (b1) to node[above]{\( \vec{h}_{10} \)} (b2);
+			\draw (b2) to node[above]{\( \vec{h}_{11} \)} (b3);
+			\draw (b3) to node[above]{\( \vec{h}_{12} \)} (b4);
+		\end{tikzpicture}
+		\caption{RNN with two RNN cells after each other. This picture shows the unrolled RNN for three time steps.}
+		\label{fig:rnnMultipleCellsUnrolled}
+	\end{figure}
+
+	\begin{figure}
+		\centering
+		\begin{subfigure}{0.135\linewidth}
+			\centering
+			\begin{tikzpicture}[->, every node/.style = { draw, rectangle, minimum width = 0.5cm, minimum height = 1cm, inner sep = 0 }, input/.style = { fill = TUDa-9a }, hidden/.style = { fill = TUDa-4a }, output/.style = { fill = TUDa-2a }]
+				\node [input] (a1) {};
+				\node [hidden, above = 1 of a1] (b1) {};
+				\node [output, above = 1 of b1] (c1) {};
+				\draw (a1) to (b1);
+				\draw (b1) to (c1);
+			\end{tikzpicture}
+			\caption{One-to-One}
+		\end{subfigure}
+		~
+		\begin{subfigure}{0.167\linewidth}
+			\centering
+			\begin{tikzpicture}[->, every node/.style = { draw, rectangle, minimum width = 0.5cm, minimum height = 1cm, inner sep = 0 }, input/.style = { fill = TUDa-9a }, hidden/.style = { fill = TUDa-4a }, output/.style = { fill = TUDa-2a }]
+				\node [input] (a1) {};
+				\node [hidden, above = 1   of a1] (b1) {};
+				\node [hidden, right = 0.5 of b1] (b2) {};
+				\node [hidden, right = 0.5 of b2] (b3) {};
+				\node [output, above = 1   of b1] (c1) {};
+				\node [output, above = 1   of b2] (c2) {};
+				\node [output, above = 1   of b3] (c3) {};
+				\draw (a1) to (b1);
+				\draw (b1) to (b2);
+				\draw (b2) to (b3);
+				\draw (b1) to (c1);
+				\draw (b2) to (c2);
+				\draw (b3) to (c3);
+			\end{tikzpicture}
+			\caption{One-to-Many}
+		\end{subfigure}
+		~
+		\begin{subfigure}{0.167\linewidth}
+			\centering
+			\begin{tikzpicture}[->, every node/.style = { draw, rectangle, minimum width = 0.5cm, minimum height = 1cm, inner sep = 0 }, input/.style = { fill = TUDa-9a }, hidden/.style = { fill = TUDa-4a }, output/.style = { fill = TUDa-2a }]
+				\node [input] (a1) {};
+				\node [input, right = 0.5 of a1] (a2) {};
+				\node [input, right = 0.5 of a2] (a3) {};
+				\node [hidden, above = 1 of a1] (b1) {};
+				\node [hidden, above = 1 of a2] (b2) {};
+				\node [hidden, above = 1 of a3] (b3) {};
+				\node [output, above = 1 of b3] (c3) {};
+				\draw (a1) to (b1);
+				\draw (a2) to (b2);
+				\draw (a3) to (b3);
+				\draw (b1) to (b2);
+				\draw (b2) to (b3);
+				\draw (b3) to (c3);
+			\end{tikzpicture}
+			\caption{Many-to-One}
+		\end{subfigure}
+		~
+		\begin{subfigure}{0.167\linewidth}
+			\centering
+			\begin{tikzpicture}[->, every node/.style = { draw, rectangle, minimum width = 0.5cm, minimum height = 1cm, inner sep = 0 }, input/.style = { fill = TUDa-9a }, hidden/.style = { fill = TUDa-4a }, output/.style = { fill = TUDa-2a }]
+				\node [input] (a1) {};
+				\node [input, right = 0.5 of a1] (a2) {};
+				\node [input, right = 0.5 of a2] (a3) {};
+				\node [hidden, above = 1 of a1] (b1) {};
+				\node [hidden, above = 1 of a2] (b2) {};
+				\node [hidden, above = 1 of a3] (b3) {};
+				\node [output, above = 1 of b1] (c1) {};
+				\node [output, above = 1 of b2] (c2) {};
+				\node [output, above = 1 of b3] (c3) {};
+				\draw (a1) to (b1);
+				\draw (a2) to (b2);
+				\draw (a3) to (b3);
+				\draw (b1) to (b2);
+				\draw (b2) to (b3);
+				\draw (b1) to (c1);
+				\draw (b2) to (c2);
+				\draw (b3) to (c3);
+			\end{tikzpicture}
+			\caption{Many-to-Many}
+		\end{subfigure}
+		~
+		\begin{subfigure}{0.28\linewidth}
+			\centering
+			\begin{tikzpicture}[->, every node/.style = { draw, rectangle, minimum width = 0.5cm, minimum height = 1cm, inner sep = 0 }, input/.style = { fill = TUDa-9a }, hidden/.style = { fill = TUDa-4a }, output/.style = { fill = TUDa-2a }]
+				\node [input] (a1) {};
+				\node [input, right = 0.5 of a1] (a2) {};
+				\node [input, right = 0.5 of a2] (a3) {};
+				\node [hidden, above = 1 of a1] (b1) {};
+				\node [hidden, above = 1 of a2] (b2) {};
+				\node [hidden, above = 1 of a3] (b3) {};
+				\node [hidden, right = 0.5 of b3] (b4) {};
+				\node [hidden, right = 0.5 of b4] (b5) {};
+				\node [output, above = 1 of b3] (c3) {};
+				\node [output, above = 1 of b4] (c4) {};
+				\node [output, above = 1 of b5] (c5) {};
+				\draw (a1) to (b1);
+				\draw (a2) to (b2);
+				\draw (a3) to (b3);
+				\draw (b1) to (b2);
+				\draw (b2) to (b3);
+				\draw (b3) to (b4);
+				\draw (b4) to (b5);
+				\draw (b3) to (c3);
+				\draw (b4) to (c4);
+				\draw (b5) to (c5);
+			\end{tikzpicture}
+			\caption{Many-to-Many}
+		\end{subfigure}
+		\caption{Illustration of the four/five variants of RNN applications.}
+		\label{fig:rnnVariants}
+	\end{figure}
+
+	\section{Vanilla RNN}
+		The dynamics of the hidden state of a vanilla RNN as illustrated in \autoref{fig:rnnCell} is described by a parametric function
+		\begin{equation}
+			\vec{h}_t = \vec{f}_{\vec{\theta}}(\vec{h}_{t - 1}, \vec{x}_t)
+		\end{equation}
+		where \( \vec{h}_t \) and \( \vec{h}_{t - 1} \) are the next and current time step, respectively, and \(\vec{x}_t\) is the current input. This formula is then iterated for every step of the input sequence (with the same function and parameters per step). Usually the function \( \vec{f}_{\vec{\theta}} \) is a tanh with linear combinations of the hidden state and input as parameters
+		\begin{equation}
+			\vec{f}_{\vec{\theta}} = \tanh\!\big( \mat{W}_{hh} \vec{h}_{t - 1} + \mat{W}_{xh} \vec{x}_t \big)  \label{eq:rnnHidden}
+		\end{equation}
+		with \( \vec{\theta} = \big\{ \mat{W}_{hh}, \mat{W}_{xh} \big\} \). The hidden state is then re-weighted, forming the output of the RNN cell:
+		\begin{equation}
+			\vec{y}_t = \mat{W}_{hy} \vec{h}_t
+		\end{equation}
+		This can either be taken as the output or be fed into another neural network, often a fully connected one. For one-to-many and delayed many-to-many RNNs, the inputs of the cells that do not have inputs are just set to zero such that they are ignored in \autoref{eq:rnnHidden}.
+
+		% TODO: Vanilla RNN: Interpretable Cells; 8.62, 8.63, 8.64, 8.65, 8.66, 8.67
+
+		\subsection{Image Captioning}
+			For using RNNs in image captioning, the hidden state is usually high-dimensional and \(\vec{h}_0\) is initialized with the output of a CNN. Then a "start" token is fed into the RNN as the first input and the second input is just the first output. To indicate that the captioning is complete the RNN spits out an "end" token. This is illustrated in \autoref{fig:rnnImageCaptioning}. Instead of initializing \(\vec{h}_0\) it may also be helpful to learn an additional matrix that transforms the first input
+			\begin{equation}
+				\vec{f}_{\vec{\theta}} = \tanh\!\big( \mat{W}_{hh} \vec{h}_{t - 1} + \mat{W}_{xh} \vec{x}_t + \mat{W}_{ih} \vec{v} \big),
+			\end{equation}
+			where \( \vec{v} \) is the output vector of the CNN. Fancier models for image captioning use \emph{attention} to look at different parts of the image for different parts of the caption. This is covered in more detail in \autoref{c:attention}.
+
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[->, label distance = -5pt, every node/.style = { draw, rectangle, minimum width = 0.5cm, minimum height = 1cm, inner sep = 0 }, input/.style = { fill = TUDa-9a }, hidden/.style = { fill = TUDa-4a }, output/.style = { fill = TUDa-2a }]
+					\node [inner sep = 2pt] (image) {\includegraphics[width = 4cm]{img/compressed-straw-hat.png}};
+					\node [draw, rectangle, right = 1.5 of image, minimum width = 1.5cm] (cnn) {CNN};
+					\node [hidden, right = 1.5 of cnn] (b1) {};
+					\node [hidden, right = 1.25 of b1] (b2) {};
+					\node [hidden, right = 1.25 of b2] (b3) {};
+					\node [hidden, right = 1.25 of b3] (b4) {};
+					\node [hidden, right = 1.25 of b4] (b5) {};
+					\node [input, below = 1 of b1, label = below:{START}] (a1) {};
+					\node [input, below = 1 of b2, label = below:{"woman"}] (a2) {};
+					\node [input, below = 1 of b3, label = below:{"with"}] (a3) {};
+					\node [input, below = 1 of b4, label = below:{"straw"}] (a4) {};
+					\node [input, below = 1 of b5, label = below:{"hat"}] (a5) {};
+					\node [output, above = 1 of b1, label = above:{"woman"}] (c1) {};
+					\node [output, above = 1 of b2, label = above:{"with"}] (c2) {};
+					\node [output, above = 1 of b3, label = above:{"straw"}] (c3) {};
+					\node [output, above = 1 of b4, label = above:{"hat"}] (c4) {};
+					\node [output, above = 1 of b5, label = above:{END}] (c5) {};
+
+					\draw (image) to (cnn);
+					\draw (cnn) to (b1);
+					\draw (b1) to (b2);
+					\draw (b2) to (b3);
+					\draw (b3) to (b4);
+					\draw (b4) to (b5);
+					\draw (a1) to (b1);
+					\draw (a2) to (b2);
+					\draw (a3) to (b3);
+					\draw (a4) to (b4);
+					\draw (a5) to (b5);
+					\draw (b1) to (c1);
+					\draw (b2) to (c2);
+					\draw (b3) to (c3);
+					\draw (b4) to (c4);
+					\draw (b5) to (c5);
+				\end{tikzpicture}
+				\caption{Illustration of image captioning using a CNN to initialize the hidden state.}
+				\label{fig:rnnImageCaptioning}
+			\end{figure}
+		% end
 	% end
 
-	\section{Vanilla RNN} % 8.30, 8.31, 8.32, 8.33, 8.34
-		\todo{Content}
+	\section{Long Short-Term Memory (LSTM)}
+		One problem with vanilla RNNs is that if the sequences are very long, gradients vanish quickly as the tangent always reduces the gradient values. Also, if the largest Eigenvalue of weight matrix for the hidden state is larger than one, gradient will explode. If it is lower than one, they will vanish. So only for a single Eigenvalue the gradients are stable. \emph{Long short-term memory networks} tackle the problem of vanishing gradients by adding "highway"\footnote{Not to be confused with highway networks!} connections for the gradients. Exploding gradients can be solved by gradient clipping, so the problem is not that severe.
 
-		\subsection{Example: Character-Level Language Model} % 8.35, 8.36, 8.37, 8.38, 8.47, 8.48, 8.52, 8.53, 8.54, 8.55, 8.56, 8.57, 8.58, 8.59, 8.60, 8.61
-			\todo{Content}
+		Assuming stacked RNNs, the equation for updating the hidden state in a vanilla RNN is\footnote{Let \(n\) be the dimensionality of the hidden state, then the weight matrix has size \( n \times 2n \).}
+		\begin{equation}
+			\vec{h}_t^l = \tanh\,
+				\mat{W}^l
+				\begin{bmatrix}
+					\vec{h}_t^{l - 1} \\
+					\vec{h}_{t - 1}^l
+				\end{bmatrix}
+		\end{equation}
+		where \( \vec{h}_{t - 1}^l \) is the hidden state of layer \(l\) of the previous time step, \( \vec{h}_t^{l - 1} \) is the hidden state of the previous layer \(l - 1\) of the current time step and \(\vec{h}_t^l\) is the next hidden state. For the first layer, the hidden state equals the input: \( \vec{h}_t^0 = \vec{x}_t \). The weight matrix \( \mat{W}^l \) then summarizes the two matrices of \eqref{eq:rnnHidden}. The vanilla RNN was previously introduced like every cell has an extra output with an extra weight matrix, but this formalism is not necessary and the hidden state can just be passed to the next layer. It will be multiplied by a learnable weight matrix anyway.
 
-			\subsubsection{Interpretable Cells} % 8.62, 8.63, 8.64, 8.65, 8.66, 8.67
-				\todo{Content}
-			% end
-		% end
+		LSTMs add a \emph{cell state} \( \vec{c}_t^l \in \R^n \) captures the state of the cell and is not directly pushed through a sigmoidal nonlinearity. Hence, gradient vanishing is not that big of a problem. The update equations for the hidden state and the cell state are
+		\begin{align}
+			\begin{bmatrix}
+				\vec{i} \\
+				\vec{f} \\
+				\vec{o} \\
+				\vec{g}
+			\end{bmatrix}
+			&=
+				\begin{bmatrix}
+					\sigma \\
+					\sigma \\
+					\sigma \\
+					\tanh
+				\end{bmatrix}
+				\mat{W}^l
+				\begin{bmatrix}
+					\vec{h}_t^{l - 1} \\
+					\vec{h}_{t - 1}^l
+				\end{bmatrix} &
+			\vec{c}_t^l &= \vec{f} \odot \vec{c}_{t - 1}^l + \vec{i} \odot \vec{g} &
+			\vec{h}_t^l &= \vec{o} \odot \tanh\big( \vec{c}_t^l \big)
+		\end{align}
+		where now \( \mat{W}^l \in \R^{4n \times 2n} \) and \( \vec{i}, \vec{f}, \vec{o}, \vec{g} \in \R^n \) and \( \odot \) denotes the Hadamard product. These vectors have the following interpretations:
+		\begin{itemize}
+			\item \eqmakebox[lstm][r]{\(\vec{i}\)} is the activation vector for the input gate,
+			\item \eqmakebox[lstm][r]{\(\vec{f}\)} is the activation vector for the forget gate,
+			\item \eqmakebox[lstm][r]{\(\vec{o}\)} is the activation vector for the output gate, and
+			\item \eqmakebox[lstm][r]{\(\vec{g}\)} is the cell input activation.
+		\end{itemize}
+		The forget vector controls how much of the cell state will be lost in this cell, i.e., how much the network forgets. This way the network can learn to both capture short- and long-term behavior. These equations are also illustrated in \autoref{fig:lstmCell}.
 
-		\subsection{Image Captioning} % 8.68, 8.69, 8.70, 8.71, 8.72, 8.73, 8.74, 8.75, 8.76, 8.77, 8.78, 8.79, 8.80, 8.81, 8.82, 8.83
-			\todo{Content}
-		% end
-	% end
+		One can say that LSTMs are to RNNs what ResNets are to vanilla nets.
 
-	\section{Long Short-Term Memory (LSTM)} % 8.84, 8.85, 8.86, 8.87, 8.88, 8.89, 8.90, 8.91, 8.92, 8.93
-		\todo{Content}
+		There are also other variants of LSTMs, for example the \emph{gated recurrent unit} (GRU) which uses slightly different and simpler update equations for the hidden state and does not feature an additional cell state. GRUs have shown to work similarly well as LSTMs on large datasets but better on small datasets because they have less parameters.
 
-		\subsection{Gradient Flow Dynamics} % 8.94, 8.95, 8.96
-			\todo{Content}
-		% end
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[
+						->,
+						align = center,
+						compute/.style = {
+							draw,
+							circle,
+							minimum width = 1cm,
+							minimum height = 1cm,
+							inner sep = 0
+						},
+						select/.style = {
+							draw,
+							rectangle,
+							minimum width = 1.25cm,
+							minimum height = 0.75cm,
+							inner sep = 0
+						}
+					]
+				\node [compute] (n2) {\(+\)};
+				\node [compute, below = 1 of n2] (n3) {\(\odot\)};
+				\node [compute, below = 1 of n3, xshift = -0.75cm] (vi) {\(\sigma\)};
+				\node [compute, below = 1 of n3, xshift = +0.75cm] (vg) {\(\tanh\)};
+				\node [compute, left = 0.5 of vi] (vf) {\(\sigma\)};
+				\path let \p1 = (vf), \p2 = (n2) in node [compute] (n1) at (\x1, \y2) {\(\odot\)};
+				\node [compute, right = 0.5 of vg] (vo) {\(\sigma\)};
+				\node [compute, right = 1 of vo] (n6) {\(\cdot\)};
+				\path let \p1 = (n6), \p2 = (n3) in node [compute] (n5) at (\x1, \y2) {\(\tanh\)};
+				\path let \p1 = (n5), \p2 = (n2) in coordinate (n4) at (\x1, \y2);
 
-		\subsection{Variants and Friends} % 8.97
-			\todo{Content}
-		% end
+				\draw (vf) to node[left]{\(\vec{f}\)} (n1);
+				\draw (vi) to node[left]{\(\vec{i}\)} (n3);
+				\draw (vg) to node[right]{\(\vec{g}\)} (n3);
+				\draw (n3) to (n2);
+				\draw (vo) to node[above]{\(\vec{o}\)} (n6);
+				\draw (n4) to (n5);
+				\draw (n5) to (n6);
+
+				\node [select, below = 0.75 of vf] (i1) {\( n\!:\!2n \)};
+				\node [select, below = 0.75 of vi] (i2) {\( 0\!:\!n \)};
+				\node [select, below = 0.75 of vg] (i3) {\( 3n\!:\!4n \)};
+				\node [select, below = 0.75 of vo] (i4) {\( 2n\!:\!3n \)};
+				\node [compute, left = 0.75 of i1, yshift = -1cm] (i5) {\(\mat{W}^l\)};
+				\coordinate [left = 1 of i5, label = left:{\( \vec{h}_{t - 1}^l \)}] (i6);
+
+				\path let \p1 = (n5), \p2 = (i5) in coordinate (n7) at (\x1, \y2);
+
+				\draw (i1) to (vf);
+				\draw (i2) to (vi);
+				\draw (i3) to (vg);
+				\draw (i4) to (vo);
+				\draw (i5) -| (i1);
+				\draw (i5) -| (i2);
+				\draw (i5) -| (i3);
+				\draw (i5) -| (i4);
+				\draw (i6) to (i5);
+
+				\path let \p1 = (i6), \p2 = (n1) in coordinate [label = left:{\(\vec{c}_{t - 1}^l\)}] (a) at (\x1, \y2);
+				\coordinate [right = 3 of n4, label = right:{\(\vec{c}_t^l\)}] (A);
+				\coordinate [above = 1 of a] (b);
+				\coordinate [above = 1 of A] (B);
+				\coordinate [above = 1 of b] (c);
+				\coordinate [above = 1 of B] (C);
+				\coordinate [above = 1 of c] (d);
+				\coordinate [above = 1 of C] (D);
+				\coordinate [above = 1 of d] (e);
+				\coordinate [above = 1 of D] (E);
+
+				\path (B) to node[right]{\small Other \\ \small Cell \\ \small States} (E);
+
+				\draw (a) to (n1);
+				\draw (n1) to (n2);
+				\draw (n2) to (A);
+				\draw (b) to (B);
+				\draw (c) to (C);
+				\draw (d) to (D);
+				\draw (e) to (E);
+
+				\path let \p1 = (A), \p2 = (n7) in coordinate [label = right:{\(\vec{h}_t^l\)}] (m1) at (\x1, \y2);
+				\coordinate [left = 1 of m1] (m2);
+				\path let \p1 = (m2), \p2 = (E) in coordinate [align = center, label = above:{\small Higher Layer, \\ \small or Prediction \\ \(\vec{h}_t^l\)}] (m3) at ($ (\x1, \y2) + (0, 1cm) $);
+
+				\draw (n6) to (n7) to (m1);
+				\draw (m2) to (m3);
+
+				\coordinate [below = 0.5 of i5] (i7);
+				\path let \p1 = (m2), \p2 = (i7) in coordinate (i8) at (\x1, \y2);
+				\coordinate [below = 0.5 of i8, label = below:{\( \vec{h}_t^{l - 1} \)}] (i9);
+				\draw (i9) to (i8) to (i7) to (i5);
+			\end{tikzpicture}
+			\caption{Illustration of a single LSTM cell.}
+			\label{fig:lstmCell}
+		\end{figure}
 	% end
 % end
 
@@ -1434,43 +1876,41 @@ db1 = np.einsum('ib->i', dL)
 			% end
 		% end
 	% end
+% end
 
-	\section{Attention Models} % 12.1, 12.3, 12.4, 12.5, 12.6, 13.2, 13.3, 13.4, 13.5
+\chapter{Attention Models and Transformers} % 12.1, 12.3, 12.4, 12.5, 12.6, 13.2, 13.3, 13.4, 13.5
+	\label{c:attention}
+
+	\todo{Content}
+
+	\section{Hard Attention for Recognition} % 12.7, 12.8, 12.9
+		\todo{Content}
+	% end
+
+	\section{Soft Attention for Translation} % 12.10, 12.11, 12.12, 12.13, 12.14, 12.15, 12.16, 12.17, 12.18, 12.19, 12.20, 12.21, 12.22, 12.23
+		\todo{Content}
+	% end
+
+	\section{Global and Local Attention Model} % 12.24, 12.25, 12.26
+		\todo{Content}
+	% end
+
+	\section{Soft Attention for Captioning} % 12.27, 12.28, 12.29, 12.30, 12.31, 12.35
 		\todo{Content}
 
-		\subsection{Hard Attention for Recognition} % 12.7, 12.8, 12.9
+		\subsection{Soft Attention for Video} % 12.32, 12.33, 12.34
+			\todo{Content}
+		% end
+	% end
+
+	\section{Attending to Arbitrary Regions} % 12.36, 12.37
+		\todo{Content}
+
+		\subsection{DRAW} % 12.38, 12.39
 			\todo{Content}
 		% end
 
-		\subsection{Soft Attention for Translation} % 12.10, 12.11, 12.12, 12.13, 12.14, 12.15, 12.16, 12.17, 12.18, 12.19, 12.20, 12.21, 12.22, 12.23
-			\todo{Content}
-		% end
-
-		\subsection{Global and Local Attention Model} % 12.24, 12.25, 12.26
-			\todo{Content}
-		% end
-
-		\subsection{Soft Attention for Captioning} % 12.27, 12.28, 12.29, 12.30, 12.31, 12.35
-			\todo{Content}
-
-			\subsubsection{Soft Attention for Video} % 12.32, 12.33, 12.34
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Attending to Arbitrary Regions} % 12.36, 12.37
-			\todo{Content}
-
-			\subsubsection{DRAW} % 12.38, 12.39
-				\todo{Content}
-			% end
-
-			\subsubsection{Spatial Transformer Networks} % 12.40, 12.41, 12.42, 12.43, 12.44
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Takeaways} % 12.45, 12.46
+		\subsection{Spatial Transformer Networks} % 12.40, 12.41, 12.42, 12.43, 12.44
 			\todo{Content}
 		% end
 	% end
@@ -1485,5 +1925,9 @@ db1 = np.einsum('ib->i', dL)
 		\subsection{BERT (Bidirectional Encoder Representation from Transformers)} % 13.13
 			\todo{Content}
 		% end
+	% end
+
+	\section{Takeaways} % 12.45, 12.46
+		\todo{Content}
 	% end
 % end

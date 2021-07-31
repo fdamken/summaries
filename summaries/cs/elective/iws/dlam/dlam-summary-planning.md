@@ -2,7 +2,7 @@
 
 ## Slides
 
-Done/Structured/Total: 648/1350/1350; 48%/100%/100%
+Done/Structured/Total: 746/1350/1350; 55%/100%/100%
 
 * [X] Chapter  1 : Introduction (45)
 * [X] Chapter  2 : Optimization (81)
@@ -11,7 +11,7 @@ Done/Structured/Total: 648/1350/1350; 48%/100%/100%
 * [X] Chapter  5 : Training Neural Networks 2 (48)
 * [X] Chapter  6 : Convolutional Neural Networks 1 (170)
 * [X] Chapter  7 : Convolutional Neural Networks 2 (118)
-* [x] Chapter  8 : Recurrent NNs, LSTMs, and Applications (98)
+* [X] Chapter  8 : Recurrent NNs, LSTMs, and Applications (98)
 * [x] Chapter  9a: Generative Adversarial Networks (50)
 * [x] Chapter  9b: Generative Models (133)
 * [x] Chapter 10a: Deep Probabilistic Models (69)

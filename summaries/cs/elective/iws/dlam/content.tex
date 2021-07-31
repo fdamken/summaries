@@ -1,5 +1,9 @@
 % !TeX spellcheck = en_US
 
+\usetikzlibrary{math}
+
+% Useful resources:
+%   - https://github.com/cs231n/cs231n.github.io
 
 \chapter{Introduction}
 	This summary of the course "Deep Learning: Architectures and Methods" held at the TU Darmstadt covers a lot of topics in the wast field of deep learning and neural network architectures. The first part focuses on fully connected and convolutional networks and in the end some more advanced architectures are touched, namely recurrent, long short-term memory and transformer networks. Knowledge of basic machine learning taxonomy like "features", "training data" and "supervised learning" is assumed to be known as well as basic mathematical knowledge.
@@ -121,30 +125,6 @@
 			\end{align}
 			where the hatted variables are a bias correction that compensates for the zero-initialization of \(\vec{v}\) and \(s\) and only really affects the process in the first few iterations where \(k\) i small.
 		% end
-	% end
-
-	\section{Gradient Clipping}
-		In gradient descent, big gradients cause divergence while small gradients cause slow convergence. As divergence is much worse and gradients can explode pretty fast, a technique called \emph{gradient clipping} can be used. Gradient clipping limits the magnitude of each gradient
-		\begin{equation}
-			\hat{g}_i = \min\big( g_\mathrm{max},\, \max(-g_\mathrm{max},\, g_i) \big)
-		\end{equation}
-		such that \( \lvert \hat{g}_i \rvert \leq g_\mathrm{max} \). Then a decreasing learning rate is used to converge to an optimum. Standard gradient clipping limits the larges gradient dimensions while others max be very small.
-
-		An alternative, \emph{extreme} gradient clipping which is used in AdaGrad and RMSProp scale all dimensions by the inverse standard deviation such that all dimensions have unit standard deviation. An even more extreme approach are one-bit gradients where all gradient dimensions are clipped such that only their sign is left. This actually works on some problems! But usually, gradient clipping is not used this aggressive.
-	% end
-
-	\section{Gradient Noise}
-		In stochastic gradient descent, the gradient resulting from the Monte Carlo approximations is noisy, but SGD still makes good progress on average. This gives the idea of whether it might be good to add a little noise to the gradients? Experiments have shown that this is actually the case, reducing overfitting in complex models. Usually the noise is additive
-		\begin{equation}
-			\hat{g}_i^{(k)} = g_i^{(k)} + \epsilon_t^{(k)},\quad \epsilon_t^{(k)} \sim \mathcal{N}(0, \sigma_k^2)
-		\end{equation}
-		with variance
-		\begin{equation}
-			\sigma_k^2 = \frac{\eta}{(1 + k) \gamma}
-		\end{equation}
-		where \( \eta \in \{ 0.01, 0.3, 1 \} \) and \( \gamma = 0.55 \). This way the noise added to the gradients is reduced over time, producing more stable gradients towards the end.
-
-		Gradient noise raises some interesting theoretical questions as it turns the model parameters into a Bayesian inference task where the noise magnitude controls the temperature of the distribution (higher noise \(\to\) higher temperature). Cf. momentum which reduces the level of detail.
 	% end
 
 	\section{Learning Rate}
@@ -631,144 +611,279 @@ db1 = np.einsum('ib->i', dL)
 
 		As scaling the activations at test time reveals details about the training process\footnote{Take, for example, a model that is deployed on lots on end-user devices (like a face detection model). If the developer finds a better way of training that improves the model, but uses dropout, the end-user model would have to be changed just because the training process changed.}, it is also possible to scale the activations by \(1/p\) in the training forward pass. This is called \emph{inverted dropout}.
 	% end
-% end
 
-\chapter{Convolutional Neural Networks} % 6.1, 6.2, 6.3, 6.64, 6.65, 6.66, 6.67, 6.68, 6.170
-	\todo{Content}
+	\section{Gradient Clipping}
+		In gradient descent, big gradients cause divergence while small gradients cause slow convergence. As divergence is much worse and gradients can explode pretty fast, a technique called \emph{gradient clipping} can be used. Gradient clipping limits the magnitude of each gradient
+		\begin{equation}
+			\hat{g}_i = \min\big( g_\mathrm{max},\, \max(-g_\mathrm{max},\, g_i) \big)
+		\end{equation}
+		such that \( \lvert \hat{g}_i \rvert \leq g_\mathrm{max} \). Then a decreasing learning rate is used to converge to an optimum. Standard gradient clipping limits the larges gradient dimensions while others max be very small.
 
-	\section{Biology} % N/A
-		\todo{Content}
-
-		\subsection{Retinal Receptive Fields} % 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 6.10, 6.11, 6.12, 6.13, 6.14
-			\todo{Content}
-		% end
-
-		\subsection{Cortical Receptive Fields} % 6.15, 6.16, 6.17, 6.18, 6.19, 6.20, 6.21, 6.22, 6.23, 6.24, 6.25, 6.26, 6.27, 6.28
-			\todo{Content}
-		% end
+		An alternative, \emph{extreme} gradient clipping which is used in AdaGrad and RMSProp scale all dimensions by the inverse standard deviation such that all dimensions have unit standard deviation. An even more extreme approach are one-bit gradients where all gradient dimensions are clipped such that only their sign is left. This actually works on some problems! But usually, gradient clipping is not used this aggressive.
 	% end
 
-	\section{Convolutions} % 6.29, 6.30, 6.31, 6.32, 6.33, 6.34, 6.35, 6.36, 6.37, 6.38
-		\todo{Content}
+	\section{Gradient Noise}
+		In stochastic gradient descent, the gradient resulting from the Monte Carlo approximations is noisy, but SGD still makes good progress on average. This gives the idea of whether it might be good to add a little noise to the gradients? Experiments have shown that this is actually the case, reducing overfitting in complex models. Usually the noise is additive
+		\begin{equation}
+			\hat{g}_i^{(k)} = g_i^{(k)} + \epsilon_t^{(k)},\quad \epsilon_t^{(k)} \sim \mathcal{N}(0, \sigma_k^2)
+		\end{equation}
+		with variance
+		\begin{equation}
+			\sigma_k^2 = \frac{\eta}{(1 + k) \gamma}
+		\end{equation}
+		where \( \eta \in \{ 0.01, 0.3, 1 \} \) and \( \gamma = 0.55 \). This way the noise added to the gradients is reduced over time, producing more stable gradients towards the end.
 
-		\subsection{Examples} % 6.39, 6.40, 6.41, 6.42, 6.43, 6.44, 6.45, 6.46, 6.47, 6.48, 6.49, 6.50, 6.51, 6.52, 6.53, 6.54, 6.55, 6.56, 6.57, 6.58, 6.59, 6.60, 6.61, 6.62, 6.63
-			\todo{Content}
-		% end
+		Gradient noise raises some interesting theoretical questions as it turns the model parameters into a Bayesian inference task where the noise magnitude controls the temperature of the distribution (higher noise \(\to\) higher temperature). Cf. momentum which reduces the level of detail.
 	% end
 
-	\section{Convolutional Layers} % 6.66, 6.67, 6.68, 6.69, 6.70, 6.71, 6.72, 6.73, 6.74, 6.75, 6.76, 6.77, 6.78, 6.79, 6.80, 6.81, 6.82, 6.83, 6.84, 6.85, 6.86, 6.120, 6.121
-		\todo{Content}
+	\section{Vanishing Gradients and Residual Networks}
+		The \emph{vanishing gradient problem} is like the opposite of exploding gradients: if an activation function like tanh is used which squashes all numbers between zero and one and only produces gradients between zero and one, multiplying many of these numbers together quickly approaches zero. As many activation values and activation function gradients are stacked on top of each other in a deep network, this causes the gradients to \emph{vanish} or \emph{die}. One way to circumvent this is to use \emph{residual networks} with add \emph{skip connections} from one layer to later layers (see \autoref{fig:resNet}).
 
-		\subsection{Activation Volume} % 6.87, 6.88, 6.89, 6.90, 6.91, 6.92, 6.93, 6.94, 6.95, 6.96, 6.115, 6.122
-			\todo{Content}
-		% end
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[->]
+				\node [neuron] (a) {};
+				\node [neuron, right = 2 of a] (b) {};
+				\node [neuron, right = 2 of b] (c) {};
+				\node [neuron, right = 2 of c] (d) {};
 
-		\subsection{Zero-Padding and Stride} % 6.100, 6.101, 6.102, 6.103, 6.104, 6.105, 6.106, 6.107, 6.108, 6.109, 6.110, 6.111, 6.112, 6.113, 6.114
-			\todo{Content}
-		% end
+				\draw (a) -> (b);
+				\draw (b) -> (c);
+				\draw (c) -> (d);
 
-		\subsection{Neuron View} % 6.123, 6.124, 6.125, 6.126
-			\todo{Content}
-		% end
-	% end
-
-	\section{Pooling} % 6.127, 6.128, 6.129, 6.130, 6.131
-		\todo{Content}
-	% end
-
-	\section{Examples} % N/A
-		\todo{Content}
-
-		\paragraph{LeNet-5} % 6.133, 6.134, 7.11
-			\todo{Content}
-		% end
-
-		\paragraph{AlexNet} % 6.136, 6.137, 6.138, 6.139, 6.140, 6.141, 6.142, 6.143, 7.12, 7.13
-			\todo{Content}
-		% end
-	% end
-
-	\section{Transfer Learning} % 6.144, 6.145, 6.146, 6.147, 6.148, 6.149, 6.150, 6.151
-		\todo{Content}
-
-		\subsection{Examples} % N/A
-			\todo{Content}
-
-			\paragraph{VGGNet} % 6.152, 6.153, 6.154, 6.155
-				\todo{Content}
-			% end
-
-			\paragraph{GoogLeNet} % 6.156, 6.157
-				\todo{Content}
-			% end
-
-			\paragraph{ResNet} % 6.158, 6.159, 6.160, 6.161, 6.162, 6.163, 6.164, 6.165, 6.166, 6.167, 7.26, 7.27, 7.28, 7.32, 7.34
-				\todo{Content}
-			% end
-
-			\paragraph{AlphaGo} % 6.168, 6.169
-				\todo{Content}
-			% end
-		% end
+				\draw (a) to[bend left] (c);
+				\draw (b) to[bend left] (d);
+			\end{tikzpicture}
+			\caption{Illustration of the skip connections in a residual network. To compute the gradient of a node with two outgoing connections, the two incoming gradients are added together. It is also possible to add connections that skip more than one layer.}
+			\label{fig:resNet}
+		\end{figure}
 	% end
 % end
 
-\chapter{Computer Vision Tasks} % 7.36, 7.37, 7.38, 7.118
-	\todo{Content}
+\chapter{Convolutional Neural Networks}
+	While fully connected neural networks (multilayer perceptrons) are extremely powerful, they are not really well suited for processing large images. This is due to the shear amount of parameters that would be needed for the first layers as all pixels are connected to every neuron. But images do not really have a global correlation, the spatial correlation is fairly local! Hence, fully connected layers are just a waste of resources. Instead, \emph{convolutional neural networks} (CNNs) use convolutions from computer vision as learnable filters to extract locally correlated information first and later plugging the downscaled result into fully connected layers for further processing.
 
-	\section{Classification + Localization} % 7.39, 7.40, 7.63
-		\todo{Content}
+	A convolution is described by an \( F_y \times F_x \) matrix that gets shifted along the input image using element-wise products and sums for computing a pixel at that point. \autoref{fig:convNoStrideNoPadding} illustrates this for a \(3 \times 3\) filter on a \(5 \times 5\) image. Obviously, the size of the image shrinks because the size of the filter. This can be circumvented by adding \emph{zero-padding}. This means that the edges of the image get extended by \( P_x \)/\( P_y \) zeros on all sides such that the image is bigger. It is also possible to specify a \emph{stride} \(S_x\)/\(S_y\) along the width/height which prescribes the number of pixels the filter is moved in every step. The default is a stride of one which is also used in \autoref{fig:convNoStrideNoPadding} (also referred to as "no stride"). Higher values for the stride result in a smaller output image.
 
-		\subsection{Localization as Regression} % 7.41, 7.42, 7.43, 7.44, 7.45, 7.46, 7.47
-			\todo{Content}
+	In real-world applications, input images may have multiple \emph{channels}. A channel is one layer of the image, e.g. the "red" layer in an RGB image. Usually images have three (RGB) or four (RGBA, with transparency) channels. Then a filter is created for each layer and the results of all these filters are added together after applying them. It is common to add a bias (which, for a single filter, is a scalar value) that gets added to each resulting pixel. Usually in CNNs multiple filters are used per layer in the network resulting in as many output channels as filters where used. So the filters do not interact within a layer, but the next layer can combine them as needed. A really good visualization of a filter processing an image is given here:
+	\begin{center}
+		\url{https://cs231n.github.io/assets/conv-demo/index.html}
+	\end{center}
 
-			\subsubsection{Localizing Multiple Objects} % 7.48
-				\todo{Content}
-			% end
+	Normally all parameters in a filter layer (weights and biases of the filters) are learnable, resulting in
+	\begin{equation}
+		\text{\#Parameters} = D \big( d F_x F_y + 1 \big)
+	\end{equation}
+	parameters where \(d\) is the number of input channels, \(D\) is the number of output channels, and \(F_x\)/\(F_y\) are the size of each filter (width/height). The \emph{activation volume} has the spatial size
+	\begin{equation}
+		O_{x/y} = \frac{I_{x/y} + 2 P_{x/y} - F_{x/y}}{S_{x/y}} + 1
+	\end{equation}
+	where \(O_{x/y}\) is the width/height of the output data, \(I_{x/y}\) is the width/height of the input data, \(P_{x/y}\) is the horizontal/vertical padding, and \(S_{x/y}\) is the horizontal/vertical stride. If square input data and filters are used, the equations simplify to
+	\begin{align}
+		\text{\#Parameters} &= D \big( d F^2 + 1 \big) &
+		O &= \frac{I + 2 P - F}{S} + 1.
+	\end{align}
+	In convolutional networks, these kind of layers are then stacked on top of each other, forming a feature hierarchy (like in multilayer perceptrons). As usual, it is not good to shrink down the spatial dimensions too slow nor too fast. Common settings are power of two for the number of filters and filter sizes, padding and stride of \( (F, S, P) = (3, 1, 1) \), \( (F, S, P) = (5, 1, 2) \), \( (F, S, P) = (5, 2, ?) \)\footnote{Whatever fits for the padding.}, or \( (F, S, P) = (1, 1, 0) \). Usually the convolutional part of a network is followed by some fully connected layers for performing the actual classification/regression task. The interpretation is that the convolutional layers produce good features that can then be used by the following multiplayer perceptron.
 
-			\subsubsection{Human Pose Estimation} % 7.49
-				\todo{Content}
-			% end
+	It is also perfectly fine to use a scalar filter which basically results in a dot product between the layer and the filters.
+
+	% TODO: CNNs: Biology; 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 6.10, 6.11, 6.12, 6.13, 6.14, 6.15, 6.16, 6.17, 6.18, 6.19, 6.20, 6.21, 6.22, 6.23, 6.24, 6.25, 6.26, 6.27, 6.28, 6.123, 6.124, 6.125, 6.126
+
+	\begin{figure}
+		\centering
+		\begin{tikzpicture}[yscale = -1]
+			\begin{scope}[local bounding box = image]
+				\draw (0, 0) grid (5, 5);
+				\foreach [count = \i] \x in { 0, ..., 4 } {
+					\foreach [count = \j] \y in { 0, ..., 4 } {
+						\tikzmath{\val = int(sqrt(((\i - 3) * (\j - 3)) ^ 2));}
+						\node at (\x + 0.5, \y + 0.5) {\(\val\)};
+					}
+				}
+				\coordinate (a) at (1, 0);
+				\coordinate (b) at (4, 0);
+				\coordinate (c) at (4, 3);
+				\coordinate (d) at (1, 3);
+				\node at (1.8, 0.8) {\scriptsize \( \cdot 1 \)};
+				\node at (2.8, 0.8) {\scriptsize \( \cdot 0 \)};
+				\node at (3.8, 0.8) {\scriptsize \( \cdot 1 \)};
+				\node at (1.8, 1.8) {\scriptsize \( \cdot 0 \)};
+				\node at (2.8, 1.8) {\scriptsize \( \cdot 1 \)};
+				\node at (3.8, 1.8) {\scriptsize \( \cdot 0 \)};
+				\node at (1.8, 2.8) {\scriptsize \( \cdot 1 \)};
+				\node at (2.8, 2.8) {\scriptsize \( \cdot 0 \)};
+				\node at (3.8, 2.8) {\scriptsize \( \cdot 1 \)};
+			\end{scope}
+
+			\begin{scope}[local bounding box = convolution, shift = {($ (image.east) + (2cm, -1.5cm) $)}]
+				\draw (0, 0) grid (3, 3);
+				\node at (0 + 0.5, 0 + 0.5) {\(1\)};
+				\node at (0 + 0.5, 1 + 0.5) {\(0\)};
+				\node at (0 + 0.5, 2 + 0.5) {\(1\)};
+				\node at (1 + 0.5, 0 + 0.5) {\(0\)};
+				\node at (1 + 0.5, 1 + 0.5) {\(1\)};
+				\node at (1 + 0.5, 2 + 0.5) {\(0\)};
+				\node at (2 + 0.5, 0 + 0.5) {\(1\)};
+				\node at (2 + 0.5, 1 + 0.5) {\(0\)};
+				\node at (2 + 0.5, 2 + 0.5) {\(1\)};
+			\end{scope}
+
+			\begin{scope}[local bounding box = result, shift = {($ (convolution.east) + (2cm, -1.5cm) $)}]
+				\draw (0, 0) grid (3, 3);
+				\node at (0 + 0.5, 0 + 0.5) {\(5\)};
+				\node at (0 + 0.5, 1 + 0.5) {\(4\)};
+				\node at (0 + 0.5, 2 + 0.5) {\(5\)};
+				\node at (1 + 0.5, 0 + 0.5) {\(4\)};
+				\node at (1 + 0.5, 1 + 0.5) {\(4\)};
+				\node at (1 + 0.5, 2 + 0.5) {\(4\)};
+				\node at (2 + 0.5, 0 + 0.5) {\(5\)};
+				\node at (2 + 0.5, 1 + 0.5) {\(4\)};
+				\node at (2 + 0.5, 2 + 0.5) {\(5\)};
+				\coordinate (A) at (1, 0);
+				\coordinate (B) at (2, 0);
+				\coordinate (C) at (2, 1);
+				\coordinate (D) at (1, 1);
+				\node at (1.225, 0.775) {\tiny \( \sum \)};
+			\end{scope}
+
+			\path (image) -- node{\(\ast\)} (convolution);
+			\path (convolution) -- node{\(=\)} (result);
+
+			\draw [line width = 2pt] (a) -- (b) -- (c) -- (d) -- cycle;
+			\draw [line width = 2pt] (A) -- (B) -- (C) -- (D) -- cycle;
+			\draw [line width = 1pt] (b) -- (convolution.north west);
+			\draw [line width = 1pt] (c) -- (convolution.south west);
+			\draw [line width = 1pt] (convolution.north east) -- (A);
+			\draw [line width = 1pt] (convolution.south east) -- (D);
+		\end{tikzpicture}
+		\caption{Illustration of a \( 3 \times 3 \) convolution along an \( 5 \times 5 \) image.}
+		\label{fig:convNoStrideNoPadding}
+	\end{figure}
+
+	\section{Pooling}
+		A \emph{pooling} layer scales the input down by combining multiple pixels into a single pixel (like a convolution), but usually destructive operations like a maximum (known as \emph{max pooling}) are used. In contrast to convolutional layers, pooling layers operate independently on the input channels, producing as many output channels as there are input channels (i.e., the results to not get combined).
+	% end
+
+	\section{Case Studies}
+		This section covers some case studies (concrete models) used for certain tasks, usually classification.
+
+		Like previously for multi-layer perceptrons, the trend goes toward using smaller filters and instead using deeper architectures. Another trend is to get rid of pooling and fully connected layers and instead just use convolutional layers.
+
+		\paragraph{LeNet-5}
+			LeNet-5 was proposed by LeCun et al. in 1998 for classification on the MNIST dataset:
+			\begin{enumerate}
+				\item Convolution, \num{6} filters, size \(5 \times 5\), stride \num{1}, pad \num{2}.
+				\item Max pooling, size \(2 \times 2\), stride \num{2}.
+				\item Convolution, \num{16} filters, size \(5 \times 5\), stride \num{1}, pad \num{0}.
+				\item Max pooling, size \(2 \times 2\), stride \num{2}.
+				\item Fully connected, \num{120} neurons.
+				\item Fully connected, \num{84} neurons.
+				\item Fully connected (output), \num{10} neurons.
+			\end{enumerate}
 		% end
 
-		\subsection{Sliding Window} % 7.50, 7.51, 7.52, 7.53, 7.54, 7.55, 7.56, 7.57, 7.58, 7.59, 7.60, 7.61, 7.62
-			\todo{Content}
+		\paragraph{AlexNet}
+			AlexNet was proposed by Krizhevsky et al. in 2012 and is more advanced and evolved than LeNet-5:
+			\begin{enumerate}
+				\item Convolution, \num{96} filters, size \( 11 \times 11 \), stride \num{4}, pad \num{0}.
+				\item Max pooling, size \(3 \times 3\), stride \num{2}.
+				\item Normalization.
+				\item Convolution, \num{256} filters, site \(5 \times 5\), stride \num{1}, pad \num{2}.
+				\item Max pooling, size \(3 \times 3\), stride \num{2}.
+				\item Normalization.
+				\item Convolution, \num{384} filters, size \(3 \times 3\), stride \num{1}, pad \num{1}.
+				\item Convolution, \num{384} filters, size \(3 \times 3\), stride \num{1}, pad \num{1}.
+				\item Convolution, \num{256} filters, size \(3 \times 3\), stride \num{1}, pad \num{1}.
+				\item Max pooling, size \(3 \times 3\), stride \num{2}.
+				\item Fully connected, \num{4096} neurons.
+				\item Fully connected, \num{4096} neurons.
+				\item Fully connected, \num{1000} neurons.
+			\end{enumerate}
+			Further details: AlexNet was the first model to use ReLU activations and used normalization layers which is not common anymore. Furthermore heavy data augmentation was done as well as dropout with \(p = 0.5\).
 		% end
 	% end
 
-	\section{Object Detection} % 7.65, 7.87, 7.88, 7.117
-		\todo{Content}
+	\section{Transfer Learning}
+		A common saying about CNNs and computer vision tasks in general is that they take a lot of data for training. While is is true for training untrained models, it is possible to use pre-trained models and fine-tune them on the data at hand. This is called \emph{transfer learning}. The idea is to take a trained deep CNN that was, for example, trained on ImageNet and plug an untrained \emph{classification head}, fix all weights of the "body" of the model and only train the weights and biases of the head. This way deep features provided by the pre-trained model can be used as these are utterly effective, but training time and the amount of data needed is still relatively low. If more data is available, it might also be possible to fine-tune some of the convolutional layers for even better accuracy, but this is often not even needed. Tip: use a smaller learning rate for fine-tuning the final layers (around \(1/10\) of the original learning rate) and use even smaller rates for intermediate layers (around \(1/100\) of the original learning rate).
+	% end
+% end
 
-		\subsection{Detection as Regression} % 7.66, 7.67, 7.68
-			\todo{Content}
-		% end
+\chapter{Computer Vision Tasks}
+	This chapter covers tasks that are common in computer vision like classification, localization, and object detection. In classification, the task is to classify a given image based on what is in it. In combined classification and localization, the image is classified and a bounding box is detected around the object that was classified. Object detection describes the same but for multiple objects, so multiple different objects can be classified and localized within an image. In \emph{image segmentation}, the bounding box is extended so a polygon that gets built around the objects. This is the hardest task of the four. \autoref{fig:computerVisionTasks} shows a comparison of the four tasks.
 
-		\subsection{Detection as Classification} % 7.69, 7.70, 7.71, 7.72, 7.73, 7.76
-			\todo{Content}
+	\begin{figure}
+		\centering
+		\begin{subfigure}{0.24\linewidth}
+			\captionsetup{justification=centering}
+			\centering
+			\includegraphics[width=\linewidth]{img/compressed-dog.png}
+			\caption{Classification \\ Dog}
+		\end{subfigure}
+		\begin{subfigure}{0.24\linewidth}
+			\captionsetup{justification=centering}
+			\centering
+			\includegraphics[width=\linewidth]{img/compressed-dog-localized.png}
+			\caption{Class. \& Localization \\ Dog}
+		\end{subfigure}
+		\begin{subfigure}{0.24\linewidth}
+			\captionsetup{justification=centering}
+			\centering
+			\includegraphics[width=\linewidth]{img/compressed-dog-and-cat-detected.png}
+			\caption{Object Detection \\ {\color{TUDa-2b} Dog}, {\color{TUDa-9b} Cat}}
+		\end{subfigure}
+		\begin{subfigure}{0.24\linewidth}
+			\captionsetup{justification=centering}
+			\centering
+			\includegraphics[width=\linewidth]{img/compressed-dog-and-cat-segmented.png}
+			\caption{Object Segmentation \\ {\color{TUDa-2b} Dog}, {\color{TUDa-9b} Cat}}
+		\end{subfigure}
+		\caption{Comparison of computer vision task, from the easiest (left) to the hardest (right).}
+		\label{fig:computerVisionTasks}
+	\end{figure}
 
-			\subsubsection{Deformable Parts Model (DPM)} % 7.74, 7.75
-				\todo{Content}
+	\section{Combined Classification and Localization}
+		In classification, the input to the model is an image and the output is a class label. In localization, the input to the model is an image and the output is a box in the image, given by its coordinates and its width/height.
+
+		Interpreting localization as regression is a pretty natural thing to do as the output is (kind of) continuous. For training such a model, a cross-entropy loss is used for classification and an L2 loss is used for regression separately. The process is as follows: firstly, train or download a classification model. Secondly, attach a new regression head to the network that will be used for localization. The network is now two-headed. Then fix the downloaded CNN and train only the regression head using the L2 loss and after that potentially fine-tune the classification head. At test time, both heads are used simultaneously to retrieve both class scores and box coordinates.
+
+		For localizing multiple objects in an image (e.g. whole face, left ear, right ear, etc.), the regression head can also output \( 4K \) numbers where \(K\) is the number of objects to localize. Compared to object detection, the number of objects that are detected is fixed and there is only one class label for the image. One application is for example human pose estimation where the \(K\) objects represent the \(K\) joints of a human.
+
+		To further optimize the accuracy of the predictions a \emph{sliding window} can be used that slides over the input image and executes the classification and regression network multiple times. The predictions are then combined into a single final prediction. One example model that uses this technique is Overfeat which uses many sliding window locations and multiple scales. Also, the fully connected layers are turned into convolutions for more efficiency.
+	% end
+
+	\section{Object Detection}
+		Compared to combined classification and localization, in object detection a variable sized output is necessary. One approach is again using a sliding window which has the disadvantage that the classifier has to be executed lots of times. But if the model is sufficiently fast, this is a good approach. Additionally it is possible to only look at a tiny subset of possible positions using \emph{region proposals}. Region proposals first find "blobby" image regions which probably contain objects and then a classification model is applied to these proposals for detecting objects. This massively reduces the amount of regions that need to be scanned such that powerful, yet resource hungry, models like CNNs can be used. This then forms the \emph{R-CNN} model.
+
+		But in the end, all approaches discussed here are really the human way. One thing is that given an image and a classification task, humans often do not detect objects which are far larger than usual, but deep CNNs do\footnote{Miguel P. Eckstein, Kathryn Koehler, Lauren E. Welbourne, and Emre Akbas (2017): "Humans, but Not Deep Neural Networks, Often Miss Giant Targets in Scenes"}.
+
+		% TODO: Object Detection: Histogram of Oriented Gradients, Deformable Parts Model; 7.73, 7.74, 7.75
+
+		\subsection{R-CNN}
+			\emph{R-CNN} combines regions proposals with CNNs to form an efficient detector. For training R-CNNs, the process is as follows:
+			\begin{enumerate}
+				\item Train or download a classification model for ImageNet (e.g. AlexNet).
+				\item Reinitialize and fine-tune the final fully connected layer on a small portion of the classes that should be detected.
+				\item Extract training features by extracting the region proposals and cropping/scaling them such that they fit into the CNN. Then save all outputs of the final pooling layer.
+				\item Train a binary support vector machine per class to classify the features extracted in the previous step.
+				\item Train a linear regression model per class to map from the images to offsets of the bounding box. This makes up for region proposals that where slightly wrong (too wide, small, etc.).
+			\end{enumerate}
+			To evaluate the performance of R-CNNs, the \emph{mean average precision} (mAP) is used: compute the \emph{average precision} (AP) separately for each class and then average over the classes. It is computed as follows. A detection is a true positive if the intersection over union with the true box is greater than some threshold (usually \num{0.5}). Then to compute the AP all detections are used to draw a precision/recall-curve. The AP then is the area under the curve.
+
+			Problems of R-CNN is that it is slow at test time as a full forward pass through the CNN has to be computed for each region proposals. Also the SVMs and regressors are post-hoc, i.e., the CNN features are not updated in response to the SVMs and regressors. And the training process is really complicated.
+
+			\subsubsection{Fast R-CNN}
+				\emph{Fast R-CNN} is a variant of R-CNN that speeds up predictions at test time by sharing computation of convolutional layers between proposals for an image. Also, to tackle the second and third problem of R-CNNs, the whole model is just trained end-to-end with no complex training pipeline. Compared to vanilla R-CNN, Fast R-CNN is \num{25} times faster at test time.
 			% end
 
-			\subsubsection{Region Proposals} % 7.77, 7.78, 7.79, 7.80
-				\todo{Content}
+			\subsubsection{Faster R-CNN}
+				An even faster version of R-CNN is \emph{Faster R-CNN} where the extraction of regional proposals is done after the convolutional layers using a \emph{region proposal network} (RPN). This works by sliding a small window along the feature map that uses a small network that is used to classify between "object" and "not object" and outputs bounding boxes (which are used for finer localization in reference to the current window).
+
+				To train Faster R-CNN, the original paper proposed an ugly pipeline consisting of alternating optimization of the RPN and all other components. But since then, the community shifted to just training everything jointly using four losses: RPN classification, RPN regression, Fast R-CNN classification, and Fast R-CNN regression. Compared to vanilla R-CNN, Faster R-CNN is \num{250} times faster at test time.
 			% end
 		% end
 
-		\subsection{R-CNN} % 7.81, 7.82, 7.83, 7.84, 7.85, 7.86, 7.89, 7.90, 7.91, 7.92, 7.93
-			\todo{Content}
-		% end
-
-		\subsection{Fast R-CNN} % 7.94, 7.95, 7.96, 7.98, 7.98, 7.99, 7.100, .101, 7.102, 7.103, 7.104, 7.105, 7.106
-			\todo{Content}
-		% end
-
-		\subsection{Faster R-CNN} % 7.107, 7.108, 7.109, 7.110, 7.111, 7.112, 7.113
-			\todo{Content}
-		% end
-
-		\subsection{YOLO: You Only Look Once} % 7.114, 7.115
-			\todo{Content}
+		\subsection{YOLO: You Only Look Once}
+			The \emph{You Only Look Once} (YOLO) model uses a different approach than R-CNN and interprets object detection as regression. The image is divided into an \(S \times S\) grid and within each cell bounding boxes with four coordinated and their respective confidence as well as \(C\) class scores are calculated. The model than directly predicts these values using a CNN onto a \( 7 \times 7 \times (5 \cdot B + C) \) tensor. The YOLO model is even faster than Faster R-CNN, but the prediction power is not as good.
 		% end
 	% end
 % end

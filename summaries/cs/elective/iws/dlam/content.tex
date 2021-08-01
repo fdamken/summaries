@@ -1366,8 +1366,42 @@ db1 = np.einsum('ib->i', dL)
 	% end
 % end
 
-\chapter{Generative Models} % 9b.1, 9b.3, 9b.4, 9b.5, 9b.6, 9b.7, 9b.8, 9b.9, 9b.10, 9b.11, 9b.12, 9b.13, 9b.14, 9b.15, 9b.16, 9b.17, 9b.18, 9b.19, 9b.20, 9b.131, 9b.132, 9b.133, 9a.3, 9a.4, 9a.5, 9a.6, 9a.7, 9a.8
+\chapter{Generative Models} % 9b.131, 9b.132, 9b.133, 9a.3, 9a.4, 9a.5, 9a.6, 9a.7, 9a.8
 	\todo{Content}
+%	In supervised learning (everything discussed) before, the training dataset contains both input data as well as labels for that data and the goal is to learn a function that maps from the former to the latter. In unsupervised ML, the training data only contains "input" data and no labels. The goal here is to learn the underlying structure in the data rather than an explicit mapping. Examples for this are clustering, dimensionality reduction, and density estimation. Hence, unsupervised learning is the "hole grail" of machine learning: being able to learn and detect structure in data without explicitly providing information on this structure would lead to understanding the world.
+%
+%	\emph{Generative models} are a class of models that try to learn the underlying distribution of the training data rather than directly learning, e.g. discrimination rules. In other words: the goal is to learn a distribution \( p_\mathrm{model}(\vec{x}) \) that is similar to \( p_\mathrm{real}(\vec{x}) \). So generative models boil down to density estimation. Density estimation comes in two flavors:
+%	\begin{description}[leftmargin = 2cm]
+%		\item[Explicit] The distribution \( p_\mathrm{model}(\vec{x}) \) is explicitly defined and solved for.
+%		\item[Implicit] A model is learned that can sample from \( p_\mathrm{model}(\vec{x}) \) without explicitly defining it.
+%	\end{description}
+%	As the distribution is known after successful training, generative models can be used for generating data, e.g. for super-sampling or colorizing images. If time series data is learned, they can be used for simulation and planning which is especially useful in control (e.g. receding horizon control) and reinforcement learning. Also, training generative models can enable inference of latent representations which can be used as general features (e.g. in variational autoencoders, see \autoref{sec:vae}). \autoref{fig:generativeModelsHierarchy} shows the most known models and groups of models in a hierarchy.
+%
+%	\begin{figure}
+%		\centering
+%		\begin{tikzpicture}[->, every node/.style = { draw, rectangle, minimum height = 0.75cm, minimum width = 4cm }]
+%			\node (a) {Generative Models};
+%				\node [below = 1.5 of a, xshift = -4.5cm] (aa) {Explicit Density};
+%					\node [below = 1.5 of aa, xshift = -2.25cm, label = below:{Full Visible Belief Nets}] (aaa) {Tractable Density};
+%					\node [below = 1.5 of aa, xshift = +2.25cm] (aab) {Approximate Density};
+%						\node [below = 1.5 of aab, xshift = -2.25cm, label = below:{VAE}] (aaba) {Variational};
+%						\node [below = 1.5 of aab, xshift = +2.25cm, label = below:{Boltzmann Machine}] (aabb) {Markov Chain};
+%				\node [below = 1.5 of a, xshift = +4.5cm] (ab) {Implicit Density};
+%					\node [below = 1.5 of ab, xshift = -2.25cm, label = below:{GAN}] (aba) {Direct};
+%					\node [below = 1.5 of ab, xshift = +2.25cm, label = below:{GSN}] (abb) {Markov Chain};
+%
+%			\draw (a.south) to[bend right, out = 0, in = 180+45+15] (aa.north);
+%				\draw (aa.south) to[bend right, out = 0, in = 180+45] (aaa);
+%				\draw (aa.south) to[bend left, out = 0, in = -(180+45)] (aab);
+%					\draw (aab.south) to[bend right, out = 0, in = 180+45] (aaba);
+%					\draw (aab.south) to[bend left, out = 0, in = -(180+45)] (aabb);
+%			\draw (a.south) to[bend left, out = 0, in = -(180+45+15)] (ab.north);
+%				\draw (ab.south) to[bend right, out = 0, in = 180+45] (aba);
+%				\draw (ab.south) to[bend left, out = 0, in = -(180+45)] (abb);
+%		\end{tikzpicture}
+%		\caption{Taxonomy of generative models. The text below the leaves name some examples models in the respective category (where VAE stands for Variational Autoencoder, GAN for Generative Adversarial Network, and GSN for Generative Stochastic Network).}
+%		\label{fig:generativeModelsHierarchy}
+%	\end{figure}
 
 	\section{Fully Visible Belief Network} % 9b.22, 9b.23, 9b.24, 9a.9
 		\todo{Content}
@@ -1390,6 +1424,8 @@ db1 = np.einsum('ib->i', dL)
 	% end
 
 	\section{Variational Auto-Encoder (VAE)} % 9b.34, 9b.35, 9b.36, 9b.97, 9a.12
+		\label{sec:vae}
+
 		\todo{Content}
 
 		\subsection{Auto-Encoder} % 9b.37, 9b.38, 9b.39, 9b.40, 9b.41, 9b.42, 9b.43, 9b.44, 9b.45, 9b.46, 9b.47, 9b.48, 9b.49
@@ -1802,79 +1838,280 @@ db1 = np.einsum('ib->i', dL)
 	% end
 % end
 
-\chapter{Natural Language Processing} % 11.1, 11.2, 11.82, 11.84
-	\todo{Content}
+\chapter{Natural Language Processing}
+	\emph{Natural language processing} (NLP) is concerned with processing, interpreting, and translating naturally spoken or written text. This chapter will cover some parts of natural language understanding in form of the underlying semantics (\autoref{sec:textSemantics}) as well as translation and structure extraction (\autoref{sec:translation}).
 
-	\section{Text Semantics} % 11.3, 11.4, 11.39
-		\todo{Content}
+	\section{Text Semantics}
+		\label{sec:textSemantics}
 
-		\subsection{Propositional Semantics} % 11.5, 11.6, 11.7, 11.8, 11.9, 11.10, 11.11, 11.12, 11.13, 11.14
-			\todo{Content}
+		In NLP, \emph{text semantics} addresses the problem of extracting the meaning of texts. The models in this category can be split into two supercategories:
+		\begin{description}[leftmargin = 5cm]
+			\item[Propositional Semantics]
+				Text gets translated into a logical language, e.g. predicate calculus. For example the text "dog bites man" can be translated into the formula \( \mathrm{bites}(\mathrm{dog}, \mathrm{man}) \), where \( \mathrm{bites}(\cdot, \cdot) \) is a binary relation and \(\mathrm{man}\) and \(\mathrm{dog}\) are objects. It is also possible to attach probabilities to these formulas.
+			\item[Vector Representation]
+				Text is embedded into a high-dimensional vector space. For example the text "dog bites man" can be represented as a vector \( (0.2, -0.3, 1.5, \,\cdots\!) \in \R^n \). Sentences with a similar meaning should then be close to this embedding.
+		\end{description}
+		Text semantics can again be decomposed into two kinds of analysis: \emph{lexical} and \emph{compositional} semantics. In the former the meaning of individual words is analyzed while in the latter the meaning depends on the surrounding words and how they are combined. The next two sections will focus on propositional semantics and vector representations, respectively which can be used for both lexical and compositional semantics.
 
-			\subsubsection{Vector Embeddings and Similarity} % 11.15, 11.16, 11.17
-				\todo{Content}
-			% end
+		\subsection{Propositional Semantics}
+			Propositional semantics allow for logical inferences and allow the use of powerful result from logic to interpret text. For example: it is possible to infer "Socrates is mortal" from "Socrates is a man" and "all men are mortal".
 
-			\subsubsection{Latent Semantic Analysis} % 11.18, 11.19, 11.20, 11.21, 11.22, 11.23
-				\todo{Content}
-			% end
+			% TODO: NLP: Prop. Semantics; 11.12, 11.13, 11.14
+			% TODO: NLP: Prop. Semantics: Contemporary Approaches; 11.6, 11.7, 11.8, 11.9, 11.10, 11.11
 		% end
 
-		\subsection{Word2Vec} % 11.24, 11.25, 11.26, 11.27, 11.28, 11.29, 11.30
-			\todo{Content}
+		\subsection{Vector Representation}
+			The second approach to semantic analysis are vector embedding of words. These are based on a notion of \emph{similarity} and are based on the definition of paradigmatic similarity: similar words occur in similar contexts and are exchangeable. Word embeddings are vectors in a high dimensional vector space usually use a bag-of-words, for example:
+			\begin{gather}
+				\mathrm{vec}(\text{"dog"}) = \begin{bmatrix} 0.2 \\ -0.3 \\ 1.5 \\ \vdots \end{bmatrix} \qquad\qquad\quad
+				\mathrm{vec}(\text{"bites"}) = \begin{bmatrix} 0.5 \\ 1.0 \\ -0.4 \\ \vdots \end{bmatrix} \qquad\qquad\quad
+				\mathrm{vec}(\text{"man"}) = \begin{bmatrix} -0.1 \\ 2.3 \\ -1.5 \\ \vdots \end{bmatrix} \\
+				\implies\qquad
+				\mathrm{vec}(\text{"dog bites man"})
+					= \mathrm{vec}(\text{"dog"}) + \mathrm{vec}(\text{"bites"}) + \mathrm{vec}(\text{"man"})
+					= \begin{bmatrix} 0.6 \\ 2.0 \\ -0.4 \\ \vdots \end{bmatrix}
+			\end{gather}
+			The following sections will cover four models that all fall into the category of vector representations: latent semantic analysis, word2vec, skip-thought vectors and Siamese networks.
 
-			\subsubsection{Learned Relations} % 11.31, 11.32, 11.33, 11.34, 11.35, 11.36, 11.37, 11.38
-				\todo{Content}
+			\subsubsection{Latent Semantic Analysis}
+				\emph{Latent semantic analysis} (LSA) uses a bag-of-words format for studying documents. All documents are encoded in a matrix \( \mat{T} \in \R^{N \times M} \) where the entry \(T_{ij}\) represents how often word \(j\) appears in document \(i\)\footnote{Where \(N\) and \(M\) are the total number of documents and words/word features, respectively.}. Often not the count is used as a metric but tf-idf (term frequency-inverse document frequency) or other "squashing" functions. Obviously, most entries of the matrix are zero. Then an approximate factorization \( \mat{T} \approx \mat{U}^T \mat{S} \mat{V} \) with \( \mat{U}^T \in \R^{N \times K} \), \( \mat{S} \in \R^{K \times K} \), \( \mat{V} \in \R^{K \times M} \) is computed where \(K\) is the latent dimensionality. If \(K = M\), then this is the singular value decomposition of \(\mat{T}\). The latent dimensionality \(\mat{K}\) is chosen based on the Eigenvalues of \(\mat{S}\) by leaving out the smallest Eigenvalues.
+
+				Given a document \(\vec{t}\), i.e., a row of \(\mat{T}\), \( \vec{v} = \mat{V} \vec{t} \) is an embedding of the document in the latent space and \( \vec{t}' = \mat{U}^T \vec{v} = \mat{U}^T \mat{V} \vec{t} \) is the decoding from its embedding. The latent space can then be used to compute similarities between documents.
+
+				Note how singular value decomposition of the term frequency matrix is used in order to compute the most relevant Eigenvectors for the embedding. This is similar to principal component analysis which essentially does the same thing, but on the covariance matrix. Also, as PCA first normalizes the data, it looses the sparseness of the factorized matrix, making it infeasible for large bag-of-words.
 			% end
-		% end
 
-		\subsection{Skip-Thought Vectors} % 11.40, 11.41, 11.42, 11.43
-			\todo{Content}
+			\subsubsection{Word2Vec}
+				As opposed to latent semantic analysis, \emph{word2vec} does not use entire documents but only a few positions before and after a word to determine its local context. The pairs of these words are called \emph{skip-grams}. For example, if three context words are used\footnote{Three to five words are usual.}, the {\color{TUDa-9b} red} word is the center word and the {\color{TUDa-1b} blue} words are the context words:
+				\begin{center}
+					"This is a sentence {\color{TUDa-1b} that does not} {\color{TUDa-9b} contain} {\color{TUDa-1b} any content and} can thus be ignored."
+				\end{center}
+				In a complete word2vec model, all words are considered as center words. The model is then trained for trying to predict the context words given a center word. It is also possible to train the inverse, i.e., predict the center word given context words, but skip-grams in general perform better. Training is done by optimizing a softmax loss
+				\begin{equation}
+					p(j \given i) = \frac{\exp\big\{ \vec{u}_j^T \vec{v}_i \big\}}{\sum_k \exp\big\{ \vec{u}_k^T \vec{v}_i \big\}}
+				\end{equation}
+				where \(j\) is the output word, \(i\) is the input word, and \(j\) ranges over the context (e.g. from \num{-3} to \num{+3} if three context words are used). The vectors \(\vec{u}_j\) and \(\vec{v}_i\) are output and input embedding vectors, respectively. Word2Vec can thus be implemented with standard deep learning tools by differentiating the loss to optimize the output and input embeddings.
 
-			\subsubsection{Sentence Similarity and Relatedness} % 11.44, 11.45, 11.46, 11.47
-				\todo{Content}
+				Compared to LSA, local contexts reveal much more information about relations and properties between words than LSA. Relations between words are characterized by their displacement, e.g. \( \mathrm{vec}(\text{"woman"}) - \mathrm{vec}(\text{"man"}) \) describes the distance between the word "woman" and the word "man". Word2Vec manages to generalize these structures, such that the said distance is for example roughly equal to the distance between "queen" and "king":
+				\begin{equation}
+					\mathrm{vec}(\text{"woman"}) - \mathrm{vec}(\text{"man"}) \approx \mathrm{vec}(\text{"queen"}) - \mathrm{vec}(\text{"king"})
+				\end{equation}
+				These kinds of relations can be found a lot when analyzing the results from word2vec models.
 			% end
-		% end
 
-		\subsection{Siamese Models} % 11.48, 11.49, 11.50, 11.51, 11.52
-			\todo{Content}
+			\subsubsection{Skip-Thought Embeddings}
+				All vector representation models discussed before only capture bag-of-words, i.e., the order of how words appear is neglected. But order matters! Take for example the two sentences "dog bites man" and "man bites dog": they have opposite meanings. \emph{Skip-though embeddings} use many-to-many RNNs for predicting the next and previous sentence. The hidden state after the complete sentence was entered into the RNN (but before the prediction started) is then used as the vector embedding. Once the RNN is trained, the two prediction heads can be discarded. \autopageref{fig:skipThoughtVector} illustrates this.
 
-			\subsubsection{Semantic Entailment} % 11.53, 11.54
-				\todo{Content}
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}[
+								->,
+								label/.style = {
+									text height = 0.3cm,
+									inner sep = 0,
+									minimum height = 0.4cm
+								},
+								input/.style = {
+									fill = TUDa-0b,
+									draw,
+									circle,
+									minimum width = 0.5cm,
+									minimum height = 0.5cm,
+									inner sep = 0
+								},
+								previous/.style = {
+									fill = TUDa-4a,
+									draw,
+									circle,
+									minimum width = 0.5cm,
+									minimum height = 0.5cm,
+									inner sep = 0
+								},
+								next/.style = {
+									fill = TUDa-2a,
+									draw,
+									circle,
+									minimum width = 0.5cm,
+									minimum height = 0.5cm,
+									inner sep = 0
+								}
+							]
+						\node [input] (a) {};
+						\node [input, right = 0.65 of a] (b) {};
+						\node [input, right = 0.65 of b] (c) {};
+						\node [input, right = 0.65 of c] (d) {};
+						\node [input, right = 0.65 of d] (e) {};
+						\node [input, right = 0.65 of e] (f) {};
+						\node [input, right = 0.65 of f] (g) {};
+						\node [input, right = 0.65 of g] (h) {};
+						\node [input, right = 1.25 of h] (i) {};
+						\node [draw, circle, dashed, minimum width = 1.25cm, minimum height = 1.25cm, inner sep = 0] at (i) {};
+
+						\node [previous, above = 0.5 of i, xshift = 1.5cm] (pa) {};
+						\node [previous, right = 0.65 of pa] (pb) {};
+						\node [previous, right = 0.65 of pb] (pc) {};
+						\node [previous, right = 0.65 of pc] (pd) {};
+						\node [previous, right = 0.65 of pd] (pe) {};
+
+						\node [next, below = 0.5 of i, xshift = 1.5cm] (na) {};
+						\node [next, right = 0.65 of na] (nb) {};
+						\node [next, right = 0.65 of nb] (nc) {};
+						\node [next, right = 0.65 of nc] (nd) {};
+
+						\draw (a) to (b);
+						\draw (b) to (c);
+						\draw (c) to (d);
+						\draw (d) to (e);
+						\draw (e) to (f);
+						\draw (f) to (g);
+						\draw (g) to (h);
+						\draw (h) to (i);
+
+						\draw (i) to (pa);
+						\draw (pa) to (pb);
+						\draw (pb) to (pc);
+						\draw (pc) to (pd);
+						\draw (pd) to (pe);
+
+						\draw (i) to (na);
+						\draw (na) to (nb);
+						\draw (nb) to (nc);
+						\draw (nc) to (nd);
+
+						\node [label, below = 0 of a] {I};
+						\node [label, below = 0 of b] {could};
+						\node [label, below = 0 of c] {see};
+						\node [label, below = 0 of d] {the};
+						\node [label, below = 0 of e] {cat};
+						\node [label, below = 0 of f] {on};
+						\node [label, below = 0 of g] {the};
+						\node [label, below = 0 of h] {steps};
+
+						\node [label, below = 0 of pa] {EOS};
+						\node [label, below = 0 of pb] {I};
+						\node [label, below = 0 of pc] {got};
+						\node [label, below = 0 of pd] {back};
+						\node [label, below = 0 of pe] {home};
+						\node [label, above = 0 of pa] {I};
+						\node [label, above = 0 of pb] {got};
+						\node [label, above = 0 of pc] {back};
+						\node [label, above = 0 of pd] {home};
+						\node [label, above = 0 of pe] {EOS};
+
+						\node [label, below = 0 of na] {EOS};
+						\node [label, below = 0 of nb] {This};
+						\node [label, below = 0 of nc] {was};
+						\node [label, below = 0 of nd] {strange};
+						\node [label, above = 0 of na] {This};
+						\node [label, above = 0 of nb] {was};
+						\node [label, above = 0 of nc] {strange};
+						\node [label, above = 0 of nd] {EOS};
+					\end{tikzpicture}
+					\caption{Illustration of the RNN that backs skip-thought embeddings. The text below the nodes represent inputs to the RNN cell, the text above represents the output. Gray nodes are the input cells, green and blue are the prediction for the previous and next sentence, respectively. The hidden state of the surrounded cell is used as the embedding. "EOS" stands for "end of sentence".}
+					\label{fig:skipThoughtVector}
+				\end{figure}
+			% end
+
+			\subsubsection{Siamese Networks}
+				\emph{Siamese networks} utilize two recurrent neural networks (usually LSTMs) that share theirs parameters. It is trained by inputting two different sentences into each RNN and combining them using the Manhattan distance. This produces a similarity measure \(y\). The training data contains pairs of sentences that are labeled with a similarity measure such that well-known backpropagation and gradient descent can be used for training the Siamese network.
 			% end
 		% end
 	% end
 
-	\section{Translation Models} % 11.55
-		\todo{Content}
+	\section{Translation Models}
+		\label{sec:translation}
 
-		\subsection{Sequence-to-Sequence RNNs} % 11.56, 11.57
-			\todo{Content}
+		This chapter covers \emph{machine translation} and \emph{translation models} that do not use attention and transformer networks. These will be covered in \autoref{c:attention}.
 
-			\subsubsection{Bleu Scores for Translation} % 11.58, 11.59, 11.60, 11.61, 11.62, 11.63, 11.64, 11.65, 11.66
-				\todo{Content}
-			% end
+		In theory it is possible to develop machine translation models by using many-to-many RNNs that take a sentence as an input and produce the sentence as an output in another language (see \autoref{fig:rnnTranslation}). It is also possible to generate multiple possible output sequences, compare them to each other and choose the best. One possible score for comparing machine translations is a \emph{unigram precision}. It compares machine translations against human translations by dividing the number of words of the machine translation that also appear in the reference by the total number of words in the candidate sentence (a \emph{unigram} is a single word). This has the problem that for example the candidate "the the the the the the the" compared to the references "the cat is on the mat" and "there is a cat on the mat" has the maximum precision of \( 7/7 = 1 \):
+		\begin{equation}
+			\text{Unigram Precision} =
+				= \frac{\text{Correct words occuring in reference sentence.}}{\text{Words occuring in candidate sentence.}}
+				= \frac{7 \cdot \text{"the"}}{7 \cdot \text{"the"}}
+				= 7/7 = 1
+		\end{equation}
+		An alternative is to use the maximum number of occurrences throughout the candidates as the nominator. This way, in the above example, the unigram precision would be \(2/7\) because the word "the" appears two times in "the cat is on the mat". A generalization are \emph{\(n\)-gram precisions} that are defined similarly:
+		\begin{equation}
+			\text{\(n\)-Gram Precision}
+				= \frac{\text{Correct \(n\)-grams occuring in reference sentence.}}{\text{\(n\)-Grams occuring in candidate sentence.}}
+		\end{equation}
+		Like the unigram precision, the modified \(n\)-gram precision clips the nominator by the maximum occurrences throughout the candidates. Unigram precisions tend to capture adequacy while \(n\)-gram precisions tend to capture fluency.
 
-			\subsubsection{Sequence-to-Sequence Model Translation} % 11.67, 11.68, 11.69, 11.70
-				\todo{Content}
-			% end
-		% end
+		To combine multiple \(n\)-gram precisions, the \emph{BLEU} score can be used. It defines a weighted geometric mean over \(N\) different \(n\)-scores:
+		\begin{align}
+			\text{BLEU} &= \text{BP} \cdot \exp\bigg\{ \sum_{n = 1}^{N} w_n \log p_n \bigg\} &
+			\text{BP} &=
+				\begin{cases}
+					1 & \text{if } c > r \\
+					e^{1 - r/c} & \text{if } c \leq r
+				\end{cases}
+		\end{align}
+		Here \(p_n\) is the \(n\)-gram precision, \(c\) is the length of the candidate and \(r\) is the length of the reference translation. It has been shown that the BLEU score highly correlates with human judgment.
 
-		\subsection{State-of-the-Art Neural Machine Translation} % 11.71, 11.72
-			\todo{Content}
+		% TODO: NLP: State-of-the-Art Neural Machine Translation; 11.71, 11.72, 11.73, 11.74, 11.75, 11.76, 11.77, 11.78, 11.79, 11.80, 11.81, 11.82
 
-			\subsubsection{Parsing} % 11.73, 11.74, 11.75
-				\todo{Content}
-			% end
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[
+					->,
+						label/.style = {
+							text height = 0.3cm,
+							inner sep = 0,
+							minimum height = 0.4cm
+						},
+						cell/.style = {
+							fill = TUDa-0b,
+							draw,
+							circle,
+							minimum width = 0.5cm,
+							minimum height = 0.5cm,
+							inner sep = 0
+						},
+					]
+				\node [cell] (a) {};
+				\node [cell, right = 1 of a] (b) {};
+				\node [cell, right = 1 of b] (c) {};
+				\node [cell, right = 1 of c] (d) {};
+				\node [cell, right = 1 of d] (e) {};
+				\node [cell, right = 1 of e] (f) {};
+				\node [cell, right = 1 of f] (g) {};
 
-			\subsubsection{Sequence-to-Sequence Parser} % 11.76, 11.77, 11.78, 11.79
-				\todo{Content}
-			% end
+				\node [label, below = 0.5 of a] (ai) {I};
+				\node [label, below = 0.5 of b] (bi) {love};
+				\node [label, below = 0.5 of c] (ci) {coffee};
+				\node [label, below = 0.5 of d] (di) {EOS};
+				\node [label, below = 0.5 of e] (ei) {Ich};
+				\node [label, below = 0.5 of f] (fi) {liebe};
+				\node [label, below = 0.5 of g] (gi) {Kaffee};
 
-			\subsubsection{Neural Entity-Relation Extraction} % 11.80, 11.81, 11.82
-				\todo{Content}
-			% end
-		% end
+				\node [label, above = 0.5 of d] (do) {Ich};
+				\node [label, above = 0.5 of e] (eo) {liebe};
+				\node [label, above = 0.5 of f] (fo) {Kaffe};
+				\node [label, above = 0.5 of g] (go) {EOS};
+
+				\draw (a) to (b);
+				\draw (b) to (c);
+				\draw (c) to (d);
+				\draw (d) to (e);
+				\draw (e) to (f);
+				\draw (f) to (g);
+
+				\draw (ai) to (a);
+				\draw (bi) to (b);
+				\draw (ci) to (c);
+				\draw (di) to (d);
+				\draw (ei) to (e);
+				\draw (fi) to (f);
+				\draw (gi) to (g);
+
+				\draw (d) to (do);
+				\draw (e) to (eo);
+				\draw (f) to (fo);
+				\draw (g) to (go);
+			\end{tikzpicture}
+			\caption{Illustration of machine translation using a many-to-many RNN. Again, "EOS" stands for "end of sentence".}
+			\label{fig:rnnTranslation}
+		\end{figure}
 	% end
 % end
 

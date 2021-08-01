@@ -2115,56 +2115,54 @@ db1 = np.einsum('ib->i', dL)
 	% end
 % end
 
-\chapter{Attention Models and Transformers} % 12.1, 12.3, 12.4, 12.5, 12.6, 13.2, 13.3, 13.4, 13.5
+\chapter{Attention and Transformers}
 	\label{c:attention}
 
-	\todo{Content}
+	\emph{Attention models} us \emph{attention masks} to let the model know which parts of the input it should attend to. They can be separated into two classes: hard and soft attention. In hard attention, the model is forced to attend to a single input location. Thus, it is not possible to use gradient descent and techniques from reinforcement learning have to be leveraged to train these models. Soft attention models on the other hand compute a weighted combination over some inputs using an attention network. The weights are the \emph{attention mask}. As this is differentiable, backpropagation and gradient descent can be used for end-to-end training.
 
-	\section{Hard Attention for Recognition} % 12.7, 12.8, 12.9
-		\todo{Content}
+	A really good introduction to attention and transformer networks by \emph{Justin Johnson} can be found here:
+	\begin{center}
+		\url{https://youtu.be/YAgjfMR9R_M}
+	\end{center}
+
+	\section{Soft Attention for Translation}
+		The starting point for soft attention are recurrent neural networks and RNN translation which have the problem that the complete information about the sentence, no matter how long, has to be pushed into a single hidden state. Attention models use an attention network to generate weights that are then used for adding another input to each generating RNN cell that is directly computed from the input sentence (or, more specifically, the hidden states of the RNN input cells). The input to the decoder/generator network is
+		\begin{equation}
+			\vec{c}_i = \sum_{j = 1}^{T} \alpha_{ij} \vec{h}_j
+		\end{equation}
+		where \(\alpha_{ij}\) are the weights for the annotations \(\vec{h}_j\). These are the attention mask
+		\begin{equation}
+			\alpha_{ij} = \frac{\exp\{ e_{ij} \}}{\sum_k \exp\{ e_{ik} \}}
+		\end{equation}
+		where \( e_{ij} = a(\vec{s}_{i - 1}, \vec{h}_j) \) is the \emph{alignment score} which is a learnable function. The vector \(\vec{s}_{i - 1}\) the hidden state of the RNN cell right before emitting the output\footnote{Dzmitry Bahdanau, Kyunghyun Cho, and Yoshua Bengio (2015): "Neural Machine Translation by Jointly Learning to Align and Translate"}. The soft attention models are extremely powerful and it only took one year for them to reach the state-of-the-art after release. Currently they are surpassing any preexisting translation models.
+
+		% TODO: Attention: Global/Local; 12.24, 12.25, 12.26
 	% end
 
-	\section{Soft Attention for Translation} % 12.10, 12.11, 12.12, 12.13, 12.14, 12.15, 12.16, 12.17, 12.18, 12.19, 12.20, 12.21, 12.22, 12.23
-		\todo{Content}
+	\section{Attention for Captioning}
+		It is also possible to use attention for image captioning. Here the output of a CNN is used an interpreted as stacked features which are then weighted according to the attention. This enables the image captioning system (a RNN) to look at different parts of the image for different words. A similar procedure can be used for video data.
+
+		When using soft attention, the features are summed up and weighted according the (normalized) attention. In hard attention, a features is sampled from according to the (normalized) attention which form a probability distribution. But as sampling is not differentiable, one might resort to using the feature with the maximum attention instead. Nevertheless the derivative of this will be zero, killing all subsequent gradients, hence no learning via gradient descent is possible. That is why reinforcement learning is needed in this case and why soft attention is preferred.
 	% end
 
-	\section{Global and Local Attention Model} % 12.24, 12.25, 12.26
-		\todo{Content}
+	\section{Attending to Arbitrary Regions}
+		Attending according to the original paper "Show, Attend, and Tell" (Xu et al., 2015) only allows attending for regions on a fixed grid---but would not attending to arbitrary regions be better? It was shown by Graves et al. in 2013 that it is possible to attend to arbitrary regions by predicting the parameters of a mixture model. \emph{DRAW} (Gregor et al., 2015) can classify images by attending to arbitrary images of the input and can also generated images by attending to arbitrary regions of the output.
+
+		Another attention mechanism are \emph{spatial transformer networks} (Jaderberg, 2015). They try to find a mapping between the coordinated of in- and output pixels. Repeating this for all pixels in the output yields a sampling grid. Then a bilinear transformation is used to compute the output.
 	% end
 
-	\section{Soft Attention for Captioning} % 12.27, 12.28, 12.29, 12.30, 12.31, 12.35
-		\todo{Content}
+	\section{Transformer Networks}
+		\emph{Transformer networks} where originally introduced by Vaswani et al. in 2017 in a paper called "Attention is all you need". They propose an encoder-decoder architecture that is purely based on attention and does not utilize any recurrence. The core idea is that of \emph{multihead attention}, meaning that multiple attentions are computed per query with different weights. Additionally layer normalization is added which normalizes the values of each layer to have zero mean and unit variance\footnote{Note that this is different to batch normalization which normalizes all batches to have zero mean and unit variance.}. This reduces the covariate shift and therefore reduces training time. Also codes for the position of an input are added as otherwise self-attention layers would have no notion of order.
 
-		\subsection{Soft Attention for Video} % 12.32, 12.33, 12.34
-			\todo{Content}
-		% end
+		Compared to RNNs, transformer networks are much more efficient as everything can be computed in parallel as compared to sequential models. Also the maximum path length is reduced, reducing the problem of vanishing gradients. The transformer network achieves better results in machine translation and natural language generation than every previous state-of-the-art model. Example models that use transformers are GPT, GPT-2, and BERT.
 	% end
 
-	\section{Attending to Arbitrary Regions} % 12.36, 12.37
-		\todo{Content}
-
-		\subsection{DRAW} % 12.38, 12.39
-			\todo{Content}
-		% end
-
-		\subsection{Spatial Transformer Networks} % 12.40, 12.41, 12.42, 12.43, 12.44
-			\todo{Content}
-		% end
-	% end
-
-	\section{Transformer Networks} % 13.1, 13.6, 13.7, 13.8, 13.9, 13.10, 13.11
-		\todo{Content}
-
-		\subsection{GPT and GPT-2} % 13.12
-			\todo{Content}
-		% end
-
-		\subsection{BERT (Bidirectional Encoder Representation from Transformers)} % 13.13
-			\todo{Content}
-		% end
-	% end
-
-	\section{Takeaways} % 12.45, 12.46
-		\todo{Content}
+	\section{Takeaways}
+		\begin{description}
+			\item[Performance]    Attention models can improve accuracy and reduce computation time at the same time.
+			\item[Complexity]     There are many different design choices for attention networks that have a big impact on performance. Attention models can be quite complex, but they get simplified whenever possible.
+			\item[Explainability] Attention can yield more interpretability by seeing where the model looks.
+			\item[Hard vs. Soft]  Soft models are generally easier to train; hard models require reinforcement learning. But they can also be combined (Luong et al., 2015).
+		\end{description}
 	% end
 % end

@@ -1366,178 +1366,358 @@ db1 = np.einsum('ib->i', dL)
 	% end
 % end
 
-\chapter{Generative Models} % 9b.131, 9b.132, 9b.133, 9a.3, 9a.4, 9a.5, 9a.6, 9a.7, 9a.8
-	\todo{Content}
-%	In supervised learning (everything discussed) before, the training dataset contains both input data as well as labels for that data and the goal is to learn a function that maps from the former to the latter. In unsupervised ML, the training data only contains "input" data and no labels. The goal here is to learn the underlying structure in the data rather than an explicit mapping. Examples for this are clustering, dimensionality reduction, and density estimation. Hence, unsupervised learning is the "hole grail" of machine learning: being able to learn and detect structure in data without explicitly providing information on this structure would lead to understanding the world.
-%
-%	\emph{Generative models} are a class of models that try to learn the underlying distribution of the training data rather than directly learning, e.g. discrimination rules. In other words: the goal is to learn a distribution \( p_\mathrm{model}(\vec{x}) \) that is similar to \( p_\mathrm{real}(\vec{x}) \). So generative models boil down to density estimation. Density estimation comes in two flavors:
-%	\begin{description}[leftmargin = 2cm]
-%		\item[Explicit] The distribution \( p_\mathrm{model}(\vec{x}) \) is explicitly defined and solved for.
-%		\item[Implicit] A model is learned that can sample from \( p_\mathrm{model}(\vec{x}) \) without explicitly defining it.
-%	\end{description}
-%	As the distribution is known after successful training, generative models can be used for generating data, e.g. for super-sampling or colorizing images. If time series data is learned, they can be used for simulation and planning which is especially useful in control (e.g. receding horizon control) and reinforcement learning. Also, training generative models can enable inference of latent representations which can be used as general features (e.g. in variational autoencoders, see \autoref{sec:vae}). \autoref{fig:generativeModelsHierarchy} shows the most known models and groups of models in a hierarchy.
-%
-%	\begin{figure}
-%		\centering
-%		\begin{tikzpicture}[->, every node/.style = { draw, rectangle, minimum height = 0.75cm, minimum width = 4cm }]
-%			\node (a) {Generative Models};
-%				\node [below = 1.5 of a, xshift = -4.5cm] (aa) {Explicit Density};
-%					\node [below = 1.5 of aa, xshift = -2.25cm, label = below:{Full Visible Belief Nets}] (aaa) {Tractable Density};
-%					\node [below = 1.5 of aa, xshift = +2.25cm] (aab) {Approximate Density};
-%						\node [below = 1.5 of aab, xshift = -2.25cm, label = below:{VAE}] (aaba) {Variational};
-%						\node [below = 1.5 of aab, xshift = +2.25cm, label = below:{Boltzmann Machine}] (aabb) {Markov Chain};
-%				\node [below = 1.5 of a, xshift = +4.5cm] (ab) {Implicit Density};
-%					\node [below = 1.5 of ab, xshift = -2.25cm, label = below:{GAN}] (aba) {Direct};
-%					\node [below = 1.5 of ab, xshift = +2.25cm, label = below:{GSN}] (abb) {Markov Chain};
-%
-%			\draw (a.south) to[bend right, out = 0, in = 180+45+15] (aa.north);
-%				\draw (aa.south) to[bend right, out = 0, in = 180+45] (aaa);
-%				\draw (aa.south) to[bend left, out = 0, in = -(180+45)] (aab);
-%					\draw (aab.south) to[bend right, out = 0, in = 180+45] (aaba);
-%					\draw (aab.south) to[bend left, out = 0, in = -(180+45)] (aabb);
-%			\draw (a.south) to[bend left, out = 0, in = -(180+45+15)] (ab.north);
-%				\draw (ab.south) to[bend right, out = 0, in = 180+45] (aba);
-%				\draw (ab.south) to[bend left, out = 0, in = -(180+45)] (abb);
-%		\end{tikzpicture}
-%		\caption{Taxonomy of generative models. The text below the leaves name some examples models in the respective category (where VAE stands for Variational Autoencoder, GAN for Generative Adversarial Network, and GSN for Generative Stochastic Network).}
-%		\label{fig:generativeModelsHierarchy}
-%	\end{figure}
+\chapter{Generative Models}
+	In supervised learning (everything discussed) before, the training dataset contains both input data as well as labels for that data and the goal is to learn a function that maps from the former to the latter. In unsupervised ML, the training data only contains "input" data and no labels. The goal here is to learn the underlying structure in the data rather than an explicit mapping. Examples for this are clustering, dimensionality reduction, and density estimation. Hence, unsupervised learning is the "hole grail" of machine learning: being able to learn and detect structure in data without explicitly providing information on this structure would lead to understanding the world.
 
-	\section{Fully Visible Belief Network} % 9b.22, 9b.23, 9b.24, 9a.9
-		\todo{Content}
+	\emph{Generative models} are a class of models that try to learn the underlying distribution of the training data rather than directly learning, e.g. discrimination rules. In other words: the goal is to learn a distribution \( p_\mathrm{model}(\vec{x}) \) that is similar to \( p_\mathrm{real}(\vec{x}) \). So generative models boil down to density estimation. Density estimation comes in two flavors:
+	\begin{description}[leftmargin = 2cm]
+		\item[Explicit] The distribution \( p_\mathrm{model}(\vec{x}) \) is explicitly defined and solved for.
+		\item[Implicit] A model is learned that can sample from \( p_\mathrm{model}(\vec{x}) \) without explicitly defining it.
+	\end{description}
+	As the distribution is known after successful training, generative models can be used for generating data, e.g. for super-sampling or colorizing images. If time series data is learned, they can be used for simulation and planning which is especially useful in control (e.g. receding horizon control) and reinforcement learning. Also, training generative models can enable inference of latent representations which can be used as general features (e.g. in variational autoencoders, see \autoref{sec:vae}). \autoref{fig:generativeModelsHierarchy} shows the most known models and groups of models in a hierarchy.
+
+	\begin{figure}
+		\centering
+		\begin{tikzpicture}[->, every node/.style = { draw, rectangle, minimum height = 0.75cm, minimum width = 4cm }]
+			\node (a) {Generative Models};
+				\node [below = 1.5 of a, xshift = -4.5cm] (aa) {Explicit Density};
+					\node [below = 1.5 of aa, xshift = -2.25cm, label = below:{Full Visible Belief Nets}] (aaa) {Tractable Density};
+					\node [below = 1.5 of aa, xshift = +2.25cm] (aab) {Approximate Density};
+						\node [below = 1.5 of aab, xshift = -2.25cm, label = below:{VAE}] (aaba) {Variational};
+						\node [below = 1.5 of aab, xshift = +2.25cm, label = below:{Boltzmann Machine}] (aabb) {Markov Chain};
+				\node [below = 1.5 of a, xshift = +4.5cm] (ab) {Implicit Density};
+					\node [below = 1.5 of ab, xshift = -2.25cm, label = below:{GAN}] (aba) {Direct};
+					\node [below = 1.5 of ab, xshift = +2.25cm, label = below:{GSN}] (abb) {Markov Chain};
+
+			\draw (a.south) to[bend right, out = 0, in = 180+45+15] (aa.north);
+				\draw (aa.south) to[bend right, out = 0, in = 180+45] (aaa);
+				\draw (aa.south) to[bend left, out = 0, in = -(180+45)] (aab);
+					\draw (aab.south) to[bend right, out = 0, in = 180+45] (aaba);
+					\draw (aab.south) to[bend left, out = 0, in = -(180+45)] (aabb);
+			\draw (a.south) to[bend left, out = 0, in = -(180+45+15)] (ab.north);
+				\draw (ab.south) to[bend right, out = 0, in = 180+45] (aba);
+				\draw (ab.south) to[bend left, out = 0, in = -(180+45)] (abb);
+		\end{tikzpicture}
+		\caption{Taxonomy of generative models. The text below the leaves name some examples models in the respective category (where VAE stands for Variational Autoencoder, GAN for Generative Adversarial Network, and GSN for Generative Stochastic Network).}
+		\label{fig:generativeModelsHierarchy}
+	\end{figure}
+
+	\section{A Glimpse at Other Models}
+		This section only glimpses at some other models than the two models that are discussed primarily in this chapter.
+
+		\subsection{Fully Visible Belief Network, PixelRNN, and PixelCNN}
+			A \emph{fully visible belief network} is an explicit (tractable) density model that uses the probability chain rule for composing the likelihood \( p(\vec{x}) \) of a data point using the scalar probability density for each element of the vector:
+			\begin{equation}
+				p_{\vec{\theta}}(\vec{x}) = p_{\vec{\theta}}(x_1) \prod_{i = 2}^{n} p_{\vec{\theta}}(x_i \given \dotsrange{x_1}{x_{i - 1}})  \label{eq:fvbnLikelihood}
+			\end{equation}
+			For training, the likelihood is maximized.
+
+			If \(\vec{x}\) is an image, then the individual values \(x_i\) are the pixels of that image. To express the likelihood like in \eqref{eq:fvbnLikelihood}, an order of pixels in an image has to be defined. In \emph{PixelRNN}, images are generated starting from a corner and the order of pixels is defined from that corner to the opposite corner (the dependencies are illustrated in \autoref{fig:pixelrnn}). Then, but iteratively sampling from the distributions, a complete image can be generated. The big disadvantage of this approach is that it extremely slow. \emph{PixelCNN} is similar to PixelRNN in the sense that image generation still starts from the corner, but the dependency on previous pixels is now modeled using a CNN. Thus, training is faster then for PixelRNN as convolutions can be computed in paralleled, but generation is still sequential and slow.
+
+			Advantages of fully visible belief networks are that the likelihood can be computed explicitly which also gives a good evaluation metric. Also, the generated samples (e.g. of images) are good. But the big disadvantage is that they are extremely slow for high-dimensional data like images as sampling has to be done sequentially. The performance of PixelCNN can for example be improved by using gated convolutional layers, shortcut connections, discretized logistic loss, multi-scale, training tricks, and a lot more. One advancement of PixelCNN is PixelCNN++ (Salimans et al., 2017).
+
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[->, yscale = -1]
+					\foreach \x in { 0, ..., 4 } {
+						\foreach \y in { 0, ..., 4 } {
+							\node [draw, circle, minimum width = 0.5cm, minimum height = 0.5cm, inner sep = 0] (n\x\y) at (\x, \y) {};
+						}
+					}
+
+					\draw (n00) to (n10);
+					\draw (n10) to (n20);
+					\draw (n20) to (n30);
+					\draw (n30) to (n40);
+					\draw (n01) to (n11);
+					\draw (n11) to (n21);
+					\draw (n21) to (n31);
+					\draw (n31) to (n41);
+					\draw (n02) to (n12);
+					\draw (n12) to (n22);
+					\draw (n22) to (n32);
+					\draw (n32) to (n42);
+					\draw (n03) to (n13);
+					\draw (n13) to (n23);
+					\draw (n23) to (n33);
+					\draw (n33) to (n43);
+					\draw (n04) to (n14);
+					\draw (n14) to (n24);
+					\draw (n24) to (n34);
+					\draw (n34) to (n44);
+
+					\draw (n00) to (n01);
+					\draw (n01) to (n02);
+					\draw (n02) to (n03);
+					\draw (n03) to (n04);
+					\draw (n10) to (n11);
+					\draw (n11) to (n12);
+					\draw (n12) to (n13);
+					\draw (n13) to (n14);
+					\draw (n20) to (n21);
+					\draw (n21) to (n22);
+					\draw (n22) to (n23);
+					\draw (n23) to (n24);
+					\draw (n30) to (n31);
+					\draw (n31) to (n32);
+					\draw (n32) to (n33);
+					\draw (n33) to (n34);
+					\draw (n40) to (n41);
+					\draw (n41) to (n42);
+					\draw (n42) to (n43);
+					\draw (n43) to (n44);
+				\end{tikzpicture}
+				\caption{Dependencies of pixels as assumed by a PixelRNN. Generation starts from the top left and propagates through the whole image.}
+				\label{fig:pixelrnn}
+			\end{figure}
+		% end
+
+		\subsection{Change of Variables}
+			Instead of sampling from the actual distribution \( p(\vec{x}) \), it is possible to learn a mapping \( \vec{y} = \vec{g}(\vec{x}) \) such that
+			\begin{equation}
+				p_{\vec{x}}(\vec{x}) = p_{\vec{y}}\big( \vec{g}(\vec{x}) \big) \Biggl\lvert \det\biggl( \pdv{g(\vec{x})}{\vec{x}} \biggr) \Biggr\rvert.
+			\end{equation}
+			Then sampling can be done from the distribution \( p_{\vec{y}}(\vec{y}) \) instead and the results can be mapped back to the visible space.
+
+			Disadvantages are that the transformation \(\vec{g}(\cdot)\) must be invertible and that the latent dimension must match the real dimension.
+		% end
+
+		\subsection{Boltzmann Machine}
+			A \emph{Boltzmann machine} defines the likelihood as
+			\begin{align}
+				p(\vec{x}) &= \frac{1}{Z} \exp\bigl\{ -E(\vec{x}, \vec{z}) \bigr\} &
+				Z &= \sum_{\vec{x}} \sum_{\vec{z}} \exp\bigl\{ -E(\vec{x}, \vec{z}) \bigr\}
+			\end{align}
+			As this is intractable, sampling requires Markov chain Monte Carlo methods.
+		% end
 	% end
 
-	\section{WaveNet} % 9a.10
-		\todo{Content}
-	% end
-
-	\section{Change of Variables} % 9a.11
-		\todo{Content}
-	% end
-
-	\section{Boltzmann Machine} % 9a.13
-		\todo{Content}
-	% end
-
-	\section{PixelRNN and PixelCNN} % 9b.21, 9b.25, 9b.26, 9b.27, 9b.28, 9b.29, 9b.30, 9b.31, 9b.32, 9b.33
-		\todo{Content}
-	% end
-
-	\section{Variational Auto-Encoder (VAE)} % 9b.34, 9b.35, 9b.36, 9b.97, 9a.12
+	\section{Variational Auto-Encoder (VAE)}
 		\label{sec:vae}
 
-		\todo{Content}
+		While fully visible belief networks define a tractable density function \( p_{\vec{\theta}}(\vec{x}) = p_{\vec{\theta}}(x_1) \prod_{i = 2}^{n} p_{\vec{\theta}}(x_i \given \dotsrange{x_1}{x_{i - 1}}) \) that can be used to optimize the likelihood of the data, \emph{variational auto-encoders} (VAEs) define an intractable density function
+		\begin{equation}
+			p_{\vec{\theta}}(\vec{x}) = \int\! p_{\vec{\theta}}(\vec{z}) \, p_{\vec{\theta}}(\vec{x} \given \vec{z}) \dd{\vec{z}}
+		\end{equation}
+		using a latent representation \(\vec{z}\). This can not be used to directly optimize the likelihood. Instead, a lower bound is derived and optimized instead.
 
-		\subsection{Auto-Encoder} % 9b.37, 9b.38, 9b.39, 9b.40, 9b.41, 9b.42, 9b.43, 9b.44, 9b.45, 9b.46, 9b.47, 9b.48, 9b.49
-			\todo{Content}
+		This section will first introduce non-variational (classical) auto-encoders and subsequently lay down the definition of the VAE model, the derivation of the lower bound, and how to train and sample from the model
+
+		\subsection{Auto-Encoder}
+			An \emph{auto-encoder} is composed of two parts (usually neural networks): the \emph{encoder} and the \emph{decoder}. The encoder is used to compute a low-dimensional\footnote{Usually at least lower-dimensional than the original data.} feature representation \(\vec{z}\) from the original data. This feature representation is then passed to the decoder which reconstructs the original data. The latent dimension can then be used in various different ways: either to pass it to another model and exploit that the latent dimension is low-dimensional and has to contain meaningful information about the original data or to actually compress and transmit data. To achieve this, the encoder and decoder are trained jointly using an L2 loss between the input data and the reconstructed data. The boundary between the encoder and decoder is usually called the \emph{bottleneck} of the auto-encoder as it forces all data to be compressed into this dimensionality. \autoref{fig:autoEncoder} is an illustration of this concept.
+
+			To generate new data from a classical auto-encoder, it is possible to sample latent vectors---but this does not work well. This is due to the vectors in the latent dimension being unrestricted at how the scatter across the whole space. Also it is unclear on how to actually sample the vectors because no distribution is defined within the latent space.
+
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[yscale = -1]
+					\coordinate (ea) at (-2, -1.4);
+					\coordinate (eb) at (-1, -0.4);
+					\coordinate (ec) at (-1, +0.4);
+					\coordinate (ed) at (-2, +1.4);
+					\path (eb) to coordinate(ebc) (ec);
+					\path (ea) to coordinate(ead) (ed);
+					\coordinate [left = 1 of ead, label = left:{\( \vec{x} \)}] (eadM);
+					\path let \p1 = (eb), \p2 = (ea) in coordinate (eA) at (\x1, \y2);
+
+					\coordinate (da) at (+2, -1.4);
+					\coordinate (db) at (+1, -0.4);
+					\coordinate (dc) at (+1, +0.4);
+					\coordinate (dd) at (+2, +1.4);
+					\path (db) to coordinate(dbc) (dc);
+					\path (da) to coordinate(dad) (dd);
+					\coordinate [right = 1 of dad, label = right:{\( \hat{\vec{x}} \)}] (dadM);
+					\path let \p1 = (db), \p2 = (da) in coordinate (dA) at (\x1, \y2);
+
+					\draw (ea) to (ed);
+					\draw (eb) to (ec);
+					\draw (da) to (dd);
+					\draw (db) to (dc);
+
+					\path (ea) to node[above]{Encoder} (eA);
+					\path (da) to node[above]{Decoder} (dA);
+
+					\path (ebc) to node(z){\(\vec{z}\)} (dbc);
+
+					\draw [->] (ebc) to (z) to (dbc);
+					\draw [->] (eadM) to (ead);
+					\draw [->] (dad) to (dadM);
+
+					\foreach \a in { -1.4, -1.0, ..., 1.4 } {
+						\foreach \b in { -0.4, -0.0, ..., 0.4 } {
+							\draw (-2, \a) to (-1, \b);
+							\draw (+2, \a) to (+1, \b);
+						}
+					}
+				\end{tikzpicture}
+				\caption{Illustration of a classical auto-encoder.}
+				\label{fig:autoEncoder}
+			\end{figure}
 		% end
 
-		\subsection{Model} % 9b.50, 9b.51, 9b.52, 9b.53, 9b.54, 9b.55, 9b.56, 9b.57, 9b.58, 9b.59, 9b.60, 9b.61
-			\todo{Content}
+		\subsection{Model and Evidence Lower Bound}
+			As already seen in the previous section, auto-encoders work well in finding a low-dimensional embedding that explains the data and provides nonlinear mappings into and out of this embedding. A variational autoencoder is now an extension of classical auto-encoders that have a probabilistic interpretation and place a distribution on the latent space such that it can be sampled. Let \( p_{\vec{\theta}^\ast}(\vec{z}) \) be the true prior of the latent dimension and let \( p_{\vec{\theta}^\ast}(\vec{x} \given \vec{z}) \) be the true conditional. Usually the prior is chosen to be simple, e.g. a Gaussian, and the conditional distribution is represented by a neural network. This is called the decoder network and serves a similar purpose as in classical auto-encoders. To train the model, the data likelihood
+			\begin{equation}
+				p_{\vec{\theta}}(\vec{x}) = \int\! p_{\vec{\theta}}(\vec{z}) \, p_{\vec{\theta}}(\vec{x} \given \vec{z}) \dd{\vec{z}}  \label{eq:vaeLikelihood}
+			\end{equation}
+			is maximized. But this integral is intractable! And thus the posterior density
+			\begin{equation}
+				p_{\vec{\theta}}(\vec{z} \given \vec{x}) = \frac{p_{\vec{\theta}}(\vec{x} \given \vec{z}) \, p_{\vec{\theta}}(\vec{z})}{p_{\vec{\theta}}(\vec{x})}
+			\end{equation}
+			is also intractable because the normalization factor is intractable. The core idea of VAEs is to define an additional encoder network \( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \) that approximates the true posterior \( p_{\vec{\theta}}(\vec{z} \given \vec{x}) \). This allows to derive a lower bound on the data likelihood that can be optimized end-to-end. When choosing a Gaussian distributions for the latents, the encoder and decoder networks are now two-headed: they both produce the mean and covariance\footnote{When implementing, it is often helpful to not let the network directly produce the covariance matrix or standard deviation, but rather the logarithm. This does not make a difference mathematically, but taking the logarithm afterwards (which will in the ELBO) would result in numerical instability as the network might produce negative numbers. Taking the logarithm implicitly circumvents this problem.} of the Gaussian, explicitly modeling the distributions.
+
+			\subsubsection{Deriving the Lower Bound}
+				To derive the ELBO, there are two approaches: one uses Jensen's inequality and the other does not. This section contains both of the derivations.
+
+				\paragraph{With Jensen's Inequality}
+					To derive the ELBO using Jensen's inequality, the data likelihood is first written according to \eqref{eq:vaeLikelihood}, and then massaged using statistical properties:
+					\begin{align}
+						\log p_{\vec{\theta}}(\vec{x})
+							&= \log \int\! p_{\vec{\theta}}(\vec{z}) \, p_{\vec{\theta}}(\vec{x} \given \vec{z}) \dd{\vec{z}} \\
+							&= \log \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \frac{p_{\vec{\theta}}(\vec{x} \given \vec{z}) \, p_{\vec{\theta}}(\vec{z})}{q_{\vec{\phi}}(\vec{z} \given \vec{x})} \dd{\vec{z}} \\
+							&\geq \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{p_{\vec{\theta}}(\vec{x} \given \vec{z}) \, p_{\vec{\theta}}(\vec{z})}{q_{\vec{\phi}}(\vec{z} \given \vec{x})} \dd{\vec{z}} \\
+							&= \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \dd{\vec{z}} - \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{q_{\vec{\phi}}(\vec{z} \given \vec{x})}{p_{\vec{\theta}}(\vec{z})} \dd{\vec{z}} \\
+							&= \E_{\vec{z} \sim q_{\vec{\phi}}(\cdot \subgiven \vec{x})}\!\big[\! \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \big] - D_\mathrm{KL}\big( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \,\Vert\, p_{\vec{\theta}}(\vec{z}) \big) \\
+							&\eqqcolon \mathcal{L}_\mathrm{ELBO}(\vec{x}; \vec{\theta}, \vec{\phi})
+					\end{align}
+					In the second step the integrand was multiplied by one, the third step uses Jensen's inequality, and the rest is just moving around and exploiting of properties of the logarithm.
+				% end
+
+				\paragraph{Without Jensen's Inequality}
+					To derive the ELBO without Jensen's inequality, the data likelihood is surrounded by a noop integral which can then be transformed into the ELBO:
+					\begin{align}
+						\log p_{\vec{\theta}}(\vec{x})
+							&= \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log p_{\vec{\theta}}(\vec{x}) \dd{\vec{z}} \\
+							&= \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{p_{\vec{\theta}}(\vec{x} \given \vec{z}) \, p_{\vec{\theta}}(\vec{z})}{p_{\vec{\theta}}(\vec{z} \given \vec{x})} \dd{\vec{z}} \\
+							&= \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{p_{\vec{\theta}}(\vec{x} \given \vec{z}) \, p_{\vec{\theta}}(\vec{z})}{p_{\vec{\theta}}(\vec{z} \given \vec{x})} \frac{q_{\vec{\phi}}(\vec{z} \given \vec{x})}{q_{\vec{\phi}}(\vec{z} \given \vec{x})} \dd{\vec{z}} \\
+							&= \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \dd{\vec{z}} - \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{q_{\vec{\phi}}(\vec{z} \given \vec{x})}{p_{\vec{\theta}}(\vec{z})} \dd{\vec{z}} + \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{q_{\vec{\phi}}(\vec{z} \given \vec{x})}{p_{\vec{\theta}}(\vec{z} \given \vec{x})} \dd{\vec{z}} \\
+							&= \E_{\vec{z} \sim q_{\vec{\phi}}(\cdot \subgiven \vec{x})}\!\big[\! \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \big] - D_\mathrm{KL}\big( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \,\Vert\, p_{\vec{\theta}}(\vec{z}) \big) + \underbrace{D_\mathrm{KL}\big( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \,\Vert\, p_{\vec{\theta}}(\vec{z} \given \vec{x}) \big)}_{\geq\, 0} \\
+							&\geq \E_{\vec{z} \sim q_{\vec{\phi}}(\cdot \subgiven \vec{x})}\!\big[\! \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \big] - D_\mathrm{KL}\big( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \,\Vert\, p_{\vec{\theta}}(\vec{z}) \big) \\
+							&\eqqcolon \mathcal{L}_\mathrm{ELBO}(\vec{x}; \vec{\theta}, \vec{\phi})
+					\end{align}
+					The first step adds an integral over \(\vec{z}\) which is valid because \( p_{\vec{\theta}}(\vec{x}) \) does not depend on \(\vec{z}\) and is thus just a multiplicative constant w.r.t. the integral. In the second step the data likelihood is written out using Bayes' rule. The third step multiplies the argument of the logarithm with a one, not changing the overall value. Then, in the fourth step, the integral can be split into three parts by exploiting properties of the logarithm. This yields, in the fifth step, three components: a tractable expectation, a tractable KL-divergence and an intractable KL-divergence. As the latter it always non-negative it can be discarded in the sixth step, yielding the ELBO (seventh step).
+
+					While this derivation is a tad longer than the derivation using Jensen's inequality, it fives some more insights on what the ELBO is actually neglects: the KL-divergence, or distance, between the approximate posterior and the actual posterior. Thus it is possible that optimizing the ELBO does not even closely approximate the true posterior as it is not enforced. But as the first and second part of the ELBO ensure reconstruction and staying close to the prior, respectively, optimizing it usually yields good embeddings.
+				% end
+			% end
 		% end
 
-		\subsection{Intractability} % 9b.62, 9b.63, 9b.64, 9b.65, 9b.66, 9b.67, 9b.68
-			\todo{Content}
+		\subsection{Training Procedure and Generating Data}
+			To optimize a VAE, the ELBO has to be maximized. This is done by computing a forward pass through the network and both sampling layers and backpropagating through it. As it is not possible to differentiate a sampling procedure per se, a trick called the \emph{reparametrization trick} is used: instead of directly sampling from the encoder distribution, samples are taken from a fixed distribution and are transformed via the sufficient statistics produced by the encoder network. For a Gaussian \( q_{\vec{\phi}}(\vec{z} \given \vec{x}) = \mathcal{N}(\vec{z} \given \vec{\mu}_{\vec{x}}, \mat{\Sigma}_{\vec{x}}) \), where the mean and covariance are produced by the encoder network, the latent variables are not sampled directly from \( q_{\vec{\phi}} \), but an auxiliary variable \( \vec{\epsilon} \) is sampled from a unit Gaussian. This sample is then transformed using the mean and covariance like it has been sampled from the posterior directly:
+			\begin{equation}
+				\vec{z} \sim \mathcal{N}(\vec{z} \given \vec{\mu}_{\vec{x}}, \mat{\Sigma}_{\vec{x}})
+				\qquad\implies\qquad
+				\vec{z} = \vec{\mu}_{\vec{x}} + \mat{\Sigma}_{\vec{x}}^{1/2} \vec{\epsilon},\quad \vec{\epsilon} \sim \mathcal{N}(\vec{0}, \mat{I})
+			\end{equation}
+			Here \( \mat{\Sigma}_{\vec{x}}^{1/2} \) is the Cholesky decomposition of the covariance matrix.
+
+			To generate samples from the VAE, it is now possible to just sample from the prior and push the result through the decoder network. When a diagonal prior was used (like it is usually done), the latent variables are independent and different dimensions of \(\vec{z}\) might encode interpretable information about the data. This is also a good feature representation that can be used in subsequent models.
 		% end
 
-		\subsection{Encoder, Decoder, and Evidence Lower Bound (ELBO)} % 9b.69, 9b.70, 9b.71, 9b.72, 9b.73, 9b.74, 9b.75, 9b.76, 9b.77, 9b.78, 9b.79, 9b.80, 9b.81, 9b.82
-			\todo{Content}
-		% end
+		\subsection{Pros and Cons}
+			The advantages of VAEs are that they are a principled approach to generative models and allow inference of \( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \) which exhibits useful feature representations for other tasks. Disadvantages are that the maximization of the ELBO work reasonable well, but is not an evaluation metric as good as the density in PixelRNN/PixelCNN. Also the samples are blurrier and of lower quality compared to state-of-the-art generative models (Generative Adversarial Models, GANs).
 
-		\subsection{Training Procedure} % 9b.83, 9b.84, 9b.85, 9b.86, 9b.87, 9b.88, 9b.89, 9b.90
-			\todo{Content}
-		% end
-
-		\subsection{Generating Data} % 9b.91, 9b.92, 9b.93, 9b.94, 9b.95, 9b.96
-			\todo{Content}
+			But they are extremely flexibly and allow rich approximations of the posterior, also more than Gaussian distributions. They also incorporate structure in the latent variables that allow for interpretability.
 		% end
 	% end
 
-	\section{Generative Adversarial Networks (GANs)} % , 9b.114, 9b.115, 9b.130, 9a.1, 9a.2, 9a.14, 9a.15, 9a.16
-		\todo{Content}
+	\section{Generative Adversarial Networks}
+		\emph{Generative adversarial networks} (GANs) take a step back and give up explicitly modeling the density \( p(\vec{x}) \) in the favor of specializing on generating data. This is done by training two networks jointly: the generator network \( G_{\vec{\theta}_g(\vec{z})} \) which has the only requirement of being differentiable---especially not necessarily invertible---and the discriminator network \( D_{\vec{\theta}_d}(\vec{x}) \) which must also be differentiable. The generator network is used for transforming the \emph{noise vector} \(\vec{z}\), which is usually sampled from a simple distribution, into output data \(\vec{x}\) (often these are images). Hence, it "generates" images. For some theoretical guarantees the noise vector must be of higher dimension than the image dimensionality, but this is not a necessity. The discriminator network then tries to distinguish real and fake images by assigning each input data a probability of it being real.
 
-		\subsection{Two-Player Game} % 9b.104, 9b.105, 9b.106, 9b.107, 9b.108, 9b.109
-			\todo{Content}
+		The next sections will cover the training process and the model in more detail and glimpse at some related network architectures.
 
-			\subsubsection{Optimization Problems} % 9b.110, 9b.111, 9b.112
-				\todo{Content}
-			% end
+		\subsection{Training Procedure}
+			Training a GAN is done using a gradient descent variant like Adam on two batches of data simultaneously: the first batch are real images, the training examples, and the second batch are fake images generated by the generator network. Both networks are then trained simultaneously in a minimax game
+			\begin{equation}
+				\min_{\vec{\theta}_g} \max_{\vec{\theta}_d} \; \E_{\vec{x} \sim p_\mathrm{data}(\cdot)}\big[\! \log D_{\vec{\theta}_d}(\vec{x}) \big] + \E_{\vec{z} \sim p(\vec{z})}\Big[\! \log\!\Big(\! 1 - D_{\vec{\theta}_d}\big( G_{\vec{\theta}_g}(\vec{z}) \big) \!\Big) \Big]
+			\end{equation}
+			where the two expectations are (as usual) approximated using minibatches of data. The first expectation describes the log-likelihood that the discriminator classifies the real images correctly and the second expectation described the log-likelihood that the discriminator classifies the fake images correctly. As the discriminator maximizes and the generator minimizes the objective, the goal of the former is to correctly classify all data while the goal of the latter is to fool the discriminator. To optimize this objective, the training process alternates between gradient ascent on the discriminator and gradient descent on the generator parameters.
+
+			The problem of this approach is that training the generator does not work well. This is because the loss in the regions where a sample is likely fake, i.e., not good enough, is relatively flat compared to regions where samples are already good. Hence, the gradient vanishes and no learning happens. This is due to the minimax game having an equilibrium at the saddle point of the loss. Do circumvent this, the training process must not alternate between minimizing and maximizing the same loss w.r.t. different parameters, but instead perform alternating gradient ascent on two different objectives:
+			\begin{align}
+				\max_{\vec{\theta}_d} \;& \E_{\vec{x} \sim p_\mathrm{data}(\cdot)}\big[\! \log D_{\vec{\theta}_d}(\vec{x}) \big] + \E_{\vec{z} \sim p(\vec{z})}\Big[\! \log\!\Big(\! 1 - D_{\vec{\theta}_d}\big( G_{\vec{\theta}_g}(\vec{z}) \big) \!\Big) \Big] \\
+				\max_{\vec{\theta}_g} &\; \E_{\vec{z} \sim p(\vec{z})}\big[\! \log D_{\vec{\theta}_d}\big( G_{\vec{\theta}_g}(\vec{z}) \big) \big]
+			\end{align}
+			This is essentially the same, but now the equilibrium is no longer describable with a single loss and the minimax game is non-saturating. But this is also heuristically motivated! But it has the advantage that the generator can also learn when the discriminator successfully rejects all generator samples, making it kind of robust towards a too good discriminator.
+
+			% TODO: GAN: Maximum Likelihood Objective; 9a.20
+
+			It is also possible to view GANs as cooperative rather than adversarial games by interpreting the output of the discriminator as an estimate of the data and model distributions. The discriminator then "informs" the generator over its estimate such that the generate can improve itself. This is based on the fact the optimal discriminator distributions is
+			\begin{equation}
+				D(\vec{x}) = \frac{p_\mathrm{data}(\vec{x})}{p_\mathrm{data}(\vec{x}) + p_\mathrm{model}(\vec{x})}
+			\end{equation}
+			and the generator tries to estimate the real distribution: \( p_\mathrm{model}(\vec{x}) \approx p_\mathrm{data}(\vec{x}) \). If the generator would be optimal, \( p_\mathrm{model}(\vec{x}) = p_\mathrm{data}(\vec{x}) \), even the optimal discriminator would output \( D(\vec{x}) = 1/2 \), which is equivalent to random guess.
+
+			Two remaining problems of GANs are that optimizing the objective is still unstable which lies in the nature oj jointly training two networks. This is an open area of research! Another problem is the \emph{mode collapse}: fully training the discriminator while the generator is held constant is safe and probably yields a good discriminator. But fully training the generator while the discriminator is fixed results in a generator that maps all inputs to the argmax of the discriminator, overfitting on the current discriminator and exploiting its weaknesses rather than learning to generate good samples. This can partially be fixed by adding nearest-neighbor features to the discriminator that are constructed from the current minibatch (\emph{minibatch GAN}).
 		% end
 
-		\subsection{Convolutional Architectures} % 9b.118, 9b.119, 9b.120, 9b.121
-			\todo{Content}
+		\subsection{Convolutional Architectures}
+			Convolutional GANs use super-sampling in the generator with convolutions using a fractional stride, i.e., the stride is a fraction and thus pixels are used multiple times, resulting in a activation output volume, and a vanilla CNN architecture for the discriminator. Some more tips for designing CNN GANs are:
+			\begin{itemize}
+				\item Replace pooling layers with convolutions with stride in the discriminator and with convolutions with fractional stride in the generator.
+				\item Use batch normalization in both networks.
+				\item Remove fully connected layers for deeper architectures.
+				\item Use ReLU activations for every layer in the generator except for the output which uses tanh.
+				\item Use leaky ReLU activations for every layer in the discriminator.
+			\end{itemize}
+			Using CNN architectures as GANs results in high-definition images that look extremely realistic.
+		% end
 
-			\subsubsection{Interpretability} % 9b.122, 9b.123, 9b.124, 9b.125, 9b.126
-				\todo{Content}
-			% end
+		\subsection{Vector Space Arithmetic}
+			Basic arithmetic on the noise vectors \(\vec{z}\) can yield interesting interpretable results. If, for instance, a noise vector \( \vec{z}_\text{woman} \) generates a woman, \( \vec{z}_\text{man} \) generates a man without glasses, and \( \vec{z}_\text{glasses} \) generates a man with glasses, then \( \vec{z}_\text{glasses} - \vec{z}_\text{man} + \vec{z}_\text{woman} \) results in a woman with glasses. To use these properties it is of course necessary to get the corresponding noise vectors at first. But when using sufficiently low-dimensional noise vectors, finding the correct ones should not be too hard.
+		% end
+
+		\subsection{Pros and Cons}
+			A big advantage of GANs is that they generate beautiful, state-of-the-art samples and images. The downsides on the other hand are that they are a lot trickier to train compared to, for example, VAEs and that they can not solve inference queries such as \( p(\vec{x}) \) and \( p(\vec{z} \given \vec{x}) \) as GANs do not model the distributions explicitly.
+
+			Active areas of research regarding GANs are better loss functions that induce a more stable training (Wasserstein GAN, LSGAN, etc.), Conditional GANs for training multi-purpose GANs, and many more.
 		% end
 	% end
 
-	\section{Generative Adversarial Networks (GANs)} % 9a.14, 9a.15, 9a.16, 9a.33, 9a.50, 9b.98, 9b.99, 9b.100, 9b.101, 9b.102, 9b.103, 9b.130
-		\todo{Content}
+	\section{Optimization and Game Theory}
+		Optimization and game theory are two topics that should not be viewed independently and have lots of links between them. In optimization, the goal is to find a set of parameters \( \vec{\theta}^\ast \) that are optimal w.r.t. some loss \( J(\vec{\theta}) \):
+		\begin{equation}
+			\vec{\theta}^\ast = \arg\min_{\vec{\theta}} \; J(\vec{\theta})
+		\end{equation}
+		In game theory (or, more specifically, a two-player game), there ate two sets of parameters: \( \vec{\theta}_1 \) and \( \vec{\theta}_2 \). The first player controls \(\vec{\theta}_1\) and tries to minimize its objective \( J_1(\vec{\theta}_1, \vec{\theta}_2) \) and the second players controls \(\vec{\theta}_2\) and tries to minimize its objective \( J_2(\vec{\theta}_1, \vec{\theta}_2) \). Depending on these losses, the game is either cooperative or non-cooperative. Optimization can therefore be viewed as a subset of the more general two-players games by setting \( \vec{\theta}_1 = \vec{\theta} \), \( \vec{\theta}_2 = \emptyset \), \( J_1(\vec{\theta}_1, \vec{\theta}_2) = J(\vec{\theta}_1) \), and \( J_2(\vec{\theta}_1, \vec{\theta}_2) = 0 \).
 
-		\subsection{Training Procedure} % 9a.17, 9a.23, 9a.34, 9b.104, 9b.105, 9b.113, 9b.114, 9b.115
-			\todo{Content}
+		A solution of a non-cooperative is characterized by its \emph{Nash equilibrium}. In a Nash equilibrium \( \vec{\theta}_1^\ast \), \( \vec{\theta}_2^\ast \), neither player can reduce its loss by changing their own strategy/parameters:
+		\begin{align}
+			\forall \vec{\theta}_1 : \eqmakebox[gtJBox][r]{\( \displaystyle  J_1 \)}(\vec{\theta}_1, \vec{\theta}_2^\ast) \geq \eqmakebox[gtJBox][r]{\( \displaystyle  J_1 \)}(\vec{\theta}_1^\ast, \vec{\theta}_2^\ast) \\
+			\forall \vec{\theta}_2 : \eqmakebox[gtJBox][r]{\( \displaystyle  J_2 \)}(\vec{\theta}_1^\ast, \vec{\theta}_2) \geq \eqmakebox[gtJBox][r]{\( \displaystyle  J_2 \)}(\vec{\theta}_1^\ast, \vec{\theta}_2^\ast)
+		\end{align}
+		In other words: each player's loss is minimal with respect to the other player's strategy. Finding Nash equilibria can thus be seen again as a subset of optimization as a Nash equilibrium always characterized the global optimum.
 
-			\subsubsection{Minimax, Non-Saturating, and Maximum Likelihood Games} % 9a.18, 9a.19, 9a.20, 9a.21, 9b.106, 9b.107, 9b.108, 9b.109
-				\todo{Content}
-			% end
+		Some well-studies cases for games are finite minimax games (zero-sum games), finite mixed-strategy games, continuous and convex games, and differential games. In continuous games, the Nash equilibrium is a saddle point of the losses. More specifically, it has to be a maximum for one and a minimum for the other player. A necessary condition for an optima are---as usual---that the gradient of the loss vanishes and that the Hessian is positive semi-definite. A sufficient condition is that the Hessian is positive definite.
 
-			\subsubsection{Discriminator Strategy} % 9a.22
-				\todo{Content}
-			% end
+		This yields sufficient conditions for gradient descent to converge for both players. Given the joint gradient
+		\begin{equation}
+			\vec{\omega} =
+				\begin{bmatrix}
+					\grad_{\vec{\theta}_1} J_1(\vec{\theta}_1, \vec{\theta}_2) \\
+					\grad_{\vec{\theta}_2} J_2(\vec{\theta}_1, \vec{\theta}_2)
+				\end{bmatrix}
+		\end{equation}
+		the Eigenvalues of the \emph{generalized Hessian}
+		\begin{equation}
+			\grad_{\vec{\theta}_1, \vec{\theta}_2} \vec{\omega} =
+				\begin{bmatrix}
+					\grad_{\vec{\theta}_1} \grad_{\vec{\theta}_1} J_1(\vec{\theta}_1, \vec{\theta}_2) & \grad_{\vec{\theta}_1} \grad_{\vec{\theta}_2} J_2(\vec{\theta}_1, \vec{\theta}_2) \\
+					\grad_{\vec{\theta}_2} \grad_{\vec{\theta}_1} J_1(\vec{\theta}_1, \vec{\theta}_2) & \grad_{\vec{\theta}_2} \grad_{\vec{\theta}_2} J_2(\vec{\theta}_1, \vec{\theta}_2)
+				\end{bmatrix}
+		\end{equation}
+		must have a positive real part. This condition can be interpreted as each player's Hessian should have large, positive, Eigenvalues, expressing a strong urge to keep their strategy. The Jacobian of the gradient of one player w.r.t. the other player's strategy should have a small effect on the Eigenvalues, meaning that the change of strategy of the player has only a limited ability to change the other player's behavior. But sadly this does not apply to GANs, so their convergence still is an open question.
 
-			\subsubsection{Mode Collapse} % 9a.29, 9b.110, 9b.111, 9b.112
-				\todo{Content}
-			% end
-		% end
+		Some heuristics for finding equilibria are to keep the parameter values close to their running average and periodically assign the running average to the parameters. Also add a loss for deviation from the running average.
 
-		\subsection{Convolutional Architectures} % 9b.118, 9b.119, 9b.120, 9b.121
-			\todo{Content}
-		% end
-
-		\subsection{Vector Space Arithmetic} % 9a.28, 9b.122, 9b.123, 9b.124, 9b.125, 9b.126
-			\todo{Content}
-		% end
-	% end
-
-	\section{Optimization and Games} % 9a.37, 9a.38
-		\todo{Content}
-
-		\subsection{Nash Equilibrium} % 9a.39
-			\todo{Content}
-		% end
-
-		\subsection{Well-Studies Cases} % 9a.40
-			\todo{Content}
-
-			\subsubsection{Continuous Minimax Game} % 9a.41
-				\todo{Content}
-			% end
-
-			\subsubsection{Local Differential Nash Equilibria} % 9a.42
-				\todo{Content}
-			% end
-
-			\subsubsection{Gradient Descent Convergence} % 9a.43, 9a.44
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Heuristics} % 9a.45, 9a.46
-			\todo{Content}
-		% end
-
-		\subsection{Other Games in AI} % 9a.47
-			\todo{Content}
-		% end
+		Other games in artificial intelligence are for example robust optimization and robust control, domain-adversarial learning for domain adaption, adversarial privacy, guided cost learning, and predictability minimization.
 	% end
 % end
 
 \chapter{Probabilistic Graphical Models} % 10b.6, 10b.7, 10b.8, 10b.9, 10b.10, 10b.11, 10b.12, 10b.13, 10b.14, 10b.15, 10b.16, 10b.17, 10b.18, 10b.19, 10a.1, 10a.2, 10a.3, 10a.6, 10a.13, 10a.14, 10a.22, 10a.23, 10a.24, 10a.69
 	\todo{Content}
 
-	\section{(Conditional) Independency} % 10a.15, 10a.16
+	\section{(Conditional) Independence} % 10a.15, 10a.16
 		\todo{Content}
 	% end
 

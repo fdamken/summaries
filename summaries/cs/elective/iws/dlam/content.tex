@@ -1366,475 +1366,1034 @@ db1 = np.einsum('ib->i', dL)
 	% end
 % end
 
-\chapter{Generative Models} % 9b.131, 9b.132, 9b.133, 9a.3, 9a.4, 9a.5, 9a.6, 9a.7, 9a.8
-	\todo{Content}
-%	In supervised learning (everything discussed) before, the training dataset contains both input data as well as labels for that data and the goal is to learn a function that maps from the former to the latter. In unsupervised ML, the training data only contains "input" data and no labels. The goal here is to learn the underlying structure in the data rather than an explicit mapping. Examples for this are clustering, dimensionality reduction, and density estimation. Hence, unsupervised learning is the "hole grail" of machine learning: being able to learn and detect structure in data without explicitly providing information on this structure would lead to understanding the world.
-%
-%	\emph{Generative models} are a class of models that try to learn the underlying distribution of the training data rather than directly learning, e.g. discrimination rules. In other words: the goal is to learn a distribution \( p_\mathrm{model}(\vec{x}) \) that is similar to \( p_\mathrm{real}(\vec{x}) \). So generative models boil down to density estimation. Density estimation comes in two flavors:
-%	\begin{description}[leftmargin = 2cm]
-%		\item[Explicit] The distribution \( p_\mathrm{model}(\vec{x}) \) is explicitly defined and solved for.
-%		\item[Implicit] A model is learned that can sample from \( p_\mathrm{model}(\vec{x}) \) without explicitly defining it.
-%	\end{description}
-%	As the distribution is known after successful training, generative models can be used for generating data, e.g. for super-sampling or colorizing images. If time series data is learned, they can be used for simulation and planning which is especially useful in control (e.g. receding horizon control) and reinforcement learning. Also, training generative models can enable inference of latent representations which can be used as general features (e.g. in variational autoencoders, see \autoref{sec:vae}). \autoref{fig:generativeModelsHierarchy} shows the most known models and groups of models in a hierarchy.
-%
-%	\begin{figure}
-%		\centering
-%		\begin{tikzpicture}[->, every node/.style = { draw, rectangle, minimum height = 0.75cm, minimum width = 4cm }]
-%			\node (a) {Generative Models};
-%				\node [below = 1.5 of a, xshift = -4.5cm] (aa) {Explicit Density};
-%					\node [below = 1.5 of aa, xshift = -2.25cm, label = below:{Full Visible Belief Nets}] (aaa) {Tractable Density};
-%					\node [below = 1.5 of aa, xshift = +2.25cm] (aab) {Approximate Density};
-%						\node [below = 1.5 of aab, xshift = -2.25cm, label = below:{VAE}] (aaba) {Variational};
-%						\node [below = 1.5 of aab, xshift = +2.25cm, label = below:{Boltzmann Machine}] (aabb) {Markov Chain};
-%				\node [below = 1.5 of a, xshift = +4.5cm] (ab) {Implicit Density};
-%					\node [below = 1.5 of ab, xshift = -2.25cm, label = below:{GAN}] (aba) {Direct};
-%					\node [below = 1.5 of ab, xshift = +2.25cm, label = below:{GSN}] (abb) {Markov Chain};
-%
-%			\draw (a.south) to[bend right, out = 0, in = 180+45+15] (aa.north);
-%				\draw (aa.south) to[bend right, out = 0, in = 180+45] (aaa);
-%				\draw (aa.south) to[bend left, out = 0, in = -(180+45)] (aab);
-%					\draw (aab.south) to[bend right, out = 0, in = 180+45] (aaba);
-%					\draw (aab.south) to[bend left, out = 0, in = -(180+45)] (aabb);
-%			\draw (a.south) to[bend left, out = 0, in = -(180+45+15)] (ab.north);
-%				\draw (ab.south) to[bend right, out = 0, in = 180+45] (aba);
-%				\draw (ab.south) to[bend left, out = 0, in = -(180+45)] (abb);
-%		\end{tikzpicture}
-%		\caption{Taxonomy of generative models. The text below the leaves name some examples models in the respective category (where VAE stands for Variational Autoencoder, GAN for Generative Adversarial Network, and GSN for Generative Stochastic Network).}
-%		\label{fig:generativeModelsHierarchy}
-%	\end{figure}
+\chapter{Generative Models}
+	In supervised learning (everything discussed) before, the training dataset contains both input data as well as labels for that data and the goal is to learn a function that maps from the former to the latter. In unsupervised ML, the training data only contains "input" data and no labels. The goal here is to learn the underlying structure in the data rather than an explicit mapping. Examples for this are clustering, dimensionality reduction, and density estimation. Hence, unsupervised learning is the "holy grail" of machine learning: being able to learn and detect structure in data without explicitly providing information on this structure would lead to understanding the world.
 
-	\section{Fully Visible Belief Network} % 9b.22, 9b.23, 9b.24, 9a.9
-		\todo{Content}
+	\emph{Generative models} are a class of models that try to learn the underlying distribution of the training data rather than directly learning, e.g. discrimination rules. In other words: the goal is to learn a distribution \( p_\mathrm{model}(\vec{x}) \) that is similar to \( p_\mathrm{real}(\vec{x}) \). So generative models boil down to density estimation. Density estimation comes in two flavors:
+	\begin{description}[leftmargin = 2cm]
+		\item[Explicit] The distribution \( p_\mathrm{model}(\vec{x}) \) is explicitly defined and solved for.
+		\item[Implicit] A model is learned that can sample from \( p_\mathrm{model}(\vec{x}) \) without explicitly defining it.
+	\end{description}
+	As the distribution is known after successful training, generative models can be used for generating data, e.g. for super-sampling or colorizing images. If time series data is learned, they can be used for simulation and planning which is especially useful in control (e.g. receding horizon control) and reinforcement learning. Also, training generative models can enable inference of latent representations which can be used as general features (e.g. in variational autoencoders, see \autoref{sec:vae}). \autoref{fig:generativeModelsHierarchy} shows the most known models and groups of models in a hierarchy.
+
+	\begin{figure}
+		\centering
+		\begin{tikzpicture}[->, every node/.style = { draw, rectangle, minimum height = 0.75cm, minimum width = 4cm }]
+			\node (a) {Generative Models};
+				\node [below = 1.5 of a, xshift = -4.5cm] (aa) {Explicit Density};
+					\node [below = 1.5 of aa, xshift = -2.25cm, label = below:{Full Visible Belief Nets}] (aaa) {Tractable Density};
+					\node [below = 1.5 of aa, xshift = +2.25cm] (aab) {Approximate Density};
+						\node [below = 1.5 of aab, xshift = -2.25cm, label = below:{VAE}] (aaba) {Variational};
+						\node [below = 1.5 of aab, xshift = +2.25cm, label = below:{Boltzmann Machine}] (aabb) {Markov Chain};
+				\node [below = 1.5 of a, xshift = +4.5cm] (ab) {Implicit Density};
+					\node [below = 1.5 of ab, xshift = -2.25cm, label = below:{GAN}] (aba) {Direct};
+					\node [below = 1.5 of ab, xshift = +2.25cm, label = below:{GSN}] (abb) {Markov Chain};
+
+			\draw (a.south) to[bend right, out = 0, in = 180+45+15] (aa.north);
+				\draw (aa.south) to[bend right, out = 0, in = 180+45] (aaa);
+				\draw (aa.south) to[bend left, out = 0, in = -(180+45)] (aab);
+					\draw (aab.south) to[bend right, out = 0, in = 180+45] (aaba);
+					\draw (aab.south) to[bend left, out = 0, in = -(180+45)] (aabb);
+			\draw (a.south) to[bend left, out = 0, in = -(180+45+15)] (ab.north);
+				\draw (ab.south) to[bend right, out = 0, in = 180+45] (aba);
+				\draw (ab.south) to[bend left, out = 0, in = -(180+45)] (abb);
+		\end{tikzpicture}
+		\caption{Taxonomy of generative models. The text below the leaves name some examples models in the respective category (where VAE stands for Variational Autoencoder, GAN for Generative Adversarial Network, and GSN for Generative Stochastic Network).}
+		\label{fig:generativeModelsHierarchy}
+	\end{figure}
+
+	\section{A Glimpse at Other Models}
+		This section only glimpses at some other models than the two models that are discussed primarily in this chapter.
+
+		\subsection{Fully Visible Belief Network, PixelRNN, and PixelCNN}
+			A \emph{fully visible belief network} is an explicit (tractable) density model that uses the probability chain rule for composing the likelihood \( p(\vec{x}) \) of a data point using the scalar probability density for each element of the vector:
+			\begin{equation}
+				p_{\vec{\theta}}(\vec{x}) = p_{\vec{\theta}}(x_1) \prod_{i = 2}^{n} p_{\vec{\theta}}(x_i \given \dotsrange{x_1}{x_{i - 1}})  \label{eq:fvbnLikelihood}
+			\end{equation}
+			For training, the likelihood is maximized.
+
+			If \(\vec{x}\) is an image, then the individual values \(x_i\) are the pixels of that image. To express the likelihood like in \eqref{eq:fvbnLikelihood}, an order of pixels in an image has to be defined. In \emph{PixelRNN}, images are generated starting from a corner and the order of pixels is defined from that corner to the opposite corner (the dependencies are illustrated in \autoref{fig:pixelrnn}). Then, but iteratively sampling from the distributions, a complete image can be generated. The big disadvantage of this approach is that it extremely slow. \emph{PixelCNN} is similar to PixelRNN in the sense that image generation still starts from the corner, but the dependency on previous pixels is now modeled using a CNN. Thus, training is faster then for PixelRNN as convolutions can be computed in paralleled, but generation is still sequential and slow.
+
+			Advantages of fully visible belief networks are that the likelihood can be computed explicitly which also gives a good evaluation metric. Also, the generated samples (e.g. of images) are good. But the big disadvantage is that they are extremely slow for high-dimensional data like images as sampling has to be done sequentially. The performance of PixelCNN can for example be improved by using gated convolutional layers, shortcut connections, discretized logistic loss, multi-scale, training tricks, and a lot more. One advancement of PixelCNN is PixelCNN++ (Salimans et al., 2017).
+
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[->, yscale = -1]
+					\foreach \x in { 0, ..., 4 } {
+						\foreach \y in { 0, ..., 4 } {
+							\node [draw, circle, minimum width = 0.5cm, minimum height = 0.5cm, inner sep = 0] (n\x\y) at (\x, \y) {};
+						}
+					}
+
+					\draw (n00) to (n10);
+					\draw (n10) to (n20);
+					\draw (n20) to (n30);
+					\draw (n30) to (n40);
+					\draw (n01) to (n11);
+					\draw (n11) to (n21);
+					\draw (n21) to (n31);
+					\draw (n31) to (n41);
+					\draw (n02) to (n12);
+					\draw (n12) to (n22);
+					\draw (n22) to (n32);
+					\draw (n32) to (n42);
+					\draw (n03) to (n13);
+					\draw (n13) to (n23);
+					\draw (n23) to (n33);
+					\draw (n33) to (n43);
+					\draw (n04) to (n14);
+					\draw (n14) to (n24);
+					\draw (n24) to (n34);
+					\draw (n34) to (n44);
+
+					\draw (n00) to (n01);
+					\draw (n01) to (n02);
+					\draw (n02) to (n03);
+					\draw (n03) to (n04);
+					\draw (n10) to (n11);
+					\draw (n11) to (n12);
+					\draw (n12) to (n13);
+					\draw (n13) to (n14);
+					\draw (n20) to (n21);
+					\draw (n21) to (n22);
+					\draw (n22) to (n23);
+					\draw (n23) to (n24);
+					\draw (n30) to (n31);
+					\draw (n31) to (n32);
+					\draw (n32) to (n33);
+					\draw (n33) to (n34);
+					\draw (n40) to (n41);
+					\draw (n41) to (n42);
+					\draw (n42) to (n43);
+					\draw (n43) to (n44);
+				\end{tikzpicture}
+				\caption{Dependencies of pixels as assumed by a PixelRNN. Generation starts from the top left and propagates through the whole image.}
+				\label{fig:pixelrnn}
+			\end{figure}
+		% end
+
+		\subsection{Change of Variables}
+			Instead of sampling from the actual distribution \( p(\vec{x}) \), it is possible to learn a mapping \( \vec{y} = \vec{g}(\vec{x}) \) such that
+			\begin{equation}
+				p_{\vec{x}}(\vec{x}) = p_{\vec{y}}\big( \vec{g}(\vec{x}) \big) \Biggl\lvert \det\biggl( \pdv{g(\vec{x})}{\vec{x}} \biggr) \Biggr\rvert.
+			\end{equation}
+			Then sampling can be done from the distribution \( p_{\vec{y}}(\vec{y}) \) instead and the results can be mapped back to the visible space.
+
+			Disadvantages are that the transformation \(\vec{g}(\cdot)\) must be invertible and that the latent dimension must match the real dimension.
+		% end
+
+		\subsection{Boltzmann Machine}
+			A \emph{Boltzmann machine} defines the likelihood as
+			\begin{align}
+				p(\vec{x}) &= \frac{1}{Z} \exp\bigl\{ -E(\vec{x}, \vec{z}) \bigr\} &
+				Z &= \sum_{\vec{x}} \sum_{\vec{z}} \exp\bigl\{ -E(\vec{x}, \vec{z}) \bigr\}
+			\end{align}
+			As this is intractable, sampling requires Markov chain Monte Carlo methods.
+		% end
 	% end
 
-	\section{WaveNet} % 9a.10
-		\todo{Content}
-	% end
-
-	\section{Change of Variables} % 9a.11
-		\todo{Content}
-	% end
-
-	\section{Boltzmann Machine} % 9a.13
-		\todo{Content}
-	% end
-
-	\section{PixelRNN and PixelCNN} % 9b.21, 9b.25, 9b.26, 9b.27, 9b.28, 9b.29, 9b.30, 9b.31, 9b.32, 9b.33
-		\todo{Content}
-	% end
-
-	\section{Variational Auto-Encoder (VAE)} % 9b.34, 9b.35, 9b.36, 9b.97, 9a.12
+	\section{Variational Auto-Encoder (VAE)}
 		\label{sec:vae}
 
-		\todo{Content}
+		While fully visible belief networks define a tractable density function \( p_{\vec{\theta}}(\vec{x}) = p_{\vec{\theta}}(x_1) \prod_{i = 2}^{n} p_{\vec{\theta}}(x_i \given \dotsrange{x_1}{x_{i - 1}}) \) that can be used to optimize the likelihood of the data, \emph{variational auto-encoders} (VAEs) define an intractable density function
+		\begin{equation}
+			p_{\vec{\theta}}(\vec{x}) = \int\! p_{\vec{\theta}}(\vec{z}) \, p_{\vec{\theta}}(\vec{x} \given \vec{z}) \dd{\vec{z}}
+		\end{equation}
+		using a latent representation \(\vec{z}\). This can not be used to directly optimize the likelihood. Instead, a lower bound is derived and optimized instead.
 
-		\subsection{Auto-Encoder} % 9b.37, 9b.38, 9b.39, 9b.40, 9b.41, 9b.42, 9b.43, 9b.44, 9b.45, 9b.46, 9b.47, 9b.48, 9b.49
-			\todo{Content}
+		This section will first introduce non-variational (classical) auto-encoders and subsequently lay down the definition of the VAE model, the derivation of the lower bound, and how to train and sample from the model
+
+		\subsection{Auto-Encoder}
+			An \emph{auto-encoder} is composed of two parts (usually neural networks): the \emph{encoder} and the \emph{decoder}. The encoder is used to compute a low-dimensional\footnote{Usually at least lower-dimensional than the original data.} feature representation \(\vec{z}\) from the original data. This feature representation is then passed to the decoder which reconstructs the original data. The latent dimension can then be used in various different ways: either to pass it to another model and exploit that the latent dimension is low-dimensional and has to contain meaningful information about the original data or to actually compress and transmit data. To achieve this, the encoder and decoder are trained jointly using an L2 loss between the input data and the reconstructed data. The boundary between the encoder and decoder is usually called the \emph{bottleneck} of the auto-encoder as it forces all data to be compressed into this dimensionality. \autoref{fig:autoEncoder} is an illustration of this concept.
+
+			To generate new data from a classical auto-encoder, it is possible to sample latent vectors---but this does not work well. This is due to the vectors in the latent dimension being unrestricted at how the scatter across the whole space. Also it is unclear on how to actually sample the vectors because no distribution is defined within the latent space.
+
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[yscale = -1]
+					\coordinate (ea) at (-2, -1.4);
+					\coordinate (eb) at (-1, -0.4);
+					\coordinate (ec) at (-1, +0.4);
+					\coordinate (ed) at (-2, +1.4);
+					\path (eb) to coordinate(ebc) (ec);
+					\path (ea) to coordinate(ead) (ed);
+					\coordinate [left = 1 of ead, label = left:{\( \vec{x} \)}] (eadM);
+					\path let \p1 = (eb), \p2 = (ea) in coordinate (eA) at (\x1, \y2);
+
+					\coordinate (da) at (+2, -1.4);
+					\coordinate (db) at (+1, -0.4);
+					\coordinate (dc) at (+1, +0.4);
+					\coordinate (dd) at (+2, +1.4);
+					\path (db) to coordinate(dbc) (dc);
+					\path (da) to coordinate(dad) (dd);
+					\coordinate [right = 1 of dad, label = right:{\( \hat{\vec{x}} \)}] (dadM);
+					\path let \p1 = (db), \p2 = (da) in coordinate (dA) at (\x1, \y2);
+
+					\draw (ea) to (ed);
+					\draw (eb) to (ec);
+					\draw (da) to (dd);
+					\draw (db) to (dc);
+
+					\path (ea) to node[above]{Encoder} (eA);
+					\path (da) to node[above]{Decoder} (dA);
+
+					\path (ebc) to node(z){\(\vec{z}\)} (dbc);
+
+					\draw [->] (ebc) to (z) to (dbc);
+					\draw [->] (eadM) to (ead);
+					\draw [->] (dad) to (dadM);
+
+					\foreach \a in { -1.4, -1.0, ..., 1.4 } {
+						\foreach \b in { -0.4, -0.0, ..., 0.4 } {
+							\draw (-2, \a) to (-1, \b);
+							\draw (+2, \a) to (+1, \b);
+						}
+					}
+				\end{tikzpicture}
+				\caption{Illustration of a classical auto-encoder.}
+				\label{fig:autoEncoder}
+			\end{figure}
 		% end
 
-		\subsection{Model} % 9b.50, 9b.51, 9b.52, 9b.53, 9b.54, 9b.55, 9b.56, 9b.57, 9b.58, 9b.59, 9b.60, 9b.61
-			\todo{Content}
+		\subsection{Model and Evidence Lower Bound}
+			As already seen in the previous section, auto-encoders work well in finding a low-dimensional embedding that explains the data and provides nonlinear mappings into and out of this embedding. A variational autoencoder is now an extension of classical auto-encoders that have a probabilistic interpretation and place a distribution on the latent space such that it can be sampled. Let \( p_{\vec{\theta}^\ast}(\vec{z}) \) be the true prior of the latent dimension and let \( p_{\vec{\theta}^\ast}(\vec{x} \given \vec{z}) \) be the true conditional. Usually the prior is chosen to be simple, e.g. a Gaussian, and the conditional distribution is represented by a neural network. This is called the decoder network and serves a similar purpose as in classical auto-encoders. To train the model, the data likelihood
+			\begin{equation}
+				p_{\vec{\theta}}(\vec{x}) = \int\! p_{\vec{\theta}}(\vec{z}) \, p_{\vec{\theta}}(\vec{x} \given \vec{z}) \dd{\vec{z}}  \label{eq:vaeLikelihood}
+			\end{equation}
+			is maximized. But this integral is intractable! And thus the posterior density
+			\begin{equation}
+				p_{\vec{\theta}}(\vec{z} \given \vec{x}) = \frac{p_{\vec{\theta}}(\vec{x} \given \vec{z}) \, p_{\vec{\theta}}(\vec{z})}{p_{\vec{\theta}}(\vec{x})}
+			\end{equation}
+			is also intractable because the normalization factor is intractable. The core idea of VAEs is to define an additional encoder network \( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \) that approximates the true posterior \( p_{\vec{\theta}}(\vec{z} \given \vec{x}) \). This allows to derive a lower bound on the data likelihood that can be optimized end-to-end. When choosing a Gaussian distributions for the latents, the encoder and decoder networks are now two-headed: they both produce the mean and covariance\footnote{When implementing, it is often helpful to not let the network directly produce the covariance matrix or standard deviation, but rather the logarithm. This does not make a difference mathematically, but taking the logarithm afterwards (which will in the ELBO) would result in numerical instability as the network might produce negative numbers. Taking the logarithm implicitly circumvents this problem.} of the Gaussian, explicitly modeling the distributions.
+
+			\subsubsection{Deriving the Lower Bound}
+				To derive the ELBO, there are two approaches: one uses Jensen's inequality and the other does not. This section contains both of the derivations.
+
+				\paragraph{With Jensen's Inequality}
+					To derive the ELBO using Jensen's inequality, the data likelihood is first written according to \eqref{eq:vaeLikelihood}, and then massaged using statistical properties:
+					\begin{align}
+						\log p_{\vec{\theta}}(\vec{x})
+							&= \log \int\! p_{\vec{\theta}}(\vec{z}) \, p_{\vec{\theta}}(\vec{x} \given \vec{z}) \dd{\vec{z}} \\
+							&= \log \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \frac{p_{\vec{\theta}}(\vec{x} \given \vec{z}) \, p_{\vec{\theta}}(\vec{z})}{q_{\vec{\phi}}(\vec{z} \given \vec{x})} \dd{\vec{z}} \\
+							&\geq \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{p_{\vec{\theta}}(\vec{x} \given \vec{z}) \, p_{\vec{\theta}}(\vec{z})}{q_{\vec{\phi}}(\vec{z} \given \vec{x})} \dd{\vec{z}} \\
+							&= \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \dd{\vec{z}} - \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{q_{\vec{\phi}}(\vec{z} \given \vec{x})}{p_{\vec{\theta}}(\vec{z})} \dd{\vec{z}} \\
+							&= \E_{\vec{z} \sim q_{\vec{\phi}}(\cdot \subgiven \vec{x})}\!\big[\! \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \big] - D_\mathrm{KL}\big( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \,\Vert\, p_{\vec{\theta}}(\vec{z}) \big) \\
+							&\eqqcolon \mathcal{L}_\mathrm{ELBO}(\vec{x}; \vec{\theta}, \vec{\phi})
+					\end{align}
+					In the second step the integrand was multiplied by one, the third step uses Jensen's inequality, and the rest is just moving around and exploiting of properties of the logarithm.
+				% end
+
+				\paragraph{Without Jensen's Inequality}
+					To derive the ELBO without Jensen's inequality, the data likelihood is surrounded by a noop integral which can then be transformed into the ELBO:
+					\begin{align}
+						\log p_{\vec{\theta}}(\vec{x})
+							&= \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log p_{\vec{\theta}}(\vec{x}) \dd{\vec{z}} \\
+							&= \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{p_{\vec{\theta}}(\vec{x} \given \vec{z}) \, p_{\vec{\theta}}(\vec{z})}{p_{\vec{\theta}}(\vec{z} \given \vec{x})} \dd{\vec{z}} \\
+							&= \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{p_{\vec{\theta}}(\vec{x} \given \vec{z}) \, p_{\vec{\theta}}(\vec{z})}{p_{\vec{\theta}}(\vec{z} \given \vec{x})} \frac{q_{\vec{\phi}}(\vec{z} \given \vec{x})}{q_{\vec{\phi}}(\vec{z} \given \vec{x})} \dd{\vec{z}} \\
+							&= \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \dd{\vec{z}} - \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{q_{\vec{\phi}}(\vec{z} \given \vec{x})}{p_{\vec{\theta}}(\vec{z})} \dd{\vec{z}} + \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{q_{\vec{\phi}}(\vec{z} \given \vec{x})}{p_{\vec{\theta}}(\vec{z} \given \vec{x})} \dd{\vec{z}} \\
+							&= \E_{\vec{z} \sim q_{\vec{\phi}}(\cdot \subgiven \vec{x})}\!\big[\! \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \big] - D_\mathrm{KL}\big( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \,\Vert\, p_{\vec{\theta}}(\vec{z}) \big) + \underbrace{D_\mathrm{KL}\big( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \,\Vert\, p_{\vec{\theta}}(\vec{z} \given \vec{x}) \big)}_{\geq\, 0} \\
+							&\geq \E_{\vec{z} \sim q_{\vec{\phi}}(\cdot \subgiven \vec{x})}\!\big[\! \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \big] - D_\mathrm{KL}\big( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \,\Vert\, p_{\vec{\theta}}(\vec{z}) \big) \\
+							&\eqqcolon \mathcal{L}_\mathrm{ELBO}(\vec{x}; \vec{\theta}, \vec{\phi})
+					\end{align}
+					The first step adds an integral over \(\vec{z}\) which is valid because \( p_{\vec{\theta}}(\vec{x}) \) does not depend on \(\vec{z}\) and is thus just a multiplicative constant w.r.t. the integral. In the second step the data likelihood is written out using Bayes' rule. The third step multiplies the argument of the logarithm with a one, not changing the overall value. Then, in the fourth step, the integral can be split into three parts by exploiting properties of the logarithm. This yields, in the fifth step, three components: a tractable expectation, a tractable KL-divergence and an intractable KL-divergence. As the latter it always non-negative it can be discarded in the sixth step, yielding the ELBO (seventh step).
+
+					While this derivation is a tad longer than the derivation using Jensen's inequality, it fives some more insights on what the ELBO is actually neglects: the KL-divergence, or distance, between the approximate posterior and the actual posterior. Thus it is possible that optimizing the ELBO does not even closely approximate the true posterior as it is not enforced. But as the first and second part of the ELBO ensure reconstruction and staying close to the prior, respectively, optimizing it usually yields good embeddings.
+				% end
+			% end
 		% end
 
-		\subsection{Intractability} % 9b.62, 9b.63, 9b.64, 9b.65, 9b.66, 9b.67, 9b.68
-			\todo{Content}
+		\subsection{Training Procedure and Generating Data}
+			To optimize a VAE, the ELBO has to be maximized. This is done by computing a forward pass through the network and both sampling layers and backpropagating through it. As it is not possible to differentiate a sampling procedure per se, a trick called the \emph{reparametrization trick} is used: instead of directly sampling from the encoder distribution, samples are taken from a fixed distribution and are transformed via the sufficient statistics produced by the encoder network. For a Gaussian \( q_{\vec{\phi}}(\vec{z} \given \vec{x}) = \mathcal{N}(\vec{z} \given \vec{\mu}_{\vec{x}}, \mat{\Sigma}_{\vec{x}}) \), where the mean and covariance are produced by the encoder network, the latent variables are not sampled directly from \( q_{\vec{\phi}} \), but an auxiliary variable \( \vec{\epsilon} \) is sampled from a unit Gaussian. This sample is then transformed using the mean and covariance like it has been sampled from the posterior directly:
+			\begin{equation}
+				\vec{z} \sim \mathcal{N}(\vec{z} \given \vec{\mu}_{\vec{x}}, \mat{\Sigma}_{\vec{x}})
+				\qquad\implies\qquad
+				\vec{z} = \vec{\mu}_{\vec{x}} + \mat{\Sigma}_{\vec{x}}^{1/2} \vec{\epsilon},\quad \vec{\epsilon} \sim \mathcal{N}(\vec{0}, \mat{I})
+			\end{equation}
+			Here \( \mat{\Sigma}_{\vec{x}}^{1/2} \) is the Cholesky decomposition of the covariance matrix.
+
+			To generate samples from the VAE, it is now possible to just sample from the prior and push the result through the decoder network. When a diagonal prior was used (like it is usually done), the latent variables are independent and different dimensions of \(\vec{z}\) might encode interpretable information about the data. This is also a good feature representation that can be used in subsequent models.
 		% end
 
-		\subsection{Encoder, Decoder, and Evidence Lower Bound (ELBO)} % 9b.69, 9b.70, 9b.71, 9b.72, 9b.73, 9b.74, 9b.75, 9b.76, 9b.77, 9b.78, 9b.79, 9b.80, 9b.81, 9b.82
-			\todo{Content}
-		% end
+		\subsection{Pros and Cons}
+			The advantages of VAEs are that they are a principled approach to generative models and allow inference of \( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \) which exhibits useful feature representations for other tasks. Disadvantages are that the maximization of the ELBO work reasonable well, but is not an evaluation metric as good as the density in PixelRNN/PixelCNN. Also the samples are blurrier and of lower quality compared to state-of-the-art generative models (Generative Adversarial Models, GANs).
 
-		\subsection{Training Procedure} % 9b.83, 9b.84, 9b.85, 9b.86, 9b.87, 9b.88, 9b.89, 9b.90
-			\todo{Content}
-		% end
-
-		\subsection{Generating Data} % 9b.91, 9b.92, 9b.93, 9b.94, 9b.95, 9b.96
-			\todo{Content}
+			But they are extremely flexibly and allow rich approximations of the posterior, also more than Gaussian distributions. They also incorporate structure in the latent variables that allow for interpretability.
 		% end
 	% end
 
-	\section{Generative Adversarial Networks (GANs)} % , 9b.114, 9b.115, 9b.130, 9a.1, 9a.2, 9a.14, 9a.15, 9a.16
-		\todo{Content}
+	\section{Generative Adversarial Networks}
+		\emph{Generative adversarial networks} (GANs) take a step back and give up explicitly modeling the density \( p(\vec{x}) \) in the favor of specializing on generating data. This is done by training two networks jointly: the generator network \( G_{\vec{\theta}_g(\vec{z})} \) which has the only requirement of being differentiable---especially not necessarily invertible---and the discriminator network \( D_{\vec{\theta}_d}(\vec{x}) \) which must also be differentiable. The generator network is used for transforming the \emph{noise vector} \(\vec{z}\), which is usually sampled from a simple distribution, into output data \(\vec{x}\) (often these are images). Hence, it "generates" images. For some theoretical guarantees the noise vector must be of higher dimension than the image dimensionality, but this is not a necessity. The discriminator network then tries to distinguish real and fake images by assigning each input data a probability of it being real.
 
-		\subsection{Two-Player Game} % 9b.104, 9b.105, 9b.106, 9b.107, 9b.108, 9b.109
-			\todo{Content}
+		The next sections will cover the training process and the model in more detail and glimpse at some related network architectures.
 
-			\subsubsection{Optimization Problems} % 9b.110, 9b.111, 9b.112
-				\todo{Content}
-			% end
+		\subsection{Training Procedure}
+			Training a GAN is done using a gradient descent variant like Adam on two batches of data simultaneously: the first batch are real images, the training examples, and the second batch are fake images generated by the generator network. Both networks are then trained simultaneously in a minimax game
+			\begin{equation}
+				\min_{\vec{\theta}_g} \max_{\vec{\theta}_d} \; \E_{\vec{x} \sim p_\mathrm{data}(\cdot)}\big[\! \log D_{\vec{\theta}_d}(\vec{x}) \big] + \E_{\vec{z} \sim p(\vec{z})}\Big[\! \log\!\Big(\! 1 - D_{\vec{\theta}_d}\big( G_{\vec{\theta}_g}(\vec{z}) \big) \!\Big) \Big]
+			\end{equation}
+			where the two expectations are (as usual) approximated using minibatches of data. The first expectation describes the log-likelihood that the discriminator classifies the real images correctly and the second expectation described the log-likelihood that the discriminator classifies the fake images correctly. As the discriminator maximizes and the generator minimizes the objective, the goal of the former is to correctly classify all data while the goal of the latter is to fool the discriminator. To optimize this objective, the training process alternates between gradient ascent on the discriminator and gradient descent on the generator parameters.
+
+			The problem of this approach is that training the generator does not work well. This is because the loss in the regions where a sample is likely fake, i.e., not good enough, is relatively flat compared to regions where samples are already good. Hence, the gradient vanishes and no learning happens. This is due to the minimax game having an equilibrium at the saddle point of the loss. Do circumvent this, the training process must not alternate between minimizing and maximizing the same loss w.r.t. different parameters, but instead perform alternating gradient ascent on two different objectives:
+			\begin{align}
+				\max_{\vec{\theta}_d} \;& \E_{\vec{x} \sim p_\mathrm{data}(\cdot)}\big[\! \log D_{\vec{\theta}_d}(\vec{x}) \big] + \E_{\vec{z} \sim p(\vec{z})}\Big[\! \log\!\Big(\! 1 - D_{\vec{\theta}_d}\big( G_{\vec{\theta}_g}(\vec{z}) \big) \!\Big) \Big] \\
+				\max_{\vec{\theta}_g} &\; \E_{\vec{z} \sim p(\vec{z})}\big[\! \log D_{\vec{\theta}_d}\big( G_{\vec{\theta}_g}(\vec{z}) \big) \big]
+			\end{align}
+			This is essentially the same, but now the equilibrium is no longer describable with a single loss and the minimax game is non-saturating. But this is also heuristically motivated! But it has the advantage that the generator can also learn when the discriminator successfully rejects all generator samples, making it kind of robust towards a too good discriminator.
+
+			% TODO: GAN: Maximum Likelihood Objective; 9a.20
+
+			It is also possible to view GANs as cooperative rather than adversarial games by interpreting the output of the discriminator as an estimate of the data and model distributions. The discriminator then "informs" the generator over its estimate such that the generate can improve itself. This is based on the fact the optimal discriminator distributions is
+			\begin{equation}
+				D(\vec{x}) = \frac{p_\mathrm{data}(\vec{x})}{p_\mathrm{data}(\vec{x}) + p_\mathrm{model}(\vec{x})}
+			\end{equation}
+			and the generator tries to estimate the real distribution: \( p_\mathrm{model}(\vec{x}) \approx p_\mathrm{data}(\vec{x}) \). If the generator would be optimal, \( p_\mathrm{model}(\vec{x}) = p_\mathrm{data}(\vec{x}) \), even the optimal discriminator would output \( D(\vec{x}) = 1/2 \), which is equivalent to random guess.
+
+			Two remaining problems of GANs are that optimizing the objective is still unstable which lies in the nature oj jointly training two networks. This is an open area of research! Another problem is the \emph{mode collapse}: fully training the discriminator while the generator is held constant is safe and probably yields a good discriminator. But fully training the generator while the discriminator is fixed results in a generator that maps all inputs to the argmax of the discriminator, overfitting on the current discriminator and exploiting its weaknesses rather than learning to generate good samples. This can partially be fixed by adding nearest-neighbor features to the discriminator that are constructed from the current minibatch (\emph{minibatch GAN}).
 		% end
 
-		\subsection{Convolutional Architectures} % 9b.118, 9b.119, 9b.120, 9b.121
-			\todo{Content}
+		\subsection{Convolutional Architectures}
+			Convolutional GANs use super-sampling in the generator with convolutions using a fractional stride, i.e., the stride is a fraction and thus pixels are used multiple times, resulting in a activation output volume, and a vanilla CNN architecture for the discriminator. Some more tips for designing CNN GANs are:
+			\begin{itemize}
+				\item Replace pooling layers with convolutions with stride in the discriminator and with convolutions with fractional stride in the generator.
+				\item Use batch normalization in both networks.
+				\item Remove fully connected layers for deeper architectures.
+				\item Use ReLU activations for every layer in the generator except for the output which uses tanh.
+				\item Use leaky ReLU activations for every layer in the discriminator.
+			\end{itemize}
+			Using CNN architectures as GANs results in high-definition images that look extremely realistic.
+		% end
 
-			\subsubsection{Interpretability} % 9b.122, 9b.123, 9b.124, 9b.125, 9b.126
-				\todo{Content}
-			% end
+		\subsection{Vector Space Arithmetic}
+			Basic arithmetic on the noise vectors \(\vec{z}\) can yield interesting interpretable results. If, for instance, a noise vector \( \vec{z}_\text{woman} \) generates a woman, \( \vec{z}_\text{man} \) generates a man without glasses, and \( \vec{z}_\text{glasses} \) generates a man with glasses, then \( \vec{z}_\text{glasses} - \vec{z}_\text{man} + \vec{z}_\text{woman} \) results in a woman with glasses. To use these properties it is of course necessary to get the corresponding noise vectors at first. But when using sufficiently low-dimensional noise vectors, finding the correct ones should not be too hard.
+		% end
+
+		\subsection{Pros and Cons}
+			A big advantage of GANs is that they generate beautiful, state-of-the-art samples and images. The downsides on the other hand are that they are a lot trickier to train compared to, for example, VAEs and that they can not solve inference queries such as \( p(\vec{x}) \) and \( p(\vec{z} \given \vec{x}) \) as GANs do not model the distributions explicitly.
+
+			Active areas of research regarding GANs are better loss functions that induce a more stable training (Wasserstein GAN, LSGAN, etc.), Conditional GANs for training multi-purpose GANs, and many more.
 		% end
 	% end
 
-	\section{Generative Adversarial Networks (GANs)} % 9a.14, 9a.15, 9a.16, 9a.33, 9a.50, 9b.98, 9b.99, 9b.100, 9b.101, 9b.102, 9b.103, 9b.130
-		\todo{Content}
+	\section{Optimization and Game Theory}
+		Optimization and game theory are two topics that should not be viewed independently and have lots of links between them. In optimization, the goal is to find a set of parameters \( \vec{\theta}^\ast \) that are optimal w.r.t. some loss \( J(\vec{\theta}) \):
+		\begin{equation}
+			\vec{\theta}^\ast = \arg\min_{\vec{\theta}} \; J(\vec{\theta})
+		\end{equation}
+		In game theory (or, more specifically, a two-player game), there ate two sets of parameters: \( \vec{\theta}_1 \) and \( \vec{\theta}_2 \). The first player controls \(\vec{\theta}_1\) and tries to minimize its objective \( J_1(\vec{\theta}_1, \vec{\theta}_2) \) and the second players controls \(\vec{\theta}_2\) and tries to minimize its objective \( J_2(\vec{\theta}_1, \vec{\theta}_2) \). Depending on these losses, the game is either cooperative or non-cooperative. Optimization can therefore be viewed as a subset of the more general two-players games by setting \( \vec{\theta}_1 = \vec{\theta} \), \( \vec{\theta}_2 = \emptyset \), \( J_1(\vec{\theta}_1, \vec{\theta}_2) = J(\vec{\theta}_1) \), and \( J_2(\vec{\theta}_1, \vec{\theta}_2) = 0 \).
 
-		\subsection{Training Procedure} % 9a.17, 9a.23, 9a.34, 9b.104, 9b.105, 9b.113, 9b.114, 9b.115
-			\todo{Content}
+		A solution of a non-cooperative is characterized by its \emph{Nash equilibrium}. In a Nash equilibrium \( \vec{\theta}_1^\ast \), \( \vec{\theta}_2^\ast \), neither player can reduce its loss by changing their own strategy/parameters:
+		\begin{align}
+			\forall \vec{\theta}_1 : \eqmakebox[gtJBox][r]{\( \displaystyle  J_1 \)}(\vec{\theta}_1, \vec{\theta}_2^\ast) \geq \eqmakebox[gtJBox][r]{\( \displaystyle  J_1 \)}(\vec{\theta}_1^\ast, \vec{\theta}_2^\ast) \\
+			\forall \vec{\theta}_2 : \eqmakebox[gtJBox][r]{\( \displaystyle  J_2 \)}(\vec{\theta}_1^\ast, \vec{\theta}_2) \geq \eqmakebox[gtJBox][r]{\( \displaystyle  J_2 \)}(\vec{\theta}_1^\ast, \vec{\theta}_2^\ast)
+		\end{align}
+		In other words: each player's loss is minimal with respect to the other player's strategy. Finding Nash equilibria can thus be seen again as a subset of optimization as a Nash equilibrium always characterized the global optimum.
 
-			\subsubsection{Minimax, Non-Saturating, and Maximum Likelihood Games} % 9a.18, 9a.19, 9a.20, 9a.21, 9b.106, 9b.107, 9b.108, 9b.109
-				\todo{Content}
-			% end
+		Some well-studies cases for games are finite minimax games (zero-sum games), finite mixed-strategy games, continuous and convex games, and differential games. In continuous games, the Nash equilibrium is a saddle point of the losses. More specifically, it has to be a maximum for one and a minimum for the other player. A necessary condition for an optima are---as usual---that the gradient of the loss vanishes and that the Hessian is positive semi-definite. A sufficient condition is that the Hessian is positive definite.
 
-			\subsubsection{Discriminator Strategy} % 9a.22
-				\todo{Content}
-			% end
+		This yields sufficient conditions for gradient descent to converge for both players. Given the joint gradient
+		\begin{equation}
+			\vec{\omega} =
+				\begin{bmatrix}
+					\grad_{\vec{\theta}_1} J_1(\vec{\theta}_1, \vec{\theta}_2) \\
+					\grad_{\vec{\theta}_2} J_2(\vec{\theta}_1, \vec{\theta}_2)
+				\end{bmatrix}
+		\end{equation}
+		the Eigenvalues of the \emph{generalized Hessian}
+		\begin{equation}
+			\grad_{\vec{\theta}_1, \vec{\theta}_2} \vec{\omega} =
+				\begin{bmatrix}
+					\grad_{\vec{\theta}_1} \grad_{\vec{\theta}_1} J_1(\vec{\theta}_1, \vec{\theta}_2) & \grad_{\vec{\theta}_1} \grad_{\vec{\theta}_2} J_2(\vec{\theta}_1, \vec{\theta}_2) \\
+					\grad_{\vec{\theta}_2} \grad_{\vec{\theta}_1} J_1(\vec{\theta}_1, \vec{\theta}_2) & \grad_{\vec{\theta}_2} \grad_{\vec{\theta}_2} J_2(\vec{\theta}_1, \vec{\theta}_2)
+				\end{bmatrix}
+		\end{equation}
+		must have a positive real part. This condition can be interpreted as each player's Hessian should have large, positive, Eigenvalues, expressing a strong urge to keep their strategy. The Jacobian of the gradient of one player w.r.t. the other player's strategy should have a small effect on the Eigenvalues, meaning that the change of strategy of the player has only a limited ability to change the other player's behavior. But sadly this does not apply to GANs, so their convergence still is an open question.
 
-			\subsubsection{Mode Collapse} % 9a.29, 9b.110, 9b.111, 9b.112
-				\todo{Content}
-			% end
-		% end
+		Some heuristics for finding equilibria are to keep the parameter values close to their running average and periodically assign the running average to the parameters. Also add a loss for deviation from the running average.
 
-		\subsection{Convolutional Architectures} % 9b.118, 9b.119, 9b.120, 9b.121
-			\todo{Content}
-		% end
-
-		\subsection{Vector Space Arithmetic} % 9a.28, 9b.122, 9b.123, 9b.124, 9b.125, 9b.126
-			\todo{Content}
-		% end
-	% end
-
-	\section{Optimization and Games} % 9a.37, 9a.38
-		\todo{Content}
-
-		\subsection{Nash Equilibrium} % 9a.39
-			\todo{Content}
-		% end
-
-		\subsection{Well-Studies Cases} % 9a.40
-			\todo{Content}
-
-			\subsubsection{Continuous Minimax Game} % 9a.41
-				\todo{Content}
-			% end
-
-			\subsubsection{Local Differential Nash Equilibria} % 9a.42
-				\todo{Content}
-			% end
-
-			\subsubsection{Gradient Descent Convergence} % 9a.43, 9a.44
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Heuristics} % 9a.45, 9a.46
-			\todo{Content}
-		% end
-
-		\subsection{Other Games in AI} % 9a.47
-			\todo{Content}
-		% end
+		Other games in artificial intelligence are for example robust optimization and robust control, domain-adversarial learning for domain adaption, adversarial privacy, guided cost learning, and predictability minimization.
 	% end
 % end
 
-\chapter{Probabilistic Graphical Models} % 10b.6, 10b.7, 10b.8, 10b.9, 10b.10, 10b.11, 10b.12, 10b.13, 10b.14, 10b.15, 10b.16, 10b.17, 10b.18, 10b.19, 10a.1, 10a.2, 10a.3, 10a.6, 10a.13, 10a.14, 10a.22, 10a.23, 10a.24, 10a.69
-	\todo{Content}
+\chapter{Probabilistic Graphical Models}
+	This chapter introduces \emph{probabilistic graphical models} and \emph{tractable inference}. The core if inference is to answer given queries \(q\), for example "What is the probability that today is a Monday and there is a traffic jam on Herzl Str.?" Instead of fitting a predictive model, inference takes the step of formulating these kinds of queries statistically over a given model \(m\) of the world. The said query could be expressed as the probability \( q(m) = p_{m}(\text{Day} = \text{Monday},\, \text{Jam}_\text{Herzl} = 1) \). Other types of queries are also possible and different types of these will be discussed in \autoref{subsec:queries}.
 
-	\section{(Conditional) Independency} % 10a.15, 10a.16
-		\todo{Content}
-	% end
+	For a given family \(\mathcal{M}\) of models, a class of queries \(\mathcal{Q}\) is called \emph{tractable on \(\mathcal{M}\)} iff for any query \( q \in \mathcal{Q} \) and model \( m \in \mathcal{M} \), computing \( q(m) \) has time complexity \( \mathcal{O}\big( \mathrm{poly}(\lvert m \rvert \, \lvert q \rvert) \big) \) where \( \mathrm{poly}(\cdot) \) is any polynomial but is in practice often linear. Also, if \(\mathcal{M}\) and \(\mathcal{Q}\) are compact in the number of random variables \(\vec{X}\), i.e. \( \lvert m \rvert, \lvert q \rvert \in \mathcal{O}\big( \mathrm{poly}(\lvert \vec{X} \rvert) \big) \), then the query time is in \( \mathcal{O}\big( \mathrm{poly}(\lvert \vec{X} \rvert) \big) \).
 
-	\section{Tractability vs. Expressiveness} % 10b.60, 10b.61, 10b.62, 10b.63
-		\todo{Content}
+	It is also possible to do \emph{approximate} inference instead of exact inference, but this brings some caveats: firstly, if it is possible to to exact inference, why do approximate inference? This can be answered in the context of tractability vs. expressiveness which is discussed in \autoref{sec:tractability}. Also, approximate inference can be intractable as well---but sometimes it comes with certain guarantees. But even those guarantees might not be enough and can mislead learners when the approximation is incorrect. It is also possible to do approximate inference by using exact inference in an approximate model. This is something one often has to resort to as the model is usually not exact.
 
-		\subsection{Inference and Queries} % 10a.19
-			\todo{Content}
+	The next content of this chapter will be the different query types that are possible as well as certain concrete models and their pros and cons in terms of tractability and expressiveness. Afterwards probabilistic circuits and how to build them is covered and some applications are presented.
 
-			\paragraph{Complete Evidence Queries (EVI)} % 10b.20, 10b.21, 10b.22
-				\todo{Content}
+	\section{Tractability vs. Expressiveness}
+		The core problem in inference is that more tractable queries and models are not very expressive whereas expressive models are usually not very tractable. This is known as the tractability vs. expressiveness tradeoff. To understand more what this means, the next section introduces the different variants of queries that can occur and the section after that highlights some models and their respective complexity on the queries.
+
+		\subsection{Inference and Queries}
+			\label{subsec:queries}
+
+			As already said, this section will cover different query types and some examples of what such a query might encode.
+
+			\subsubsection{Complete Evidence Queries (EVI)}
+				\emph{Complete evidence} (EVI) queries ask for the probability of all random variables having specific values. This comes down to evaluating the complete joint probability. An example natural language query is
+				\begin{center}
+					"What is the probability that today is a Monday at 12pm and there is a traffic jam only on Herzl Str.?"
+				\end{center}
+				where all random variables are the day, the time, and whether there is a traffic jam for every street. The formalized version is
+				\begin{equation}
+					q(m) = p_m(\text{Day} = \text{Monday},\, \text{Time} = \text{12pm},\, \text{Jam}_\text{Herzl} = 1,\, \dotsrange{\text{Jam}_{\text{Str}2} = 0}{\text{Jam}_{\text{Str}N} = 0})
+				\end{equation}
+				and the general version is
+				\begin{equation}
+					p_m(\vec{Q} = \vec{q}).
+				\end{equation}
+				This kind of query is essential in maximum likelihood learning where the joint distribution is computed for every data point.
 			% end
 
-			\paragraph{Marginal Queries (MAR)} % 10b.31, 10b.32, 10b.33
-				\todo{Content}
+			\subsubsection{Marginal Queries (MAR)}
+				\emph{Marginal} (MAR) queries ask for the probability of some random variables having specific values. This comes down to evaluating the marginal probability of the said random variables. An example natural language query is
+				\begin{center}
+					"What is the probability that today is a Monday \sout{at 12pm} and there is a traffic jam \sout{only} on Herzl Str.?"
+				\end{center}
+				where the time and other streets are marginalized out. The formalized version is
+				\begin{equation}
+					q(m) = p_m(\text{Day} = \text{Monday},\, \text{Jam}_\text{Herzl} = 1)
+				\end{equation}
+				and the general version is
+				\begin{equation}
+					p_m(\vec{Q} = \vec{q}) = \int\! p_m(\vec{Q} = \vec{q}, \vec{H} = \vec{h}) \dd{\vec{h}}
+				\end{equation}
+				with \( \vec{Q} \subseteq \vec{X} \) and \( \vec{H} = \vec{X} \setminus \vec{Q} \).
 			% end
 
-			\paragraph{Conditional Queries (CON)} % 10b.34, 10b.35, 10b.36
-				\todo{Content}
+			\subsubsection{Conditional Queries (CON)}
+				\emph{Conditional} (CON) queries ask for the probability of some random variables having specific values given that other random variables are known to have specific values. This comes down to evaluating the conditional probability of the said setting. An example natural language query is
+				\begin{center}
+					"What is the probability that these is a traffic jam on Herzl Str. \emph{given that} today is a Monday?"
+				\end{center}
+				where the day is the given random variable. The formalized version is
+				\begin{equation}
+					q(m) = p_m(\text{Jam}_\text{Herzl} = 1 \given \text{Day} = \text{Monday})
+				\end{equation}
+				and the general version is
+				\begin{equation}
+					p_m(\vec{Q} = \vec{q} \given \vec{E} = \vec{e}) = \frac{p_m(\vec{Q} = \vec{q}, \vec{E} = \vec{e})}{p_m(\vec{E} = \vec{e})}
+				\end{equation}
+				with \( \vec{Q} \subseteq \vec{X} \), \( \vec{E} \subseteq \vec{X} \), and \( \vec{Q} \cap \vec{E} = \emptyset \). As conditional probabilities can be purely expressed using marginals, the ability to answer CON queries follows from the ability of answering MAR queries.
 			% end
 
-			\paragraph{Maximum A-Posteriori (MAP)} % 10b.46, 10b.47, 10b.48, 10b.49
-				\todo{Content}
+			\subsubsection{Maximum A-Posteriori (MAP)}
+				\emph{Maximum a-posteriori} (MAP) or \emph{most probable explanation} (MPE) queries ask for the values of some random variables that are most likely given other random variables are known to have specific values. The combination of variables in question and given variables has to be exhaustive. This comes down to evaluating the configuration of the random variables in question that maximizes the posterior probability. An example natural language query is
+				\begin{center}
+					"Which combination of streets is most likely to be jammed on Monday at 12pm?"
+				\end{center}
+				where the configuration of streets are the random variables that is asked for and day and time are the given random variables. The formalized version is
+				\begin{equation}
+					q(m) = \arg\max_{\subdotsrange{j_1}{j_N}} \; p_m(\dotsrange{\text{Jam}_{\text{Str}1} = j_1}{\text{Jam}_{\text{Str}N} = j_N} \given \text{Day} = \text{Monday},\, \text{Time} = \text{12pm})
+				\end{equation}
+				and the generalized version is
+				\begin{equation}
+					\arg\max_{\vec{q}} \; p_m(\vec{Q} = \vec{q} \given \vec{E} = \vec{e})
+				\end{equation}
+				with \( \vec{Q} \subseteq \vec{X} \), \( \vec{E} \subseteq \vec{e} \), \( \vec{Q} \cap \vec{E} = \emptyset \), and \( \vec{Q} \cup \vec{E} = \vec{X} \).
+
+				These kinds of queries are intractable for latent variable models!
 			% end
 
-			\paragraph{Marginal MAP (MMAP)} % 10b.50, 10b.51, 10b.52, 10b.53
-				\todo{Content}
+			\subsubsection{Marginal MAP (MMAP)}
+				\emph{Marginal maximum a-posteriori} (MMAP) queries ask for the values of some random variables that are most likely given other random variables are known to have specific values. The combination of variables in question and given variables dows not have to be exhaustive. This comes down to evaluating the configuration of the random variables in question that maximizes the marginal posterior probability. An example natural language query is
+				\begin{center}
+					"Which combination of streets is most likely to be jammed \sout{on Monday} at 12pm?"
+				\end{center}
+				where the configuration of streets are the random variables that is asked for and the day is marginalized out. The formalized version is
+				\begin{equation}
+					q(m) = \arg\max_{\subdotsrange{j_1}{j_N}} \; p_m(\dotsrange{\text{Jam}_{\text{Str}1} = j_1}{\text{Jam}_{\text{Str}N} = j_N} \given \text{Time} = \text{12pm})
+				\end{equation}
+				and the generalized version is
+				\begin{equation}
+					\arg\max_{\vec{q}} \; p_m(\vec{Q} = \vec{q} \given \vec{E} = \vec{e})
+						= \arg\max_{\vec{q}} \; \sum_{\vec{h}} p_m(\vec{Q} = \vec{q}, \vec{H} = \vec{h} \given \vec{E} = \vec{e})
+				\end{equation}
+				with \( \vec{Q} \cup \vec{H} \cup \vec{E} = \vec{X} \).
+
+				These kinds of queries are \( \mathit{NP}^\mathit{PP} \)-complete, \( \mathit{NP} \)-hard for trees, and even \(\mathit{NP}\)-hard for naive Bayes!
 			% end
 
-			\paragraph{Advanced Queries} % 10b.54, 10b.55, 10b.56, 10b.57, 10b.58
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Models} % N/A
-			\todo{Content}
-
-			\subsubsection{Generative Adversarial Networks} % 10b.23,, 10b.24
-				\todo{Content}
-			% end
-
-			\subsubsection{Variational Autoencoders} % 10b.25, 10b.26
-				\todo{Content}
-			% end
-
-			\subsubsection{Probabilistic Graphical Models: Markov and Bayes Networks} % 10b.27, 10b.28, 10b.29, 10b.30, 10b.37, 10b.38, 10a.7, 10a.17, 10a.18, 10a.19, 10a.25
-				\todo{Content}
-
-				\paragraph{Variable Elimination} % 10a.20, 10a.21
-					\todo{Content}
-				% end
-			% end
-
-			\subsubsection{Low-Tree-Width PGMs: Trees} % 10b.39, 10b.40, 10b.41
-				\todo{Content}
-			% end
-
-			\subsubsection{Mixtures} % 10b.42, 10b.43, 10b.44, 10b.45
-				\todo{Content}
-			% end
-
-			\subsubsection{Fully Factorized Models} % 10b.59
-				\todo{Content}
-			% end
-		% end
-	% end
-
-	\section{Probabilistic Circuits} % 10b.64, 10b.65, 10b.66, 10b.67, 10b.68, 10b.69, 10b.70, 10b.71, 10b.72, 10b.73, 10b.74, 10b.75, 10b.76, 10b.77, 10b.78, 10b.79, 10b.80, 10b.81, 10b.82, 10b.104, 10b.126
-		\todo{Content}
-
-		\subsection{Ensuring Tractability} % 10b.83
-			\todo{Content}
-
-			\subsubsection{Decomposability and Smoothness} % 10b.84, 10b.85
-				\todo{Content}
-
-				\paragraph{Tractable MAR/CON} % 10b.86, 10b.87, 10b.88, 10b.89
-					\todo{Content}
-				% end
-			% end
-
-			\subsubsection{Determinism} % 10b.90
-				\todo{Content}
-
-				\paragraph{Tractable MAP} % 10b.91, 10b.92, 10b.93, 10b.94, 10b.95, 10b.96, 10b.97, 10b.98
-					\todo{Content}
-				% end
-
-				\paragraph{Approximate MAP} % 10b.99
-					\todo{Content}
-				% end
-			% end
-
-			\subsubsection{Structured Decomposability} % 10b.100, 10b.101, 10b.102, 10b.103
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Logical Circuits} % 10b.105, 10b.106, 10b.107, 10b.108
-			\todo{Content}
-
-			\subsubsection{Weighted Model Counting (WMC)} % 10b.109
-				\todo{Content}
-			% end
-
-			\subsubsection{From Trees to Circuits} % 10b.110, 10b.111, 10b.112, 10b.113, 10b.114, 10b.115, 10b.116, 10b.117
-				\todo{Content}
-			% end
-
-			\subsubsection{Low-Tree-Width PGMs} % 10b.118
-				\todo{Content}
-			% end
-
-			\subsubsection{Arithmetic Circuits (ACs)} % 10b.119
-				\todo{Content}
-			% end
-
-			\subsubsection{Sum-Product Networks (SPNs)} % 10b.120, 10a.26, 10a.27, 10a.28, 10a.29, 10a.30, 10a.31, 10a.32, 10a.33, 10a.53, 10a.54, 10a.55, 10a.56, 10a.57
-				\todo{Content}
-
-				\paragraph{Semantics} % 10a.34
-					\todo{Content}
-				% end
-
-				\paragraph{Linear Inference} % 10a.35, 10a.36, 10a.37, 10a.38
-					\todo{Content}
-				% end
-
-				\paragraph{Image Completion} % 10a.40, 10a.41, 10a.42, 10a.43, 10a.44
-					\todo{Content}
-				% end
-
-				\paragraph{Variants} % 10a.45, 10a.46, 10a.47
-					\todo{Content}
-				% end
-
-				\paragraph{Symbolic Evaluation} % 10a.51, 10a.52
-					\todo{Content}
-				% end
-			% end
-
-			\subsubsection{Cutset Networks (CNets)} % 10b.121, 10b.122, 10b.123
-				\todo{Content}
-			% end
-
-			\subsubsection{Probabilistic Sentential Decision Diagrams} % 10b.124
-				\todo{Content}
+			\subsubsection{Advanced Queries}
+				More advanced queries might combine several of the ones introduced above, for example
+				\begin{center}
+					"Which day is most likely to have a traffic jam on my route to work?"
+				\end{center}
+				and
+				\begin{center}
+					"What is the probability of seeing more traffic jams in Jaffa than Marina?"
+				\end{center}
+				The former needs marginals and maximum a-posteriori and logical events and can be formalized as
+				\begin{equation}
+					q(m) = \arg\max_{\text{day}} \; p_m\Big(\text{Day} = \text{day},\, \textstyle\bigvee_{i \,\in\, \text{Route}}\displaystyle \text{Jam}_{\text{Str}i} = 1\Big)
+				\end{equation}
+				and the latter needs counts and group comparisons. These kinds of queries can get very complex very fast.
 			% end
 		% end
 
-		\subsection{Expressiveness} % 10b.127, 10b.128
-			\todo{Content}
-		% end
-	% end
+		\subsection{Models}
+			This section will introduce some models in different levels of detail and relate them to the different query types introduces beforehand in terms of tractability and expressiveness.
 
-	\section{Building Circuits} % 10b.129, 10b.130, 10b.131, 10b.132, 10b.133, 10b.134, 10b.135, 10b.136, 10a.39
-		\todo{Content}
+			\subsubsection{GANs and VAEs}
+				GANs are powerful generative models that can generate good-looking samples, but they do not serve well for inference. That is due to the lack of an explicit likelihood and hence EVI is not tractable. Also the training is unstable due to the mode collapse and lots of samples are needed for effective Monte Carlo inference.
 
-		\subsection{Hard/Soft Parameter Updating: Gradient Descent and EM} % 10b.137, 10b.138
-			\todo{Content}
-		% end
+				Similar goes for VAEs. They serve an explicit likelihood model, but computing \( \log p_{\vec{\theta}}(\vec{x}) \) is intractable as it is an infinite and uncountable mixture of distributions. Hence, EVI is not tractable. Also, the ELBO has to be optimized instead of the real data likelihood which is "broken"\footnote{Alexander Alemi, Ben Poole, Ian Fischer, Joshua Dillon, Rif A. Saurous, and Kevin Murphy (2018): "Fixing a Broken ELBO"}\footnote{Bin Dai and David Wipf (2019): "Diagnosing and Enhancing VAE Models"}.
+			% end
 
-		\subsection{(Bayesian) Parameter Learning} % 10b.139, 10b.140, 10b.141
-			\todo{Content}
-		% end
+			\subsubsection{Mixture Models}
+				\emph{Mixture models} are built by combining multiple simpler models
+				\begin{equation}
+					p(\vec{X}) = w_1 p_1(\vec{X}) + w_2 p_2(\vec{X}),
+				\end{equation}
+				e.g. Gaussians. They can be seen as a marginalization over a categorical latent variable \(Z\) that describes the amount one of the distributions participates to the mixture model. This increases the expressiveness of the simpler distributions.
 
-		\subsection{Structure Learning} % 10b.142
-			\todo{Content}
+				In fact, a mixture of Gaussians can represent any distribution, but this would need lots of Gaussians. This is known as \emph{expressive efficiency}, settings the expressiveness of a model in relation to its complexity/size.
+			% end
 
-			\subsubsection{LearnSPN} % 10b.143, 10b.144, 10b.145, 10b.146
-				\todo{Content}
+			\subsubsection{Probabilistic Graphical Models: Markov and Bayes Networks}
+				Probabilistic graphical models are---in a nutshell---a graphical notation for conditional independence assumptions and a compact representation for probability distributions. They utilize graphs where the nodes represent random variables and the edges represent dependencies between them. They divide into three main types: \emph{Markov networks}, \emph{Bayesian networks}, and \emph{factor graphs}. Markov networks and Bayesian networks are closely related with the difference that the edges in Bayesian networks are directed while they are not in Markov networks. Factor graphs are a more general form of PGMs than can represent all kinds of relations, including everything that can be represented using a Markov or Bayesian network.
 
-				\paragraph{ID-SPN} % 10b.148
-					\todo{Content}
+				In general, exact inference for MAR and CON queries in PGMs is \(\mathrm{\#P}\)-complete. Also approximate inference of MAR and CON queries with a relative error of \( 2^{n^{1 - \epsilon}} \) for any fixed \(\epsilon\) is \(\mathrm{NP}\)-hard. The complexity can be further refined using the \emph{treewidth} of a PGM. The treewidth \(w\) described how tree-like a graphical model \(m\) is. Formally, it is the minimum width of any tree-decomposition of \(m\). With that number, the time complexity of MAR and CON queries on a graphical model with treewidth \(w\) is \( \mathcal{O}(2^w \, \lvert \vec{X} \rvert) \), which is linear for a fixed \(w\). One idea is to bound the tree-width by design as inference is possible in practice for \( w \approx 20 \). The extreme form are trees which are covered after Bayesian networks as they are a special form of them.
+
+				\paragraph{Fully Factorized Models}
+					\emph{Fully factorized models} are PGMs with no connections between the random variables. That is, each random variable is independent from all others and EVI, MAR, MAP, and MMAP inference is linear in time. But these models are definitely not expressive.
 				% end
 
-				\paragraph{Other Variants} % 10b.147, 10b.149
-					\todo{Content}
+				\paragraph{Bayesian Networks and Variable Elimination}
+					Bayesian networks are digraphs in which every node is a random variable and all parents of that not are dependencies. \autoref{fig:bayesNetExample} shows an example of a Bayesian network that describes the joint distribution
+					\begin{equation}
+						P(A, B, C, D, E) = P(A) \, P(B) \, P(C \given A, B) \, P(D \given B) \, P(E \given C).
+					\end{equation}
+					In general, the joint distributions for a Bayesian network with the random variables \( \dotsrange{X_1}{X_N} \) is described by
+					\begin{equation}
+						P(\dotsrange{X_1}{X_N}) = \prod_{i = 1}^{N} P\big( X_i \biggiven \mathrm{Pa}(X_i) \big)
+					\end{equation}
+					where \( \mathrm{Pa}(X_i) \) is the set of parents of the random variable \( X_i \). In the example shown in \autoref{fig:bayesNetExample}, this would, for example, be \( \mathrm{Pa}(C) = \{ A, B \} \). The local Markov assumption in Bayesian networks is that each random variable is independent from its non-descendants given its parents. As the joint distribution can be computed efficiently, EVI queries are tractable!
+
+					To evaluate MAR queries, an algorithm called \emph{variable elimination} can be used. It is based on the observation that in the general form of a marginalization,
+					\begin{equation}
+						P(\vec{Q}) = \sum_{X_j \,\not\in\, \vec{Q}}^{\text{marg}} \prod_{i = 1}^{N} P\big( X_i \biggiven \mathrm{Pa}(X_i) \big),
+					\end{equation}
+					where the first sum described a marginalization on its summation index, i.e., a summation of all possible realizations of \(X_j\), the product and the sum can be exchanged under certain circumstances. That is, if all of the factors are independent of a variable \(X_k\), these factors can be pulled before the sum:
+					\begin{align}
+						P(\vec{Q})
+							&= \sum_{X_j \,\not\in\, \vec{Q}}^{\text{marg}} \prod_{i = 1}^{N} P\big( X_i \biggiven \mathrm{Pa}(X_i) \big) \\
+							&= \prod_{\substack{i \,=\, 1 \\ X_k \,\not\in\, \{ X_i \} \,\cup\, \mathrm{Pa}(X_i)}}^{N} \hspace{-1.06cm} P\big( X_i \biggiven \mathrm{Pa}(X_i) \big) \sum_{X_j \,\not\in\, \vec{Q}}^{\text{marg}} \prod_{\substack{i \,=\, 1 \\ X_k \,\in\, \{ X_i \} \,\cup\, \mathrm{Pa}(X_i)}}^{N} \hspace{-1.06cm} P\big( X_i \biggiven \mathrm{Pa}(X_i) \big)
+					\end{align}
+					This way not the complete joint has to be computed for each combination of the random variables that are marginalized out. \autoref{alg:variableElimination} shows the pseudocode for this algorithm.
+
+					But even with this rather efficient algorithm, inference in Bayesian networks is still NP-hard!
+
+					\begin{figure}
+						\centering
+						\begin{tikzpicture}[->, every node/.style = { draw, circle, minimum width = 1cm, minimum height = 1cm }]
+							\node (a) {\(A\)};
+							\node [below = 1.5 of a] (b) {\(B\)};
+							\node [right = 1.5 of a] (c) {\(C\)};
+							\node [right = 1.5 of b] (d) {\(D\)};
+							\node [right = 1.5 of c] (e) {\(E\)};
+
+							\draw (a) -> (c);
+							\draw (b) -> (c);
+							\draw (b) -> (d);
+							\draw (c) -> (e);
+						\end{tikzpicture}
+						\caption{Example of a Bayesian network with the random variables \(A\), \(B\), \(C\), \(D\), and \(E\).}
+						\label{fig:bayesNetExample}
+					\end{figure}
+
+					\begin{algorithm}  \DontPrintSemicolon
+						\KwIn{Query \( P(\vec{Q}) \).}
+						\KwOut{Probability \( P(\vec{Q}) \).}
+						Initialize factors \( \mathcal{F} = \{ \dotsrange{f_1}{f_N} \} \) with \( f_i = P\big( X_i \biggiven \mathrm{Pa}(X_i) \big) \) \;
+						\For{\( i = \dotsrange{1}{N} \)}{
+							\If{\( X_i \in \vec{Q} \)}{
+								\textit{skip} \;
+							}
+
+							Collect factors \( \dotsrange{f_1}{f_k} \) that contain \(X_i\). \;
+							\tcp{Generate a new factor by eliminating \(X_i\) from these factors:}
+							\( \displaystyle  g = \sum_{X_i}^{\text{marg}} \prod_{j = 1}^{k} f_j \) \;
+							\tcp{Add \(g\) to the set of factors:}
+							\( \displaystyle  \mathcal{F} \gets \mathcal{F} \cup \{ g \} \) \;
+						}
+						Factors \(\mathcal{F}\) now include \( P(\vec{Q}) \). \;
+						\caption{Variable Elimination}
+						\label{alg:variableElimination}
+					\end{algorithm}
 				% end
-			% end
 
-			\subsubsection{Cut(e)set Network} % 10b.150
-				\todo{Content}
-			% end
+				\paragraph{Low-Treewidth PGMs: Trees}
+					If in a Bayesian network every random variable has at most one parent, the Bayesian network is a \emph{tree}. Then EVI, MAR, and CON queries can be answered exactly in linear time \( \mathcal{O}( \lvert \vec{X} \rvert ) \). Also, exact learning from \(d\) samples takes \( \mathcal{O}(d \, \lvert \vec{X} \rvert^2) \) with the Chow-Liu algorithm.
 
-			\subsubsection{PSDD Structure Learning} % 10b.151, 10b.152
-				\todo{Content}
-			% end
-
-			\subsubsection{LearnPSDD} % 10b.153
-				\todo{Content}
-			% end
-
-			\subsubsection{Learning Logistic Circuits} % 10b.154, 10b.155
-				\todo{Content}
-			% end
-
-			\subsubsection{Bayesian Structure Learning} % 10b.156
-				\todo{Content}
-			% end
-
-			\subsubsection{Automatic Bayesian Density Analysis (ABDA)} % 10b.157, 10b.158
-				\todo{Content}
-			% end
-
-			\subsubsection{Bayesian SPNs} % 10b.159, 10b.160
-				\todo{Content}
-			% end
-
-			\subsubsection{Randomized Structure Learning: RAT-SPNs} % 10b.161, 19b.162
-				\todo{Content}
-			% end
-
-			\subsubsection{Extremely Randomized CNets: XCNets} % 10b.166, 10b.167
-				\todo{Content}
-			% end
-
-			\subsubsection{Learning (Tree-)SPNs} % 10a.47, 10a.48, 10a.49, 10a.50
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Ensembles of Probabilistic Circuits} % 10b.163, 10b.164, 10b.165
-			\todo{Content}
-		% end
-
-		\subsection{Online Learning} % 10b.168
-			\todo{Content}
-		% end
-
-		\subsection{Knowledge Compilation} % 10b.169, 10b.170
-			\todo{Content}
-		% end
-
-		\subsection{Hybridizing TPMs with Intractable Models} % 10b.171
-			\todo{Content}
-
-			\subsubsection{Sum-Product Graphical Model (SPGM)} % 10b.172
-				\todo{Content}
-			% end
-
-			\subsubsection{Sum-Product Variational Auto-Encoder (SPVAE)} % 10b.173
-				\todo{Content}
+					This comes at the cost of not being able to represent rich and complex classes of distributions. In general, bounded-treewidth PGMs lose the ability to represent all possible distributions.
+				% end
 			% end
 		% end
 	% end
 
-	\section{Applications} % 10b.174, 10b.175, 10b.176, 10b.177, 10b.181, 10b.188, 10b.191
-		\todo{Content}
+	\section{Probabilistic Circuits} % 10b.104, 10b.126
+		\emph{Probabilistic circuits} are computational graphs for probabilistic models. They are built from simple distributions as building blocks and summation and multiplication between them.
 
-		\paragraph{Computer Vision} % 10b.178, 10a.5
-			\todo{Content}
+		The starting point (base case) are univariate distributions, i.e. distributions over scalars. Generally they are tractable for EVI (by answering the value of the density/mass at the query point), MAR (bay answering \num{1} if normalized or \(Z\)), and MAP queries (by answering the location of the mode). The univariate building block is written as
+		\begin{center}
+			\begin{tikzpicture}[->, comp/.style = { draw, circle, minimum width = 0.75cm, minimum height = 0.75cm, inner sep = 0 }]
+				\coordinate [label = left:{\(x\)}] (a);
+				\node [comp, right = 1 of a] (b) {\includegraphics[width=0.5cm]{img/gaussian.pdf}};
+				\coordinate [right = 1 of b, label = right:{\(p(x)\)}] (c);
+				\draw (a) to (b);
+				\draw (b) to (c);
+			\end{tikzpicture}
+		\end{center}
+		as they are usually Gaussians. Multiple univariate probabilities can also be multiplied which is denoted as
+		\begin{center}
+			\begin{tikzpicture}[->, comp/.style = { draw, circle, minimum width = 0.75cm, minimum height = 0.75cm, inner sep = 0 }]
+				\node [comp] (a) {\includegraphics[width=0.5cm]{img/gaussian.pdf}};
+				\node [comp, below = 0.5 of a] (b) {\includegraphics[width=0.5cm]{img/gaussian.pdf}};
+				\node [comp, below = 0.5 of b] (c) {\includegraphics[width=0.5cm]{img/gaussian.pdf}};
+				\coordinate [left = 1 of a, label = left:{\(x_1\)}] (A);
+				\coordinate [left = 1 of b, label = left:{\(x_2\)}] (B);
+				\coordinate [left = 1 of c, label = left:{\(x_3\)}] (C);
+				\node [comp, right = 1 of b] (d) {\( \bigtimes \)};
+				\coordinate [right = 1 of d, label = right:{\( p(x_1, x_2, x_3) = p(x_1) \, p(x_2) \, p(x_3) \)}] (D);
+				\draw (A) to (a);
+				\draw (B) to (b);
+				\draw (C) to (c);
+				\draw (a) to (d);
+				\draw (b) to (d);
+				\draw (c) to (d);
+				\draw (d) to (D);
+			\end{tikzpicture}
+		\end{center}
+		for three random variables. More random variables are denoted analogous. One example application for this is to model a multivariate Gaussian with diagonal covariance matrix. To represent mixture models over a single random variable, weighted sums are used. These are denoted as
+		\begin{center}
+			\begin{tikzpicture}[->, comp/.style = { draw, circle, minimum width = 0.75cm, minimum height = 0.75cm, inner sep = 0 }]
+				\node [comp] (a) {\includegraphics[width=0.5cm]{img/gaussian.pdf}};
+				\node [comp, below = 0.5 of a] (b) {\includegraphics[width=0.5cm]{img/gaussian.pdf}};
+				\node [comp, below = 0.5 of b] (c) {\includegraphics[width=0.5cm]{img/gaussian.pdf}};
+				\coordinate [left = 1 of a, label = left:{\(x\)}] (A);
+				\coordinate [left = 1 of b, label = left:{\(x\)}] (B);
+				\coordinate [left = 1 of c, label = left:{\(x\)}] (C);
+				\node [comp, right = 1 of b] (d) {\resizebox{0.5cm}{!}{\(+\)}};
+				\coordinate [right = 1 of d, label = right:{\( p(x) = w_1 p(x) + w_2 p(x) + w_3 p(x) \)}] (D);
+				\draw (A) to (a);
+				\draw (B) to (b);
+				\draw (C) to (c);
+				\draw (a) to node[above, near start, xshift = +2pt]{\(w_1\)} (d);
+				\draw (b) to node[above, near start, yshift = -2pt]{\(w_2\)} (d);
+				\draw (c) to node[below, near start, xshift = +2pt, yshift = -2pt]{\(w_3\)} (d);
+				\draw (d) to (D);
+			\end{tikzpicture}
+		\end{center}
+		where the weights are written on the edges from the univariate distributions to the summing node. By stacking all these different nodes, expressive efficiency can be increased. It is, however, not possible to arbitrarily stack sums, products and distributions, certain structural constraints have to be fulfilled to ensure tractability. These will be covered in \autoref{subsec:probCircTractability}.
+
+		But probabilistic circuits are not PGMs! They are probabilistic and graphical, but the nodes represent computations, not random variables and the edges determine the order of execution and do not encode dependencies. In PGMs, inference is done using conditioning, elimination, and message passing while in probabilistic circuits inference is done using forward- and backward-passes. So they are more like neural networks than PGMs. Due to them being computational graphs, a lot of things are possible: repeated computations can be cached, the operational semantics are clear and tractable in terms of circuit size, and they are differentiable, so gradient-based optimization is possible.
+
+		\subsection{Ensuring Tractability}
+			\label{subsec:probCircTractability}
+
+			In order to ensure tractability in a probabilistic circuit, certain constraints have to be fulfilled. The first two obvious ones are \emph{decomposability} and \emph{smoothness}:
+			\begin{description}
+				\item[Decomposability] All product nodes have to be decomposable. A product node is decomposable if its children depend on a disjoint set of variables, i.e., the same variable does not appear twice on the incoming nodes.
+				\item[Smoothness] All sum nodes have to be smooth. A sum node is smooth if its children depend on the same variable sets, i.e., the same variable has to be present on all incoming nodes.
+			\end{description}
+			These two properties enable tractable MAR and CON queries! This is due to large integrals that can be decomposed into easier ones
+			\begin{equation}
+				p(\vec{x}, \vec{y}) = p(\vec{x}) \, p(\vec{y})
+				\quad\implies\quad
+				\iint\! p(\vec{x}, \vec{y}) \dd{\vec{x}} \dd{\vec{y}}
+					= \iint\! p(\vec{x}) \, p(\vec{y}) \dd{\vec{x}} \dd{\vec{y}}
+					= \bigg(\! \int\! p(\vec{x}) \dd{\vec{x}} \!\!\bigg) \bigg(\! \int\! p(\vec{y}) \dd{\vec{y}} \!\!\bigg)
+			\end{equation}
+			and the marginalization sums can be pulled out of the integrals
+			\begin{equation}
+				p(\vec{x}) = \sum_i w_i p_i(\vec{x})
+				\quad\implies\quad
+				\int\! p(\vec{x}) \dd{\vec{x}}
+					= \int \sum_i w_i p_i(\vec{x}) \dd{\vec{x}}
+					= \sum_i w_i \int\! p_i(\vec{x}) \dd{\vec{x}}
+			\end{equation}
+			pushing the integrals down to the children. On both these cases, pre premise follows from the decomposability and smoothness property, respectively. To compute for example \( p(X_2, X_3) \) when there are four random variables, the inputs for \( X_1 \) and \( X_4 \) are set to \num{1} (as they get integrated out) and the inputs for \( X_2 \) and \( X_3 \) are set to their respective probability which is provided from the unimodal distribution.
+
+			The next property that has to be ensured is \emph{determinism} (also known as \emph{selectivity}):
+			\begin{description}
+				\item[Determinism] All sum nodes have to be deterministic. A sum node is deterministic if the output of at most one children is non-zero for any input, e.g. if their distributions have disjoint support.
+			\end{description}
+			This property enables tractable MAP queries! This is due to the argmax on a mixture model that gets drastically simplified because the sum over the weights can be discarded. Let \( \vec{q} = \{ \vec{q}_x, \vec{q}_y \} \) and \( \vec{e} = \{ \vec{e}_x, \vec{e}_y \} \) be separated into two arbitrary sets of random variables, then from decomposability is follows that \( p(\vec{q}, \vec{e}) = p(\vec{q}_x, \vec{e}_x, \vec{q}_y, \vec{e}_y) = p(\vec{q}_x, \vec{e}_x) \, p(\vec{q}_y, \vec{e}_y) \). Thus, the argmax can be split at the product notes:
+			\begin{equation}
+				\arg\max_{\vec{q}} \; p(\vec{q} \given \vec{e})
+					= \arg\max_{\vec{q}} \; p(\vec{q}, \vec{e})
+					= \arg\max_{\vec{q}_x, \vec{q}_y} \; p(\vec{q}_x, \vec{e}_x, \vec{q}_y, \vec{e}_y)
+					= \arg\max_{\vec{q}_x} \; p(\vec{q}_x, \vec{e}_x),\, \arg\max_{\vec{q}_y} \; p(\vec{q}_y, \vec{e}_y)
+			\end{equation}
+			and the optimizations can be solved separately. Due to determinism, i.e.
+			\begin{equation}
+				p(\vec{q}, \vec{e}) = \sum_i w_i p_i(\vec{q}, \vec{e}) = w_c p_c(\vec{q}, \vec{e})
+			\end{equation}
+			where \(p_i\) is the only non-zero distribution, the argmax of a sum node is extremely simple:
+			\begin{equation}
+				\arg\max_{\vec{q}} \; p(\vec{q}, \vec{e})
+					= \arg\max_{\vec{q}} \; \sum_i w_i p_i(\vec{q}, \vec{e})
+					= \arg\max_{\vec{q}} \; w_c p_c(\vec{q}, \vec{e})
+			\end{equation}
+			This pushes the argmax to the children. By repeatedly applying these two rules, the argmax can be pushed to the leaves (the random variables) where a MAP query is simple to answer as the mode of the unimodal distribution. In practice, the evaluation of a MAP query goes as follows:
+			\begin{enumerate}
+				\item Turn all sum nodes into (weighted) max nodes.
+				\item Evaluate \( p(\vec{e}) \), the marginal of the given evidence, in a forward pass.
+				\item Retrieve the max activations in a backward pass.
+				\item Compute MAP queries at the leaves.
+			\end{enumerate}
+			Compares to MAR and CON queries, the computation has to be run two times through the network, but it is still linear in circuit size. If the circuit is non-deterministic, MAP is intractable, but the algorithm can still be used as an approximation. The circuit is then called a \emph{sum-product network} (SPN) which are equivalent the exception of determinism.
+
+			The final requirement is \emph{structured decomposability}:
+			\begin{description}
+				\item[Structured Decomposability] A product node is structured decomposable if it decomposes according to a node in a binary tree.
+			\end{description}
+			This is a stronger requirement than decomposability and is not necessary for MAR, CON, and MAP queries. But it enables tractability of the \emph{entropy} of the circuit, \emph{symmetric} and \emph{group queries} (exactly \(k\), odd number, more, etc.), and, for the "right" binary tree, also the probability of logical circuit event in a probabilistic circuit, \emph{multiplication} of two probabilistic circuits, \emph{KL-divergence} between two circuits, \emph{same-decision probability}, \emph{expected same-decision probability}, \emph{expected classifier agreement}, and \emph{expected predictions}. But as structure decomposability is a pretty harsh requirement, it is usually not enforced.
 		% end
 
-		\paragraph{Image Segmentation} % 10b.179
-			\todo{Content}
-		% end
+		\subsection{Other Circuits and Circuit Compilation}
+			This section addresses the similarities and differences between probabilistic, logical, and other circuits. The tractable probabilistic inference view exploits efficient summation for decomposable functions in the commutative semi-ring of probabilities, \( (\R, +, \times, 0, 1) \). This is also possible in other semi-rings with generalized operations, \( (\mathbb{S}, \oplus, \otimes, 0_\oplus, 1_\otimes) \). Historically a very well studied semi-ring is the one for boolean functions: \( (\mathbb{B} = \{ 0, 1 \}, \lor, \land, 0, 1) \). These lead to logical circuits which represent logical functions in a compact way. These look the same way as probabilistic circuits, but the nodes are logical ands and ors instead of sums and products. Also similar to probabilistic circuits, it is possible to define structural properties like \emph{decomposability}, \emph{smoothness}, and \emph{determinism} to allow for tractable computations and---in some sense---inference of boolean values.
 
-		\paragraph{Scene Understanding: Su-PAIR} % 10b.180
-			\todo{Content}
-		% end
+			% TODO: PGMs: Weighted Model Counting; 10b.109
 
-		\paragraph{Activity Recognition} % 10b.182
-			\todo{Content}
-		% end
+			\subsubsection{Circuit Compilation: From Trees to Circuits}
+				A big step into tractability is to compile probabilistic graphical models---or probabilistic trees only, in this section---into probabilistic circuits. This can be done in a bottom-up approach: at first a leaf node of the probabilistic tree is compiled into a sum node structure in the probabilistic circuit where for each value of the leaf there exists one leaf in the circuit and for each value of the dependent variable there exists a sum node. The weights are the probabilities. This is done for every leaf node of the tree. Then these structures are taken as leaves with multiple outputs, corresponding to each value of the random variables. The "leaf structures" are then used to recursively build up the parent nodes of the probabilistic tree which builds up the circuit in the end.
 
-		\paragraph{Speec Reconstriction and Extension} % 10b.183, 10a.4
-			\todo{Content}
-		% end
+				Take, for example, the probabilistic tree shown in \autoref{fig:probTree}. To compile the first node, the probabilities
+				\begin{align}
+					P(A = 0 \given C = 0) &= 0.3 &
+					P(A = 1 \given C = 0) &= 0.7 \\
+					P(A = 0 \given C = 1) &= 0.6 &
+					P(A = 1 \given C = 1) &= 0.4
+				\end{align}
+				are used. First the circuit for \( P(A \given C = 0) \) is built and subsequently the circuit for \( P(A \given C = 1) \) is added. Both of these steps are shown in \autoref{fig:probTreeCirc1a} and \ref{fig:probTreeCirc1a}. Analogously the circuit for \( P(B \given C = 0/1) \) is built in \autoref{fig:probTreeCirc1c} and \ref{fig:probTreeCirc1d}. To now build the probabilities \(P(A, B, C = 0/1)\) and \(P(A, B, C)\), the already build probabilities have to be multiplied and then \(C\) has to be summed up w.r.t. the probabilities \( P(C = 0) = 0.2 \) and \( P(C = 1) = 0.8 \). All of this is shown in \autoref{fig:probTreeCirc1e}.
 
-		\paragraph{Sequence Labeling} % 10b.184
-			\todo{Content}
-		% end
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}[->, rv/.style = { draw, circle, minimum width = 1cm, minimum height = 1cm, inner sep = 0 }]
+						\node [rv] (c) {\(C\)};
+						\node [rv, below = 1 of c, xshift = -1cm] (b) {\(B\)};
+						\node [rv, below = 1 of c, xshift = +1cm] (a) {\(A\)};
+						\draw (c) to (b);
+						\draw (c) to (a);
+					\end{tikzpicture}
+					\caption{Example probabilistic tree.}
+					\label{fig:probTree}
+				\end{figure}
 
-		\paragraph{Robotics} % 10b.185
-			\todo{Content}
-		% end
+				\begin{figure}
+					\centering
+					\begin{subfigure}{0.35\linewidth}
+						\centering
+						\begin{tikzpicture}[->, xscale = 2, yscale = 2, comp/.style = { draw, circle, minimum width = 0.75cm, minimum height = 0.75cm, inner sep = 0 }]
+							\node [comp, label = below:{\( A = 0 \)}] (A0) at (0, 0) {\(\bigodot\)};
+							\node [comp, label = below:{\( A = 1 \)}] (A1) at (1, 0) {\(\bigodot\)};
+							\node [comp, label = above:{\( P(A \given C = 0) \)}] (AgivenC0) at (0, 1) {\resizebox{0.5cm}{!}{\(+\)}};
 
-		\paragraph{SOP: Preference Learning} % 10b.186
-			\todo{Content}
-		% end
+							\draw (A0) to node[above, sloped, near start]{\(0.3\)} (AgivenC0);
+							\draw (A1) to node[below, sloped, near start]{\(0.7\)} (AgivenC0);
+						\end{tikzpicture}
+						\caption{Compilation of \( P(A \given C = 0) \).}
+						\label{fig:probTreeCirc1a}
+					\end{subfigure}
+					~
+					\begin{subfigure}{0.35\linewidth}
+						\centering
+						\begin{tikzpicture}[->, xscale = 2, yscale = 2, comp/.style = { draw, circle, minimum width = 0.75cm, minimum height = 0.75cm, inner sep = 0 }]
+							\node [comp, label = below:{\( A = 0 \)}] (A0) at (0, 0) {\(\bigodot\)};
+							\node [comp, label = below:{\( A = 1 \)}] (A1) at (1, 0) {\(\bigodot\)};
+							\node [comp] (AgivenC0) at (0, 1) {\resizebox{0.5cm}{!}{\(+\)}};
+							\node [comp, label = above:{\( P(A \given C = 1) \)}] (AgivenC1) at (1, 1) {\resizebox{0.5cm}{!}{\(+\)}};
 
-		\paragraph{SOP: Routing} % 10b.187
-			\todo{Content}
-		% end
+							\draw (A0) to node[left,  near start]{\(0.3\)} (AgivenC0);
+							\draw (A1) to node[above, sloped, near start]{\(0.7\)} (AgivenC0);
+							\draw (A0) to node[above, sloped, near start]{\(0.6\)} (AgivenC1);
+							\draw (A1) to node[right, near start]{\(0.4\)} (AgivenC1);
+						\end{tikzpicture}
+						\caption{Compilation of \( P(A \given C = 0) \).}
+						\label{fig:probTreeCirc1b}
+					\end{subfigure} \\ \vspace{0.4cm}
+					\begin{subfigure}{0.35\linewidth}
+					\centering
+						\begin{tikzpicture}[->, xscale = 2, yscale = 2, comp/.style = { draw, circle, minimum width = 0.75cm, minimum height = 0.75cm, inner sep = 0 }]
+							\node [comp, label = below:{\( B = 0 \)}] (B0) at (0, 0) {\(\bigodot\)};
+							\node [comp, label = below:{\( B = 1 \)}] (B1) at (1, 0) {\(\bigodot\)};
+							\node [comp, label = above:{\( P(B \given C = 0) \)}] (BgivenC0) at (0, 1) {\resizebox{0.5cm}{!}{\(+\)}};
 
-		\paragraph{Probabilistic Programming} % 10b.189
-			\todo{Content}
-		% end
+							\draw (B0) to node[above, sloped, near start]{\(0.5\)} (BgivenC0);
+							\draw (B1) to node[below, sloped, near start]{\(0.5\)} (BgivenC0);
+						\end{tikzpicture}
+						\caption{Compilation of \( P(B \given C = 0) \).}
+						\label{fig:probTreeCirc1c}
+					\end{subfigure}
+					~
+					\begin{subfigure}{0.35\linewidth}
+						\centering
+						\begin{tikzpicture}[->, xscale = 2, yscale = 2, comp/.style = { draw, circle, minimum width = 0.75cm, minimum height = 0.75cm, inner sep = 0 }]
+							\node [comp, label = below:{\( B = 0 \)}] (B0) at (0, 0) {\(\bigodot\)};
+							\node [comp, label = below:{\( B = 1 \)}] (B1) at (1, 0) {\(\bigodot\)};
+							\node [comp] (BgivenC0) at (0, 1) {\resizebox{0.5cm}{!}{\(+\)}};
+							\node [comp, label = above:{\( P(B \given C = 1) \)}] (BgivenC1) at (1, 1) {\resizebox{0.5cm}{!}{\(+\)}};
 
-		\paragraph{And more\dots} % 10b.190
-			\todo{Content}
+							\draw (B0) to node[left,  near start]{\(0.5\)} (BgivenC0);
+							\draw (B1) to node[above, sloped, near start]{\(0.5\)} (BgivenC0);
+							\draw (B0) to node[above, sloped, near start]{\(0.1\)} (BgivenC1);
+							\draw (B1) to node[right, near start]{\(0.9\)} (BgivenC1);
+						\end{tikzpicture}
+						\caption{Compilation of \( P(B \given C = 0) \).}
+						\label{fig:probTreeCirc1d}
+					\end{subfigure} \\ \vspace{0.4cm}
+					\begin{subfigure}{0.7\linewidth}
+						\centering
+						\begin{tikzpicture}[->, xscale = 2, yscale = 2, comp/.style = { draw, circle, minimum width = 0.75cm, minimum height = 0.75cm, inner sep = 0 }]
+							\node [comp, label = below:{\( A = 0 \)}] (A0) at (0, 0) {\(\bigodot\)};
+							\node [comp, label = below:{\( A = 1 \)}] (A1) at (1, 0) {\(\bigodot\)};
+							\node [comp] (AgivenC0) at (0, 1) {\resizebox{0.5cm}{!}{\(+\)}};
+							\node [comp, label] (AgivenC1) at (1, 1) {\resizebox{0.5cm}{!}{\(+\)}};
+
+							\node [comp, label = below:{\( B = 0 \)}] (B0) at (2, 0) {\(\bigodot\)};
+							\node [comp, label = below:{\( B = 1 \)}] (B1) at (3, 0) {\(\bigodot\)};
+							\node [comp] (BgivenC0) at (2, 1) {\resizebox{0.5cm}{!}{\(+\)}};
+							\node [comp, label] (BgivenC1) at (3, 1) {\resizebox{0.5cm}{!}{\(+\)}};
+
+							\node [comp, label = below:{\( C = 0 \)}] (C0) at (-1, 1) {\(\bigodot\)};
+							\node [comp, label = above left:{\( P(A, B, C = 0) \)}] (ABC0) at (0, 2) {\(\bigtimes\)};
+
+							\node [comp, label = below:{\( C = 1 \)}] (C1) at (4, 1) {\(\bigodot\)};
+							\node [comp, label = above right:{\( P(A, B, C = 1) \)}] (ABC1) at (3, 2) {\(\bigtimes\)};
+
+							\node [comp, label = above:{\( P(A, B, C) \)}] (ABC) at (1.5, 3) {\resizebox{0.5cm}{!}{\(+\)}};
+
+							\draw (A0) to node[left]{\(0.3\)} (AgivenC0);
+							\draw (A1) to node[above, sloped, near start]{\(0.7\)} (AgivenC0);
+							\draw (A0) to node[above, sloped, near start]{\(0.6\)} (AgivenC1);
+							\draw (A1) to node[right]{\(0.4\)} (AgivenC1);
+
+							\draw (B0) to node[left]{\(0.5\)} (BgivenC0);
+							\draw (B1) to node[above, sloped, near start]{\(0.5\)} (BgivenC0);
+							\draw (B0) to node[above, sloped, near start]{\(0.1\)} (BgivenC1);
+							\draw (B1) to node[right]{\(0.9\)} (BgivenC1);
+
+							\draw (C0) to (ABC0);
+							\draw (AgivenC0) to (ABC0);
+							\draw (BgivenC0) to (ABC0);
+							\draw (C1) to (ABC1);
+							\draw (AgivenC1) to (ABC1);
+							\draw (BgivenC1) to (ABC1);
+
+							\draw (ABC0) to node[above, sloped]{\(0.2\)} (ABC);
+							\draw (ABC1) to node[above, sloped]{\(0.8\)} (ABC);
+						\end{tikzpicture}
+						\caption{}
+						\label{fig:probTreeCirc1e}
+					\end{subfigure}
+					\caption{Steps of compiling the probabilistic tree in \autoref{fig:probTree} into a probabilistic circuit. The distribution node with a \(\odot\) described the binary distribution that outputs \num{0} if the condition below the node holds and \num{1} otherwise. Hence, the nodes \( A = 0 \) and \( A = 12 \) are mutually exclusive and determinism holds (similar for the others).}
+					\label{fig:probTreeCirc1}
+				\end{figure}
+			% end
+
+			\subsubsection{Equivalent and Related Formulations}
+				As trees, polytrees and thin junction trees can be turned into decomposable, smooth, and deterministic probabilistic circuits, they all support tractable EVI, MAR, CON, and MAP queries. The same goes for arithmetic circuits (ACs) which are also decomposable, smooth, and deterministic.
+
+				Other equivalent formulations are:
+				\begin{itemize}
+					\item \emph{Cutset networks} (CNets): CNets are weighted decision trees whose leaves are Bayesian networks. It is possible to replace every decision node by a deterministic and smooth sum node, and thus it is possible to compile CNets into probabilistic circuits. Hence, they are decomposable, smooth, and deterministic and thus EVI, MAR, CON, and MAP queries are tractable.
+					\item \emph{Probabilistic sentential decision diagrams} (PSDDs): These are also \emph{structured} decomposable, smooth, and deterministic. Hence, EVI, MAR, CON, MAP, and also complex queries are tractable!
+				\end{itemize}
+				As probabilistic circuits are so diverse and expressive, they belong to the most expressive while still tractable models!
+			% end
 		% end
 	% end
 
-	\section{Takeaways and Open Challenges} % 10b.192, 10b.193, 10b.194, 10b.195
-		\todo{Content}
+	\section{Building Circuits} % 10a.39
+		After discussing probabilistic circuits and seeing how expressive and expression efficient they are, the next big question is how to build these circuits tractably because usually the circuits are not given but the shall be learned from data. The first step is to define a \emph{tractable learner}: a learner \(L\) is \emph{tractable} for a class of queries \(\mathcal{Q}\) if and only if
+		\begin{enumerate}
+			\item for any dataset \(\mathcal{D}\), the learner \( L(\mathcal{D}) \) runs in \( \mathcal{O}\big( \mathrm{poly}(\lvert \mathcal{D} \rvert) \big) \). This guarantees that the size of the learned model is in \( \mathcal{O}\big( \mathrm{poly}(\lvert \mathcal{D} \rvert) \big) \cap \mathcal{O}\big( \mathrm{poly}(\lvert \vec{X} \rvert) \big) \).
+			\item it outputs a probabilistic model that is tractable for all queries in the class \(\mathcal{Q}\). This guarantees efficient querying for \(\mathcal{Q}\) in time \( \mathcal{O}\big( \mathrm{poly}(\lvert \vec{X} \rvert) \big) \).
+		\end{enumerate}
+		This section will now introduce different methods for learning circuit parameters and also structure. Additionally, compilation of other models into circuits is covered.
+
+		\subsection{Learning Circuit Parameters}
+			The easiest part of circuit learning is learning the parameters, i.e. the probabilities, of the circuit. These are leaf parameters \(\vec{\theta}\) and the weights \(\vec{w}\) on summing nodes. For deterministic circuits, this can be done in closed form with convex optimization. For non-deterministic circuits, this is harder. Some algorithms for learning the parameters in non-deterministic circuits are SGD, soft/hard EM, Bayesian moment matching, collapsed variational Bayes, CCCP, and extended Baum-Welch. This section will covert the former two algorithms.
+
+			\subsubsection{Deterministic Circuits}
+				For deterministic circuits, approximating the parameters can simply be done by maximizing the data likelihood
+				\begin{equation}
+					\vec{\theta}^\mathrm{MLE}, \vec{w}^\mathrm{MLE}
+						= \arg\max_{\vec{\theta}, \vec{w}} \; L(\vec{\theta}, \vec{w}; \mathcal{D})
+						= \arg\max_{\vec{\theta}, \vec{w}} \; \prod_{d \in \mathcal{D}} p_{\vec{\theta}, \vec{w}}(d).
+				\end{equation}
+				With determinism, the likelihood decomposes over the parameters and the optimization problem has a closed-form solution.
+			% end
+
+			\subsubsection{Hard/Soft Parameter Updating: Gradient Descent and EM}
+				Optimizing the parameters via gradient descent is simply done by computing the gradient of the likelihood and applying standard optimization techniques. For using EM, each summing node is considered as the marginalization over a hidden variable that is estimated in the E-step.
+			% end
+
+			\subsubsection{Bayesian Parameter Learning}
+				In \emph{Bayesian} parameter learning, a prior \( p(\vec{w}) \) is put on the weights of the circuit. Then the posterior
+				\begin{equation}
+					p(\vec{w} \given \mathcal{D}) \propto p(\mathcal{D} \given \vec{w}) \, p(\vec{w})
+				\end{equation}
+				is maximized. But this posterior is intractable! Instead of a general prior, a factorized prior
+				\begin{equation}
+					p(\vec{w}) = \prod_{i \in \text{Sum Nodes}} \mathit{Dir}(\vec{w}_i \given \alpha_i)
+				\end{equation}
+				is assumed in a circuit with normalized weights \( w_{ij} \geq 0 \) and \( \sum_j w_{ij} = 1 \) where \( i \in \text{Sum Nodes} \). The posterior then becomes a mixture of Dirichlet distributions where the number of mixture components is exponential in the number of sum nodes.
+
+				\paragraph{Moment Matching (oBMM)}
+					The posterior is approximated with a tractable distribution after each update that matches some moments of the exact, but intractable, posterior. The joint \(p(\vec{w})\) is approximated by a product of Dirichlet distributions and the first and second moment of each marginal \(p(\vec{w}_i)\) are used to set the parameters \(\alpha_i\) of each Dirichlet.
+				% end
+
+				\paragraph{oBMM Extended}
+					Uses continuous models with Gaussian leavers.
+				% end
+
+				\paragraph{CVB-SPN}
+					Uses a collapsed variational inference algorithm and produces better results than oBMM.
+				% end
+
+				\paragraph{Sequential Monomial Approximation and Concave-Convex Procedure}
+					Any complete and decomposable circuit can be transformed into a mixture of trees where each tree corresponds to a product of univariate distributions. \emph{Sequential monomial approximation} learns the parameters based on a maximum likelihood estimator which can be formulated as a sigmonial program. This program can equivalently be transformed into a different of convex functions, yielding the \emph{concave-convex procedure}.
+				% end
+			% end
+		% end
+
+		\subsection{Structure Learning}
+			Instead of "just" learning the parameters of a probabilistic circuit, \emph{structure learning} algorithms address the problem of learning the structure of the circuit, i.e., the connections between the nodes.
+
+			A general approach for learning the structure is to start with a dense circuit and then find the structure by learning the weights and removing connections with near-zero weights. This is, in principle, possible to every arithmetic circuit by implementing it in any autograd library. It also works well but there are more advanced algorithms that produce better results.
+
+			\paragraph{LearnSPN and Variants}
+				\emph{LearnSPN} learns both structure and parameters of a circuit simultaneously. For this it starts from a data matrix that lists all values for each random variable. Then clusters are searched in the data for building sum nodes. Once clusters have been found and sum nodes have been created, an independence test is used within the leaves to find independent random variables. Once these have been found, the circuit is factorized into these random variables. These two steps iterate until either no clusters can be found anymore.
+
+				A variant of LearnSPN is ID-SPN which starts with a single arithmetic circuit (AC) that represents a tractable Markov network. The process of clustering instances and variables for sum and product nodes is then stopped before the process reaches univariate distributions. These are replaced by a learned tractable MN represented by an AC factorizing multiple distributions. This creates an SPN with tractable multivariate distributions as leaves, so-called Markov network arithmetic circuits (MN AC).
+
+				Another variant is \emph{bottom-up learning} which start from a simple model over a small variable scope and increase this model successively over a larger variable scope guided by dependence tests and a maximum mutual information principle. Other variants are \emph{greedy for deterministic circuits} and \emph{graph SPNs} which transform the network as a hill climbing algorithm using split and merge operations and form tree SPNs my merging similar sub-structures, respectively.
+			% end
+
+			% TODO: PGMs: Building Circuits: Structure Learning; 10b.150--10b.160, 10b.161--19b.162, 10b.166--10b.168
+
+%			\paragraph{Cut(e)set Network}
+%				\emph{Cut(e)set networks} use likelihood decompositions for learning the parameters and for structure learning start with a single tractable model and substitute leaf nodes with the best CNet which improves all likelihood decompositions.
+%			% end
+%
+%			\paragraph{PSDD Structure Learning}
+%				\emph{PSDD structure learning} learning a binary tree where the leaves are labeled with variables and the internal nodes split the variables into those appearing in the left and those appearing in the right sub-tree. Learning takes place in a bottom-up or top-down fashion max maximizing the pairwise MI instead of the joint MI.
+%			% end
+%
+%			\paragraph{LearnPSDD}
+%				\emph{LearnPSDD} incrementally improves the structure of a PSDD to better fit the data. Learning continuous until the log-likelihood on the validation data set converges or a desired time or size limit is reached. In every step the structure is changed by executing an operation that is greedily chosen based on the best likelihood improvement per size increment.
+%			% end
+%
+%			\paragraph{Learning Logic Circuits}
+%				To learn logic circuits, the values and parameters are propagated bottom-up. For parameter learning, due to decomposability and determinism, any logic circuit model can be reduced to a logistic regression model over some features. For structure learning, split operations like in LearnPSDD are performed.
+%			% end
+
+%			\paragraph{Bayesian Structure Learning} % 10b.156
+%				\todo{Content}
+%			% end
+%
+%			\paragraph{Automatic Bayesian Density Analysis (ABDA)} % 10b.157, 10b.158
+%				\todo{Content}
+%			% end
+%
+%			\paragraph{Bayesian SPNs} % 10b.159, 10b.160
+%				\todo{Content}
+%			% end
+%
+%			\paragraph{Randomized Structure Learning: RAT-SPNs} % 10b.161, 19b.162
+%				\todo{Content}
+%			% end
+%
+%			\paragraph{Extremely Randomized CNets: XCNets} % 10b.166, 10b.167
+%				\todo{Content}
+%			% end
+%
+%			\paragraph{Online Learning} % 10b.168
+%				\todo{Content}
+%			% end
+		% end
+
+		\subsection{Ensembles of Probabilistic Circuits}
+			To solve issues like the tendency of overfitting of probabilistic circuits and to improve accuracy of a single model, probabilistic circuits an be used in an ensemble in the form of a mixture model
+			\begin{equation}
+				p(\vec{x}) = \sum_{i = 1}^{K} \lambda_i C_i(\vec{x}),\quad \lambda_i \geq 0, \sum_{i = 1}^{K} \lambda_1 = 1.
+			\end{equation}
+			To learn both the parameters of each circuit and to learn the mixture components weights \(\vec{\lambda}\), an EM-algorithm can be employed. But this raises some issues in convergence and stability, making this impractical.
+
+			A better alternative for using circuit ensembles is bagging which is more efficient than EM. For training the circuits the mixture components are all set equally probable and are then learned independently on different bootstraps. To make these models even more efficient, random subspace projects can be added (like for CNets).
+
+			It is also possible to boost probabilistic circuits. One method the \emph{boosting density estimation} (BDE) which works like AdaBoost and combined models in the form \( f_m = (1 - \eta_m) f_{m - 1} + \eta_m c_m \) where \(f_m\) is the \(m\)-th model, \(c_m\) is the current weak learner and \(\eta_m\) is the weight of that learner. Another method is GBDE which is kernel-based. It is also possible to use sequential EM which jointly optimized \(\eta_m\) and \(c_m\) while keeping \(f_{m - 1}\) fixed.
+		% end
+
+		% TODO: PGMs: Building Circuits: Knowledge Compilation; 10b.169, 10b.170, 10b.171, 10b.172, 10b.173
+	% end
+
+	\section{Applications}
+		This sections shows some of the applications of tractable inference and probabilistic graphical models in general.
+
+		% TODO: PGMs: Applications; 10a.4, 10a.5, 10b.174--10b.190
+
+%		\paragraph{Computer Vision} % 10b.178, 10a.5
+%			\todo{Content}
+%		% end
+%
+%		\paragraph{Image Segmentation} % 10b.179
+%			\todo{Content}
+%		% end
+%
+%		\paragraph{Scene Understanding: Su-PAIR} % 10b.180
+%			\todo{Content}
+%		% end
+%
+%		\paragraph{Activity Recognition} % 10b.182
+%			\todo{Content}
+%		% end
+%
+%		\paragraph{Speec Reconstriction and Extension} % 10b.183, 10a.4
+%			\todo{Content}
+%		% end
+%
+%		\paragraph{Sequence Labeling} % 10b.184
+%			\todo{Content}
+%		% end
+%
+%		\paragraph{Robotics} % 10b.185
+%			\todo{Content}
+%		% end
+%
+%		\paragraph{SOP: Preference Learning} % 10b.186
+%			\todo{Content}
+%		% end
+%
+%		\paragraph{SOP: Routing} % 10b.187
+%			\todo{Content}
+%		% end
+%
+%		\paragraph{Probabilistic Programming} % 10b.189
+%			\todo{Content}
+%		% end
+%
+%		\paragraph{And more\dots} % 10b.190
+%			\todo{Content}
+%		% end
+	% end
+
+	\section{Takeaways and Open Challenges}
+		The three primary challenges in probabilistic graphical models are:
+		\begin{enumerate}
+			\item \emph{Better benchmarks:} \\
+				To move beyond toy problems and dataset reflecting to complex and heterogeneous nature of real data. Move towards fully automated reasoning!
+			\item \emph{Hybridizing tractable and intractable models:} \\
+				Use tractable models inside intractable loops and glue together small intractable boxed by tractable inference.
+			\item \emph{Scaling tractable learning:} \\
+				Learn tractable models with millions of datapoints and thousands of feature in tractable time.
+		\end{enumerate}
+		The takeaways are that tractability is a spectrum and there are more and less tractable models, it is possible to be both tractable and expressive at the same time (probabilistic circuits), probabilistic circuits are the foundation for tractable inference and learning, and that there is still a lot more to do.
 	% end
 % end
 
@@ -2115,56 +2674,54 @@ db1 = np.einsum('ib->i', dL)
 	% end
 % end
 
-\chapter{Attention Models and Transformers} % 12.1, 12.3, 12.4, 12.5, 12.6, 13.2, 13.3, 13.4, 13.5
+\chapter{Attention and Transformers}
 	\label{c:attention}
 
-	\todo{Content}
+	\emph{Attention models} us \emph{attention masks} to let the model know which parts of the input it should attend to. They can be separated into two classes: hard and soft attention. In hard attention, the model is forced to attend to a single input location. Thus, it is not possible to use gradient descent and techniques from reinforcement learning have to be leveraged to train these models. Soft attention models on the other hand compute a weighted combination over some inputs using an attention network. The weights are the \emph{attention mask}. As this is differentiable, backpropagation and gradient descent can be used for end-to-end training.
 
-	\section{Hard Attention for Recognition} % 12.7, 12.8, 12.9
-		\todo{Content}
+	A really good introduction to attention and transformer networks by \emph{Justin Johnson} can be found here:
+	\begin{center}
+		\url{https://youtu.be/YAgjfMR9R_M}
+	\end{center}
+
+	\section{Soft Attention for Translation}
+		The starting point for soft attention are recurrent neural networks and RNN translation which have the problem that the complete information about the sentence, no matter how long, has to be pushed into a single hidden state. Attention models use an attention network to generate weights that are then used for adding another input to each generating RNN cell that is directly computed from the input sentence (or, more specifically, the hidden states of the RNN input cells). The input to the decoder/generator network is
+		\begin{equation}
+			\vec{c}_i = \sum_{j = 1}^{T} \alpha_{ij} \vec{h}_j
+		\end{equation}
+		where \(\alpha_{ij}\) are the weights for the annotations \(\vec{h}_j\). These are the attention mask
+		\begin{equation}
+			\alpha_{ij} = \frac{\exp\{ e_{ij} \}}{\sum_k \exp\{ e_{ik} \}}
+		\end{equation}
+		where \( e_{ij} = a(\vec{s}_{i - 1}, \vec{h}_j) \) is the \emph{alignment score} which is a learnable function. The vector \(\vec{s}_{i - 1}\) the hidden state of the RNN cell right before emitting the output\footnote{Dzmitry Bahdanau, Kyunghyun Cho, and Yoshua Bengio (2015): "Neural Machine Translation by Jointly Learning to Align and Translate"}. The soft attention models are extremely powerful and it only took one year for them to reach the state-of-the-art after release. Currently they are surpassing any preexisting translation models.
+
+		% TODO: Attention: Global/Local; 12.24, 12.25, 12.26
 	% end
 
-	\section{Soft Attention for Translation} % 12.10, 12.11, 12.12, 12.13, 12.14, 12.15, 12.16, 12.17, 12.18, 12.19, 12.20, 12.21, 12.22, 12.23
-		\todo{Content}
+	\section{Attention for Captioning}
+		It is also possible to use attention for image captioning. Here the output of a CNN is used an interpreted as stacked features which are then weighted according to the attention. This enables the image captioning system (a RNN) to look at different parts of the image for different words. A similar procedure can be used for video data.
+
+		When using soft attention, the features are summed up and weighted according the (normalized) attention. In hard attention, a features is sampled from according to the (normalized) attention which form a probability distribution. But as sampling is not differentiable, one might resort to using the feature with the maximum attention instead. Nevertheless the derivative of this will be zero, killing all subsequent gradients, hence no learning via gradient descent is possible. That is why reinforcement learning is needed in this case and why soft attention is preferred.
 	% end
 
-	\section{Global and Local Attention Model} % 12.24, 12.25, 12.26
-		\todo{Content}
+	\section{Attending to Arbitrary Regions}
+		Attending according to the original paper "Show, Attend, and Tell" (Xu et al., 2015) only allows attending for regions on a fixed grid---but would not attending to arbitrary regions be better? It was shown by Graves et al. in 2013 that it is possible to attend to arbitrary regions by predicting the parameters of a mixture model. \emph{DRAW} (Gregor et al., 2015) can classify images by attending to arbitrary images of the input and can also generated images by attending to arbitrary regions of the output.
+
+		Another attention mechanism are \emph{spatial transformer networks} (Jaderberg, 2015). They try to find a mapping between the coordinated of in- and output pixels. Repeating this for all pixels in the output yields a sampling grid. Then a bilinear transformation is used to compute the output.
 	% end
 
-	\section{Soft Attention for Captioning} % 12.27, 12.28, 12.29, 12.30, 12.31, 12.35
-		\todo{Content}
+	\section{Transformer Networks}
+		\emph{Transformer networks} where originally introduced by Vaswani et al. in 2017 in a paper called "Attention is all you need". They propose an encoder-decoder architecture that is purely based on attention and does not utilize any recurrence. The core idea is that of \emph{multihead attention}, meaning that multiple attentions are computed per query with different weights. Additionally layer normalization is added which normalizes the values of each layer to have zero mean and unit variance\footnote{Note that this is different to batch normalization which normalizes all batches to have zero mean and unit variance.}. This reduces the covariate shift and therefore reduces training time. Also codes for the position of an input are added as otherwise self-attention layers would have no notion of order.
 
-		\subsection{Soft Attention for Video} % 12.32, 12.33, 12.34
-			\todo{Content}
-		% end
+		Compared to RNNs, transformer networks are much more efficient as everything can be computed in parallel as compared to sequential models. Also the maximum path length is reduced, reducing the problem of vanishing gradients. The transformer network achieves better results in machine translation and natural language generation than every previous state-of-the-art model. Example models that use transformers are GPT, GPT-2, and BERT.
 	% end
 
-	\section{Attending to Arbitrary Regions} % 12.36, 12.37
-		\todo{Content}
-
-		\subsection{DRAW} % 12.38, 12.39
-			\todo{Content}
-		% end
-
-		\subsection{Spatial Transformer Networks} % 12.40, 12.41, 12.42, 12.43, 12.44
-			\todo{Content}
-		% end
-	% end
-
-	\section{Transformer Networks} % 13.1, 13.6, 13.7, 13.8, 13.9, 13.10, 13.11
-		\todo{Content}
-
-		\subsection{GPT and GPT-2} % 13.12
-			\todo{Content}
-		% end
-
-		\subsection{BERT (Bidirectional Encoder Representation from Transformers)} % 13.13
-			\todo{Content}
-		% end
-	% end
-
-	\section{Takeaways} % 12.45, 12.46
-		\todo{Content}
+	\section{Takeaways}
+		\begin{description}
+			\item[Performance]    Attention models can improve accuracy and reduce computation time at the same time.
+			\item[Complexity]     There are many different design choices for attention networks that have a big impact on performance. Attention models can be quite complex, but they get simplified whenever possible.
+			\item[Explainability] Attention can yield more interpretability by seeing where the model looks.
+			\item[Hard vs. Soft]  Soft models are generally easier to train; hard models require reinforcement learning. But they can also be combined (Luong et al., 2015).
+		\end{description}
 	% end
 % end

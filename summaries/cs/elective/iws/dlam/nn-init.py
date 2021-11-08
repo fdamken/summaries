@@ -66,14 +66,14 @@ def main():
 		for label, mean in means.items():
 			if initialization == "normal-big" and label == "ReLU":
 				continue
-			ax1.plot(mean, "-o", label=label)
+			ax1.plot([m.detach().cpu().numpy() for m in mean], "-o", label=label)
 		ax1.set_xlabel("Layer")
 		ax1.set_title("Activation Mean")
 		ax1.legend()
 		for label, std in stds.items():
 			if initialization == "normal-big" and label == "ReLU":
 				continue
-			ax2.plot(std, "-o", label=label)
+			ax2.plot([s.detach().cpu().numpy() for s in std], "-o", label=label)
 		ax2.set_xlabel("Layer")
 		ax2.set_title("Activation Standard Deviation")
 		ax2.legend()

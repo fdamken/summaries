@@ -107,7 +107,6 @@ def doSteepestDescent():
     fig.colorbar(c)
     ax.set_title('$ \\alpha = %.2f, n = %d $' % (alpha, iterations))
     fig.savefig('tmp-steepestDescent-rosenbrock.pdf')
-    fig.canvas.set_window_title('Steepest Descent (Rosenbrock)')
 
 
     # Quadratic.
@@ -123,7 +122,6 @@ def doSteepestDescent():
     fig.colorbar(c)
     ax.set_title('$ \\alpha = %.2f, n = %d $' % (alpha, iterations))
     fig.savefig('tmp-steepestDescent-quadratic.pdf')
-    fig.canvas.set_window_title('Steepest Descent (Quadratic)')
 
 
 
@@ -145,7 +143,6 @@ def doNewtonsMethod():
     fig.colorbar(c)
     ax.set_title('$ \\alpha = %.2f, n = %d $' % (alpha, iterations))
     fig.savefig('tmp-newtonsMethod-rosenbrock.pdf')
-    fig.canvas.set_window_title('Newtons Method (Rosenbrock)')
 
 
     # Quadratic.
@@ -163,7 +160,6 @@ def doNewtonsMethod():
     fig.colorbar(c)
     ax.set_title('$ \\alpha = %.2f, n = %d $' % (alpha, iterations))
     fig.savefig('tmp-newtonsMethod-quadratic.pdf')
-    fig.canvas.set_window_title('Newtons Method (Quadratic)')
 
 
 
@@ -186,7 +182,6 @@ def doBFGS():
     fig.colorbar(c)
     ax.set_title('$ \\alpha = %.2f, n = %d $' % (alpha, iterations))
     fig.savefig('tmp-bfgs-rosenbrock.pdf')
-    fig.canvas.set_window_title('BFGS (Rosenbrock)')
 
 
     # Quadratic.
@@ -204,7 +199,6 @@ def doBFGS():
     fig.colorbar(c)
     ax.set_title('$ \\alpha = %.2f, n = %d $' % (alpha, iterations))
     fig.savefig('tmp-bfgs-quadratic.pdf')
-    fig.canvas.set_window_title('BFGS (Quadratic)')
 
 
 
@@ -227,7 +221,6 @@ def doCG():
     fig.colorbar(c)
     ax.set_title('$ \\alpha = %.2f, n = %d $' % (alpha, iterations))
     fig.savefig('tmp-cg-rosenbrock.pdf')
-    fig.canvas.set_window_title('CG (Rosenbrock)')
 
 
     # Quadratic.
@@ -243,7 +236,6 @@ def doCG():
     fig.colorbar(c)
     ax.set_title('$ \\alpha = %.2f, n = %d $' % (alpha, iterations))
     fig.savefig('tmp-cg-quadratic.pdf')
-    fig.canvas.set_window_title('CG (Quadratic)')
 
 
 

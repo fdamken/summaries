@@ -75,7 +75,6 @@
 \RequirePackage{qtree}
 \RequirePackage{rotating}
 \RequirePackage{siunitx}
-\RequirePackage{siunitx}
 \RequirePackage{stmaryrd}
 \RequirePackage{subcaption}
 \RequirePackage{syntax}

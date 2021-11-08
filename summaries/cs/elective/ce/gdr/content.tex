@@ -1,6 +1,6 @@
 \chapter{Einleitung} % 1.8
 	\todo{Einleitung}
-	
+
 	\section{Was ist ein Roboter?} % 1.9, 1.10, 1.11, 1.12, 1.13, 1.14
 		\todo{Einleitung}
 	% end
@@ -136,7 +136,7 @@
 
 	\section{Klassische Transformationsbeziehungen}
 		Darstellung von \( \cdot \) \bzgl einem Koordinatensystem \( S_a \): \( \inreferenceto{a}{\cdot} \).
-		
+
 		Klassische Transformationsbeziehung:
 		\begin{equation*}
 			\inreferenceto{a}{\vec{p}} = \inreferenceto{a}{\vec{r}}_b + \inreferenceto{a}{\mat{R}}_b \inreferenceto{b}{\vec{p}}
@@ -157,7 +157,7 @@
 				\item Orthonormalität: \( \mat{R} \mat{R}^T = \mat{E} \)
 				\item Orthonormale Spalten (\dh Einheitsvektoren und paarweise orthogonal).
 			\end{itemize}
-		
+
 			\paragraph{Elementare Rotationsmatrizen}
 				\begin{itemize}
 					\item Rotation um \(x\)-Achse um \(\theta_x\):
@@ -212,7 +212,7 @@
 
 			\subsubsection{Kardan-Winkel}
 				Bei \emph{Kardan-Winkeln} erfolgen die drei verketteten Rotationen um die Winkel \(\psi\) (Yaw), \(\theta\) (Pitch), \(\phi\) (Roll) in dieser Reihenfolge um die Achsen des festen Bezugssystems \(S_a\), \dh durch Vormultiplikation.
-			
+
 				Am häufigsten werden \emph{X-Y-Z-Winkel} (auch \emph{RPY-Winkel}) verwendet:
 				\begin{align*}
 					\inreferenceto{a}{\mat{R}}_b(\psi, \theta, \phi) &= \mat{R}(z; \phi) \cdot \big( \mat{R}(y; \theta) \cdot \mat{R}(x; \psi) \big) \\
@@ -234,7 +234,7 @@
 
 			\subsubsection{Euler-Winkel}
 				Bei \emph{Euler-Winkeln} erfolgen die drei verketteten Rotationen um die Winkel \(\alpha\), \(\beta\), \(\gamma\) in dieser Reihenfolge um die Achsen des momentanen Bezugssystems \(S_b\), \dh durch Nachmultiplikation.
-				
+
 				Am häufigsten werden dabei \emph{Z-Y-Z-Winkel} verwendet:
 				\begin{equation*}
 					\inreferenceto{a}{\mat{R}}_b = \big( \mat{R}(z; \alpha) \cdot \mat{R}(y; \beta) \big) \cdot \mat{R}(z; \gamma)
@@ -286,7 +286,7 @@
 \chapter{Roboterkinematik}
 	\section{Vorwärtskinematik}
 		Die Vorwärtskinematik \DIRKIN berechnet die Endeffektor-Position/-Orientierung aus den Gelenkstellungen.
-	
+
 		\subsection{Kinematische Ketten}
 			Der Roboter wird dabei als \emph{offene kinematische Kette} betrachtet, \dh die
 			\begin{itemize}
@@ -294,7 +294,7 @@
 				\item Drehgelenke (mit Rotation \( \theta_i \))
 			\end{itemize}
 			als auch die Glieder werden als starr-, massen- sowie schleifenlos betrachtet.
-			
+
 			Dabei hat jedes Gelenk einen Freiheitsgrad (Degree of Freedom, DOF). Ein Manipulator mit \(n\) Gelenken hat somit \(n\) DOF, wobei
 			\begin{enumerate}
 				\item die Gelenke von \(1\) bis \(n\) nummeriert werden und
@@ -305,7 +305,7 @@
 
 		\subsection{Kinematische Modellbildung}
 			Mit jedem Glied \(i\) wird am Gelenk \(i + 1\) ein gliedfestes Koordinatensystem \(S_i\) befestigt, wobei zusätzlich das Basiskoordinatensystem \(S_0\) und das Endeffektorkoordinatensystem \(S_n\) definiert wird. Ein Manipulator wird also durch \( n + 1 \) Koordinatensysteme beschrieben.
-			
+
 			Ziel ist es nun, eine kinematische Modellstruktur
 			\begin{equation*}
 				\inreferenceto{0}{\mat{T}}_n = \inreferenceto{0}{\mat{T}}_1 \cdot \inreferenceto{1}{\mat{T}}_2 \cdots \inreferenceto{n - 2}{\mat{T}}_{n - 1} \cdot \inreferenceto{n - 1}{\mat{T}}_{n} = \prod_{i = 1}^{n} \inreferenceto{i - 1}{\mat{T}}_i
@@ -321,16 +321,16 @@
 				\item Die \(x_i\)-Achse steht senkrecht zur \(z_{i - 1}\)-Achse und zeigt von ihr weg.
 				\item Die \(x_i\)-Achse und die \(z_{i - 1}\)-Achse haben einen Schnittpunkt.
 			\end{itemize}
-		
+
 			\subsubsection{Pseudo-Algorithmus zur Festlegung der Koordinatensysteme}
 				Voraussetzung: Der Manipulator befindet sich in allen \(n\) Gelenken in Nullstellung (\zB ausgestreckt nach oben).
-				
+
 				Legt der folgende Algorithmus in einzelnen Schritten nicht eindeutig sein, so ist zuerst die Einhaltung der DH-Eigenschaften zu gewährleisten und ansonsten die Wahl einer Lösung mit möglichst geringer Komplexität der Transformationen zu bevorzugen.
-				
+
 				\paragraph{Schritt 1}
 					\subparagraph{Schritt 1a}
 					Nummerierung der Glieder von \(0\) (Basis) bis \(n\).
-					
+
 					\subparagraph{Schritt 1b (für \( i = 0, \cdots, n - 1 \))}
 					Festlegung der \(z_i\)-Achsen als koinzident mit der Bewegungsachse des \( (i + 1) \)-ten Gelenks:
 					\begin{itemize}
@@ -338,11 +338,11 @@
 						\item Bei Drehgelenken als Rotationsachse in Richtung positiver Drehwinkel (wird festgelegt).
 					\end{itemize}
 				% end
-				
+
 				\paragraph{Schritt 2}
 					Festlegung von \(S_0\) mit Ursprung auf der \(z_0\)-Achse, sodass sich ein Rechtskoordinatensystem ergibt (oft werden \(x_0\) und \(y_0\) parallel zum Welt-Koordinatensystem gewählt).
 				% end
-				
+
 				\paragraph{Schritt 3 (für \( i = 1, \cdots, n - 1 \))}
 					Festlegung des Ursprungs von \(S_i\):
 					\begin{itemize}
@@ -350,7 +350,7 @@
 						\item Falls \(z_{i - 1}\) und \(z_i\) parallel sind: \\ Festlegung auf der \(z_i\)-Achse am Gelenk \(i + 1\).
 						\item Sonst (\(z_{i - 1}\) und \(z_i\) windschief): \\ Bilde eine gemeinsame Normale zu \(z_i\) und \(z_{i - 1}\), Schnittpunkt der Normalen mit \(z_i\) wird der Ursprung.
 					\end{itemize}
-				
+
 					\subparagraph{Kurzschreibweise}
 					\begin{equation*}
 						S_i =
@@ -361,14 +361,14 @@
 							\end{cases*}
 					\end{equation*}
 				% end
-				
+
 				\paragraph{Schritt 4 (für \( i = 1, \cdots, n - 1 \))}
 					Festlegung der \(x_i\)-Achse:
 					\begin{itemize}
 						\item Falls \(z_{i - 1}\) und \(z_i\) sich schneiden: \\ \( x_i = z_{i - 1} \times z_i \) oder \( x_i = z_i \times z_{i - 1} \) (unter Berücksichtigung der DH-Eigenschaften!).
 						\item Sonst (\(z_{i - 1}\) und \(z_i\) parallel oder windschief): \\ \(x_i\)-Achse in Richtung der gemeinsamen Normalen von \(z_{i - 1}\) und \(z_i\), sodass sich \(x_i\) und \(z_{i - 1}\) schneiden.
 					\end{itemize}
-				
+
 					\subparagraph{Kurzschreibweise}
 					\begin{equation*}
 						x_i =
@@ -378,16 +378,16 @@
 							\end{cases*}
 					\end{equation*}
 				% end
-				
+
 				\paragraph{Schritt 5 (für \( i = 1, \cdots, n - 1 \))}
 					Festlegung der \(y_i\)-Achse, sodass \( x_i, y_i, z_i \) ein Rechtskoordinatensystem bilden (\dh \( z_i = x_i \times z_i \), Rechte-Hand-Regel!).
-					
+
 					\subparagraph{Kurzschreibweise}
 					\begin{equation*}
 						z_i \overset{!}{=} x_i \times y_i
 					\end{equation*}
 				% end
-				
+
 				\paragraph{Schritt 6}
 					Festlegung des Endeffektor-Koordinatensystems \(S_n\): Der Ursprung wird meistens in den Tool-Center-Point (TCP) gelegt.
 					\begin{itemize}
@@ -395,7 +395,7 @@
 						\item Ist der Endeffektor ein einfacher Greifer: \\ Meist eine solche Festlegung, dass Yaw-, Pitch- und Roll-Winkel verwendet werden können.
 					\end{itemize}
 				% end
-				
+
 				\paragraph{Schritt 7 (für \( i = 1, \cdots, n \))}
 					Erstellen einer Tabelle von Gliedparametern \( \theta_i, d_i, a_i, \alpha_i \):
 					\begin{itemize}
@@ -404,7 +404,7 @@
 						\item[\(a_i\)] Entfernung vom Schnittpunkt von \(z_{i - 1}\) und \(x_i\) entlang \(x_i\) zum \(S_i\)-Ursprung. Je nach Orientierung von \(x_i\) kann \(a_i\) auch negativ sein.
 						\item[\(\alpha_i\)] Winkel zwischen \( z_{i - 1} \) und \(z_i\), gemessen um \(x_i\).
 					\end{itemize}
-				
+
 					\subparagraph{Kurzschreibweise}
 					\begin{align*}
 						\theta_i & \coloneqq x_{i - 1} \,\angle_{z_{i - 1}}\, x_i                                     \\
@@ -413,7 +413,7 @@
 						\alpha_i & \coloneqq z_{i - 1} \,\angle_{x_i}\, z_i
 					\end{align*}
 				% end
-				
+
 				\paragraph{Schritt 8 (für \( i = 1, \cdots, n \))}
 					Bildung der homogenen Transformationsmatrizen:
 					\begin{equation*}
@@ -426,7 +426,7 @@
 							\end{bmatrix}
 					\end{equation*}
 				% end
-				
+
 				\paragraph{Schritt 9}
 					Berechnung von
 					\begin{equation*}
@@ -439,27 +439,27 @@
 
 	\section{Rückwärtskinematik (Inverse Kinematik)}
 		Die Rückwärtskinematik \INVKIN berechnet die benötigten Gelenkstellungen für eine Endeffektor-Position/-Orientierung.
-		
+
 		Gegeben einer Endeffektor-Position/-Orientierung \( \inreferenceto{0}{\tilde{\mat{T}}}_E \) ist ein Vektor \( \vec{q} \in \R^n \) gesucht, sodass
 		\begin{equation*}
 			\inreferenceto{0}{\mat{T}}_E(\vec{q}) = \inreferenceto{0}{\tilde{\mat{T}}}_E
 		\end{equation*}
 		gilt. Dies liefert ein System von \(6\) unabhängigen, nichtlinearen, gekoppelten Gleichungen.
-		
+
 		Allgemein gilt: Wird eine RAN beliebig vorgegeben, so existiert
 		\begin{itemize}
 			\item für \( n < 6 \) Gelenkvariablen \iA keine Lösung (es dürfen maximal \(n\) Werte vorgegeben werden),
 			\item für \( n = 6 \) Gelenkvariablen \iA genau eine Lösung (dies ist der Fall für viele \num{6}-DOF Industrieroboter),
 			\item für \( n > 6 \) Gelenkvariablen \iA unendliche viele Lösungen.
 		\end{itemize}
-	
+
 		Definition: Der \emph{erreichbare Arbeitsraum} \(\mathcal{A} \subseteq \R^3\) ist der Raum, der von dem Manipulator in mindestens einer Stellung erreicht werden kann.
-		
+
 		Definition: Der \emph{vollmanipulierbare Arbeitsraum} die ist Teilmenge von \(\mathcal{A}\), die von dem Manipulator mit allen Orientierungen erreicht werden kann.
 
 		\subsection{Numerische Berechnung}
 			Es kann \bspw das klassische Newton-Verfahren zur Lösung nichtlinearer Gleichungssysteme eingesetzt werden (sofern \DIRKIN differenzierbar ist).
-			
+
 			\textbf{Nachteile:}
 			\begin{itemize}
 				\item Kein iteratives Verfahren kann alle Lösungen garantiert berechnen. Dies wird jedoch oftmals benötigt.
@@ -474,15 +474,15 @@
 				\item \textbf{Nachteil:} Aufwendig zu bestimmen.
 				\item Dennoch sollten, wenn möglich, explizite Lösungsformeln zumindest für einen Teil gefunden werden.
 			\end{itemize}
-		
+
 			\subsubsection{Algebraische Ermittlung}
 				Die Rückwärtslösung wird rein durch umformen von Gleichungen gefunden.
 			% end
-			
+
 			\subsubsection{Geometrische Lösung}
 				Die Rückwärtslösung wird durch geometrische (\bspw trigonometrische) Betrachtung des Roboters ermittelt, wobei das Problem in mehrere Teilprobleme zerlegt werden kann.
 			% end
-			
+
 			\subsubsection{Algorithmische Ermittlung}
 				\begin{itemize}
 					\item \textbf{Vorteil:} Falls eine Lösungsformel bestimmt werden kann schneller als iterative Verfahren.
@@ -521,7 +521,7 @@
 				\end{bmatrix}
 		\end{equation*}
 		wobei \( \vec{\omega} = \begin{bmatrix} \omega_x & \omega_y & \omega_z \end{bmatrix}^T \) den Vektor der Winkelgeschwindigkeiten der Rotation darstellt.
-		
+
 		Über die Beziehung
 		\begin{equation*}
 			\mat{B}\Big(\!\vec{\omega}\big(\vec{q}(t), \dot{\vec{q}}(t)\big)\!\Big) = \Bigg( \sum_{i = 1}^{n} \frac{\partial \mat{R}\big(\vec{q}(t)\big)}{\partial q_i(t)} \cdot \dot{q}_i(t) \!\Bigg) \cdot \mat{R}\big(\vec{q}(t)\big)^T
@@ -531,7 +531,7 @@
 
 	\section{Jacobi-Matrix eines Manipulators}
 		\textbf{Achtung:} Die Jacobi-Matrix eines Manipulators darf nicht mit der Jacobi-Matrix einer Funktion mehrerer Veränderlicher verwechselt werden!
-		
+
 		\subsection{Verkettung von Rotationen}
 			Für verkettete Rotationen
 			\begin{equation*}
@@ -549,7 +549,7 @@
 
 		\subsection{Zusammenfassung}
 			\textbf{Das folgende gilt nur, wenn die Koordinatensysteme entsprechend der DH-Konvention platziert sind!}
-		
+
 			Für die Jacobi-Matrix \( \inreferenceto{0}{\mat{J}} \) gilt:
 			\begin{equation*}
 				\begin{bmatrix}
@@ -560,7 +560,7 @@
 				\inreferenceto{0}{\mat{J}}_n\big(\vec{q}(t)\big) \cdot \dot{\vec{q}}(t)
 			\end{equation*}
 			mit der Lineargeschwindigkeit \( \inreferenceto{0}{\vec{v}}(t) \) und Winkelgeschwindigkeit \( \inreferenceto{0}{\vec{\omega}}(t) \) des Endeffektors in Bezug auf das Basiskoordinatensystem.
-			
+
 			Die \(i\)-te Spalte \( \inreferenceto{0}{\vec{J}}_{n, i} \) der Manipulator-Jacobi-Matrix berechnet sich wie folgt. Ist Gelenk \(i\) ein
 			\begin{itemize}
 				\item Drehgelenk:
@@ -583,7 +583,7 @@
 					\end{bmatrix}
 			\end{equation*}
 			Somit kann die Jacobi-Matrix direkt aus \DIRKIN berechnet werden.
-			
+
 			Anmerkung: Oft kann es (insbesondere bei der linearen Geschwindigkeit eines Drehgelenks) einfacher sein, \( \inreferenceto{0}{\vec{r}}_n \) direkt nach den Gelenkvariablen abzuleiten.
 		% end
 	% end
@@ -625,9 +625,9 @@
 			\rank\big(\inreferenceto{0}{\mat{J}}_n(\vec{q}_s)\big) < m
 		\end{equation*}
 		\emph{kinematische Singularität}.
-		
+
 		Bei einer solchen Singularität ist die Jacobi-Matrix singulär und es müssten unendliche hohe Geschwindigkeiten erreicht werden (ebenso nehmen die Geschwindigkeit bei der Annäherung an eine solche Singularität \iA zu).
-		
+
 		Zur Berechnung der kinematischen Singularitäten (\zB um diese bei der Bahnplanung zu vermeiden), ist folgendes vorgehen möglich: Zunächst wird die Jacobi-Matrix auf eine \( (m \times m) \)-Untermatrix \( \inreferenceto{0}{\hat{\mat{J}}}_n(\vec{q}) \) mit \( m = \rank\big(\inreferenceto{0}{\hat{\mat{J}}}_n(\vec{q})\big) \) eingeschränkt. Dann ist eine Konfiguration \(\vec{q}_s\) genau dann singulär, wenn
 		\begin{equation*}
 			\det \inreferenceto{0}{\hat{\mat{J}}}_n(\vec{q}_s) = 0
@@ -674,7 +674,7 @@
 
 \chapter{Roboterdynamik}
 	Bisher wurden keine (statischen) Kräfte, sondern nur Positionen und Geschwindigkeiten betrachtet. Die inverse Dynamik/Kinetik \INVDYN berechnet für gegebene Kräfte (\zB die Gravitation) die Kräfte/Momente, die die Gelenke aufbringen müssen.
-	
+
 	Seien \( \tau_i \) die verallgemeinerten Kräfte/Drehmomente wobei
 	\begin{itemize}
 		\item \( \tau_i = n_i \) für ein Drehgelenk (Drehmoment) und
@@ -697,22 +697,22 @@
 			\inreferenceto{a}{I}_{yy} &= \iiint_{\mathcal{V}} \! \big(x^2 + z^2\big) \,\rho(x, y, z) \dd{v} & \inreferenceto{a}{I}_{xz} &= \iiint_{\mathcal{V}} \! xz \,\rho(x, y, z) \dd{v} \\
 			\inreferenceto{a}{I}_{zz} &= \iiint_{\mathcal{V}} \! \big(x^2 + y^2\big) \,\rho(x, y, z) \dd{v} & \inreferenceto{a}{I}_{yz} &= \iiint_{\mathcal{V}} \! yz \,\rho(x, y, z) \dd{v}
 		\end{align*}
-		
+
 		Sind \(x_a\), \(y_a\) und \(z_a\) die Hauptträgheitsachsen, so verschwinden die die Massenträgheitsprodukte. Dies ist zum Beispiel der Fall, wenn die Achsen paarweise Symmetrieebenen des Körpers bilden (bilden zwei Achsen eine Symmetrieebene, so verschwinden die Trägheitsprodukte der dritten Achse).
-		
+
 		\subsection{Transformation von Trägheitstensoren}
 			\paragraph{(Reine) Rotation des Bezugssystems}
 			Ist das System \(S_b\) um \(\inreferenceto{a}{\mat{R}}_b\) zu \(S_a\) rotiert, so gilt:
 			\begin{equation*}
 				\inreferenceto{b}{\mat{I}} = \inreferenceto{b}{\mat{R}}_a \cdot \inreferenceto{a}{\mat{I}} \cdot \inreferenceto{a}{\mat{R}}_b
 			\end{equation*}
-			
+
 			\paragraph{Translation des Bezugssystems (Satz von Steiner)}
 			Liegt \(S_c\) im \emph{Schwerpunkt} des Körpers und das System \(S_b\) ist um \(\inreferenceto{c}{\vec{r}_b}\) zu \(S_c\) verschoben, aber nicht rotiert, so gilt:
 			\begin{equation*}
 				\inreferenceto{b}{\mat{I}} = \inreferenceto{c}{\mat{I}} + m \cdot \big( \inreferenceto{c}{\vec{r}}_b^T \cdot \inreferenceto{c}{\vec{r}}_b \cdot \mat{E} - \inreferenceto{c}{\vec{r}}_b \cdot \inreferenceto{c}{\vec{r}}_b^T \big)
 			\end{equation*}
-			
+
 			\paragraph{Zusammenfügen von Körpern}
 			Werden die Trägheitstensoren \( \mat{I}_1 \) und \( \mat{I}_2 \) von zwei Körpern, die verbunden werden, im gleichen Koordinatensystem dargestellt, so ergibt sich der Gesamtträgheitstensor des zusammengefügten Körpers:
 			\begin{equation*}
@@ -734,7 +734,7 @@
 			\item Der Trägheitstensor \( \inreferenceto{c_i}{\mat{I}}_i \) bezüglich \( S_{c_i} \).
 		\end{itemize}
 		Dabei sei \( S_{c_i} \) das Schwerpunktkoordinatensystem von Glied \(i\) mit der gleichen Orientierung wie \( S_i \).
-		
+
 		Weitere Notationen:
 		\begin{itemize}
 			\item \( \vec{\omega}_i \coloneqq \inreferenceto{i}{\mat{R}}_0 \cdot \inreferenceto{0}{\vec{\omega}}_i \) \\
@@ -749,7 +749,7 @@
 
 		\subsection{Iterative Berechnung von INV\,DYN}
 			Für die Basis werden die Werte \( \vec{\omega}_0 \), \( \dot{\vec{\omega}}_0 \), \( \vec{v}_0 \) und \( \vec{\dot{v}}_0 \) vorgegeben (\zB \( \vec{\dot{v}}_0 = \vec{g} \) mit dem Gravitationsvektor \(\vec{g}\)). Des weiteren werden die Werte \( \vec{f}_{n + 1} \) und \( \vec{n}_{n + 1} \) für den Endeffektor vorgegeben (eine am Endeffektor sorgt dabei nicht für die Änderung dieser Werte, sondern für eine Änderung der Masse \(m_n\)).
-			
+
 			Sei außerdem
 			\begin{equation*}
 				\rho_i \coloneqq
@@ -758,7 +758,7 @@
 						0 & falls \(i\) Schubgelenk
 					\end{cases*}
 			\end{equation*}
-			
+
 			\paragraph{Schritt NE.1 (für \( n = 1, \cdots, n \))}
 				Berechnung der Linear- und Winkelbeschleunigungen (von innen nach außen).
 				\begin{align*}
@@ -769,7 +769,7 @@
 					\vec{\dot{v}}_{c_i} &= \vec{\dot{v}}_i + \big(\dot{\vec{\omega}}_i \times \inreferenceto{i}{\vec{r}}_{c_i}\big) + \vec{\omega}_i \times \big( \vec{\omega}_i \times \inreferenceto{i}{\vec{r}}_{c_i} \big)
 				\end{align*}
 			% end
-			
+
 			\paragraph{Schritt NE.2 (für \( i = 1, \cdots, n \))}
 				Berechnung der am Schwerpunkt wirkenden Kräfte \( \vec{F}_i \) und Drehmomente \( \vec{N}_i \). Dieser Schritt kann auch in Schritt NE.1 integriert werden.
 				\begin{align*}
@@ -781,7 +781,7 @@
 					\vec{N}_i &= \inreferenceto{c_i}{\mat{I}}_i \dot{\vec{\omega}}_i + \vec{\omega}_i \times \big( \inreferenceto{c_i}{\mat{I}}_i \vec{\omega}_i \big)
 				\end{align*}
 			% end
-			
+
 			\paragraph{Schritt NE.3 (für \( i = n, \cdots, 1 \))}
 				Berechnung der Kräfte und Drehmomente \( \tau_i \) am Gelenk jedes Roboterglieds (von außen nach innen).
 				\begin{align*}
@@ -795,14 +795,14 @@
 				\end{align*}
 			% end
 		% end
-		
+
 		\subsection{Bemerkungen und DIR\,DYN}
 			Die inverse Dynamik \INVDYN kann immer in der Form
 			\begin{equation*}
 				\vec{\tau} = \mat{M}(\vec{q}\!)\, \ddot{\vec{q}} + \vec{C}(\vec{q}, \dot{\vec{q}}\!) + \vec{G}(\vec{q}\!)
 			\end{equation*}
 			mit der symmetrischen, positiv definiten Massenmatrix \( \mat{\vec{q}\!} \in \R^{n \times n} \), dem Vektor der Zentrifugal- und Coriolisanteile \( \vec{C}(\vec{q}, \dot{\vec{q}}\!) \) und dem Vektor der Gravitationsanteile \( \vec{G}(\vec{q}\!) \).
-			
+
 			Die direkte Dynamik \DIRDYN kann in Abhängigkeit von den Antriebsmomenten und -kräften \(\vec{\tau}\) formuliert werden
 			\begin{equation*}
 				\ddot{\vec{q}} = \mat{M}(\vec{q}\!)^{-1} \big( \vec{\tau} - \vec{C}(\vec{q}, \dot{\vec{q}}\!) - \vec{G}(\vec{q}\!) \big)
@@ -813,13 +813,13 @@
 
 	\section{Lagrangesche Formulierung der Roboterdynamik}
 		Die Lagrangesche Formulierung der Dynamik liefert am Ende die gleichen Bewegungsgleichungen, funktioniert aber grundlegend anders (Energie-basiert).
-		
+
 		\paragraph{Kinetische Energie}
 			Die kinetische Energie des \(i\)-ten Gliedes lautet:
 			\begin{equation*}
 				K_i(\vec{q}, \dot{\vec{q}}) = \frac{1}{2}\, \dot{\vec{q}}^T \Big( m_i \inreferenceto{0}{\mat{J}}_{c_i, v}^T \inreferenceto{0}{\mat{J}}_{c_i, v} + \inreferenceto{0}{\mat{J}}_{i, \omega}^T \inreferenceto{c_i}{\mat{I}}_i \inreferenceto{0}{\mat{J}}_{i, \omega} \Big)\, \dot{\vec{q}}
 			\end{equation*}
-			
+
 			Damit lautet die gesamte kinetische Energie des Manipulators:
 			\begin{align*}
 				K(\vec{q}, \dot{\vec{q}}) &= \sum_{i = 1}^{n} K_i(\vec{q}, \dot{\vec{q}}) \\
@@ -828,26 +828,26 @@
 			\end{align*}
 			Wobei \( \mat{M}(\vec{q}) \) Massenmatrix darstellt.
 		% end
-		
+
 		\paragraph{Potentielle Energie}
 			Die potentielle Energie des \(i\)-ten Gliedes lautet
 			\begin{equation*}
 				P_i = -m_i \vec{g}^T \inreferenceto{0}{\vec{r}}_{c_i} + P_{\text{Ref}, i}
 			\end{equation*}
 			mit dem Gravitationsvektor \( \vec{g} \) und einer Konstante \( P_{\text{Ref}, i} \), die im späteren Verlauf der Ableitungen wieder verschwindet.
-			
+
 			Damit lautet die gesamte potentielle Energie des Manipulators:
 			\begin{equation*}
 				P(\vec{q}\!) = \sum_{i = 1}^{n} P_i
 			\end{equation*}
 		% end
-		
+
 		\paragraph{Lagrangefunktion und Lagrange-Gleichungen}
 			Die Lagrangefunktion ist definiert als:
 			\begin{equation*}
 				\mathcal{L}(\vec{q}, \dot{\vec{q}}\!) = K(\vec{q}, \dot{\vec{q}}\!) - P(\vec{q}\!)
 			\end{equation*}
-			
+
 			Nach dem Prinzip der kleinsten Wirkung (Hamiltonsches Prinzip) bewegt der Manipulator sich dann entsprechend der \(n\) Bewegungsgleichungen
 			\begin{equation*}
 				\dv{t} \frac{\partial \mathcal{L}}{\partial \dot{q}_i} - \frac{\partial \mathcal{L}}{\partial q_i} = \tau_i,\quad i = 1, \cdots, n
@@ -917,19 +917,19 @@
 
 		\subsection{Reibung}
 			Berühren sich zwei Oberflächen, so sind die typischerweise nicht glatt, sodass auch tangentiale Kräfte wirken (die \emph{Reibung}). In der Regel können die Reibungskräfte und -momente, die in den Gelenken wirken, nicht vernachlässigt werden.
-			
+
 			Zur Berücksichtigung von Reibung wird den Bewegungsdifferentialgleichungen \INVDYN ein Vektor \( \vec{F} \) für Reibungs- und Dämpfungskräfte und -momente hinzugefügt:
 			\begin{equation*}
 				\vec{\tau} = \mat{M}(\vec{q}\!)\, \ddot{\vec{q}} + \vec{C}(\vec{q}, \dot{\vec{q}}\!) + \vec{G}(\vec{q}\!) + \vec{F}(\vec{q}, \dot{\vec{q}}\!)
 			\end{equation*}
-			
+
 			\subsubsection{Reibungsmodell}
 				Ein häufiges, einfaches Reibungsmodell (des \(i\)-ten Gelenks) ist
 				\begin{equation*}
 					F_i(\vec{q}, \dot{\vec{q}}\!) = \underbrace{\gamma_{C, i} \cdot \sign \dot{q}_i}_\text{Coulombsche Reibung} + \underbrace{\gamma_{v, i} \cdot \dot{q}_i}_\text{Viskose Gleitreibung}
 				\end{equation*}
 				mit \( \gamma_{C, i}, \gamma_{v, i} = \const \).
-				
+
 				Sobald die Zugkraft \(Z\) einen bestimmten Grenzwert überschreitet, wird die Haftung überwunden und die Oberflächen gleiten übereinander. Diese \emph{Coulombsche Reibung} wird mit \( \gamma_{C, i} \) beschrieben, welches nach Charles Augustine proportional zur Normalkraft \( N_i \) ist (mit dem \emph{Reibungskoeffizient} \( \mu_{R, i} \)):
 				\begin{equation*}
 					\gamma_{C, i} = \mu_{R, i} \cdot N_i
@@ -947,16 +947,16 @@
 							\gamma_{s, i} \cdot \sign Z                                         & sonst
 						\end{cases*}
 				\end{equation*}
-				
+
 				Die \emph{viskose Gleitreibung} wird häufig proportional zur Geschwindigkeit modelliert und berücksichtigt hydromechanische Effekte (\zB Schmiermittel).
-				
+
 				\paragraph{Verfeinerungen}
 					Das bisherige Modell modelliert einen sprunghaften Übergang zwischen Haft- und Gleitreibung. Dies entspricht jedoch nur annähernd der Realität, wobei Reibung mit zunehmender Geschwindigkeit zunächst abnimmt. Dieser Übergang kann mit der Stribeck-Reibung beschrieben werden (dabei ist \( \dot{q}_\text{stribeck} \) die Geschwindigkeit, bei der die minimale Reibung auftritt):
 					\begin{equation*}
 						F_i(\vec{q}, \vec{q}\!) = \Bigg( \gamma_{C, i} + (\gamma_{s, i} - \gamma_{C, i}) \exp \bigg\{\! -\Big\lvert \frac{\dot{q}_i}{\dot{q}_{\text{stribeck}, i}} \Big\rvert \,\bigg\} \Bigg) \cdot \sign \dot{q}_i + \gamma_{v, i} \cdot \dot{q}_i
 					\end{equation*}
 				% end
-				
+
 				\paragraph{Anmerkungen}
 					\begin{itemize}
 						\item Reibungsmodelle sind immer mit Unsicherheiten behaftet (Last-, Temperatur-, Winkelabhängigkeiten, \dots).
@@ -1136,7 +1136,7 @@
 
 	\section{Spezielle Dynamikmodelle für zweibeinige, humanoide Roboter und deren Stabilitätsregelung}
 		Heutige humanoide Roboter bestehen aus starren kinematischen Ketten mit steifen Drehgelenken (meistens sechs bis sieben Drehgelenke pro Bein), sind Kaskadengeregelt.
-		
+
 		Dabei beruht die posturale Stabilität auf dem \emph{Zero Moment Point}. Der Begriff von \emph{statisch stabilen Laufen} bezeichnet dabei, dass die Laufbewegung jederzeit gestoppt werden kann, ohne dass der Roboter umfällt. \emph{Dynamische Stabilität} ist hingegen gegeben, wenn der Roboter zwar nicht statisch stabil ist, aber trotzdem nicht umfällt.
 
 		\subsection{Zero-Moment-Point (ZMP)}
@@ -1156,7 +1156,7 @@
 						0
 					\end{bmatrix}
 			\end{equation*}
-			
+
 			Der \emph{Zero-Moment-Point} ist nun derjenige Punkt \(P\), in dem die resultierende normale Kraft \( \vec{F}_N = \sum_i \vec{f}_{N_i} \) wirkt:
 			\begin{equation*}
 				\vec{r}_\text{ZMP} \coloneqq \frac{\sum_i \vec{r}_{N_i} f_{N_i, z}}{\sum_i f_{N_i, z}}
@@ -1183,24 +1183,24 @@
 					\end{bmatrix}
 			\end{equation*}
 			Somit wirkt am Zero-Moment-Point zwar ein Moment, dieses führt aber nicht zum Kippen.
-			
+
 			Der Roboter kann nur dann kippen, wenn sich der ZMP am Rand der konvexen Hülle der Bodenkontaktpunkte liegt. Daher muss der ZMP strikt innerhalb der konvexen Hülle gehalten werden.
 		% end
 
 		\subsection{Center of Pressure (CoP)}
 			Ein alternatives Stabilitätsmaß ist das \emph{Center of Pressure} (CoP). Dieser ist die resultierende Ersatzkraft aus allen Kräften, die auf die Sole des Fußes wirken und den Bodenreaktionskräften entgegen wirken.
-			
+
 			Achtung: ZMP und CoP beschreiben nicht das gleiche! Dies ist nur der Fall bei einem dynamisch ausbalancierten Laufroboter.
 		% end
 
 		\subsection{Inverses Pendel und Feder-Masse-Modell}
 			Für humanoide Roboter (mit oft mehr als \num{30} Gelenken) ist das aufstellen des inversen Dynamikmodells häufig zu komplex und damit die Berechnung nicht echtzeitfähig. Daher werden vereinfache Dynamikmodelle eingesetzt, \zB ein inverses Pendel.
-			
+
 			Die Energien eines seitwärts beschleunigten, inversen Pendels mit Länge \(l\) und Auslenkung \(\theta\) ergibt sich die (um die Nullauslenkung, \dh aufrechte Haltung) linearisierte Bewegungsgleichung
 			\begin{equation*}
 				l \ddot{\theta} - g \theta = -\ddot{x}
 			\end{equation*}
-			
+
 			Dieses Modell liefert nur gute Ergebnisse für langsames Gehen. Alternativ kann ein Feder-Masse-Modell mit
 			\begin{itemize}
 				\item Masse \(m\),
@@ -1214,7 +1214,7 @@
 				r\ddot{\varphi} &= -2\dot{r}\dot{\varphi} - g\cos\varphi
 			\end{align*}
 		% end
-		
+
 		\subsection{Globale Stabilitätsbegriffe} % S.156, S.157
 			\todo{Dynamik: Globale Stabilitätsbegriffe}
 		% end
@@ -1247,7 +1247,7 @@
 					\item Haltung
 				\end{enumerate}
 				Diese Probleme können mit je einer Differentialgleichung modelliert werde, wobei die drei Steuerungen durch einen diskreten Zustandsautomaten für den Hüpfzyklus synchronisiert werden.
-				
+
 				Dieser hat fünft diskrete Zustände und Übergänge mit jeweils eigener, kontinuierlicher Systemdynamik (hybride diskret-kontinuierliche Systemdynamik). Dieses "Umschalten" von kontinuierlichen Systemdynamikmodell für die verschiedenen Phasen einer Gangart ist ein heute gängiges Vorgehen bei laufenden Robotern. Sensoren messen dabei die Zeitpunkte
 				\begin{itemize}
 					\item des Bodenkontakts,
@@ -1268,7 +1268,7 @@
 	\section{Gebräuchliche Antriebssysteme}
 		\subsection{Hydraulische Antriebe}
 			Hydraulische Antriebe nutzen Öl und Druckveränderungen dieses Öls in einer Kammer zur Bewegung.
-			
+
 			\begin{itemize}
 				\item \textbf{Vorteile:}
 					\begin{itemize}
@@ -1291,13 +1291,13 @@
 						\item Das Regel- und Positionierverhalten ist Temperaturabhängig.
 					\end{itemize}
 			\end{itemize}
-		
+
 			Daher gibt es nur wenige mobile hydraulisch aktuierte Roboter (\zB Atlas und BigDog von Boston Dynamics).
 		% end
 
 		\subsection{Pneumatische Antriebe}
 			Pneumatische Antriebe nutzen Pressluft und Veränderungen des Drucks zur Bewegung.
-			
+
 			\begin{itemize}
 				\item \textbf{Vorteile:}
 					\begin{itemize}
@@ -1342,25 +1342,25 @@
 
 	\section{DC-Bürsten-Motoren}
 		Durch das anlegen einer Spannung an den \emph{Bürsten}, die den \emph{Kollektor} berühren, wird eine Spannung induziert. Durch die Rotorwicklung wird ein magnetisches Felds erzeugt, was das magnetische Fels des Permanentmagneten verzerrt. Das hieraus resultierende Drehmoment führt zur Bewegung des Kollektors. Durch das Reiben der Bürsten an dem Kollektor entstehen Funken, die in einer entzündlichen Umgebung zu Bränden führen können.
-		
+
 		Abbildung~\ref{fig:dcbrushenginecircuit} zeigt den elektrischen Stromkreis eines DC-Bürsten-Motors mit allen relevanten elektrischen Größen. Mit der Drehzahlkonstante \(k_v\) sowie der Drehmomentkonstante \(k_t\) und den mechanischen Größen des Motordrehmoments \(\tau_r\) und der Motorgeschwindigkeit \(\dot{\theta}_r\) wird der Stromkreis durch folgende ()Differential-) Gleichungen beschrieben:
 		\begin{align*}
 			u_C            & = R_a i_a + L_a \dv{i_A}{t} + u_\mathit{ind} \tag{Ankerstromkreis}     \\
 			u_\mathit{ind} & = \dot{\theta}_r k_v                         \tag{Induzierte Spannung} \\
 			\tau_r         & = i_a k_t                                    \tag{Motordrehmoment}
 		\end{align*}
-		
+
 		\begin{figure}
 			\centering
 			\begin{tikzpicture}
 				\node [draw, circle] (a) at (0, 0) {};
 				\node [draw, circle] (b) at (0, -2) {};
 				\node [draw, circle] (c) at (7, -1) {M};
-				
+
 				\draw (a.north)
 					to (0, 1)
 					to (1.5, 1);
-					
+
 				% Resistor.
 				\draw (1.5, 1)
 					to (1.5, 1.25)
@@ -1368,9 +1368,9 @@
 					to (3, 0.75)
 					to (1.5, 0.75)
 					to cycle;
-				
+
 				\draw (3, 1) to (4, 1);
-				
+
 				% Coil.
 				\draw[fill = black] (4, 1)
 					to (4, 1.25)
@@ -1378,28 +1378,28 @@
 					to (5.5, 0.75)
 					to (4, 0.75)
 					to cycle;
-				
+
 				\draw (5.5, 1) -| (c.north);
-				
+
 				\draw (c.south)
 					to (7, -3)
 					to (0, -3)
 					to (b.south);
-				
+
 				\draw [->] (1.5, 1.5) to node[label = above:{\( u_R \)}, yshift = -5pt]{} (3, 1.5);
 				\draw [->] (4, 1.5) to node[label = above:{\( u_L \)}, yshift = -5pt]{} (5.5, 1.5);
-				
+
 				\path (1.5, 0.5) to node[label = below:{\( R_a \)}, yshift = 11pt]{} (3, 0.5);
 				\path (4, 0.5) to node[label = below:{\( L_a \)}, yshift = 11pt]{} (5.5, 0.5);
-				
+
 				\coordinate [xshift = 0.6cm] (C1) at (c.north);
 				\coordinate [xshift = 0.6cm] (C2) at (c.south);
 				\draw [->] (C1) to node[label = right:{\( u_\mathit{ind} \)}]{} (C2);
-				
+
 				\coordinate [yshift = -0.1cm] (A) at (a.south);
 				\coordinate [yshift = 0.1cm] (B) at (b.north);
 				\draw [->] (A) to node[label = left:{\( u_C \)}, xshift = 5pt]{} (B);
-				
+
 				\draw [->] (7, 1) to node[label = right:{\( i_a \)}, xshift = -5pt]{} (7, 0.25);
 			\end{tikzpicture}
 			\caption{Stromkreis eines DC-Bürsten-Motors mit dem Widerstand der Spule \(R_a\), der Induktivität der Spule \(L_a\), dem Ankerstrom \(i_a\), der angelegten Spannung \(u_a\) und der induzierten Spannung \(u_\mathit{ind}\).}
@@ -1409,7 +1409,7 @@
 
 	\section{Getriebe}
 		Direkte Elektrische Antriebe produzieren hohe Geschwindigkeiten bei geringen Drehmomenten. Daher ist ein \emph{Getriebe} zur Übersetzung notwendig, wenn hohe Drehmomente gewünscht sind (dies ist meistens der Fall, \bspw wenn schwere Lasten gehoben werden sollen). Zu den gebräuchlichsten Getriebe-Bauarten zählen Gewinde, Riemen-, Ketten oder Seilzug-Getriebe sowie Rädergetriebe. Diese werden in den folgenden Abschnitten detaillierter behandelt.
-		
+
 		Die \emph{Getriebeübersetzung} bezeichnet im Allgemeinen das Verhältnis von Eingangs- zu Austrittsgeschwindigkeit aus dem Getriebe. Dieses ist dabei gleich dem Verhältnis von Ausgangs- zu Eingangsdrehmoment:
 		\begin{equation*}
 			\text{Getriebeübersetzung} \coloneqq \frac{\text{Eingangsgeschwindigkeit}}{\text{Ausgangsgeschwindigkeit}} = \frac{\text{Ausgangsdrehmoment}}{\text{Eingangsdrehmoment}}
@@ -1422,7 +1422,7 @@
 
 		\subsection{Riemen-/Seilzug-Getriebe}
 			Bei einem \emph{Riemen-} oder auch \emph{Seilzug-Gewinde} bestehen aus zwei unterschiedlich großen Rädern (\zB Zahnrädern) mit den Radien \(r_1\) und \(r_2\), die über einen Riemen verbunden sind (dabei ist \(r_1\) der Eingang, \dh dieses Rad wird von dem Motor gedreht.). Problematisch sind hier die auftretenden Elastizitäten im Riemen. Zur Vermeidung dieser muss der Riemen durchgehend gespannt bleiben.
-			
+
 			Die Getriebeübersetzung gleich dem Quotient der beiden Radien:
 			\begin{equation*}
 				\text{Getriebeübersetzung} = \frac{r_2}{r_1}
@@ -1436,7 +1436,7 @@
 				\item Reibung zwischen den Rädern.
 				\item Durch eine enge Verzahnung kann das Spiel verringert werden, dies führt aber zu einer höheren Reibung.
 			\end{itemize}
-		
+
 			Gängige Typen von Zahnradgetrieben sind
 			\begin{itemize}
 				\item Stirnradgetriebe,
@@ -1457,11 +1457,11 @@
 					\item Hohlrad angetrieben, Sonnenrad festgehalten, Planetenrad als (langsamere) Abtriebswelle
 					\item Sonnenrad und Hohlrad mit gleicher Drehzahl angetrieben, Planetenradträger als (gleich schnelle) Abtriebswelle
 				\end{enumerate}
-				
+
 				\begin{figure}
 					\centering
 					\includegraphics[width = 0.9\textwidth]{epicyclicgear}
-					\caption{Planetengetriebe mit Sonnenrad (gelb), Planetenrädern (blau), Planetenradträger (grün) sowie Hohlrad (rot). Das rechte Bild zeigt die relative Verschiebung von Sonnenrad und Planetenradträger, nachdem letzterer um \ang{45} rotiert wurde. Quelle:~\url{https://commons.wikimedia.org/wiki/File:Epicyclic_gear_ratios.png}}
+					\caption{Planetengetriebe mit Sonnenrad (gelb), Planetenrädern (blau), Planetenradträger (grün) sowie Hohlrad (rot). Das rechte Bild zeigt die relative Verschiebung von Sonnenrad und Planetenradträger, nachdem letzterer um \ang{45} rotiert wurde. Quelle:~Wikipedia}
 				\end{figure}
 			% end
 
@@ -1472,9 +1472,9 @@
 					\item \emph{Flexspline} \\ Zylindrische, verformbare Stahlbüchse mit Außenverzahnung.
 					\item \emph{Circular Spline} \\ Zylindrischer Ring mit Innenverzahnung.
 				\end{itemize}
-			
+
 				Dabei wir der elliptische Wave Generator angetrieben und verformt über das Kugellager den Flexspline. Dieser befinet sich gegenüber der großen Ellipsenachse mit dem Circular Spline im Eingriff. Drehen des Wave Generators führt zu einer Verlagerung der großen Ellipsenachse und damit zu einer Verlagerung  des Zahneingriffsbereichs von Flexspline und Circular Spline. Eine halbe Umdrehung des Wave Generators führt dann zu einer Relativbewegung zwischen Flexspline und Circular Spline um einen Zahn.
-				
+
 				\begin{itemize}
 					\item \textbf{Vorteile:}
 						\begin{itemize}
@@ -1513,7 +1513,7 @@
 
 		\subsection{Elastische Antriebskonzepte} % 6.45
 			Die Grundidee ist die Kombination elektrischer Antriebe mit mechanischer (potentiell verstellbarer) Elastizität.
-			
+
 			\begin{itemize}
 				\item Seriell-Elastische Antriebe (SEA):
 					\begin{itemize}
@@ -1562,7 +1562,7 @@
 
 \chapter{Sensoren}
 	Ein \emph{Sensor} ist ein technisches System, welches eine physikalische (analoge) Größe (\zB Position) und gegebenenfalls deren Änderung (\zB Geschwindigkeit) in geeignete (unsicherheitsbehaftete) elektronische (digitale) Signale transformiert.
-	
+
 	Ein \emph{internen Sensor} ("proprioceptive sensor") erfasst dabei die Roboter-internen Zustände, wobei ein \emph{externer Sensor} ("exteroceptive sensor") Informationen über den Zustand der Umwelt sammelt.
 
 	\section{Interne Sensoren}
@@ -1579,17 +1579,17 @@
 		\subsection{Positionssensoren}
 			\subsubsection{Potentiometer}
 				Ein \emph{Potentiometer} besteht aus einem \emph{Widerstandselement} mit darüber verlaufender Spannung und einem gleitendem Kontakt (\emph{Wischer}, "wiper"), der sich Über das Widerstandselement bewegt. Dabei kann sich entweder der Wischer oder das Widerstandselement bewegen. Abbildung~\ref{fig:potentiometer} zeigt ein lineares und ein rotatorisches Potentiometer.
-				
+
 				Die Spannung im Kontakt ist dann abhängig von der Position auf dem Widerstandselement und damit proportional zur Gelenkposition, womit die Position gemessen werden kann. Die Genauigkeit liegt (unter der Voraussetzung einer stabilen Spannungsquelle) bei ca. \SI{0.5}{\percent}.
-				
+
 				\begin{figure}
 					\centering
 					\begin{tikzpicture}
 						\node [minimum width = 0.8cm] (a) {+\si{\volt}};
 						\node [minimum width = 0.8cm, below = 2 of a] (b) {\SI{0}{\volt}};
-						
+
 						\draw [fill = TUDa-2b, color = TUDa-2b] (a.south east) -- (b.north east) -- (b.north west) -- (a.south west) -- cycle;
-						
+
 						\path (a.east) to coordinate(c) (b.east);
 						\node [right = 1.6 of c] (A) {\(\si{\volt}_\text{aus}\)};
 						\coordinate [right = 0.1 of c] (B);
@@ -1599,11 +1599,11 @@
 					\begin{tikzpicture}[xscale = 0.8, yscale = 0.8]
 						\node at (0.65, 0.1) {+\si{\volt}};
 						\node at (0.5, -0.9) {\SI{0}{\volt}};
-						
+
 						\draw [line width = 0.4cm, color = TUDa-2b] (0, 0) arc (0:340:2cm);
-						
+
 						\draw [->, color = TUDa-7b, line width = 4pt, > = { Latex[length = 4mm] }] (-2cm, 0) to node[above, color = black, yshift = -1pt]{\(\si{\volt}_\text{aus}\)} (-0.3cm, 0);
-						
+
 						\draw [fill = black] (-2cm, 0) circle (0.15cm);
 					\end{tikzpicture}
 					\caption{Lineares (links) und rotatorisches (rechts) Potentiometer mit Widerstandselement (blau) und Kontakt (orange).}
@@ -1620,7 +1620,7 @@
 
 				\paragraph{Inkrementell}
 					Die Empfangseinheit zählt die Inkremente (die durch die periodischen Unterbrechungen erzeugt werden) und zählt diese (daher der Name \emph{inkrementeller Codierer}). Daraus kann anschließend die Position berechnet werden. Einer großer Nachteil dieser Methode ist, dass die Startposition unbekannt ist, \dh der Zähler muss zunächst Kalibriert werden.
-					
+
 					Durch mehrspurige Codierer können durch die Verschiebung der Inkremente mehr Daten gemessen werden:
 					\begin{itemize}
 						\item 1-spuriger Codierer: Winkel
@@ -1631,14 +1631,14 @@
 
 				\paragraph{Absolut}
 					Im Gegensatz zum inkrementellen wird beim \emph{absoluten Codierer} jeder Achsenposition ein individuelles Wortmuster zugeteilt, welches anschließend gemessen wird. Dadurch ist ein direktes Ablesen der Gelenkposition möglich und somit keine Kalibrierung notwendig. Allerdings ist die Konstruktion sehr aufwendig.
-					
+
 					Mit dem Gray-Code unterscheidet sich der Code an jeder Stelle nur um ein Bit, wodurch große Fehler vermieden werden.
 				% end
 			% end
 
 			\subsubsection{Resolver} % 6.63
 				\todo{Sensoren: Resolver}
-				
+
 				Resolver sind robust, störungssicher und haben eine hohe Lebensdauer, weshalb sie oft bei Industrierobotern eingesetzt werden.
 			% end
 		% end
@@ -1666,7 +1666,7 @@
 
 			\subsubsection{Mechanisches Gyroskop}
 				Ein \emph{Gyroskop} ist ein schnell rotierender, semi-kardanisch aufgehängter Kreisel. Durch die Erdrotation wird ein Drehmoment in Richtung des Medians verursacht, wodurch eine Richtungsanzeige möglich wird.
-				
+
 				Angewendet werden Gyroskope an vielen Stellen:
 				\begin{itemize}
 					\item Linienflugzeug (ca. \num{12} Gyroskope)
@@ -1697,14 +1697,14 @@
 				\item Optische Effekte
 			\end{itemize}
 			Die Dose wird dabei zwischen Effektor und Roboterhand und -fuß angebracht.
-			
+
 			Oft haben Kraft-Momenten-Sensoren eine Speichenradform, wobei auf den Speichen/Stegen Dehnungsmessstreifen angebracht sind. Wirkt eine Kraft auf die Dose, so ändert sich die Länge er Stege. Auf den Dehnungsmessstreifen ist eine dünne Metallfolie in Matrixform angebracht, die bei Änderung der Länge ihren Widerstand ändert. Durch Messung dieser Änderung kann die Krafteinwirkung gemessen werden.
 		% end
 	% end
 
 	\section{Externe und intelligente Sensoren}
 		Abbildung~\ref{fig:sensorsystemstructure} zeigt die typische Struktur eines (externen) Sensorsystems.
-		
+
 		\begin{figure}
 			\centering
 			\begin{tikzpicture}[->, every node/.style = { minimum width = 6cm, minimum height = 0.8cm, draw, rectangle }]
@@ -1713,7 +1713,7 @@
 				\node [fill = TUDa-8a, below = 0.5 of b] (c) {Aufbereitung/Vorverarbeitung};
 				\node [fill = TUDa-8a, below = 0.5 of c] (d) {Verarbeitung/Auswertung};
 				\node [fill = TUDa-2a, below = 0.5 of d] (e) {Weltmodellierung/Steuerung/\dots};
-				
+
 				\draw (a) -- (b);
 				\draw (b) -- (c);
 				\draw (c) -- (d);
@@ -1722,7 +1722,7 @@
 			\caption{Typische Struktur eines Sensorsystems, wobei die blau hinterlegten Schritte (größtenteils) analog und die orange hinterlegten Schritte (größtenteils) digital ablaufen.}
 			\label{fig:sensorsystemstructure}
 		\end{figure}
-	
+
 		Externe Sensoren können grob in die Kategorien
 		\begin{itemize}
 			\item Taktile Sensoren
@@ -1735,7 +1735,7 @@
 
 		\subsection{Abstandssensoren}
 			\emph{Abstandssensoren} messen den Abstand zwischen dem Sensor und einem Gegenstand. Diese Sensoren sind geeignet zur Erfassung von geometrischen Umweltinformation. Außerdem haben sie eine größere Reichweite als Näherungssensoren.
-			
+
 			Es werden drei grundlegende Typen von Abstandssensoren unterschieden:
 			\begin{itemize}
 				\item Optisch (Nutzung von sichtbaren, elektromagnetischen Wellen)
@@ -1745,14 +1745,14 @@
 
 			\subsubsection{Akustische Abstandssensoren}
 				\emph{Schall} ist ein an Materie gebundener Energie- und Impulstransport, wobei eine \emph{Schallwelle} die wellenförmige Ausbreitung der periodischen Anregung eines Übertragungsmediums beschreibt. Der hörbare Schall liegt dabei zwischen \SI{16}{\hertz} und \SI{16}{\kilo\hertz}, wobei alles darunter als \emph{Infraschall} und alles darüber als \emph{Ultraschall} bezeichnet wird.
-				
+
 				In den 1980er und 1990er sind Ultraschallsensoren die wichtigsten Sensoren zur Erdfassung der Umwelt. Seit Ende der 1990 werden jedoch vermehrt Laserscanner kombiniert mit Farbkameras eingesetzt. Im Nahbereich sind Ultraschallsensoren jedoch auch noch heute nützlich (Kollisionsdetektion, \bzw -vermeidung), sowie in Bereichen wo weder Laserscanner noch Kameras einsetzbar sind (\zB in Gebäuden mit Rauch).
 
 				\paragraph{Ultraschall}
 					Die Messung von Abständen mittels Ultraschall heißt \emph{sonar} ("sound navigation and ranging"). In der Natur wird diese Art der Navigation häufig eingesetzt, \zB von Delfinen und Fledermäusen.
-					
+
 					Zur Erzeugung von Ultraschall wird eine schwingende Folie eingesetzt, die im Sende-Modus durch die elektrostatische Kraft, ausgelöst von einer geladenen Aluplatte, vibriert. Im Empfangs-Modus bewegt der Klangdruck die Folie, wodurch sich die Kapazität des Kondensators ändern (elektrostatisches Mikrofon).
-					
+
 					Im Normalbetrieb sendet ein Sensor \SI{1}{\milli\second} bis \SI{1.2}{\milli\second} langes "Zwitschern" pro \SI{200}{\milli\second}. Dieses Zwitschern wird aufgrund der unterschiedlichen Materialbeschaffenheit und deren unterschiedlichen Reflexionseigenschaften in unterschiedlichen Frequenzen gesendet.
 				% end
 
@@ -1769,7 +1769,7 @@
 
 				\paragraph{Abhilfe der Schwierigkeiten}
 					Bei nur einem Empfänger darf die Umweltszene nur ein Objekt innerhalb der Schallkeule enthalten der reflektierende Objektteil muss orthogonal zur Strahlrichtung stehen.
-					
+
 					Gebräuchliche Abhilfen sind die Verwendung von mehreren Ultraschallsensoren und algorithmische Verfahren wie Peilverfahren: Die Position wird aus den Laufzeitunterschieden, \zB mit Triangulationsverfahren (ähnlich wie bei GPS), berechnet.
 				% end
 
@@ -1780,7 +1780,7 @@
 
 			\subsubsection{Optische Abstandssensoren}
 				Der Aufbau von optischen Abstandssensoren besteht aus einem Emitter (LED, Laserdioden) und einem Empfänger (Fototransistor). Optische Sensoren liefern sehr genaue Entfernungsmessungen und sind stabil gegen viele Fremdeinflüsse.
-				
+
 				Es gibt verschiedene Messverfahren:
 				\begin{itemize}
 					\item Ermittlung der Flugzeit (Laufzeit)
@@ -1795,13 +1795,13 @@
 						d = \frac{c \cdot \Delta t}{2}
 					\end{equation*}
 					Es muss die Hälfte genommen werden, da der Lichtstrahl zum Objekt hin und zurück verläuft.
-					
+
 					Typische Probleme sind die Absorption des Strahls vom Objekt, Wegreflexion (\zB bei einem Spiegel) sowie Mehrfachreflexion (wodurch der Weg verlängert wird).
 				% end
 
 				\paragraph{2D-Laserscanner}
 					In einem \emph{Laserscanner} wird ein gepulster Laserstrahl, abgelenkt durch einen beweglichen Spiegel, ausgesandt. Durch diesen Drehspiegel wird die Umgebung fächerförmig abgetastet. Trifft der Impuls auf ein Objekt, so wird er reflektiert und die Entfernung kann mittels Laufzeitermittlung berechnet werden. Durch die Abfolge der empfangenen Impulse kann die Entfernung, Lage und Kontur eines Objekts berechnet werden.
-					
+
 					Bei der \emph{Kartografierung} werden alle gescannten Szenen (gescannt mit einem mobilen System) zu einer Karte zusammengefasst.
 				% end
 			% end
@@ -1831,7 +1831,7 @@
 						\item Begrenze Rechenleistung und schnelle Reaktionszeiten
 					\end{itemize}
 			\end{itemize}
-		
+
 			Voraussetzungen für maschinelles Sehen sind:
 			\begin{enumerate}
 				\item "Technisches Auge", \dh ein Kamerachip mit Optik
@@ -1840,9 +1840,9 @@
 				\item Ausreichende Beleuchtung (Helligkeit, Lampen-Lichtspektrum, Reflexionen, \dots) der Szene
 			\end{enumerate}
 			Je nach Aufgabe ist eine Abstimmung dieser vier Voraussetzungen nötig, \dh es gibt keine allgemeine Lösung.
-			
+
 			Die klassische Hierarchie der Bildverarbeitungsoperationen ist in Abbildung~\ref{fig:imageprocessinghierarchy} aufgezeigt.
-			
+
 			\begin{figure}
 				\centering
 				\begin{tikzpicture}[block/.style = { draw, rectangle, minimum height = 0.8cm, align = center }, minwidth/.style = { minimum width = 7cm }]
@@ -1854,25 +1854,25 @@
 					\node [block, minwidth, below = 0.5 of e] (f) {\textbf{Objekterkennung}};
 					\node [block, minwidth, below = 0.5 of f] (g) {\textbf{Bildanalyse} \\ Interpretation der Szene \\ durch symbolische Beschreibung};
 					\coordinate [below = 0.5 of g.south east] (h);
-					
+
 					\node [left = 0 of b] {Pixel};
 					\node [left = 0 of d] {Kanten};
 					\node [left = 0 of e] {Konturen};
 					\node [left = 0 of f] {Objekte};
 					\node [left = 0 of g] {Semantik};
-					
+
 					\path (b.south east) to coordinate(B) (c.north east);
 					\path (c.south east) to coordinate(C) (d.north east);
 					\path (d.south east) to coordinate(D) (e.north east);
 					\path (e.south east) to coordinate(E) (f.north east);
 					\path (g.south east) to coordinate(G) (h.north east);
-					
+
 					\node [right = 0 of B] {Rohbild (degradiert)};
 					\node [right = 0 of C] {Fertigbild (korrigiert)};
 					\node [right = 0 of D] {Segmentiertes Bild};
 					\node [right = 0 of E] {Merkmale, \ggf auch 3D};
 					\node [right = 0 of G] {Relevante Aussage};
-					
+
 					\draw [->] (a) -- (b);
 					\draw [->] (b) -- (c);
 					\draw [->] (c) -- (d);
@@ -1886,7 +1886,7 @@
 
 			\subsubsection{Bilderzeugung}
 				Die \emph{Kameramatrix} beschreibt die Projektionsabbildung von 3D-Punkten durch eine Lochkamera auf 2D-Punkte der Bildebene. Dadurch können spezifische Verzerrungseffekte der Kameralinse berücksichtigt werden.
-				
+
 				Zur Bilderzeugung gibt es mehrere grundlegende Methoden von Bildwandlersystemen (Kamerachip):
 				\begin{itemize}
 					\item Binäre fotoelektrische Zellen \\ Der Chip besteht aus einzelnen Fotodioden, wobei die Bildpunkte entweder \num{1} oder \num{0} wahrnehmen (hell oder dunkel).
@@ -1902,13 +1902,13 @@
 					f^\ast(x, y) = i(x, y) \cdot r(x, y)
 				\end{equation*}
 				aufgespalten werden mit der Illuminationsfunktion \( i(x, y) \) und der Reflexionsfunktion \( 0 < r(x, y) < 1 \). Dabei hat die Illuminationsfunktion die Einheit \( [i] = \si{\candela} \) (Candela) und die Reflexion ist einheitenlos. Beispielhafte Werte für die Illumination \(i\) und die Reflexion \(r\) sind in den Tabellen~\ref{tab:exampleillumination} und~\ref{tab:examplereflexion} gegeben.
-				
+
 				Die Absorptionsfunktion
 				\begin{equation*}
 					a(x, y) \coloneqq 1 - r(x, y)
 				\end{equation*}
 				beschreibt, wie viel Licht an einem Pixel \( (x, y) \) absorbiert wird/wurde.
-				
+
 				\begin{table}
 					\centering
 					\begin{tabular}{l|l}
@@ -1933,7 +1933,7 @@
 					\caption{Beispielhafte Werte der Reflexion \(r\).}
 					\label{tab:examplereflexion}
 				\end{table}
-			
+
 				Zusammengefasst ergibt sich die \emph{Bildmatrix} \( f = (f_{i, j}) \)
 				\begin{equation*}
 					f =
@@ -1956,7 +1956,7 @@
 					\item HSI/HSV (Hue, Saturation, Intensity/Value) \\ Speziell für die Bildverarbeitung, da Segmentierung leicht ist.
 				\end{itemize}
 				Das RGB-Farbmodell mit \num{8} Bit je Farbe hat damit \( \num{256} \cdot \num{256} \cdot \num{256} = \num{16777216}\text{ mögliche Farben} \).
-				
+
 				Eine alternative zum RGB-Modell ist das HSI/HSV-Modell, welches aus den Komponenten
 				\begin{itemize}
 					\item Hue (Farbwellenlänge)
@@ -2009,9 +2009,9 @@
 							(x + 1, y - 1) & (x + 1, y) & (x + 1, y + 1)
 						\end{bmatrix}
 					\end{equation*}
-					
+
 					In der \emph{Nachbarschaftsbildverarbeitung} wird nun ein solcher Bildausschnitt bezüglich eines Pixels \( (x, y) \) betrachtet und \zB mittels \emph{Nachbarschaftsdurchschnittsbildung} eine neue Intensität des Pixels berechnet. Der folgende Teil beschränkt sich auf \( 3 \times 3 \)-Nachbarschaften, theoretisch sind alle Verfahren aber auch mit größeren Nachbarschaften möglich.
-					
+
 					Bei der Nachbarschaftsdurchschnittsbildung wird jeder Pixels eines Bildausschnitts
 					\begin{equation*}
 						\begin{bmatrix}
@@ -2038,7 +2038,7 @@
 						g = \sum_{k = 1}^{n^2} \omega_k f_k
 					\end{equation*}
 					berechnet.
-					
+
 					Beispiele für Nachbarschaftsfilter:
 					\begin{itemize}
 						\item Mittelwertbildung:
@@ -2062,7 +2062,7 @@
 								-1 & -1 & -1
 							\end{bmatrix}
 					\end{equation*}
-					
+
 					Ein prinzipielles Problem bei Nachbarschaftsdurchschnittsbildung ist, dass scharfe Bilddetails (\zB Ecken und Kanten) unscharf werden. Eine Abhilfe ist, einen \emph{Median-Filter} zu verwenden. Dabei berechnet sich die neue Intensität \(g\) eines Pixels durch den Medianwert der Intensitäten der Nachbarschaft, \dh ist Intensitäten werden sortiert und es wird der mittlere Wert (der Median) als neue Intensität genutzt.
 				% end
 			% end
@@ -2076,9 +2076,9 @@
 						\item Extraktion von Kandidaten für Kantenelemente
 						\item Kombination der Elemente zu längeren Strukturen
 					\end{enumerate}
-				
+
 					Die allgemeine Idee ist, die Größe der ersten Ableitung zur Detektion von Kantenelementen und die Größe der zweiten Ableitung zur Interpretation der Lage der Pixel (negative zweite Ableitung \(\to\) Pixel liegt auf der dunklen, positive zweite Ableitung \(\to\) Pixel liegt auf der hellen Seite der Kante).
-					
+
 					Der Gradient einer kontinuierlichen Funktion, differenzierbaren Funktion \( f(x, y) \) ist
 					\begin{equation*}
 						\nabla f(x, y) =
@@ -2112,7 +2112,7 @@
 							\end{bmatrix} \tag{Prewitt-Y Filter}
 						\end{gather*}
 						Daraus ergeben sich die gefilterten Bilder \(p_x\) (Prewitt-X Filter) und \(p_y\) (Prewitt-Y Filter).
-						
+
 						Zusammengesetzt ergibt sich der Prewitt-Operator (\bzw das Graustufenbild)
 						\begin{equation*}
 							M \approx \sqrt{p_x^2 + p_y^2}
@@ -2190,7 +2190,7 @@
 							g(x, y, c_1, c_2, c_3) = 0
 						\end{equation*}
 						gegebene Kurve durchgeführt werden (\zB für einen Kreis \( (x - c_1)^2 + (y - c_2)^2 - c_3^2 = 0 \) mit Radius \( c_3 \)).
-						
+
 						Liegen Punkte \( (x_i, y_i) \) auf einer Geraden, so erfüllen diese die Gleichung \( y_i = ax_i + b \) mit den Parametern \(a, b\). Diese Gleichung kann mit
 						\begin{equation*}
 							y_i = ax_i + b \quad\iff\quad b = -x_ia + y_i
@@ -2200,9 +2200,9 @@
 							y_i = a^\ast x_i + b^\ast \quad\quad\text{und}\quad\quad y_j = a^\ast x_j + b^\ast
 						\end{equation*}
 						Schneiden sich drei Graden in einem Punkt, so liegen alle entsprechenden Punkte auf einer Geraden.
-						
+
 						In der Praxis ist die Darstellung \( y = ax + b \) der Geraden problematisch, da vertikale Geraden nicht dargestellt werden. Es wird daher eher die Parametrisierung \( x \cos\theta + y \sin\theta = \rho \) verwendet, da hier das Problem nicht auftritt.
-						
+
 						% TODO: Hough-Transformation: Beispiel.
 					% end
 				% end
@@ -2221,7 +2221,7 @@
 								\end{cases*}
 						\end{equation*}
 						ein trinäres Schwellwertbild ergibt.
-						
+
 						Dieses Verfahren wirft allerdings Probleme auf, da die Intensitätsfunktion stark von der aktuellen Beleuchtung abhängig ist, welche von Bild zu Bild variieren kann. Eine automatische Adaption der Schwellwerte erfordert eine robuste Minimum-Suche, wobei die Minima abhängig sind von Beleuchtung, Lager der Objekte, \dots.
 					% end
 
@@ -2239,7 +2239,7 @@
 
 			\subsubsection{Merkmalsextraktion}
 				Bisher wurden Objekte Bildhaft durch diskrete Bildfunktionen beschrieben. Die \emph{Merkmalsextraktion} beschäftigt sich nun mit der Charakterisierung von Objekten durch einen Vektor von Merkmalen sowie eventuell Beziehungen zwischen Objekten (Relationstupel) wie Nachbarschaft und Größe. Ausgangspunkt ist dabei das durch Segmentierung und Bildvorverarbeitung entstandene Binärbild \( g(x, y) \). Ziel ist die Extraktion der Merkmale, die ein Segment beschreiben.
-				
+
 				Merkmale können \zB sein:
 				\begin{itemize}
 					\item \(m_1\): Objektumfang \( m_1 = \int_\text{Kontur} \! g(x, y) \dd{s} \approx \sum_\text{Kontur} g(x, y) \)
@@ -2267,7 +2267,7 @@
 					\item Deep Learning Systeme scheitern allerdings noch an einem echten Verstehen der Objekte.
 				\end{itemize}
 			% end
-			
+
 			\subsubsection{Bildverstehen} % 8.87, 8.88, 8.89, 8.90, 8.91, 8.92
 				\todo{Sensoren: Bildverstehen}
 			% end
@@ -2283,9 +2283,9 @@
 				\item Sensorqualität
 			\end{itemize}
 			Ein Mensch ist extrem gut darin, aus einem einzelnen Bild Tiefeninformationen zu extrahieren, wobei dies im Bereich Computer Vision noch immer eine große Herausforderung ist.
-			
+
 			Werden zwei Farbbilder (leicht versetzt) verwendet, so wird dies als \emph{Stereo Vision} (oder in der Biologie auch "binokulares Sehen") bezeichnet. Dies erlaubt eine passive Tiefenschätzung. Andere Spezies wie Fledermäuse haben sogar eine aktive Tiefenschätzung (Sonar).
-			
+
 			Distanzinformationen sind extrem wichtig:
 			\begin{itemize}
 				\item 3D-Navigation
@@ -2300,12 +2300,12 @@
 			\subsubsection{Bildbasierte 3D-Sensoren}
 				\paragraph{Stereo Vision}
 					\emph{Stereo Vision} basiert auf der Triangulation von Bildpunkten durch die Verwendung von zwei Bildern.
-					
+
 					Basierend auf Abbildung~\ref{fig:stereotriangulation} kann die Distanz \(Z\) wie folgt berechnet werden:
 					\begin{equation*}
 						\frac{Z - f}{B - (x - x')} = \frac{Z}{B} \quad\iff\quad BZ - Bf = BZ - Z(x - x') \quad\iff\quad Z = \frac{Bf}{x - x'}
 					\end{equation*}
-					
+
 					\begin{figure}
 						\centering
 						\begin{tikzpicture}
@@ -2314,23 +2314,23 @@
 							\node [fill = black, draw, circle] (xPrime) at (3, -6) {};
 							\node [fill = black, draw, circle, label = below:{\(O\)}] (o) at (-4, -8) {};
 							\node [fill = black, draw, circle, label = below:{\(O'\)}] (oPrime) at (4, -8) {};
-							
+
 							\path let \p1 = (o), \p2 = (x) in coordinate (f) at (\x1, \y2);
 							\path let \p1 = (oPrime), \p2 = (xPrime) in coordinate (fPrime) at (\x1, \y2);
 
 							\coordinate [above = 0.1 of x] (xShift);
 							\coordinate [above = 0.1 of xPrime] (xPrimeShift);
-							
+
 							\path let \p1 = (xShift), \p2 = (f) in coordinate (fShift) at (\x2, \y1);
 							\path let \p1 = (xPrimeShift), \p2 = (fPrime) in coordinate (fPrimeShift) at (\x2, \y1);
-							
+
 							\coordinate [left = 2 of x] (xShiftLeft);
 							\coordinate [right = 0.2 of x] (xShiftRight);
 							\coordinate [left = 0.2 of xPrime] (xPrimeShiftLeft);
 							\coordinate [right = 2 of xPrime] (xPrimeShiftRight);
-							
+
 							\path (o) to coordinate(oCenter) (oPrime);
-							
+
 							\draw (o) to node[below]{Baseline \(B\)} (oPrime);
 							\draw [->] (o) to node[left]{\(f\)} (f);
 							\draw [->] (oPrime) to node[left]{\(f\)} (fPrime);
@@ -2345,9 +2345,9 @@
 						\caption{Triangulation der Distanz \(Z\) eines Objekts \(X\) durch zwei Kameras \(O\) und \(O'\).}
 						\label{fig:stereotriangulation}
 					\end{figure}
-				
+
 					Diese Art der Berechnung wirft das Problem auf, dass detektiert werden muss, welche Pixel das selbe Objekt abbilden.
-					
+
 					\begin{itemize}
 						\item \textbf{Vorteile:}
 							\begin{itemize}
@@ -2392,7 +2392,7 @@
 								\item Ein reflektierter Impuls wird teilweise vom Shutter blockiert, was einen Rückschluss auf die zurückgelegte Lichtstrecke zulässt.
 							\end{itemize}
 					\end{itemize}
-				
+
 					\begin{itemize}
 						\item \textbf{Vorteile:}
 							\begin{itemize}
@@ -2426,7 +2426,7 @@
 
 				\paragraph{KD-Baum}
 					Ein \emph{KD-Baum} ist eine verallgemeinerte Version eines Binärbaums (KD steht für \(k\)-dimensional). Die geometrische Idee ist eine rekursive Aufteilung der Daten mit Hyperebenen.
-					
+
 					\begin{itemize}
 						\item \textbf{Vorteile:}
 							\begin{itemize}
@@ -2444,7 +2444,7 @@
 
 				\paragraph{Octree}
 					Ein \emph{Octree} unterteilt den Raum rekursiv-hierarchisch in \emph{Oktanten}. Er ist dabei ein gewurzelter Baum, indem jeder Knoten entweder acht oder keine Nachfolger hat.
-					
+
 					\begin{itemize}
 						\item \textbf{Vorteile:}
 							\begin{itemize}
@@ -2486,7 +2486,7 @@
 
 			\subsubsection{Point-Cloud Processing}
 				\emph{Point Cloud Library} (PCL) eine eine umfangreiche Bibliothek zur Verarbeitung von 3D-Daten und ist die meist genutzte Bibliothek zur 3D-Datenverarbeitung (analog zu OpenCV in der 2D-Bildverarbeitung).
-				
+
 				\begin{itemize}
 					\item Datenaufbesserung: Statistical Outlier Removal
 						\begin{itemize}
@@ -2530,7 +2530,7 @@
 \chapter{Regelung} % S.158, S.159, S.160
 	\section{Lineare Regelung}
 		Bei einer "normalen" Steuerung (Abbildung~\ref{fig:feedforwardcontrol}) findet keine Rückkopplung der tatsächlich durchgeführten Aktion statt, während bei einer Regelung (Abbildung~\ref{fig:feedbackcontrol}) die Aktion gemessen wird und in das nächste Steuerungssignal eingerechnet wird.
-		
+
 		\begin{figure}
 			\centering
 			\begin{tikzpicture}[every node/.style = { align = center }]
@@ -2542,7 +2542,7 @@
 				\node [above = 1 of a] (eingangsgroesse) {Eingangsgröße: \\ Steuerungen der Antriebe \\ (Stellgröße)};
 				\node [above = 1 of b] (ausgangsgroesse) {Ausgangsgröße: \\ Roboterbewegung \\ (in Raum und Zeit)};
 				\node [above = 1 of regelstrecke] (stoergroesse) {Störgröße};
-				
+
 				\draw [->] (A) -- (regelstrecke);
 				\draw [->] (regelstrecke) -- (B);
 				\draw [->] (eingangsgroesse) -- (a);
@@ -2567,7 +2567,7 @@
 				\node [draw, rectangle, below = 1 of regelstrecke] (sensoren) {Sensoren};
 				\node [draw, circle, left = 1 of A, label = above:Fehler] (fehler) {\(\Sigma\)};
 				\coordinate [left = 1 of fehler] (d);
-				
+
 				\draw [->] (A) -- (regelstrecke);
 				\draw [->] (regelstrecke) -- (B);
 				\draw [->] (eingangsgroesse) -- (a);
@@ -2584,7 +2584,7 @@
 
 		\subsection{Begriffe}
 			Eine Steuerung wird auch als Open-Loop oder Feedforward Control bezeichnet, eine Regelung als Closed-Loop oder Feedback Control.
-			
+
 			Im folgenden wird folgende Notation verwendet:
 			\begin{itemize}
 				\item Sollwert:    \tabto{2.5cm} \( x_d(t) \)
@@ -2595,7 +2595,7 @@
 				\item Störung:     \tabto{2.5cm} \( s(t) \)
 			\end{itemize}
 			Abbildung~\ref{fig:controlnotation} zeigt einen normalen Regelkreis mit den entsprechenden Größen.
-			
+
 			\begin{figure}
 				\centering
 				\begin{tikzpicture}
@@ -2607,7 +2607,7 @@
 					\node [draw, rectangle, below = 1 of regelstrecke] (sensoren) {Sensoren};
 					\node [draw, circle, left = 1 of A] (fehler) {\(\Sigma\)};
 					\coordinate [left = 1 of fehler] (d);
-					
+
 					\draw [->] (A) to node[above]{\(u(t)\)} (regelstrecke);
 					\draw [->] (regelstrecke) to node[above]{\(x(t)\)} (B);
 					\draw [->] (stoergroesse) to node[left]{\(s(t)\)} (regelstrecke);
@@ -2619,7 +2619,7 @@
 				\caption{Die dynamischen Größen eines Regelkreises.}
 				\label{fig:controlnotation}
 			\end{figure}
-		
+
 			Des weiteren seien folgende Begriffe definiert:
 			\begin{itemize}
 				\item \emph{Regelungstechnik:} Lehre der
@@ -2678,14 +2678,14 @@
 
 			\subsubsection{Untersuchung des Bewegungsverhaltens} % S.161, S.162, S.163
 				Mit einer gegebenen Anfangsposition \( x(0) \) und einer gegebenen Anfangsgeschwindigkeit \( \dot{x}(0) \) sowie einem Antriebskraftverlauf \( f(t) \) kann der zeitliche Bewegungsverlauf der Masse aus der Bewegungsgleichung bestimmt werden.
-				
+
 				\paragraph{Erwartetes Bewegungsverhalten}
 					Wird angenommen, dass \( f(t) = 0 \) gilt sowie \( x_\text{stat}(t) = 0 \) die Ruhelage darstellt, so lassen sich folgende Bewegungsmuster erkennen:
 					\begin{itemize}
 						\item Schwache Feder (\(k\) klein), große Reibungskraft (\(b\) groß): Die Masse wird aus einer Anfangsauslenkung \( x(0) \neq x_\text{stat} \) langsam in den stationären Zustand zurückkehren.
 						\item Starke Feder (\(k\) groß), schwache Reibungskraft (\(b\) klein): Die Masse wird aus einer Anfangsauslenkung \( x(0) \neq x_\text{stat} \) mehrmals schnell hin und her schwingen (oszillieren), bis sie in den stationären Zustand zurückkehrt.
 					\end{itemize}
-				
+
 					Unter der Annahme \( f(t) = 0 \) kann die Differentialgleichung mit dem Lösungsansatz \( x(t) = ce^{\lambda t} \) explizit gelöst werden, wodurch sich das charakteristische Polynom
 					\begin{equation*}
 						\lambda^2 + \frac{b}{m} \lambda + \frac{k}{m} = 0
@@ -2695,42 +2695,42 @@
 						\lambda_{1, 2} = -\frac{b}{2m} \pm \frac{\sqrt{b^2 - 4mk}}{2m}
 					\end{equation*}
 					ergibt. Diese Pole bestimmen das Lösungsverhalten und damit das Bewegungsverhalten der Masse.
-					
+
 					\subparagraph{Überkritisch Gedämpftes Verhalten}
 						\( \lambda_{1, 2} \) sind einfache, reelle Nullstellen, wenn
 						\begin{equation*}
 							b^2 - 4mk > 0 \quad\iff\quad b^2 > 4mk
 						\end{equation*}
 						wodurch auch \( \lambda_{1, 2} < 0 \) gilt. Dieser Fall wird \emph{überkritisch gedämpft} genannt.
-						
+
 						Die Lösung ist in diesem Fall gegeben durch
 						\begin{equation*}
 							x(t) = c_1 e^{\lambda_1 t} + c_2 e^{\lambda_2 t}
 						\end{equation*}
 						wobei die Konstanten \( c_1, c_2 \) durch die Anfangsbedingungen festgelegt werden.
 					% end
-					
+
 					\subparagraph{Kritisch Gedämpftes Verhalten}
 						\( \lambda \) ist eine doppelte, reelle Nullstelle, wenn
 						\begin{equation*}
 							b^2 - 4mk = 0 \quad\iff\quad b^2 = 4mk
 						\end{equation*}
 						wodurch auch \( \lambda < 0 \) gilt. Dieser Fall wird \emph{kritisch gedämpft} genannt.
-						
+
 						Die Lösung ist in diesem Fall gegeben durch
 						\begin{equation*}
 							x(t) = c_1 e^{\lambda t} + c_2 t e^{\lambda t}
 						\end{equation*}
 						wobei die Konstanten \( c_1, c_2 \) durch die Anfangsbedingungen festgelegt werden.
 					% end
-					
+
 					\subparagraph{Unterkritisch Gedämpftes Verhalten}
 						\( \lambda_{1, 2} \) sind einfache, komplexe Nullstellen (mit \( \lambda_1 = \bar{\lambda}_2 \)), wenn
 						\begin{equation*}
 							b^2 - 4mk < 0 \quad\iff\quad b^2 < 4mk
 						\end{equation*}
 						wodurch mit \( \lambda_{1, 2} \eqqcolon \lambda_r \pm i \lambda_i \) auch \( \lambda_r < 0 \) gilt. Dieser Fall wird \emph{unterkritisch gedämpft} genannt.
-						
+
 						Die Lösung ist in diesem Fall gegeben durch
 						\begin{equation*}
 							c_1 e^{\lambda_r t} \cos(\lambda_i t) + c_2 e^{\lambda_r t} \sin(\lambda_i t)
@@ -2745,7 +2745,7 @@
 						\item das System dabei aus einer Anfangsauslenkung \( x(0) \neq x_\text{stat} \) schnellstmöglich in die stationäre Lage zurückkehrt und
 						\item keine Oszillationen oder Überschwingungen auftreten.
 					\end{itemize}
-				
+
 					In der Regelungstechnik wird üblicherweise nicht im Zeitbereich gearbeitet, sondern die Laplace-Transformation zur Definition von Übertragungsfunktionen und der Untersuchung der Pole eingesetzt. Dies wird hier aber nicht weiter behandelt\dots
 				% end
 			% end
@@ -2760,7 +2760,7 @@
 					f(t) = -k_v \dot{x}(t) - k_p x(t)
 				\end{equation*}
 				mit den Regelparametern/Verstärkungsfaktoren \( k_v \) (Differentialanteil) und \( k_p \) (Proportionalanteil). Abbildung~\ref{fig:pdcontrol} zeigt das Blockschaltbild für eine solche Regelung.
-				
+
 				\begin{figure}
 					\centering
 					\begin{tikzpicture}
@@ -2776,7 +2776,7 @@
 						\node [draw, rectangle, below left = of pd, xshift = 1cm] (kp) {\(k_p\)};
 						\node [above right = 0 of x] {\(x\)};
 						\node [above right = 0 of xDot] {\(\dot{x}\)};
-						
+
 						\draw [->] (x) -- (xPathA) |- (xPath) -| (kp);
 						\draw [->] (xDot) -- (xDotPathA) |- (xDotPath) -| (kv);
 						\draw [->] (kp) -- (pd) node[left, xshift = -0.2cm, yshift = -0.5cm]{\(-\)};
@@ -2786,7 +2786,7 @@
 					\caption{Blockschaltbild einer PD-Regelung mit den Soll-Werten \( x_d, \dot{x}_d \).}
 					\label{fig:pdcontrol}
 				\end{figure}
-			
+
 				Wird das Regelgesetz auf die Bewegungsgleichung angewandt, so ergibt sich:
 				\begin{align*}
 					     &  & m\ddot{x}(t) + b\dot{x}(t) + kx(t)                                                                 & = f(t)                       &  \\
@@ -2798,15 +2798,15 @@
 					\lambda_{1, 2} = -\frac{\hat{b}}{2m} \pm \frac{\sqrt{\hat{b}^2 - 4m\hat{k}}}{2m}
 				\end{equation*}
 				Durch geeignete Wahl der Regelparameter \( k_v, k_p \) kann also das gewünschte Bewegungsverhalten der kritischen Dämpfung erreicht werden.
-				
+
 				Neben der Bedingung \( \hat{b}^2 = 2m\hat{k} \) muss (da diese noch nicht ausreichend ist für eine kritische Dämpfung, da \( k_v \) und \( k_p \) positiv oder negativ gewählt werden können) unter anderem \( \hat{b} > 0 \) sichergestellt werden, da Regelfehler sonst die Instabilität verstärken statt dämpfen würde.
-				
+
 				\begin{itemize}
 					\item Auf diese Weise kann das System auf einen konstanten Sollwert \( x_d \) geregelt werden (Festpunktregelung).
 					\item Analog dazu kann die Regelung auch auf eine gegebene Sollwerttrajektorie \( x_d(t) \) erweitert werden.
 					\item Ebenfalls kann das System auf mehrdimensionale und nichtlineare Systeme erweitert werden.
 				\end{itemize}
-			
+
 				\paragraph{Gewünschte Polplatzierung}
 					Damit das geregelte System stabil ist, müssen die Pole des Systems in der linken Hälfte der komplexen Ebene liegen (\dh der Realteil muss negativ sein).
 				% end
@@ -2815,20 +2815,20 @@
 
 		\subsection{Partitionierung des Regelgesetzes durch Feedback-Linearisierung}
 			\label{sec:feedbacklinearization}
-		
+
 			In diesem Abschnitt wird wieder das Feder-Masse-System
 			\begin{equation*}
 				m\ddot{x}(t) + b\dot{x}(t) + kx(t) = f(t)
 			\end{equation*}
 			mit der Regelkraft \( f(t) \) betrachtet.
-		
+
 			Bei der Partitionierung des Regelgesetzes wird dieser in zwei Teile aufgebrochen:
 			\begin{enumerate}
 				\item Den ("inneren") \emph{modellbasierten Anteil}, der die Kenntnis über die Systemdynamik ausnutzt und
 				\item den ("äußeren") \emph{Servo-Anteil}, welcher die Servomesswerte zurück koppelt zur Anpassung des dynamischen Systemverhaltens.
 			\end{enumerate}
 			Durch (1) wird die Systemdynamik transformiert, sodass der Entwurf von (2) sehr viel einfacher wird.
-			
+
 			Für den modellbasierten Reglerteil wird der Ansatz
 			\begin{equation*}
 				f = \alpha \hat{f} + \beta
@@ -2845,7 +2845,7 @@
 			\begin{equation*}
 				f = m \hat{f} + b\dot{x} + kx
 			\end{equation*}
-			
+
 			Der Servo-Anteil wird nun als PD-Regler für das sehr einfache System \( \ddot{x} = \hat{f} \) bestimmt:
 			\begin{equation*}
 				\hat{f} = -k_p x - k_v \dot{x}
@@ -2854,9 +2854,9 @@
 			\begin{equation*}
 				k_v = 2 \sqrt{k_p}
 			\end{equation*}
-			
+
 			Durch dieses Vorgehen können viele komplizierte Systemdynamiken linearisiert werden.
-			
+
 			\paragraph{Beispiel}
 				Sei die nichtlineare Systemdynamik mit Regelkraft \(f\) gegeben:
 				\begin{equation*}
@@ -2870,7 +2870,7 @@
 				\begin{equation*}
 					m\ddot{x} + kx^2 = \alpha \hat{f} + \beta \quad\implies\quad \alpha = m,\, \beta = kx^2
 				\end{equation*}
-				
+
 				Damit lautet das modellbasierte Regelgesetz
 				\begin{equation*}
 					f = m \hat{f} + kx^2
@@ -2914,7 +2914,7 @@
 				\item der Proportionalteil "schaut auf die Gegenwart" und führt zu einer akuten Regelung und
 				\item der Integralteil "schaut in die Vergangenheit" und korrigiert (regelt) Fehler raus, die in der Vergangenheit gemacht wurden.
 			\end{itemize}
-		
+
 			\begin{figure}
 				\centering
 				\begin{tikzpicture}
@@ -2927,24 +2927,24 @@
 					\coordinate [below = 0.5 of xDotPath] (xPath);
 					\node [above right = 0 of x] {\(x\)};
 					\node [above right = 0 of xDot] {\(\dot{x}\)};
-					
+
 					\node [draw, circle, left = 2 of regelstrecke] (add1) {};
 					\coordinate [below = 0.5 of add1] (a);
 					\node [draw, circle, left = 1 of a] (add2) {};
 					\node [draw, rectangle, below left = of add2, yshift = 0.8cm] (kv) {\(k_v\)};
 					\node [draw, rectangle, above left = of add2, yshift = -0.8cm] (kp) {\(k_p\)};
-					
+
 					\coordinate [above = 1 of add1] (b);
 					\node [draw, rectangle, left = 1.5 of b] (ki) {\(k_i\)};
 					\node [draw, rectangle, left = 0.1 of ki] (integral) {\(\int\)};
-					
+
 					\coordinate [left = 0.5 of kv] (c);
 					\path let \p1 = (c), \p2 = (xDotPath) in node [draw, circle] (e) at (\x1, \y2) {};
 					\coordinate [left = 0.5 of e] (f);
 					\path let \p1 = (f), \p2 = (xPath) in node [draw, circle] (g) at (\x1, \y2) {};
 					\node [left = 0.5 of g] (xd) {\(x_d\)};
 					\path let \p1 = (xd), \p2 = (e) in node (xDotd) at (\x1, \y2) {\(\dot{x}_d\)};
-					
+
 					\draw [->] (x) -- (xPathA) |- (xPath) -- (g) node[below, xshift = 0.5cm, yshift = 0.05cm]{\(-\)};
 					\draw [->] (xDot) -- (xDotPathA) |- (xDotPath) -- (e) node[above, xshift = 0.5cm, yshift = -0.05cm]{\(-\)};
 					\draw [->] (add1) -- node[above]{\(f\)} (regelstrecke);
@@ -2961,14 +2961,14 @@
 				\caption{Blockschaltbild eines PID-Reglers mit den Sollwerten \( x_d, \dot{x}_d \).}
 				\label{fig:pidcontrol}
 			\end{figure}
-		
+
 			\subsubsection{Windup-Effekt}
 				Üblicherweise ist die maximale Stellleistung endlich, \dh jede Stellgröße \(f\) ist auf einen maximalen Wertebereich \( \big[ -f_\text{max},\, f_\text{max} \big] \) begrenzt.
-				
+
 				Problem: Der I-Anteil des Reglers integriert auch nach Erreichen der Sättigung der Stellgröße die Regelabweichung weiter auf, obwohl der Reglerausgang keinen Einfluss mehr auf die Regelstrecke hat. Beim Erreichen der Zielvorgabe kann \( \lvert f \rvert \) dadurch deutlich größer als \( f_\text{max} \) sein, wodurch dieser Überschuss zunächst wieder abgebaut werden muss. Dieser Effekt wird als \emph{Windup-Effekt} bezeichnet und verschlechtert das Regelverhalten (Überschwingen).
-				
+
 				Zur "Schadensbegrenzung" müssen Anti-Windup-Maßnahmen eingesetzt werden, \bspw die Begrenzung des I-Anteils bei Auftreten der Sättigung. Dazu wird die Differenz \( \tilde{f} - f \) zwischen Stellgröße \(f\) und begrenzter Stellgröße \( \tilde{f} \) über ein P-Glied mit Verstärkung \( k_\text{aw} \) zurück gekoppelt. Diese Rückkopplung hat keinen Einfluss, wenn \( f \in \big[ -f_\text{max},\, f_\text{max} \big] \) gilt. Abbildung~\ref{fig:pidcontrolantiwindup} zeigt das Blockschaltbild einer solchen Anti-Windup-Strategie.
-				
+
 				\begin{figure}
 					\centering
 					\begin{tikzpicture}
@@ -2982,30 +2982,30 @@
 					\coordinate [below = 0.5 of xDotPath] (xPath);
 					\node [above right = 0 of x] {\(x\)};
 					\node [above right = 0 of xDot] {\(\dot{x}\)};
-					
+
 					\node [draw, circle, left = 1 of stellgliedbegrenzung] (add1) {};
 					\coordinate [below = 0.5 of add1] (a);
 					\node [draw, circle, left = 1 of a] (add2) {};
 					\node [draw, rectangle, below left = of add2, yshift = 0.8cm] (kv) {\(k_v\)};
 					\node [draw, rectangle, above left = of add2, yshift = -0.8cm] (kp) {\(k_p\)};
-					
+
 					\coordinate [above = 1 of add1] (b);
 					\node [draw, rectangle, left = 1.5 of b] (ki) {\(k_i\)};
 					\node [draw, rectangle, left = 0.1 of ki] (integral) {\(\int\)};
-					
+
 					\coordinate [left = 0.5 of kv] (c);
 					\path let \p1 = (c), \p2 = (xDotPath) in node [draw, circle] (e) at (\x1, \y2) {};
 					\coordinate [left = 0.5 of e] (f);
 					\path let \p1 = (f), \p2 = (xPath) in node [draw, circle] (g) at (\x1, \y2) {};
 					\node [left = 0.5 of g] (xd) {\(x_d\)};
 					\path let \p1 = (xd), \p2 = (e) in node (xDotd) at (\x1, \y2) {\(\dot{x}_d\)};
-					
+
 					\path (add1) -- coordinate(i) (stellgliedbegrenzung);
 					\path (stellgliedbegrenzung) -- coordinate(j) (regelstrecke);
 					\node [draw, circle, above = 2 of i] (k) {};
 					\node [draw, rectangle, left = 2 of k] (l) {\(k_\text{aw}\)};
 					\path let \p1 = (integral), \p2 = (g) in node [draw, circle] (m) at (\x2, \y1) {};
-					
+
 					\draw [->] (x) -- (xPathA) |- (xPath) -- (g) node[below, xshift = 0.5cm, yshift = 0.05cm]{\(-\)};
 					\draw [->] (xDot) -- (xDotPathA) |- (xDotPath) -- (e) node[above, xshift = 0.5cm, yshift = -0.05cm]{\(-\)};
 					\draw [->] (add1) -- node[below]{\(f\)} (stellgliedbegrenzung);
@@ -3033,7 +3033,7 @@
 
 		\subsection{Kaskadenregelung}
 			Bei einer \emph{Kaskadenregelung} werden mehrere Regler hintereinander geschaltet (siehe Abbildung~\ref{fig:cascadecontrol}), wobei die Führungsgröße des "inneren" Reglers von einem "äußeren" Regler eingestellt wird. Dadurch können \bspw verschiedene Taktraten umgesetzt werden (\zB eine geringere Taktrate zur Berechnung der Gelenkstellungen und eine hohe Taktrate zur individuellen PID-Gelenkreglung).
-			
+
 			\begin{figure}
 				\centering
 				\begin{tikzpicture}[->, every node/.style = { align = center }]
@@ -3046,10 +3046,10 @@
 					\coordinate [right = 1 of f] (g);
 					\node [draw, rectangle, right = 1 of g] (h) {System A \\ \enquote{Außen}};
 					\coordinate [right = 1 of h] (i);
-					
+
 					\coordinate [below = 1 of g] (j);
 					\coordinate [below = 1.5 of i] (k);
-					
+
 					\draw (a) -- node[above]{Soll A} (b);
 					\draw (b) -- (c);
 					\draw (c) -- node[above]{Soll I} (d);
@@ -3073,7 +3073,7 @@
 				\item Overdamped: Überkritische Dämpfung, der Sollwert wird nur langsam erreicht (ohne Überschießen).
 				\item Critically Damped: Kritische Dämpfung, der Sollwert wird bei minimaler Verzögerung ohne Überschießen erreicht. Dies ist das ideale Verhalten.
 			\end{enumerate}
-		
+
 			Schwierigkeiten bei der Regelung:
 			\begin{itemize}
 				\item Einstellung der Regelparameter und Regelstruktur.
@@ -3088,7 +3088,7 @@
 					\item \emph{Anregelzeit} \\ Die Zeitspanne von Sprungeingabe bis zum erstmaligen Erreichen des Sollwerttoleranzbereichs.
 					\item \emph{Überschwingweite} \\ Prozentualer Wert des Überschwingens des Endwertes bei der ersten Oszillation.
 				\end{itemize}
-			
+
 				Zur Einstellung der PID-Parameter kommen zwei grundlegende Verfahren in Frage:
 				\begin{enumerate}
 					\item Bei einem bekanntem mathematischen Modell der Prozessdynamik (Transferfunktion) können analytische Methoden angewendet werden, um die Parameter zu bestimmen (und damit die transienten und stationären Spezifikationen zu erfüllen).
@@ -3139,7 +3139,7 @@
 			= \vec{f}\big(\vec{x}(t), \vec{u}(t)\big)
 		\end{equation*}
 		mit dem Zustandsvektor \( \vec{x}(t) = \begin{bmatrix} x_1(t) & \cdots & x_m(t) \end{bmatrix}^T \) und den Steuerungsgrößen \( \vec{u}(t) = \begin{bmatrix} u_1(t) & \cdots & u_l(t) \end{bmatrix}^T \).
-		
+
 		\subsection{Systemlinearisierung}
 			Eine lineare Systemdynamik hat die Form \( \vec{f}\big(\vec{x}(t), \vec{u}(t)\big) = \mat{A} \vec{x}(t) + \mat{B} \vec{u}(t) \) mit zwei konstanten Matrizen \( A \in \R^{m \times m} \) und \( B \in \R^{m \times l} \). Ein nichtlineares System \( \vec{f}\big(\vec{x}(t), \vec{u}(t)\big) \) kann lokal um einen Arbeitspunkt (\bspw die Ruhelage) \( (\vec{x}_0, \vec{u}_0) \) durch die Taylorentwicklung
 			\begin{equation*}
@@ -3150,7 +3150,7 @@
 				\Delta\dot{\vec{x}}(t) = \mat{J}_{\vec{x}}(\vec{x}_0, \vec{u}_0) \cdot \Delta\vec{x}(t) + \mat{J}_{\vec{u}}(\vec{x}_0, \vec{u}_0) \cdot \Delta\vec{u}(t)
 			\end{equation*}
 			mit \( \Delta\vec{x}(t) = \vec{x}(t) - \vec{x}_0 \) und \( \Delta\vec{u}(t) = \vec{u}(t) - \vec{u}_0 \) sowie den Jacobi-Matrizen \( \mat{J}_{\vec{x}}(\vec{x}_0, \vec{u}_0) \) und \( \mat{J}_{\vec{u}}(\vec{x}_0, \vec{u}_0) \) ausgewertet am Arbeitspunkt \( (\vec{x}_0, \vec{u}_0) \).
-			
+
 			Achtung: Dieses linearisierte Systems gilt nur approximativ um den Arbeitspunkt und kann nicht global verwendet werden!
 		% end
 
@@ -3174,7 +3174,7 @@
 				\vec{e}          & = \vec{q}_d - \vec{q}
 			\end{align*}
 			Dadurch werden die \(n\) Gleichungen entkoppelt und das Regelgesetz "linearisiert" (entkoppelt).
-			
+
 			\begin{itemize}
 				\item Diese für allgemeine Regelstrecken anwendbare, modellbasierte Regelungsmethode ("feedback linearization") wird auch als "inverse dynamics control" bezeichnet und ist eng verwandt mit "computed torque control".
 				\item Die Realisierung setzt voraus, dass die Gelenkregelung zentral (\dh nicht wie bei einer Kaskadenregelung) geschieht. Bei den meisten Industrierobotern ist dies nicht möglich, \bzw technisch nicht vorgesehen.
@@ -3190,20 +3190,20 @@
 
 		\subsection{Bahnreglung in Weltkoordinaten}
 			\label{sec:cartesiancontrol}
-		
+
 			Die Bahnregelung kann direkt (naiv) durch Nutzung der (inversen) Kinematik und der (inversen) Jacobi-Formulieren in Weltkoordinaten genutzt werden. Besser ist allerdings eine direkte Messung der Position in Weltkoordinaten als die (aufwendige und Fehlerbehaftete) Umrechnung.
 		% end
 	% end
 
 	\section{Kraft-/Momenten-Regelung}
 		Manipulationsaufgaben erfordern den gezielten Umgang mit dem physikalischen Kontakt des Roboters mit der Umwelt. Bei einer reinen Positionsregelung können kleine Variationen der Positionen extrem große Kontaktkräfte hervorrufen. Dadurch können Schäden hervorgerufen werden, \bspw beim hantieren mit Glas oder generell bei eingeschränkten Aufgaben. Somit ist ebenfalls eine Messung sowie Regelung der Kontaktkräfte und -momente nötig.
-		
+
 		Im folgenden werden nur Systeme betrachtet, bei denen beide Objekte (\dh der Manipulator und das manipulierte Objekt) eine hohe Steifigkeit besitzen (\dh keine passiven, strukturellen Nachgiebigkeiten) und nur geringe Störungen (\zB durch Reibung) auftreten.
-		
+
 		Die Modellierung und Unterteilung der Manipulationsaufgabe wird in Teilaufgaben unterteilt. Dabei wird jede Teilaufgabe mit einer Anzahl an "natürlichen Beschränkungen" verbunden und für jede Teilaufgabe eine \emph{verallgemeinerte Fläche definiert}. Dabei gelten die Positions-/Geschwindigkeits-Beschränkungen entlang der Flächennormalen und die Kraft-/Momenten-Beschränkungen entlang der Flächentangenten. Dies ermöglicht eine Partitionierung der Freiheitsgrade in zwei "orthogonale" Mengen, die nach verschiedenen Methoden geregelt werden.
-		
+
 		Die \emph{Zusammensetzungsstrategie} ist eine geplante Abfolge künstlicher Beschränkungen zur Durchführung der Manipulationsaufgabe in einer bestimmten weise. Dazu werden Strategien zur Erkennung von Änderungen der Kontaktsituation und für unerwartete Situationen benötigt.
-		
+
 		\paragraph{Praxis}
 			\begin{itemize}
 				\item Industrielle Manipulatoren sind extrem steif in den Gelenken und Gliedern konstruiert, damit hohe Positionsgenauigkeiten bei hohen Geschwindigkeiten erreicht werden können.
@@ -3225,7 +3225,7 @@
 	\section{Bahn-/Kraft-Regelung}
 		\subsection{Hybride Regelung}
 			Beispiel: Ein dreiachsiger, kartesischer Manipulator muss eine Fensterscheibe putzen, wobei \( y_w \)-Achse die Fensternormale darstellt. Dann ist eine Kraftregelung in \(y_w\)-Richtung und eine Positionsregelung in \(x_w\)- und \(z_w\)-Richtung nötig. Die Lösung ist hier eine Positionsregelung für zwei und eine Kraftregelung für eines der Gelenke (bei einer entsprechenden Roboterstruktur mit drei Schubgelenken).
-			
+
 			Abbildung~\ref{fig:hybridcontrol} zeigt das Blockschaltbild einer verallgemeinerten hybriden Regelstruktur, wobei \( \mat{S} \) und \( \mat{S}' \) mit \( \mat{S} + \mat{S}' = \mat{E} \) (\(\mat{E}\) ist die Einheitsmatrix) die jeweiligen Komponenten ein-/ausblenden, die den jeweiligen kartesischen Richtungen des Koordinatensystems der Beschränkungen entsprechen. Im oben genannten Beispiel lauten diese Matrizen wie folgt:
 			\begin{equation*}
 				\mat{S} =
@@ -3242,7 +3242,7 @@
 						0 & 0 & 0
 					\end{bmatrix}
 			\end{equation*}
-			
+
 			\begin{figure}
 				\centering
 				\begin{tikzpicture}[->, every node/.style = { align = center }]
@@ -3256,7 +3256,7 @@
 					\node [left = 1 of positionControl] (b) {\( \prescript{0}{}{\mat{T}\!}_{n, d} \) \\ \( \prescript{0}{}{\dot{\mat{T}\!}}_{n, d} \) \\ \( \prescript{0}{}{\ddot{\mat{T}\!}}_{n, d} \)};
 					\node [left = 1 of forceControl] (c) {\( \vec{n}_d \) \\ \( \vec{f}_d \)};
 					\node [left = 5 of a] (constraints) {Constraints};
-					
+
 					\coordinate [above = 1 of positionControl.north] (d1);
 					\coordinate [right = 1 of arm.east] (d2);
 					\coordinate [below = 1 of forceControl.south] (d3);
@@ -3264,7 +3264,7 @@
 					\path let \p1 = (d3), \p2 = (d2) in coordinate(B) at (\x2, \y1);
 					\coordinate [above = 0.5cm of arm.east] (C);
 					\coordinate [below = 0.5cm of arm.east] (D);
-					
+
 					\draw (b) -- (positionControl);
 					\draw (c) -- (forceControl);
 					\draw (constraints) -| (S);
@@ -3284,7 +3284,7 @@
 
 		\subsection{Parallele Regelung}
 			Bei der \emph{parallelen Regelung} wird die Interaktionskraft, \bzw die Position, direkt geregelt, wobei der Kraftregler in der Regel als dominierend ausgelegt wird.
-			
+
 			\begin{itemize}
 				\item \textbf{Stärken:}
 					\begin{itemize}
@@ -3299,10 +3299,10 @@
 					\end{itemize}
 			\end{itemize}
 		% end
-		
+
 		\subsection{Diskussion}
 			\label{sec:controlhybriddiscussion}
-		
+
 			Der Aufgabenraum wird aufgeteilt in separate Positions-/Orientierungs- sowie Kraft-/Momenten-geregelte Teilräume.
 			\begin{itemize}
 				\item Entlang einer gegebenen Richtung kann dabei nur entweder Position oder Kraft geregelt werden, aber nicht beides gleichzeitig.
@@ -3314,7 +3314,7 @@
 
 	\section{Nachgiebigkeitsregelung (Compliant Control)}
 		Die sichere und reaktive Interaktion des Roboters mit der Umgebung bei direktem physikalischem Kontakt ermöglicht viele wichtige Anwendungen (\zB physikalische Mensch-Roboter-Interaktion) und feinfühlige Kontaktaufgabe. Durch die in Abschnitt~\ref{sec:controlhybriddiscussion} beschriebenen Nachteile der direkten hybriden Bahn-/Kraft-Regelung ist dies mit einer reinen solchen nicht möglich.
-		
+
 		Eine Idee zur Lösung ist die \emph{Impedanz-Regelung}:
 		\begin{itemize}
 			\item Die Interaktion im Kontakt mit der Umgebung verursacht Abweichungen der Endeffektor-Bewegung von der Soll-Bewegung.
@@ -3333,9 +3333,9 @@
 				\item \emph{Admittanzen}, welche Effort (Kraft, Moment) aufnehmen und Flow (Geschwindigkeit) ausgeben.
 				\item \emph{Impedanzen}, welche Flow (Geschwindigkeit) aufnehmen und Effort (Kraft, Moment) ausgeben.
 			\end{itemize}
-		
+
 			Bei der dynamischen Interaktion zweier physikalischer Systeme (Manipulator und seine Umgebung) müssen sich beide physikalisch entlang jedes Freiheitsgrades ergänzen, \dh falls der eine sich als Impedanz verhält, muss der andere sich als Admittanz verhalten und umgekehrt. Auf ein Objekt (mit Trägheit und kinematischen Beschränkungen) kann jedoch nicht immer eine Kraft (oder ein Moment) ausgeübt werden, es muss sich jedoch auch nicht immer bewegen. In solchen Fällen können die beschreibenden Gleichungen nicht in Impedanz-Form dargestellt werden, eine Admittanz-Form ist jedoch immer möglich.
-			
+
 			Damit ein Manipulator, der mechanisch an eine solche Umgebung gekoppelt ist, physikalisch kompatibel mit der Admittanz der Umgebung ist, sollte dieser ein Impedanz-Verhalten annehmen.
 		% end
 
@@ -3347,7 +3347,7 @@
 					&\quad\quad\quad\quad\quad\quad + (\text{aktive Dämpungskonstante}) \,\cdot\, (\text{Regeldifferenz in linearer und Winkel-Geschwindigkeit})
 			\end{align*}
 			Ein weiterer Vorteil der Impedanzregelung ist, dass ein schneller und definierter Wechsel zwischen kontaktfreiem und kontaktbehaftetem Zustand möglich ist (\zB zum Abfangen von Stößen), sofern die Sensorik hinreichend schnell arbeitet.
-			
+
 			\textbf{Prinzip:}
 			\begin{itemize}
 				\item Indirekte Regelung der Interaktionskraft durch eine direkte Regelung des Interaktionsverhaltens als Impedanz mit (nahezu) beliebigen Dämpfungs- und Steifigkeitskoeffizienten.
@@ -3355,7 +3355,7 @@
 				\item Durch die Parameterwahl kann eine gute Positionsfolge auf eine gute Kraftfolge abgestimmt werden.
 				\item Kann bei niedrigen Impedanzen angewandt werden.
 			\end{itemize}
-		
+
 			\begin{itemize}
 				\item \textbf{Vorteile:}
 					\begin{itemize}
@@ -3372,9 +3372,9 @@
 
 		\subsection{Admittanzregelung}
 			Für eine closed-loop Impedanzregelung ist eine Kraft-/Drehmomentmessung notwendig. Ideal ist eine direkte Messung mit spezifischer Sensorik in jedem Gelenk, was allerdings sehr kostenaufwendig und noch nicht standardmäßig verfügbar ist. Alternativ können die Gelenkdrehmomente über den Stromfluss geschätzt werden. Dies benötigt allerdings eine hinreichend genaue Stromflussmessung und ist noch weniger entwickelt und verfügbar.
-			
+
 			Alternativ können, zur Simulation, die Kräfte/Drehmomente gelenk-extern im Hand- oder Fußgelenk gemessen werden. Ein nachgiebiges Verhalten im kartesischen Raum ist simulierbar mit einer \emph{Admittanzregelung}.
-			
+
 			\textbf{Prinzip:}
 			\begin{itemize}
 				\item Indirekte Regelung der Interaktionskraft durch direkte Regelung des Interaktionsverhaltens als Admittanz mit (nahezu) beliebigen Dämpfungs- und Steifigkeitskoeffizienten.
@@ -3383,7 +3383,7 @@
 				\item Kann bei hohen Impedanzen angewandt werden.
 				\item Es existieren viele Varianten von Admittanzregelungen.
 			\end{itemize}
-		
+
 			\begin{itemize}
 				\item \textbf{Vorteile:}
 					\begin{itemize}
@@ -3429,7 +3429,7 @@
 
 	\section{Bildgeführte Regelung}
 		Die Genauigkeit der "klassischen" Regelung ist unter anderem beschränkt durch die Genauigkeit der Roboterkinematik \bzw des kinematischen Modells. Abhilfe kann hier durch Messung der zu regelnder Größe durch externe Sensoren gewonnen werden.
-		
+
 		Bei der bildgeführten Regelung gibt es dabei zwei grundsätzlich verschiedene Strukturen:
 		\begin{enumerate}
 			\item Positionsbasierte, kamerageführte Regelung
@@ -3455,7 +3455,7 @@
 						\item Merkmale Positionen zugeordnet.
 					\end{enumerate}
 			\end{itemize}
-		
+
 			\textbf{Aufgabe:}
 			Es soll eine Konfiguration \( \vec{q}_\text{Zielposition} \) gefunden werden, sodass
 			\begin{equation*}
@@ -3466,7 +3466,7 @@
 				\Big\lVert \vec{m}\Big(\!\mat{B}\big(\vec{q}_\text{Zielposition}\big)\Big) - \vec{m}\Big(\!\mat{B}\big(\vec{q}_\text{ist}\big)\Big) \Big\rVert_2^2
 			\end{equation*}
 			minimal wird.
-			
+
 			\textbf{Ansatz:}
 			Das Gauß-Newton-Verfahrens für nichtlineare Ausgleichsprobleme motiviert ein Iterations- und Bewegungsverfahren:
 			\begin{equation*}
@@ -3514,7 +3514,7 @@
 
 	\section{Elementare Roboterbewegungen}
 		Definition: Eine \emph{elementare Bewegungsart} ist eine direkt programmierbare, "kleinste" Bewegungsmöglichkeit zwischen einer Anfangsposition und einer Endposition. Diese werden (bei einem Industrieroboter) meistens standardmäßig bereitgestellt. Die \emph{kürzeste Verfahrzeit} \(t_f\) ist dabei \iA nicht vom Benutzer wählbar, sondern ergibt sich aus der Bewegungsart.
-		
+
 		Elementare Bewegungsarten für Industrieroboter sind z.\,B.:
 		\begin{itemize}
 			\item Lineare Interpolation in Gelenkkoordinaten
@@ -3551,7 +3551,7 @@
 
 		\subsection{Programmierung einer Bahn als Folge elementarer Bewegungen}
 			Es werden Bahnpunkte (Positionen) und dazugehörige Attribute (Orientierung, Geschwindigkeit, \dots) definiert.
-			
+
 			"Überschleifen" mit "fly-by"-Zonen:
 			\begin{itemize}
 				\item Idee: Die einzelnen Positionen werden nur näherungsweise und nicht exakt angefahren.
@@ -3569,7 +3569,7 @@
 	\label{c:bahnplanung}
 
 	Abbildung~\ref{fig:jobprocessingandplanning} zeigt den typischen hierarchischen Aufbau der Auftragsbearbeitung und Planung, wobei sich dieses Kapitel auf die topologische, geometrische, kinematische und kinetische Planung bezieht.
-	
+
 	Die \emph{Bahnplanung} ist eine wichtige Mindestanforderung an "autonome", mobile Roboter und beinhaltet die Planung und Umsetzung eigener Bewegungen. Benötigt werden dazu
 	\begin{itemize}
 		\item Die Start- und Ziel-RAN,
@@ -3589,7 +3589,7 @@
 		\item \emph{Bahn-/Trajektorien-Planungsproblem} \\ Die Bestimmung einer Bahn/Trajektorie von Anfangs-RAN zu End-RAN (in der Regel im Konfigurationsraum), sodass der Roboter nicht mit Hindernissen kolidiert und die geplante Bewegung möglichst konsistent mit den kinematischen und kinetischen Beschränkungen des Roboters ist.
 	\end{itemize}
 	Meistens sind viele, alternative Bahnen von Start zum Ziel möglich. Die Auswahl einer optimalen Bahn kann zum Beispiel durch die Minimierung von Kosten (\zB Verfahrzeit, Bahnlänge, Energieaufwand, \dots) unter der Berücksichtigung von Beschränkungen (Kollisionsvermeidung, Sicherheit, Möglichkeit guter Sensordatenaufnahme, \dots) bestimmt werden. Ideal sind hierzu "Anytime"-Algorithmen, in der Realität erfordert die (optimale) Bahnplanung jedoch hohe Rechenzeiten. Daher werden oft Heuristiken verwendet, um die Echtzeitanforderungen einzuhalten.
-	
+
 	\begin{figure}
 		\centering
 		\begin{tikzpicture}[every node/.style = { draw, rectangle, align = center, minimum width = 5cm }]
@@ -3620,7 +3620,7 @@
 			\coordinate (l) at (-4.3, -9.55);
 			\path (k) -- coordinate(m) (f);
 			\path let \p1 = (l), \p2 = (m) in coordinate (n) at (\x2, \y1);
-			
+
 			\draw [->] (a) -- (b);
 			\draw [->] (b) -- (c);
 			\draw [->] (c) -- (d);
@@ -3645,7 +3645,7 @@
 
 	\section{Bahnplanungsarten}
 		Tabelle~\ref{tab:pathplanningtypes} zeigt die unterschiedlichen Arten der Bahnplanung auf. Dabei ist zu beachten, dass viele der im Folgenden betrachteten Verfahren ein (nahezu) perfektes Weltmodell voraussetzen. In der Praxis sind jedoch zusätzlich die Unsicherheiten und Eigenschaften der Sensorik sowie die Echtzeitanforderungen eine große Rolle.
-		
+
 		\begin{table}
 			\centering
 			\begin{tabular}{l|p{6cm}|p{4cm}}
@@ -3662,7 +3662,7 @@
 
 	\section{Topologische Wegplanung}
 		Die \emph{topologischen Wegplanung} basiert auf einer Abstraktion der Umgebung in Form diskreter Orte mit verbindenden Kanten. Oftmals wird dies als kantengewichteter (\ggf gerichteter) Graph dargestellt.
-		
+
 		Zur Wegplanung wird ein Startknoten \(K_1\) und ein Zielknoten \(K_\text{Ziel}\) angegeben und der günstigste Weg vom Start- zum Zielknoten bestimmt (\zB mit dem Dijkstra- oder A*-Algorithmus). Eine größeres Kantengewicht bedeutet z.\,B., dass
 		\begin{itemize}
 			\item die Passage schwieriger zu passieren ist,
@@ -3684,7 +3684,7 @@
 				\end{itemize}
 		\end{itemize}
 		Aufgrund dieser vielen Nachteile wird Bahnplanung und -interpolation im Konfigurationsraum (Gelenkraum) präferiert. Dies führt bei mehr als drei DOF jedoch zu einem hochdimensionalen Planungsraum.
-		
+
 		Definition: Der \emph{Konfigurationsraum} bezeichnet die Abbildung des (erreichbaren) Arbeitsraum in den Raum aller möglichen Gelenkkonfigurationen unter Berücksichtigung der
 		\begin{itemize}
 			\item Arbeitsraumsituation (Hindernisse, Begrenzungen, \dots),
@@ -3697,13 +3697,13 @@
 	\section{Geometrische Bahnplanung}
 		\subsection{Metrische Darstellung}
 			Die geometrische Bahnplanung basiert auf einer metrischen Darstellung des Raumes. Dies sind diskrete, räumliche Zerlegung des Raumes selbst anstelle der Objekte im Raum. Dieser metrische Raum ist dabei aus elementaren geometrischen 2- oder 3-dimensionalen Körpern (Punkte, Polygone, Kreise; Würfel, Ellipsoide) aufgebaut.
-			
+
 			Eigenschaften:
 			\begin{itemize}
 				\item Menge von elementaren Grundkörpern zur Beschreibung der Objekte verwendet.
 				\item Menge von Zusammensetzungs- und Verformungsoperatoren zur Manipulation von Objekten.
 			\end{itemize}
-		
+
 			Probleme:
 			\begin{itemize}
 				\item Stabilität: Kleine Variationen in der Eingabe können zu einer drastischen Veränderung der Darstellung führen. Daher müssen Methoden zur Dämpfung von Schwankungen eingesetzt werden.
@@ -3712,13 +3712,13 @@
 			\end{itemize}
 		% end
 
-		\subsection{Roadmap-Verfahren} 
+		\subsection{Roadmap-Verfahren}
 			Bei \emph{Roadmap-Verfahren} werden Verbindungen zwischen Freiräumen im Konfigurationsraum dargestellt (durch ein Netzwerk von eindimensionalen Kurven), was eine "Straßenkarte" \(R\) produziert. Die Bahnplanung erfordert dann die
 			\begin{itemize}
 				\item Identifikation der Anfangs- und Endkonfiguration mit Knoten in \(R\) sowie das
 				\item Suchen eines geeigneten Verbindungspfades in \(R\).
 			\end{itemize}
-			
+
 			Es gibt verschiedene Verfahren zur Erzeugung von \(R\):
 			\begin{itemize}
 				\item Sichtbarkeitsgraphen
@@ -3730,39 +3730,39 @@
 			\subsubsection{Sichtbarkeitsgraph}
 				\textbf{Ansatz:} Der Sichtbarkeitsgraph wird erzeugt aus der Verbindung zwischen allen Eckpunkten der Hindernisse sowie von Start- und Endkonfiguration, wobei die Verbindungen im freien Konfigurationsraum liegen müssen. \\
 				\textbf{Bahnplanung:} Bestimmung des kürzesten Verbindungsweges vom Start- zum Zielknoten.
-				
+
 				Abbildung~\ref{fig:visibilitygraph} zeigt einen beispielhaften Sichtbarkeitsgraph im Konfigurationsraum.
-				
+
 				\begin{figure}
 					\centering
 					\begin{tikzpicture}
 						\node [fill = black, draw, circle, label = left:Start] (S) at (-1, 0) {};
 						\node [fill = black, draw, circle, label = right:Ziel] (G) at (9, -3) {};
-						
+
 						\coordinate (a1) at (1, -1);
 						\coordinate (a2) at (2, 1);
 						\coordinate (a3) at (3.5, -1.5);
-						
+
 						\coordinate (b1) at (4, -4);
 						\coordinate (b2) at (6, 0);
 						\coordinate (b3) at (6.5, -3);
-						
+
 						\coordinate (c1) at (4, 2);
 						\coordinate (c2) at (4.5, 3);
 						\coordinate (c3) at (6, 2.9);
 						\coordinate (c4) at (5.5, 2.2);
-						
+
 						\coordinate (d1) at (-3, 4);
 						\coordinate (d2) at (12, 4);
 						\coordinate (d3) at (11, -5);
 						\coordinate (d4) at (-4, -5);
-						
+
 						\draw [fill = black] (a1) -- (a2) -- (a3) -- cycle;
 						\draw [fill = black] (b1) -- (b2) -- (b3) -- cycle;
 						\draw [fill = black] (c1) -- (c2) -- (c3) -- (c4) -- cycle;
-						
+
 						\draw [line width = 4pt] (d1) -- (d2) -- (d3) -- (d4) -- cycle;
-						
+
 						\draw (a1) -- (b1);
 						\draw (a2) -- (b2);
 						\draw (a2) -- (c1);
@@ -3772,20 +3772,20 @@
 						\draw (a3) -- (b2);
 						\draw (a3) -- (c1);
 						\draw (a3) -- (c4);
-						
+
 						\draw (b1) -- (c1);
 						\draw (b1) -- (c3);
 						\draw (b1) -- (c4);
 						\draw (b2) -- (c1);
 						\draw (b2) -- (c3);
 						\draw (b2) -- (c4);
-						
+
 						\draw [dashed] (S) -- (a1);
 						\draw [dashed] (S) -- (a2);
 						\draw [dashed] (S) -- (b1);
 						\draw [dashed] (S) -- (c1);
 						\draw [dashed] (S) -- (c2);
-						
+
 						\draw [dashed] (G) -- (b1);
 						\draw [dashed] (G) -- (b2);
 						\draw [dashed] (G) -- (b3);
@@ -3803,9 +3803,9 @@
 
 			\subsubsection{Voronoi-Diagramme}
 				Eine Schwierigkeit bei Sichtbarkeitsgraphen ist, dass resultierende Bahnen meistens nahe an Hindernissen vorbei gehen, diese sogar berühren können. Daher sind die durch Sichtbarkeitsgraphen generierten Bahnen nur "semi-frei". Einen alternativen Ansatz verfolgen \emph{Voronoi-Diagramme}, bei denen die Bahnen so weit wie möglich von den nächsten Hindernissen entfernt liegen. Diese werden konstruiert, indem die Wege entlang der Punkte gelegt werden, die den gleichen Abstand zu den nächsten Hindernissen haben (wobei der Rand des Arbeitsbereichs als Hindernis zählt). Dadurch haben die Bahnen immer den maximalen Abstand zu den festen Hindernissen.
-				
+
 				\textbf{Bahnplanung:} Für die Bahnplanung bewegt sich der Roboter zunächst orthogonal zum Voronoi-Diagramm auf dieses zu und bewegt sich anschließend entlang dem Diagramm zum "Absprungpunkt" zum Ziel. Dieser liegt so, dass der Roboter wieder orthogonal zum Diagramm auf das Ziel zubewegt.
-				
+
 				\textbf{Nachteile:}
 				\begin{itemize}
 					\item Die berechneten Bahnen sind im Vergleich zum Sichtbarkeitsgraphen sehr lang.
@@ -3817,94 +3817,94 @@
 		\subsection{Exakte Zellzerlegung}
 			\textbf{Ansatz:} Zerlegung des freien Konfigurationsraums in eine Menge an nicht überlappenden, konvexen Gebieten (Zellen), deren Vereinigung genau den freien Konfigurationsraum ergibt. Über die benachbarten Zellen wird dann der Verbindungsgraph (Freiraumgraph) konstruiert. Abbildung~\ref{fig:connectiongraph} zeigt eine solche Zellzerlegung. \\
 			\textbf{Bahnplanung:} Zur Bahnplanung wird ein \emph{Kanal} von der Zelle mit Start zur Zelle mit Ziel konstruiert. Aus diesem Kanal wird anschließend eine Bahn konstruiert, \bspw durch Verbinden der Mittelpunkte der Ränder von benachbarten Zellen.
-			
+
 			\begin{figure}
 				\centering
 				\begin{tikzpicture}
 					\node [fill = black, draw, circle, label = left:Start] (S) at (-1, 0) {};
 					\node [fill = black, draw, circle, label = right:Ziel] (G) at (9, -3) {};
-					
+
 					\coordinate (a1) at (1, -1);
 					\coordinate (a2) at (2, 1);
 					\coordinate (a3) at (3.5, -1.5);
-					
+
 					\coordinate (b1) at (4, -4);
 					\coordinate (b2) at (6, 0);
 					\coordinate (b3) at (6.5, -3);
-					
+
 					\coordinate (c1) at (4, 2);
 					\coordinate (c2) at (4.5, 3);
 					\coordinate (c3) at (6, 2.9);
 					\coordinate (c4) at (5.5, 2.2);
-					
+
 					\coordinate (d1) at (-3, 4);
 					\coordinate (d2) at (12, 4);
 					\coordinate (d3) at (11, -5);
 					\coordinate (d4) at (-4, -5);
-					
+
 					\draw [fill = black] (a1) -- (a2) -- (a3) -- cycle;
 					\draw [fill = black] (b1) -- (b2) -- (b3) -- cycle;
 					\draw [fill = black] (c1) -- (c2) -- (c3) -- (c4) -- cycle;
-					
+
 					\draw [line width = 4pt] (d1) -- (d2) -- (d3) -- (d4) -- cycle;
-					
+
 					\draw (a1) -- (d4);
 					\draw (a2) -- (d1);
 					\draw (a2) -- (c1);
 					\draw (a3) -- (b1);
 					\draw (a3) -- (b2);
 					\draw (a3) -- (c4);
-					
+
 					\draw (b1) -- (d3);
 					\draw (b1) -- (d4);
 					\draw (b2) -- (c4);
 					\draw (b2) -- (d2);
 					\draw (b3) -- (d3);
-					
+
 					\draw (c2) -- (d1);
 					\draw (c3) -- (d2);
 				\end{tikzpicture}
 				\caption{Zellzerlegung mit Start- und Zielknoten im beschränkten Konfigurationsraum, wobei die schwarzen Flächen Hindernisse darstellen.}
 				\label{fig:connectiongraph}
 			\end{figure}
-		
+
 			\subsubsection{Trapez-Zerlegung}
 				Der Aufwand einer solchen konvexen, optimalen Zellzerlegung ist mindestens polynomial in der Anzahl der Polygonecken der Zerlegung. Eine einfachere Variante stellt die \emph{Trapez-Zerlegung} dar.
-				
+
 				Dabei wird eine vertikale Linie (\bzw Hyper-Ebene) von links nach rechts durch den Konfigurationsraum geschoben. Schneidet sich die Linie mit einem Eckpunkt, so wird eine Gerade vom Schnittpunkt zum Rand, \bzw bis zum nächsten Hindernis erzeugt. Dies führt zu einer Zerlegung in trapezförmige oder dreieckige Zellen.
-				
+
 				Die Bahnplanung funktioniert dann wie bei einer optimalen Zellzerlegung.
-				
+
 				\begin{figure}
 					\centering
 					\begin{tikzpicture}
 						\node [fill = black, draw, circle, label = left:Start] (S) at (-1, 0) {};
 						\node [fill = black, draw, circle, label = right:Ziel] (G) at (9, -3) {};
-						
+
 						\coordinate (a1) at (1, -1);
 						\coordinate (a2) at (2, 1);
 						\coordinate (a3) at (3.5, -1.5);
-						
+
 						\coordinate (b1) at (4, -4);
 						\coordinate (b2) at (6, 0);
 						\coordinate (b3) at (6.5, -3);
-						
+
 						\coordinate (c1) at (4, 2);
 						\coordinate (c2) at (4.5, 3);
 						\coordinate (c3) at (6, 2.9);
 						\coordinate (c4) at (5.5, 2.2);
-						
+
 						\coordinate (d1) at (-3, 4);
 						\coordinate (d2) at (12, 4);
 						\coordinate (d3) at (11, -5);
 						\coordinate (d4) at (-4, -5);
-						
+
 						\draw [fill = black] (a1) -- (a2) -- (a3) -- cycle;
 						\draw [fill = black] (b1) -- (b2) -- (b3) -- cycle;
 						\draw [fill = black] (c1) -- (c2) -- (c3) -- (c4) -- cycle;
-						
+
 						\draw [line width = 4pt] (d1) -- (d2) -- (d3) -- (d4) -- cycle;
-						
+
 						\draw (-3, 4) -- (-3, -5);
 						\draw (1, 4) -- (1, -5);
 						\draw (2, 4) -- (2, 1);
@@ -3944,37 +3944,37 @@
 				\end{tabular}
 			\end{table}
 			von links nach rechts gelistet. Abbildung~\ref{fig:approxcelldecompositionquadtree} zeigt den Quadtree des vierten Quadranten der approximativen Zerlegung aus Abbildung~\ref{fig:approxcelldecomposition}.
-			
+
 			Das Verfahren lässt sich analog auf einen 3- oder \(n\)-dimensionalen Raum anwenden.
-		
+
 			\begin{figure}
 				\centering
 				\begin{tikzpicture}
 					\coordinate (a1) at (1, -1);
 					\coordinate (a2) at (2, 1);
 					\coordinate (a3) at (3.5, -1.5);
-					
+
 					\coordinate (b1) at (4, -4);
 					\coordinate (b15) at (5, 0);
 					\coordinate (b2) at (6.5, 1);
 					\coordinate (b3) at (6.5, -3);
-					
+
 					\coordinate (c1) at (4, 2);
 					\coordinate (c2) at (4.5, 3);
 					\coordinate (c3) at (6, 2.9);
 					\coordinate (c4) at (5.5, 2.2);
-					
+
 					\coordinate (d1) at (-1, 5);
 					\coordinate (d2) at (9, 5);
 					\coordinate (d3) at (9, -5);
 					\coordinate (d4) at (-1, -5);
-					
+
 					\draw [fill = black] (a1) -- (a2) -- (a3) -- cycle;
 					\draw [fill = black] (b1) -- (b15) -- (b2) -- (b3) -- cycle;
 					\draw [fill = black] (c1) -- (c2) -- (c3) -- (c4) -- cycle;
-					
+
 					\draw [line width = 4pt] (d1) -- (d2) -- (d3) -- (d4) -- cycle;
-					
+
 					\draw [color = TUDa-3b, line width = 3pt, step = 5, xshift = -1cm] (d1) grid +(10, -10);
 					\draw [color = TUDa-3b, line width = 2pt, step = 2.5, xshift = -1cm] (d1) grid +(10, -10);
 					\draw [color = TUDa-3b, line width = 1pt] (0.25, 0) -- (0.25, -2.5);
@@ -3988,7 +3988,7 @@
 				\caption{Approximative Zellzerlegung im beschränkten Konfigurationsraum, wobei die schwarzen Flächen Hindernisse darstellen.}
 				\label{fig:approxcelldecomposition}
 			\end{figure}
-		
+
 			\begin{figure}
 				\Tree[.{\grayBox}
 					[.{\grayBox}
@@ -4013,7 +4013,7 @@
 
 		\subsection{Potentialfeld-Methoden} % 7.50, 7.51, 7.52, 7.53, 7.54, 7.55, 7.56
 			Zerlegungs-Verfahren beruhen auf der Suche in einem diskreten (\bzw diskretisierten) Raum. Eine alternative sind Heuristiken zur (lokalen) Suche in einem kontinuierlichem Raum.
-			
+
 			Bei \emph{Potentialfeld-Methoden} werden Objekte als geladene, punktförmige Teilchen betrachtet, wobei das
 			\begin{itemize}
 				\item Ziel \( \vec{q}_\text{Ziel} \) ein anziehendes Potential \( U_\text{Ziel} \) hat und
@@ -4033,7 +4033,7 @@
 					\end{bmatrix}
 			\end{equation*}
 			Dies entspricht dem Verfahren des steilsten Abstiegs (Steepest Descent) zur Minimierung des Gesamtpotentials.
-			
+
 			\paragraph{Berechnung}
 				Es sind viele verschiedene Definitionen der Potentiale möglich, z.\,B.:
 				\begin{align*}
@@ -4041,14 +4041,14 @@
 					U_\text{Hindernis}(\vec{q}) &\coloneqq \frac{\beta}{\beta_0 + \text{dist}(\vec{q}, \text{Hindernis})}
 				\end{align*}
 				mit geeigneten zu wählenden Parametern \( \alpha, \beta, \beta_0 > 0 \), wobei \( \beta_0 \) die Potentialhöhe der Hindernisse festlegt (\( \beta_0 = 0 \) entspricht einem unendlichen Potential, \dh einer Barriere). \( \text{dist}(\vec{q}, \text{Hindernis}) \) entspricht dem minimalen Abstand des Punktes zum Hindernis, wobei "Null" bedeutet, dass der Punkt im Hindernis liegt.
-				
+
 				Für \( U_\text{Hindernis}(\vec{q}) \) gibt es unterschiedliche Berechnungsvarianten, z.\,B.:
 				\begin{itemize}
 					\item nur zum nächsten Hindernis oder
 					\item summiert über alle Hindernisse (in der Nähe).
 				\end{itemize}
 			% end
-			
+
 			\paragraph{Diskussion}
 				\begin{itemize}
 					\item \textbf{Vorteile:}
@@ -4062,7 +4062,7 @@
 							\item Die Gefahr, in lokalen Minima hängen zu bleiben, ist groß.
 						\end{itemize}
 				\end{itemize}
-			
+
 				Abhilfen \bzgl der lokalen Minima sind z.\,B.:
 				\begin{itemize}
 					\item Konstruktion eines Potentials ohne lokales Minima, \zB über Strömungsmodelle (hohe Rechenzeiten).
@@ -4082,7 +4082,7 @@
 				\item Die Komplexität des Problems wächst (vermutlich immer) exponentiell in der Anzahl der Roboterfreiheitsgrade.
 				\item Wenn es schnellere Algorithmen geben sollte, so benötigen diese mindestens polynomiale Zeit \bzgl \(n\).
 			\end{itemize}
-		
+
 			Anmerkungen:
 			\begin{itemize}
 				\item In Spezialfällen mit besonderen Geometrien kann die Komplexität niedriger sein.
@@ -4107,27 +4107,27 @@
 					\coordinate (a1) at (1, -1);
 					\coordinate (a2) at (2, 1);
 					\coordinate (a3) at (3.5, -1.5);
-					
+
 					\coordinate (b1) at (4, -4);
 					\coordinate (b2) at (6, 0);
 					\coordinate (b3) at (6.5, -3);
-					
+
 					\coordinate (c1) at (4, 2);
 					\coordinate (c2) at (4.5, 3);
 					\coordinate (c3) at (6, 2.9);
 					\coordinate (c4) at (5.5, 2.2);
-					
+
 					\coordinate (d1) at (-1, 4);
 					\coordinate (d2) at (9, 4);
 					\coordinate (d3) at (9, -5);
 					\coordinate (d4) at (-1, -5);
-					
+
 					\draw [fill = black] (a1) -- (a2) -- (a3) -- cycle;
 					\draw [fill = black] (b1) -- (b2) -- (b3) -- cycle;
 					\draw [fill = black] (c1) -- (c2) -- (c3) -- (c4) -- cycle;
-					
+
 					\draw [line width = 4pt] (d1) -- (d2) -- (d3) -- (d4) -- cycle;
-					
+
 					\node [draw, circle, fill = white] (a) at (0, 1) {};
 					\node [draw, circle, fill = white] (b) at (4, 2) {};
 					\node [draw, circle, fill = white] (c) at (7, -4) {};
@@ -4158,27 +4158,27 @@
 					\coordinate (a1) at (1, -1);
 					\coordinate (a2) at (2, 1);
 					\coordinate (a3) at (3.5, -1.5);
-					
+
 					\coordinate (b1) at (4, -4);
 					\coordinate (b2) at (6, 0);
 					\coordinate (b3) at (6.5, -3);
-					
+
 					\coordinate (c1) at (4, 2);
 					\coordinate (c2) at (4.5, 3);
 					\coordinate (c3) at (6, 2.9);
 					\coordinate (c4) at (5.5, 2.2);
-					
+
 					\coordinate (d1) at (-1, 4);
 					\coordinate (d2) at (9, 4);
 					\coordinate (d3) at (9, -5);
 					\coordinate (d4) at (-1, -5);
-					
+
 					\draw [fill = black] (a1) -- (a2) -- (a3) -- cycle;
 					\draw [fill = black] (b1) -- (b2) -- (b3) -- cycle;
 					\draw [fill = black] (c1) -- (c2) -- (c3) -- (c4) -- cycle;
-					
+
 					\draw [line width = 4pt] (d1) -- (d2) -- (d3) -- (d4) -- cycle;
-					
+
 					\node [draw, circle, fill = white] (a) at (0, 1) {};
 					\node [draw, circle, fill = white] (c) at (7, -4) {};
 					\node [draw, circle, fill = white] (e) at (3, 1) {};
@@ -4209,27 +4209,27 @@
 					\coordinate (a1) at (1, -1);
 					\coordinate (a2) at (2, 1);
 					\coordinate (a3) at (3.5, -1.5);
-					
+
 					\coordinate (b1) at (4, -4);
 					\coordinate (b2) at (6, 0);
 					\coordinate (b3) at (6.5, -3);
-					
+
 					\coordinate (c1) at (4, 2);
 					\coordinate (c2) at (4.5, 3);
 					\coordinate (c3) at (6, 2.9);
 					\coordinate (c4) at (5.5, 2.2);
-					
+
 					\coordinate (d1) at (-1, 4);
 					\coordinate (d2) at (9, 4);
 					\coordinate (d3) at (9, -5);
 					\coordinate (d4) at (-1, -5);
-					
+
 					\draw [fill = black] (a1) -- (a2) -- (a3) -- cycle;
 					\draw [fill = black] (b1) -- (b2) -- (b3) -- cycle;
 					\draw [fill = black] (c1) -- (c2) -- (c3) -- (c4) -- cycle;
-					
+
 					\draw [line width = 4pt] (d1) -- (d2) -- (d3) -- (d4) -- cycle;
-					
+
 					\node [draw, circle, fill = white] (a) at (0, 1) {a};
 					\node [draw, circle, fill = white] (b) at (1, 3) {b};
 					\node [draw, circle, fill = white] (c) at (1, -3) {c};
@@ -4241,7 +4241,7 @@
 					\node [draw, circle, fill = white] (i) at (7, -4) {i};
 					\node [draw, circle, fill = white] (j) at (7, 1) {j};
 					\node [draw, circle, fill = white] (k) at (8, -4) {k};
-					
+
 					\draw (a) -- (b);
 					\draw (a) -- (e);
 				\end{tikzpicture}
@@ -4254,27 +4254,27 @@
 					\coordinate (a1) at (1, -1);
 					\coordinate (a2) at (2, 1);
 					\coordinate (a3) at (3.5, -1.5);
-					
+
 					\coordinate (b1) at (4, -4);
 					\coordinate (b2) at (6, 0);
 					\coordinate (b3) at (6.5, -3);
-					
+
 					\coordinate (c1) at (4, 2);
 					\coordinate (c2) at (4.5, 3);
 					\coordinate (c3) at (6, 2.9);
 					\coordinate (c4) at (5.5, 2.2);
-					
+
 					\coordinate (d1) at (-1, 4);
 					\coordinate (d2) at (9, 4);
 					\coordinate (d3) at (9, -5);
 					\coordinate (d4) at (-1, -5);
-					
+
 					\draw [fill = black] (a1) -- (a2) -- (a3) -- cycle;
 					\draw [fill = black] (b1) -- (b2) -- (b3) -- cycle;
 					\draw [fill = black] (c1) -- (c2) -- (c3) -- (c4) -- cycle;
-					
+
 					\draw [line width = 4pt] (d1) -- (d2) -- (d3) -- (d4) -- cycle;
-					
+
 					\node [draw, circle, fill = white] (a) at (0, 1) {a};
 					\node [draw, circle, fill = white] (b) at (1, 3) {b};
 					\node [draw, circle, fill = white] (c) at (1, -3) {c};
@@ -4286,37 +4286,37 @@
 					\node [draw, circle, fill = white] (i) at (7, -4) {i};
 					\node [draw, circle, fill = white] (j) at (7, 1) {j};
 					\node [draw, circle, fill = white] (k) at (8, -4) {k};
-					
+
 					\draw (a) -- (b);
 					\draw [color = TUDa-9b] (a) -- (e);
-					
+
 					\draw (b) -- (e);
 					\draw (b) -- (h);
-					
+
 					\draw (c) -- (d);
 					\draw (c) -- (f);
-					
+
 					\draw (d) -- (f);
 					\draw (d) -- (g);
-					
+
 					\draw (e) -- (h);
 					\draw [color = TUDa-9b] (e) -- (f);
-					
+
 					\draw (f) -- (g);
 					\draw [color = TUDa-9b] (f) -- (h);
-					
+
 					\draw [color = TUDa-9b] (g) -- (i);
 					\draw [color = TUDa-9b] (g) -- (j);
-					
+
 					\draw (h) -- (g);
 					\draw (h) -- (j);
-					
+
 					\draw (i) -- (k);
 					\draw (i) -- (j);
-					
+
 					\draw (j) -- (e);
 					\draw (j) -- (f);
-					
+
 					\draw [color = TUDa-9b] (k) -- (g);
 					\draw [color = TUDa-9b] (k) -- (h);
 				\end{tikzpicture}
@@ -4329,27 +4329,27 @@
 					\coordinate (a1) at (1, -1);
 					\coordinate (a2) at (2, 1);
 					\coordinate (a3) at (3.5, -1.5);
-					
+
 					\coordinate (b1) at (4, -4);
 					\coordinate (b2) at (6, 0);
 					\coordinate (b3) at (6.5, -3);
-					
+
 					\coordinate (c1) at (4, 2);
 					\coordinate (c2) at (4.5, 3);
 					\coordinate (c3) at (6, 2.9);
 					\coordinate (c4) at (5.5, 2.2);
-					
+
 					\coordinate (d1) at (-1, 4);
 					\coordinate (d2) at (9, 4);
 					\coordinate (d3) at (9, -5);
 					\coordinate (d4) at (-1, -5);
-					
+
 					\draw [fill = black] (a1) -- (a2) -- (a3) -- cycle;
 					\draw [fill = black] (b1) -- (b2) -- (b3) -- cycle;
 					\draw [fill = black] (c1) -- (c2) -- (c3) -- (c4) -- cycle;
-					
+
 					\draw [line width = 4pt] (d1) -- (d2) -- (d3) -- (d4) -- cycle;
-					
+
 					\node [draw, circle, fill = white] (a) at (0, 1) {a};
 					\node [draw, circle, fill = white] (b) at (1, 3) {b};
 					\node [draw, circle, fill = white] (c) at (1, -3) {c};
@@ -4361,35 +4361,35 @@
 					\node [draw, circle, fill = white] (i) at (7, -4) {i};
 					\node [draw, circle, fill = white] (j) at (7, 1) {j};
 					\node [draw, circle, fill = white] (k) at (8, -4) {k};
-					
+
 					\draw (a) -- (b);
-					
+
 					\draw (b) -- (e);
 					\draw (b) -- (h);
-					
+
 					\draw (c) -- (d);
 					\draw (c) -- (f);
-					
+
 					\draw (d) -- (f);
 					\draw (d) -- (g);
-					
+
 					\draw (e) -- (h);
-					
+
 					\draw (f) -- (g);
-					
+
 					\draw (h) -- (g);
 					\draw (h) -- (j);
-					
+
 					\draw (i) -- (k);
 					\draw (i) -- (j);
-					
+
 					\draw (j) -- (e);
 					\draw (j) -- (f);
 				\end{tikzpicture}
 				\caption{Probabilistic Roadmap, Ergebnis: Der resultierende (nicht-planare) Graph ist die Probabilistic Roadmap (PRM)}
 				\label{fig:prmstep5}
 			\end{figure}
-		
+
 			\paragraph{Allgemeines Vorgehen}
 				Das allgemeine Vorgehen von Stichprobenverfahren ist erst die Diskretisierung durch Stichproben und anschließende Graphensuche. Dabei gibt es zwei Kategorien von Graphbasierten Verfahren:
 				\begin{itemize}
@@ -4402,14 +4402,14 @@
 					\item mehr Stichproben bei Punkten mit wenigen Nachbarn
 					\item mehr Stichproben bei Hindernissen
 				\end{itemize}
-			
+
 				Durch korrekte (zulässige) Heuristiken kann eine enorme Performanzverbesserung erzielt werden. In der Praxis ist die Auswahl solcher Heuristiken jedoch kompliziert\dots
 			% end
 		% end
 
 		\subsection{Rapidly Exploring Random Trees (RRTs)}
 			Siehe Algorithmus~\ref{alg:rrt}.
-			
+
 			\begin{algorithm}
 				\KwData{\( x_\mathit{init} \), \( K \), \( \Delta t \)}
 				\Begin{
@@ -4431,7 +4431,7 @@
 
 		\subsection{Beispiel: MINERVA}
 			MINERVA ist ein Museumstourführungsroboter.
-			
+
 			\subsubsection{Umweltmodell: Belegungskarte}
 				\begin{itemize}
 					\item Die Umgebungskarte wird eingeteilt in ein Netz aus quadratischen Zellen, wobei freie Stellen hell und Hindernisse dunkel markiert werden.
@@ -4501,7 +4501,7 @@
 						g_n\big(\vec{x}(t), \vec{u}(t), t\big) \geq 0
 					\end{matrix}
 			\end{equation*}
-			
+
 			Das \emph{optimale Steuerungsproblem} (Optimal Control Problem) lässt sich nun durch ein Gütekriterium/eine Kostenfunktion wie folgt definieren
 			\begin{equation*}
 				\min_{\vec{u}} \> J(\vec{x}, \vec{u}) = \Phi\big(\vec{x}(t_f), t_f\big) + \int_{0}^{t_f} \! L\big(\vec{x}(t), \vec{u}(t), t\big) \dd{t}
@@ -4525,7 +4525,7 @@
 			\begin{equation*}
 				\min_{\vec{u}} \> J(\vec{x}, \vec{u}) = \rho_1 \cdot J_t(\vec{x}, \vec{u}) + \rho_2 \cdot J_e(\vec{x}, \vec{u}),\quad \rho_1, \rho_2 > 0
 			\end{equation*}
-			
+
 			Siehe auch Vorlesung "Optimierung statischer und dynamischer Systeme".
 		% end
 	% end
@@ -4542,7 +4542,7 @@
 
 	\section{Lokalisierung und Positionierung}
 		Die Positionsbestimmung kann relativ, absolut oder stochastisch erfolgen.
-		
+
 		\textbf{Relative Verfahren:}
 		\begin{enumerate}
 			\item \emph{Odometrie}
@@ -4559,7 +4559,7 @@
 				\end{itemize}
 			\item[] Werden 1 und 2 kombiniert, so ergibt sich eine \emph{Koppelnavigation}.
 		\end{enumerate}
-	
+
 		\textbf{Absolute Verfahren:}
 		\begin{enumerate} \setcounter{enumi}{2}
 			\item \emph{Aktive "Leuchtfeuer"}
@@ -4580,7 +4580,7 @@
 					\item Die aus Sensordaten aufgebaute Karte (Umweltmodell) wird mit einer Referenzkarte verglichen und daraus die Position bestimmt.
 				\end{itemize}
 		\end{enumerate}
-	
+
 		\textbf{Stochastische Verfahren:}
 		\begin{enumerate} \setcounter{enumi}{6}
 			\item \emph{Markov-Lokalisierung}
@@ -4590,17 +4590,17 @@
 			\item \emph{Monte-Carlo-Lokalisierung}
 				\begin{itemize}
 					\item Die Position wird als Dichte von Partikeln betrachtet.
-					\item Es werden Beobachtungs- und Bewegungsmodelle verwendet:, 
+					\item Es werden Beobachtungs- und Bewegungsmodelle verwendet:,
 						\begin{itemize}
 							\item Das Beobachtungsmodell modelliert die Wahrscheinlichkeit der Aufnahme von Sensordaten an bestimmten Positionen.
 							\item Das Bewegungsmodell modelliert die Wahrscheinlichkeit von Bewegungen, die zu einer bestimmten, relativen RAN führen.
 						\end{itemize}
 				\end{itemize}
 		\end{enumerate}
-	
+
 		\subsection{Nichtlineare Ausgleichsrechnung}
 			\label{sec:leastsquares}
-		
+
 			Bei der \emph{nichtlinearen Ausgleichsregelung} (auch als \emph{Methode der kleinsten Quadrate}, \emph{ninlinear least squares} bezeichnet) ist ein nichtlineares Minimierungsproblem
 			\begin{equation*}
 				\min_{\vec{p} \in \R^{n_p}} \> \varphi_2(\vec{p}),\quad \varphi_2 : \R^{n_p} \to \R
@@ -4610,7 +4610,7 @@
 				\varphi_2(\vec{p}) \coloneqq \frac{1}{2} \sum_{i = 1}^{n_r} \omega_i \big(r_i(\vec{p})\big)^2
 			\end{equation*}
 			mit den reellen Gewichten \( \omega_i \in \R^+ \) und einer Fehlerfunktion \( r_i : \R^{n_p} \to \R \).
-			
+
 			\paragraph{Beispiel}
 				In diesem Beispiel sind mehrere Randpunkte \( (x_i, y_i) \), \( i = 1, \cdots, n_r \) eines Balls gegeben und es soll der Mittelpunkt \( (x_K, y_K) \) sowie der Radius \( R_K \) des Balls gefunden werden, \dh Parameter \( \vec{p} = \begin{bmatrix} x_K & y_K & R_K \end{bmatrix} \in \R^3 \) (\( n_p = 3 \)), für die für alle \( (x_i, y_i) \) gilt:
 				\begin{equation*}
@@ -4621,7 +4621,7 @@
 					r_i(x_K, y_K, R_K) = \sqrt{(x_i - x_K)^2 + (y_i - y_K)^2} - R_K \label{eqn:leastsquaresexamplegood}
 				\end{equation}
 				verwendet wird.
-				
+
 				Im Gegensatz zu einer alternativen Fehlerfunktion
 				\begin{equation}
 					r_i(x_K, y_K, R_K) = \sqrt{(x_i - x_K)^2 + (y_i - y_K)^2 - R_K^2} \label{eqn:leastsquaresexamplebad}
@@ -4633,14 +4633,14 @@
 
 	\section{Selbstlokalisierung und Navigation}
 		Das Ziel der \emph{Selbstlokalisierung} ist die Bestimmung des Aufenthaltsortes eines Roboters relativ zu einer Ausgangsposition oder absolut bezogen auf ein Weltkoordinatensystem. Für den Rest des Kapitels wird dabei angenommen, dass eine absolute Positionsbestimmung mit GPS oder ähnlichem nicht verfügbar ist (\zB innerhalb von Gebäuden oder Tunneln). In der Praxis ist eine Kombination der im folgenden untersuchten Methoden mit GPS natürlich möglich uns sinnvoll.
-		
+
 		Das allgemeine Vorgehen besteht aus zwei Schritten:
 		\begin{enumerate}
 			\item Messen der (Eigen-)~Bewegung des Roboters (Änderung des Aufenthaltsortes) sowie der Umgebung (mit externen Sensoren), was Hinweise auf die absolute Position liefert.
 			\item Verarbeitung der Messdaten zu einer (deterministischen oder probabilistischen) Vermutung (Hypothese) über den Aufenthaltsort.
 		\end{enumerate}
 		Dazu werden geeignete interne und externe Sensoren, Modelle der Sensoren und der Bewegung, geeignete Darstellung der Vermutung(en) über den Aufenthaltsort sowie geeignete Verfahren zur Sensordatenfusion benötigt.
-		
+
 		Die unterschiedlichen Verfahren können nach einigen Eigenschaften klassifiziert werden:
 		\begin{enumerate}
 			\item Verwendung einer Karte (bekannt oder nicht bekannt, metrisch oder topologisch)
@@ -4649,17 +4649,17 @@
 			\item Deterministisch oder nicht deterministisch (probabilistisch).
 			\item Verwendete/benötigte Sensoren.
 		\end{enumerate}
-	
+
 		\subsection{Metrische und Topologische Beschreibung des Aufenthaltsortes}
 			\paragraph{Metrische Beschreibung}
 				Bei der metrischen Beschreibung wird die RAN Allgemein durch einen Vektor \( \vec{x} \in \R^n \) beschrieben, wobei \(n\) die Dimension der RAN ist. Bei einem Fahrzeug in der Ebene ist diese \( n = 3 \) (Position und Winkel), bei einem Körper im Raum ist diese \( n = 6 \) (Position und Orientierung). Prinzipiell sind aber auch höhere Dimensionen denkbar, wenn der Roboterzustand genauer modelliert wird.
 			% end
-			
+
 			\paragraph{Topologische Beschreibung}
 				Bei der topologischen Beschreibung wird das Umgebungsmodell als Graph modelliert und der mobile Roboter befindet sich in einem der Knoten.
 			% end
 		% end
-		
+
 		\subsection{Messungenauigkeiten/-unsicherheiten}
 			Bei sowohl der metrischen als auch der topologischen Beschreibung tritt das Problem auf, dass keine genauen Daten der Roboterbewegung verfügbar sind:
 			\begin{itemize}
@@ -4675,28 +4675,28 @@
 
 			\subsubsection{Koppelnavigation}
 				Bei der \emph{Koppelnavigation} wird die Roboterbewegung anhand interner Sensoren gemessen und durch Auswertung der Bewegungsgleichungen die Änderung von Position und Orientierung nach jeder erfassten Bewegung berechnet. Dabei erfolgt keine Messung der Umgebung, \dh es findet nur eine relative Bestimmung der RAN statt und Messfehler können weder erkannt noch korrigiert werden.
-				
+
 				Dies ist problematisch, da der Fehler der RAN-Schätzung so beliebig ansteigen kann. Daher ist eine Koppelnavigation nur für kurzzeitige Schätzungen geeignet.
 			% end
 
 			\subsubsection{(Erweitertes) Kalman-Filter}
 				Das \emph{erweiterte Kalman-Filter} (EKF) erlaubt die Fusion der Messdaten von mehreren Sensoren (auch mit verschiedenen Messraten). Dabei wird die RAN-Schätzung als normalverteilte Zufallsvariable modelliert. Das Ergebnis ist eine statistisch optimale Schätzung des Systemzustands\footnote{Das Kalman-Filter ist ein Bayes'scher Minimum-Varianz-Schätzer für lineare stochastische Systeme in Zustandsraumdarstellung}.
-				
+
 				Sowohl das Robotersystem als auch die Messungen werden durch Modelle beschrieben. Das Mess- und Systemrauschen wird sowie Schätzung des Systemzustands werden dabei als ein Vektor normalverteilter Zufallsvariablen modelliert.
-				
+
 				Ausgehend von einer Startschätzung wird dann die RAN des Roboters verfolgt. Während der Laufzeit werden zwei Verarbeitungsschritte immer wieder ausgeführt:
 				\begin{itemize}
 					\item \emph{Time-Update} (Vorhersage) \\ Auf Basis des momentanen Zustands wird, unter Verwendung von Systemfunktionen (Bewegungsmodell), der Folgezustand geschätzt (a-priori Schätzung).
 					\item \emph{Measurement-Update} (Korrektur) \\ Die a-priori Schätzung wird mit Hilfe der neusten Messungen externer Sensoren korrigiert.
 				\end{itemize}
-			
+
 				\paragraph{Diskretisierung der Bewegungsdynamik}
 					Das allgemeine Roboterbewegungsmodell ist eine nichtlineare und zeitkontinuierliche Differentialgleichung
 					\begin{equation*}
 						\dot{\vec{x}}(t) = \vec{F}\big(\vec{x}(t), \vec{u}(t)\big)
 					\end{equation*}
 					mit dem Systemzustand \( \vec{x} \in \R^n \) und der Systemsteuerung \( \vec{u} \in \R^l \).
-					
+
 					Mit \( \vec{x}_k \coloneqq \vec{x}(t_k) \), \( \vec{u}_k \coloneqq \vec{u}(t_k) \), einer "Schrittweite" \( h_k \coloneqq t_{k + 1} - t_k \) und der Approximation
 					\begin{equation*}
 						\dot{\vec{x}}(t_{k + 1}) \approx \frac{1}{h_k} (\vec{x}_{k + 1} - \vec{x}_k) = \vec{F}(\vec{x}_k, \vec{u}_k)
@@ -4708,14 +4708,14 @@
 					\end{align*}
 					Im folgenden wird immer ein zeitdiskrete Modell vorausgesetzt. In der Praxis orientieren sich die Zeitschritte \( t_k \), \bzw \( h_k \), an den Taktraten der (schnellsten) Sensordaten.
 				% end
-				
+
 				\paragraph{Probabilistisches Systemmodell}
 					Mit dem Systemrauschen \( \vec{w} \in \R^n \), ein Vektor von mittelwertfreien, normalverteilten Zufallsvariablen mit Kovarianzmatrix \( \mat{Q} \in \R^{n \times n} \), wird das Systemmodell wie folgt erweitert:
 					\begin{equation*}
 						\vec{x}_k = \vec{f}(\vec{x}_{k - 1}, \vec{u}_{k - 1}) + \vec{w}_{k - 1}
 					\end{equation*}
 					Durch dieses Rauschen kann der Systemzustand nicht mehr deterministisch angegeben werden, da er von der Zufallsvariablen \( \vec{w} \) abhängt.
-					
+
 					Jedoch kann der Systemzustand nun als ein Vektor normalverteilter, unabhängiger Zufallsvariablen mit
 					\begin{itemize}
 						\item Mittelwert \( \hat{\vec{x}} \in \R^n \) und
@@ -4723,7 +4723,7 @@
 					\end{itemize}
 					geschätzt/betrachtet werden.
 				% end
-				
+
 				\paragraph{Probabilistisches Messmodell}
 					Mit dem Messrauschen \( \vec{v} \in \R^m \), ein Vektor von mittelwertfreien, normalverteilten Zufallsvariablen mit Kovarianzmatrix \( \mat{R} \in \R^{m \times m} \), lautet das Messmodell wie folgt:
 					\begin{equation*}
@@ -4739,7 +4739,7 @@
 						\item der Steuereingabe \( \hat{\vec{u}}_{k - 1} \) zum Zeitpunkt \( k - 1 \),
 					\end{itemize}
 					eine a-priori Schätzung \( \hat{\vec{x}}_k^- \), \( \mat{P}_k^{\,-} \) des Systemzustands zum Zeitpunkt \(k\) berechnet, \dh die Parameter des Priors \( p(\vec{x}_k) = \mathcal{N}\,\big(\hat{\vec{x}}_k^-, \mat{P}_k^{\,-}\big) \).
-					
+
 					Mit der gegebenen Kovarianzmatrix \( \mat{Q} \) des Systemrauschens sowie der Jacobi-Matrix
 					\begin{equation*}
 						\mat{A}_k \coloneqq \frac{\partial \vec{f}(\hat{\vec{x}}_k^-, \vec{u}_k)}{\partial \vec{x}}
@@ -4759,7 +4759,7 @@
 						\item den Messungen \( \vec{z}_k \) der externen Sensoren zum Zeitpunkt \(k\),
 					\end{itemize}
 					eine a-posteriori Schätzung \( \hat{\vec{x}}_k \), \( \mat{P}_k \) des Systemzustands und der Kovarianzmatrix zum Zeitpunkt \(k\) berechnet, \dh die Parameter des Posteriors \( p(\vec{x}_k \given \vec{z}_k, \cdots, \vec{z}_1) = \mathcal{N}\,\big(\hat{\vec{x}}_k, \mat{P}_k\big) \).
-					
+
 					Mit der gegebenen Kovarianzmatrix \( \mat{R} \) des Messrauschens sowie der Jacobi-Matrix
 					\begin{equation*}
 						\mat{H}_k \coloneqq \frac{\partial \vec{h}(\hat{\vec{x}}_k^-)}{\partial \vec{x}}
@@ -4771,9 +4771,9 @@
 						\mat{P}_k &= (\mat{E} - \mat{K}_k \mat{H}_k) \mat{P}_k^{\,-}
 					\end{align*}
 					Wobei \( \mat{E} \) die Einheitsmatrix darstellt.
-					
+
 					Die grundlegende Idee des Filter ist, zunächst die Kalmanverstärkung \( \mat{K} \) so zu berechnen, dass die Varianz der a-posteriori Schätzung minimal wird. Anschließend wird der Mittelwert der der (durch \( \mat{K} \) gewichteten) Abweichung der erwarteten Messung von der tatsächlichen Messung korrigiert.
-					
+
 					\begin{itemize}
 						\item In der Regel weicht die tatsächliche Messung \( \vec{z} \) von dem erwarteten Messwert \( \vec{h} \) ab (um das Residuum \( \vec{r}_k \coloneqq \vec{z}_k - \vec{h}(\hat{\vec{x}}_k^-) \)).
 						\item Die Fehlerkovarianzmatrix \( \mat{P} \) beschreibt insgesamt die Zuverlässigkeit der Zustandsschätzung.
@@ -4781,7 +4781,7 @@
 						\item Durch die Elimination von Ausreißern ist das Verfahren somit stabil gegenüber einzelnen Falschmessungen in Komponenten von \( \vec{z}_k \).
 					\end{itemize}
 				% end
-				
+
 				\paragraph{Vor- und Nachteile des EKF}
 					\begin{itemize}
 						\item \textbf{Vorteile:}
@@ -4827,19 +4827,19 @@
 							\item Vereinigen von Hypothesen
 						\end{itemize}
 				\end{itemize}
-			
+
 				Zunächst muss die Hypothesenmenge jedoch modelliert werden. Die \(i\)-te Hypothese (\( i \in \{\, 1, \cdots, N \,\} \)) zum Zeitpunkt \(k\) wird dabei dargestellt durch ein Tripel
 				\begin{equation*}
 					H_k^{(i)} \coloneqq \Big( \vec{x}_k^{(i)}, \mat{P}_k^{\,(i)}, p_k^{(i)} \Big)
 				\end{equation*}
 				mit dem Erwartungswert \( \vec{x}_k^{(i)} \), der Kovarianzmatrix \( \mat{P}_k^{\,(i)} \) und einer Gewichtung \( p_k^{(i)} \geq 0 \) (die Wahrscheinlichkeit, dass eine Hypothese gilt). Jede Hypothese wird dabei durch eine Normalverteilung \( p_k^{(i)} = \mathcal{N}\,\Big( \vec{x}_k^{(i)}, \mat{P}_k^{\,(i)} \Big) \) dargestellt.
-				
+
 				Außerdem muss dafür gesorgt werden, dass die Wahrscheinlichkeiten \( p_k^{(i)} \) normiert sind, \dh es muss
 				\begin{equation*}
 					p_k^{(0)} + \sum_{i = 1}^{N} p_k^{(i)} = 1
 				\end{equation*}
 				gelten, wobei \( p_k^{(i)} \) die Wahrscheinlichkeit ist, dass keine Hypothese gilt.
-				
+
 				\paragraph{Vorgehen}
 					\begin{enumerate}
 						\item \emph{Time-Update} \\ Für jede Hypothese wird ein normales Time-Update durchgeführt.
@@ -4853,7 +4853,7 @@
 					\begin{equation*}
 						p_k^{(i_\text{neu})} = c p_k^{(i)} P\Big(\vec{z} \,\big\vert\, H_k^{(i)}\Big)
 					\end{equation*}
-					
+
 					Eine Messung der Umgebung kann neue Hypothesen (sogenannte Kandidaten) über den Systemzustand produzieren. Diese Kandidaten werden unterteilt in
 					\begin{itemize}
 						\item solche, die in der Nähe einer bestehenden Hypothese liegen und dieser unterstützen \( \to \) Anwenden eines Measurement-Updates auf diese Hypothese.
@@ -4867,7 +4867,7 @@
 					\end{itemize}
 					Wurde eine Hypothese entfernt, so müssen die Wahrscheinlichkeiten danach neu normiert werden! Neben dem entfernen von Hypothesen können diese auch Zusammengefasst werden. Dies wird durchgeführt, wenn die Hypothesen dich beieinander liegen, \dh \( \big\lVert \vec{x}_k^{(i)} - \vec{x}_k^{(j)} \) klein ist. Die Wahrscheinlichkeit der neuen Hypothese entspricht dann der Summer der Ausgangshypothesen.
 				% end
-				
+
 				\paragraph{Vor- und Nachteile von Multiple Hypothesis Tracking}
 					\begin{itemize}
 						\item \textbf{Vorteile:}
@@ -4892,20 +4892,20 @@
 
 			\subsubsection{Diskretisierte Wahrscheinlichkeitsverteilung}
 				Die RAN eines Roboters wird durch einen \(n\)-dimensionalen Vektor beschrieben, wobei die genaue RAN nicht angegeben werden kann, sondern nur eine Wahrscheinlichkeitsverteilung über den metrischen Raum. Diese Verteilung kann sehr ungleichmäßig sein, speziell bei der Berücksichtigung von Hindernissen.
-				
+
 				\textbf{Ansatz:} Der metrische Raum wird diskretisiert (\zB durch eine Zellzerlegung im Konfigurationsraum) und es wird die Wahrscheinlichkeit
 				\begin{equation*}
 					P(\vec{x}),\quad \vec{x} \in \{\, \vec{x}_1, \cdots, \vec{x}_N \,\},\quad P(\vec{x}) \in [0, 1]
 				\end{equation*}
 				für jede RAN in einem Feld (Position Probability Grid) gespeichert (zu Anfang einer Gleichverteilung folgend). Bewegt der Roboter sich oder treffen neue Sensordaten ein, so erfolgt eine Neuberechnung der Wahrscheinlichkeiten.
-				
+
 				\paragraph{Motion-Update}
 					Eine Bewegung sei gegeben als Änderung \( \vec{\Delta} \) des Systemzustands \(\vec{x}\):
 					\begin{equation*}
 						\vec{x}_k = \vec{x}_{k - 1} + \vec{\Delta}
 					\end{equation*}
 					Des weiteren wird durch eine Weltmodell \(m\) eine Wahrscheinlichkeit \( P(\vec{x} \given m) \) vorgegeben, dass \(\vec{x}\) eingenommen werden kann.
-					
+
 					Bei einem solchen \emph{Motion-Update} wird die Wahrscheinlichkeitsverteilung wie folgt neu berechnet:
 					\begin{equation*}
 						P_\text{neu}(\vec{x}) =
@@ -4916,21 +4916,21 @@
 					\end{equation*}
 					Nach den Berechnungen muss \(p\) normiert werden. Durch dieses Aktualisieren der Wahrscheinlichkeitsverteilung werden Fehler in der Messung durch ein Glätten von \( p \) modelliert.
 				% end
-				
+
 				\paragraph{Measurement-Update}
 					Das Sensormodell und das Weltmodell \(m\) geben die Wahrscheinlichkeit
 					\begin{equation*}
 						P(\vec{x} \given \vec{x}, m)
 					\end{equation*}
 					an, dass \( \vec{z} \) bei der RAN \( \vec{x} \) gemessen wird.
-					
+
 					Dadurch wird die Berechnung der aktualisierten Wahrscheinlichkeit nach einer Messung \( \vec{z} \) (\emph{Measurement-Update}) möglich:
 					\begin{equation*}
 						P_\text{neu}(\vec{x}) = P(\vec{z} \given \vec{x}, m) \cdot P(\vec{x})
 					\end{equation*}
 					Somit werden aus der anfänglichen Gleichverteilung nach und nach die unwahrscheinlichen Hypothesen eliminiert.
 				% end
-				
+
 				\paragraph{Vor- und Nachteile des Position Probability Grids}
 					\begin{itemize}
 						\item \textbf{Vorteile:}
@@ -4956,13 +4956,13 @@
 					\item Ein solcher Partikel kann eine RAN präzise wiedergeben (es ist keine Diskretisierung notwendig).
 				\end{itemize}
 				Bei einer Bewegung des Roboters wird die Lage der Partikel verändert, bei einer Sensormessung die Wahrscheinlichkeit der Partikel. Vorausgesetzt werden stochastische Modelle der Bewegung und der Sensorik.
-				
+
 				Die Wahrscheinlichkeitsverteilung wird durch \(N\) Partikel dargestellt, die jeweils durch ein Tupel aus Systemzustand \( \vec{x}_i \) und Wahrscheinlichkeit \( p_i \in [0, 1] \) beschrieben werden:
 				\begin{equation*}
 					S_i \coloneqq (\vec{x}_i, p_i)
 				\end{equation*}
 				Die Wahrscheinlichkeit über alle Partikel muss dabei normiert sein, \dh \( \sum_{i = 1}^{N} p_i = 1 \).
-				
+
 				\paragraph{Probabilistisches Bewegungsmodell}
 					Das probabilistische Bewegungsmodell
 					\begin{equation*}
@@ -4970,7 +4970,7 @@
 					\end{equation*}
 					beschreibt die Wahrscheinlichkeit eines Zustands \( \vec{x} \) nach der Ausführung einer Bewegung \( \vec{u} \) im Zustand \( \vec{x}' \).
 				% end
-				
+
 				\paragraph{Bewegungen}
 					Bewegt sich der Roboter, so wird eine neue Wahrscheinlichkeitsverteilung erzeugt:
 					\begin{enumerate}
@@ -4987,21 +4987,21 @@
 							\end{itemize}
 					\end{enumerate}
 				% end
-				
+
 				\paragraph{Messungen}
 					Der externe Sensorwert \( \vec{z} \) hängt von dem Systemzustand des Roboters ab, wobei das Verhalten der Messung als Wahrscheinlichkeitsverteilung
 					\begin{equation*}
 						\P(\vec{z} \given \vec{x})
 					\end{equation*}
 					beschrieben wird. Für jeden Systemzustand ist damit die Wahrscheinlichkeit jeder möglichen Messung gegeben.
-					
+
 					Das Ziel ist nun, die Wahrscheinlichkeiten der Partikel durch gemessene Sensordaten neu zu bewerten. Dazu werden alle Partikel neu gewichtet:
 					\begin{equation*}
 						p_{i_\text{neu}} = p_i P(\vec{z} \given \vec{x}_i)
 					\end{equation*}
 					Anschließend müssen die Wahrscheinlichkeiten wieder normiert werden.
 				% end
-				
+
 				\paragraph{Vor- und Nachteile der Monte-Carlo Lokalisierung}
 					\begin{itemize}
 						\item \textbf{Vorteile:}
@@ -5024,7 +5024,7 @@
 
 		\subsection{Simultaneous Localization and Mapping (SLAM)}
 			\label{sec:slam}
-		
+
 			Bisher wurde immer davon ausgegangen, dass ein Umweltmodell gegeben ist. Wird ein Roboter jedoch in einer unbekannten Umgebung eingesetzt, so müssen Selbstlokalisierung auf Aufbau der Karte simultan gelöst werden. Verfügbar sind dabei:
 			\begin{itemize}
 				\item Odometrie sowie Steuerungsdaten
@@ -5035,7 +5035,7 @@
 				\item Karte der Umgebung
 				\item Trajektorie des Roboters
 			\end{itemize}
-		
+
 			SLAM ist dabei ein klassisches Henne-Ei-Problem:
 			\begin{itemize}
 				\item Für die Lokalisierung ist eine Karte erforderlich,
@@ -5048,7 +5048,7 @@
 				\item Fehler können erst beim Schließen von Schleifen ("Loop Closing") erkannt und korrigiert werden.
 				\item Die Assoziation von Daten kann schwer sein (die Zuordnung von Sensordaten).
 			\end{itemize}
-		
+
 			Dabei gibt es zwei grundlegende Kartentypen:
 			\begin{itemize}
 				\item \emph{Merkmals-basierte Karten}
@@ -5075,7 +5075,7 @@
 					\item Eine einzige Kantenhypothesen.
 					\item Datenassoziation problematisch.
 				\end{itemize}
-			
+
 				\begin{itemize}
 					\item \textbf{Vorteile:}
 						\begin{itemize}
@@ -5104,7 +5104,7 @@
 						\end{itemize}
 					\item Es ist sowohl eine Merkmals- als auch Gitter-basierte Variante der Kartenrepräsentation möglich.
 				\end{itemize}
-			
+
 				\begin{itemize}
 					\item \textbf{Vorteile:}
 						\begin{itemize}
@@ -5141,7 +5141,7 @@
 					\item Einsetzbarkeit in beliebigem Terrain
 					\item Nicht-statische Karten
 				\end{itemize}
-			
+
 				Aktuelle Forschungsrichtungen:
 				\begin{itemize}
 					\item Semantic Mapping \\ Statt "nur" geometrische Informationen zu kartieren werden zusätzlich semantische Informationen (\zB Place Labeling (Flur, Büro, Schränke)) gespeichert. Dies ist notwendig für zielorientiertes Handeln des Roboters.
@@ -5164,7 +5164,7 @@
 							\item Erfordert Features in der Umgebung
 						\end{itemize}
 				\end{itemize}
-				
+
 				Direkte Methoden (Direktes Matching der Bildinformation):
 				\begin{itemize}
 					\item \textbf{Vorteile:}
@@ -5225,9 +5225,9 @@
 
 	\section{Szenarien, Eigenschaften und Herausforderungen}
 		Roboter können für die unterschiedlichsten Aufgaben eingesetzt werden. Ständig steigende Komplexität und sich schnell ändernde Hardware erschweren dabei die effiziente Programmierung für solche Einsätze. Wie kann eine "korrekte" und "zuverlässige" Funktionsweise sichergestellt werden?
-		
+
 		In Robotern kommen werden viele verschiedene Algorithmen aus verschiedenen Bereichen integriert (Sensordaten Verarbeitung, Objekterkennung, Filterung, Modellierung, Lokalisierung, Kartografierung, Vorhersage, Verhaltensentscheidung, Bewegungssteuerung, \dots). All diese Algorithmen müssen in ein Gesamtsystem integriert und auf dieses und den jeweiligen Roboter angepasst werden. Diese Integration erfordert einen hohen Aufwand.
-		
+
 		Gewünschte Software Engineering Kriterien für die Hard-/Software-Komponenten sind dabei:
 		\begin{itemize}
 			\item Modularität (lose Kopplung zwischen den Komponenten, einfacher Austausch/einfache Änderung der Komponenten)
@@ -5240,7 +5240,7 @@
 
 	\section{Middleware}
 		Roboter-Middleware bildet eine Zwischenschicht zwischen der Hardware und dem Sense -- Plan -- Act Zyklus. Ein weltweit akzeptierter Standard für ein solches System ist ROS, das "Robot Operating System" (wobei es eigentlich kein Betriebssystem ist, sondern eine Middleware, die auf einem Betriebssystem, \zB einem Echtzeit-Linux, eingesetzt wird).
-		
+
 		Die Middleware ist dabei der "Kleber" zwischen den Komponenten und sorgt für
 		\begin{itemize}
 			\item Separation der Komponenten
@@ -5271,7 +5271,7 @@
 
 		\subsection{Laufzeit-Effizienz}
 			Insbesondere bei mobilen Robotern ist die Laufzeit-Effizienz enorm wichtig (es werden oftmals tausende Nachrichten pro Sekunde ausgetauscht). Bei jeder Nachricht muss diese dabei serialisiert, in den Speicher kopiert und deserialisiert werden. Diese Übertragung benötigt (auch lokal) Zeit.
-			
+
 			Bei einer einzelnen Nachricht in die Latenz gering, aber in der Summe signifikant. Bei einem Echtzeit-Betriebssystem ist dabei nicht unbedingt schnell, aber das Zeitverhalten ist definiert (\dh die Dauer einer Operation ist exakt definiert).
 		% end
 	% end
@@ -5396,7 +5396,7 @@
 			\item Hybris Deliberativ-Reaktiv
 		\end{enumerate}
 		Die Basisfunktionalitäten autonomer Roboter sind in Tabelle~\ref{tab:basicfunctionalitiesofautonomousrobots} abgebildet.
-		
+
 		\begin{table}
 			\centering
 			\begin{tabular}{l|ll}
@@ -5411,7 +5411,7 @@
 
 		\subsection{Hierarchisches Steuerungsparadigma}
 			Die Steuerung wird hier hierarchisch Zerlegt (deliberativ) und verfolgt damit den Ansatz "erst denken, dann handeln", siehe Abbildung~\ref{fig:autonomoushierarchy}.
-			
+
 			\begin{itemize}
 				\item Über dieses Paradigma wurden die ersten autonomen, mobilen Roboter erstellt.
 				\item Kritik in den 80er Jahren:
@@ -5422,7 +5422,7 @@
 						\item Während das Weltmodell aufgebaut wird, ändert sich die Umweltsituation bereits.
 					\end{itemize}
 			\end{itemize}
-			
+
 			\begin{figure}
 				\centering
 				\begin{tikzpicture}[->, every node/.style = { align = center, minimum width = 5cm }]
@@ -5433,7 +5433,7 @@
 					\node [draw, rectangle, below = 0.5 of c] (d) {Ausführung \\ (Handlungen, Trajektorien)};
 					\node [draw, rectangle, below = 0.5 of d] (e) {Antriebssteuerung};
 					\node [below = 0.5 of e] (1) {Antriebe};
-					
+
 					\draw (0) -- (a);
 					\draw (a) -- (b);
 					\draw (b) -- (c);
@@ -5448,9 +5448,9 @@
 
 		\subsection{Reaktives Steuerungsparadigma}
 			Das reaktive Paradigma wurde als "Antwort" auf das hierarchische Paradigma, \bzw die Kritik an diesem, erstellt. Dabei greifen Sense und Act ineinander und der Plan-Schritt fällt weg ("handeln ohne zu denken"), siehe Abbildung~\ref{fig:autonomousreactive}.
-			
+
 			Vor- und Nachteil dieses Systems ist die Entfernung aller Planungskomponenten. Dadurch werden zwar schnelle Reaktionszeiten erreicht und das System ist robust gegen Modulausfälle, aber das Verhalten ist schwer vorherzusagen und nicht planbar.
-			
+
 			\begin{figure}
 				\centering
 				\begin{tikzpicture}[->, block/.style = { draw, rectangle, align = center, minimum width = 8cm }]
@@ -5464,14 +5464,14 @@
 					\path (a.north east) -- coordinate(B) (f.south east);
 					\node [left = 1 of A] (0) {Sensoren};
 					\node [right = 1 of B] (1) {Antriebe};
-					
+
 					\draw (a.east) -- (1);
 					\draw (b.east) -- (1);
 					\draw (c.east) -- (1);
 					\draw (d.east) -- (1);
 					\draw (e.east) -- (1);
 					\draw (f.east) -- (1);
-					
+
 					\draw (0) -- (a.west);
 					\draw (0) -- (b.west);
 					\draw (0) -- (c.west);
@@ -5520,16 +5520,16 @@
 						\item Bzgl.~ Sensoren, Fähigkeiten, Rechenleistung, \dots
 					\end{itemize}
 			\end{enumerate}
-		
+
 			Einige grundlegende Annahmen hinter der Subsumption Architecture sind:
 			\begin{itemize}
 				\item Der Aufbau eines komplexen Verhaltens setzt sich aus einfachen Verhaltensweisen zusammen.
 				\item KI: Autonomie und Insektenfähigkeiten als Voraussetzung für intelligentes Verhalten.
 				\item Keine künstliche Umgebung, keine externe Kalibrierung.
 			\end{itemize}
-		
+
 			In der Subsumption Architecture wird die Robotersteuerung in mehrere, übereinanderliegende Schichten von Kompetenzebenen strukturiert, wobei keine ein explizites Weltmodell aufweist. Dabei benötigt jede Schicht Sensoren und Aktuatoren und jede Schicht beinhaltet die Fähigkeiten der niedrigeren Ebenen. Die Berechnung der Verhaltensweisen findet dann auf allen Ebenen parallel statt, wobei die anzuwendende Verhaltensweise (\bzw Ebene) abhängig von der kontextabhängigen Priorität ausgewählt wird.
-			
+
 			Beispielhafte Kompetenzebenen:
 			\begin{enumerate}
 				\setcounter{enumi}{-1}
@@ -5542,7 +5542,7 @@
 				\item Pläne, die Umwelt in sinnvoller Weise zu verändern, formulieren und ausführen
 				\item "Nachdenken" über das Verhalten von Objekten in der Umwelt und Berücksichtigung in der Planung
 			\end{enumerate}
-		
+
 			\begin{itemize}
 				\item \textbf{Vorteile:}
 					\begin{itemize}
@@ -5558,12 +5558,12 @@
 
 			\subsubsection{Schicht 0}
 				Kollisionsvermeidung.
-					
+
 				\begin{itemize}
 					\item Erzeugung einer momentanen Umgebungskarte aus Ultraschallsensoren.
 					\item Erzeugung einer "gefühlten", abstoßenden Kraft durch Summierung simulierter, abstoßender Kräfte von Hindernissen.
 				\end{itemize}
-				
+
 				Hindernisvermeidung durch zwei Taktiken:
 				\begin{itemize}
 					\item \emph{Collide:} Das Hindernis ist direkt vor dem Roboter, der Roboter bleibt stehen.
@@ -5573,7 +5573,7 @@
 
 			\subsubsection{Schicht 1}
 				Zielloses Herumfahren durch die Welt mit Heuristik zur vorausschauenden Kollisionsvermeidung.
-				
+
 				\begin{itemize}
 					\item \emph{Wander:} Zufällige Bewegungsrichtungen.
 					\item \emph{Avoid:} Ermittlung der tatsächlichen Bewegungsrichtung unter Berücksichtigung der simulierten Abstoßungskraft.
@@ -5582,7 +5582,7 @@
 
 			\subsubsection{Schicht 2}
 				Exploration der Umwelt.
-				
+
 				\begin{itemize}
 					\item Auswahl und
 					\item Anfahren
@@ -5594,13 +5594,13 @@
 
 	\section{Programmierung von Verhalten}
 		"Konventionelle", wissenschaftliche Programmierung arbeitet nur mit Variablen, die in der Regel nur im Computer existieren. Ebenso ist die Ausführungszeit häufig unkritisch. Bei der Roboterprogrammierung wird jedoch direkt mit dreidimensionalen, physikalischen Objekten gearbeitet. Außerdem sind die Ausführungszeiten kritisch (harte und weiche Echtzeitbeschränkungen, in ereignisbezogenen Takten, \dots). Außerdem sind die Daten \iA stark unsicherheitsbehaftet.
-		
+
 		Zu den Aufgaben von Roboterprogrammiersprachen gehören:
 		\begin{itemize}
 			\item Formulierung der durchzuführenden Aufgaben sowie die
 			\item Steuerung des Roboters bei der Durchführung.
 		\end{itemize}
-	
+
 		Einige solcher Programmiersprachen sind:
 		\begin{itemize}
 			\item COLBERT

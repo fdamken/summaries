@@ -7,7 +7,7 @@ set -o nounset
 # Extract the root repository directory from the location of this script.
 root="$(dirname $(dirname $(readlink -f $0)))"
 
-first_commit="$(git log --pretty=tformat:'%H' | tail -n 1)"
+first_commit="4f56a06ecd6c7accc897ce58f9ca458a83de2e3a"  # This will never change.
 latest_successful_commit="$(curl -s 'https://api.github.com/repos/fdamken/summaries/actions/runs' | jq -r "
     .workflow_runs
         | map(select(.status == \"completed\" and .conclusion == \"success\"))
@@ -18,6 +18,10 @@ latest_successful_commit="$(curl -s 'https://api.github.com/repos/fdamken/summar
 echo "Searching documents changed since commit $latest_successful_commit."
 
 documents="$(git diff --name-only "$latest_successful_commit" | sed -nr 's@^summaries/([^/]+)/([^/]+)/([^/]+)/([^/]+)/.+$@\1 \2 \3 \4@g p' | sort | uniq)"
+if [[ "$documents" == "" ]]; then
+    echo "No changed documents found."
+    exit 0
+fi
 
 echo "Found $(echo "$documents" | wc -l) changed documents."
 

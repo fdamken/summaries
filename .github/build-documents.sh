@@ -1,10 +1,8 @@
 #!/bin/bash
 
-echo Hello
-exit 1
-
 set -o errexit
 set -o nounset
+
 
 # Extract the root repository directory from the location of this script.
 root="$(dirname $(dirname $(readlink -f $0)))"

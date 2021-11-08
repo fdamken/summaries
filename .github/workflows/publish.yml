@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Install Graphviz and Spin
         run: sudo apt install graphviz spin
       - name: Install TeXLive
@@ -21,8 +23,6 @@ jobs:
           python-version: 3.8
       - name: Install Python Dependencies
         run: "pip install -f https://download.pytorch.org/whl/torch_stable.html -r sys/requirements.txt"
-      - name: Fetch Git Refs
-        run: git fetch
       - name: Build Documents
         run: |
           chmod +x ./.github/build-documents.sh

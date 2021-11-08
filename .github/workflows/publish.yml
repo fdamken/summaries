@@ -1,0 +1,29 @@
+name: Publish
+on:
+  workflow_dispatch:
+  push:
+jobs:
+  pytest-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Install TeXLive Full
+        run: "sudo apt install texlive-full"
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install Dependencies
+        run: "pip install -f https://download.pytorch.org/whl/torch_stable.html -r sys/requirements.txt"
+      - name: Extract Last Successful Commit
+        uses: nrwl/last-successful-commit-action@v1
+        id: last_successful_commit
+        with:
+          branch: 'master'
+          workflow_id: 'public.yml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Documents
+        run: "bin/github/build-documents.sh"
+        env:
+          LAST_SUCCESSFUL_COMMIT_HASH: ${{ steps.last_successful_commit.outputs.commit_hash }}

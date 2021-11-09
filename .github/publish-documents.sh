@@ -15,7 +15,7 @@ if [[ -e "$publish_repo_dir" ]]; then
     exit 126
 fi
 mkdir "$publish_repo_dir"
-git clone "https://$gh_user:$GITHUB_TOKEN@github.com/fdamken/fdamken.github.io.git" "$publish_repo_dir"
+git clone "https://$gh_user:$gh_token@github.com/fdamken/fdamken.github.io.git" "$publish_repo_dir"
 
 echo "Copying index files."
 cd "$root"

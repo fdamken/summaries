@@ -3,9 +3,6 @@
 set -o errexit
 set -o nounset
 
-gh_user="fdamken"
-#gh_token="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"
-
 # Extract the root repository directory from the location of this script.
 root="$(dirname $(dirname $(readlink -f $0)))"
 

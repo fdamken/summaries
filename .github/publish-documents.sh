@@ -61,6 +61,13 @@ EOF
     fi
 done <<<"$documents"
 
+echo "Showing diff, committing changes, and pushing."
 cd "$publish_repo_dir"
+git diff
+git add -A
+git config user.name "Summary Auto-Publishing Action"
+git config user.email "actions@github"
+git commit -m "Automated summary publishing."
+git push
 git push
 cd -

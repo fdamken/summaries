@@ -16,8 +16,9 @@ git clone "https://$gh_user:$gh_token@github.com/fdamken/fdamken.github.io.git" 
 
 echo "Copying index files."
 cd "$root"
-find summaries -name '_index.md' -exec cp --parents {} "$publish_repo_dir/content" \;
+index_files="$(find summaries -name '_index.md' -exec cp --parents {} "$publish_repo_dir/content" \;)"
 cd - >/dev/null
+echo "Copied $(echo "$index_files" | wc -l) index files."
 
 echo "Copying document files."
 mkdir -p "$publish_repo_dir/static/summaries-docs"

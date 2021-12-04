@@ -52,7 +52,7 @@ draft: false
 
 [Download]($subject-summary.pdf)
 
-[![Buy Me a Coffee](https://img.buymeacoffee.com/button-api/?text=Buy%20Me%20a%20Coffee&emoji=&slug=fdamken&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff)](https://www.buymeacoffee.com/fdamken)
+[![Buy Me a Coffee](https://cdn.ko-fi.com/cdn/kofi1.png?v=3)](https://ko-fi.com/fdamken)
 
 ## Recent Changes
 $(git log --pretty=tformat:'%as %s' "$document_dir" | sed -r 's/^([^ ]+)/- `\1`/g')

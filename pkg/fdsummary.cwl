@@ -139,11 +139,15 @@
 
 % Math operators.
 \ggT#m
+\argmax#m
+\argmin#m
 \Bias#m
 \cond#m
 \const#m
+\Ch#m
 \Cov#m
 \Dec#m
+\Des#m
 \dom#m
 \diag#m
 \Eig#m
@@ -155,7 +159,9 @@
 \MAC#m
 \MSE#m
 \marg#m
+\ND#m
 \rd#m
+\Pa#m
 \sign#m
 \Sig#m
 \sinc#m

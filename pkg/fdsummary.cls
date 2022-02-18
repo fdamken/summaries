@@ -262,11 +262,15 @@
 
 % Math operators.
 \fdsummary@ifde{\newcommand{\ggT}{\ensuremath{\textrm{ggT}}}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator{\Bias}{Bias}
 \DeclareMathOperator{\cond}{cond}
 \DeclareMathOperator{\const}{const}
+\DeclareMathOperator{\Ch}{Ch}
 \DeclareMathOperator{\Cov}{Cov}
 \DeclareMathOperator{\Dec}{Dec}
+\DeclareMathOperator{\Des}{Des}
 \DeclareMathOperator{\dom}{dom}
 \DeclareMathOperator{\diag}{diag}
 \DeclareMathOperator{\Eig}{Eig}
@@ -278,7 +282,9 @@
 \DeclareMathOperator{\MAC}{MAC}
 \DeclareMathOperator{\MSE}{MSE}
 \DeclareMathOperator{\marg}{marg.}
+\DeclareMathOperator{\ND}{ND}
 \DeclareMathOperator{\rd}{rd}
+\DeclareMathOperator{\Pa}{Pa}
 \DeclareMathOperator{\sign}{sign}
 \DeclareMathOperator{\Sig}{Sig}
 \DeclareMathOperator{\sinc}{sinc}

@@ -1,756 +1,1001 @@
+\tikzstyle{rv} = [
+	draw,
+	circle,
+	inner sep = 0,
+	minimum width = 0.75cm,
+	minimum height = 0.75cm
+]
+
 \chapter{Introduction} % 1.1, 1.2, 1.28, 1.29, 1.30, 1.38
-    \todo{Content}
+	\todo{Content}
 
-    \section{Examples} % 1.3, ..., 1.27
-        \todo{Content}
-    % end
+	\section{Examples} % 1.3, ..., 1.27
+		\todo{Content}
+	% end
 
-    \section{Fundamental Questions} % 1.36, 1.37
-        \todo{Content}
-    % end
+	\section{Fundamental Questions} % 1.36, 1.37
+		\todo{Content}
+	% end
 % end
 
 \chapter{Foundations}
-    This chapter covers fundamental concepts of probability theory and machine learning that are required for the later chapters. Note that not all relevant concepts of probability theory are covered.
+	This chapter covers fundamental concepts of probability theory and machine learning that are required for the later chapters. Note that not all relevant concepts of probability theory are covered.
 
-    \section{Probability Theory}
-	    This section covers some very important concepts of probability theory, however, one should already be familiar with some basics like probability measures, density functions, joint distributions, marginalization, etc.\footnote{Take a look the chapter of statistics fundamentals of \url{https://fabian.damken.net/summaries/cs/elective/vc/statml/statml-summary.pdf}.}
+	\section{Probability Theory}
+		This section covers some very important concepts of probability theory, however, one should already be familiar with some basics like probability measures, density functions, joint distributions, marginalization, etc.\footnote{Take a look the chapter of statistics fundamentals of \url{https://fabian.damken.net/summaries/cs/elective/vc/statml/statml-summary.pdf}.}
 
-        One note on notation: whenever a sum represents a marginalization over some random variable \(X\), it is written as
-        \begin{equation}
-        P(Y) = \sum_{X}^{\marg} P(X, Y) \coloneqq \sum_{x \in \val(X)} P(X = x, Y)
-        \end{equation}
-        for brevity.
+		One note on notation: whenever a sum represents a marginalization over some random variable \(X\), it is written as
+		\begin{equation}
+		P(Y) = \sum_{X}^{\marg} P(X, Y) \coloneqq \sum_{x \in \val(X)} P(X = x, Y)
+		\end{equation}
+		for brevity.
 
-        \subsection{(Conditional) Independence}
-            The most important concept leveraged in probabilistic graphical models is (conditional) independence of random variables. Two random variables \(X\) and \(Y\) are \emph{statistically independent} if knowing either does not change the belief/probability of the other, i.e.,
-            \begin{gather}
-            	P(X \given Y) = P(X)
-            	\quad\text{and}\quad
-            	P(Y \given X) = P(Y).
-            \end{gather}
-            This is equivalent to the definition of independence, \( P(X, Y) = P(X) \, P(Y) \). Independence is denoted \( X \perp Y \) and is a symmetric properties. A milder property is \emph{conditional} independence, i.e., two random variables \(X\) and \(Y\) are independent if \(Z\) is given:
-            \begin{gather}
-	            P(X \given Y, Z) = P(X \given Z)
-	            \quad\text{and}\quad
-	            P(Y \given X, Z) = P(Y \given Z).
-            \end{gather}
-            Again, this property can be written as \( P(X, Y \given Z) = P(X \given Z) \, P(Y \given Z) \) by the chain rule. Conditional independency is denoted \( X \perp Y \given Z \).
+		\subsection{(Conditional) Independence}
+			\label{subsec:condIndependence}
 
-            The following properties hold and can be useful for some proofs later on:
-            \begin{align}
-            	X \perp Y \given Z                                                                & \eqmakebox[indepProps][r]{\(\quad\iff\quad\)}     Y \perp X \given Z  \tag{Symmetry}                                                          \\
-            	X \perp (Y, W) \given Z                                                           & \eqmakebox[indepProps][r]{\(\quad\iff\quad\)}     \bigl( X \perp Y \given Z \bigr) \land \bigl( X \perp W \given Z \bigr) \tag{Decomposition} \\
-            	X \perp (Y, W) \given Z                                                           & \eqmakebox[indepProps][r]{\(\quad\implies\quad\)} X \perp Y \given (Z, W)  \tag{Weak Union}                                                   \\
-            	\bigl( X \perp W \given (Y, Z) \bigr) \land \bigl( X \perp Y \given Z \bigr)      & \eqmakebox[indepProps][r]{\(\quad\implies\quad\)} X \perp (Y, W) \given Z  \tag{Contraction}                                                  \\
-            	\bigl( X \perp Y \given (W, Z) \bigr) \land \bigl( X \perp W \given (Y, Z) \bigr) & \eqmakebox[indepProps][r]{\(\quad\implies\quad\)} X \perp (Y, W) \given Z  \tag{Intersection}
-            \end{align}
-            \todo{The intersection property only holds for positive distributions, but what does hits mean?}
+			The most important concept leveraged in probabilistic graphical models is (conditional) independence of random variables. Two random variables \(X\) and \(Y\) are \emph{statistically independent} if knowing either does not change the belief/probability of the other, i.e.,
+			\begin{gather}
+				P(X \given Y) = P(X)
+				\quad\text{and}\quad
+				P(Y \given X) = P(Y).
+			\end{gather}
+			This is equivalent to the definition of independence, \( P(X, Y) = P(X) \, P(Y) \). Independence is denoted \( X \perp Y \) and is a symmetric properties. A milder property is \emph{conditional} independence, i.e., two random variables \(X\) and \(Y\) are independent if \(Z\) is given:
+			\begin{gather}
+				P(X \given Y, Z) = P(X \given Z)
+				\quad\text{and}\quad
+				P(Y \given X, Z) = P(Y \given Z).
+			\end{gather}
+			Again, this property can be written as \( P(X, Y \given Z) = P(X \given Z) \, P(Y \given Z) \) by the chain rule. Conditional independency is denoted \( X \perp Y \given Z \).
 
-            \subsubsection{Monty Hall Problem} % 1.61, 1.62, 1.63, 1.64, 1.65, 1.66, 1.67
-                \todo{Content}
-            % end
-        % end
+			The following properties hold and can be useful for some proofs later on:
+			\begin{align}
+				X \perp Y \given Z                                                                & \eqmakebox[indepProps][r]{\(\quad\iff\quad\)}	 Y \perp X \given Z  \tag{Symmetry}                                                             \\
+				X \perp (Y, W) \given Z                                                           & \eqmakebox[indepProps][r]{\(\quad\implies\quad\)} \bigl( X \perp Y \given Z \bigr) \land \bigl( X \perp W \given Z \bigr) \tag{Decomposition} \\
+				X \perp (Y, W) \given Z                                                           & \eqmakebox[indepProps][r]{\(\quad\implies\quad\)} X \perp Y \given (Z, W)  \tag{Weak Union}                                                   \\
+				\bigl( X \perp W \given (Y, Z) \bigr) \land \bigl( X \perp Y \given Z \bigr)      & \eqmakebox[indepProps][r]{\(\quad\implies\quad\)} X \perp (Y, W) \given Z  \tag{Contraction}                                                  \\
+				\bigl( X \perp Y \given (W, Z) \bigr) \land \bigl( X \perp W \given (Y, Z) \bigr) & \eqmakebox[indepProps][r]{\(\quad\implies\quad\)} X \perp (Y, W) \given Z  \tag{Intersection}
+			\end{align}
+			\todo{The intersection property only holds for positive distributions, but what does hits mean?}
 
-        \subsection{Inference} % 1.70, 1.71, 1.72
-        	\todo{Content}
+			\subsubsection{Monty Hall Problem} % 1.61, 1.62, 1.63, 1.64, 1.65, 1.66, 1.67
+				\todo{Content}
+			% end
+		% end
 
-            \subsubsection{Information Theory}
-                Information theory is trying to quantify how much information is encoded in some distribution \(P(X)\). The central measure is \emph{entropy}:
-                \begin{equation}
-                	H_P(X)
-                		= \E\bigl[ \log(1/P(X)) \bigr]
-                		= \sum_{x \in \val(X)} P(X) \,\log \frac{1}{\log P(X)}
-                		= -\sum_{x \in \val(X)} P(X) \,\log P(X)
-                \end{equation}
-                If the logarithm is of base two, the entropy encodes how much bits are required \emph{on average} to encode \(X\) when \(X\) follows the distribution \(P(X)\). Similarly, \emph{conditional entropy} can be defined as
-                \begin{equation}
-                	H_P(X \given Y)
-                		= \E\bigl[ \log(1/P(X \given Y)) \bigr]
-                		= H_P(X, Y) - H_P(X)
-                \end{equation}
-                where \( H_P(X, Y) \) is the joint entropy over \(X\) and \(Y\). Like for probabilities, a \emph{chain rule of entropies} is derivable:
-                \begin{equation}
-                	H_P(X, Y, Z) = H_P(X) + H_P(Y \given X) + H_P(Z \given X, Y).
-                \end{equation}
-                To quantify (in)dependency between two variables \(X\) and \(Y\), the \emph{mutual information}
-                \begin{equation}
-                	I_P(X; Y) = H_P(X) - H_P(X \given Y)
-                \end{equation}
-                can be used. This quantity is symmetric and is zero if and only if \(X\) and \(Y\) are independent.
-            % end
-        % end
+		\subsection{Inference} % 1.70, 1.71, 1.72
+			\todo{Content}
 
-        \subsection{Potentials}
-            A \emph{potential} is an alternative way of representing (conditional) probabilities aside from conditional probability tables (CPTs). A potential \(\phi_{X, Y, Z}\) is is a function that maps each configuration \( (x, y, z) \in \val(X) \times \val(Y) \times \val(Z) \) to a non-negative real number. The set of random variables targeted by a potential is its \emph{domain}, i.e., \( \dom f_{X, Y, Z} = \{ X, Y, Z \} \). Note that a (conditional) probability distribution is a special case of potentials where the potential is normalized. Vice versa, a potential can always be normalized into a CPT. This is illustrated in \autoref{fig:potetial}.
+			\subsubsection{Information Theory}
+				Information theory is trying to quantify how much information is encoded in some distribution \(P(X)\). The central measure is \emph{entropy}:
+				\begin{equation}
+					H_P(X)
+						= \E\bigl[ \log(1/P(X)) \bigr]
+						= \sum_{x \in \val(X)} P(X) \,\log \frac{1}{\log P(X)}
+						= -\sum_{x \in \val(X)} P(X) \,\log P(X)
+				\end{equation}
+				If the logarithm is of base two, the entropy encodes how much bits are required \emph{on average} to encode \(X\) when \(X\) follows the distribution \(P(X)\). Similarly, \emph{conditional entropy} can be defined as
+				\begin{equation}
+					H_P(X \given Y)
+						= \E\bigl[ \log(1/P(X \given Y)) \bigr]
+						= H_P(X, Y) - H_P(X)
+				\end{equation}
+				where \( H_P(X, Y) \) is the joint entropy over \(X\) and \(Y\). Like for probabilities, a \emph{chain rule of entropies} is derivable:
+				\begin{equation}
+					H_P(X, Y, Z) = H_P(X) + H_P(Y \given X) + H_P(Z \given X, Y).
+				\end{equation}
+				To quantify (in)dependency between two variables \(X\) and \(Y\), the \emph{mutual information}
+				\begin{equation}
+					I_P(X; Y) = H_P(X) - H_P(X \given Y)
+				\end{equation}
+				can be used. This quantity is symmetric and is zero if and only if \(X\) and \(Y\) are independent.
+			% end
+		% end
 
-            Similar to CPTs, potentials can be multiplied by pairing up the entries and marginalized by summing up the corresponding entries. Compared to CPTs, it is not necessary to normalize a potential into a probability distribution afterwards, easing some calculations.
+		\subsection{Potentials}
+			A \emph{potential} is an alternative way of representing (conditional) probabilities aside from conditional probability tables (CPTs). A potential \(\phi_{X, Y, Z}\) is is a function that maps each configuration \( (x, y, z) \in \val(X) \times \val(Y) \times \val(Z) \) to a non-negative real number. The set of random variables targeted by a potential is its \emph{domain}, i.e., \( \dom f_{X, Y, Z} = \{ X, Y, Z \} \). Note that a (conditional) probability distribution is a special case of potentials where the potential is normalized. Vice versa, a potential can always be normalized into a CPT. This is illustrated in \autoref{fig:potetial}.
 
-            Potentials will come in handy later on when covering inference in junction trees (\autoref{sec:junctionTrees}).
+			Similar to CPTs, potentials can be multiplied by pairing up the entries and marginalized by summing up the corresponding entries. Compared to CPTs, it is not necessary to normalize a potential into a probability distribution afterwards, easing some calculations.
 
-            \begin{figure}
-            	\begin{tikzpicture}
-	            	\node (cpt) {
-	            		\begin{tabular}{c|cc}
-	            			    \( P(X = x \given Y = y, Z = z) \)      & \( x = \mathfrak{f} \) & \( x = \mathfrak{t} \) \\ \midrule
-	            			\( (Y, Z) = (\mathfrak{t}, \mathfrak{t}) \) &        \(0.8\)         &        \(0.2\)         \\
-	            			\( (Y, Z) = (\mathfrak{t}, \mathfrak{f}) \) &        \(0.5\)         &        \(0.5\)         \\
-	            			\( (Y, Z) = (\mathfrak{t}, \mathfrak{t}) \) &        \(0.2\)         &        \(0.8\)         \\
-	            			\( (Y, Z) = (\mathfrak{t}, \mathfrak{f}) \) &        \(0.7\)         &        \(0.3\)
-	            		\end{tabular}
-	            	};
-            		\node [right = 2 of cpt] (transfer) {\( \longleftrightarrow \)};
-            		\node [right = 2 of transfer] (potential) {
-            			\begin{tabular}{ccc|c|c}
-            				     \(X\)       &      \(Y\)       &      \(Z\)       & \(\phi_{X, Y, Z}\) & \(\tilde{\phi}_{X, Y, Z}\) \\ \midrule
-            				\(\mathfrak{t}\) & \(\mathfrak{t}\) & \(\mathfrak{t}\) &      \(0.8\)       &           \(8\)            \\
-            				\(\mathfrak{t}\) & \(\mathfrak{t}\) & \(\mathfrak{f}\) &      \(0.2\)       &           \(2\)            \\
-            				\(\mathfrak{t}\) & \(\mathfrak{f}\) & \(\mathfrak{t}\) &      \(0.5\)       &           \(5\)            \\
-            				\(\mathfrak{t}\) & \(\mathfrak{f}\) & \(\mathfrak{f}\) &      \(0.5\)       &           \(5\)            \\
-            				\(\mathfrak{f}\) & \(\mathfrak{t}\) & \(\mathfrak{t}\) &      \(0.2\)       &           \(2\)            \\
-            				\(\mathfrak{f}\) & \(\mathfrak{t}\) & \(\mathfrak{f}\) &      \(0.8\)       &           \(8\)            \\
-            				\(\mathfrak{f}\) & \(\mathfrak{f}\) & \(\mathfrak{t}\) &      \(0.7\)       &           \(7\)            \\
-            				\(\mathfrak{f}\) & \(\mathfrak{f}\) & \(\mathfrak{f}\) &      \(0.3\)       &           \(3\)
-            			\end{tabular}
-            		};
-            	\end{tikzpicture}
-            	\caption{Comparison of a CPT (left) and the corresponding potential (right). The rightmost column in the potential \( \tilde{\phi} \) is equivalent to \( \phi \) as it can be normalized accordingly.}
-            	\label{fig:potetial}
-            \end{figure}
-        % end
-    % end
+			Potentials will come in handy later on when covering inference in junction trees (\autoref{sec:junctionTrees}).
 
-    \section{Machine Learning} % N/A
-        \todo{Content}
+			\begin{figure}
+				\begin{tikzpicture}
+					\node (cpt) {
+						\begin{tabular}{c|cc}
+								\( P(X = x \given Y = y, Z = z) \)	  & \( x = \mathfrak{f} \) & \( x = \mathfrak{t} \) \\ \midrule
+							\( (Y, Z) = (\mathfrak{t}, \mathfrak{t}) \) &		\(0.8\)		 &		\(0.2\)		 \\
+							\( (Y, Z) = (\mathfrak{t}, \mathfrak{f}) \) &		\(0.5\)		 &		\(0.5\)		 \\
+							\( (Y, Z) = (\mathfrak{t}, \mathfrak{t}) \) &		\(0.2\)		 &		\(0.8\)		 \\
+							\( (Y, Z) = (\mathfrak{t}, \mathfrak{f}) \) &		\(0.7\)		 &		\(0.3\)
+						\end{tabular}
+					};
+					\node [right = 2 of cpt] (transfer) {\( \longleftrightarrow \)};
+					\node [right = 2 of transfer] (potential) {
+						\begin{tabular}{ccc|c|c}
+								 \(X\)	   &	  \(Y\)	   &	  \(Z\)	   & \(\phi_{X, Y, Z}\) & \(\tilde{\phi}_{X, Y, Z}\) \\ \midrule
+							\(\mathfrak{t}\) & \(\mathfrak{t}\) & \(\mathfrak{t}\) &	  \(0.8\)	   &		   \(8\)			\\
+							\(\mathfrak{t}\) & \(\mathfrak{t}\) & \(\mathfrak{f}\) &	  \(0.2\)	   &		   \(2\)			\\
+							\(\mathfrak{t}\) & \(\mathfrak{f}\) & \(\mathfrak{t}\) &	  \(0.5\)	   &		   \(5\)			\\
+							\(\mathfrak{t}\) & \(\mathfrak{f}\) & \(\mathfrak{f}\) &	  \(0.5\)	   &		   \(5\)			\\
+							\(\mathfrak{f}\) & \(\mathfrak{t}\) & \(\mathfrak{t}\) &	  \(0.2\)	   &		   \(2\)			\\
+							\(\mathfrak{f}\) & \(\mathfrak{t}\) & \(\mathfrak{f}\) &	  \(0.8\)	   &		   \(8\)			\\
+							\(\mathfrak{f}\) & \(\mathfrak{f}\) & \(\mathfrak{t}\) &	  \(0.7\)	   &		   \(7\)			\\
+							\(\mathfrak{f}\) & \(\mathfrak{f}\) & \(\mathfrak{f}\) &	  \(0.3\)	   &		   \(3\)
+						\end{tabular}
+					};
+				\end{tikzpicture}
+				\caption[Comparison of CPT and Potential]{Comparison of a CPT (left) and the corresponding potential (right). The rightmost column in the potential \( \tilde{\phi} \) is equivalent to \( \phi \) as it can be normalized accordingly.}
+				\label{fig:potetial}
+			\end{figure}
+		% end
+	% end
 
-        \subsection{(Document) Classification} % 2.11, 2.12, 2.13, 2.14, 2.15, 2.16
-            \todo{Content}
-        % end
-    % end
+	\section{Machine Learning} % N/A
+		\todo{Content}
+
+		\subsection{(Document) Classification} % 2.11, 2.12, 2.13, 2.14, 2.15, 2.16
+			\todo{Content}
+		% end
+	% end
 % end
 
-\chapter{Bayesian Networks} % 1.79, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.31, 2.32
-    \todo{Content}
+\chapter{Bayesian Networks}
+	\emph{Bayesian networks} provide a compact representation for exponentially-large distribution by exploiting conditional independencies. When representing a joint distribution \( P(X_1, X_2, \dots, X_n) \) with \( \lvert \val(X_i) \rvert = k \) for simplicity, the CPT has \(k^n - 1\) entries\footnote{The \(-1\) comes from the requirement of the probability being normalized, hence the probability of the "last" configuration is implicit.}! But lots of information is redundant in the joint if some of the variables exhibit independencies. Assume, for instance, that all subsets \( \mathcal{X}, \mathcal{Y} \subseteq \{ X_1, X_2, \dots, X_n \} \) are independent (\( \mathcal{X} \perp \mathcal{Y} \)). Then the joint can be written as
+	\begin{equation}
+		P(X_1, X_2, \dots, X_n) = \prod_{i = 1}^{n} P(X_i),
+	\end{equation}
+	requiring only \( n (k - 1) \in \mathcal{O}(n) \) parameters! This is linear in the number of random variables! While this assumption seems rather simplistic, it is used with success in practice: this is the assumption of the naive Bayed classifier covered in \autoref{sec:naiveBayes}.
 
-    \section{The Naive Bayes Model} % 2.8, 2.9
-        \todo{Content}
+	\section{The Naive Bayes Model}
+		\label{sec:naiveBayes}
 
-        \subsection{Classification} % 2.20, 2.21, 2.22, 2.27
-            \todo{Content}
-        % end
+		In the \emph{naive Bayes model}, it is assumed that some feature random variables \( \{ X_1, X_2, \dots, X_n \} \) are all conditionally independent given the class \(C\); \( \forall \mathcal{X}, \mathcal{Y} \subseteq \{ X_1, X_2, \dots, X_n \} : \mathcal{X} \perp \mathcal{Y} \given C \). The joint distribution is therefore simply
+		\begin{equation}
+			P(X_1, X_2, \dots, X_n, C) = P(X) \prod_{i = 1}^{n} P(X_i).  \label{eq:naiveBayesJoint}
+		\end{equation}
+		Using Bayesian networks, the independencies are represented using a graph as shown in \autoref{fig:naiveBayes}.
 
-        \subsection{Maximum Likelihood Parameter Estimation} % 2.23, 2.24, 2.25, 2.26
-            \todo{Content}
-        % end
+		To classify a new instance \(\vec{x}\) (a vector composed of the individual instances of \(X_1, X_2, \dots, X_n\)), the class \(c \in \val(C)\) with the highest posterior probability is selected:
+		\begin{equation}
+			c_\mathrm{MAP}
+				= \argmax_{c \in \val(C)} \; P(c \given \vec{x})
+				= \argmax_{c \in \val(C)} \; \frac{P(\vec{x} \given c) \, P(c)}{P(\vec{x})}
+				= \argmax_{c \in \val(C)} \; P(\vec{x} \given c) \, P(c)
+				= \argmax_{c \in \val(C)} \; P(X) \prod_{i = 1}^{n} P(X_i).
+		\end{equation}
 
-        \subsection{Application} % 2.28, 2.29
-            \todo{Content}
-        % end
-    % end
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[->]
+				\node [rv] (C) {\(C\)};
+				\node [rv, below = 1 of C] (X3) {\(X_3\)};
+				\node [rv, left = 1 of X3] (X2) {\(X_2\)};
+				\node [rv, left = 1 of X2] (X1) {\(X_1\)};
+				\node [rv, draw = white, right = 1 of X3] (Xd) {\(\cdots\)};
+				\node [rv, right = 1 of Xd] (Xn) {\(X_n\)};
 
-    \section{Definition and Independence Assumptions} % 2.36, 2.37, 2.38, 2.39, 2.40, 2.46, 2.58
-        \todo{Content}
+				\draw (C) to (X1);
+				\draw (C) to (X2);
+				\draw (C) to (X3);
+				\draw [dotted] (C) to (Xd);
+				\draw (C) to (Xn);
+			\end{tikzpicture}
+			\caption[Naive Bayes Bayesian Network]{Bayesian network for the naive Bayes classifier.}
+			\label{fig:naiveBayes}
+		\end{figure}
 
-        \subsection{Local Markov Assumption} % 2.41, 2.42, 2.45
-            \todo{Content}
-        % end
+		\subsection{Maximum Likelihood Parameter Estimation}
+			To learn the probabilities required to perform classification using the naive Bayes model, the straightforward approach is to use maximum likelihood estimates, i.e., the frequencies in the data:
+			\begin{align}
+				\hat{P}(C = c_j) &= \frac{N(C = c_j)}{N} &
+				\hat{P}(X_i = x_{ik} \given c_j) &= \frac{N(X_i = x_{ik}, C = C_j)}{N(C = c_j)}.
+			\end{align}
+			here, \( N(C = c_j) \) is the number of data points where the class is \(c_j\) and \( N(X_i = x_{ik}, C = C_j) \) is the number of data points with class \( c_j \) and value \(x_{ik}\) in the \(i\)-th feature. Using the identity function \(\mathbbm{1}[\psi]\) that is one iff \(\psi\) is true and zero otherwise, these quantities can be expressed as
+			\begin{align}
+				N(C = c_j) &= \sum_{((x_1, x_2, \dots, x_n), c) \in \mathcal{D}} \mathbbm{1}[c = c_j] &
+				N(X_i = x_{ik}, C = C_j) &= \sum_{(x_1, x_2, \dots, x_n, c) \in \mathcal{D}} \mathbbm{1}[x_i = x_{ik}, c = c_j]
+			\end{align}
+			where \( \mathcal{D} \subseteq \val(X_1) \times \val(X_2) \times \dots \times \val(X_n) \times \val(C) \) is the data set. Note that the formality of the data set and values is quite rigorous in this section. From now on, the notation will be abused from time to time for brevity.
 
-        \subsection{"Explaining Away" / Berkson's Paradox} % 2.43, 2.44
-            \todo{Content}
-        % end
+			This estimation method poses a major challenge: if no instances have been observed of a given feature/class-configuration, the evidence is zero and no matter how high other evidence is in the joint \eqref{eq:naiveBayesJoint}, the joint will be zero. This problem can be reducing by \emph{smoothing} the distributions to avoid overfitting,
+			\begin{equation}
+				\hat{P}(X_i = x_{ik} \given c_j) = \frac{N(X_i = x_{ik}, C = C_j) + m \bigl( N(X_i = x_{ik}) / N \bigr)}{N(C = c_j) + m},
+			\end{equation}
+			where \(m\) controls the extend of smoothing and is a hyper-parameter.
+		% end
 
-        \subsection{Representation Theorem} % 2.47, 2.48, 2.49, 2.50, 2.51, 2.52, 2.53, 2.54
-            \todo{Content}
-        % end
+		\subsection{Application}
+			Even though the assumption of all features being conditionally independent is often false, the naive Bayes classifier turns out to be quite effective in practice. While not being the best classification method, is usually serves as a good and dependable baseline. \emph{If} the assumption holds, the Bayes classifier is optimal (and can be tuned for different misclassification costs, for example).
 
-        \subsection{Building a Bayesian Network} % 2.55, 2.56, 2.57
-            \todo{Content}
-        % end
-    % end
+			Also, it is very fast: learning is done in a single pass over the data (by counting) and testing is linear in the number of attributes and data size. For the same reason (small CPTs), it requires very little storage, making it suitable for on-device classification.
+		% end
+	% end
 
-    \section{Encoded Independencies} % 2.59, 3.2, 3.3, 3.28, 3.29
-        \todo{Content}
+	\section{Definition and Independence Assumptions}
+		After some introductory treatment of the naive Bayes classifier and its associated Bayesian network, this section now focuses on a more rigorous treatment of the independencies that are actually encoded in a Bayesian network and a formal definition of what a Bayesian network is.
 
-        \subsection{Dependency Structures} % 3.4
-            \todo{Content}
-        % end
+		The key idea for Bayesian networks is the incorporation of independence assumptions into their structure. A formal Bayesian network consists of the following components:
+		\begin{itemize}
+			\item Set of random variables \( \{ X_1, X_2, \dots, X_n \} \).
+			\item Directed acyclic graph (DAG) encoding the (in-) dependencies.
+			\item Conditional probability table for each random variable, \( P\bigl( X_i \given \Pa(X_i) \bigr) \). \( \Pa(X_i) \) contains all parents of the random variable in the given DAG.
+		\end{itemize}
+		Then, the joint distribution is given by
+		\begin{equation}
+			P(X_1, X_2, \dots, X_n) = \prod_{i = 1}^{n} P\bigl( X_i \given \Pa(X_i) \bigr)  \label{eq:bayesNetJoint}
+		\end{equation}
+		and the local Markov assumption holds. The \emph{local Markov assumption} states that a random variable \(X_i\) is independent of all its non-descendants \( \ND(X_i) \) given its parents \( \Pa(X_i) \):
+		\begin{equation}
+			X_i \perp \ND(X_i) \given \Pa(X_i).
+		\end{equation}
+		Let \( \Ch(X_i) \) be the children of \(X_i\), then \(X_i\)'s non-descendants are all random variables that are not in \( \Des(X_i) \), \(X_i\)'s descendants:
+		\begin{align}
+			\ND(X_i) &= \{ X_1, X_2, \dots, X_n \} \setminus \Des(X_i), &
+			\Des(X_i) &= \Ch(X_i) \cup \bigcup_{X_j \in \Ch(X_i)} \Des(X_j).
+		\end{align}
+		This is a recursive definition for which \( \Des(X_i) = \emptyset \) holds iff \( X_i \) does not have children.
 
-        \subsection{d-Separation} % N/A
-            \todo{Content}
+		\subsection{"Explaining Away" / Berkson's Paradox}
+			\label{subsec:berkson}
 
-            \subsubsection{(Active) Trails} % 3.5, 3.6
-                \todo{Content}
-            % end
+			Berkson's paradox describe the phenomenon that, by the local Markov assumption, for a network like
+			\begin{center}
+				\begin{tikzpicture}[->]
+					\node [rv] (X) at (0,  0) {\(X\)};
+					\node [rv] (Y) at (2,  0) {\(Y\)};
+					\node [rv] (Z) at (1, -1) {\(Z\)};
 
-            \subsubsection{Independencies} % 3.9
-                \todo{Content}
-            % end
+					\draw (X) to (Z);
+					\draw (Y) to (Z);
+				\end{tikzpicture}
+			\end{center}
+			the independence \( X \perp Y \) holds but \( X \perp Y \given Z \) does not. This implies that information can flow from \(X\) to \(Y\) iff \(Z\) is given, i.e., having evidence on either \(X\) or \(Y\) is already sufficient to explain the evidence on \(Z\):
+			\begin{equation}
+				P(X = x \given Z = z, Y = y) \leq P(X = x \given Z = z).
+			\end{equation}
+		% end
 
-            \subsubsection{Soundness} % 3.15, 3.16
-                \todo{Content}
-            % end
+		\subsection{Representation Theorem}
+			All this work on independencies raise the question of whether it is actually worth it: what distributions can be represented using a Bayesian network? And what networks are required to represent a distribution? Also, what other independencies apart from the local Markov assumption are encoded in a network? Some independencies can certainly be derived using the relations presented in \autoref{subsec:condIndependence}. Let \(P\) be the real distribution and let \( I(P) \) be the independencies encoded in the true distribution. Similarly, let \( I_\ell(G) \) be the local independencies (induces by the local Markov assumption) encoded in a graph \(G\). Then the key assumption of Bayesian networks is that
+			\begin{equation}
+				I_\ell(G) \subseteq I(P).
+			\end{equation}
+			That is, the local independencies only capture such that are actual present in the true distribution. If this relation holds, \(G\) is said to be an \emph{I-map} (independency map) of \(P\).
 
-            \subsubsection{Completeness} % 3.18, 3.20
-                \todo{Content}
-            % end
-        % end
+			\theorem{The \emph{representation theorem} states that \(G\) if an I-map of \(P\) if and only if \(P\) factorizes according to \(G\) via \eqref{eq:bayesNetJoint}.}
 
-        \subsection{Faithful Distributions} % 3.17
-            \todo{Content}
-        % end
+			\paragraph{Proof} % 2.54
+				The proof is split into proofing "if" and "only if".
 
-        \subsection{Context-Specific Independence (CSI)} % 3.21, 3.22, 3.23, 3.27
-            \todo{Content}
+				"if": \todo{Representation Theorem: Proof: "if"}
 
-            \subsubsection{Tree CPD} % 3.24
-                \todo{Content}
-            % end
+				"only if": Assume, w.l.o.g., a topological ordering \( X_1, X_2, \dots, X_n \) where \(j < i\) for all children \(X_j\) of some random variable \(X_i\). Applying the chain rule to the joint yields \( P(X_1, X_2, \dots, X_n) = \prod_{i = 1}^{n} P(X_1 \given X_1, X_2, \dots, X_{i - 1}) \). By the topological ordering, \( \Pa(X_1) \subseteq \{ X_1, X_2, \dots, X_{i - 1} \} \) and hence, using the local Markov assumption, \( P(X_i \given X_1, X_2, \dots, X_{i - 1}) = P\bigl(X_1 \given \Pa(X_i) \bigr) \). Therefore, \(P\) factorized according to \eqref{eq:bayesNetJoint}.
+			% end
+		% end
 
-            \subsubsection{Determinism} % 3.25, 3.26
-                \todo{Content}
-            % end
-        % end
+		\subsection{"Adding Edges Does Not Hurt"}
+			\theorem{Let \(G\) be an I-map for \(P\). Then any DAG \(G'\) having the same directed edges as \(G\), then \(G'\) is also an I-map of \(P\).}
 
-        \subsection{The Bayes' Ball Algorithm} % 3.19
-            \todo{Content}
-        % end
-    % end
+			From this theorem it follows that
+			\begin{itemize}
+				\item \(G'\) is strictly more expressive than \(G\) by capturing more independencies, and
+				\item adding edges to \(G\) still results in an I-map.
+			\end{itemize}
+
+			\paragraph{Proof Idea} % 2.57
+				Let \( I_\ell(G) \subseteq I(P) \). To show that \( I_\ell(G') \subseteq I(P) \) holds, it is enough to show \( I_\ell(G') \subsetneq I_\ell(G) \). Note that is enough to show that this property holds if a single edge is added as adding two edges can be understood as two modifications, resulting in a third graph \(G''\). It therefore follows from \( I_\ell(G'') \subsetneq I_\ell(G') \subseteq I_\ell(G) \) that also \( I_\ell(G'') \subsetneq I_\ell(G) \).
+
+				Let \(X\) and \(Y\) be some random variables of \(G\) such that \( Y \not\in \Pa_G(X) \). Then adding an edge \( Y \to X \) only removes local independencies, but does not induce new ones.
+
+				\todo{Adding Edges Does Not Hurt: Proof}
+			% end
+		% end
+	% end
+
+	\section{Encoded Independencies} % 2.59, 3.2, 3.3, 3.28, 3.29
+		So far, only local independencies have been considered. However, a Bayesian network encodes even more dependencies by applying the algebra of conditional independencies (\autoref{subsec:condIndependence}; see \autoref{fig:moreIndependencies} for an example).
+
+		The findings of this section are summarized in \autoref{fig:independencies} which gives an overview of the different variants to getting the set of independencies (read this section first before inspecting the figure).
+
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[->]
+				\node [rv] (A) {\(A\)};
+				\node [rv, right = 1 of A] (B) {\(B\)};
+				\node [rv, right = 1 of B] (C) {\(D\)};
+				\node [rv, right = 1 of C] (D) {\(D\)};
+
+				\draw (A) to (B);
+				\draw (B) to (C);
+				\draw (C) to (D);
+			\end{tikzpicture}
+			\caption[A Bayesian Network Captures More than Local Independencies]{Illustration of a Bayesian network capturing more independencies than induced by the local Markov assumption. In this BN, the local Markov assumption encodes \( I_\ell(G) = \{\, B \perp A \given A, C \perp (A, B) \given B, D \perp (A, B, C) \given C \,\} \). However, also \( A \perp D \given C \) is a captured independency, for example.}
+			\label{fig:moreIndependencies}
+		\end{figure}
+
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[->, box/.style = { draw, rectangle, minimum width = 1.5cm, minimum height = 1.5cm }]
+				\node [box] (G) at (0,  0) {\(G\)};
+				\node [box] (IG) at (3, -3) {\(I(G)\)};
+				\node [box] (IellG) at (3,  0) {\(I_\ell(G)\)};
+				\node [box, minimum height = 4.5cm] (IP) at (7.5, -1.5) {\(I(P)\)};
+				\path let \p1 = (IP.west), \p2 = (IellG.east) in coordinate(a) at (\x1, \y2);
+				\path let \p1 = (IP.west), \p2 = (IG.east) in coordinate(b) at (\x1, \y2);
+
+				\draw (G) to node[above]{Reads} (IellG);
+				\draw (G) |- node[left]{d-Separation} (IG);
+				\draw (IellG) to node[right]{Algebra of Ind.} (IG);
+				\draw (IellG) to node[above]{\(\subseteq\)} (a);
+				\draw (IG) to node[above]{\(\subseteq / =\)} (b);
+			\end{tikzpicture}
+			\caption[Illustration of Independency Capturing]{Illustration of different methods to capture the independencies of a distribution. Note that \(I(G)\) and \(I(P)\) are equal (i.e., \(P\) is faithful to \(G\)) for almost all \(P\) that factor over \(G\).}
+			\label{fig:independencies}
+		\end{figure}
+
+		\subsection{Dependency Structures}
+			In a three-node BN, four types of structures are possible. The first, second, and third are indirect causal and evidential effects and a common cause, respectively:
+			\begin{center}
+				\begin{tikzpicture}[->]
+					\node [rv] (X) {\(X\)};
+					\node [rv, right = 1 of X] (Y) {\(Y\)};
+					\node [rv, right = 1 of Y] (Z) {\(Z\)};
+					\draw (X) to (Y);
+					\draw (Y) to (Z);
+				\end{tikzpicture}
+				\qquad\qquad
+				\begin{tikzpicture}[->]
+					\node [rv] (X) {\(X\)};
+					\node [rv, right = 1 of X] (Y) {\(Y\)};
+					\node [rv, right = 1 of Y] (Z) {\(Z\)};
+					\draw (Y) to (X);
+					\draw (Z) to (Y);
+				\end{tikzpicture}
+				\qquad\qquad
+				\begin{tikzpicture}[->]
+					\node [rv] (X) {\(X\)};
+					\node [rv, right = 1 of X] (Z) {\(Z\)};
+					\node [rv, right = 1 of Z] (Y) {\(Y\)};
+					\draw (Z) to (X);
+					\draw (Z) to (Y);
+				\end{tikzpicture}
+			\end{center}
+			In both cases, the conditional independence \( X \perp Y \given Z \) holds, but \emph{not} the simple independence \( X \perp Y \).
+
+			The last and most special structure is a v-structure, where two variables have a common effect:
+			\begin{center}
+				\begin{tikzpicture}[->]
+					\node [rv] (X) {\(X\)};
+					\node [rv, right = 1 of X] (Z) {\(Z\)};
+					\node [rv, right = 1 of Z] (Y) {\(Y\)};
+					\draw (X) to (Z);
+					\draw (Y) to (Z);
+				\end{tikzpicture}
+			\end{center}
+			In this case, the independencies are inverted: the simple independence \( X \perp Y \) holds, but \( X \perp Y \given Z \) \emph{does not}. This is the same effect as the "explain away" phenomenon / Berkson's paradox (\autoref{subsec:berkson}).
+		% end
+
+		\subsection{d-Separation}
+			\emph{d-Separation} (dependence separation) is a principled way of finding all independencies modeled by a Bayesian network. The main component are trails. A \emph{trail} is a non-cyclic path \( X_1' \fromto X_2' \fromto \cdots \fromto X_k' \) from one random variable \(X_1'\) to another \(X_k'\). Note that a trail can also be along an edge in opposite order (i.e., the trail itself is undirected) and that every edge and note can only be visited once. For example, the network
+			\begin{center}
+				\begin{tikzpicture}[->]
+					\node [rv] (A) {\(A\)};
+					\node [rv, right = 1 of A] (B) {\(B\)};
+					\node [rv, below = 1 of A] (C) {\(C\)};
+					\node [rv, right = 1 of C] (D) {\(D\)};
+
+					\draw (A) to (B);
+					\draw (A) to (C);
+					\draw (B) to (D);
+					\draw (D) to (C);
+				\end{tikzpicture}
+			\end{center}
+			has the following trails:
+			\begin{itemize}
+				\item \( A \to B \),\, \( A \to C \from D \from B \);\; \( A \to C \),\, \( A \to B \to D \to C \);\; \( A \to B \to D \),\, \( A \to C \from D \)
+				\item \( B \from A \),\, \( B \to D \to C \from A \);\; \( B \from A \to C \),\, \( B \to D \to C \);\; \( B \to D \),\, \( B \from A \to C \from D \)
+				\item \( C \from A \),\, \( C \from D \from B \from A \);\; \( C \from A \to B \),\, \( C \from D \from B \);\; \( C \from D \),\, \( C \from A \to B \to D \)
+				\item \( D \from B \from A \),\, \( D \to C \from A \);\; \( D \from B \),\, \( D \to C \from A \to B \);\; \( D \to C \),\, \( D \from B \from A \to C \)
+			\end{itemize}
+			Note that as trails are themselves undirected, the graph itself really has half as many trails, but they are kept for consistency.
+
+			d-Separation now uses these trails to extract independencies. Consider any trail \( X_1' \fromto X_2' \fromto \cdots \fromto X_k' \) between two variables \(X_1'\) and \(X_k'\) this trail is \emph{active} if for each triplet \( X_{i - 1}' \fromto X_i' \fromto X_{i + 1}' \), the following holds:
+			\begin{itemize}
+				\item \eqmakebox[trails][l]{for \( X_{i - 1} \to X_i \to X_{i + 1} \),}\quad     \(X_i\) is \emph{not observed}.
+				\item \eqmakebox[trails][l]{for \( X_{i - 1} \from X_i \from X_{i + 1} \),}\quad \(X_i\) is \emph{not observed}.
+				\item \eqmakebox[trails][l]{for \( X_{i - 1} \from X_i \to X_{i + 1} \),}\quad   \(X_i\) is \emph{not observed}.
+				\item \eqmakebox[trails][l]{for \( X_{i - 1} \to X_i \from X_{i + 1} \),}\quad   \(X_i\) or one of its descendants \emph{is observed}.
+			\end{itemize}
+			\theorem{}{Two variables \(X\) and \(Y\) are independent given a set of variables \(\mathcal{Z}\) if there is no active trail between \(X\) and \(Y\) if \(\mathcal{Z}\) are observed. They are said to be \emph{d-separated}. The set of independencies obtained via d-separation is called \(I(G)\).}
+
+			\subsubsection{Soundness}
+				\theorem{d-Seperation is \emph{sound}. That is, if \(P\) factorizes over \(G\), then \( I(G) \subseteq I(P) \).}
+
+				This means that d-separation only captured independencies that the true distributions exhibits.
+
+				\paragraph{Proof} % 3.16
+					\todo{d-Separation Soundness: Proof}
+				% end
+			% end
+
+			\subsubsection{Completeness}
+				A distribution \(P\) is said to be \emph{faithful} if it does not have independencies that cannot be read from \(G\).
+
+				\theorem{For almost all distributions \(P\) that factorize over \(G\), \( I(G) = I(P) \). "Almost all" means that the possible distributions are a set of measure zero parametrizations of the CPTs.}
+
+				Hence, the Bayesian network is usually sufficient for capturing all independence properties of the distribution! But this only holds for complete independence, but there might be context-specific independencies that are not captured.
+
+				\paragraph{Proof} % 3.18
+					\todo{d-Separation Completeness: Proof}
+				% end
+			% end
+		% end
+
+		\subsection{Context-Specific Independence (CSI)}
+			As already said, d-separation only captures complete independencies, i.e., once for which
+			\begin{equation}
+				\forall x, \in \val(X), y \in \val(Y), z \in (Z) : (X = x \perp Y = y \given Z = z)
+			\end{equation}
+			holds but context-specific independencies,
+			\begin{equation}
+				\exists x, \in \val(X), y \in \val(Y), z \in (Z) : (X = x \perp Y = y \given Z = z),
+			\end{equation}
+			are not captured.
+
+			One option for representing CSIs are Tree CPDs. \emph{Tree CPDs} encode a distribution \( P\bigl(X \given \Pa(X) \bigr) \) using a decision-tree like structure, where the paths are an assignment of (a subset of) \( \Pa(X) \) and leaves represent the distributions given the assignments on the path. This way, representation size can be drastically reduced when CSIs are present.
+
+			Another variant where CSIs occur is determinism. While determinism already makes the CPT sparse, it has even greater influences on inference as propagating the zeros often leads to a bunch of new zeros.
+		% end
+
+		\subsection{The Bayes' Ball Algorithm} % 3.19
+			The \emph{Bayes' ball algorithm} is a algorithmic approach to applying d-separation.
+			\todo{Bayes' Ball Algorithm}
+		% end
+	% end
+
+	\section{SOTA Modal}
+		Current state-of-the-art (SOTA) models are often characterized by richness in their local structures (determinism, CSI), massive sizes (thousand of variables), and high connectivity (treewidth, see \autoref{subsec:treewidth}). These developments are enabled by high-level modeling tools (relational and first-order logic), the overall advancement in machine learning, and new application areas (e.g., bioinformatics and sensor networks).
+
+		In these big models, it is a must to exploit local and relational structure!
+	% end
 % end
 
 \chapter{Inference} % 3.30, 3.31, 3.32, 3.33
-    \todo{Content}
+	\todo{Content}
 
-    \section{Chain Models} % 3.34, 3.35, 3.36, 3.37
-        \todo{Content}
-    % end
+	\section{Chain Models} % 3.34, 3.35, 3.36, 3.37
+		\todo{Content}
+	% end
 
-    \section{Variable Elimination} % 3.38, 3.39, 3.40, 3.41, 3.42, 3.43, 3.44, 3.45, 3.46, 3.54, 3.57
-        \todo{Content}
+	\section{Variable Elimination} % 3.38, 3.39, 3.40, 3.41, 3.42, 3.43, 3.44, 3.45, 3.46, 3.54, 3.57
+		\todo{Content}
 
-        \subsection{Evidence} % 3.47, 3.48, 3.49, 3.50, 3.51, 3.52, 3.53
-            \todo{Content}
-        % end
+		\subsection{Evidence} % 3.47, 3.48, 3.49, 3.50, 3.51, 3.52, 3.53
+			\todo{Content}
+		% end
 
-        \subsection{Complexity} % 3.55, 3.56
-            \todo{Content}
-        % end
+		\subsection{Complexity} % 3.55, 3.56
+			\todo{Content}
+		% end
 
-        \subsection{VE for Potentials} % 4.24, 4.25
-            \todo{Content}
-        % end
-    % end
+		\subsection{VE for Potentials} % 4.24, 4.25
+			\todo{Content}
+		% end
+	% end
 
-    \section{Abductive Inference} % 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.12, 4.17, 4.58
-        \todo{Content}
+	\section{Abductive Inference} % 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.12, 4.17, 4.58
+		\todo{Content}
 
-        \subsection{Consistency} % 4.8
-            \todo{Content}
-        % end
+		\subsection{Consistency} % 4.8
+			\todo{Content}
+		% end
 
-        \subsection{Finding Most Probable Explanations (MPEs)} % 4.9, 4.10, 4.11
-            \todo{Content}
-        % end
-    % end
+		\subsection{Finding Most Probable Explanations (MPEs)} % 4.9, 4.10, 4.11
+			\todo{Content}
+		% end
+	% end
 
-    \section{Complexity of Conditional Queries} % 4.13, 4.14, 4.15, 4.16, 4.17
-        \todo{Content}
-    % end
+	\section{Complexity of Conditional Queries} % 4.13, 4.14, 4.15, 4.16, 4.17
+		\todo{Content}
+	% end
 
-    \section{Moralizing} % 4.26, 4.27, 4.28, 4.29, 4.30, 4.31, 4.32
-        \todo{Content}
-    % end
+	\section{Moralizing} % 4.26, 4.27, 4.28, 4.29, 4.30, 4.31, 4.32
+		\todo{Content}
+	% end
 
-    \section{Variable Elimination in Moral Graphs} % 4.18, 4.33, 4.34, 4.35, 4.59
-        \todo{Content}
+	\section{Variable Elimination in Moral Graphs} % 4.18, 4.33, 4.34, 4.35, 4.59
+		\todo{Content}
 
-        \subsection{Perfect Elimination Sequences} % 4.36, 4.37, 4.38, 4.39, 4.40, 4.41, 4.42
-            \todo{Content}
-        % end
+		\subsection{Perfect Elimination Sequences} % 4.36, 4.37, 4.38, 4.39, 4.40, 4.41, 4.42
+			\todo{Content}
+		% end
 
-        \subsection{Complexity} % 4.43, 4.44, 4.45
-            \todo{Content}
-        % end
+		\subsection{Complexity} % 4.43, 4.44, 4.45
+			\todo{Content}
+		% end
 
-        \subsection{Induced Graph} % 4.46, 4.47, 4.48
-            \todo{Content}
-        % end
+		\subsection{Induced Graph} % 4.46, 4.47, 4.48
+			\todo{Content}
+		% end
 
-        \subsection{Induced Treewidth} % 4.49
-            \todo{Content}
-        % end
+		\subsection{Induced Treewidth} % 4.49
+			\label{subsec:treewidth}
 
-        \subsection{Elimination on Trees} % 4.50, 4.51, 4.52
-            \todo{Content}
+			\todo{Content}
+		% end
 
-            \subsubsection{Polytrees} % 4.53
-                \todo{Content}
-            % end
-        % end
+		\subsection{Elimination on Trees} % 4.50, 4.51, 4.52
+			\todo{Content}
 
-        \subsection{General Networks} % 4.54, 4.55, 4.56, 4.57
-            \todo{Content}
-        % end
-    % end
+			\subsubsection{Polytrees} % 4.53
+				\todo{Content}
+			% end
+		% end
+
+		\subsection{General Networks} % 4.54, 4.55, 4.56, 4.57
+			\todo{Content}
+		% end
+	% end
 % end
 
 \chapter{Markov Random Fields} % 4.60, 4.61, 4.62, 4.63, 4.64, 4.99
-    \todo{Content}
+	\todo{Content}
 
-    \section{Bayesian Networks as MRFs} % 4.65, 4.66, 4.67, 4.68, 4.69, 4.70
-        \todo{Content}
-    % end
+	\section{Bayesian Networks as MRFs} % 4.65, 4.66, 4.67, 4.68, 4.69, 4.70
+		\todo{Content}
+	% end
 
-    \section{Triangulated Graphs} % 4.71, 4.72, 4.73, 4.74, 4.75
-        \todo{Content}
-    % end
+	\section{Triangulated Graphs} % 4.71, 4.72, 4.73, 4.74, 4.75
+		\todo{Content}
+	% end
 
-    \section{Join Trees} % 4.76, 4.77, 4.78, 4.79, 4.80, 4.81, 4.82, 4.83, 4.84, 4.85, 4.86
-        \todo{Content}
-    % end
+	\section{Join Trees} % 4.76, 4.77, 4.78, 4.79, 4.80, 4.81, 4.82, 4.83, 4.84, 4.85, 4.86
+		\todo{Content}
+	% end
 
-    \section{Junction Trees} % 4.87, 4.88, 4.89, 4.90
-    	\label{sec:junctionTrees}
+	\section{Junction Trees} % 4.87, 4.88, 4.89, 4.90
+		\label{sec:junctionTrees}
 
-        \todo{Content}
+		\todo{Content}
 
-        \subsection{Collecting Evidence} % 4.91, 4.92, 4.93, 4.94, 4.95, 4.96
-            \todo{Content}
-        % end
+		\subsection{Collecting Evidence} % 4.91, 4.92, 4.93, 4.94, 4.95, 4.96
+			\todo{Content}
+		% end
 
-        \subsection{Distributing Evidence} % 4.97
-            \todo{Content}
-        % end
-    % end
+		\subsection{Distributing Evidence} % 4.97
+			\todo{Content}
+		% end
+	% end
 
-    \section{Non-Triangulated Graphs} % 4.98
-        \todo{Content}
-    % end
+	\section{Non-Triangulated Graphs} % 4.98
+		\todo{Content}
+	% end
 % end
 
-\chapter{Learning} % 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.22, 5.28, 5.38, 6.58
-    \todo{Content}
+\chapter{Learning} % 2.55, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.22, 5.28, 5.38, 6.58
+	\todo{Content}
 
-    \section{Complete and Incomplete Data Sets} % 5.9, 5.10, 5.11, 5.12
-        \todo{Content}
+	\section{Complete and Incomplete Data Sets} % 5.9, 5.10, 5.11, 5.12
+		\todo{Content}
 
-        \subsection{Hidden Variables} % 5.12, 5.13, 5.14, 5.15, 5.16, 5.17, 5.18, 5.19, 5.20, 5.21
-            \todo{Content}
-        % end
-    % end
+		\subsection{Hidden Variables} % 5.12, 5.13, 5.14, 5.15, 5.16, 5.17, 5.18, 5.19, 5.20, 5.21
+			\todo{Content}
+		% end
+	% end
 
-    \section{Parameter Estimation} % 5.23, 5.55, 6.3
-        \todo{Content}
+	\section{Parameter Estimation} % 5.23, 5.55, 6.3
+		\todo{Content}
 
-        \subsection{Known Structure, Complete Data} % 5.29
-            \todo{Content}
+		\subsection{Known Structure, Complete Data} % 5.29
+			\todo{Content}
 
-            \subsubsection{Maximum Likelihood} % 5.24, 5.25, 5.26, 5.27, 5.30
-                \todo{Content}
-            % end
+			\subsubsection{Maximum Likelihood} % 5.24, 5.25, 5.26, 5.27, 5.30
+				\todo{Content}
+			% end
 
-            \subsubsection{Decomposability of the Likelihood} % 5.31, 5.32
-                \todo{Content}
-            % end
+			\subsubsection{Decomposability of the Likelihood} % 5.31, 5.32
+				\todo{Content}
+			% end
 
-            \subsubsection{Likelihood for (Conditional) Bi- and Multinomials} % 5.33, 5.34, 5.35, 5.36, 5.37
-                \todo{Content}
-            % end
-        % end
+			\subsubsection{Likelihood for (Conditional) Bi- and Multinomials} % 5.33, 5.34, 5.35, 5.36, 5.37
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Known Structure, Incomplete Data (Expectation-Maximization)} % 5.39, 5.44, 5.48, 5.49, 5.53, 6.1
-            \todo{Content}
+		\subsection{Known Structure, Incomplete Data (Expectation-Maximization)} % 5.39, 5.44, 5.48, 5.49, 5.53, 6.1
+			\todo{Content}
 
-            \subsubsection{EM Idea} % 5.40, 5.41, 5.42, 5.45
-                \todo{Content}
-            % end
+			\subsubsection{EM Idea} % 5.40, 5.41, 5.42, 5.45
+				\todo{Content}
+			% end
 
-            \subsubsection{Complete-Data Likelihood} % 5.43
-                \todo{Content}
-            % end
+			\subsubsection{Complete-Data Likelihood} % 5.43
+				\todo{Content}
+			% end
 
-            \subsubsection{EM for (Conditional) Multinomials} % 5.46, 5.47
-                \todo{Content}
-            % end
+			\subsubsection{EM for (Conditional) Multinomials} % 5.46, 5.47
+				\todo{Content}
+			% end
 
-            \subsubsection{Monotonicity} % 5.50
-                \todo{Content}
-            % end
-        % end
+			\subsubsection{Monotonicity} % 5.50
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Gradient Ascent} % 5.54
-            \todo{Content}
-        % end
+		\subsection{Gradient Ascent} % 5.54
+			\todo{Content}
+		% end
 
-        \subsection{Bayesian Parameter Estimation} % 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 6.10
-            \todo{Content}
+		\subsection{Bayesian Parameter Estimation} % 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 6.10
+			\todo{Content}
 
-            \subsubsection{Laplace Estimation} % 6.11, 6.12, 6.13, 6.16, 6.17
-                \todo{Content}
-            % end
+			\subsubsection{Laplace Estimation} % 6.11, 6.12, 6.13, 6.16, 6.17
+				\todo{Content}
+			% end
 
-            \subsubsection{Bayesian Prediction} % 6.18, 6.19, 6.24
-                \todo{Content}
-            % end
+			\subsubsection{Bayesian Prediction} % 6.18, 6.19, 6.24
+				\todo{Content}
+			% end
 
-            \subsubsection{Conjugate Priors} % 6.20, 6.21, 6.25
-                \todo{Content}
+			\subsubsection{Conjugate Priors} % 6.20, 6.21, 6.25
+				\todo{Content}
 
-                \paragraph{Binomial Prior} % 6.22, 6.23
-                    \todo{Content}
-                % end
+				\paragraph{Binomial Prior} % 6.22, 6.23
+					\todo{Content}
+				% end
 
-                \paragraph{Dirichlet Prior} % 6.26, 6.27, 6.28, 6.29, 6.30
-                    \todo{Content}
-                % end
-            % end
+				\paragraph{Dirichlet Prior} % 6.26, 6.27, 6.28, 6.29, 6.30
+					\todo{Content}
+				% end
+			% end
 
-            \subsubsection{Bayesian Networks and Bayesian Prediction} % 6.31, 6.32
-                \todo{Content}
-            % end
-        % end
+			\subsubsection{Bayesian Networks and Bayesian Prediction} % 6.31, 6.32
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Summary} % 6.33, 6.34, 6.35
-            \todo{Content}
-        % end
-    % end
+		\subsection{Summary} % 6.33, 6.34, 6.35
+			\todo{Content}
+		% end
+	% end
 
-    \section{Structure Learning / Model Selection} % 6.36, 6.37, 6.38, 6.39, 6.40, 6.57
-        \todo{Content}
+	\section{Structure Learning / Model Selection} % 6.36, 6.37, 6.38, 6.39, 6.40, 6.57
+		\todo{Content}
 
-        \subsection{Minimal I-Maps} % 6.41, 6.42, 6.43
-            \todo{Content}
-        % end
+		\subsection{Minimal I-Maps} % 6.41, 6.42, 6.43
+			\todo{Content}
+		% end
 
-        \subsection{Perfect Maps (P-Maps)} % 6.44, 6.45
-            \todo{Content}
-        % end
+		\subsection{Perfect Maps (P-Maps)} % 6.44, 6.45
+			\todo{Content}
+		% end
 
-        \subsection{I-Equivalence} % 6.46, 6.47
-            \todo{Content}
+		\subsection{I-Equivalence} % 6.46, 6.47
+			\todo{Content}
 
-            \subsubsection{Skeleton and Immoralities} % 6.48, 6.49, 6.50, 6.51
-                \todo{Content}
-            % end
-        % end
+			\subsubsection{Skeleton and Immoralities} % 6.48, 6.49, 6.50, 6.51
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Obtaining a P-Map} % 6.52
-            \todo{Content}
+		\subsection{Obtaining a P-Map} % 6.52
+			\todo{Content}
 
-            \subsubsection{Identifying the Skeleton} % 6.53, 6.54
-                \todo{Content}
-            % end
+			\subsubsection{Identifying the Skeleton} % 6.53, 6.54
+				\todo{Content}
+			% end
 
-            \subsubsection{Identifying Immoralities} % 6.55
-                \todo{Content}
-            % end
+			\subsubsection{Identifying Immoralities} % 6.55
+				\todo{Content}
+			% end
 
-            \subsubsection{From Immoralities to Structures} % 6.56
-                \todo{Content}
-            % end
-        % end
+			\subsubsection{From Immoralities to Structures} % 6.56
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Accurate Structures} % 6.59
-            \todo{Content}
-        % end
+		\subsection{Accurate Structures} % 6.59
+			\todo{Content}
+		% end
 
-        \subsection{Learning} % 6.60, 6.61
-            \todo{Content}
+		\subsection{Learning} % 6.60, 6.61
+			\todo{Content}
 
-            \subsubsection{Constrained-Based} % 6.62, 6.63
-                \todo{Content}
-            % end
+			\subsubsection{Constrained-Based} % 6.62, 6.63
+				\todo{Content}
+			% end
 
-            \subsubsection{Score-Based} % 6.64
-                \todo{Content}
+			\subsubsection{Score-Based} % 6.64
+				\todo{Content}
 
-                \paragraph{Likelihood Score} % 6.65
-                    \todo{Content}
-                % end
+				\paragraph{Likelihood Score} % 6.65
+					\todo{Content}
+				% end
 
-                \paragraph{Bayesian Score and Bayesian Information Criterion} % 6.66, 6.67, 6.68, 6.69, 6.70
-                    \todo{Content}
-                % end
-            % end
-        % end
+				\paragraph{Bayesian Score and Bayesian Information Criterion} % 6.66, 6.67, 6.68, 6.69, 6.70
+					\todo{Content}
+				% end
+			% end
+		% end
 
-        \subsection{Structure Search as Optimization} % 6.71
-            \todo{Content}
+		\subsection{Structure Search as Optimization} % 6.71
+			\todo{Content}
 
-            \subsubsection{Learning Trees (Complete Data)} % 6.72, 6.73
-                \todo{Content}
-            % end
+			\subsubsection{Learning Trees (Complete Data)} % 6.72, 6.73
+				\todo{Content}
+			% end
 
-            \subsubsection{Heuristic (Local) Search} % 6.74, 6.75, 6.76, 6.77, 6.78, 6.79, 6.80, 6.81, 6.82, 6.83
-                \todo{Content}
-            % end
-        % end
+			\subsubsection{Heuristic (Local) Search} % 6.74, 6.75, 6.76, 6.77, 6.78, 6.79, 6.80, 6.81, 6.82, 6.83
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Structural EM} % 6.84, 6.85, 6.86, 6.87, 6.88
-            \todo{Content}
-        % end
+		\subsection{Structural EM} % 6.84, 6.85, 6.86, 6.87, 6.88
+			\todo{Content}
+		% end
 
-        \subsection{Summary} % 6.89
-            \todo{Content}
-        % end
-    % end
+		\subsection{Summary} % 6.89
+			\todo{Content}
+		% end
+	% end
 % end
 
 \chapter{Dynamic Bayesian Networks} % 7.1, 7.2, 7.3, 7.48
-    \todo{Content}
+	\todo{Content}
 
-    \section{Hidden Markov Models} % 7.4, 7.14, 7.15, 7.16
-        \todo{Content}
-    % end
+	\section{Hidden Markov Models} % 7.4, 7.14, 7.15, 7.16
+		\todo{Content}
+	% end
 
-    \section{Inference} % 7.17
-        \todo{Content}
+	\section{Inference} % 7.17
+		\todo{Content}
 
-        \subsection{Decoding} % 7.18, 7.19, 7.20, 7.21, 7.22, 7.36
-            \todo{Content}
+		\subsection{Decoding} % 7.18, 7.19, 7.20, 7.21, 7.22, 7.36
+			\todo{Content}
 
-            \subsubsection{Forward Pass} % 7.23, 7.24, 7.25, 7.26, 7.27, 7.28, 7.29, 7.30, 7.31, 7.32
-                \todo{Content}
-            % end
+			\subsubsection{Forward Pass} % 7.23, 7.24, 7.25, 7.26, 7.27, 7.28, 7.29, 7.30, 7.31, 7.32
+				\todo{Content}
+			% end
 
-            \subsubsection{Backward Pass} % 7.33, 7.34, 7.35
-                \todo{Content}
-            % end
-        % end
+			\subsubsection{Backward Pass} % 7.33, 7.34, 7.35
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Best State Sequence} % 7.37, 7.38, 7.39
-            \todo{Content}
+		\subsection{Best State Sequence} % 7.37, 7.38, 7.39
+			\todo{Content}
 
-            \subsubsection{Viterbi Algorithm} % 7.40, 7.41, 7.42
-                \todo{Content}
-            % end
-        % end
+			\subsubsection{Viterbi Algorithm} % 7.40, 7.41, 7.42
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Parameter Estimation} % 7.43, 7.44, 7.45, 7.46, 7.47
-            \todo{Content}
-        % end
-    % end
+		\subsection{Parameter Estimation} % 7.43, 7.44, 7.45, 7.46, 7.47
+			\todo{Content}
+		% end
+	% end
 
-    \section{State Estimation (Kalman Filter)} % 7.49, 7.50, 7.51, 7.52
-        \todo{Content}
+	\section{State Estimation (Kalman Filter)} % 7.49, 7.50, 7.51, 7.52
+		\todo{Content}
 
-        \subsection{Recursive Bayesian Updating} % 7.53, 7.54
-            \todo{Content}
-        % end
+		\subsection{Recursive Bayesian Updating} % 7.53, 7.54
+			\todo{Content}
+		% end
 
-        \subsection{(Modeling) Actions} % 7.55, 7.56, 7.57, 7.58
-            \todo{Content}
-        % end
+		\subsection{(Modeling) Actions} % 7.55, 7.56, 7.57, 7.58
+			\todo{Content}
+		% end
 
-        \subsection{Bayes Filter} % 7.62, 7.63, 7.64, 7.65, 7.66
-            \todo{Content}
-        % end
+		\subsection{Bayes Filter} % 7.62, 7.63, 7.64, 7.65, 7.66
+			\todo{Content}
+		% end
 
-        \subsection{Discrete-Time Kalman Filter} % 7.69, 7.70, 7.71
-            \todo{Content}
+		\subsection{Discrete-Time Kalman Filter} % 7.69, 7.70, 7.71
+			\todo{Content}
 
-            \subsubsection{Dynamics and Observations} % 7.72, 7.74
-                \todo{Content}
-            % end
+			\subsubsection{Dynamics and Observations} % 7.72, 7.74
+				\todo{Content}
+			% end
 
-            \subsubsection{Belief Update: Prediction} % 7.73
-                \todo{Content}
-            % end
+			\subsubsection{Belief Update: Prediction} % 7.73
+				\todo{Content}
+			% end
 
-            \subsubsection{Belief Update: Correction} % 7.75
-                \todo{Content}
-            % end
-        % end
-    % end
+			\subsubsection{Belief Update: Correction} % 7.75
+				\todo{Content}
+			% end
+		% end
+	% end
 
-    \section{General Dynamic Bayesian Networks} % 7.77, 7.78, 7.79
-        \todo{Content}
+	\section{General Dynamic Bayesian Networks} % 7.77, 7.78, 7.79
+		\todo{Content}
 
-        \subsection{Exact Inference} % 7.80, 7.81
-            \todo{Content}
-        % end
+		\subsection{Exact Inference} % 7.80, 7.81
+			\todo{Content}
+		% end
 
-        \subsection{Tractable, Approximate Inference} % 7.82
-            \todo{Content}
+		\subsection{Tractable, Approximate Inference} % 7.82
+			\todo{Content}
 
-            \subsubsection{Assumed Density Filtering} % 7.83, 7.84, 7.85
-                \todo{Content}
-            % end
-        % end
-    % end
+			\subsubsection{Assumed Density Filtering} % 7.83, 7.84, 7.85
+				\todo{Content}
+			% end
+		% end
+	% end
 % end
 
 \chapter{Approximate Inference} % 8.1, 8.2
-    \todo{Content}
+	\todo{Content}
 
-    \section{Message Passing} % 8.3, 8.4, 8.5, 8.6, 8.7, 8.8, 8.9, 8.10, 8.11
-        \todo{Content}
+	\section{Message Passing} % 8.3, 8.4, 8.5, 8.6, 8.7, 8.8, 8.9, 8.10, 8.11
+		\todo{Content}
 
-        \subsection{Sum-Product Belief Propagation} % 8.12, 8.13, 8.14, 8.15, 8.16, 8.17, 8.18, 8.19, 8.20, 8.21
-            \todo{Content}
-        % end
+		\subsection{Sum-Product Belief Propagation} % 8.12, 8.13, 8.14, 8.15, 8.16, 8.17, 8.18, 8.19, 8.20, 8.21
+			\todo{Content}
+		% end
 
-        \subsection{(Acyclic) Belief Propagation as Dynamic Programming} % 8.22, 8.23, 8.24, 8.25, 8.26, 8.27, 8.28, 8.29, 8.30, 8.31, 8.32, 8.33, 8.34, 8.35, 8.36
-            \todo{Content}
-        % end
+		\subsection{(Acyclic) Belief Propagation as Dynamic Programming} % 8.22, 8.23, 8.24, 8.25, 8.26, 8.27, 8.28, 8.29, 8.30, 8.31, 8.32, 8.33, 8.34, 8.35, 8.36
+			\todo{Content}
+		% end
 
-        \subsection{Loopy Belief Propagation} % 8.37, 8.38, 8.39, 8.40, 8.41
-            \todo{Content}
-        % end
-    % end
+		\subsection{Loopy Belief Propagation} % 8.37, 8.38, 8.39, 8.40, 8.41
+			\todo{Content}
+		% end
+	% end
 
-    \section{Sampling} % 8.42, 8.43, 8.44, 8.45, 8.46, 8.47, 8.48
-        \todo{Content}
+	\section{Sampling} % 8.42, 8.43, 8.44, 8.45, 8.46, 8.47, 8.48
+		\todo{Content}
 
-        \subsection{Forward Sampling (Without Evidence)} % 8.49, 8.50, 8.51, 8.52
-            \todo{Content}
-        % end
+		\subsection{Forward Sampling (Without Evidence)} % 8.49, 8.50, 8.51, 8.52
+			\todo{Content}
+		% end
 
-        \subsection{Forward Sampling (With Evidence)} % 8.53, 8.54, 8.55, 8.56, 8.57
-            \todo{Content}
-        % end
+		\subsection{Forward Sampling (With Evidence)} % 8.53, 8.54, 8.55, 8.56, 8.57
+			\todo{Content}
+		% end
 
-        \subsection{Gibbs Sampling} % 8.58, 8.59, 8.60, 8.61, 8.62, 8.63, 8.64, 8.65, 8.66, 8.67, 8.68
-            \todo{Content}
+		\subsection{Gibbs Sampling} % 8.58, 8.59, 8.60, 8.61, 8.62, 8.63, 8.64, 8.65, 8.66, 8.67, 8.68
+			\todo{Content}
 
-            \subsubsection{Burn-In} % 8.69
-                \todo{Content}
-            % end
+			\subsubsection{Burn-In} % 8.69
+				\todo{Content}
+			% end
 
-            \subsubsection{Irreducibility, Aperiodicity, and Ergodicity} % 8.71, 8.72, 8.73
-                \todo{Content}
-            % end
+			\subsubsection{Irreducibility, Aperiodicity, and Ergodicity} % 8.71, 8.72, 8.73
+				\todo{Content}
+			% end
 
-            \subsubsection{Convergence} % 8.70, 8.74, 8.75
-                \todo{Content}
-            % end
+			\subsubsection{Convergence} % 8.70, 8.74, 8.75
+				\todo{Content}
+			% end
 
-            \subsubsection{Performance} % 8.77
-                \todo{Content}
-            % end
+			\subsubsection{Performance} % 8.77
+				\todo{Content}
+			% end
 
-            \subsubsection{Speeding Convergence} % 8.77
-                \todo{Content}
+			\subsubsection{Speeding Convergence} % 8.77
+				\todo{Content}
 
-                \paragraph{Skipping Samples} % 8.78
-                    \todo{Content}
-                % end
+				\paragraph{Skipping Samples} % 8.78
+					\todo{Content}
+				% end
 
-                \paragraph{Randomized Variable Order} % 8.79
-                    \todo{Content}
-                % end
+				\paragraph{Randomized Variable Order} % 8.79
+					\todo{Content}
+				% end
 
-                \paragraph{Blocking} % 8.80
-                    \todo{Content}
-                % end
+				\paragraph{Blocking} % 8.80
+					\todo{Content}
+				% end
 
-                \paragraph{Rao-Blackwellization} % 8.81, 8.82
-                    \todo{Content}
-                % end
+				\paragraph{Rao-Blackwellization} % 8.81, 8.82
+					\todo{Content}
+				% end
 
-                \paragraph{Multiple Chains} % 8.83
-                    \todo{Content}
-                % end
-            % end
-        % end
+				\paragraph{Multiple Chains} % 8.83
+					\todo{Content}
+				% end
+			% end
+		% end
 
-        \subsection{Likelihood Weighting} % 8.84, 8.85, 8.86, 8.87, 8.88
-            \todo{Content}
-        % end
-    % end
+		\subsection{Likelihood Weighting} % 8.84, 8.85, 8.86, 8.87, 8.88
+			\todo{Content}
+		% end
+	% end
 % end
 
 \chapter{Tractable Probabilistic Models} % 9.1
-    \todo{Content}
+	\todo{Content}
 
-    \section{Deep Learning} % 9.2, 9.3, 9.4
-        \todo{Content}
-    % end
+	\section{Deep Learning} % 9.2, 9.3, 9.4
+		\todo{Content}
+	% end
 
-    \section{Probabilistic Circuits} % 9.5, 9.6, 9.7, 9.8, 9.9, 9.10
-        \todo{Content}
-    % end
+	\section{Probabilistic Circuits} % 9.5, 9.6, 9.7, 9.8, 9.9, 9.10
+		\todo{Content}
+	% end
 
-    \section{Sum-Product Networks} % 9.11, 9.12, 9.58, 9.59
-        \todo{Content}
+	\section{Sum-Product Networks} % 9.11, 9.12, 9.58, 9.59
+		\todo{Content}
 
-        \subsection{Inference} % 9.13, 9.14, 9.15, 9.16
-            \todo{Content}
-        % end
+		\subsection{Inference} % 9.13, 9.14, 9.15, 9.16
+			\todo{Content}
+		% end
 
-        \subsection{Learning} % 9.16, 9.17
-            \todo{Content}
+		\subsection{Learning} % 9.16, 9.17
+			\todo{Content}
 
-            \subsubsection{Directly Learning SPNs} % 9.24, 9.25, 9.26, 9.27
-                \todo{Content}
-            % end
-        % end
+			\subsubsection{Directly Learning SPNs} % 9.24, 9.25, 9.26, 9.27
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Inference on Devices} % 9.29
-            \todo{Content}
-        % end
-    % end
+		\subsection{Inference on Devices} % 9.29
+			\todo{Content}
+		% end
+	% end
 % end
 
 \chapter{Deep Generative Models} % 10.1, 10.2, 10.3, 10.4, 10.5, 10.6, 10.7, 10.8
-    \todo{Content}
+	\todo{Content}
 
-    \section{Likelihood-Based} % 10.9
-        \todo{Content}
+	\section{Likelihood-Based} % 10.9
+		\todo{Content}
 
-        \subsection{Autoregressive Generatie Models} % 10.10
-            \todo{Content}
+		\subsection{Autoregressive Generatie Models} % 10.10
+			\todo{Content}
 
-            \subsubsection{Learning and Inference} % 10.11
-                \todo{Content}
-            % end
+			\subsubsection{Learning and Inference} % 10.11
+				\todo{Content}
+			% end
 
-            \subsubsection{Parametrization} % 10.12, 10.13, 10.14
-                \todo{Content}
-            % end
-        % end
+			\subsubsection{Parametrization} % 10.12, 10.13, 10.14
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Variational Auto-Encoders} % 10.15, 10.16, 10.17
-            \todo{Content}
+		\subsection{Variational Auto-Encoders} % 10.15, 10.16, 10.17
+			\todo{Content}
 
-            \subsubsection{Inference as Optimization} % 10.18, 10.19
-                \todo{Content}
-            % end
+			\subsubsection{Inference as Optimization} % 10.18, 10.19
+				\todo{Content}
+			% end
 
-            \subsubsection{Variational Bayes} % 10.20, 10.21
-                \todo{Content}
-            % end
+			\subsubsection{Variational Bayes} % 10.20, 10.21
+				\todo{Content}
+			% end
 
-            \subsubsection{Learning and Inference} % 10.22
-                \todo{Content}
-            % end
+			\subsubsection{Learning and Inference} % 10.22
+				\todo{Content}
+			% end
 
-            \subsubsection{Open Questions} % 10.24
-                \todo{Content}
-            % end
-        % end
+			\subsubsection{Open Questions} % 10.24
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Normalizing Flows} % 10.25, 10.26, 10.27, 10.28, 10.29
-            \todo{Content}
+		\subsection{Normalizing Flows} % 10.25, 10.26, 10.27, 10.28, 10.29
+			\todo{Content}
 
-            \subsubsection{Learning and Inference} % 10.30
-                \todo{Content}
-            % end
-        % end
-    % end
+			\subsubsection{Learning and Inference} % 10.30
+				\todo{Content}
+			% end
+		% end
+	% end
 
-    \section{Likelihood-Free} % 10.32
-        \todo{Content}
+	\section{Likelihood-Free} % 10.32
+		\todo{Content}
 
-        \subsection{Generative Adversarial Networks} % 10.33, 10.34, 10.35
-            \todo{Content}
+		\subsection{Generative Adversarial Networks} % 10.33, 10.34, 10.35
+			\todo{Content}
 
-            \subsubsection{Inference} % 10.36
-                \todo{Content}
-            % end
-        % end
-    % end
+			\subsubsection{Inference} % 10.36
+				\todo{Content}
+			% end
+		% end
+	% end
 
-    \section{Applications in Scientific Discovery} % 10.39, 10.40, 10.41, 10.42, 10.43
-        \todo{Content}
-    % end
+	\section{Applications in Scientific Discovery} % 10.39, 10.40, 10.41, 10.42, 10.43
+		\todo{Content}
+	% end
 % end

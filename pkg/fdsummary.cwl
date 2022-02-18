@@ -16,6 +16,7 @@
 #include:attachfile
 #include:bbm
 #include:bitpattern
+#include:booktabs
 #include:bm
 #include:bytefield
 #include:caption
@@ -143,6 +144,7 @@
 \const#m
 \Cov#m
 \Dec#m
+\dom#m
 \diag#m
 \Eig#m
 \emp#m
@@ -152,6 +154,7 @@
 \HMAC#m
 \MAC#m
 \MSE#m
+\marg#m
 \rd#m
 \sign#m
 \Sig#m
@@ -232,6 +235,10 @@
 \until#m
 % For InfMan NLP.
 \ambiguity{%|}#n
+% Stuff for PGM.
+\from#m
+\to#m
+\fromto#m
 
 % BIG!
 \makeatletter

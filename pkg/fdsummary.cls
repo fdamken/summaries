@@ -53,6 +53,7 @@
 \RequirePackage{attachfile}
 \RequirePackage{bbm}
 \RequirePackage{bitpattern}
+\RequirePackage{booktabs}
 \RequirePackage{bm}
 \RequirePackage{bytefield}
 \RequirePackage{caption}
@@ -136,6 +137,9 @@
 
 % If somethis is quoted using "..", interpret it as \csquotes{..} for correct quotes.
 \MakeOuterQuote{"}
+
+% Only number an equation if it is references.
+\mathtoolsset{showonlyrefs,showmanualtags}
 
 % Make it possible to use vertical lines in a matrix. See https://tex.stackexchange.com/a/333383
 \renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
@@ -263,6 +267,7 @@
 \DeclareMathOperator{\const}{const}
 \DeclareMathOperator{\Cov}{Cov}
 \DeclareMathOperator{\Dec}{Dec}
+\DeclareMathOperator{\dom}{dom}
 \DeclareMathOperator{\diag}{diag}
 \DeclareMathOperator{\Eig}{Eig}
 \DeclareMathOperator{\emp}{emp}
@@ -272,6 +277,7 @@
 \DeclareMathOperator{\HMAC}{HMAC}
 \DeclareMathOperator{\MAC}{MAC}
 \DeclareMathOperator{\MSE}{MSE}
+\DeclareMathOperator{\marg}{marg.}
 \DeclareMathOperator{\rd}{rd}
 \DeclareMathOperator{\sign}{sign}
 \DeclareMathOperator{\Sig}{Sig}
@@ -352,6 +358,9 @@
 \newcommand{\until}{\mathcal{U}}
 % For InfMan NLP.
 \newcommand{\ambiguity}[1]{\textcolor{ambiguityorange}{#1}}
+% Stuff for PGM.
+\newcommand{\from}{\leftarrow}
+\newcommand{\fromto}{\leftrightarrow}
 
 % BIG!
 \makeatletter

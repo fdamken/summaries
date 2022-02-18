@@ -10,14 +10,42 @@
     % end
 % end
 
-\chapter{Foundations} % N/A
-    \todo{Content}
+\chapter{Foundations}
+    This chapter covers fundamental concepts of probability theory and machine learning that are required for the later chapters. Note that not all relevant concepts of probability theory are covered.
 
-    \section{Probability Theory} % 1.40
-        \todo{Content}
+    \section{Probability Theory}
+	    This section covers some very important concepts of probability theory, however, one should already be familiar with some basics like probability measures, density functions, joint distributions, marginalization, etc.\footnote{Take a look the chapter of statistics fundamentals of \url{https://fabian.damken.net/summaries/cs/elective/vc/statml/statml-summary.pdf}.}
 
-        \subsection{(Conditional) Independence} % 1.57, 1.58, 1.59, 1.60
-            \todo{Content}
+        One note on notation: whenever a sum represents a marginalization over some random variable \(X\), it is written as
+        \begin{equation}
+        P(Y) = \sum_{X}^{\marg} P(X, Y) \coloneqq \sum_{x \in \val(X)} P(X = x, Y)
+        \end{equation}
+        for brevity.
+
+        \subsection{(Conditional) Independence}
+            The most important concept leveraged in probabilistic graphical models is (conditional) independence of random variables. Two random variables \(X\) and \(Y\) are \emph{statistically independent} if knowing either does not change the belief/probability of the other, i.e.,
+            \begin{gather}
+            	P(X \given Y) = P(X)
+            	\quad\text{and}\quad
+            	P(Y \given X) = P(Y).
+            \end{gather}
+            This is equivalent to the definition of independence, \( P(X, Y) = P(X) \, P(Y) \). Independence is denoted \( X \perp Y \) and is a symmetric properties. A milder property is \emph{conditional} independence, i.e., two random variables \(X\) and \(Y\) are independent if \(Z\) is given:
+            \begin{gather}
+	            P(X \given Y, Z) = P(X \given Z)
+	            \quad\text{and}\quad
+	            P(Y \given X, Z) = P(Y \given Z).
+            \end{gather}
+            Again, this property can be written as \( P(X, Y \given Z) = P(X \given Z) \, P(Y \given Z) \) by the chain rule. Conditional independency is denoted \( X \perp Y \given Z \).
+
+            The following properties hold and can be useful for some proofs later on:
+            \begin{align}
+            	X \perp Y \given Z                                                                & \eqmakebox[indepProps][r]{\(\quad\iff\quad\)}     Y \perp X \given Z  \tag{Symmetry}                                                          \\
+            	X \perp (Y, W) \given Z                                                           & \eqmakebox[indepProps][r]{\(\quad\iff\quad\)}     \bigl( X \perp Y \given Z \bigr) \land \bigl( X \perp W \given Z \bigr) \tag{Decomposition} \\
+            	X \perp (Y, W) \given Z                                                           & \eqmakebox[indepProps][r]{\(\quad\implies\quad\)} X \perp Y \given (Z, W)  \tag{Weak Union}                                                   \\
+            	\bigl( X \perp W \given (Y, Z) \bigr) \land \bigl( X \perp Y \given Z \bigr)      & \eqmakebox[indepProps][r]{\(\quad\implies\quad\)} X \perp (Y, W) \given Z  \tag{Contraction}                                                  \\
+            	\bigl( X \perp Y \given (W, Z) \bigr) \land \bigl( X \perp W \given (Y, Z) \bigr) & \eqmakebox[indepProps][r]{\(\quad\implies\quad\)} X \perp (Y, W) \given Z  \tag{Intersection}
+            \end{align}
+            \todo{The intersection property only holds for positive distributions, but what does hits mean?}
 
             \subsubsection{Monty Hall Problem} % 1.61, 1.62, 1.63, 1.64, 1.65, 1.66, 1.67
                 \todo{Content}
@@ -25,15 +53,70 @@
         % end
 
         \subsection{Inference} % 1.70, 1.71, 1.72
-            \todo{Content}
+        	\todo{Content}
 
-            \subsubsection{Information Theory} % 1.73, 1.74, 1.75
-                \todo{Content}
+            \subsubsection{Information Theory}
+                Information theory is trying to quantify how much information is encoded in some distribution \(P(X)\). The central measure is \emph{entropy}:
+                \begin{equation}
+                	H_P(X)
+                		= \E\bigl[ \log(1/P(X)) \bigr]
+                		= \sum_{x \in \val(X)} P(X) \,\log \frac{1}{\log P(X)}
+                		= -\sum_{x \in \val(X)} P(X) \,\log P(X)
+                \end{equation}
+                If the logarithm is of base two, the entropy encodes how much bits are required \emph{on average} to encode \(X\) when \(X\) follows the distribution \(P(X)\). Similarly, \emph{conditional entropy} can be defined as
+                \begin{equation}
+                	H_P(X \given Y)
+                		= \E\bigl[ \log(1/P(X \given Y)) \bigr]
+                		= H_P(X, Y) - H_P(X)
+                \end{equation}
+                where \( H_P(X, Y) \) is the joint entropy over \(X\) and \(Y\). Like for probabilities, a \emph{chain rule of entropies} is derivable:
+                \begin{equation}
+                	H_P(X, Y, Z) = H_P(X) + H_P(Y \given X) + H_P(Z \given X, Y).
+                \end{equation}
+                To quantify (in)dependency between two variables \(X\) and \(Y\), the \emph{mutual information}
+                \begin{equation}
+                	I_P(X; Y) = H_P(X) - H_P(X \given Y)
+                \end{equation}
+                can be used. This quantity is symmetric and is zero if and only if \(X\) and \(Y\) are independent.
             % end
         % end
 
-        \subsection{Potentials} % 4.19, 4.20, 4.21, 4.22, 4.23
-            \todo{Content}
+        \subsection{Potentials}
+            A \emph{potential} is an alternative way of representing (conditional) probabilities aside from conditional probability tables (CPTs). A potential \(\phi_{X, Y, Z}\) is is a function that maps each configuration \( (x, y, z) \in \val(X) \times \val(Y) \times \val(Z) \) to a non-negative real number. The set of random variables targeted by a potential is its \emph{domain}, i.e., \( \dom f_{X, Y, Z} = \{ X, Y, Z \} \). Note that a (conditional) probability distribution is a special case of potentials where the potential is normalized. Vice versa, a potential can always be normalized into a CPT. This is illustrated in \autoref{fig:potetial}.
+
+            Similar to CPTs, potentials can be multiplied by pairing up the entries and marginalized by summing up the corresponding entries. Compared to CPTs, it is not necessary to normalize a potential into a probability distribution afterwards, easing some calculations.
+
+            Potentials will come in handy later on when covering inference in junction trees (\autoref{sec:junctionTrees}).
+
+            \begin{figure}
+            	\begin{tikzpicture}
+	            	\node (cpt) {
+	            		\begin{tabular}{c|cc}
+	            			    \( P(X = x \given Y = y, Z = z) \)      & \( x = \mathfrak{f} \) & \( x = \mathfrak{t} \) \\ \midrule
+	            			\( (Y, Z) = (\mathfrak{t}, \mathfrak{t}) \) &        \(0.8\)         &        \(0.2\)         \\
+	            			\( (Y, Z) = (\mathfrak{t}, \mathfrak{f}) \) &        \(0.5\)         &        \(0.5\)         \\
+	            			\( (Y, Z) = (\mathfrak{t}, \mathfrak{t}) \) &        \(0.2\)         &        \(0.8\)         \\
+	            			\( (Y, Z) = (\mathfrak{t}, \mathfrak{f}) \) &        \(0.7\)         &        \(0.3\)
+	            		\end{tabular}
+	            	};
+            		\node [right = 2 of cpt] (transfer) {\( \longleftrightarrow \)};
+            		\node [right = 2 of transfer] (potential) {
+            			\begin{tabular}{ccc|c|c}
+            				     \(X\)       &      \(Y\)       &      \(Z\)       & \(\phi_{X, Y, Z}\) & \(\tilde{\phi}_{X, Y, Z}\) \\ \midrule
+            				\(\mathfrak{t}\) & \(\mathfrak{t}\) & \(\mathfrak{t}\) &      \(0.8\)       &           \(8\)            \\
+            				\(\mathfrak{t}\) & \(\mathfrak{t}\) & \(\mathfrak{f}\) &      \(0.2\)       &           \(2\)            \\
+            				\(\mathfrak{t}\) & \(\mathfrak{f}\) & \(\mathfrak{t}\) &      \(0.5\)       &           \(5\)            \\
+            				\(\mathfrak{t}\) & \(\mathfrak{f}\) & \(\mathfrak{f}\) &      \(0.5\)       &           \(5\)            \\
+            				\(\mathfrak{f}\) & \(\mathfrak{t}\) & \(\mathfrak{t}\) &      \(0.2\)       &           \(2\)            \\
+            				\(\mathfrak{f}\) & \(\mathfrak{t}\) & \(\mathfrak{f}\) &      \(0.8\)       &           \(8\)            \\
+            				\(\mathfrak{f}\) & \(\mathfrak{f}\) & \(\mathfrak{t}\) &      \(0.7\)       &           \(7\)            \\
+            				\(\mathfrak{f}\) & \(\mathfrak{f}\) & \(\mathfrak{f}\) &      \(0.3\)       &           \(3\)
+            			\end{tabular}
+            		};
+            	\end{tikzpicture}
+            	\caption{Comparison of a CPT (left) and the corresponding potential (right). The rightmost column in the potential \( \tilde{\phi} \) is equivalent to \( \phi \) as it can be normalized accordingly.}
+            	\label{fig:potetial}
+            \end{figure}
         % end
     % end
 
@@ -226,6 +309,8 @@
     % end
 
     \section{Junction Trees} % 4.87, 4.88, 4.89, 4.90
+    	\label{sec:junctionTrees}
+
         \todo{Content}
 
         \subsection{Collecting Evidence} % 4.91, 4.92, 4.93, 4.94, 4.95, 4.96

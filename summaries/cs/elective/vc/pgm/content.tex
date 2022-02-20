@@ -55,7 +55,7 @@
 				\bigl( X \perp W \given (Y, Z) \bigr) \land \bigl( X \perp Y \given Z \bigr)      & \eqmakebox[indepProps][r]{\(\quad\implies\quad\)} X \perp (Y, W) \given Z  \tag{Contraction}                                                  \\
 				\bigl( X \perp Y \given (W, Z) \bigr) \land \bigl( X \perp W \given (Y, Z) \bigr) & \eqmakebox[indepProps][r]{\(\quad\implies\quad\)} X \perp (Y, W) \given Z  \tag{Intersection}
 			\end{align}
-			\todo{The intersection property only holds for positive distributions, but what does hits mean?}
+			Note that the intersection property only holds for positive distributions (i.e., \(P(X = x) > 0\) for all \(x\)).
 
 			\subsubsection{Monty Hall Problem} % 1.61, 1.62, 1.63, 1.64, 1.65, 1.66, 1.67
 				\todo{Content}
@@ -460,80 +460,463 @@
 	% end
 % end
 
-\chapter{Inference} % 3.30, 3.31, 3.32, 3.33
-	\todo{Content}
+\chapter{Inference}
+	\emph{Inference} is concerned with answering statistical queries in a probabilistic model. As this summary is on probabilistic model, it is concerned with inference in graphical models. However, inference in Bayesian networks is---in general---pretty hopeless aka. NP-hard (even approximate inference). In practice, however, special structures can be exploited producing many effective (approximate) inference algorithms. This chapter covers exact inference whereas approximate inference is covered later in \autoref{c:approxInference}.
 
-	\section{Chain Models} % 3.34, 3.35, 3.36, 3.37
-		\todo{Content}
+	A general probabilistic query is \( P(X \given e) \) computing some probability given some evidence \(e\). The straightforward way to compute the conditional is to directly use its definition,
+	\begin{equation}
+		P(X \given e) = \frac{P(X, e)}{P(e)}.
+	\end{equation}
+	This requires computing the joint distribution and marginalizing out \(X\) to get the normalization factor. In general, such a computation has exponential complexity in the number of random variables!
+
+	For all complexity arguments in the following sections, let \(k\) be the number of configurations of a single random variable, \( k = \lvert \val(X) \rvert \), and assume that all random variables have the same number of values.
+
+	\section{Chain Models}
+		The simplest BN to perform efficient exact inference in is a chain model
+		\begin{center}
+			\begin{tikzpicture}[->]
+				\node [rv] (X1) {\(X_1\)};
+				\node [rv, right = 1 of X1] (X2) {\(X_2\)};
+				\node [rv, right = 1 of X2] (X3) {\(X_3\)};
+				\node [rv, draw = white, right = 1 of X3] (Xd) {\(\cdots\)};
+				\node [rv, right = 1 of Xd] (Xn) {\(X_n\)};
+
+				\draw (X1) to (X2);
+				\draw (X2) to (X3);
+				\draw (X3) to (Xd);
+				\draw (Xd) to (Xn);
+			\end{tikzpicture}
+		\end{center}
+		that factors as
+		\begin{equation}
+			P(X_1, X_2, \dots, X_n) = P(X_1) \prod_{i = 2}^{n} P(X_i \given X_{i - 1}).
+		\end{equation}
+		However, to computing \(P(X_n)\) still requires an exponential number of operations, \( \mathcal{O}(k^n) \):
+		\begin{align}
+			P(X_n)
+				&= \sum_{X_1}^{\marg} \sum_{X_2}^{\marg} \cdots \sum_{X_{n - 1}}^{\marg} P(X_1, X_2, \dots, X_{n - 1}, X_n) \\
+				&= \sum_{X_1}^{\marg} \sum_{X_2}^{\marg} \cdots \sum_{X_{n - 1}}^{\marg} P(X_1) \, P(X_2 \given X_1) \, \cdots \, P(X_n \given X_{n - 1}).
+		\end{align}
+		Instead, it is advisable to reverse the sums and to pull the independent factors out of the marginalization. This corresponds to iteratively computing \( P(X_1) \), \( P(X_2) \), \dots, \( P(X_n) \):
+		\begin{equation}
+			P(X_{i + 1}) = \sum_{X_i}^{\marg} P(X_{i + 1} \given X_i) \, P(X_i).
+		\end{equation}
+		This process is linear in the number of random variables and quadratic in the number of values of a random variable, \( \mathcal{O}(nk^2) \)! Hence, at least for simple chain models, inference is tractable.
 	% end
 
-	\section{Variable Elimination} % 3.38, 3.39, 3.40, 3.41, 3.42, 3.43, 3.44, 3.45, 3.46, 3.54, 3.57
-		\todo{Content}
+	\section{Variable Elimination}
+		\label{sec:variableElimination}
 
-		\subsection{Evidence} % 3.47, 3.48, 3.49, 3.50, 3.51, 3.52, 3.53
-			\todo{Content}
-		% end
+		\emph{Variable elimination} extends the idea introduced in the chain models of pulling factors out of the marginalization sums. To incorporate evidence \(e\), the corresponding RVs are simply set to the respective values and marginalization over these variables is removed. See section 8.2.1 in \emph{Data Mining and Machine Learning}\footnote{\url{https://fabian.damken.net/summaries/cs/elective/iws/dmml/dmml-summary.pdf}} for a more thorough treatment of this topic. By convention, the factor that appears by eliminating a variable \(X\) that still depends on other RVs \( Y_1, Y_2, \dots, Y_k \) is named \( f_X(Y_1, Y_2, \dots, Y_k) \). Pseudocode for variable elimination is shown in \autoref{alg:variableElimination}.
 
-		\subsection{Complexity} % 3.55, 3.56
-			\todo{Content}
-		% end
+		One of the most important steps in variable elimination is pruning the non-active variables (\autoref{algline:vePrune}). This means removing all random variables that are independent of all variables in \( \vec{X} \cup \vec{E} \) as the distributions over these random variables simply reduce to a multiplication with \num{1}, not changing the results. However, this can reduce the number of required operations to a tractable amount.
 
-		\subsection{VE for Potentials} % 4.24, 4.25
-			\todo{Content}
-		% end
+		The most important aspect determining the efficiency of variable elimination is, intuitively, the choice of the elimination ordering (this is covered in more detail in \autoref{sec:veMoral}). For relatively simple networks like polytrees\footnote{A polytree is the directed variant of a tree. That is, a DAG is a polytree if its underlying undirected graph is a tree.}, inference is linear in \emph{representation} size (i.e., in the number of entries across all CPTs)! In general, however, variable elimination exponential in the number of variables in the intermediate factors---hence its complexity is dominated by the largest intermediate factor. This again is discussed in more detail in \autoref{sec:veMoral}.
+
+		While variable elimination on a general Bayesian network is still exponential in time w.r.t. the number of variables in the intermediate factors, it is linear (in representation size!) in polytree networks.
+
+		Also note that variable elimination can also directly be applied to potentials. It is not required that the original factors actually represent CPTs.
+
+		\begin{algorithm}  \DontPrintSemicolon
+			\KwIn{Bayesian network with RVs \( X_1, X_2, \dots, X_n \) and query \( P(\vec{X} \given \vec{E} = \vec{e}) \)}
+			\KwOut{Probability \( P(\vec{X} \given \vec{E} = \vec{e}) \)}
+			Instantiate evidence \( \vec{E} = \vec{e} \). \;
+			Prune non-active variables (w.r.t. \( \vec{X} \cup \vec{E} \)), giving \( X_1, X_2, \dots, X_{\tilde{n}} \), \( \tilde{n} \leq n \).  \label{algline:vePrune} \;
+			Choose an ordering \( X_1, X_2, \dots, X_{\tilde{n}} \). \;
+			\tcp{Initialize factors:}
+			\( \mathcal{F}^{(0)} \gets \bigl\{ f_i = P\bigl( X_i \given \Pa(X_i) \bigr) : i = 1, 2, \dots, \tilde{n} \bigr\} \) \;
+			\For{\( i = 1, 2, \dots, \tilde{n} \)}{
+				\If{\( X_i \in \vec{X} \cup \vec{E} \)}{
+					\textbf{skip} \;
+				}
+				Collect factors \( f_1, f_2, \dots, f_k \in \mathcal{F}^{(i - 1)} \) containing \(X_i\). \;
+				\tcp{Generate a new factor \(g\) by eliminating \(X_i\):}
+				\( g = \sum_{X_i}^{\marg} \prod_{i = 1}^{k} f_j \) \;
+				\tcp{Replace factors in factor set:}
+				\( \mathcal{F}^{(i)} \gets \bigl( \mathcal{F}^{(i - 1)} \setminus \{ f_1, f_2, \dots, f_k \} \bigr) \cup \{ g \} \) \;
+			}
+			Read only remaining factor \( P(\vec{X}, \vec{E} = \vec{e}) \) from \( \mathcal{F}^{(\tilde{n})} \). \;
+			Normalize \( P(\vec{X}, \vec{E} = \vec{e}) \) to get \( P(\vec{X} \given \vec{E} = \vec{e}) \). \;
+			\caption{Variable Elimination}
+			\label{alg:variableElimination}
+		\end{algorithm}
 	% end
 
-	\section{Abductive Inference} % 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.12, 4.17, 4.58
-		\todo{Content}
+	\section{Abductive Inference}
+		So far, only the calculation of a-posterior beliefs/probabilities has been covered. That is, computing queries of the form \( P(\vec{X} \given \vec{E} = \vec{e}) \) (where \(\vec{E}\) is a, possibly empty, set of evidence). While this type of inference is useful in many cases (e.g., to perform predictions by computing the probability of an outcome, diagnosing a disease by computing the probability given some symptoms, \dots), it is also desirable to perform \emph{abductive} inference. \emph{Abductive inference} is concerned with finding a configuration of a set of random variables that "best" explains the evidence at hand. This can be done in two fashions:
+		\begin{itemize}
+			\item Most Probable Explanation (MPE): finding the most probable configuration of \emph{all} variables in a Bayesian network given some evidence.
+			\item Maximum A Posteriori (MAP): finding the most probable configuration of a \emph{subset} of variables in a Bayesian network given some evidence.
+		\end{itemize}
+		Note that being able to perform either does not necessarily solve the other (i.e., the MPE cannot be found by individually maximizing all probabilities for all variables and the MAP cannot be found by taking the corresponding subset of the MPE). It is said that MPE and MAP are \emph{not consistent}.
 
-		\subsection{Consistency} % 4.8
-			\todo{Content}
-		% end
+		Finding (approximate) MPEs is quite straightforward by replacing the sums (marginalizations) in variable elimination by \(\max\)'s. In a second backward pass, the sums are replace by \(\argmax\)-operators to find the configuration. A pseudocode version of this approach is given in \autoref{alg:variableEliminationMpe}.
 
-		\subsection{Finding Most Probable Explanations (MPEs)} % 4.9, 4.10, 4.11
-			\todo{Content}
-		% end
+		\begin{algorithm}  \DontPrintSemicolon
+			\KwIn{Bayesian network with RVs \( X_1, X_2, \dots, X_n \) and evidence \( \vec{E} = \vec{e} \)}
+			\KwOut{Most probable explanation \( \vec{x}^\ast \)}
+			Instantiate evidence \( \vec{E} = \vec{e} \). \;
+			Prune non-active variables (w.r.t. \( \vec{X} \cup \vec{E} \)), giving \( X_1, X_2, \dots, X_{\tilde{n}} \), \( \tilde{n} \leq n \). \;
+			Choose an ordering \( X_1, X_2, \dots, X_{\tilde{n}} \). \;
+			\tcp{Initialize factors:}
+			\( \mathcal{F}^{(0)} \gets \bigl\{ f_i = P\bigl( X_i \given \Pa(X_i) \bigr) : i = 1, 2, \dots, \tilde{n} \bigr\} \) \;
+			\For{\( i = 1, 2, \dots, \tilde{n} \)}{
+				\If{\( X_i \in \vec{E} \)}{
+					\textbf{skip} \;
+				}
+				Collect factors \( f_1, f_2, \dots, f_k \in \mathcal{F}^{(i - 1)} \) containing \(X_i\). \;
+				\tcp{Generate a new factor \(g\) by maximizing over \(X_i\):}
+				\( g = \max_{X_i} \; \prod_{i = 1}^{k} f_j \) \;
+				\tcp{Replace factors in factor set:}
+				\( \mathcal{F}^{(i)} \gets \bigl( \mathcal{F}^{(i - 1)} \setminus \{ f_1, f_2, \dots, f_k \} \bigr) \cup \{ g \} \) \;
+			}
+			\tcp{Initilize vector of MPE-values:}
+			\( \vec{x}^\ast \in \val(X_1) \times \val(X_2) \times \cdots \times \val(X_n) \) \;
+			\For{\( i = \tilde{n}, \tilde{n} - 1, \dots, 1 \)}{
+				\If{\( X_i \in \vec{E} \)}{
+					\tcp{Copy evident value to result vector:}
+					\( x_i^\ast \gets e_i \) \;
+				}
+				\Else{
+					\tcp{Compute \(\argmax\) over \(X_i\), incorporating the evidence and already determined values:}
+					\( x_i^\ast \gets \argmax_{X_i} \; \prod_{f \in \mathcal{F}^{i - 1}} f(\vec{x}_{1:i - 1}^\ast, \vec{e}) \) \;
+				}
+			}
+			Set pruned variables \( X_{\tilde{n} + 1}, X_{\tilde{n} + 2}, \dots, X_n \) so arbitrary values. \;
+			\caption{Most Probable Explanations via Variable Elimination}
+			\label{alg:variableEliminationMpe}
+		\end{algorithm}
 	% end
 
-	\section{Complexity of Conditional Queries} % 4.13, 4.14, 4.15, 4.16, 4.17
-		\todo{Content}
+	\section{Complexity of Conditional Queries}
+		In general, inference on conditional query \( P(\vec{X} \given \vec{E} = \vec{e}) \) is NP-hard. This can be shown by reducing 3-SAT to inference in a Bayesian network. 3-SAT is concerned with the question whether a propositional formula (in conjunctive normal form) with at most three literals per clause is satisfiable. For instance, is the following formula satisfiable (with boolean \(X_1, X_2, \dots, X_4\))?
+		\begin{equation}
+			\psi = (\lnot X_1 \lor X_2 \lor X_3) \land (X_2 \lor \lnot X_3 \lor X_4) \land (X_1 \lor \lnot X_2)  \label{eqn:3sat}
+		\end{equation}
+		This problem is known to be NP-hard. This problem can be expressed using a Bayesian network:
+		\begin{center}
+			\begin{tikzpicture}[->]
+				\node [rv]                  (C1) {\(C_1\)};
+				\node [rv, right = 1 of C1] (C2) {\(C_2\)};
+				\node [rv, right = 1 of C2] (C3) {\(C_3\)};
+				\node [rv, right = 1 of C3] (PS) {\(\psi\)};
+				\node [rv, above = 0.5 of C1, xshift = 1.75cm/2] (X1) {\(X_1\)};
+				\node [rv, above = 0.5 of C2, xshift = 1.75cm/2] (X2) {\(X_2\)};
+				\node [rv, below = 0.5 of C1, xshift = 1.75cm/2] (X3) {\(X_3\)};
+				\node [rv, below = 0.5 of C2, xshift = 1.75cm/2] (X4) {\(X_4\)};
+
+				\draw (X1) to (C1);
+				\draw (X2) to (C1);
+				\draw (X3) to (C1);
+				\draw (X2) to (C2);
+				\draw (X3) to (C2);
+				\draw (X4) to (C2);
+				\draw (X1) to (C3);
+				\draw (X2) to (C3);
+				\draw (C1) to (C2);
+				\draw (C2) to (C3);
+				\draw (C3) to (PS);
+			\end{tikzpicture}
+		\end{center}
+		The CPTs of \(C_1\), \(C_2\), and \(C_3\) then encode the clauses of \eqref{eqn:3sat} and \(\psi\) summarizes them into a single random variable. While it seems possible to just direct all random variables into \(\psi\), this would make the reduction non-polynomial, invalidating the proof of NP-hardness. By putting a prior \( P(X_i = \mathfrak{t}) = 0.5 \) over all (boolean) RVs, satisfiability can be queried as \( P(\psi = \mathfrak{t}) > 0 \). Hence, if conditional inference would be tractable, 3-SAT would be too. By contradiction, this shows that conditional inference is NP-hard.
+		\qed
+
+		However, while NP-hard is already pretty hard, it can also be shown that inference is \#P-complete involving counting all satisfying configurations.
+
+		Even though this shows that inference is hard in the general case, it can be solved for problems with special structures (which are very common). For these, efficient (exact) inference algorithms exist.
 	% end
 
-	\section{Moralizing} % 4.26, 4.27, 4.28, 4.29, 4.30, 4.31, 4.32
-		\todo{Content}
-	% end
+	\section{Variable Elimination in Moral Graphs}
+		\label{sec:veMoral}
 
-	\section{Variable Elimination in Moral Graphs} % 4.18, 4.33, 4.34, 4.35, 4.59
-		\todo{Content}
+		The induces moral graph of a Bayesian network is an undirected graph where the members of each clique correspond to the domain of a potential in the Bayesian network. To extract the moral graph from a Bayesian network, it might be necessary to introduce moral links to fulfill this (defining) criterion. A \emph{moral link} is be introduced between unconnected parents of a node\footnote{The term "moralizing" has quite outdated origins and refers to the unmorality of "unmarried" parents.}. The rest of the moral graph is then given as the skeleton (i.e., the underlying undirected graph of a DAG) of the network. An example is given in \autoref{fig:moralizing}. More details on why this moral link is necessary are covered in \autoref{sec:towardsMarkovRandomFields}.
 
-		\subsection{Perfect Elimination Sequences} % 4.36, 4.37, 4.38, 4.39, 4.40, 4.41, 4.42
-			\todo{Content}
-		% end
+		As variable elimination introduces new factors/potentials into the joint probability, these changes have to be reflected in the moral graph after the elimination. If an elimination step introduces a potential with random variables that have not yet been together in a potential, a \emph{fill-in} is introduced to the moral graph representing this new connection. An example of this process is shown in \autoref{fig:fillIns}. An elimination ordering is said to be \emph{perfect} if it does not introduce any fill-ins (see \autoref{fig:perfectSequence} for an example with the same graph used in \autoref{fig:fillIns}).
 
-		\subsection{Complexity} % 4.43, 4.44, 4.45
-			\todo{Content}
-		% end
+		\begin{figure}
+			\centering
+			\begin{subfigure}{0.49\linewidth}
+				\centering
+				\begin{tikzpicture}[->]
+					\node [rv] (X1) {\(X_1\)};
+					\node [rv, below left = 1 of X1] (X2) {\(X_2\)};
+					\node [rv, below right = 1 of X1] (X3) {\(X_3\)};
+					\node [rv, below left = 1 of X2] (X4) {\(X_4\)};
+					\node [rv, below right = 1 of X2] (X5) {\(X_5\)};
+					\node [rv, below right = 1 of X3] (X6) {\(X_6\)};
 
-		\subsection{Induced Graph} % 4.46, 4.47, 4.48
-			\todo{Content}
-		% end
+					\draw (X1) to (X2);
+					\draw (X1) to (X3);
+					\draw (X2) to (X4);
+					\draw (X2) to (X5);
+					\draw (X3) to (X5);
+					\draw (X3) to (X6);
+				\end{tikzpicture}
+				\caption{Bayesian Network}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}{0.49\linewidth}
+				\centering
+				\begin{tikzpicture}
+					\node [rv] (X1) {\(X_1\)};
+					\node [rv, below left = 1 of X1] (X2) {\(X_2\)};
+					\node [rv, below right = 1 of X1] (X3) {\(X_3\)};
+					\node [rv, below left = 1 of X2] (X4) {\(X_4\)};
+					\node [rv, below right = 1 of X2] (X5) {\(X_5\)};
+					\node [rv, below right = 1 of X3] (X6) {\(X_6\)};
 
-		\subsection{Induced Treewidth} % 4.49
-			\label{subsec:treewidth}
+					\draw (X1) to (X2);
+					\draw (X1) to (X3);
+					\draw (X2) to (X4);
+					\draw (X2) to (X5);
+					\draw (X3) to (X5);
+					\draw (X3) to (X6);
 
-			\todo{Content}
-		% end
+					\draw [TUDa-9b] (X2) to (X3);
+				\end{tikzpicture}
+				\caption{Moral Graph}
+			\end{subfigure}
+			\caption[Example for Moralizing]{Example for creating a moral graph (right) from a Bayesian network (left) by moralizing. All edges are turned into undirected edges and a moral link (depicted in {\color{TUDa-9b} red}) has to be introduced between the "unmarried" parents \(X_2\) and \(X_3\) or \(X_5\).}
+			\label{fig:moralizing}
+		\end{figure}
 
-		\subsection{Elimination on Trees} % 4.50, 4.51, 4.52
-			\todo{Content}
+		\begin{figure}
+			\centering
+			\begin{subfigure}{0.49\linewidth}
+				\centering
+				\begin{tikzpicture}
+					\node [rv] (X1) {\(X_1\)};
+					\node [rv, below left = 1 of X1] (X2) {\(X_2\)};
+					\node [rv, below right = 1 of X1, TUDa-9b] (X3) {\(X_3\)};
+					\node [rv, below left = 1 of X2] (X4) {\(X_4\)};
+					\node [rv, below right = 1 of X2] (X5) {\(X_5\)};
+					\node [rv, below right = 1 of X3] (X6) {\(X_6\)};
 
-			\subsubsection{Polytrees} % 4.53
-				\todo{Content}
+					\draw (X1) to (X2);
+					\draw [TUDa-9b] (X1) to (X3);
+					\draw (X2) to (X4);
+					\draw (X2) to (X5);
+					\draw [TUDa-9b] (X3) to (X5);
+					\draw [TUDa-9b] (X3) to (X6);
+					\draw [TUDa-9b] (X2) to (X3);
+				\end{tikzpicture}
+				\caption{About to eliminate \(X_3\). The affected node and edges are depicted in {\color{TUDa-9b} red}.}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}{0.49\linewidth}
+				\centering
+				\begin{tikzpicture}
+					\node [rv] (X1) {\(X_1\)};
+					\node [rv, below left = 1 of X1] (X2) {\(X_2\)};
+					\node [rv, below left = 1 of X2] (X4) {\(X_4\)};
+					\node [rv, below right = 1 of X2] (X5) {\(X_5\)};
+					\node [rv, below right = 1 of X3] (X6) {\(X_6\)};
+
+					\draw (X1) to (X2);
+					\draw (X2) to (X4);
+					\draw (X2) to (X5);
+
+					\draw [TUDa-9b] (X1) to (X6);
+					\draw [TUDa-9b] (X1) to (X5);
+					\draw [TUDa-9b] (X2) to (X6);
+					\draw [TUDa-9b] (X5) to (X6);
+				\end{tikzpicture}
+				\caption{After eliminating \(X_3\). The introduces fill-ins are depicted in {\color{TUDa-9b} red}.}
+			\end{subfigure}
+			\caption[Example for Elimination in Moral Graphs]{Example for eliminating a variable in a moral graph.}
+			\label{fig:fillIns}
+		\end{figure}
+
+		\begin{figure}
+			\centering
+			\begin{subfigure}{0.49\linewidth}
+				\centering
+				\begin{tikzpicture}
+					\node [rv, TUDa-9b] (X1) {\(X_1\)};
+					\node [rv, below left = 1 of X1] (X2) {\(X_2\)};
+					\node [rv, below right = 1 of X1] (X3) {\(X_3\)};
+					\node [rv, below left = 1 of X2] (X4) {\(X_4\)};
+					\node [rv, below right = 1 of X2] (X5) {\(X_5\)};
+					\node [rv, below right = 1 of X3] (X6) {\(X_6\)};
+
+					\draw [TUDa-9b] (X1) to (X2);
+					\draw [TUDa-9b] (X1) to (X3);
+					\draw (X2) to (X4);
+					\draw (X2) to (X5);
+					\draw (X3) to (X5);
+					\draw (X3) to (X6);
+					\draw (X2) to (X3);
+				\end{tikzpicture}
+				\caption{About to eliminate \(X_1\).}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}{0.49\linewidth}
+				\centering
+				\begin{tikzpicture}
+					\node [rv, white] (X1) {\(X_1\)};
+					\node [rv, below left = 1 of X1] (X2) {\(X_2\)};
+					\node [rv, below right = 1 of X1] (X3) {\(X_3\)};
+					\node [rv, below left = 1 of X2, TUDa-9b] (X4) {\(X_4\)};
+					\node [rv, below right = 1 of X2] (X5) {\(X_5\)};
+					\node [rv, below right = 1 of X3] (X6) {\(X_6\)};
+
+					\draw [white] (X1) to (X2);
+					\draw [white] (X1) to (X3);
+					\draw [TUDa-9b] (X2) to (X4);
+					\draw (X2) to (X5);
+					\draw (X3) to (X5);
+					\draw (X3) to (X6);
+					\draw (X2) to (X3);
+				\end{tikzpicture}
+				\caption{After eliminating \(X_1\), about to eliminate \(X_4\).}
+			\end{subfigure}
+			\\
+			\begin{subfigure}{0.49\linewidth}
+				\centering
+				\begin{tikzpicture}
+					\node [rv, white] (X1) {\(X_1\)};
+					\node [rv, below left = 1 of X1] (X2) {\(X_2\)};
+					\node [rv, below right = 1 of X1] (X3) {\(X_3\)};
+					\node [rv, below left = 1 of X2, white] (X4) {\(X_4\)};
+					\node [rv, below right = 1 of X2] (X5) {\(X_5\)};
+					\node [rv, below right = 1 of X3, TUDa-9b] (X6) {\(X_6\)};
+
+					\draw [white] (X1) to (X2);
+					\draw [white] (X1) to (X3);
+					\draw [white] (X2) to (X4);
+					\draw (X2) to (X5);
+					\draw (X3) to (X5);
+					\draw [TUDa-9b] (X3) to (X6);
+					\draw (X2) to (X3);
+				\end{tikzpicture}
+				\caption{After eliminating \(X_4\), about to eliminate \(X_6\).}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}{0.49\linewidth}
+				\centering
+				\begin{tikzpicture}
+					\node [rv, white] (X1) {\(X_1\)};
+					\node [rv, below left = 1 of X1, TUDa-9b] (X2) {\(X_2\)};
+					\node [rv, below right = 1 of X1] (X3) {\(X_3\)};
+					\node [rv, below left = 1 of X2, white] (X4) {\(X_4\)};
+					\node [rv, below right = 1 of X2] (X5) {\(X_5\)};
+					\node [rv, below right = 1 of X3, white] (X6) {\(X_6\)};
+
+					\draw [white] (X1) to (X2);
+					\draw [white] (X1) to (X3);
+					\draw [white] (X2) to (X4);
+					\draw [TUDa-9b] (X2) to (X5);
+					\draw (X3) to (X5);
+					\draw [white] (X3) to (X6);
+					\draw [TUDa-9b] (X2) to (X3);
+				\end{tikzpicture}
+				\caption{After eliminating \(X_6\), about to eliminate \(X_2\).}
+			\end{subfigure}
+			\\
+			\begin{subfigure}{0.49\linewidth}
+				\centering
+				\begin{tikzpicture}
+					\node [rv, white] (X1) {\(X_1\)};
+					\node [rv, below left = 1 of X1, white] (X2) {\(X_2\)};
+					\node [rv, below right = 1 of X1, TUDa-9b] (X3) {\(X_3\)};
+					\node [rv, below left = 1 of X2, white] (X4) {\(X_4\)};
+					\node [rv, below right = 1 of X2] (X5) {\(X_5\)};
+					\node [rv, below right = 1 of X3, white] (X6) {\(X_6\)};
+
+					\draw [white] (X1) to (X2);
+					\draw [white] (X1) to (X3);
+					\draw [white] (X2) to (X4);
+					\draw [white] (X2) to (X5);
+					\draw [TUDa-9b] (X3) to (X5);
+					\draw [white] (X3) to (X6);
+					\draw [white] (X2) to (X3);
+				\end{tikzpicture}
+				\caption{After eliminating \(X_2\), about to eliminate \(X_3\).}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}{0.49\linewidth}
+				\centering
+				\begin{tikzpicture}
+					\node [rv, white] (X1) {\(X_1\)};
+					\node [rv, below left = 1 of X1, white] (X2) {\(X_2\)};
+					\node [rv, below right = 1 of X1, white] (X3) {\(X_3\)};
+					\node [rv, below left = 1 of X2, white] (X4) {\(X_4\)};
+					\node [rv, below right = 1 of X2] (X5) {\(X_5\)};
+					\node [rv, below right = 1 of X3, white] (X6) {\(X_6\)};
+
+					\draw [white] (X1) to (X2);
+					\draw [white] (X1) to (X3);
+					\draw [white] (X2) to (X4);
+					\draw [white] (X2) to (X5);
+					\draw [white] (X3) to (X5);
+					\draw [white] (X3) to (X6);
+					\draw [white] (X2) to (X3);
+				\end{tikzpicture}
+				\caption{After eliminating \(X_3\), elimination finished.}
+			\end{subfigure}
+			\caption[Example for a Perfect Elimination Sequence]{Example for a perfect elimination sequence executed in a moral graph. The variable that should be eliminated is always depicted in {\color{TUDa-9b} red} and is eliminated in the upcoming graph.}
+			\label{fig:perfectSequence}
+		\end{figure}
+
+		\subsection{Complexity}
+			As already pointed out in \autoref{sec:variableElimination}, the driving factor of the complexity of VE is the number of variables in the intermediate factors. Hence, for VE on moral graphs, the complexity is determined by the number of variables in the domains of the potentials producing during the elimination. This leads to a set of domains where all sets that are subsets of other sets can be removed (as they do not affect the complexity). For the elimination ordering shown in \autoref{fig:perfectSequence}, these are, in order of appearance, the following sets:
+			\begin{align}
+				&\bigl\{ \{ X_1, X_2, X_3 \},\, \{ X_2, X_4 \}, \{ X_3, X_6 \}, \{ X_2, X_3, X_5 \}, \{ X_3, X_5 \}, \{ X_5 \} \bigr\} \\
+				\longrightarrow\qquad
+				&\bigl\{ \{ X_1, X_2, X_3 \},\, \{ X_2, X_4 \}, \{ X_3, X_6 \}, \{ X_2, X_3, X_5 \} \bigr\}
+			\end{align}
+			It turns out that all perfect elimination orderings (i.e., those that do not produce fill-ins), have the same set of potential domains. Also, all perfect elimination orderings ending some random variable \(X\) are \emph{optimal} in terms of computing \( P(X) \).
+
+			For the imperfect elimination ordering \( (X_3, X_4, X_6, X_1, X_2, X_5) \) (for which the first elimination is shown in \autoref{fig:fillIns}), the following sets of potentials are created:
+			\begin{align}
+				&\bigl\{ \{ X_1, X_2, X_3, X_5, X_6 \},\, \{ X_2, X_4 \}, \{ X_1, X_2, X_5, X_6 \}, \{ X_1, X_2, X_5 \}, \{ X_2, X_5 \}, \{ X_5 \} \bigr\} \\
+				\longrightarrow\qquad
+				&\bigl\{ \{ X_1, X_2, X_3, X_5, X_6 \},\, \{ X_2, X_4 \} \bigr\}
+			\end{align}
+			Intuitively, the number of items of this clique are closely related to the complexity of VE (a small clique set corresponds to large connectivity in the graph, hence large factors).
+
+			\subsubsection{Induced Graph and Treewidth}
+				To further formalize the aforementioned idea, the notion of an induced graph is introduced. The \emph{induced graph} of some moral graph is the graph including all connections of the clique set, i.e., the moral graph with all fill-ins inserted. Hence, the moral graph is also a sub-graph of the induced graph. For the perfect elimination ordering of \autoref{fig:perfectSequence}, the induced graph is also the moral graph (as no fill-ins were added). However, for the imperfect elimination sequence \( (X_3, X_4, X_6, X_1, X_2, X_5) \), the induced graph has more connections as shown in \autoref{fig:imperfectInducedGraph}.
+
+				It is clear that the size of the maximum clique differs for the perfect and imperfect elimination sequence. This quantity (minus one) is called the \emph{treewidth} of a graph and is called \emph{induced} treewidth for a Bayesian network combined with an elimination ordering (which highly influences the treewidth of the moral graph). Hence, finding a good elimination ordering is equivalent to minimizing the treewidth of the induced graph.
+
+				\begin{figure}
+					\centering
+					\begin{tikzpicture}
+						\node [rv] (X1) {\(X_1\)};
+						\node [rv, below left = 1 of X1] (X2) {\(X_2\)};
+						\node [rv, below right = 1 of X1] (X3) {\(X_3\)};
+						\node [rv, below left = 1 of X2] (X4) {\(X_4\)};
+						\node [rv, below right = 1 of X2] (X5) {\(X_5\)};
+						\node [rv, below right = 1 of X3] (X6) {\(X_6\)};
+
+						\draw (X1) to (X2);
+						\draw (X1) to (X3);
+						\draw (X2) to (X4);
+						\draw (X2) to (X5);
+						\draw (X3) to (X5);
+						\draw (X3) to (X6);
+						\draw (X2) to (X3);
+
+						\draw (X1) to[bend left] (X6);
+						\draw (X1) to (X5);
+						\draw (X2) to (X6);
+						\draw (X5) to (X6);
+					\end{tikzpicture}
+					\caption[Induced Graph for Imperfect Elimination Ordering]{Induced graph for the imperfect elimination ordering \( (X_3, X_4, X_6, X_1, X_2, X_5) \).}
+					\label{fig:imperfectInducedGraph}
+				\end{figure}
 			% end
-		% end
 
-		\subsection{General Networks} % 4.54, 4.55, 4.56, 4.57
-			\todo{Content}
+			\subsubsection{(Poly-) Trees}
+				A direct consequence of the tight coupling between the complexity of VE and the treewidth is that inference on a "tree" Bayesian network (one in which every node has at most one parent) is linear in the number of variables (as the treewidth is \num{1} for a tree)! Finding an elimination ordering is also straightforward: by starting from the leaves, each factor only involves two RVs. It is also guaranteed that a tree has a leave, so the ordering cannot stall.
+
+				For polytree Bayesian networks (ones of which the skeleton is a tree but a node may have more than one parent), the treewidth is \num{2} and inference is linear in CPT size (i.e., representation size of the network). Opposed to a tree BN, the treewidth \emph{is not} \num{1} as moral links have to be added between "unmarried" parents.
+			% end
+
+			\subsubsection{General Networks}
+				For general networks, the treewidth is usually greater than \num{1}. In fact, for any graph that has a cycle, the treewidth is at least \num{2}. Form graph theory, it is known that finding an optimal ordering minimizing the treewidth is NP-hard, so again, in general, inference is intractable. However, there are some neat heuristics that can be applied for finding "good" (but not necessarily optimal) orderings. There also exist algorithm that---if the graph has low treewidth---find the optimal ordering in polynomial time.
+			% end
 		% end
 	% end
 % end
@@ -542,6 +925,8 @@
 	\todo{Content}
 
 	\section{Bayesian Networks as MRFs} % 4.65, 4.66, 4.67, 4.68, 4.69, 4.70
+		\label{sec:towardsMarkovRandomFields}
+
 		\todo{Content}
 	% end
 
@@ -825,6 +1210,8 @@
 % end
 
 \chapter{Approximate Inference} % 8.1, 8.2
+	\label{c:approxInference}
+
 	\todo{Content}
 
 	\section{Message Passing} % 8.3, 8.4, 8.5, 8.6, 8.7, 8.8, 8.9, 8.10, 8.11

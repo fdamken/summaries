@@ -142,6 +142,7 @@
 \argmax#m
 \argmin#m
 \Bias#m
+\Cliques#m
 \cond#m
 \const#m
 \Ch#m
@@ -154,6 +155,7 @@
 \emp#m
 \Enc#m
 \eps#m
+\Family#m
 \gl#m
 \HMAC#m
 \MAC#m
@@ -162,6 +164,7 @@
 \ND#m
 \rd#m
 \Pa#m
+\Sep#m
 \sign#m
 \Sig#m
 \sinc#m

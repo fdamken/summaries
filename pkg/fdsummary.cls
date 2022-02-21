@@ -265,6 +265,7 @@
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator{\Bias}{Bias}
+\DeclareMathOperator{\Cliques}{Cliques}
 \DeclareMathOperator{\cond}{cond}
 \DeclareMathOperator{\const}{const}
 \DeclareMathOperator{\Ch}{Ch}
@@ -277,6 +278,7 @@
 \DeclareMathOperator{\emp}{emp}
 \DeclareMathOperator{\Enc}{Enc}
 \DeclareMathOperator{\eps}{eps}
+\DeclareMathOperator{\Family}{Family}
 \DeclareMathOperator{\gl}{gl}
 \DeclareMathOperator{\HMAC}{HMAC}
 \DeclareMathOperator{\MAC}{MAC}
@@ -285,6 +287,7 @@
 \DeclareMathOperator{\ND}{ND}
 \DeclareMathOperator{\rd}{rd}
 \DeclareMathOperator{\Pa}{Pa}
+\DeclareMathOperator{\Sep}{Sep}
 \DeclareMathOperator{\sign}{sign}
 \DeclareMathOperator{\Sig}{Sig}
 \DeclareMathOperator{\sinc}{sinc}

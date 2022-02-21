@@ -5,6 +5,15 @@
 	minimum width = 0.75cm,
 	minimum height = 0.75cm
 ]
+\tikzstyle{sep} = [
+	draw,
+	rectangle
+]
+\tikzstyle{fam} = [
+	draw,
+	rectangle,
+	rounded corners = 5pt
+]
 
 \chapter{Introduction} % 1.1, 1.2, 1.28, 1.29, 1.30, 1.38
 	\todo{Content}
@@ -915,45 +924,392 @@
 			% end
 
 			\subsubsection{General Networks}
-				For general networks, the treewidth is usually greater than \num{1}. In fact, for any graph that has a cycle, the treewidth is at least \num{2}. Form graph theory, it is known that finding an optimal ordering minimizing the treewidth is NP-hard, so again, in general, inference is intractable. However, there are some neat heuristics that can be applied for finding "good" (but not necessarily optimal) orderings. There also exist algorithm that---if the graph has low treewidth---find the optimal ordering in polynomial time.
+				For general networks, the treewidth is usually greater than \num{1}. In fact, for any graph that has a cycle, the treewidth is at least \num{2}. Form graph theory, it is known that finding an optimal ordering minimizing the treewidth is NP-hard, so again, in general, inference is intractable. However, there are some neat heuristics that can be applied for finding "good" (but not necessarily optimal) orderings. There also exist algorithm that---if the graph has low treewidth---find the optimal ordering in polynomial time. Also, incorporating CSIs can reduce the complexity to be tractable even for graphs with large treewidth.
+
+				A summary of the complexity results is given in \autoref{fig:inferenceComplexity}.
+
+				\begin{table}
+					\centering
+					\begin{tabular}{c|c|c}
+						\toprule
+						                                &          \multicolumn{2}{c}{\textbf{Graph Type}}          \\
+						        \textbf{Query}          &         \textbf{General}         & \textbf{Low Treewidth} \\ \midrule
+						    Probabilistic Inference     &           \#P-Complete           &          Easy          \\
+						Most Probable Explanation (MPE) &           NP-Complete            &          Easy          \\
+						  Maximum A Posteriori (MAP)    & \(\text{NP}^\text{PP}\)-Complete &        NP-Hard         \\ \bottomrule
+					\end{tabular}
+					\begin{center}
+						For approximate probabilistic inference, hardness depends on the error: \\
+						\eqmakebox[complexSummaryA][r]{Absolute Error, \( \lvert \hat{P} - P \rvert \leq \epsilon \):\quad}
+						\eqmakebox[complexSummaryB][l]{NP-Hard for \( \epsilon < 0.5 \)} \\
+						\eqmakebox[complexSummaryA][r]{Relative Error, \( \lvert \hat{P} - P \rvert / P \leq \epsilon \):\quad}
+						\eqmakebox[complexSummaryB][l]{NP-Hard for \( \epsilon > 0 \)}
+					\end{center}
+					\vspace{-0.4cm}
+					\caption[Summary of Inference Complexities]{Summary of complexities for various inference queries.}
+					\label{fig:inferenceComplexity}
+				\end{table}
 			% end
 		% end
 	% end
 % end
 
-\chapter{Markov Random Fields} % 4.60, 4.61, 4.62, 4.63, 4.64, 4.99
-	\todo{Content}
+\chapter{Markov Random Fields}
+	Bayesian networks are not allowed to have cycles as they would not make any sense. Another variant of PGMs, Markov Random Fields (MRFs), allow cycles and are undirected. Instead of encoding dependencies, the edges in a Markov network encode which random variables occur together in a potential. For example, the Markov network
+	\begin{center}
+		\begin{tikzpicture}
+			\node [rv] (X1) {\(X_1\)};
+			\node [rv, right = 1 of X1] (X2) {\(X_2\)};
+			\node [rv, right = 1 of X2] (X3) {\(X_3\)};
+			\node [rv, below = 1 of X2] (X4) {\(X_4\)};
+			\node [rv, below = 1 of X3] (X5) {\(X_5\)};
+			\draw (X1) to (X2);
+			\draw (X2) to (X3);
+			\draw (X2) to (X4);
+			\draw (X3) to (X5);
+			\draw (X4) to (X5);
+		\end{tikzpicture}
+	\end{center}
+	corresponds to the distribution
+	\begin{equation}
+		P(X_1, X_2, X_3, X_4, X_5) \propto \phi(X_1, X_2) \, \phi(X_2, X_3) \, \phi(X_2, X_4) \, \phi(X_3, X_5) \, \phi(X_4, X_5)
+	\end{equation}
+	up to normalization. In general, a distribution \( P(X_1, X_2, \dots, X_n) \) specified by a MRF \(G\) factors as
+	\begin{equation}
+		P(X_1, X_2, \dots, X_n) = \frac{1}{Z} \prod_{C \,\in\, \Cliques(G)} \phi_C(X_1, X_2, \dots, X_n)
+	\end{equation}
+	where \( \Cliques(G) \) is the set of maximal cliques in \(G\) and \(1/Z\) is the normalization factor. In an MRF, the \emph{Markov property} holds: two sets of random variables, \(\mathcal{X}\) and \(\mathcal{Y}\) are independent given a \emph{separating subset} \(\mathcal{Z}\) (\( \mathcal{X} \perp \mathcal{Y} \given \mathcal{Z} \)). This subset has the property that every path from any variable in \(\mathcal{X}\) to any variable in \(\mathcal{Y}\) contains a variable from \(\mathcal{Z}\).
 
-	\section{Bayesian Networks as MRFs} % 4.65, 4.66, 4.67, 4.68, 4.69, 4.70
+	\paragraph{Proof}
+		\todo{Proof of Markov Property in MRFs}
+	% end
+
+	\section{Bayesian Networks as MRFs}
 		\label{sec:towardsMarkovRandomFields}
 
-		\todo{Content}
+		It is possible to convert Bayesian networks into MRFs for leveraging the theory that evolved around them. This process was already introduced as \emph{moralizing} before (\autoref{sec:veMoral}).	 This section builds up a more formal view on how the addition of a moral link is necessary. The following paragraphs show to convert the fundamental building blocks (pair, chain, common cause, and common effect) of a Bayesian network into a Markov network.
+
+		\paragraph{Pair}
+			\begin{center}
+				\begin{tikzpicture}
+					\node [rv] (X1) {\(X\)};
+					\node [rv, right = 1 of X1] (Y1) {\(Y\)};
+					\draw [->] (X1) to (Y1);
+
+					\node [right = 2 of Y1] (a) {\(\longrightarrow\)};
+
+					\node [rv, right = 2 of a] (X2) {\(X\)};
+					\node [rv, right = 1 of X2] (Y2) {\(Y\)};
+					\draw (X2) to (Y2);
+				\end{tikzpicture}
+			\end{center}
+			This conversion makes sense as from the Bayesian model,
+			\begin{equation}
+				P(X, Y) = P(X) \, P(Y \given X),
+			\end{equation}
+			and from the Markov network,
+			\begin{equation}
+				P(X, Y) \propto \phi(X, Y)
+			\end{equation}
+			with \( \phi(X, Y) \propto P(X) \, P(Y \given X) \).
+		% end
+
+		\paragraph{Chain}
+			\begin{center}
+				\begin{tikzpicture}
+					\node [rv] (X1) {\(X\)};
+					\node [rv, right = 1 of X1] (Y1) {\(Y\)};
+					\node [rv, right = 1 of Y1] (Z1) {\(Z\)};
+					\draw [->] (X1) to (Y1);
+					\draw [->] (Y1) to (Z1);
+
+					\node [right = 2 of Z1] (a) {\(\longrightarrow\)};
+
+					\node [rv, right = 2 of a] (X2) {\(X\)};
+					\node [rv, right = 1 of X2] (Y2) {\(Y\)};
+					\node [rv, right = 1 of Y2] (Z2) {\(Z\)};
+					\draw (X2) to (Y2);
+					\draw (Y2) to (Z2);
+				\end{tikzpicture}
+			\end{center}
+			Like for the pair of variables, the joint probability is
+			\begin{equation}
+				P(X, Y, Z) = P(X) \, P(Y \given X) \, P(Z \given Y)
+			\end{equation}
+			by the Bayesian model and
+			\begin{equation}
+				P(X, Y, Z) \propto \phi(X, Y) \, \phi(Y, Z)
+			\end{equation}
+			by the Markov network with \( \phi(X, Y) \propto P(X) \, P(Y \given X) \) and \( \phi(Y, Z) \propto P(Z \given Y) \). Note that the parametrization of the potentials is not unique.
+		% end
+
+		\paragraph{Common Cause}
+			\begin{center}
+				\begin{tikzpicture}
+					\node [rv] (X1) {\(X\)};
+					\node [rv, right = 1 of X1] (Y1) {\(Y\)};
+					\node [rv, right = 1 of Y1] (Z1) {\(Z\)};
+					\draw [->] (Y1) to (X1);
+					\draw [->] (Y1) to (Z1);
+
+					\node [right = 2 of Z1] (a) {\(\longrightarrow\)};
+
+					\node [rv, right = 2 of a] (X2) {\(X\)};
+					\node [rv, right = 1 of X2] (Y2) {\(Y\)};
+					\node [rv, right = 1 of Y2] (Z2) {\(Z\)};
+					\draw (Y2) to (X2);
+					\draw (Y2) to (Z2);
+				\end{tikzpicture}
+			\end{center}
+			For a common cause, the conversion is again similar to the chain model. By the Bayesian network,
+			\begin{equation}
+				P(X, Y, Z) = P(X \given Y) \, P(Y) \, P(Z \given Y)
+			\end{equation}
+			and by the Markov network,
+			\begin{equation}
+				P(X, Y, Z) \propto \phi(X, Y) \, \phi(Y, Z)
+			\end{equation}
+			with \( \phi(X, Y) \propto P(X \given Y) \, P(Y) \) and \( \phi(Y, Z) \propto P(Z \given Y) \). Note again that the parametrization is not unique.
+		% end
+
+		\paragraph{Common Effect}
+			\begin{center}
+				\begin{tikzpicture}
+					\node [rv] (X1) {\(X\)};
+					\node [rv, right = 1 of X1] (Y1) {\(Y\)};
+					\node [rv, right = 1 of Y1] (Z1) {\(Z\)};
+					\draw [->] (X1) to (Y1);
+					\draw [->] (Z1) to (Y1);
+
+					\node [right = 2 of Z1] (a) {\(\longrightarrow\)};
+
+					\node [rv, right = 2 of a] (X2) {\(X\)};
+					\node [rv, right = 1 of X2] (Y2) {\(Y\)};
+					\node [rv, right = 1 of Y2] (Z2) {\(Z\)};
+					\draw (X2) to (Y2);
+					\draw (Z2) to (Y2);
+					\draw [TUDa-9b] (X2) to[bend left] (Z2);
+				\end{tikzpicture}
+			\end{center}
+			For the v-structure, the conversion is a tad more complicated. By the Bayesian network,
+			\begin{equation}
+				P(X, Y, Z) = P(X) \, P(Y \given X, Z) \, P(Z).
+			\end{equation}
+			But if the moral link (depicted in {\color{TUDa-9b} red}) would not be present, the Markov network would model the distribution as
+			\begin{equation}
+				P(X, Y, Z) = \phi(X, Y) \, P(Y, Z).
+			\end{equation}
+			However, this would entail \( X \perp Y \given Z \) which is---prominently as Berkson's paradox---not true. Hence, a moral link has to be included to ensure that the said conditional independency does not hold. With the moral link, the Markov network entails
+			\begin{equation}
+				P(X, Y, Z) \propto \phi(X, Y) \, \phi(Y, Z) \, \phi(X, Z).
+			\end{equation}
+			Note that this formulation \emph{does not} encode the same independencies: in the Markov network formulation, \( X \perp Y \) does not hold anymore. However, it is more important to not capture invalid independencies than missing out on some.
+
+			This observation depends on the fact that two variables \(X\) and \(Y\) are conditionally dependent given \(Z\) if and only if their distribution \( P(X, Y, Z) \) can be written as \( P(X, Y, Z) = \phi(X, Y) \, \phi(Y, Z) \) with some \(\phi(\cdot)\).
+			\todo{Proof}
+		% end
 	% end
 
-	\section{Triangulated Graphs} % 4.71, 4.72, 4.73, 4.74, 4.75
-		\todo{Content}
+	\section{Triangulated Graphs and Simplicial Nodes}
+		For the upcoming sections, some nomenclature is needed:
+		\begin{itemize}
+			\item A graph is \emph{triangulated} if it has a perfect elimination ordering (i.e., one that does not introduce any fill-inds).
+			\item A node is \emph{simplicial} if its family (itself in addition to its neighbors) is equivalent to its maximum clique.
+		\end{itemize}
+		It follows that in a triangulated graph, the elimination of a simplicial node again yields a triangulated graph. Also, every triangulated graph (with at least two nodes) has at least two simplicial nodes. Hence, it directly follows that a perfect elimination ordering exists for every random variable in the graph.
+
+		Note that it is possible to triangulate every graph by applying any elimination ordering and consider the induced graph instead. However, while this creates a triangulated graph, it does not induce high-performance inference as the produces graph might have very large treewidth!
 	% end
 
-	\section{Join Trees} % 4.76, 4.77, 4.78, 4.79, 4.80, 4.81, 4.82, 4.83, 4.84, 4.85, 4.86
-		\todo{Content}
+	\section{Join Trees}
+		A \emph{join tree} is a special kind of tree where each node (also called \emph{cluster} in join trees) holds a set of variables. Additionally, the \emph{running intersection property} (RIP) holds: for each pair of nodes, \(\mathcal{X}\) and \(\mathcal{Y}\), each node along each path between the two nodes contains the intersection \( \mathcal{X} \cap \mathcal{Y} \). An example is shown in \autoref{fig:joinTree}. It can be shown that if the (maximum) cliques of a undirected graph can be organized into a join tree, then the graph is triangulated and vice versa.
+
+		\begin{figure}
+			\centering
+			\begin{subfigure}{0.49\linewidth}
+				\resizebox{\linewidth}{!}{
+					\begin{tikzpicture}[every node/.style = { draw, ellipse }]
+						\node (a1) {\( \{ B, C, D, E \} \)};
+						\node [below left = 1 of a1] (a2) {\( \{ A, B, C, D \} \)};
+						\node [below right = 1 of a1] (a3) {\( \{ D, E, F, I \} \)};
+						\node [below = 1.5 of a1] (a4) {\( \{ B, C, D, G \} \)};
+						\node [below = 1 of a4] (a5) {\( \{ C, H, G, J \} \)};
+
+						\draw (a1) to (a2);
+						\draw (a1) to (a3);
+						\draw (a1) to (a4);
+						\draw (a4) to (a5);
+					\end{tikzpicture}
+				}
+				\caption{Join Tree}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}{0.49\linewidth}
+				\resizebox{\linewidth}{!}{
+					\begin{tikzpicture}[every node/.style = { draw, ellipse }]
+						\node (a1) {\( \{ B, C, D, E \} \)};
+						\node [below left = 1 of a1] (a2) {\( \{ A, B, C, D \} \)};
+						\node [below right = 1 of a1] (a3) {\( \{ D, E, F, I \} \)};
+						\node [below = 1.5 of a1] (a4) {\( \{ B, C, D, G \} \)};
+						\node [below = 1 of a4] (a5) {\( \{ C, H, G, J \} \)};
+
+						\draw (a1) to (a2);
+						\draw (a1) to (a3);
+						\draw (a3) to (a4);
+						\draw (a4) to (a5);
+					\end{tikzpicture}
+				}
+				\caption{No Join Tree}
+			\end{subfigure}
+			\caption[Join Tree Illustration]{Illustration of a join tree. The left is a join tree, but the right is not as on the path between \( \{ A, B, C, D \} \) and \( \{ C, H, G, J \} \) has to contain \( \{ C \} \) in every node, which is not a subset of \( \{ D, E, F, I \} \).}
+			\label{fig:joinTree}
+		\end{figure}
+
+		\subsection{Markov Network as a Join Tree: Junction Tree}
+			Organizing a triangulated graph into a join tree is straightforward by exploiting the special properties of such a graph. Pseudocode for this process is given in \autoref{alg:triangulatedToJoin} and. A join tree \(G_J\) built from a Markov network \(G'\) also models the joint distribution as
+			\begin{equation}
+				P(X_1, X_2, \dots, X_n) = \frac{\prod_{C \,\in\, \Cliques(G_J)} \phi_C(X_1, X_2, \dots, X_n)}{\prod_{S \,\in\, \Sep(G_j)} \phi_S(X_1, X_2, \dots, X_n)}
+			\end{equation}
+			That is, the joint distribution is the product of the clique potentials divided by the product of the separator potentials.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{Triangulated undirected graph \(G\) with random variables \( X_1, X_2, \dots, X_n \)}
+				\KwOut{Join tree with clique and separator nodes}
+				Initialize set of nodes \(\mathcal{X}\). \;
+				Initialize count of eliminated nodes \( n \gets 0 \) \;
+				\While{\( \mathcal{X} \) is not empty}{
+					Pop simplicial node \(X\) from \(\mathcal{X}\). \;
+					\tcp{Construct set of variables to eliminate:}
+					\( \mathcal{E} \gets \bigl\{ Y \in \Family(X) : \Family(Y) \subseteq \Family(X) \bigr\} \). \;
+					Eliminate all variables in \( \mathcal{E} \). \;
+					\tcp{Increment counter for number of eliminated variables:}
+					\( n \gets n + \lvert \mathcal{E} \rvert \) \;
+					\tcp{Create clique and seperator nodes for \(X\):}
+					\( V_n \gets \Family(X) \) \;
+					\( S_n \gets \Family(X) \setminus \mathcal{E} \) \;
+					Connect \( V_n \) and \( S_n \). \;
+				}
+				Connect each separator \(S_i\) to \emph{exactly one} clique \(V_j\) with \(j > i\) and \( S_i \subseteq V_j \).
+				\caption{Triangulated, Undirected Graph \(\to\) Join Tree}
+				\label{alg:triangulatedToJoin}
+			\end{algorithm}
+
+			\paragraph{Proof}
+				\todo{Join Tree Factoring: Proof}
+			% end
+		% end
 	% end
 
-	\section{Junction Trees} % 4.87, 4.88, 4.89, 4.90
+	\section{Junction Trees}
 		\label{sec:junctionTrees}
 
-		\todo{Content}
+		A \emph{junction tree} of a Markov network is a join tree for which each factor \(\phi\) in the Markov network is associated to a cluster \(V\) in the join tree such that \( \dom \phi \subseteq V \). This is called the \emph{family preservation property} of junction trees. Such a join tree can, for example, be generated using \autoref{alg:triangulatedToJoin} if an elimination ordering is given; see \autoref{fig:junctionTree} for an example. However, it is not necessary to build up a triangulated graph beforehand in general (it would be, for example, possible to create a junction tree with a node containing all nodes of the original tree; however, this would be useless as it does not leverage any theory of junction trees at all).
 
-		\subsection{Collecting Evidence} % 4.91, 4.92, 4.93, 4.94, 4.95, 4.96
-			\todo{Content}
+		Ideally, the clusters are as small and modular as possible. Unfortunately, it is NP-hard to find the optimal tree\dots However, some useful heuristics and special cases exists. For example, tree-BNs can directly be converted to an efficient junction tree by converting each edge into a cluster.
+
+		\begin{figure}
+			\centering
+			\begin{subfigure}{0.4\linewidth}
+				\centering
+				\begin{tikzpicture}
+					\node [rv] (X1) {\(X_1\)};
+					\node [rv, below left = 1 of X1] (X2) {\(X_2\)};
+					\node [rv, below right = 1 of X1] (X3) {\(X_3\)};
+					\node [rv, below left = 1 of X2] (X4) {\(X_4\)};
+					\node [rv, below right = 1 of X2] (X5) {\(X_5\)};
+					\node [rv, below right = 1 of X3] (X6) {\(X_6\)};
+
+					\draw (X1) to (X2);
+					\draw (X1) to (X3);
+					\draw (X2) to (X4);
+					\draw (X2) to (X5);
+					\draw (X3) to (X5);
+					\draw (X3) to (X6);
+					\draw (X2) to (X3);
+				\end{tikzpicture}
+				\caption{Markov Network}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}{0.59\linewidth}
+				\centering
+				\begin{tikzpicture}[align = center]
+					\node [fam] (V6) {\( V_6 \) \\ \( \{ X_2, X_3, X_5 \} \)};
+					\node [sep, left  = 2.5 of V6.south, yshift = -0.75cm, anchor = north east] (S1) {\( S_1 \) \\ \( \{ X_2, X_3 \} \)};
+					\node [sep, below = 0.75 of V6.south, anchor = north] (S2) {\( S_2 \) \\ \( \{ X_2 \} \)};
+					\node [sep, right = 2.5 of V6.south, yshift = -0.75cm, anchor = north west] (S3) {\( S_3 \) \\ \( \{ X_3 \} \)};
+					\node [fam, below = 1 of S1] (V1) {\( V_1 \) \\ \( \{ X_1, X_2, X_3 \} \)};
+					\node [fam, below = 1 of S2] (V2) {\( V_2 \) \\ \( \{ X_2, X_4 \} \)};
+					\node [fam, below = 1 of S3] (V3) {\( V_3 \) \\ \( \{ X_3, X_6 \} \)};
+
+					\draw (V1) to (S1);
+					\draw (V2) to (S2);
+					\draw (V3) to (S3);
+					\draw (S1) |- (V6);
+					\draw (S2) to (V6);
+					\draw (S3) |- (V6);
+				\end{tikzpicture}
+				\caption{Junction Tree}
+			\end{subfigure}
+			\caption[Example of a Junction Tree]{Example of the junction tree (right) produced using \autoref{alg:triangulatedToJoin} with the elimination ordering \( (X_1, X_4, X_6, X_2, X_3, X_5) \) showed in \autoref{fig:perfectSequence}.}
+			\label{fig:junctionTree}
+		\end{figure}
+
+		\subsection{Inference}
+			To perform inference in a junction tree, each node sends exactly one \emph{message} to exactly one of its neighbors once it has received messages from all its other neighbors. Hence, message passing must start at the leaves of the tree. To define a leave, however, first an arbitrary root node must be picked. Messages are then collected at this node and afterwards distributed back across the tree to the leaves. After this process, all clusters have the relevant information to compute the potential for its variables.
+
+			To pass messages between the clusters, each separator \(S_i\) has two "mailboxes" \( \psi_i \) and \( \psi^i \), one for the forward- and one for the backward-pass, respectively. That is, \(\psi_i\) is filled when the messages flow from the leaves to the root while \(\psi^i\) is filled when the beliefs flow back from the root to the leaves. Note that from the construction of the junction tree, each separator has exactly two connections. Each clique \( C_i \) is associated with the potentials \( \phi_j \) of the Markov network for which \( \dom \phi_j \subseteq C_i \) holds. Let \( \Phi(C_i) \) be the set of potentials associated with \(C_i\). Additionally, each clique \(C_i\) is associated with a potential \(\varphi_i\) that is used to store the current belief over the variables of the clique. All of this is illustrated in \autoref{fig:junctionTreeInference}.
+
+			\begin{algorithm}
+				\KwIn{Junction tree with separators \( \{ S_j \} \) and cliques \( \{ V_i \} \) with associated potentials \( \Phi(C_i) \) from the Markov network}
+				\KwOut{Potentials \( \{ \varphi_j \} \) for each clique}
+				Initialize separator potentials
+			\end{algorithm}
+
+			\todo{IMPORTANT: Look again at message passing in junction trees! Also consider changing the separator's potentials to phis.}
+
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[->, align = center]
+					\node [fam] (V6) {
+						\( V_6 = \{ X_2, X_3, X_5 \} \) \\
+						\( \varphi_6;\; \)
+					};
+					\node [sep, left  = 2.5 of V6.south, yshift = -0.75cm, anchor = north east] (S1) {
+						\( S_1 = \{ X_2, X_3 \} \) \\
+						\( \downarrow\; \psi_1 \quad \uparrow\; \psi^1 \)
+					};
+					\node [sep, below = 0.75 of V6.south, anchor = north] (S2) {
+						\( S_2 = \{ X_2 \} \) \\
+						\( \downarrow\; \psi^2 \quad \uparrow\; \psi_2 \)
+					};
+					\node [sep, right = 2.5 of V6.south, yshift = -0.75cm, anchor = north west] (S3) {
+						\( S_3 = \{ X_3 \} \) \\
+						\( \downarrow\; \psi^3 \quad \uparrow\; \psi_3 \)
+					};
+					\node [fam, below = 1 of S1] (V1) {
+						\( V_1 = \{ X_1, X_2, X_3 \} \) \\
+						\( \varphi_1;\; \)
+					};
+					\node [fam, below = 1 of S2] (V2) {
+						\( V_2 = \{ X_2, X_4 \} \) \\
+						\( \varphi_2;\; \)
+					};
+					\node [fam, below = 1 of S3] (V3) {
+						\( V_3 = \{ X_3, X_6 \} \) \\
+						\( \varphi_3;\; \)
+					};
+
+					\draw (S1) to (V1);
+					\draw (V2) to (S2);
+					\draw (V3) to (S3);
+					\draw (V6) -| (S1);
+					\draw (S2) to (V6);
+					\draw (S3) |- (V6);
+				\end{tikzpicture}
+				\caption[Messages Boxes used in Junction Tree Message Passing]{Illustration of the message boxes and potentials used for message passing in junction trees, based on the junction tree shown in \autoref{fig:junctionTree}. For this tree, \(V_1\) is chosen as the root node. The arrow directions depict the forward pass, the backward pass goes in reverse.}
+				\label{fig:junctionTreeInference}
+			\end{figure}
 		% end
-
-		\subsection{Distributing Evidence} % 4.97
-			\todo{Content}
-		% end
-	% end
-
-	\section{Non-Triangulated Graphs} % 4.98
-		\todo{Content}
 	% end
 % end
 

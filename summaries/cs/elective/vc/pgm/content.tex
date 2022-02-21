@@ -1313,62 +1313,120 @@
 	% end
 % end
 
-\chapter{Learning} % 2.55, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.22, 5.28, 5.38, 6.58
-	\todo{Content}
+\chapter{Learning}
+	Until now, it was assumed that both the network structure and the CPTs are given somehow. This chapter is concerned with learning these from data. It is important to be able to learn structures from data as usually, no expert is available that can craft a network by hand or she is really expensive. And in the age of big data, data is cheap and huge amounts of data are available.
 
-	\section{Complete and Incomplete Data Sets} % 5.9, 5.10, 5.11, 5.12
-		\todo{Content}
+	Learning Bayesian network is especially appealing as detecting and modeling conditional independencies captures the structure of many real-world distributions and can lead to knowledge discovery by capturing causal relationships. Also, the learned model can be used for handling missing data and hidden variables.
 
-		\subsection{Hidden Variables} % 5.12, 5.13, 5.14, 5.15, 5.16, 5.17, 5.18, 5.19, 5.20, 5.21
-			\todo{Content}
+	In a \emph{complete} dataset, every data point has the values for all attributes that are getting investigated. On the other hand, \emph{incomplete} datasets lack some values of random variables (this is usually the case in real-world data\dots). Also, a special kind of incompleteness, are hidden variables. \emph{Hidden variables} never have assigned values in the whole dataset. One example for this is the cluster ID in an unsupervised clustering problem. They can also present a low-dimensional embedding that summarizes some other variables and separates them from a second set of RVs (dimensionality reduction).
+
+	The relation of the different problem types are summarized in \autoref{tab:learningProblems}.
+
+	\begin{table}
+		\centering
+		\begin{tabular}{c|ccc}
+			\toprule
+			\textbf{Observed} & \textbf{Fixed Structure} & \textbf{Fixed Variables} & \textbf{Hidden Variables} \\ \midrule
+			\textbf{Fully} & Easy (Counting, MLE) & Selection of Edges & --- \\
+			\textbf{Partially} & \makecell{Numerical Optimization \\ (difficult for large networks)} & \makecell{Encompasses for Difficult Subproblem \\ (only structural EM known)} & \makecell{Scientific \\ Discovery} \\ \bottomrule
+		\end{tabular}
+		\caption[Overview Over Different Learning Problems]{Overview over different learning problems and solution approaches.}
+		\label{tab:learningProblems}
+	\end{table}
+
+	\section{Parameter Estimation}
+		In \emph{parameter estimation}, it is assumed that the structure of the Bayesian network (i.e., the random variables and dependencies between them) is fixed and only the entries of the CPTs have to be estimated. This field further subdivides into the cases of complete and incomplete data.
+
+		\subsection{Known Structure, Complete Data}
+			With known structure and complete data, the problem simply reduces to basically counting. The most basic method to do so are maximum likelihood estimators (where the likelihood can be computed using the Bayesian network). Some advantages of ML estimated are that they are (often) intuitive, consistent (the estimate converges to the best possible value with increasing number of data points), and asymptotic efficiency (given a dataset, the estimate is as close as possible to the true value).
+
+			\subsubsection{Decomposability of the Likelihood}
+				An important property of the likelihood for a Bayesian network is that it is \emph{decomposable}. Let \( \theta_i \) be the CPT of \( P\bigl(X_i \given \Pa(X_i) \bigr) \) and let \( \vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \) be the data points. Then the log-likelihood is
+				\begin{equation}
+					\log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given \theta_1, \theta_2, \dots, \theta_n)
+						= \sum_{j = 1}^{N} \log P(\vec{x}^{(j)} \given \theta_j)
+						= \sum_{j = 1}^{N} \sum_{i = 1}^{n} \log P\bigl(X_i = x_i^{(j)} \biggiven \Pa(X_i), \theta_j \bigr).
+				\end{equation}
+				By swapping the sums, the log-likelihood can be rewritten as
+				\begin{equation}
+					\log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given \theta_1, \theta_2, \dots, \theta_n)
+						= \sum_{i = 1}^{n} \log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given \theta_i).
+				\end{equation}
+				Hence, it is possible to maximize each likelihood function independently and subsequently combine the solutions to get an ML estimate. This allows efficient solutions by distributing the calculations.
+			% end
+
+			\subsubsection{Likelihood for (Conditional) and Multinomials}
+				An important special case for the CPTs are (conditional) multinomials, i.e., distributions for which
+				\begin{equation}
+					P(X = k) = \theta_k
+				\end{equation}
+				where \( k = 1, 2, \dots, \lvert \val(X) \rvert \) are indices for the values of \(X\). Maximizing the likelihood of this distribution yields the solution
+				\begin{equation}
+					\theta_k^\ast = \frac{N_k}{N}
+				\end{equation}
+				where \( N_k \) is the number of data points for which \( X = k \), i.e., \( N_k = \sum_x \mathbbm{1}[x = k] \) and \(N\) is the total number of data points.
+
+				For \emph{conditional} multinomials, the distribution has the form \( P(X = k \given Y = \ell) = \theta_{k \subgiven \ell} \). Similarly, the ML solution is
+				\begin{equation}
+					\theta_{k \subgiven \ell} = \frac{N_{k \subgiven \ell}}{N_{\ell}}  \label{eqn:mlMultinomial}
+				\end{equation}
+				where \( N_{k \subgiven \ell} \) is the number of data points for which \( X = k \) and \( Y = \ell \) and \( N_{\ell} \) is the number of data points for which \( N_{\ell} \). Hence, conditional multinomials are completely analogous to non-conditional multinomials but the dataset is constrained to the respective conditional values.
+
+				\paragraph{Proof}
+					\todo{Multinomial ML: Proof}
+				% end
+			% end
 		% end
-	% end
 
-	\section{Parameter Estimation} % 5.23, 5.55, 6.3
-		\todo{Content}
+		\subsection{Known Structure, Incomplete Data (Expectation-Maximization)}
+			When the dataset is incomplete, the algorithm somehow has to deal with the incompleteness. One idea is to use an EM algorithm to complete the data in the E-step and to estimate the parameters in the M-step. For multinomial distributions and discrete data, this involves computing \emph{expected counts} in the E-step and using the ML estimated \eqref{eqn:mlMultinomial} in the M-step to tune the model. Let \( \vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \) be the data points, then the expected count \( \E[N_{k \given \ell}] \), where \( N_{k \given \ell} \) would be the number of data points for which \(X = k\) and \(Y = \ell\)
+			The expected count \( \E[N_{k \subgiven \ell}] \), where \( N_{k \subgiven \ell} \) would be the number of data points for which \(X = k\) and \(Y = \ell\) holds (assuming a distribution \( P(X = k \given Y = \ell) = \theta_{k \subgiven \ell} \)), is
+			\begin{equation}
+				\E[N_{k \subgiven \ell}] = \sum_{i = 1}^{N} P(k, \ell \given \vec{x}^{(i)}).  \label{eqn:emKgivenEll}
+			\end{equation}
+			If \( \vec{x}^{(i)} \) is complete, the probability would reduce to \( \mathbbm{1}[x^{(i)}_x = k \land x^{(i)}_y = \ell] \), i.e., counting. However, if the data is not complete, inference has to be run to actually compute the probability. Using the expected counts, the parameters can easily be estimated in the M-step using
+			\begin{equation}
+				\theta_{k \subgiven \ell} = \frac{\E[N_{k \subgiven \ell}]}{\E[N_{\ell}]},
+			\end{equation}
+			where \( \E[N_{\ell}] \) is analogous to \eqref{eqn:emKgivenEll}.
 
-		\subsection{Known Structure, Complete Data} % 5.29
-			\todo{Content}
-
-			\subsubsection{Maximum Likelihood} % 5.24, 5.25, 5.26, 5.27, 5.30
-				\todo{Content}
-			% end
-
-			\subsubsection{Decomposability of the Likelihood} % 5.31, 5.32
-				\todo{Content}
-			% end
-
-			\subsubsection{Likelihood for (Conditional) Bi- and Multinomials} % 5.33, 5.34, 5.35, 5.36, 5.37
-				\todo{Content}
-			% end
+			In practice, some more things are needed to apply EM. Firstly, the parameters have to be initialized some how (e.g., randomly, or as a best guess from other sources, by estimating from just the complete data points, \dots). Secondly, a stopping criterion has to be defined (only small changes in the likelihood or parameter values, for example). Thirdly, bad local maxima (which the EM algorithm is prone to converge to) have to be avoided (e.g., by running multiple times, pruning unpromising runs soon, \dots). Also, various methods are available to speed up convergence.
 		% end
 
-		\subsection{Known Structure, Incomplete Data (Expectation-Maximization)} % 5.39, 5.44, 5.48, 5.49, 5.53, 6.1
-			\todo{Content}
-
-			\subsubsection{EM Idea} % 5.40, 5.41, 5.42, 5.45
-				\todo{Content}
-			% end
-
-			\subsubsection{Complete-Data Likelihood} % 5.43
-				\todo{Content}
-			% end
-
-			\subsubsection{EM for (Conditional) Multinomials} % 5.46, 5.47
-				\todo{Content}
-			% end
-
-			\subsubsection{Monotonicity} % 5.50
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Gradient Ascent} % 5.54
-			\todo{Content}
+		\subsection{Gradient Ascent}
+			An alternative, rather bruteforcy method for dealing with incomplete data is to just ignore it and use that the gradient
+			\begin{equation}
+				\pdv{\theta_{k \given \ell}} \log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given \Theta)
+				=
+				\frac{1}{\theta_{k \given \ell}} \sum_{j = 1}^{N} \log P(k, \ell \given \vec{x}^{(i)}, \Theta)
+			\end{equation}
+			can be computed in closed form. Then, gradient ascent can be applied. This has the advantage that training is well-known from training neural networks, coming with the disadvantages that the parameters somehow have to be constrained to be legal and the requirement for smart optimization techniques to ensure convergence.
 		% end
 
 		\subsection{Bayesian Parameter Estimation} % 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 6.10
-			\todo{Content}
+			In Bayesian estimation, the parameters are assumed to be random variables as well. Hence, by putting a prior on the parameters, learning can be understood as a form of inference using Bayes rule:
+			\begin{equation}
+				P(\Theta \given \vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)}) = \frac{P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given \Theta) \, P(\Theta)}{P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)})}.
+			\end{equation}
+			Assume (for now) that the model only has a single binomial random variable \(X\) with the parameter \(\theta\). Then, by the i.i.d. assumption, all data points are independent from each other and they can be represented easily by the following Bayesian network:
+			\begin{center}
+				\begin{tikzpicture}[->, rv/.style = { draw, circle, minimum width = 0.9cm, minimum height = 0.9cm, inner sep = 0 }]
+					\node [rv] (C) {\(\theta\)};
+					\node [rv, below = 1 of C] (X3) {\( x^{(3)} \)};
+					\node [rv, left = 1 of X3] (X2) {\( x^{(2)} \)};
+					\node [rv, left = 1 of X2] (X1) {\( x^{(1)} \)};
+					\node [rv, draw = white, right = 1 of X3] (Xd) {\(\cdots\)};
+					\node [rv, right = 1 of Xd] (Xn) {\( x^{(N)} \)};
+
+					\draw (C) to (X1);
+					\draw (C) to (X2);
+					\draw (C) to (X3);
+					\draw [dotted] (C) to (Xd);
+					\draw (C) to (Xn);
+				\end{tikzpicture}
+			\end{center}
+			This network has the interesting property that \( P(x^{(i)} \given \theta) = \theta \). Hence, predicting \(\theta\) directly corresponds to inference in this network.
+			\todo{Continue Bayesian Param. Estimatiom from Slide 6.10.}
 
 			\subsubsection{Laplace Estimation} % 6.11, 6.12, 6.13, 6.16, 6.17
 				\todo{Content}
@@ -1395,32 +1453,50 @@
 			% end
 		% end
 
-		\subsection{Summary} % 6.33, 6.34, 6.35
-			\todo{Content}
+		\subsection{Summary}
+			Two approaches for parameter estimation with a fixed structure have been considered: maximum likelihood and Bayesian estimation. While both are asymptotically equivalent and consistent (i.e., they converge to the same "true" value), Bayesian estimation provides smoother result regularized by the prior. And if the prior is chosen to be close to the optimal value, it converges faster.
 		% end
 	% end
 
-	\section{Structure Learning / Model Selection} % 6.36, 6.37, 6.38, 6.39, 6.40, 6.57
-		\todo{Content}
+	\section{Structure Learning / Model Selection}
+		In the previous section, it was assumed that the structure of the Bayesian network (the random variables and dependencies between them) where given. However, this is often not the case. In essence, the goal is to find, given a \(P\), a \(G\) which is an I-map of \(P\). To do some, a notion of minimal I-maps and equivalence of I-maps is necessary.
 
-		\subsection{Minimal I-Maps} % 6.41, 6.42, 6.43
-			\todo{Content}
+		\subsection{Minimal I-Maps and Perfect Maps (P-Maps)}
+			A straightforward approach for defining an I-map to be \emph{minimal} is to call an I-map minimal if it is as simple as possible, i.e., the removal of an edge would make the graph not be an I-map anymore. However, this has the major caveat that even graphs with lots of edges might be "minimal" in this sense although other configuration have less edges. Consider, for instance, the following networks (left is the true model):
+			\begin{center}
+				\begin{tikzpicture}[->]
+					\node [rv] (F) {\( F \)};
+					\node [rv, below right = 1 of F] (S) {\( S \)};
+					\node [rv, above right = 1 of S] (A) {\( A \)};
+					\node [rv, below = 1 of S] (H) {\( H \)};
+					\draw (F) to (S);
+					\draw (A) to (S);
+					\draw (S) to (H);
+
+					\node [rv, right = 3 of A] (F) {\( F \)};
+					\node [rv, below right = 1 of F] (S) {\( S \)};
+					\node [rv, above right = 1 of S] (A) {\( A \)};
+					\node [rv, below = 1 of S] (H) {\( H \)};
+					\draw (H) to (F);
+					\draw (H) to (A);
+					\draw (H) to (S);
+					\draw (F) to (A);
+					\draw (F) to (S);
+					\draw (A) to (S);
+				\end{tikzpicture}
+			\end{center}
+			Although both models entail the independencies required to be an I-map, the left model is obviously simpler than the right. Hence, the above definition of a minimal I-map (removing an edge results in the graph not being an I-map anymore) is insufficient to capture simplicity and minimalism.
 		% end
 
-		\subsection{Perfect Maps (P-Maps)} % 6.44, 6.45
-			\todo{Content}
-		% end
-
-		\subsection{I-Equivalence} % 6.46, 6.47
-			\todo{Content}
-
-			\subsubsection{Skeleton and Immoralities} % 6.48, 6.49, 6.50, 6.51
-				\todo{Content}
-			% end
+		\subsection{Perfect Maps (P-Maps) and I-Equivalence}
+			An alternative approach is to not just try to find an I-map but to find a \emph{perfect map} (P-map) with \( I(G) = I(P) \). This eliminates the problem of defining minimalism and simplicity. Instead, a notion of equivalence between maps must be created. Straightforwardly, two models \(G_1\) and \(G_2\) are said to be \emph{I-equivalent} if \( I(G_1) = I(G_2) \). This definition leads to a theorem for I-equivalence of two Bayesian networks:
+			\theorem{Two Bayesian networks \(G_1\) and \(G_2\) are I-equivalent if and only if they have the same skeleton and same immoralities (v-structures with disconnected parents).}
 		% end
 
 		\subsection{Obtaining a P-Map} % 6.52
-			\todo{Content}
+			To obtain a P-map, in a first step the basic independencies of \(P\) (skeleton and immoralities) have to be extracted. This yields the equivalence class the Bayesian network has to live in. In a second step, every BN structure has to be obtained that lies in this equivalence class.
+
+			\todo{Stopped here.}
 
 			\subsubsection{Identifying the Skeleton} % 6.53, 6.54
 				\todo{Content}

@@ -1491,68 +1491,132 @@
 		\subsection{Perfect Maps (P-Maps) and I-Equivalence}
 			An alternative approach is to not just try to find an I-map but to find a \emph{perfect map} (P-map) with \( I(G) = I(P) \). This eliminates the problem of defining minimalism and simplicity. Instead, a notion of equivalence between maps must be created. Straightforwardly, two models \(G_1\) and \(G_2\) are said to be \emph{I-equivalent} if \( I(G_1) = I(G_2) \). This definition leads to a theorem for I-equivalence of two Bayesian networks:
 			\theorem{Two Bayesian networks \(G_1\) and \(G_2\) are I-equivalent if and only if they have the same skeleton and same immoralities (v-structures with disconnected parents).}
+			But why would one even struggle to find accurate structures? This stems from two factors: first, both networks with too many and networks with too few edges induce wrong assumptions on the structure. Second, networks with too few connections (and thus too many independencies) cannot be compensated by parameter estimation (as the relevant parameters simply do not exist); similarly, networks with too many edges have too many parameters where the number grows super-exponentially with the number of variables, making learning ambiguous and slow.
 		% end
 
-		\subsection{Obtaining a P-Map} % 6.52
+		\subsection{Obtaining a P-Map}
 			To obtain a P-map, in a first step the basic independencies of \(P\) (skeleton and immoralities) have to be extracted. This yields the equivalence class the Bayesian network has to live in. In a second step, every BN structure has to be obtained that lies in this equivalence class.
 
-			\todo{Stopped here.}
+			Obtaining the skeleton, i.e., figuring out whether there is an edge between two random variables, means to check whether the local Markov assumption holds for a pair of random variables \(X\), \(Y\). That is, if there exists a \( \mathcal{U} \subseteq \mathcal{X} \setminus \{ X, Y \} \) with \( \lvert \mathcal{U} \rvert \) such that \( X \perp Y \given \mathcal{U} \), then there is no edge between \(X\) and \(Y\). Here, \(d\) is the maximal number of parents which is a hyper-parameter reducing the search space.
 
-			\subsubsection{Identifying the Skeleton} % 6.53, 6.54
-				\todo{Content}
+			In the second step, the immoralities have to be identified, i.e., for a triple \( X - Y - Z \) without \( X - Z \), when should it be an immorality \( X \to Y \from Z \)? Essentially, this is the case if \( X \perp Y \).
+
+			Both steps are summarized in \autoref{alg:pMapIdent}. Note that all of this assumes that there is some way to determine whether \( X \perp Y \given \mathcal{U} \) holds. There are numerous approaches to this which are discussed in \todo{WHERE ARE THEY DISCUSSED???}.
+
+			From this process, a partially directed acyclic graph emerges as the identification of immoralities already prescribes some directions. Take, for instance, the following graph:
+			\begin{center}
+				\begin{tikzpicture}
+					\node [rv] (X) {\( X \)};
+					\node [rv, right = 1 of X] (Z) {\( Z \)};
+					\node [rv, right = 1 of Z] (Y) {\( Y \)};
+					\node [rv, below = 0.5 of Z] (W) {\( W \)};
+					\node [rv, right = 1 of Y] (T) {\( T \)};
+					\node [rv, right = 1 of T] (U) {\( U \)};
+					\draw [->] (X) to (Z);
+					\draw [->] (Y) to (Z);
+					\draw (Z) to (W);
+					\draw (U) to (T);
+					\draw (T) to (Y);
+				\end{tikzpicture}
+			\end{center}
+			Here the only immorality \( X \to Z \from Y \) was identified. However, from this it follows that the edge \( Z - W \) must have the direction \( Z \to W \) as the reverse would create even more immoralities (\( X \to Z \from W \) and \( Y \to Z \from W \)) which have not been observed. There exist polynomial algorithms to identify these forced directions.
+
+			\begin{algorithm}
+				\KwIn{Random variables \( \mathcal{X} = X_1, X_2, \dots, X_n \), max. number of parents \( d < n \)}
+				\KwOut{Equivalence class for P-maps}
+				\tcp{Skeleton Identification:}
+				\ForEach{\( X, Y \in \mathcal{X} \)}{
+					\( e \gets \mathfrak{t} \) \;
+					\ForEach{\( \mathcal{U} \subseteq \mathcal{X} \setminus \{ X, Y \} \) with \( \lvert \mathcal{U} \rvert \leq d \)}{
+						\If{\( X \perp Y \given \mathcal{U} \)}{
+							\( e \gets \mathfrak{f} \) \;
+							\textbf{break} \;
+						}
+					}
+					\If{\( e = \mathfrak{t} \)}{
+						Add edge between \(X\) and \(Y\). \;
+					}
+				}
+				\tcp{Immorality Identification:}
+				\ForEach{Triple \( X - Y - Z \) in the skeleton}{
+					\( i \gets \mathfrak{t} \) \;
+					\ForEach{\( \mathcal{U} \subseteq \mathcal{X} \setminus \{ X, Y \} \) with \( Z \in \mathcal{U} \)}{
+						\If{\( X \perp Y \given U \)}{
+							\( i \gets \mathfrak{f} \) \;
+							\textbf{break} \;
+						}
+					}
+					\If{\( i = \mathfrak{t} \)}{
+						Add immorality \( X \to Y \from Z \). \;
+					}
+				}
+				\caption{Bayesian Network P-Map Identification}
+				\label{alg:pMapIdent}
+			\end{algorithm}
+		% end
+
+		\subsection{Learning Approaches}
+			To learn the structure of a network, two distinctive approaches exist: constraint- and score-based learning. These will be presented in the following two sections.
+
+			\subsubsection{Constraint-Based}
+				\emph{Constraint-based} learning is based on \autoref{alg:pMapIdent} and tackles the identification of the independencies \( X \perp Y \given \mathcal{U} \). Its approach is to use statistical tests with the null hypothesis that the independence holds. One such test is the \(\chi^2\)-independency-test. A more direct measure is the mutual information
+				\begin{equation}
+					\hat{I}(X; Y \given \mathcal{U}) = \sum_{X, Y}^{\marg} \hat{P}(X, Y \given \mathcal{U}) \, \log\frac{\hat{P}(X, Y \given \mathcal{U})}{\hat{P}(X) \, \hat{P}(Y \given \mathcal{U})}
+				\end{equation}
+				where \(\hat{\cdot}\) denotes that the quantities are approximations (i.e., \(\hat{P}\) is an estimated probability based on counting the examples).
 			% end
 
-			\subsubsection{Identifying Immoralities} % 6.55
-				\todo{Content}
-			% end
+			\subsubsection{Score-Based}
+				\label{subsubsec:scoreBased}
 
-			\subsubsection{From Immoralities to Structures} % 6.56
-				\todo{Content}
+				\emph{Score-based} learning depends on a score function to assess a model's accuracy and searches for a structure with maximum score. A straightforward approach is to use the (log-)likelihood
+				\begin{equation}
+					\log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given G)
+						= N \sum_{i = 1}^{n} \bigl( \hat{I}\bigl( X_i; \Pa_G(X_i) \bigr) - \hat{H}(X_i) \bigr)
+				\end{equation}
+				where \(\hat{I}\) and \(\hat{H}\) are the approximate mutual information and entropy, respectively. Note that the data is used in the computation of the mutual information and entropy as the probabilities are based on counting the samples.
+
+				While this approach is rather simple, it has the disadvantage that adding edges always increases the log-likelihood. Hence, a fully connected network is optimal w.r.t. to the log-likelihood and it overfits badly. A practical approach is to just pick a model that scores well and use that for inferring the structure, but this yields the problem that for a small sample size, lots of models perform well but the answers of these models is often useless.
+
+				An alternative approach is to use a Bayesian score by placing a prior on the parameters. While this methods yields lots of integrals that are hard to evaluate, placing a Dirichlet prior on the parameters yields a good and simple-to-compute approximation, the \emph{Bayesian information criterion} (BIC). For a Dirichlet prior and a large dataset (i.e., \( N \lg 0 \)), the integral
+				\begin{equation}
+					P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given G) = \int\! P(P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given G), \Theta) \, P(\Theta \given G) \dd{\Theta}
+				\end{equation}
+				for the marginal likelihood can be approximated as
+				\begin{align}
+					\log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given G)
+						&= \log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given G, \Theta) - \frac{\log M}{2} \dim G + \mathcal{O}(1) \\
+						&= N \sum_{i = 1}^{n} \bigl( \hat{I}\bigl( X_i; \Pa_G(X_i) \bigr) - \hat{H}(X_i) \bigr) - \frac{\log N}{2} \dim G + \mathcal{O}(1),
+				\end{align}
+				where \( \dim G \) is the number of parameters. The the first term is simply the data log-likelihood and assesses the fit to the data while the second term penalizes model complexity (quantified by the number of parameters) and avoid fitting noise. As the amount of data \(N\) grows, the former term becomes prevalent and hence the BIC score is consistent (i.e., converges to the "true" data and overrides the Dirichlet prior).
 			% end
 		% end
 
-		\subsection{Accurate Structures} % 6.59
-			\todo{Content}
-		% end
+		\subsection{Structure Search as Optimization}
+			Using a scoring function (\autoref{subsubsec:scoreBased}), structure learning can be framed as an optimization problem trying to maximize a score. For this, the optimization algorithm needs the following ingredients:
+			\begin{itemize}
+				\item Training data
+				\item Scoring function (LL, MDL, BIC, \dots)
+				\item Set of possible structures
+			\end{itemize}
 
-		\subsection{Learning} % 6.60, 6.61
-			\todo{Content}
-
-			\subsubsection{Constrained-Based} % 6.62, 6.63
-				\todo{Content}
+			\subsubsection{Learning Trees (Complete Data)}
+				If it is known that a tree structure has to be selected and the data is complete, the optimal model can found with time complexity \( \mathcal{O}(n^2 \, \log n) \) by finding the spanning tree with the maximum score. However, if some variables are hidden or incomplete, the problem becomes hard again (and can be approximately solved using EM).
 			% end
 
-			\subsubsection{Score-Based} % 6.64
-				\todo{Content}
+			\subsubsection{Heuristic (Local) Search}
+				Most of the time, heuristics are used for finding a reasonable model. They leverage a set of application simple actions (e.g., add/remove/flip and edge, \dots) and traverse the search space looking for high-scoring models. Some search techniques are greedy hill-climbing, best first search, simulated annealing, etc.
 
-				\paragraph{Likelihood Score} % 6.65
-					\todo{Content}
-				% end
+				One of the most used approaches is \emph{local search} that starts with some network (e.g., empty, best tree, random, \dots) and at each iteration evaluates all possible changes based on the set of applicable cations and chooses the one that improves the current score the most. The algorithm terminates once no modification can improve the score anymore and a local maximum was found. After a local change, only parts that have changed have to be re-evaluated if the data is complete, but for incomplete data, everything has to be re-calculated after re-estimating the parameters.
 
-				\paragraph{Bayesian Score and Bayesian Information Criterion} % 6.66, 6.67, 6.68, 6.69, 6.70
-					\todo{Content}
-				% end
-			% end
-		% end
-
-		\subsection{Structure Search as Optimization} % 6.71
-			\todo{Content}
-
-			\subsubsection{Learning Trees (Complete Data)} % 6.72, 6.73
-				\todo{Content}
+				While this approach is simple, it also exhibits some major drawbacks: first, it is prone to get stuck in local maxima. Second, it can get stuck on plateaus where no change makes a difference. As usual, standard heuristics can be used for circumvent some of these issues (e.g., random restarts, TABU search, simulated annealing, \dots).
 			% end
 
-			\subsubsection{Heuristic (Local) Search} % 6.74, 6.75, 6.76, 6.77, 6.78, 6.79, 6.80, 6.81, 6.82, 6.83
-				\todo{Content}
+			\subsubsection{Structural EM}
+				In practice, applying local search with incomplete data using EM is costly as every evaluation of the scoring function first requires to re-fit the parameters and therefore invoke EM. This costs time as it also has to be run on poor candidates\dots in practice, only a few candidates are evaluated in depth. This introduces structural EM, an EM algorithm specially designed for this problem.
+
+				\emph{Structural EM} (SEM) is based on the idea that instead of optimizing the real score, optimize an alternative surrogate score that is decomposable. This alternative score must have that property that maximizing it improves the real score, too. The E-step works as usual. But in the M-step, the maximization is done in a combined parameter-structure-space, leading to a \emph{parametric} and \emph{structural} M-step, one of which is executed at time.
 			% end
-		% end
-
-		\subsection{Structural EM} % 6.84, 6.85, 6.86, 6.87, 6.88
-			\todo{Content}
-		% end
-
-		\subsection{Summary} % 6.89
-			\todo{Content}
 		% end
 	% end
 % end

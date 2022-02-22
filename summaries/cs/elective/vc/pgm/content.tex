@@ -1379,6 +1379,8 @@
 		% end
 
 		\subsection{Known Structure, Incomplete Data (Expectation-Maximization)}
+			\label{subsec:em}
+
 			When the dataset is incomplete, the algorithm somehow has to deal with the incompleteness. One idea is to use an EM algorithm to complete the data in the E-step and to estimate the parameters in the M-step. For multinomial distributions and discrete data, this involves computing \emph{expected counts} in the E-step and using the ML estimated \eqref{eqn:mlMultinomial} in the M-step to tune the model. Let \( \vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \) be the data points, then the expected count \( \E[N_{k \given \ell}] \), where \( N_{k \given \ell} \) would be the number of data points for which \(X = k\) and \(Y = \ell\)
 			The expected count \( \E[N_{k \subgiven \ell}] \), where \( N_{k \subgiven \ell} \) would be the number of data points for which \(X = k\) and \(Y = \ell\) holds (assuming a distribution \( P(X = k \given Y = \ell) = \theta_{k \subgiven \ell} \)), is
 			\begin{equation}
@@ -1621,87 +1623,210 @@
 	% end
 % end
 
-\chapter{Dynamic Bayesian Networks} % 7.1, 7.2, 7.3, 7.48
-	\todo{Content}
+\chapter{Dynamic Bayesian Networks}
+	So far, only \emph{static} Bayesian networks have been considered that cannot evolve. But the world around us is rather dynamic and changes with time, so incorporating this into the theory of probabilistic graphical models would be good. This chapter covers some basic topics with networks changing dynamically, highlighting the most common one, the hidden Markov model that has lots of nice properties and theoretical development that can all be leveraged when formulating a problem in this framework.
 
-	\section{Hidden Markov Models} % 7.4, 7.14, 7.15, 7.16
-		\todo{Content}
+	A \emph{hidden Markov model} (HMM) is a graphical model with \(T\) \emph{states} \(S_t\), \( t = 1, 2, \dots, T \) and as many \emph{observations} \(O_t\), \( t = 1, 2, \dots, T \); see \autoref{fig:hmm}. The terminology of states and observations stems from its applications in robotics and similar fields where the observations are usually sensor data and the states are the actual, non-observable/latent, physical states (e.g., the acceleration). According to the Bayesian network, the HMM factors as
+	\begin{equation}
+		P(S_1, S_2, \dots, S_T,\, O_1, O_2, \dots, O_T)
+			= P(S_1) \prod_{t = 1}^{T - 1} P(S_{t + 1} \given S_t) \prod_{t = 1}^{T} P(O_t \given S_t)
+			= \pi_{S_1} \, \prod_{t = 1}^{T - 1} a_{S_t S_{t + 1}} \, \prod_{t = 1}^{T} b_{S_t O_t}  \label{eqn:hmmFactor}
+	\end{equation}
+	where \( \pi_{S_1} \coloneqq P(S_1) \), \( a_{S_t S_{t + 1}} \coloneqq P(S_{t + 1} \given S_t) \), \( b_{S_t O_t} \coloneqq P(O_t \given S_t) \) are called the \emph{initial}, \emph{transition}, and \emph{observation} distributions, respectively. By the local Markov assumption, the "future is independent of the past given the present", i.e., the next state only depends on the current state and not on the state beforehand\footnote{Note that there are other variants of HMMs, called \emph{\(k\)-th order HMMs}, that can watch up to \(k\) steps into the past. So the HMM covered here has \(k = 1\). However, any \(k\)-th order HMM can be reduced to a first-order HMM, so the theory stays the same (cf. higher-order ordinary differential equations).}.
+
+	\begin{figure}
+		\centering
+		\begin{tikzpicture}[->]
+			\node [rv] (S1) {\(S_1\)};
+			\node [rv, right = 1 of S1] (S2) {\(S_2\)};
+			\node [rv, right = 1 of S2, draw = white] (Sd) {\(\cdots\)};
+			\node [rv, right = 1 of Sd] (ST) {\(S_T\)};
+			\node [rv, below = 1 of S1] (O1) {\(O_1\)};
+			\node [rv, below = 1 of S2] (O2) {\(O_2\)};
+			\node [rv, below = 1 of ST] (OT) {\(O_T\)};
+
+			\draw (S1) to (S2);
+			\draw (S2) to (Sd);
+			\draw (Sd) to (ST);
+			\draw (S1) to (O1);
+			\draw (S2) to (O2);
+			\draw (ST) to (OT);
+		\end{tikzpicture}
+		\caption[Hidden Markov Model]{Hidden Markov model with states \( S_t \) and observations \( O_t \).}
+		\label{fig:hmm}
+	\end{figure}
+
+	\section{Inference}
+		Performing inference in an HMM has three flavors:
+		\begin{itemize}
+			\item \eqmakebox[hmmInference][l]{\emph{Decoding:}}             Compute the probability of an observation sequence.
+			\item \eqmakebox[hmmInference][l]{\emph{Best State Sequence:}}  Given observations, compute the most likely (hidden) states.
+			\item \eqmakebox[hmmInference][l]{\emph{Parameter Estimation:}} Given observations and a set of possible models, which fits the best?
+		\end{itemize}
+		These three flavors are covered in the upcoming sections. Let, for all of the following, \(S\) and \(O\) be the set of all state and observation variables for brevity. Also, let \(\Theta\) be the parameters of the network.
+
+		\subsection{Decoding}
+			Decoding is concerned with computing the following probabilities:
+			\begin{align}
+				P(O \given S, \Theta) &= \prod_{t = 1}^{T} b_t &
+				   P(S \given \Theta) &= \pi \prod_{t = 1}^{T - 1} a_t \\
+				P(O, S \given \Theta) &= P(O \given S, \Theta) \, P(S \given \Theta) &
+				   P(O \given \Theta) &= \sum_{S}^{\marg} P(O, S \given \Theta)
+			\end{align}
+			While of of these are trivial expressions, computing \( P(O \given \Theta) \) has complexity \( \mathcal{O}(N^T \cdot 2T) \) due to the exponential number of entries in the CPT!
+
+			However, it is possible to leverage dynamic programming and defining recursive relations to compute \( P(O \given \Theta) \) efficiently:
+			\begin{align}
+				\alpha_\ell(t)     & \coloneqq P(O_1, O_2, \dots, O_t,\, S_t = \ell \given \Theta) & \beta_s(t) & \coloneqq P(O_{t + 1}, O_{t + 2}, \dots, O_T \given S_t = s, \Theta) \\
+				\alpha_\ell(1)     & = \pi_\ell \, b_{\ell O_1}                                    & \beta_s(T) & = 1                                                                  \\
+				\alpha_\ell(t + 1) & = \sum_s \alpha_s(t) \, a_{s \ell} \, b_{\ell O_{t + 1}}      & \beta_s(t) & = \sum_\ell a_{s \ell} \, b_{\ell O_{t + 1}} \, \beta_\ell(t + 1)
+			\end{align}
+			The left column is a forward pass for computing \( \alpha_\ell(T) = P(O_1, O_2, \dots, O_T,\, S_T = \ell \given \Theta) \) and the right column is a backward pass for computing \( \beta_s(1) = P(O_2, O_3, \dots, O_T \given S_1 = s \given \Theta) \). These quantities can then be used in three different fashions for computing \( P(O \given \Theta) \):
+			\begin{equation}
+				P(O \given \Theta)
+					= \sum_s \alpha_s(T)
+					= \sum_s \pi_s \, b_{s O_1} \, \beta_s(1)
+					= \sum_s \alpha_s(t) \, \beta_s(t)
+			\end{equation}
+			Where the latter is true for all \( t = 1, 2, \dots, T \).
+
+			\paragraph{Proof of Forward Pass}
+				Showing that the recursive relation for \( \alpha_\ell(t) \) is straightforward by invoking the chain rule and exploiting the HMM's independencies multiple times (omitting the explicit dependence on \(\Theta\) for brevity):
+				\begin{align}
+					\alpha_\ell(t + 1)
+						&= P(O_1, O_2, \dots, O_t, O_{t + 1},\, S_{t + 1} = \ell) \\
+						&= P(O_1, O_2, \dots, O_t, O_{t + 1} \given S_{t + 1} = \ell) \, P(S_{t + 1} = \ell) \\
+						&= P(O_1, O_2, \dots, O_t \given S_{t + 1} = \ell) \, P(O_{t + 1} \given S_{t + 1} = \ell) \, P(S_{t + 1} = \ell) \\
+						&= P(O_1, O_2, \dots, O_t,\, S_{t + 1} = \ell) \, P(O_{t + 1} \given S_{t + 1} = \ell) \\
+						&= \sum_s P(O_1, O_2, \dots, O_t,\, S_t = s, S_{t + 1} = \ell) \, P(O_{t + 1} \given S_{t + 1} = \ell) \\
+						&= \sum_s P(O_1, O_2, \dots, O_t,\, S_{t + 1} = \ell \given S_t = s) \, P(S_t = s) \, P(O_{t + 1} \given S_{t + 1} = \ell) \\
+						&= \sum_s P(O_1, O_2, \dots, O_t, \given S_t = s) \, P(S_{t + 1} = \ell \given S_t = s) \, P(S_t = s) \, P(O_{t + 1} \given S_{t + 1} = \ell) \\
+						&= \sum_s P(O_1, O_2, \dots, O_t,\, S_t = s) \, P(S_{t + 1} = \ell \given S_t = s) \, P(O_{t + 1} \given S_{t + 1} = \ell) \\
+						&= \sum_s \alpha_s(t) \, a_{s \ell} \, b_{\ell O_{t + 1}}
+				\end{align}
+				By marginalizing out \(S_1\) of \( \alpha_{S_1}(T) \), this is equivalent to \( P(O \given \Theta) \).
+				\qed
+			% end
+
+			\paragraph{Proof of Backward Pass}
+				Analogous to the forward pass: invoke the chain rule multiple times and exploit the HMM's independencies.
+				Showing the computation for \( P(O \given \Theta) \) is also straightforward:
+				\begin{align}
+					\sum_s \pi_s \, b_{s O_1} \, \beta_s(1)
+						&= \sum_s P(S_1 = s) \, P(O_1 \given S_1 = s ) \, P(O_2, O_3, \dots, O_T \given S_1 = s) \\
+						&= \sum_s P(S_1 = s) \, P(O_1, O_2, \dots, O_T \given S_1 = s) \\
+						&= \sum_s P(O_1, O_2, \dots, O_T,\, S_1 = s) \\
+						&= P(O_1, O_2, \dots, O_T)
+				\end{align}
+				\qed
+			% end
+
+			\paragraph{Proof of Combined Pass}
+				Showing the combined pass formulation is just plugging in of distributions and leveraging independencies, too:
+				\begin{align}
+					\sum_s \alpha_s(t) \, \beta_s(t)
+						&= \sum_s P(O_1, O_2, \dots, O_t,\, S_t = s) \, P(O_{t + 1}, O_{t + 2}, \dots, O_T \given S_t = s) \\
+						&= \sum_s P(O_1, O_2, \dots, O_t \given S_t = s) \, P(O_{t + 1}, O_{t + 2}, \dots, O_T \given S_t = s) \, P(S_t = s) \\
+						&= \sum_s P(O_1, O_2, \dots, O_T \given S_t = s) \, P(S_t = s) \\
+						&= \sum_s P(O_1, O_2, \dots, O_T,\, S_t = s) \\
+						&= P(O_1, O_2, \dots, O_T)
+				\end{align}
+				\qed
+			% end
+		% end
+
+		\subsection{Best State Sequence}
+			To find the most probable/best state sequence for a given observation sequence, two basic approaches exist: first, to get the states that are most likely individually; second, get the most likely sequence.
+
+			The former is relatively straightforward using the \(\alpha\)'s and \(\beta\)'s defined before:
+			\begin{equation}
+				\gamma_s(t)
+					= P(S_t = s \given O, \Theta)
+					= \frac{P(S_t = s, O \given \Theta)}{P(O \given \Theta)}
+					= \frac{\alpha_s(t) \, \beta_s(t)}{\sum_s \alpha_s(t) \, \beta_s(t)}
+			\end{equation}
+			Subsequently, this quantity can be maximized, \( s_t^\ast = \argmax_s \, \gamma_s(t) \).
+
+			To find the state sequence \(X^\ast = \argmax_X \, P(X \given O, \Theta) \), the \emph{Viterbi algorithm} has been developed. Let
+			\begin{equation}
+				\delta_\ell(t) = \max_{s_1, s_2, \dots, s_{t - 1}} \; P(s_1, s_2, \dots, s_{t - 1},\, O_1, O_2, \dots, O_{t - 1},\, S_t = \ell)
+			\end{equation}
+			be the maximum probability (state sequence) for given observations landing in state \(\ell\) at time \(t\). Like before for decoding, this quantity can be computed recursively,
+			\begin{equation}
+				\delta_\ell(t + 1) = \max_s \; \delta_s(t) \, a_{s \ell} \, b_{\ell O_{t + 1}},
+			\end{equation}
+			with \( \delta_\ell(1) = \pi_\ell \, b_{\ell O_1} \) to kick off the iteration. The argument states are stored in \( \psi_\ell \),
+			\begin{equation}
+				\psi_\ell(t + 1) = \argmax_s \; \delta_s(t) \, a_{s \ell} \, b_{\ell O_{t + 1}}.
+			\end{equation}
+			After iterating, the most likely state sequence can be computed using the following:
+			\begin{align}
+				s_T^\ast &= \argmax_s \; \delta_s(T) &
+				s_t^\ast &= \psi_s(t + 1) &
+				P(s^\ast) &= \argmax_s \; \delta_s(T)
+			\end{align}
+			This allows computing the most likely state sequence efficiently.
+		% end
+
+		\subsection{Parameter Estimation (Using EM)}
+			Parameter estimation in a HMM is concerned with finding the parameters \(\Theta\) given an observation sequence. This is essentially done using an EM algorithm like it was introduced before in \autoref{subsec:em}, but using the probabilities \(\alpha\) and \(\beta\). The estimated \(\hat{\pi}\), \(\hat{a}\), and \(\hat{b}\) are then given as
+			\begin{align}
+				\hat{\pi}_{S_1} &= \gamma_{S_1}(1) &
+				\hat{a}_{S_t S_{t + 1}} &= \frac{\sum_{t = 1}^{T - 1} p_t(S_t, S_{t + 1})}{\sum_{t = 1}^{T - 1} \gamma_{S_t}(t)} &
+				\hat{b}_{S_t O_t} &= \frac{\sum_{\substack{t = 1; o_t = O_t}}^{T} \gamma_{S_t}(t)}{\sum_{t = 1}^{T} \gamma_{S_t}(t)}
+			\end{align}
+			where \( p_t(S_t, S_{t + 1}) \) and \( \gamma_{S_t}(t) \) are the probability of traversing from a state \(S_t\) to a state \(S_{t + 1}\) and the probability of being in a state \(S_t\), respectively:
+			\begin{align}
+				p_t(S_t, S_{t + 1}) &= \frac{\alpha_{S_t}(t) \, a_{S_t S_{t + 1}} \, b_{S_{t + 1} O_{t + 1}} \, \beta_{S_{t + 1}}(t + 1)}{\sum_s \alpha_s(t) \, \beta_s(t)} &
+				\gamma_{S_t}(t) &= \sum_s p_t(S_t, s)
+			\end{align}
+			Note that the data is incorporated in computing the \(p\)'s and \(\gamma\)'s (this is effectively the E-step). By iterating these two sets of equations, the algorithm will converge (although possibly to a local maximum). This is known as the \emph{Baum-Welch algorithm}.
+		% end
 	% end
 
-	\section{Inference} % 7.17
-		\todo{Content}
+	\section{State Estimation (Kalman Filter)}
+		So far, only discrete states that can be enumerated have been considered. In lots of applications such as robotics and other dynamical systems, however, the states are continuous. The \emph{Kalman filter} is an approach of applying the built theory to linear Gaussian dynamical systems (LGDS's) where the local distributions are Gaussian and the mean propagation is linear.
 
-		\subsection{Decoding} % 7.18, 7.19, 7.20, 7.21, 7.22, 7.36
-			\todo{Content}
-
-			\subsubsection{Forward Pass} % 7.23, 7.24, 7.25, 7.26, 7.27, 7.28, 7.29, 7.30, 7.31, 7.32
-				\todo{Content}
-			% end
-
-			\subsubsection{Backward Pass} % 7.33, 7.34, 7.35
-				\todo{Content}
-			% end
+		\subsection{Bayes Filter} % 7.53, 7.54, 7.55, 7.56, 7.57, 7.58, 7.62, 7.63, 7.64, 7.65, 7.66
+			\todo{Bayes Filter}
 		% end
 
-		\subsection{Best State Sequence} % 7.37, 7.38, 7.39
-			\todo{Content}
+		\subsection{Discrete-Time Kalman Filter}
+			The discrete-time Kalman filter tackles dynamical systems of the form
+			\begin{align}
+				\vec{x}_1 &\sim \mathcal{N}(\vec{\mu}_0, \mat{\Sigma}_0) \\
+				\vec{x}_{t + 1} &\sim \mathcal{N}\bigl( \mat{A}_t \vec{x}_t + \mat{B}_t \vec{u}_t,\, \mat{R}_t \bigr) \\
+				\vec{y}_t &\sim \mathcal{N}\bigl( \mat{C}_t \vec{x}_t,\, \mat{Q}_t \bigr)
+			\end{align}
+			where \(\vec{x}_{1:T}\), \(\vec{y}_{1:T}\), and \(\vec{u}_{1:T - 1}\) are the states, observations, and actions, respectively. The matrices \(\mat{A}_t\), \(\mat{B}_t\), \(\mat{C}_t\), \(\mat{R}_t\), and \(\mat{Q}_t\) are the dynamics, control, observation, state covariance, and observation covariance matrices, respectively. \(\vec{\mu}_0\) and \(\mat{\Sigma}_0\) are the mean and covariance of the initial state. All of these parameters are assumed to be known for state estimation.
 
-			\subsubsection{Viterbi Algorithm} % 7.40, 7.41, 7.42
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Parameter Estimation} % 7.43, 7.44, 7.45, 7.46, 7.47
-			\todo{Content}
-		% end
-	% end
-
-	\section{State Estimation (Kalman Filter)} % 7.49, 7.50, 7.51, 7.52
-		\todo{Content}
-
-		\subsection{Recursive Bayesian Updating} % 7.53, 7.54
-			\todo{Content}
-		% end
-
-		\subsection{(Modeling) Actions} % 7.55, 7.56, 7.57, 7.58
-			\todo{Content}
-		% end
-
-		\subsection{Bayes Filter} % 7.62, 7.63, 7.64, 7.65, 7.66
-			\todo{Content}
-		% end
-
-		\subsection{Discrete-Time Kalman Filter} % 7.69, 7.70, 7.71
-			\todo{Content}
-
-			\subsubsection{Dynamics and Observations} % 7.72, 7.74
-				\todo{Content}
-			% end
-
-			\subsubsection{Belief Update: Prediction} % 7.73
-				\todo{Content}
-			% end
-
-			\subsubsection{Belief Update: Correction} % 7.75
-				\todo{Content}
-			% end
+			As the integrals of the Bayesian filter can be solved in closed form for LGDS's, the Kalman filter equations can also be stated in closed form. The state estimation consists of two steps: \emph{prediction} and \emph{correction}. In the prediction step, the state is predicted from the prior knowledge:
+			\begin{align}
+				\bar{\vec{\mu}}_t &= \mat{A}_t \vec{\mu}_{t - 1} + \mat{B}_t \vec{u}_t &
+				\bar{\mat{\Sigma}}_t &=\mat{A}_t \mat{\sigma}_{t - 1} \mat{A}_t^\top + \mat{R}_t
+			\end{align}
+			In the correction step, a new observation \(\vec{y}_t\) is incorporated to correct the previous prediction:
+			\begin{align}
+				\vec{\mu}_t &= \bar{\vec{\mu}}_t + \mat{K}_t (\vec{y}_t - \mat{C}_t \bar{\vec{\mu}}_t) &
+				\mat{\Sigma}_t &= (\mat{I} - \mat{K}_t \mat{C}_t) \bar{\mat{\Sigma}}_t
+			\end{align}
+			Here, \( \mat{K}_t = \bar{\mat{\Sigma}}_t \mat{C}_t^\top \bigl( \mat{C}_t \bar{\mat{\Sigma}}_t \mat{C}_t^\top + \mat{Q}_t \bigr)^{-1} \) is the \emph{Kalman gain}. The estimations \( \vec{\mu}_{1:T} \) are the expected states with covariance \( \mat{\Sigma}_{1:T} \) given the observations \( \vec{y}_{1:T} \).
 		% end
 	% end
 
-	\section{General Dynamic Bayesian Networks} % 7.77, 7.78, 7.79
-		\todo{Content}
+	\section{General Dynamic Bayesian Networks}
+		So far, only HMMs and LGDS's, a special kind of HMM, were considered. For general dynamical Bayesian network, the theory is not that evolved. The basic ideas are based on unrolling the network for a specific number of time steps an then performing various inference tasks in it:
+		\begin{itemize}
+			\item \eqmakebox[r][genDynBN]{Filtering:}  Computes the expected states given the observations until \(t\).
+			\item \eqmakebox[r][genDynBN]{Prediction:} Computes the expected next state.
+			\item \eqmakebox[r][genDynBN]{Smoothing:}  Computes the expected states given all observations until \(T\).
+			\item \eqmakebox[r][genDynBN]{MLE:}        Computes the most likely state sequence.
+		\end{itemize}
+		However, the naive method of unrolling the BN has some major drawbacks. Foremost, the inference cost increases with \(t\). One approach to solving this is to roll up the network again and using variable elimination to sum out the previous states.
 
-		\subsection{Exact Inference} % 7.80, 7.81
-			\todo{Content}
-		% end
+		In general, exact inference is intractable and approximate methods need to be used (e.g., factored belief states).
 
-		\subsection{Tractable, Approximate Inference} % 7.82
-			\todo{Content}
-
-			\subsubsection{Assumed Density Filtering} % 7.83, 7.84, 7.85
-				\todo{Content}
-			% end
-		% end
+		\todo{7.81, 7.82, 7.83, 7.84, 7.85}
 	% end
 % end
 

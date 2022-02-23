@@ -15,16 +15,16 @@
 	rounded corners = 5pt
 ]
 
-\chapter{Introduction} % 1.1, 1.2, 1.28, 1.29, 1.30, 1.38
-	\todo{Content}
+\chapter{Introduction}
+	Probabilistic graphical models (PGMs) are one of the most exciting development in machine learning, knowledge representation, artificial intelligence, statistics, electrical engineer, and much more research areas that has evolved in the last two decades. This summary covers a wide range of topics of this field, including Bayesian networks, Markov networks, factor graphs, junction trees, parameter learning, structure learning, exact inference, variable elimination, approximate inference, sampling, MCMC, Gibbs, loopy belief propagation, Bayesian learning, missing data, EM, temporal models, hidden Markov models, forward-backward propagation, Viterbi, Baum-Welch, DBNs, and many more.
 
-	\section{Examples} % 1.3, ..., 1.27
-		\todo{Content}
-	% end
-
-	\section{Fundamental Questions} % 1.36, 1.37
-		\todo{Content}
-	% end
+	Some of the fundamental questions of graphical models are:
+	\begin{itemize}
+		\item \eqmakebox[l][intro]{Representation:} What are model types? What does a model mean/imply/assume? How to incorporate conditional independencies to reduce representation size?
+		\item \eqmakebox[l][intro]{Inference:}      How to answer questions/queries with the model? What is the probability of \(X\) given some observations? What is the most likely observation of a phenomenon? What decision to make?
+		\item \eqmakebox[l][intro]{Learning:}       How to learn the model from data? What model fits to the data? What are right/good parameters? How to obtain the structure of a model?
+	\end{itemize}
+	This summary starts off, after some foundations, by introducing Bayesian networks and how to perform inference (in discrete domains). Later, undirected graphical models (Markov random fields), continuous random variables, and approximate inference is covered.
 % end
 
 \chapter{Foundations}
@@ -66,13 +66,13 @@
 			\end{align}
 			Note that the intersection property only holds for positive distributions (i.e., \(P(X = x) > 0\) for all \(x\)).
 
-			\subsubsection{Monty Hall Problem} % 1.61, 1.62, 1.63, 1.64, 1.65, 1.66, 1.67
-				\todo{Content}
+			\subsubsection{Monty Hall Problem}
+				\todo{Monty Hall Problem; 1.61, 1.62, 1.63, 1.64, 1.65, 1.66, 1.67}
 			% end
 		% end
 
-		\subsection{Inference} % 1.70, 1.71, 1.72
-			\todo{Content}
+		\subsection{Inference}
+			Statistical \emph{inference} is concerned with computing all kinds of statistical properties given a model, e.g., the probability of an event. This section covers same fundamental concepts needed to understand the later chapters.
 
 			\subsubsection{Information Theory}
 				Information theory is trying to quantify how much information is encoded in some distribution \(P(X)\). The central measure is \emph{entropy}:
@@ -136,14 +136,6 @@
 				\caption[Comparison of CPT and Potential]{Comparison of a CPT (left) and the corresponding potential (right). The rightmost column in the potential \( \tilde{\phi} \) is equivalent to \( \phi \) as it can be normalized accordingly.}
 				\label{fig:potetial}
 			\end{figure}
-		% end
-	% end
-
-	\section{Machine Learning} % N/A
-		\todo{Content}
-
-		\subsection{(Document) Classification} % 2.11, 2.12, 2.13, 2.14, 2.15, 2.16
-			\todo{Content}
 		% end
 	% end
 % end
@@ -273,10 +265,10 @@
 
 			\theorem{The \emph{representation theorem} states that \(G\) if an I-map of \(P\) if and only if \(P\) factorizes according to \(G\) via \eqref{eq:bayesNetJoint}.}
 
-			\paragraph{Proof} % 2.54
+			\paragraph{Proof}
 				The proof is split into proofing "if" and "only if".
 
-				"if": \todo{Representation Theorem: Proof: "if"}
+				"if": \todo{Proof: Representation Theorem; 2.54}
 
 				"only if": Assume, w.l.o.g., a topological ordering \( X_1, X_2, \dots, X_n \) where \(j < i\) for all children \(X_j\) of some random variable \(X_i\). Applying the chain rule to the joint yields \( P(X_1, X_2, \dots, X_n) = \prod_{i = 1}^{n} P(X_1 \given X_1, X_2, \dots, X_{i - 1}) \). By the topological ordering, \( \Pa(X_1) \subseteq \{ X_1, X_2, \dots, X_{i - 1} \} \) and hence, using the local Markov assumption, \( P(X_i \given X_1, X_2, \dots, X_{i - 1}) = P\bigl(X_1 \given \Pa(X_i) \bigr) \). Therefore, \(P\) factorized according to \eqref{eq:bayesNetJoint}.
 			% end
@@ -291,17 +283,17 @@
 				\item adding edges to \(G\) still results in an I-map.
 			\end{itemize}
 
-			\paragraph{Proof Idea} % 2.57
+			\paragraph{Proof Idea}
 				Let \( I_\ell(G) \subseteq I(P) \). To show that \( I_\ell(G') \subseteq I(P) \) holds, it is enough to show \( I_\ell(G') \subsetneq I_\ell(G) \). Note that is enough to show that this property holds if a single edge is added as adding two edges can be understood as two modifications, resulting in a third graph \(G''\). It therefore follows from \( I_\ell(G'') \subsetneq I_\ell(G') \subseteq I_\ell(G) \) that also \( I_\ell(G'') \subsetneq I_\ell(G) \).
 
 				Let \(X\) and \(Y\) be some random variables of \(G\) such that \( Y \not\in \Pa_G(X) \). Then adding an edge \( Y \to X \) only removes local independencies, but does not induce new ones.
 
-				\todo{Adding Edges Does Not Hurt: Proof}
+				\todo{Proof: Adding Edges Does Not Hurt; 2.57}
 			% end
 		% end
 	% end
 
-	\section{Encoded Independencies} % 2.59, 3.2, 3.3, 3.28, 3.29
+	\section{Encoded Independencies}
 		So far, only local independencies have been considered. However, a Bayesian network encodes even more dependencies by applying the algebra of conditional independencies (\autoref{subsec:condIndependence}; see \autoref{fig:moreIndependencies} for an example).
 
 		The findings of this section are summarized in \autoref{fig:independencies} which gives an overview of the different variants to getting the set of independencies (read this section first before inspecting the figure).
@@ -422,8 +414,8 @@
 
 				This means that d-separation only captured independencies that the true distributions exhibits.
 
-				\paragraph{Proof} % 3.16
-					\todo{d-Separation Soundness: Proof}
+				\paragraph{Proof}
+					\todo{Proof: d-Separation Soundness; 3.16}
 				% end
 			% end
 
@@ -434,8 +426,8 @@
 
 				Hence, the Bayesian network is usually sufficient for capturing all independence properties of the distribution! But this only holds for complete independence, but there might be context-specific independencies that are not captured.
 
-				\paragraph{Proof} % 3.18
-					\todo{d-Separation Completeness: Proof}
+				\paragraph{Proof}
+					\todo{Proof: d-Separation Completeness; 3.18}
 				% end
 			% end
 		% end
@@ -456,9 +448,9 @@
 			Another variant where CSIs occur is determinism. While determinism already makes the CPT sparse, it has even greater influences on inference as propagating the zeros often leads to a bunch of new zeros.
 		% end
 
-		\subsection{The Bayes' Ball Algorithm} % 3.19
+		\subsection{The Bayes' Ball Algorithm}
 			The \emph{Bayes' ball algorithm} is a algorithmic approach to applying d-separation.
-			\todo{Bayes' Ball Algorithm}
+			\todo{Bayes' Ball Algorithm; 3.19}
 		% end
 	% end
 
@@ -991,7 +983,7 @@
 	This set of variables is known as the \emph{Markov blanket} \(M(X)\) of \(X\).
 
 	\paragraph{Proof}
-		\todo{Proof of Markov Property in MRFs}
+		\todo{Proof: Markov Property in MRFs}
 	% end
 
 	\section{Bayesian Networks as MRFs}
@@ -1116,7 +1108,7 @@
 			Note that this formulation \emph{does not} encode the same independencies: in the Markov network formulation, \( X \perp Y \) does not hold anymore. However, it is more important to not capture invalid independencies than missing out on some.
 
 			This observation depends on the fact that two variables \(X\) and \(Y\) are conditionally dependent given \(Z\) if and only if their distribution \( P(X, Y, Z) \) can be written as \( P(X, Y, Z) = \phi(X, Y) \, \phi(Y, Z) \) with some \(\phi(\cdot)\).
-			\todo{Proof}
+			\todo{Proof: P(X, Y, Z) = f(X, Y) g(Y, Z)}
 		% end
 	% end
 
@@ -1205,7 +1197,7 @@
 			\end{algorithm}
 
 			\paragraph{Proof}
-				\todo{Join Tree Factoring: Proof}
+				\todo{Proof: Junction Tree Factoring}
 			% end
 		% end
 	% end
@@ -1269,46 +1261,75 @@
 
 			To perform inference in a junction tree, each node sends exactly one \emph{message} to exactly one of its neighbors once it has received messages from all its other neighbors. Hence, message passing must start at the leaves of the tree. To define a leave, however, first an arbitrary root node must be picked. Messages are then collected at this node and afterwards distributed back across the tree to the leaves. After this process, all clusters have the relevant information to compute the potential for its variables.
 
-			To pass messages between the clusters, each separator \(S_i\) has two "mailboxes" \( \psi_i \) and \( \psi^i \), one for the forward- and one for the backward-pass, respectively. That is, \(\psi_i\) is filled when the messages flow from the leaves to the root while \(\psi^i\) is filled when the beliefs flow back from the root to the leaves. Note that from the construction of the junction tree, each separator has exactly two connections. Each clique \( C_i \) is associated with the potentials \( \phi_j \) of the Markov network for which \( \dom \phi_j \subseteq C_i \) holds. Let \( \Phi(C_i) \) be the set of potentials associated with \(C_i\). Additionally, each clique \(C_i\) is associated with a potential \(\varphi_i\) that is used to store the current belief over the variables of the clique. All of this is illustrated in \autoref{fig:junctionTreeInference}.
+			To pass messages between the clusters, each separator \(S_i\) has two "mailboxes" \( \phi_{\overrightarrow{S_i}} \) and \( \phi_{\overleftarrow{S_i}} \), one for the forward- and one for the backward-pass, respectively. That is, \( \phi_{\overrightarrow{S_i}} \) is filled with messages flowing from the leaves to the root while \( \phi_{\overleftarrow{S_i}} \) is filled with messages flowing from the root to the leaves. Note that from the construction of the junction tree, each separator has exactly two neighboring clusters, making the message boxes unambiguous. Each clique \( C_i \) is associated with a potential \( \phi_{C_i} \) that initially holds the potential of the clique in the Markov network\footnote{For a junction tree stemming from a Bayesian network, this is the product of the potentials forming a clique in the Markov network.} and after running message passing holds the marginal potential for \( \dom \phi_{C_i} \). All of this is illustrated in \autoref{fig:junctionTreeInference}.
 
-			\begin{algorithm}
-				\KwIn{Junction tree with separators \( \{ S_j \} \) and cliques \( \{ V_i \} \) with associated potentials \( \Phi(C_i) \) from the Markov network}
-				\KwOut{Potentials \( \{ \varphi_j \} \) for each clique}
-				Initialize separator potentials
+			For the complete pseudocode, see \autoref{alg:junctionTreeMsgPassing}.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{Junction tree with clusters \(C_i\) and separators \(S_i\)}
+				\KwOut{Probabilities \( P(C_i) \) for each cluster \(C_i\)}
+				Initialize all separator potentials to one. \;
+				Initialize all cluster potentials to the Markov networks' clique potentials. \;
+				Choose a root node. \;
+				\tcp{Forward Pass}
+				\ForEach{cluster or separator \(C_i\), \(S_i\) whose children were processed}{
+					\If{a cluster was chosen}{
+						\tcp{Update cluster potential:}
+						\( \phi_{C_i} \gets \phi_{C_i} \prod_{S_j \in \Ch(C_i)} \phi_{\overrightarrow{S_j}} \) \;
+					}
+					\If{a separator was chosen}{
+						Let \(C_j\) be the child cluster of \(S_i\). \;
+						\tcp{Update separator potential:}
+						\( \phi_{\overrightarrow{S_i}} \gets \sum_{C_j \setminus S_i}^{\marg} \phi_{C_j} \) \;
+					}
+				}
+				\tcp{Backward Pass}
+				\ForEach{cluster or separator \(C_i\), \(S_i\) whose parents were processed}{
+					\If{a cluster was chosen}{
+						\tcp{Update cluster potential:}
+						\( \phi_{C_i} \gets \phi_{C_i} \prod_{S_j \in \Pa(C_i)} \phi_{\overleftarrow{S_j}} \) \;
+					}
+					\If{a separator was chosen}{
+						Let \(C_j\) be the parent cluster of \(S_i\). \;
+						\tcp{Update separator potential:}
+						\( \phi_{\overleftarrow{S_i}} \gets \sum_{C_j \setminus S_i}^{\marg} \phi_{C_j} \) \;
+					}
+				}
+				Normalize potentials at all clusters \(C_i\) to get \(P(C_i)\). \;
+				\caption{Junction Tree Message Passing}
+				\label{alg:junctionTreeMsgPassing}
 			\end{algorithm}
-
-			\todo{IMPORTANT: Look again at message passing in junction trees! Also consider changing the separator's potentials to phis.}
 
 			\begin{figure}
 				\centering
 				\begin{tikzpicture}[->, align = center]
 					\node [fam] (V6) {
 						\( V_6 = \{ X_2, X_3, X_5 \} \) \\
-						\( \varphi_6;\; \)
+						\( \phi_{C_6} = P(X_5 \given X_2, X_3) \)
 					};
-					\node [sep, left  = 2.5 of V6.south, yshift = -0.75cm, anchor = north east] (S1) {
+					\node [sep, left  = 4.5 of V6.south, yshift = -0.75cm, anchor = north east] (S1) {
 						\( S_1 = \{ X_2, X_3 \} \) \\
-						\( \downarrow\; \psi_1 \quad \uparrow\; \psi^1 \)
+						\( \downarrow\; \psi_{\overrightarrow{S_1}} \quad \uparrow\; \psi_{\overleftarrow{S_1}} \)
 					};
 					\node [sep, below = 0.75 of V6.south, anchor = north] (S2) {
 						\( S_2 = \{ X_2 \} \) \\
-						\( \downarrow\; \psi^2 \quad \uparrow\; \psi_2 \)
+						\( \downarrow\; \psi_{\overleftarrow{S_2}} \quad \uparrow\; \psi_{\overrightarrow{S_2}} \)
 					};
-					\node [sep, right = 2.5 of V6.south, yshift = -0.75cm, anchor = north west] (S3) {
+					\node [sep, right = 4.5 of V6.south, yshift = -0.75cm, anchor = north west] (S3) {
 						\( S_3 = \{ X_3 \} \) \\
-						\( \downarrow\; \psi^3 \quad \uparrow\; \psi_3 \)
+						\( \downarrow\; \psi_{\overleftarrow{S_3}} \quad \uparrow\; \psi_{\overrightarrow{S_3}} \)
 					};
 					\node [fam, below = 1 of S1] (V1) {
 						\( V_1 = \{ X_1, X_2, X_3 \} \) \\
-						\( \varphi_1;\; \)
+						\( \phi_{C_1} = P(X_1) \, P(X_2 \given X_1) \, P(X_3 \given X_1) \)
 					};
 					\node [fam, below = 1 of S2] (V2) {
 						\( V_2 = \{ X_2, X_4 \} \) \\
-						\( \varphi_2;\; \)
+						\( \phi_{C_2} = P(X_4 \given X_2) \)
 					};
 					\node [fam, below = 1 of S3] (V3) {
 						\( V_3 = \{ X_3, X_6 \} \) \\
-						\( \varphi_3;\; \)
+						\( \phi_{C_3} = P(X_6 \given X_3) \)
 					};
 
 					\draw (S1) to (V1);
@@ -1385,7 +1406,7 @@
 				where \( N_{k \subgiven \ell} \) is the number of data points for which \( X = k \) and \( Y = \ell \) and \( N_{\ell} \) is the number of data points for which \( N_{\ell} \). Hence, conditional multinomials are completely analogous to non-conditional multinomials but the dataset is constrained to the respective conditional values.
 
 				\paragraph{Proof}
-					\todo{Multinomial ML: Proof}
+					\todo{Proof: Multinomial MLE}
 				% end
 			% end
 		% end
@@ -1417,7 +1438,7 @@
 			can be computed in closed form. Then, gradient ascent can be applied. This has the advantage that training is well-known from training neural networks, coming with the disadvantages that the parameters somehow have to be constrained to be legal and the requirement for smart optimization techniques to ensure convergence.
 		% end
 
-		\subsection{Bayesian Parameter Estimation} % 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 6.10
+		\subsection{Bayesian Parameter Estimation}
 			In Bayesian estimation, the parameters are assumed to be random variables as well. Hence, by putting a prior on the parameters, learning can be understood as a form of inference using Bayes rule:
 			\begin{equation}
 				P(\Theta \given \vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)}) = \frac{P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given \Theta) \, P(\Theta)}{P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)})}.
@@ -1440,31 +1461,25 @@
 				\end{tikzpicture}
 			\end{center}
 			This network has the interesting property that \( P(x^{(i)} \given \theta) = \theta \). Hence, predicting \(\theta\) directly corresponds to inference in this network.
-			\todo{Continue Bayesian Param. Estimatiom from Slide 6.10.}
 
-			\subsubsection{Laplace Estimation} % 6.11, 6.12, 6.13, 6.16, 6.17
-				\todo{Content}
-			% end
+			As the true parameter is unknown, one idea is to integrate it out and compute the marginal data likelihood. With the prior \( P(\theta) = 1 \) for \( 0 < \theta < 1 \) and the likelihood \( P(x_1, x_2, \dots, x_n \given \theta) = \theta^k (1 - \theta)^{n - k} \) with \( k = \sum_{i = 1}^{n} X_i \) and binary variables, the marginal likelihood is
+			\begin{equation}
+				P(x_1, x_2, \dots, x_n)
+					= \int_0^1\! P(x_1, x_2, \dots, x_n \given \theta) \, P(\theta) \dd{\theta}
+					= \frac{1}{n + 1} { n \choose k }^{-1}
+			\end{equation}
+			and, by Bayes rule, the posterior is
+			\begin{equation}
+				P(\theta \given x_1, x_2, \dots, x_n)
+					= (n + 1) { n \choose k } \theta^k (1 - \theta)^{n - k}.
+			\end{equation}
+			To now perform prediction, it can be considered to compute the probability of the variable \(x_{n + 1}\), treating the realizations as a chain. Observing that \( P(x_{n + 1} \given \theta, x_1, x_2, \dots, x_n) = P(x_{n + 1} \given \theta) \) simplifies the integrals down to
+			\begin{equation}
+				P(x_{n + 1} \given x_1, x_2, \dots, x_n) = \frac{k + 1}{n + 2}.
+			\end{equation}
+			All of these calculations are possible as the chosen prior was \emph{conjugate} to the likelihood. That is, the posterior lies in the same distribution family as the prior.
 
-			\subsubsection{Bayesian Prediction} % 6.18, 6.19, 6.24
-				\todo{Content}
-			% end
-
-			\subsubsection{Conjugate Priors} % 6.20, 6.21, 6.25
-				\todo{Content}
-
-				\paragraph{Binomial Prior} % 6.22, 6.23
-					\todo{Content}
-				% end
-
-				\paragraph{Dirichlet Prior} % 6.26, 6.27, 6.28, 6.29, 6.30
-					\todo{Content}
-				% end
-			% end
-
-			\subsubsection{Bayesian Networks and Bayesian Prediction} % 6.31, 6.32
-				\todo{Content}
-			% end
+			Similarly to the above Bayesian network for a single parameter and random variable, Bayesian networks can be constructed for multiple parameters and variables to perform learning as inference. The core idea is that the separate data points are independent given the parameters, hence making inference tractable. The other observation is that the estimation only relies on \emph{sufficient statistics} (these are the count for multinomials, for example).
 		% end
 
 		\subsection{Summary}
@@ -1515,7 +1530,7 @@
 
 			In the second step, the immoralities have to be identified, i.e., for a triple \( X - Y - Z \) without \( X - Z \), when should it be an immorality \( X \to Y \from Z \)? Essentially, this is the case if \( X \perp Y \).
 
-			Both steps are summarized in \autoref{alg:pMapIdent}. Note that all of this assumes that there is some way to determine whether \( X \perp Y \given \mathcal{U} \) holds. There are numerous approaches to this which are discussed in \todo{WHERE ARE THEY DISCUSSED???}.
+			Both steps are summarized in \autoref{alg:pMapIdent}. Note that all of this assumes that there is some way to determine whether \( X \perp Y \given \mathcal{U} \) holds. There are numerous approaches to this which are discussed in \autoref{subsubsec:scoreBased}.
 
 			From this process, a partially directed acyclic graph emerges as the identification of immoralities already prescribes some directions. Take, for instance, the following graph:
 			\begin{center}
@@ -1799,10 +1814,14 @@
 	% end
 
 	\section{State Estimation (Kalman Filter)}
-		So far, only discrete states that can be enumerated have been considered. In lots of applications such as robotics and other dynamical systems, however, the states are continuous. The \emph{Kalman filter} is an approach of applying the built theory to linear Gaussian dynamical systems (LGDS's) where the local distributions are Gaussian and the mean propagation is linear.
+		So far, only discrete states that can be enumerated have been considered. In lots of applications such as robotics and other dynamical systems, however, the states are continuous. Also, an agent is able to perform actions \(u\) in the environment but cannot directly observe the states \(x\) but only observations \(z\) that somehow depend on \(x\). State estimation is concerned with recovering the states \(x\). In this section first the general framework of a \emph{Bayes filter} is discussed and subsequently a special case, the Kalman filter is covered. The \emph{Kalman filter} is an approach of applying the built theory to linear Gaussian dynamical systems (LGDS's) where the local distributions are Gaussian and the mean propagation is linear.
 
-		\subsection{Bayes Filter} % 7.53, 7.54, 7.55, 7.56, 7.57, 7.58, 7.62, 7.63, 7.64, 7.65, 7.66
-			\todo{Bayes Filter}
+		\subsection{Bayes Filter}
+			A \emph{Bayes filter} used a stream of sensor-action pairs \( (\vec{u}_t, \vec{z}_{t + 1}) \), a sensor model \( P(\vec{z}_t \given \vec{x}_t) \), an action model \( P(\vec{x}_{t + 1} \given \vec{u}_t, \vec{x}_t) \), and a prior on the system state \( P(\vec{x}) \). It seeks for the belief \( \mathit{Bel}(\vec{x}_t) = P(\vec{x}_t) \given \vec{u}_1, \vec{z}_2, \vec{u}_2, \vec{z}_3, \dots, \vec{u}_{t - 1}, \vec{z}_t \) on the system state given all prior actions and observations with the assumption of a hidden Markov model on the states and observations\footnote{Some underlying assumptions are that the world does not change, i.e., the distributions are time-invariant, the noise is independent, the model is perfect, and that no approximation errors occur.}. After some massaging of the probability distributions, the belief can be expressed as
+			\begin{equation}
+				\mathit{Bel}(\vec{x}_t) \propto P(\vec{z}_t \given \vec{x}_t) \int\! P(\vec{x}_t \given \vec{x}_{t - 1}, \vec{u}_{t - 1}) \mathit{Bel}(\vec{x}_{t - 1}) \dd{\vec{x}_{t - 1}}.
+			\end{equation}
+			For some systems like LGDS's, this integral can be solved in closed form, leading to the Kalman filter discussed in the next section. Another filtering systems used often is a particle filter which is based on using a Monte Carlo approximate of the integral.
 		% end
 
 		\subsection{Discrete-Time Kalman Filter}
@@ -1840,7 +1859,7 @@
 
 		In general, exact inference is intractable and approximate methods need to be used (e.g., factored belief states).
 
-		\todo{7.81, 7.82, 7.83, 7.84, 7.85}
+		\todo{GDBN; 7.81, 7.82, 7.83, 7.84, 7.85}
 	% end
 % end
 
@@ -1849,7 +1868,7 @@
 
 	As known from \autoref{c:inference}, exact inference is general NP-hard and intractable even for simple cases in the setting of dynamic BNs. Hence, it is desirable to get tractable approximate inference.
 
-	\section{Message Passing in Factor Graphs} % 8.3, 8.4, 8.5, 8.6, 8.7, 8.8, 8.9, 8.10, 8.11
+	\section{Message Passing in Factor Graphs}
 		A \emph{factor graph} is a representation of the structure of a distribution where random variables are connected via \emph{factor nodes} that represent the factors of the distribution. The connection to Markov networks (and subsequently Bayesian networks) is best explained with an example: consider the Markov network
 		\begin{center}
 			\begin{tikzpicture}
@@ -1977,7 +1996,7 @@
 			\end{algorithm}
 		% end
 
-		\subsection{Gibbs Sampling} % 8.58, 8.59, 8.60, 8.61, 8.62, 8.63, 8.64, 8.65, 8.66, 8.67, 8.68
+		\subsection{Gibbs Sampling}
 			Another more efficient method for sampling with evidence is \emph{Gibbs sampling}, a \emph{Markov chain Monte Carlo} (MCMC) method. Compared to forward sampling, the samples are, however, not independent anymore and form a \emph{Markov chain} (hence the name MCMC). The samples are taken from a surrogate distribution \(P'\) that converges to the true distribution \(P\) over time (with guaranteed convergence if all probabilities are positive).
 
 			The basic idea is to sample only one variable at a time, keeping all other variables fixed,
@@ -2045,9 +2064,7 @@
 		% end
 
 		\subsection{Likelihood Weighting}
-			\emph{Likelihood weighting} is a forward sampling-based method for sampling that builds on clamping the evidence and weighting the samples by the evidence likelihood, working well for likely evidence. Pseudocode for this process is given in \autoref{alg:likelihoodWeighting}. After generating the samples and weights, the posterior marginals can be estimated as follows:
-			\todo{Likelihood Weighting}
-			Like Gibbs sampling, likelihood weighting converges to the exact distribution. However, convergence may be slow, too and the sample variance is high.
+			\emph{Likelihood weighting} is a forward sampling-based method for sampling that builds on clamping the evidence and weighting the samples by the evidence likelihood, working well for likely evidence. Pseudocode for this process is given in \autoref{alg:likelihoodWeighting}. After generating the samples and weights, the posterior marginals can be estimated. Like Gibbs sampling, likelihood weighting converges to the exact distribution. However, convergence may be slow, too and the sample variance is high.
 
 			\begin{algorithm}  \DontPrintSemicolon
 				\KwIn{Bayesian network with variables \(X_1, X_2, \dots, X_n\), number of samples \(T\), evidence \(\vec{E} = \vec{e}\)}

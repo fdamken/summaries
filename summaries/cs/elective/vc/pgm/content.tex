@@ -1573,6 +1573,8 @@
 			To learn the structure of a network, two distinctive approaches exist: constraint- and score-based learning. These will be presented in the following two sections.
 
 			\subsubsection{Constraint-Based}
+				\label{subsubsec:constraintBased}
+
 				\emph{Constraint-based} learning is based on \autoref{alg:pMapIdent} and tackles the identification of the independencies \( X \perp Y \given \mathcal{U} \). Its approach is to use statistical tests with the null hypothesis that the independence holds. One such test is the \(\chi^2\)-independency-test. A more direct measure is the mutual information
 				\begin{equation}
 					\hat{I}(X; Y \given \mathcal{U}) = \sum_{X, Y}^{\marg} \hat{P}(X, Y \given \mathcal{U}) \, \log\frac{\hat{P}(X, Y \given \mathcal{U})}{\hat{P}(X) \, \hat{P}(Y \given \mathcal{U})}
@@ -2071,35 +2073,19 @@
 	% end
 % end
 
-\chapter{Tractable Probabilistic Models} % 9.1
-	\todo{Content}
+\chapter{Tractable Probabilistic Models}
+	In the current era of \emph{deep learning}, the trend goes to stacking many layers in neural networks instead of relying on shallow representations as they turn out to be much more powerful. But, opposed to PGMs, they usually have no probabilistic semantics and learning requires extensive computation. Borrowing the idea of deep representations, \emph{probabilistic circuits} have been developed. These circuits are computational graphs for joint distributions.
 
-	\section{Deep Learning} % 9.2, 9.3, 9.4
-		\todo{Content}
-	% end
+	This chapter only touches upon tractable probabilistic models, circuits, and sum-product networks. For a more thorough treatment, see section "Probabilistic Circuits" in chapter "Probabilistic Graphical Models" in the summary of "Deep Learning: Architectures and Methods"\footnote{\url{https://fabian.damken.net/summaries/cs/elective/iws/dlam/dlam-summary.pdf}}.
 
-	\section{Probabilistic Circuits} % 9.5, 9.6, 9.7, 9.8, 9.9, 9.10
-		\todo{Content}
-	% end
+	\section{Sum-Product Networks}
+		\emph{Sum-product networks} (SPNs) are a special kind of probabilistic circuits (and arithmetic circuits (ACs)) whose nodes consists of sum- and product-nodes. Additionally, the edges are weighted an the numbers flowing across them are multiplied with the weight before feeding into the next node. A neat property of SPNs is that inference is linear in network size!
 
-	\section{Sum-Product Networks} % 9.11, 9.12, 9.58, 9.59
-		\todo{Content}
+		To compute a full joint distribution, the inputs of the SPN are set to the respective values and then the prescribed calculation is carried out. To compute a marginal, the variables to marginalize are all set to \num{1} and then the prescribed calculation is carried out. To perform MAP, the sums are replaced by \(\max\)'s in the forward pass and by \(\argmax\)'s in the backward pass to get the MPE.
 
-		\subsection{Inference} % 9.13, 9.14, 9.15, 9.16
-			\todo{Content}
-		% end
+		Learning an SPN from data can be done in various fashions. The most simplistic one is to start with a dense SPN and find the structure by learning the parameters (where zero weights indicate the absence of a connection). However, this can cause vanishing gradients by the many multiplications. To directly learn the (Tree-) SPN's structure, testing for independencies similar to learning Bayesian networks (\autoref{subsubsec:constraintBased}) is also a fruitful choice. These tests then identify product nodes while subsequently clustering algorithms like k-means can be used for identifying the sum nodes (which can be understood as mixture models).
 
-		\subsection{Learning} % 9.16, 9.17
-			\todo{Content}
-
-			\subsubsection{Directly Learning SPNs} % 9.24, 9.25, 9.26, 9.27
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Inference on Devices} % 9.29
-			\todo{Content}
-		% end
+		Another major advantage of SPNs is that they can be compiled into simple and library-free code that can be executed on mobile devices. This is useful for real-time applications and similar. As they encode multivariate distributions as polynomials of univariate distributions, they can also be used in symbolic methods for inference.
 	% end
 % end
 

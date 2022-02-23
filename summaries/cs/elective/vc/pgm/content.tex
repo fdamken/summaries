@@ -2089,66 +2089,112 @@
 	% end
 % end
 
-\chapter{Deep Generative Models} % 10.1, 10.2, 10.3, 10.4, 10.5, 10.6, 10.7, 10.8
-	\todo{Content}
+\chapter{Deep Generative Models}
+	While data is relatively cheap in the era of big data, the majority of the available data is unlabeled and providing labels is time intensive, costly, requires expertise, etc. Hence, it is desirable to be able to learn without supervision. (Deep) \emph{generative models} are concerned with modeling the distribution of the data itself instead of relying on a discriminator function. The found distribution can then also be used to generate new data points (e.g., images). A major challenge in generative models is the \emph{curse of dimensionality:} in high dimensions, the data is usually sparse and an exponential amount of data is needed to fill the space.
 
-	\section{Likelihood-Based} % 10.9
-		\todo{Content}
+	In this chapter, multiple variants of deep generative models are covered, categorized into likelihood-based and likelihood-free methods.
 
-		\subsection{Autoregressive Generatie Models} % 10.10
-			\todo{Content}
+	\section{Likelihood-Based}
+		\emph{Likelihood-based} methods share the property that they learn by maximizing the (log-) likelihood of a model.
 
-			\subsubsection{Learning and Inference} % 10.11
-				\todo{Content}
-			% end
+		\subsection{Autoregressive Generative Models}
+			\emph{Autoregressive generative models} are fully observed graphical models of the form
+			\begin{center}
+				\begin{tikzpicture}[->]
+					\node [rv] (X1) {\( X_1 \)};
+					\node [rv, right = 1 of X1] (X2) {\( X_2 \)};
+					\node [rv, right = 1 of X2] (X3) {\( X_3 \)};
+					\node [rv, right = 1 of X3] (X4) {\( X_4 \)};
+					\node [rv, right = 1 of X4, draw = white] (Xd) {\( \cdots \)};
+					\node [rv, right = 1 of Xd] (Xn) {\( X_n \)};
 
-			\subsubsection{Parametrization} % 10.12, 10.13, 10.14
-				\todo{Content}
-			% end
+					\draw (X1) to (X2);
+					\draw (X1) to[bend left] (X3);
+					\draw (X1) to[bend left] (X4);
+					\draw (X1) to[bend left] (Xn);
+					\draw (X2) to (X3);
+					\draw (X2) to[bend left] (X4);
+					\draw (X2) to[bend left] (Xn);
+					\draw (X3) to (X4);
+					\draw (X3) to[bend left] (Xn);
+					\draw (X4) to (Xd);
+					\draw (X4) to[bend left] (Xn);
+					\draw (Xd) to (Xn);
+				\end{tikzpicture}
+			\end{center}
+			factorizing as
+			\begin{equation}
+				P(X_1, X_2, \dots, X_n) = \prod_{i = 1}^{n} P(X_i \given X_1, X_2, \dots, X_{i - 1}).
+			\end{equation}
+			Of course, the CPTs for this model would again have exponentially many entries in the number of variables. Later on, it will be introduced to parameterize the distributions with a neural network and approximating the distribution.
+
+			To learn the parameters, it is possible to directly maximize the log-likelihood over the dataset \(\mathcal{D}\):
+			\begin{equation}
+				\argmax_\theta \; \log P(\mathcal{D} \given \theta)
+					= \argmax_\theta \; \sum_{\vec{x} \in \mathcal{D}} \log P(\mathcal{D} \given \theta)
+					= \argmax_\theta \; \sum_{\vec{x} \in \mathcal{D}} \sum_{i = 1}^{n} \log P(x_i \given x_1, x_2, \dots, x_{i - 1}).
+			\end{equation}
+			The constraint on tractable factors allows exact computation of the likelihood! The conditionals can be evaluated in parallel during training, making it faster. To sample from the model, forward sampling can be used with the usual caveats (i.e., being slow with evidence).
+
+			As the number of entries in the CPTs of this model rise exponentially with the number of RVs, alternative parametrizations are desired. Most of the time, neural networks are used:
+			\begin{itemize}
+				\item Fully-Visible Sigmoid Belief Network (FVSBN)
+				\item Neural Autoregressive Density Estimator (NADE): one hidden layer NN
+				\item Masked Auto-Encoder Distribution Estimator (MADE): multilayer NN
+			\end{itemize}
+			Also other variants based on recurrent and convolutional neural networks have been proposed.
 		% end
 
-		\subsection{Variational Auto-Encoders} % 10.15, 10.16, 10.17
-			\todo{Content}
+		\subsection{Variational Auto-Encoders}
+			\emph{Variational autoencoders} (VAEs) are models using latent variables and inference networks to infer the latent distribution (see \autoref{fig:vae} for the graphical model). Its goal is to maximize the marginal log-likelihood \( \log p_\theta(\mathcal{D}) \) of the dataset. But this quantity is intractable! The key idea of VAEs is to approximate the posterior \( p_\theta(\vec{z} \given \vec{x}) \) with a simpler distribution \( q_\phi(\vec{z} \given \vec{x}) \) represented by a neural network. Inference is then cast as optimization over \(\theta\) and \(\phi\).
 
-			\subsubsection{Inference as Optimization} % 10.18, 10.19
-				\todo{Content}
-			% end
+			By massaging the quantity \( \log p_\theta(\vec{x}) \) a bit, one arrives at the following representation:
+			\begin{equation}
+				\log p_\theta(\vec{x}) = \underbrace{\E_{q_\phi(\vec{z} \subgiven \vec{x})}\biggl[ \log\frac{p_\theta(\vec{x}, \vec{z})}{q_\phi(\vec{z} \given \vec{x})} \biggr]}_{\mathrm{ELBO}(\vec{x}; \theta, \phi)} + D_\mathrm{KL}\bigl( q_\phi(\vec{z} \given \vec{x}) \,\big\Vert\, p_\theta(\vec{z} \given \vec{x}) \bigr).
+			\end{equation}
+			The last term (the KL-divergence) is still intractable, but as it is non-negative, it can be discarded, yielding the \emph{evidence lower bound} (ELBO), the left term. By optimizing the ELBO, the posterior approximate gets better and better and finally, the model can be used to generate new data using forward sampling.
 
-			\subsubsection{Variational Bayes} % 10.20, 10.21
-				\todo{Content}
-			% end
+			Note that the ELBO can be decomposed as
+			\begin{equation}
+				\mathrm{ELBO}(\vec{x}; \theta, \phi) = \E_{q_\phi(\vec{z} \subgiven \vec{x})}\bigl[ \log p_\theta(\vec{x} \given \vec{z}) \bigr] - D_\mathrm{KL}\bigl( q_\phi(\vec{z} \given \vec{x}) \,\big\Vert\, p_\theta(\vec{z}) \bigr),
+			\end{equation}
+			where the first term is the negative reconstruction error and the second is a penalty for diverging from the prior \( p_\theta(\vec{z}) \).
 
-			\subsubsection{Learning and Inference} % 10.22
-				\todo{Content}
-			% end
+			But while VAEs are quite successful, there are still various open research questions, e.g., better optimization techniques, mor expressive approximations, alternative loss functions, \dots
 
-			\subsubsection{Open Questions} % 10.24
-				\todo{Content}
-			% end
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[->]
+					\node [rv] (z) {\(\vec{z}\)};
+					\node [rv, below = 2 of z] (x) {\(\vec{x}\)};
+					\draw (z) to node[left]{\( p_\theta(\vec{x} \given \vec{z}) \)} (x);
+					\draw [dotted] (x) to[bend right] node[right]{\( q_\phi(\vec{z} \given \vec{x}) \)} (z);
+				\end{tikzpicture}
+				\caption[Variational Auto-Encoder]{Graphical model of a variational auto-encoder with the latent states \(\vec{z}\), the decoder network \(p_\theta(\vec{x} \given \vec{z})\) and the encoder network \(q_\phi(\vec{z} \given \vec{x})\).}
+				\label{fig:vae}
+			\end{figure}
 		% end
 
-		\subsection{Normalizing Flows} % 10.25, 10.26, 10.27, 10.28, 10.29
-			\todo{Content}
+		\subsection{Normalizing Flows}
+			\emph{Normalizing flows} leverage invertible neural networks to find a mapping \( \vec{f}_\theta : \R^n \to \R^n \) between a latent space \(\vec{z}\) and \(\vec{x}\) that is invertible and deterministic such that \( \vec{x} = \vec{f}_\theta(\vec{z}) \) and \( \vec{z} = \vec{f}_\theta^{-1}(\vec{x}) \). One example for such functions is a linear map. Then, change of variables
+			\begin{equation}
+				p_X(\vec{x}) = p_Z(\vec{z}) \Biggl( \det \pdv{\vec{f}_\theta^{-1}}{\vec{X}} \bigg\vert_{\vec{X} = \vec{x}} \Biggr)
+			\end{equation}
+			is used to define the distributions. In normalizing flows, multiple of these transformations are composed with each other to build complex structures and distributions.
 
-			\subsubsection{Learning and Inference} % 10.30
-				\todo{Content}
-			% end
+			Learning is again done by maximizing the log-likelihood and exact likelihood-evaluation is possible by design. For sampling, forward sampling can be applied straightforwardly. Also, the latent representation can be inferred using the inverse transformation.
 		% end
 	% end
 
-	\section{Likelihood-Free} % 10.32
-		\todo{Content}
+	\section{Likelihood-Free}
+		Opposed to likelihood-based models, \emph{likelihood-free} methods do not rely on the computation of a likelihood for learning.
 
-		\subsection{Generative Adversarial Networks} % 10.33, 10.34, 10.35
-			\todo{Content}
-
-			\subsubsection{Inference} % 10.36
-				\todo{Content}
-			% end
+		\subsection{Generative Adversarial Networks}
+			\emph{Generate adversarial networks} (GANs) feature two neural distributions: a generator trying to generate fake images and a discriminator trying to distinguish fake and real images. By training both in an alternating minimax fashion, the generator learns to generate better and better images while the discriminator gets better at differentiating them.
 		% end
 	% end
 
-	\section{Applications in Scientific Discovery} % 10.39, 10.40, 10.41, 10.42, 10.43
-		\todo{Content}
+	\section{Applications in Scientific Discovery}
+		Generative models have various applications, e.g., causal discovery and inference, model-based reinforcement learning, scientific discovery. But there are still various open questions, e.g., evaluation metrics for sampling and bias and fairness in generative models.
 	% end
 % end

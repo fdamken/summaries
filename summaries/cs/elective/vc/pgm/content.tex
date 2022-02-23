@@ -470,6 +470,8 @@
 % end
 
 \chapter{Inference}
+	\label{c:inference}
+
 	\emph{Inference} is concerned with answering statistical queries in a probabilistic model. As this summary is on probabilistic model, it is concerned with inference in graphical models. However, inference in Bayesian networks is---in general---pretty hopeless aka. NP-hard (even approximate inference). In practice, however, special structures can be exploited producing many effective (approximate) inference algorithms. This chapter covers exact inference whereas approximate inference is covered later in \autoref{c:approxInference}.
 
 	A general probabilistic query is \( P(X \given e) \) computing some probability given some evidence \(e\). The straightforward way to compute the conditional is to directly use its definition,
@@ -955,6 +957,8 @@
 % end
 
 \chapter{Markov Random Fields}
+	\label{c:mrf}
+
 	Bayesian networks are not allowed to have cycles as they would not make any sense. Another variant of PGMs, Markov Random Fields (MRFs), allow cycles and are undirected. Instead of encoding dependencies, the edges in a Markov network encode which random variables occur together in a potential. For example, the Markov network
 	\begin{center}
 		\begin{tikzpicture}
@@ -979,6 +983,12 @@
 		P(X_1, X_2, \dots, X_n) = \frac{1}{Z} \prod_{C \,\in\, \Cliques(G)} \phi_C(X_1, X_2, \dots, X_n)
 	\end{equation}
 	where \( \Cliques(G) \) is the set of maximal cliques in \(G\) and \(1/Z\) is the normalization factor. In an MRF, the \emph{Markov property} holds: two sets of random variables, \(\mathcal{X}\) and \(\mathcal{Y}\) are independent given a \emph{separating subset} \(\mathcal{Z}\) (\( \mathcal{X} \perp \mathcal{Y} \given \mathcal{Z} \)). This subset has the property that every path from any variable in \(\mathcal{X}\) to any variable in \(\mathcal{Y}\) contains a variable from \(\mathcal{Z}\).
+
+	Note that a random variable \(X\) is independent from all other variables \(Y\) in the network givens its parents, its children, and, to care about v-structures, its children's parents:
+	\begin{equation}
+		X \perp Y \given \Biggl( \Pa(X) \cup \Ch(X) \cup \Biggl( \bigcup_{Z \in \Ch(X)} \Pa(Z) \Biggr) \Biggr)
+	\end{equation}
+	This set of variables is known as the \emph{Markov blanket} \(M(X)\) of \(X\).
 
 	\paragraph{Proof}
 		\todo{Proof of Markov Property in MRFs}
@@ -1255,6 +1265,8 @@
 		\end{figure}
 
 		\subsection{Inference}
+			\label{subsec:junctionTreeInference}
+
 			To perform inference in a junction tree, each node sends exactly one \emph{message} to exactly one of its neighbors once it has received messages from all its other neighbors. Hence, message passing must start at the leaves of the tree. To define a leave, however, first an arbitrary root node must be picked. Messages are then collected at this node and afterwards distributed back across the tree to the leaves. After this process, all clusters have the relevant information to compute the potential for its variables.
 
 			To pass messages between the clusters, each separator \(S_i\) has two "mailboxes" \( \psi_i \) and \( \psi^i \), one for the forward- and one for the backward-pass, respectively. That is, \(\psi_i\) is filled when the messages flow from the leaves to the root while \(\psi^i\) is filled when the beliefs flow back from the root to the leaves. Note that from the construction of the junction tree, each separator has exactly two connections. Each clique \( C_i \) is associated with the potentials \( \phi_j \) of the Markov network for which \( \dom \phi_j \subseteq C_i \) holds. Let \( \Phi(C_i) \) be the set of potentials associated with \(C_i\). Additionally, each clique \(C_i\) is associated with a potential \(\varphi_i\) that is used to store the current belief over the variables of the clique. All of this is illustrated in \autoref{fig:junctionTreeInference}.
@@ -1817,10 +1829,10 @@
 	\section{General Dynamic Bayesian Networks}
 		So far, only HMMs and LGDS's, a special kind of HMM, were considered. For general dynamical Bayesian network, the theory is not that evolved. The basic ideas are based on unrolling the network for a specific number of time steps an then performing various inference tasks in it:
 		\begin{itemize}
-			\item \eqmakebox[r][genDynBN]{Filtering:}  Computes the expected states given the observations until \(t\).
-			\item \eqmakebox[r][genDynBN]{Prediction:} Computes the expected next state.
-			\item \eqmakebox[r][genDynBN]{Smoothing:}  Computes the expected states given all observations until \(T\).
-			\item \eqmakebox[r][genDynBN]{MLE:}        Computes the most likely state sequence.
+			\item \eqmakebox[genDynBN][l]{Filtering:}  Computes the expected states given the observations until \(t\).
+			\item \eqmakebox[genDynBN][l]{Prediction:} Computes the expected next state.
+			\item \eqmakebox[genDynBN][l]{Smoothing:}  Computes the expected states given all observations until \(T\).
+			\item \eqmakebox[genDynBN][l]{MLE:}        Computes the most likely state sequence.
 		\end{itemize}
 		However, the naive method of unrolling the BN has some major drawbacks. Foremost, the inference cost increases with \(t\). One approach to solving this is to roll up the network again and using variable elimination to sum out the previous states.
 
@@ -1830,84 +1842,231 @@
 	% end
 % end
 
-\chapter{Approximate Inference} % 8.1, 8.2
+\chapter{Approximate Inference}
 	\label{c:approxInference}
 
-	\todo{Content}
+	As known from \autoref{c:inference}, exact inference is general NP-hard and intractable even for simple cases in the setting of dynamic BNs. Hence, it is desirable to get tractable approximate inference.
 
-	\section{Message Passing} % 8.3, 8.4, 8.5, 8.6, 8.7, 8.8, 8.9, 8.10, 8.11
-		\todo{Content}
+	\section{Message Passing in Factor Graphs} % 8.3, 8.4, 8.5, 8.6, 8.7, 8.8, 8.9, 8.10, 8.11
+		A \emph{factor graph} is a representation of the structure of a distribution where random variables are connected via \emph{factor nodes} that represent the factors of the distribution. The connection to Markov networks (and subsequently Bayesian networks) is best explained with an example: consider the Markov network
+		\begin{center}
+			\begin{tikzpicture}
+				\node [rv] (X1) {\(X_1\)};
+				\node [rv, below left = 1 of X1] (X2) {\(X_2\)};
+				\node [rv, below right = 1 of X1] (X3) {\(X_3\)};
+				\node [rv, below left = 1 of X2] (X4) {\(X_4\)};
+				\node [rv, below right = 1 of X2] (X5) {\(X_5\)};
+				\node [rv, below right = 1 of X3] (X6) {\(X_6\)};
 
-		\subsection{Sum-Product Belief Propagation} % 8.12, 8.13, 8.14, 8.15, 8.16, 8.17, 8.18, 8.19, 8.20, 8.21
-			\todo{Content}
-		% end
+				\draw (X1) to (X2);
+				\draw (X1) to (X3);
+				\draw (X2) to (X4);
+				\draw (X2) to (X5);
+				\draw (X3) to (X5);
+				\draw (X3) to (X6);
+				\draw (X2) to (X3);
+			\end{tikzpicture}
+		\end{center}
+		which factorizes as
+		\begin{equation}
+			P(X_1, X_2, X_3, X_4, X_5, X_6) = \underbrace{P(X_1, X_2, X_3)}_{f_1} \, \underbrace{P(X_2, X_4)}_{f_2} \, \underbrace{P(X_2, X_3, X_5)}_{f_3} \, \underbrace{P(X_3, X_6)}_{f_4}.
+		\end{equation}
+		The corresponding factor graph then is:
+		\begin{center}
+			\begin{tikzpicture}[fac/.style = { rv, rectangle }]
+				\node [fac] (f1) {\(f_1\)};
+				\node [rv, left = 1 of f1] (X1) {\(X_1\)};
+				\node [rv, above = 1 of f1] (X2) {\(X_2\)};
+				\node [rv, right = 1 of f1] (X3) {\(X_3\)};
+				\node [fac, left = 1 of X2] (f2) {\(f_2\)};
+				\node [rv, left = 1 of f2] (X4) {\(X_4\)};
+				\node [fac, right = 1 of X2] (f3) {\(f_3\)};
+				\node [rv, right = 1 of f3] (X5) {\(X_5\)};
+				\node [fac, below = 1 of X5] (f4) {\(f_4\)};
+				\node [rv, right = of f4] (X6) {\(X_6\)};
 
-		\subsection{(Acyclic) Belief Propagation as Dynamic Programming} % 8.22, 8.23, 8.24, 8.25, 8.26, 8.27, 8.28, 8.29, 8.30, 8.31, 8.32, 8.33, 8.34, 8.35, 8.36
-			\todo{Content}
-		% end
+				\draw (f1) to (X1);
+				\draw (f1) to (X2);
+				\draw (f1) to (X3);
+				\draw (f2) to (X2);
+				\draw (f2) to (X4);
+				\draw (f3) to (X2);
+				\draw (f3) to (X3);
+				\draw (f3) to (X5);
+				\draw (f4) to (X3);
+				\draw (f4) to (X6);
+			\end{tikzpicture}
+		\end{center}
+		Note that this factor graph has a cycle! For most parts of this section, it is required that the factor graph is acyclic.
 
-		\subsection{Loopy Belief Propagation} % 8.37, 8.38, 8.39, 8.40, 8.41
-			\todo{Content}
+		A rather simple algorithm for performing inference in factor graphs is \emph{sum-product belief propagation}. Similar to inference in junction tree (\autoref{subsec:junctionTreeInference}), it consists of sending message between the graph's nodes. All nodes hold a belief \(b\) (with \(b_i\) for the \(i\)-th variable node and \(b_\alpha\) for the \(\alpha\)-th factor node) that is used to compute the respective marginals (over the node's variable's realization \(x_i\) or the factor's realization set of variables \(\vec{x}_\alpha\)) by normalization. Both variable and factor nodes send messages \(\mu_{i \to \alpha}\) and \(\mu_{\alpha \to i}\) to their neighbors. First, the messages are sent from the leaves to the root and subsequently the messages are propagated back from the root to the leaves (cf. junction tree inference).
+
+		The messages are constructed as follows (from variables to factors on the top, and vice versa on the bottom; \(\mathcal{N}(\cdot)\) are the neighbors of the node/factor):
+		\begin{align}
+			\mu_{i \to \alpha}(x_i) &= \prod_{\alpha \,\in\, \mathcal{N}(i) \setminus \{ \alpha \}} \mu_{\alpha \to i}(x_i) \\
+			\mu_{\alpha \to i}(x_i) &= \sum_{\vec{x}_\alpha;\, x_{\alpha, i} \,=\, x_i} f_\alpha(\vec{x}_\alpha) \prod_{j \,\in\, \mathcal{N}(\alpha) \setminus \{ i \}} \mu_{j \to \alpha}(x_{\alpha, i})
+		\end{align}
+		Subsequently (after propagating the messages), the beliefs can be computed as follows:
+		\begin{align}
+			b_i(x_i) &= \prod_{\alpha \,\in\, \mathcal{N}(i)} \mu_{\alpha \to i}(x_i) &
+			b_\alpha(\vec{x}_\alpha) &= f_\alpha(\vec{x}_\alpha) \prod_{i \,\in\, \mathcal{N}(\alpha)} \mu_{i \to \alpha}(x_{\alpha, i})
+		\end{align}
+		The complete pseudocode is given in \autoref{alg:spa}.
+
+		The sum-product algorithm can be seen as an instance of dynamic programming combined with variable elimination: the big problem of inference is broken down into small sub-problems characterized by the different parts of the graph. Additionally, the sum-product algorithm can also be used to find most probable explanations by replacing the sums with \(\max\)'s.
+
+		\begin{algorithm}  \DontPrintSemicolon
+			\KwIn{acyclic factor graph}
+			\KwOut{exact marginals for each variable and factor variables}
+			\tcp{Initialize messages to a uniform distribution:}
+			\eqmakebox[spaA][r]{\( \mu_{i \to \alpha}(x_i) \)} \( \gets 1 \) \;
+			\eqmakebox[spaA][r]{\( \mu_{\alpha \to i}(x_i) \)}\( \gets 1 \) \;
+			Choose a root node. \;
+			\tcp{Send messages from leaves to root:}
+			\eqmakebox[spaB][r]{\( \mu_{i \to \alpha}(x_i) \)} \( \gets \prod_{\alpha \,\in\, \mathcal{N}(i) \setminus \{ \alpha \}} \mu_{\alpha \to i}(x_i) \) \;
+			\eqmakebox[spaB][r]{\( \mu_{\alpha \to i}(x_i) \)} \( \gets \sum_{\vec{x}_\alpha;\, x_{\alpha, i} \,=\, x_i} f_\alpha(\vec{x}_\alpha) \prod_{j \,\in\, \mathcal{N}(\alpha) \setminus \{ i \}} \mu_{j \to \alpha}(x_{\alpha, i}) \) \;
+			\tcp{Compute beliefs:}
+			\eqmakebox[spaC][r]{\( b_i(x_i) \)} \( \gets \prod_{\alpha \,\in\, \mathcal{N}(i)} \mu_{\alpha \to i}(x_i) \) \;
+			\eqmakebox[spaC][r]{\( b_\alpha(\vec{x}_\alpha) \)} \( \gets f_\alpha(\vec{x}_\alpha) \prod_{i \,\in\, \mathcal{N}(\alpha)} \mu_{i \to \alpha}(x_{\alpha, i}) \) \;
+			\tcp{Normalize belifs and return the marginals:}
+			\eqmakebox[spaD][r]{\( P_i(X_i = x_i) \)} \( \propto b_i(x_i) \) \;
+			\eqmakebox[spaD][r]{\( P_\alpha(\vec{X}_\alpha = \vec{x}_\alpha) \)} \( \propto b_\alpha(\vec{x}_\alpha) \) \;
+			\caption{Sum-Product Algorithm}
+			\label{alg:spa}
+		\end{algorithm}
+
+
+		\subsection{Loopy Belief Propagation}
+			\label{subsec:loopyBelief}
+
+			So far, only acyclic factor graphs have been considered. However, most factor graphs have cycles (loops). Hence, the messages are no longer independent and could travel in circles! And due to these cycles, dynamic programming cannot help anymore and the problem of computing the exact marginals is \#P-complete. In turns out, though, that just ignoring this fact and letting run message passing until convergence works fine in most cases.
+
+			However, in some cases, the messages might loop around and drive the beliefs to deterministic distributions as the beliefs are increased in every turn (as the messages are treated to come from independent parts of the graph). But usually, cycles are long or include weak correlations such that the influence is weak.
+
+			Some approaches for dealing with loops is to just stop after a certain number of iterations or stop when the beliefs do not change anymore which can also be accelerated using simulated annealing or similar techniques. Usually, if the algorithm converges, it produces a good approximation. Some exemplary implementations are Turbo Codes and Lifted Inference.
 		% end
 	% end
 
-	\section{Sampling} % 8.42, 8.43, 8.44, 8.45, 8.46, 8.47, 8.48
-		\todo{Content}
+	\section{Sampling}
+		Another method of approximate inference is \emph{sampling}. A \emph{sample} is an instantiation \(\vec{x}\) of random variables \(\vec{X}\) generated from a distribution \(P(\vec{X})\). Also, it is desired to also incorporate evidence \(\vec{E} = \vec{e}\) to sample from the distribution \( P(\vec{X} \given \vec{E} = \vec{e}) \). To compute the expected value of a random variable, multiple samples can be generated and averaged which (according to the strong law of large numbers) will converge to the real expectation as the number of samples increases. Similarly, the probability of an outcome can be estimated by counting\footnote{Note that this is only really applicable for discrete random variables as a specific value of a continuous variable has measure zero.}.
 
-		\subsection{Forward Sampling (Without Evidence)} % 8.49, 8.50, 8.51, 8.52
-			\todo{Content}
-		% end
+		For a binary random variable \( X \in \{ 0, 1 \} \) with \( P(X = 0) = \theta \), a sample can be generated straightforwardly by \( x = \mathbbm{1}[\epsilon > \theta] \) where \( \epsilon \sim \mathcal{U}(0, 1) \) is sampled from a uniform continuous distribution. Random number generators for this range are assumed to exist from now on, and they do in most programming languages (usually as \emph{pseudo} random number generators). For a Bayesian network with a huge number of random variables and complicated distributions, sampling is not that simple. The following sections will cover some methods for sampling from these Bayesian networks.
 
-		\subsection{Forward Sampling (With Evidence)} % 8.53, 8.54, 8.55, 8.56, 8.57
-			\todo{Content}
+		\subsection{Forward Sampling}
+			\emph{Forward sampling} is a naive straightforward methods that works well when no evidence has to be considered. It starts from a node with no parents, generates a sample, and propagates this sample down the Bayesian network, instantiating each CPT into a simple distribution. With evidence, some samples have to be rejected as soon as the evidence is violated. The pseudocode is given in \autoref{alg:forwardSampling}.
+
+			While forward sampling has the advantages to be really simple and to produce true independent samples, incorporating the evidence in this fashion has some major drawbacks: if the probability \( P(\vec{E} = \vec{e}) \) of the evidence is low, most of the samples will be rejected. Hence, lots of useless samples will be generated, making the whole procedure extremely slow.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{Bayesian network with variables \(X_1, X_2, \dots, X_n\), number of samples \(T\), evidence \(\vec{E} = \vec{e}\)}
+				\KwOut{Set of samples \( \vec{x}^{(1:T)} \)}
+				\For{\( t = 1, 2, \dots, T \)}{
+					\tcp{Initialize empty sample:}
+					\( \vec{x}^{(t)} \gets \mathit{Empty} \)  \label{algline:forwardSamplingRestart} \;
+					\ForEach{\(X_i\) in a topological ordering}{
+						\( x_i^{(t)} \gets \text{Sample from } P\bigl(X_i \given \Pa(X_i) = \vec{x}^{(t)} \bigr) \) \;
+						\If{\( X_i \in \vec{E} \) and \( x_i^{(t)} \neq e_i \)}{
+							Reject sample and start over (go to \autoref{algline:forwardSamplingRestart}). \;
+						}
+					}
+				}
+				\caption{Forward Sampling}
+				\label{alg:forwardSampling}
+			\end{algorithm}
 		% end
 
 		\subsection{Gibbs Sampling} % 8.58, 8.59, 8.60, 8.61, 8.62, 8.63, 8.64, 8.65, 8.66, 8.67, 8.68
-			\todo{Content}
+			Another more efficient method for sampling with evidence is \emph{Gibbs sampling}, a \emph{Markov chain Monte Carlo} (MCMC) method. Compared to forward sampling, the samples are, however, not independent anymore and form a \emph{Markov chain} (hence the name MCMC). The samples are taken from a surrogate distribution \(P'\) that converges to the true distribution \(P\) over time (with guaranteed convergence if all probabilities are positive).
 
-			\subsubsection{Burn-In} % 8.69
-				\todo{Content}
+			The basic idea is to sample only one variable at a time, keeping all other variables fixed,
+			\begin{equation}
+				x_i^{(t + 1)} \sim P(\cdot \given \vec{X}_{i + 1:\tilde{n}} = \vec{x}_{i + 1:\tilde{n}}^{(t)}, \vec{X}_{1:i - 1} = \vec{x}_{1:i - 1}^{(t)}, \vec{E} = \vec{e}),  \label{eqn:gibbs}
+			\end{equation}
+			where the evidence variables \(\vec{E}\) are supposed to be the last \( (n - \tilde{n}) \) random variable such that \( \vec{X} = \vec{X}_{1:\tilde{n}} \cup \vec{E} \). By generating iterative many times, the distribution of the samples converges to \( P(\vec{X} \given \vec{E} = \vec{e}) \)! However, the conditional \eqref{eqn:gibbs} seems to be hard to compute. Recall from \autoref{c:mrf} that a random variable \(X_i\) is independent of all other random variables given its Markov blanket
+			\begin{equation}
+				M(X_i) = \Pa(X_i) \cup \Ch(X_i) \cup \Biggl( \bigcup_{X_j \in \Ch(X_i)} \Pa(X_j) \biggr).
+			\end{equation}
+			Hence, the distribution reduces to
+			\begin{equation}
+				P\bigl( X_i \biggiven \vec{X} \setminus \{ X_i \} \bigr) = P\bigl( X_i \biggiven \Pa(X_i) \bigr) \prod_{X_j \in \Ch(X_i)} P\bigl( X_j \biggiven \Pa(X_j) \bigr),
+			\end{equation}
+			making it straightforward to compute when the Markov blanket is given as in \eqref{eqn:gibbs}. The pseudocode is given in \autoref{alg:gibbs}.
+
+			To answer probabilities queries \( P(X_i \given \vec{E} = \vec{e}) \) using Gibbs sampling, it is either possible to use counting of the samples (like in forward sampling), but it is also possible to leverage the surrogate probabilities directly:
+			\begin{equation}
+				\hat{P}(X_i \given \vec{E} = \vec{e}) = \frac{1}{T} \sum_{t = 1}^{T} P(X_i \given \vec{X}_{i + 1:\tilde{n}} = \vec{x}_{i + 1:\tilde{n}}^{(t)}, \vec{X}_{1:i - 1} = \vec{x}_{1:i - 1}^{(t)}, \vec{E} = \vec{e})
+			\end{equation}
+			This could yield a more accurate approximate of the probability.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{Bayesian network with variables \( X_1, X_2, \dots, X_n \), number of samples \(T\), evidence \(\vec{E} = \vec{e}\)}
+				\KwOut{Set of samples \( \vec{x}^{(1:T)} \)}
+				\tcp{Initialize zeroth sample somehow, e.g., uniformly:}
+				\( \vec{x}^{(0)} \gets \mathit{Random} \) \;
+				\For{\( t = 1, 2, \dots, T \)}{
+					\For{\( t = 1, 2, \dots, n \)}{
+						\tcp{Generate sample levaraging the Markov blanket \( M(X_i) \) to compute the CPT:}
+						\( x_i^{(t + 1)} \gets \text{Sample from } P(\cdot \given \vec{X}_{i + 1:\tilde{n}} = \vec{x}_{i + 1:\tilde{n}}^{(t)}, \vec{X}_{1:i - 1} = \vec{x}_{1:i - 1}^{(t)}, \vec{E} = \vec{e}) \) \;
+					}
+				}
+				\caption{Gibbs Sampling}
+				\label{alg:gibbs}
+			\end{algorithm}
+
+			\subsubsection{Burn-In}
+				One problem of Gibbs sampling is that the first samples do not follow \(P\) as the initialization is random. This is known as the \emph{burn-in phase} and can be solved by throwing away the first \(K\) samples. However, \(K\) cannot be determined in a principled fashion and is set by intuition. Alternative approaches are to draw the first samples from an approximate \( P(\vec{X} \given \vec{E} = \vec{e}) \) found by loopy belief propagation (\autoref{subsec:loopyBelief}), for example.
 			% end
 
-			\subsubsection{Irreducibility, Aperiodicity, and Ergodicity} % 8.71, 8.72, 8.73
-				\todo{Content}
+			\subsubsection{Convergence: Irreducibility, Aperiodicity, and Ergodicity}
+				The convergence of Gibbs sampling to a stationary distribution \(\pi^\ast\) is guaranteed under three conditions: the sample chain must be irreducible, aperiodic, and ergodic. Let \( p_{ij} = P(\vec{x}^{(i)} \to \vec{x}^{(j)}) \) be the \emph{transition kernel} describing the probability of transition from \(\vec{x}^{(i)}\) to \(\vec{x}^{(j)}\) in the Markov chain. Then irreducibility, aperiodicity, and ergodicity are defined as follows:
+				\begin{itemize}
+					\item \eqmakebox[gibbsConv][l]{\emph{Irreducibility:}} A Markov chain is \emph{irreducible} if every state can be reached from every other state (not necessarily in one step), i.e., \( \forall i, j : \exists k : p_{ij}^{(k)} \) where \(k\) is the number of steps.
+					\item \eqmakebox[gibbsConv][l]{\emph{Aperiodicity:}}   Let \( d(i) \coloneqq \mathrm{gcd}\{ k > 0 : \text{it is possible to go from state \(i\) to state \(i\) in \(k\)} steps \} \), where \(\mathrm{gcd}\) is the greatest common divisor. Then a Markov chain is \emph{aperiodic} if \( \forall i : d(i) = 1 \), i.e., it is only possible to go back to the same state irregularly.
+					\item \eqmakebox[gibbsConv][l]{\emph{Ergodicity:}}     \emph{Ergodic} states \(i\), \(j\) are recurrent and aperiodic. States \(i\), \(j\) are \emph{recurrent} if the chain returns to it with probability \(1\), i.e., \( \sum_n p_{ij}^{(n)} \to \infty \). An extra condition is that the expected recurrence time is finite which is trivial in finite chains.
+				\end{itemize}
+				The required ergodicity requires \( \forall i, j : p_{ij} > 0 \), i.e., it is possible to reach every state from every other state in one step with some probability. This generally holds in networks where all probabilities are positive. Consider a network containing (among others) two random variables \(X\) and \(Y\) that are correlated such that \(X = 0\) iff \(Y = 0\). Then once \(X = 0\) or \(Y = 0\) is reached, Gibbs sampling is force to set the other to zero, too. Hence, it will never be possible to change their values and parts of the sampling space remain uncovered.
+
+				However, it can take quite some time as the samples are dependent (autocorrelation) and variance is extremely high in high-dimensional settings. Hence, speeding up convergence has to tackle these problems: reducing the dependence between samples and reducing the variance. This will be covered in the upcoming two sections.
 			% end
 
-			\subsubsection{Convergence} % 8.70, 8.74, 8.75
-				\todo{Content}
+			\subsubsection{Reducing Autocorrelation}
+				To reduce autocorrelation between samples, two major techniques have been developed: \emph{skipping samples} and \emph{randomizing the variable order}. While both of these are straightforward to implement and quite intuitive, they have different pros and cons. Of course, skipping samples is inefficient and samples are wasted. Additionally, it increases the variance. Randomizing the variable order, on the other hand, can even decrease the variance! However, it is a tad harder to implement.
 			% end
 
-			\subsubsection{Performance} % 8.77
-				\todo{Content}
+			\subsubsection{Reducing Variance}
+				Reducing the variance can again be tackled by two major techniques: \emph{blocking} and \emph{Rao-Blackwellization}. The former bundles highly correlated variables into \emph{blocks} and samples them in one step, greatly reducing the variance and convergence speed. However, it comes at the cost that the domain that the blocks' domains grow exponentially\dots Raw-Blackwellization, on the other hand, simply reduces the number of variables to sample and samples only a subset. Of course, this reduces the variance of the samples.
 			% end
 
-			\subsubsection{Speeding Convergence} % 8.77
-				\todo{Content}
-
-				\paragraph{Skipping Samples} % 8.78
-					\todo{Content}
-				% end
-
-				\paragraph{Randomized Variable Order} % 8.79
-					\todo{Content}
-				% end
-
-				\paragraph{Blocking} % 8.80
-					\todo{Content}
-				% end
-
-				\paragraph{Rao-Blackwellization} % 8.81, 8.82
-					\todo{Content}
-				% end
-
-				\paragraph{Multiple Chains} % 8.83
-					\todo{Content}
-				% end
+			\subsubsection{Multi-Chain Gibbs Sampling}
+				In \emph{multi-chain Gibbs sampling}, \(M\) chains of size \(K\) are generated which generate independent samples and independent surrogate distributions \( P_m' \). The probability \( P(X_i \given \vec{E} = \vec{e}) \) can then be estimated as the average \( \bar{P}(X_i \given \vec{E} = \vec{e}) = \sum_{m = 1}^{M} P_m' / M \).
 			% end
 		% end
 
-		\subsection{Likelihood Weighting} % 8.84, 8.85, 8.86, 8.87, 8.88
-			\todo{Content}
+		\subsection{Likelihood Weighting}
+			\emph{Likelihood weighting} is a forward sampling-based method for sampling that builds on clamping the evidence and weighting the samples by the evidence likelihood, working well for likely evidence. Pseudocode for this process is given in \autoref{alg:likelihoodWeighting}. After generating the samples and weights, the posterior marginals can be estimated as follows:
+			\todo{Likelihood Weighting}
+			Like Gibbs sampling, likelihood weighting converges to the exact distribution. However, convergence may be slow, too and the sample variance is high.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{Bayesian network with variables \(X_1, X_2, \dots, X_n\), number of samples \(T\), evidence \(\vec{E} = \vec{e}\)}
+				\KwOut{Set of samples \( \vec{x}^{(1:T)} \) and weights \( w^{(1:T)} \)}
+				\For{\( t = 1, 2, \dots, T \)}{
+					\tcp{Initialize empty sample and sample weight:}
+					\( \vec{x}^{(t)} \gets \mathit{Empty} \) \;
+					\( w^{(t)} \gets 1 \) \;
+					\ForEach{\(X_i\) in a topological ordering}{
+						\If{\( X_i \in \vec{E} \) and \( x_i^{(t)} \neq e_i \)}{
+							\( x_i^{(t)} \gets e_i \) \;
+							\( w^{(t)} \gets w^{(t)} P\bigl(E_i = e_i \given \Pa(X_i) = \vec{x}^{(t)} \bigr) \) \;
+						}
+						\Else{
+							\( x_i^{(t)} \gets \text{Sample from } P\bigl(X_i \given \Pa(X_i) = \vec{x}^{(t)} \bigr) \) \;
+						}
+					}
+				}
+				\caption{Likelihood Weighting Sampling}
+				\label{alg:likelihoodWeighting}
+			\end{algorithm}
 		% end
 	% end
 % end

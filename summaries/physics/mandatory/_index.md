@@ -1,0 +1,4 @@
+---
+title: "Mandatory"
+draft: false
+---

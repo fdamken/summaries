@@ -16,6 +16,7 @@
 #include:attachfile
 #include:bbm
 #include:bitpattern
+#include:booktabs
 #include:bm
 #include:bytefield
 #include:caption
@@ -138,21 +139,32 @@
 
 % Math operators.
 \ggT#m
+\argmax#m
+\argmin#m
 \Bias#m
+\Cliques#m
 \cond#m
 \const#m
+\Ch#m
 \Cov#m
 \Dec#m
+\Des#m
+\dom#m
 \diag#m
 \Eig#m
 \emp#m
 \Enc#m
 \eps#m
+\Family#m
 \gl#m
 \HMAC#m
 \MAC#m
 \MSE#m
+\marg#m
+\ND#m
 \rd#m
+\Pa#m
+\Sep#m
 \sign#m
 \Sig#m
 \sinc#m
@@ -232,6 +244,10 @@
 \until#m
 % For InfMan NLP.
 \ambiguity{%|}#n
+% Stuff for PGM.
+\from#m
+\to#m
+\fromto#m
 
 % BIG!
 \makeatletter

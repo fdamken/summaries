@@ -1,0 +1,32 @@
+name: Publish
+on:
+  workflow_dispatch:
+  push:
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Install Graphviz and Spin
+        run: sudo apt install graphviz spin
+      - name: Install TeXLive
+        run: sudo apt install texlive-base texlive-fonts-extra texlive-humanities texlive-lang-english texlive-lang-german texlive-latex-extra texlive-latex-recommended texlive-latex-recommended texlive-luatex texlive-pictures texlive-plain-generic texlive-publishers texlive-science
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install Python Dependencies
+        run: "pip install -f https://download.pytorch.org/whl/torch_stable.html -r sys/requirements.txt"
+      - name: Build Documents
+        run: ".github/build-documents.sh"
+      - name: Publish Documents
+        run: ".github/publish-documents.sh"
+        env:
+          gh_user: ${{ secrets.PUBLISH_GH_USER }}
+          gh_token: ${{ secrets.PUBLISH_GH_TOKEN }}

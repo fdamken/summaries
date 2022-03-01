@@ -92,6 +92,7 @@
 \RequirePackage{attachfile}
 \RequirePackage{bbm}
 \RequirePackage{bitpattern}
+\RequirePackage{booktabs}
 \RequirePackage{bm}
 \RequirePackage{bytefield}
 \RequirePackage{caption}
@@ -113,7 +114,6 @@
 \RequirePackage{prftree}
 \RequirePackage{qtree}
 \RequirePackage{rotating}
-\RequirePackage{siunitx}
 \RequirePackage{siunitx}
 \RequirePackage{stmaryrd}
 \RequirePackage{subcaption}
@@ -177,6 +177,9 @@
 
 % If somethis is quoted using "..", interpret it as \csquotes{..} for correct quotes.
 \MakeOuterQuote{"}
+
+% Only number an equation if it is references.
+\mathtoolsset{showonlyrefs,showmanualtags}
 
 % Make it possible to use vertical lines in a matrix. See https://tex.stackexchange.com/a/333383
 \renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
@@ -299,21 +302,32 @@
 
 % Math operators.
 \fdsummary@ifde{\newcommand{\ggT}{\ensuremath{\textrm{ggT}}}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator{\Bias}{Bias}
+\DeclareMathOperator{\Cliques}{Cliques}
 \DeclareMathOperator{\cond}{cond}
 \DeclareMathOperator{\const}{const}
+\DeclareMathOperator{\Ch}{Ch}
 \DeclareMathOperator{\Cov}{Cov}
 \DeclareMathOperator{\Dec}{Dec}
+\DeclareMathOperator{\Des}{Des}
+\DeclareMathOperator{\dom}{dom}
 \DeclareMathOperator{\diag}{diag}
 \DeclareMathOperator{\Eig}{Eig}
 \DeclareMathOperator{\emp}{emp}
 \DeclareMathOperator{\Enc}{Enc}
 \DeclareMathOperator{\eps}{eps}
+\DeclareMathOperator{\Family}{Family}
 \DeclareMathOperator{\gl}{gl}
 \DeclareMathOperator{\HMAC}{HMAC}
 \DeclareMathOperator{\MAC}{MAC}
 \DeclareMathOperator{\MSE}{MSE}
+\DeclareMathOperator{\marg}{marg.}
+\DeclareMathOperator{\ND}{ND}
 \DeclareMathOperator{\rd}{rd}
+\DeclareMathOperator{\Pa}{Pa}
+\DeclareMathOperator{\Sep}{Sep}
 \DeclareMathOperator{\sign}{sign}
 \DeclareMathOperator{\Sig}{Sig}
 \DeclareMathOperator{\sinc}{sinc}
@@ -394,6 +408,9 @@
 \newcommand{\until}{\mathcal{U}}
 % For InfMan NLP.
 \newcommand{\ambiguity}[1]{\textcolor{ambiguityorange}{#1}}
+% Stuff for PGM.
+\newcommand{\from}{\leftarrow}
+\newcommand{\fromto}{\leftrightarrow}
 
 % BIG!
 \makeatletter

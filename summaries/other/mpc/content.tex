@@ -1,473 +1,588 @@
+\renewcommand{\mat}[1]{\bm{\mathrm{#1}}}
+
 \chapter{Introduction}
-    This summary covers \emph{model predictive control} (MPC) combined with \emph{machine learning} (ML). In MPC, a model of a dynamical system is used to find inputs that steer the system optimally (in some sense). ML, on the other hand, can be used to build such models from data. This document focuses primarily on the MPC part, featuring nominal, robust, and stochastic MPC. Subsequently, connections to and applications of ML are drawn as these fields get more and more interconnected. The key topics are understanding MPC basics, identifying benefits and drawbacks of MPC, understanding the role of ML in control, understanding the basic concepts of ML-supported MPC as well as its benefits and drawbacks.
+	This summary covers \emph{model predictive control} (MPC) combined with \emph{machine learning} (ML). In MPC, a model of a dynamical system is used to find inputs that steer the system optimally (in some sense). ML, on the other hand, can be used to build such models from data. This document focuses primarily on the MPC part, featuring nominal, robust, and stochastic MPC. Subsequently, connections to and applications of ML are drawn as these fields get more and more interconnected. The key topics are understanding MPC basics, identifying benefits and drawbacks of MPC, understanding the role of ML in control, understanding the basic concepts of ML-supported MPC as well as its benefits and drawbacks.
 
-    \section{What is Model Predictive Control?}
-        In general, \emph{control} is concerned with influencing a dynamical system such that it exhibits a wanted behavior. Usually, this involves incorporating feedback (e.g., the actual state of the system) into the control law (feedback control). In \emph{optimal} control, the inputs shall be optimal in some sense (e.g., minimal energy consumption, avoidance of states, \dots).
+	\section{What is Model Predictive Control?}
+		In general, \emph{control} is concerned with influencing a dynamical system such that it exhibits a wanted behavior. Usually, this involves incorporating feedback (e.g., the actual state of the system) into the control law (feedback control). In \emph{optimal} control, the inputs shall be optimal in some sense (e.g., minimal energy consumption, avoidance of states, \dots).
 
-        In \emph{model} predictive control, a model of the system is used to predict the influence of inputs. This has the advantage of the controller actually understanding what it is doing, potentially increasing the performance and yielding a structured design process of the controller. On the other hand, MPC needs a model that can be hard to obtain\footnote{A common way to obtain a model aside from deriving it using first principles are gathering data of the system, fixing a model structure, and fitting the parameters.}. Also, it is computationally expensive and its  performance is highly influenced by the model quality and accuracy.
+		In \emph{model} predictive control, a model of the system is used to predict the influence of inputs. This has the advantage of the controller actually understanding what it is doing, potentially increasing the performance and yielding a structured design process of the controller. On the other hand, MPC needs a model that can be hard to obtain\footnote{A common way to obtain a model aside from deriving it using first principles are gathering data of the system, fixing a model structure, and fitting the parameters.}. Also, it is computationally expensive and its  performance is highly influenced by the model quality and accuracy.
 
-        An MPC controller performs \emph{prediction} using the model to assess the influence of certain actions. This can be used for finding the optimal inputs by minimizing a cost function on the predicted states. This optimal input can then be applied to the system. Hence, MPC is \emph{optimization-based} control: the optimal input is retrieved by minimizing a cost function with the dynamical system as a constraint on the states. This allows to incorporate additional constraints (e.g., min/max actions or unsafe states) directly into the optimizer. To incorporate feedback from the actual system, this optimization problem is solved repeatedly during execution (see \autoref{fig:mpcCycle}).
+		An MPC controller performs \emph{prediction} using the model to assess the influence of certain actions. This can be used for finding the optimal inputs by minimizing a cost function on the predicted states. This optimal input can then be applied to the system. Hence, MPC is \emph{optimization-based} control: the optimal input is retrieved by minimizing a cost function with the dynamical system as a constraint on the states. This allows to incorporate additional constraints (e.g., min/max actions or unsafe states) directly into the optimizer. To incorporate feedback from the actual system, this optimization problem is solved repeatedly during execution (see \autoref{fig:mpcCycle}).
 
-        Model predictive control is covered in detail in \autoref{c:mpcNominal}, \ref{c:mpcRobust}, and \ref{c:mpcStochastic}.
+		Model predictive control is covered in detail in \autoref{c:mpcNominal}, \ref{c:mpcRobust}, and \ref{c:mpcStochastic}.
 
-        \begin{figure}
-        	\centering
-        	\begin{tikzpicture}[->, every node/.style = { draw, rectangle, minimum width = 3cm, minimum height = 1cm }]
-        		\node (a) {Obtain State};
-        		\node [right = 1.5 of a] (b) {Predict System};
-        		\draw (a) to coordinate(d) (b);
-        		\node [below = 1 of d] (c) {Apply Input};
-        		\draw (b) |- (c);
-        		\draw (c) -| (a);
-        	\end{tikzpicture}
-        	\caption{Illustration of the model predictive control cycle.}
-        	\label{fig:mpcCycle}
-        \end{figure}
-    % end
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[->, every node/.style = { draw, rectangle, minimum width = 3cm, minimum height = 1cm }]
+				\node (a) {Obtain State};
+				\node [right = 1.5 of a] (b) {Predict System};
+				\draw (a) to coordinate(d) (b);
+				\node [below = 1 of d] (c) {Apply Input};
+				\draw (b) |- (c);
+				\draw (c) -| (a);
+			\end{tikzpicture}
+			\caption{Illustration of the model predictive control cycle.}
+			\label{fig:mpcCycle}
+		\end{figure}
+	% end
 
-    \section{What is Machine Learning?}
-       	While there is no unified definition of machine learning, it is often used to describe systems that use a bunch of data to find relations/patterns/connections/\dots in them and to extract general rules. Typical methods are neural networks, Gaussian processes, support vector machines, and many more. In control, the applications of machine learning are twofold: first, it can be used to find a model and use the model in a model-based controller (supervised learning and regression); second, this step can also be skipped and ML can be applied directly as the controller (usually covered in reinforcement learning).
+	\section{What is Machine Learning?}
+	   	While there is no unified definition of machine learning, it is often used to describe systems that use a bunch of data to find relations/patterns/connections/\dots in them and to extract general rules. Typical methods are neural networks, Gaussian processes, support vector machines, and many more. In control, the applications of machine learning are twofold: first, it can be used to find a model and use the model in a model-based controller (supervised learning and regression); second, this step can also be skipped and ML can be applied directly as the controller (usually covered in reinforcement learning).
 
-       	Machine learning for MPC is covered in detail in \autoref{c:ml}.
-    % end
+	   	Machine learning for MPC is covered in detail in \autoref{c:ml}.
+	% end
 % end
 
-\chapter{Preliminaries} % N/A
-    \todo{Content}
+\chapter{Preliminaries}
+	This chapter covers some preliminaries required to understand the upcoming chapters.
 
-    \section{System Theory} % 2.1, 2.3, 2.36
-        \todo{Content}
+	\section{System Theory}
+		\emph{System theory} describes the study of all kinds of dynamical systems, their stability, controllability, and various other properties. This section introduces the most important concepts like the different kinds of representations and stability. In MPC, system theory is both used to study the behavior of the actual system as well as the model.
 
-        \subsection{Types of Dynamical Systems} % 2.4, 2.15
-            \todo{Content}
+		\subsection{Types of Dynamical Systems}
+			On a high level, dynamical systems separate into two classes: time-continuous and time-discrete. By Shannon's sampling theorem, it is always possible to turn a continuous model into a discrete one with an appropriate sample rate.
 
-            \subsubsection{Time-Continous} % 2.5, 2.6, 2.8, 2.9
-                \todo{Content}
+			\subsubsection{Time-Continuous}
+				A time-continuous nonlinear system is represented by an (ordinary) initial value problem
+				\begin{align}
+					\dot{\vec{x}} &= \vec{f}(\vec{x}, \vec{u}; t) &
+					\vec{y} &= \vec{h}(\vec{x}, \vec{u}; t) &
+					\vec{x}(t_0) &= \vec{x}_0
+				\end{align}
+				where \(\vec{x}\) are the states, \(\vec{u}\) is the control input, \(\vec{y}\) are the observations, and \(t\) is the time. If \(\vec{f}\) or \(\vec{h}\) is \(t\)-dependent, the system is called \emph{time-variant}, otherwise it is called \emph{time-invariant}. If \(\vec{f}\) and \(\vec{h}\) are linear functions \( \vec{f}(\vec{x}, \vec{u}; t) = \mat{A}(t) \vec{x} + \mat{B}(t) \vec{u} \) and \( \vec{h}(\vec{x}, \vec{u}; t) = \mat{C}(t) \vec{x} + \mat{D}(t) \vec{u} \), the system is called \emph{linear} with state dynamics matrix \(\mat{A}\), control matrix \(\mat{B}\), output/observation matrix \(\mat{C}\), and control influence matrix \(\mat{D}\).
 
-                \paragraph{Linearization} % 2.7
-                    \todo{Content}
-                % end
-            % end
+				If the system matrices \(\mat{A}\), \(\mat{B}\), \(\mat{C}\), and \(\mat{D}\) are time-independent, a major advantage of linear systems is that they exhibit an analytical solution:
+				\begin{equation}
+					\vec{x}(t) = \exp\bigl\{ \mat{A}(t - t_0) \bigr\} \vec{x}_0 + \int_{t_0}^{t}\! \exp\bigl\{ \mat{A}(t - \tau) \bigr\} \mat{B} \vec{u}(\tau) \dd{\tau}.
+				\end{equation}
+				Note that here, \( \mat{A}(t - t_0) \) does \emph{not} correspond to an invocation and time-dependence, is is simply a multiplication with \(t - t_0\). However, the vast majority of dynamical systems are not linear! Hence, these models are often approximated locally (around an operation point \( (\bar{\vec{x}}, \bar{\vec{u}}) \)) using the Taylor series of \(\vec{f}\):
+				\begin{equation}
+					\vec{f}(\vec{x}, \vec{u}; t) \approx \vec{f}(\bar{\vec{x}}, \bar{\vec{u}}; t) + \Biggl( \pdv{\vec{f}}{\vec{x}}\bigg\vert_{\vec{x} = \bar{\vec{x}}} \Biggr) (\vec{x} - \bar{\vec{x}}) + \Biggl( \pdv{\vec{f}}{\vec{u}}\bigg\vert_{\vec{u} = \bar{\vec{u}}} \Biggr) (\vec{u} - \bar{\vec{u}})
+				\end{equation}
+				By cutting off the higher-order terms, this yields a linear approximation.
+			% end
 
-            \subsubsection{Time-Discrete} % 2.12, 2.13, 2.14
-                \todo{Content}
+			\subsubsection{Time-Discrete}
+				A \emph{time-discrete} nonlinear system is represented by a dynamics equation
+				\begin{align}
+					\vec{x}_{k + 1} &= \vec{f}(\vec{x}_k, \vec{u}_k; k) &
+					\vec{y}_k &= \vec{h}(\vec{x}_k, \vec{u}_k; k)
+				\end{align}
+				with an initial value \(\vec{x}_0\). Time-variant and -invariant systems as well as linear models are defined analogous to time-continuous systems. Again, linear time-invariant models can be solved in closed form:
+				\begin{equation}
+					\vec{x}_k = \mat{A}^k\, \vec{x}_0 + \sum_{j = 0}^{k - 1} \mat{A}^{k - j - 1}\, \mat{B} \vec{u}_j
+				\end{equation}
+				However, while discrete systems are easier to handle than continuous systems (e.g., computers work discretely), the world is inherently continuous. Hence, systems are often \emph{discretized} by using discrete indices \(\cdot_k\) corresponding to the value at time \(t_k = k h\), where \(h\) is the \emph{sampling time}. To apply a discrete control signal \( \vec{u}_k \) to a continuous system, it is usually applied using a step function, i.e., \( u(t) = u(t_k) \) for \( t \in [t_k, t_{k + 1}) \). To compute a discrete system from a continuous system, the difference quotient can be used:
+				\begin{equation}
+					\dot{x} \approx \frac{\vec{x}_{k + 1} - \vec{x}_k}{h}
+					\quad\implies\quad
+					\vec{x}_{k + 1} \approx \vec{x}_k + h \dot{x}
+				\end{equation}
+				This is, in fact, equivalent to Euler's method for solving an initial value problem.
+			% end
+		% end
 
-                \paragraph{Discretization} % 2.10, 2.11
-                    \todo{Content}
-                % end
-            % end
-        % end
+		\subsection{Stability} % 2.29, 12.4
+			One of the fundamental properties studied in dynamical systems theory is \emph{stability}. Stability describes the asymptotic behavior of a system: a system is either asymptotically stable, instable, or marginally stable. All of these variants can also occur in a \emph{ringing} configuration where the system oscillates between different values (see \autoref{fig:stability}). Usually, the goal of control is to stabilize an unstable system.
 
-        \subsection{Stability} % 2.16, 2.17, 2.29, 12.4
-            \todo{Content}
+			\begin{definition}[Global Asymptotic Stability]
+				A dynamical system with state \( \vec{x}(t) \) is \emph{globally asymptotically stable} in an equilibrium point \( \bar{\vec{x}} \) iff \( \lim_{t \to \infty} \vec{x}(t) = \bar{\vec{x}} \) for all \( \vec{x}_0 \in \R^n \).
+			\end{definition}
 
-            \subsubsection{State-Feedback Controllers} % 2.18
-                \todo{Content}
-            % end
+			\begin{theorem}[Global Asymptotic Stability of Linear, Discrete-Time, Time-Invariant Systems]
+				The system \( \vec{x}_{k + 1} = \mat{A} \vec{x}_k \) is globally asymptotically stable for \( \bar{\vec{x}} = \vec{0} \) iff \( \lvert \lambda_i \rvert < 1 \) for all \( i = 1, 2, \dots, n \), where \( \lambda_i \) is the \(i\)-th eigenvalue of \(\mat{A}\).
+			\end{theorem}
+			\begin{theorem}[Global Asymptotic Stability of Linear, Continuous-Time, Time-Invariant Systems]
+				The system \( \dot{\vec{x}} = \mat{A} \vec{x} \) is globally asymptotically stable for \( \bar{\vec{x}} = \vec{0} \) iff \( \Re(\lambda_i) < 0 \) for all \( i = 1, 2, \dots, n \), where \( \lambda_i \) is the \(i\)-th eigenvalue of \(\mat{A}\).
+			\end{theorem}
 
-            \subsubsection{Lyapunov Stability} % 2.19
-                \todo{Content}
-            % end
+			\begin{figure}
+				\centering
+				\resizebox{\linewidth}{!}{\input{tmp-stability.pgf}}
+				\caption{Stability Characteristics}
+				\label{fig:stability}
+			\end{figure}
 
-            \subsubsection{Asymptotic Stability} % 2.20
-                \todo{Content}
-            % end
+			\subsubsection{State-Feedback Controllers}
+				By introducing feedback-control \( \vec{u}_k = -\mat{K} \vec{x} \) with a \emph{gain matrix} \(\mat{K}\), the eigenvalues of a dynamical systems are characterized by
+				\begin{equation}
+					\vec{x}_{k + 1}
+						= \mat{A} \vec{x}_k + \mat{B} \vec{u}_k
+						= \mat{A} \vec{x}_k - \mat{B} \mat{K} \vec{x}_k
+						= \underbrace{(\mat{A} - \mat{B} \mat{K})}_{\eqqcolon\, \tilde{\mat{A}}} \vec{x}_k.
+				\end{equation}
+				Hence, the eigenvalues (also called \emph{poles}) can be placed arbitrarily by modifying \(\mat{K}\) and henceforth \(\tilde{\mat{A}}\) which defines stability.
+			% end
 
-            \subsubsection{Lyapunov Functions} % 2.21, 2.22, 2.23, 2.24, 2.25, 2.26, 2.27, 2.28, 12.5
-                \todo{Content}
-            % end
-        % end
+			\subsubsection{Lyapunov Stability and Lyapunov Function}
+				For nonlinear systems, multiple or even infinite or no equilibrium points might exist, making characterization of stability difficult. One option is \emph{Lyapunov stability}:
+				\begin{definition}[Lyapunov Stability]
+					An equilibrium point \(\bar{\vec{x}}\) is \emph{Lyapunov stable} iff for all \(t\) and  for all \(\epsilon > 0\) there exists a \(\delta(\epsilon) > 0\) such that \( \lVert \vec{x}(t) - \bar{\vec{x}} \rVert < \epsilon \) if \( \lVert \vec{x}(0) - \bar{\vec{x}} \rVert > \delta(\epsilon) \).
+				\end{definition}
 
-        \subsection{Detectability, Observability, Controllability, and Stabilizability} % 2.30, 2.31, 2.32, 3.3, 3.4
-            \todo{Content}
-        % end
+				This builds on the intuition that stability causes the system to stay close to an equilibrium point of the system starts close to it. Lyapunov stability can be further extended to asymptotic stability of nonlinear systems by requiring that the equilibrium is attractive:
+				\begin{definition}[(Global) Asymptotic Lyapunov Stability]
+					An equilibrium point \(\bar{\vec{x}} \in D\) is \emph{asymptotically stable} in \( D \subseteq \R^n \) if it is Lyapunov stable and attractive, i.e., \( \lim_{t \to \infty} \lVert \vec{x}(t) - \bar{\vec{x}} \rVert = 0 \) for all \( \vec{x}_0 \in D \). If additionally \( D = \R^n \), it is called \emph{globally} asymptotically stable.
+				\end{definition}
 
-        \subsection{Outlook} % 2.33, 2.34, 2.35
-            \todo{Content}
-        % end
-    % end
+				However, while these definitions are quote straightforward, checking stability for an arbitrary nonlinear system is still an open challenge. One option is to linearize the system around an equilibrium point and subsequently analyze the stability of the linear system. Another option is the usage of \emph{Lyapunov functions}:
+				\begin{definition}[Discrete Lyapunov Functions]
+					A continuous function \( V : D \to \R \), \( D \subseteq \R^n \) is a \emph{Lyapunov function} for a system \( \vec{x}_{k + 1} = \vec{f}(\vec{x}_k) \) if all of the following hold:
+					\begin{enumerate}
+						\item \( V(\vec{0}) = 0 \)
+						\item \( V(\vec{x}) > 0 \) for all \( \vec{x} \in D \setminus \{ \vec{0} \} \)
+						\item \( V\bigl( \vec{f}(\vec{x}) \bigr) - V(\vec{x}) \leq 0 \) for all \( \vec{x} \in D \)
+					\end{enumerate}
+					If additionally \( V\bigl( \vec{f}(\vec{x}) \bigr) - V(\vec{x}) > 0 \) holds for all \( \vec{x} \in D \setminus \{ \vec{0} \} \), \(V\) is a \emph{strict} Lyapunov function.
+				\end{definition}
+				\begin{definition}[Continuous Lyapunov Functions]
+					A continuously differentiable function \( V : D \to \R \), \( D \subseteq \R^n \) is a \emph{Lyapunov function} for a system \( \dot{\vec{x}} = \vec{f}(\vec{x}) \) if all of the following hold:
+					\begin{enumerate}
+						\item \( V(\vec{0}) = 0 \)
+						\item \( V(\vec{x}) > 0 \) for all \( \vec{x} \in D \setminus \{ \vec{0} \} \)
+						\item \( \dot{V}(\vec{x}) \leq 0 \) for all \( \vec{x} \in D \)
+					\end{enumerate}
+					If additionally \( \dot{V}(\vec{x}) > 0 \) holds for all \( \vec{x} \in D \setminus \{ \vec{0} \} \), \(V\) is a \emph{strict} Lyapunov function.
+				\end{definition}
+				\begin{theorem}[Lyapunov Functions for Stability]
+					If a Lyapunov functions exists for a dynamical system, it is \emph{locally stable} in \( \vec{x} = \vec{0} \). If the Lyapunov function is strict, the equilibrium is locally \emph{asymptotically} stable.
+				\end{theorem}
 
-    \section{Linear Quadratic Regulator} % 3.1, 3.2, 3.5, 3.6, 3.7, 3.8, 3.10, 3.11, 3.13, 3.35, 12.6, 12.7
-        \todo{Content}
+				However, finding these Lyapunov functions is generally hard. For systems derived from first order principles, the energy of the system is generally a good candidate for a Lyapunov function worth checking. Other methods for checking stability are, for example, Nyquist and Routh-Hurwitz stability.
+			% end
+		% end
 
-        \subsection{Cost Functions} % 3.14, 3.15, 3.16, 3.17
-            \todo{Content}
-        % end
+		\subsection{Detectability, Observability, Controllability, and Stabilizability}
+			As seen before, the eigenvalues of linear systems can be placed using a linear control law. However, being able to control a system like this has some requirements: first, the system must be \emph{observable} (i.e., the states must be known, either by observing them directly of by reconstructing them from the measurements). Second, the system must be \emph{controllable} (i.e., the states must be directly or indirectly influenced by the control inputs). As milder condition to stabilize a system is stabilizability requiring that at least the unstable states must be influenceable\footnote{Note that stabilizability is milder as it does not allow to steer the system to arbitrary states.}.
 
-        \subsection{LQR Formulation} % 3.18, 3.19, 3.20
-            \todo{Content}
-        % end
+			\begin{definition}[Observability]
+				A system is \emph{observable} iff there exists an \(N\) such that for every initial state \(\vec{x}_0\), the measurements \( \vec{y}_0, \vec{y}_1, \dots, \vec{y}_{N - 1} \) uniquely determine \(\vec{x}_0\).
+			\end{definition}
+			\begin{definition}[Controllability]
+				A system is \emph{controllable} iff for every initial state \(\vec{x}_0\) and desired state \(\vec{x}_d\) there exists an input sequence \( \vec{u}_0, \vec{u}_1, \dots, \vec{u}_{N - 1} \) such that \( \vec{x}_N = \vec{x}_d \).
+			\end{definition}
 
-        \subsection{Batch Optimization} % 3.21, 3.22, 3.23, 3.24
-            \todo{Content}
-        % end
+			\begin{theorem}[Observability of Linear Time-Invariant Systems]
+				A system \( \vec{x}_{k + 1} = \mat{A} \vec{x}_k \) is \emph{observable} iff
+				\begin{equation}
+					\rank
+					\begin{bmatrix}
+						\mat{C} \\
+						\mat{C} \mat{A} \\
+						\mat{C} \mat{A}^2 \\
+						\vdots \\
+						\mat{C} \mat{A}^{n - 2} \\
+						\mat{C} \mat{A}^{n - 1}
+					\end{bmatrix}
+					= n.
+				\end{equation}
+				The system is \emph{detectable} iff \( \rank \begin{bmatrix} \lambda \mat{I} - \mat{A} & \mat{C} \end{bmatrix} = n \).
+			\end{theorem}
+			\begin{theorem}[Controllability of Linear Time-Invariant Systems]
+				A system \( \vec{x}_{k + 1} = \mat{A} \vec{x}_k \) is \emph{controllable} iff
+				\begin{equation}
+					\rank
+					\begin{bmatrix}
+						\mat{B} &
+						\mat{A} \mat{B} &
+						\mat{A}^2\, \mat{B} &
+						\cdots &
+						\mat{A}^{n - 2}\, \mat{B} &
+						\mat{A}^{n - 1}\, \mat{B}
+					\end{bmatrix}
+					= n.
+				\end{equation}
+				The system is stabilizable iff \( \rank \begin{bmatrix} \lambda \mat{I} - \mat{A} & \mat{b} \end{bmatrix} = n \).
+			\end{theorem}
+		% end
 
-        \subsection{Dynamic Programming} % 3.25
-            \todo{Content}
+		\subsection{Outlook} % 2.33, 2.34, 2.35
+			\todo{Content}
+		% end
+	% end
 
-            \subsubsection{Optimal Cost-to-Go} % 3.26
-                \todo{Content}
-            % end
+	\section{Linear Quadratic Regulator} % 3.1, 3.2, 3.5, 3.6, 3.7, 3.8, 3.10, 3.11, 3.13, 3.35, 12.6, 12.7
+		\todo{Content}
 
-            \subsubsection{Recursive Solution} % 3.27, 3.28, 3.29
-                \todo{Content}
-            % end
+		\subsection{Cost Functions} % 3.14, 3.15, 3.16, 3.17
+			\todo{Content}
+		% end
 
-            \subsubsection{Infinite Horizon} % 3.30, 3.31
-                \todo{Content}
-            % end
-        % end
+		\subsection{LQR Formulation} % 3.18, 3.19, 3.20
+			\todo{Content}
+		% end
 
-        \subsection{Stability} % 3.32, 3.33, 12.8
-            \todo{Content}
-        % end
+		\subsection{Batch Optimization} % 3.21, 3.22, 3.23, 3.24
+			\todo{Content}
+		% end
 
-        \subsection{Outlook} % 3.36
-            \todo{Content}
-        % end
-    % end
+		\subsection{Dynamic Programming} % 3.25
+			\todo{Content}
 
-    \section{Constrained Optimization} % 4.1, 4.2, 4.3, 4.4, 4.28, 12.9
-        \todo{Content}
+			\subsubsection{Optimal Cost-to-Go} % 3.26
+				\todo{Content}
+			% end
 
-        \subsection{Nomenclature} % 4.5, 4.6, 4.7, 4.8
-            \todo{Content}
-        % end
+			\subsubsection{Recursive Solution} % 3.27, 3.28, 3.29
+				\todo{Content}
+			% end
 
-        \subsection{Global and Local Optimality} % 4.9
-            \todo{Content}
-        % end
+			\subsubsection{Infinite Horizon} % 3.30, 3.31
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Convexity} % N/A
-            \todo{Content}
+		\subsection{Stability} % 3.32, 3.33, 12.8
+			\todo{Content}
+		% end
 
-            \subsubsection{Convex Sets} % 4.10, 4.11, 4.12, 4.13
-                \todo{Content}
-            % end
+		\subsection{Outlook} % 3.36
+			\todo{Content}
+		% end
+	% end
 
-            \subsubsection{Convex Functions} % 4.14, 4.15
-                \todo{Content}
-            % end
+	\section{Constrained Optimization} % 4.1, 4.2, 4.3, 4.4, 4.28, 12.9
+		\todo{Content}
 
-            \subsubsection{(Sub-) Level Sets} % 4.16
-                \todo{Content}
-            % end
+		\subsection{Nomenclature} % 4.5, 4.6, 4.7, 4.8
+			\todo{Content}
+		% end
 
-            \subsubsection{Convex Optimization Problems and Optimality} % 4.18, 4.19
-                \todo{Content}
-            % end
-        % end
+		\subsection{Global and Local Optimality} % 4.9
+			\todo{Content}
+		% end
 
-        \subsection{Quadratic Programming} % 4.20, 4.21
-            \todo{Content}
-        % end
+		\subsection{Convexity} % N/A
+			\todo{Content}
 
-        \subsection{Optimality Conditions for Constraints Optimization Problems} % 4.22
-            \todo{Content}
+			\subsubsection{Convex Sets} % 4.10, 4.11, 4.12, 4.13
+				\todo{Content}
+			% end
 
-            \subsubsection{Lagrangian} % 4.23, 4.24
-                \todo{Content}
-            % end
+			\subsubsection{Convex Functions} % 4.14, 4.15
+				\todo{Content}
+			% end
 
-            \subsubsection{Generalized Lagrangian and KKT-Conditions} % 4.25, 4.26
-                \todo{Content}
-            % end
-        % end
+			\subsubsection{(Sub-) Level Sets} % 4.16
+				\todo{Content}
+			% end
 
-        \subsection{Numerical Solver} % 6.23, 6.24, 6.25, 6.30
-            \todo{Content}
+			\subsubsection{Convex Optimization Problems and Optimality} % 4.18, 4.19
+				\todo{Content}
+			% end
+		% end
 
-            \subsubsection{Penalty Functions} % 6.26, 6.27, 6.28, 6.29
-                \todo{Content}
-            % end
+		\subsection{Quadratic Programming} % 4.20, 4.21
+			\todo{Content}
+		% end
 
-            \subsubsection{Soft Constraints} % 6.31, 6.32
-                \todo{Content}
-            % end
-        % end
-    % end
+		\subsection{Optimality Conditions for Constraints Optimization Problems} % 4.22
+			\todo{Content}
+
+			\subsubsection{Lagrangian} % 4.23, 4.24
+				\todo{Content}
+			% end
+
+			\subsubsection{Generalized Lagrangian and KKT-Conditions} % 4.25, 4.26
+				\todo{Content}
+			% end
+		% end
+
+		\subsection{Numerical Solver} % 6.23, 6.24, 6.25, 6.30
+			\todo{Content}
+
+			\subsubsection{Penalty Functions} % 6.26, 6.27, 6.28, 6.29
+				\todo{Content}
+			% end
+
+			\subsubsection{Soft Constraints} % 6.31, 6.32
+				\todo{Content}
+			% end
+		% end
+	% end
 % end
 
 \chapter{Nominal Model Predictive Control} % 5.1, 5.2, 5.3, 5.4, 5.5, 5.38, 12.10
 	\label{c:mpcNominal}
 
-    \todo{Content}
+	\todo{Content}
 
-    \section{Receding Horizon} % 5.6, 5.7, 5.8, 5.9, 5.10, 5.11
-        \todo{Content}
-    % end
+	\section{Receding Horizon} % 5.6, 5.7, 5.8, 5.9, 5.10, 5.11
+		\todo{Content}
+	% end
 
-    \section{Nominal MPC} % 5.12, 5.13
-        \todo{Content}
-    % end
+	\section{Nominal MPC} % 5.12, 5.13
+		\todo{Content}
+	% end
 
-    \section{Linear MPC} % 5.14, 5.15
-        \todo{Content}
-    % end
+	\section{Linear MPC} % 5.14, 5.15
+		\todo{Content}
+	% end
 
-    \section{Recursive Feasibility and Stability} % 5.16, 5.17, 5.18, 5.19, 5.20, 5.21, 12.11
-        \todo{Content}
+	\section{Recursive Feasibility and Stability} % 5.16, 5.17, 5.18, 5.19, 5.20, 5.21, 12.11
+		\todo{Content}
 
-        \subsection{\dots using a Terminal Equality} % 5.22
-            \todo{Content}
+		\subsection{\dots using a Terminal Equality} % 5.22
+			\todo{Content}
 
-            \subsubsection{Achieving Recursive Feasibility} % 5.23, 5.24
-                \todo{Content}
-            % end
+			\subsubsection{Achieving Recursive Feasibility} % 5.23, 5.24
+				\todo{Content}
+			% end
 
-            \subsubsection{Achieving Stability} % 5.25, 5.26, 5.27
-                \todo{Content}
-            % end
-        % end
+			\subsubsection{Achieving Stability} % 5.25, 5.26, 5.27
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{\dots using a Terminal Set} % 5.28, 5.29
-            \todo{Content}
+		\subsection{\dots using a Terminal Set} % 5.28, 5.29
+			\todo{Content}
 
-            \subsubsection{Invariant Sets} % 5.30, 5.31
-                \todo{Content}
-            % end
+			\subsubsection{Invariant Sets} % 5.30, 5.31
+				\todo{Content}
+			% end
 
-            \subsubsection{Stability of MPC} % 5.32, 5.37, 6.10
-                \todo{Content}
-            % end
+			\subsubsection{Stability of MPC} % 5.32, 5.37, 6.10
+				\todo{Content}
+			% end
 
-            \subsubsection{Showing Recursive Feasibility} % 5.33, 5.34
-                \todo{Content}
-            % end
+			\subsubsection{Showing Recursive Feasibility} % 5.33, 5.34
+				\todo{Content}
+			% end
 
-            \subsubsection{Showing Stability} % 5.35, 5.36, 6.8, 6.9
-                \todo{Content}
-            % end
-        % end
-    % end
+			\subsubsection{Showing Stability} % 5.35, 5.36, 6.8, 6.9
+				\todo{Content}
+			% end
+		% end
+	% end
 
-    \section{Solving MPC Problem} % 6.11, 6.12, 6.33, 12.12
-        \todo{Content}
+	\section{Solving MPC Problem} % 6.11, 6.12, 6.33, 12.12
+		\todo{Content}
 
-        \subsection{Reformulation Linear MPC as a QP} % 6.13, 6.22
-            \todo{Content}
+		\subsection{Reformulation Linear MPC as a QP} % 6.13, 6.22
+			\todo{Content}
 
-            \subsubsection{\dots with Substitution} % 6.14, 6.15, 6.16, 6.17
-                \todo{Content}
-            % end
+			\subsubsection{\dots with Substitution} % 6.14, 6.15, 6.16, 6.17
+				\todo{Content}
+			% end
 
-            \subsubsection{\dots without Substitution} % 6.18, 6.19, 6.20, 6.21
-                \todo{Content}
-            % end
-        % end
-    % end
+			\subsubsection{\dots without Substitution} % 6.18, 6.19, 6.20, 6.21
+				\todo{Content}
+			% end
+		% end
+	% end
 % end
 
 \chapter{Robust Model Predictive Control} % 7.1, 7.3, 7.20, 7.32, 12.13, 12.14
 	\label{c:mpcRobust}
 
-    \todo{Content}
+	\todo{Content}
 
-    \section{Inherent Robustness of Nominal MPC} % 7.4, 7.5, 7.6, 7.7, 7.8, 7.9, 7.10, 7.11
-        \todo{Content}
-    % end
+	\section{Inherent Robustness of Nominal MPC} % 7.4, 7.5, 7.6, 7.7, 7.8, 7.9, 7.10, 7.11
+		\todo{Content}
+	% end
 
-    \section{Uncertain Models} % 7.12, 7.13, 7.14
-        \todo{Content}
+	\section{Uncertain Models} % 7.12, 7.13, 7.14
+		\todo{Content}
 
-        \subsection{System Evolution} % 7.15, 7.16
-            \todo{Content}
-        % end
-    % end
+		\subsection{System Evolution} % 7.15, 7.16
+			\todo{Content}
+		% end
+	% end
 
-    \section{Cost Functions for Uncertain Systems} % 7.17, 7.18
-        \todo{Content}
-    % end
+	\section{Cost Functions for Uncertain Systems} % 7.17, 7.18
+		\todo{Content}
+	% end
 
-    \section{Minimax MPC} % 7.19
-        \todo{Content}
-    % end
+	\section{Minimax MPC} % 7.19
+		\todo{Content}
+	% end
 
-    \section{Set Subtraction and Addition} % 7.21, 7.22, 7.23
-        \todo{Content}
-    % end
+	\section{Set Subtraction and Addition} % 7.21, 7.22, 7.23
+		\todo{Content}
+	% end
 
-    \section{Robust Open-Loop MPC} % 7.24, 7.25, 7.26
-        \todo{Content}
-    % end
+	\section{Robust Open-Loop MPC} % 7.24, 7.25, 7.26
+		\todo{Content}
+	% end
 
-    \section{Tube MPC} % 7.27, 7.28, 7.29, 7.30, 7.31
-        \todo{Content}
-    % end
+	\section{Tube MPC} % 7.27, 7.28, 7.29, 7.30, 7.31
+		\todo{Content}
+	% end
 % end
 
 \chapter{Stochastic Model Predictive Control} % 8.1, 8.8, 8.13, 8.22, 12.13, 12.15
 	\label{c:mpcStochastic}
 
-    \todo{Content}
+	\todo{Content}
 
-    \section{Stochastic Uncertainty} % 8.9, 8.10, 8.11
-        \todo{Content}
-    % end
+	\section{Stochastic Uncertainty} % 8.9, 8.10, 8.11
+		\todo{Content}
+	% end
 
-    \section{Uncertain System Evolution} % 8.12
-        \todo{Content}
-    % end
+	\section{Uncertain System Evolution} % 8.12
+		\todo{Content}
+	% end
 
-    \section{Chance Constraints} % 8.14, 8.15, 8.16, 8.17
-        \todo{Content}
-    % end
+	\section{Chance Constraints} % 8.14, 8.15, 8.16, 8.17
+		\todo{Content}
+	% end
 
-    \section{Stochastic Tube MPC} % 8.18, 8.19
-        \todo{Content}
-    % end
+	\section{Stochastic Tube MPC} % 8.18, 8.19
+		\todo{Content}
+	% end
 
-    \section{Outlook} % 8.20, 8.21
-        \todo{Content}
-    % end
+	\section{Outlook} % 8.20, 8.21
+		\todo{Content}
+	% end
 % end
 
 \chapter{Machine Learning in Model Predictive Control} % 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8, 9.9, 9.10, 9.12, 12.16, 12.17
 	\label{c:ml}
 
-    \todo{Content}
+	\todo{Content}
 
-    \section{Machine Learning for MPC} % 9.11, 9.13, 10.8
-        \todo{Content}
+	\section{Machine Learning for MPC} % 9.11, 9.13, 10.8
+		\todo{Content}
 
-        \subsection{Modeling Dynamical Systems with ML} % 9.14
-            \todo{Content}
+		\subsection{Modeling Dynamical Systems with ML} % 9.14
+			\todo{Content}
 
-            \subsubsection{Implications} % 9.15, 9.16, 9.19
-                \todo{Content}
+			\subsubsection{Implications} % 9.15, 9.16, 9.19
+				\todo{Content}
 
-                \paragraph{Safe Sets} % 9.17
-                    \todo{Content}
-                % end
+				\paragraph{Safe Sets} % 9.17
+					\todo{Content}
+				% end
 
-                \paragraph{Robust Learning Supported Tube MPC} % 9.18
-                    \todo{Content}
-                % end
-            % end
-        % end
+				\paragraph{Robust Learning Supported Tube MPC} % 9.18
+					\todo{Content}
+				% end
+			% end
+		% end
 
-        \subsection{Modeling External Signals} % 10.3, 10.4
-            \todo{Content}
-        % end
+		\subsection{Modeling External Signals} % 10.3, 10.4
+			\todo{Content}
+		% end
 
-        \subsection{Modeling Constraints} % 10.5
-            \todo{Content}
-        % end
+		\subsection{Modeling Constraints} % 10.5
+			\todo{Content}
+		% end
 
-        \subsection{Modeling Cost Functions} % 10.6
-            \todo{Content}
-        % end
+		\subsection{Modeling Cost Functions} % 10.6
+			\todo{Content}
+		% end
 
-        \subsection{Learning Control Input: Replacing MPC} % 10.7
-            \todo{Content}
-        % end
-    % end
+		\subsection{Learning Control Input: Replacing MPC} % 10.7
+			\todo{Content}
+		% end
+	% end
 
-    \section{Gaussian Processes} % 10.1, 10.9, 10.35, 12.18
-        \todo{Content}
+	\section{Gaussian Processes} % 10.1, 10.9, 10.35, 12.18
+		\todo{Content}
 
-        \subsection{Setup and Definition} % 10.10, 10.17, 10.18, 10.19
-            \todo{Content}
-        % end
+		\subsection{Setup and Definition} % 10.10, 10.17, 10.18, 10.19
+			\todo{Content}
+		% end
 
-        \subsection{GP Regression} % 10.20
-            \todo{Content}
+		\subsection{GP Regression} % 10.20
+			\todo{Content}
 
-            \subsubsection{Prior Distribution} % 10.21, 10.26
-                \todo{Content}
+			\subsubsection{Prior Distribution} % 10.21, 10.26
+				\todo{Content}
 
-                \paragraph{Mean Function} % 10.22, 10.37, 10.38, 10.39
-                    \todo{Content}
-                % end
+				\paragraph{Mean Function} % 10.22, 10.37, 10.38, 10.39
+					\todo{Content}
+				% end
 
-                \paragraph{Covariance Function} % 10.23, 10.24, 10.25, 10.40, 10.49, 10.50
-                    \todo{Content}
-                % end
-            % end
+				\paragraph{Covariance Function} % 10.23, 10.24, 10.25, 10.40, 10.49, 10.50
+					\todo{Content}
+				% end
+			% end
 
-            \subsubsection{Posterior Distribution} % 10.27, 10.28
-                \todo{Content}
-            % end
+			\subsubsection{Posterior Distribution} % 10.27, 10.28
+				\todo{Content}
+			% end
 
-            \subsubsection{Noise Observations} % 10.51, 10.52
-                \todo{Content}
-            % end
-        % end
+			\subsubsection{Noise Observations} % 10.51, 10.52
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Hyper-Parameter Learning} % 10.29
-            \todo{Content}
+		\subsection{Hyper-Parameter Learning} % 10.29
+			\todo{Content}
 
-            \subsubsection{Influence of the Hyper-Parameters} % 10.41, 10.42, 10.43, 10.44, 10.45, 10.46, 10.47
-                \todo{Content}
-            % end
+			\subsubsection{Influence of the Hyper-Parameters} % 10.41, 10.42, 10.43, 10.44, 10.45, 10.46, 10.47
+				\todo{Content}
+			% end
 
-            \subsubsection{Automatic Relevance Determination} % 10.48
-                \todo{Content}
-            % end
-        % end
+			\subsubsection{Automatic Relevance Determination} % 10.48
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Dynamic Process Models} % 10.32, 10.33
-            \todo{Content}
-        % end
+		\subsection{Dynamic Process Models} % 10.32, 10.33
+			\todo{Content}
+		% end
 
-        \subsection{Benefits and Drawbacks} % 10.30, 10.31
-            \todo{Content}
-        % end
-    % end
+		\subsection{Benefits and Drawbacks} % 10.30, 10.31
+			\todo{Content}
+		% end
+	% end
 
-    \section{(Artificial) Neural Networks} % 11.1, 11.3, 11.25, 12.19
-        \todo{Content}
+	\section{(Artificial) Neural Networks} % 11.1, 11.3, 11.25, 12.19
+		\todo{Content}
 
-        \subsection{Setup} % 11.4, 11.6, 11.7, 11.8
-            \todo{Content}
-        % end
+		\subsection{Setup} % 11.4, 11.6, 11.7, 11.8
+			\todo{Content}
+		% end
 
-        \subsection{Signal Direction} % 11.9, 11.10, 11.11
-            \todo{Content}
-        % end
+		\subsection{Signal Direction} % 11.9, 11.10, 11.11
+			\todo{Content}
+		% end
 
-        \subsection{Connections Between Nodes} % 11.12
-            \todo{Content}
-        % end
+		\subsection{Connections Between Nodes} % 11.12
+			\todo{Content}
+		% end
 
-        \subsection{Activation Functions} % 11.13
-            \todo{Content}
-        % end
+		\subsection{Activation Functions} % 11.13
+			\todo{Content}
+		% end
 
-        \subsection{Training} % 11.14, 11.15, 11.16, 11.17
-            \todo{Content}
+		\subsection{Training} % 11.14, 11.15, 11.16, 11.17
+			\todo{Content}
 
-            \subsubsection{Optimization Algorithm} % 11.18
-                \todo{Content}
-            % end
+			\subsubsection{Optimization Algorithm} % 11.18
+				\todo{Content}
+			% end
 
-            \subsubsection{Challenges} % 11.19, 11.20
-                \todo{Content}
-            % end
-        % end
+			\subsubsection{Challenges} % 11.19, 11.20
+				\todo{Content}
+			% end
+		% end
 
-        \subsection{Neural Networks in MPOC} % 11.24
-            \todo{Content}
-        % end
+		\subsection{Neural Networks in MPOC} % 11.24
+			\todo{Content}
+		% end
 
-        \subsection{Benefits and Drawbacks} % 11.23
-            \todo{Content}
-        % end
-    % end
+		\subsection{Benefits and Drawbacks} % 11.23
+			\todo{Content}
+		% end
+	% end
 
-    \section{Remarks on Nomenclature} % 11.21
-        \todo{Content}
-    % end
+	\section{Remarks on Nomenclature} % 11.21
+		\todo{Content}
+	% end
 % end
 
 \chapter{Outlook} % 13.1, 13.6, 13.10
-    \todo{Content}
+	\todo{Content}
 
-    \section{Libraries for Machine Learning} % 13.3, 13.4, 13.5
-        \todo{Content}
-    % end
+	\section{Libraries for Machine Learning} % 13.3, 13.4, 13.5
+		\todo{Content}
+	% end
 
-    \section{Reinforcement Learning vs. MPC} % 13.7, 13.8, 13.9
-        \todo{Content}
-    % end
+	\section{Reinforcement Learning vs. MPC} % 13.7, 13.8, 13.9
+		\todo{Content}
+	% end
 % end

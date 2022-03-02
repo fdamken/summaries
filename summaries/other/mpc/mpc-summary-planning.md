@@ -131,4 +131,6 @@ Done/Structured/Total: 0/369/369+?; 0%/?%/100%
         + Neural Networks in MPOC {11.24}
         + Benefits and Drawbacks {11.23}
     - Remarks on Nomenclature {11.21}
-* Outlook {TODO}
+* Outlook {13.1, 13.6, 13.10}
+    - Libraries for Machine Learning {13.3, 13.4, 13.5}
+    - Reinforcement Learning vs. MPC {13.7, 13.8, 13.9}

@@ -1,4 +1,5 @@
 \renewcommand{\mat}[1]{\bm{\mathrm{#1}}}
+\newcommand{\transposed}{{\!\top}}
 
 \chapter{Introduction}
 	This summary covers \emph{model predictive control} (MPC) combined with \emph{machine learning} (ML). In MPC, a model of a dynamical system is used to find inputs that steer the system optimally (in some sense). ML, on the other hand, can be used to build such models from data. This document focuses primarily on the MPC part, featuring nominal, robust, and stochastic MPC. Subsequently, connections to and applications of ML are drawn as these fields get more and more interconnected. The key topics are understanding MPC basics, identifying benefits and drawbacks of MPC, understanding the role of ML in control, understanding the basic concepts of ML-supported MPC as well as its benefits and drawbacks.
@@ -71,7 +72,7 @@
 				\end{align}
 				with an initial value \(\vec{x}_0\). Time-variant and -invariant systems as well as linear models are defined analogous to time-continuous systems. Again, linear time-invariant models can be solved in closed form:
 				\begin{equation}
-					\vec{x}_k = \mat{A}^k\, \vec{x}_0 + \sum_{j = 0}^{k - 1} \mat{A}^{k - j - 1}\, \mat{B} \vec{u}_j
+					\vec{x}_k = \mat{A}^k\, \vec{x}_0 + \sum_{j = 0}^{k - 1} \mat{A}^{k - j - 1}\, \mat{B} \vec{u}_j  \label{eqn:discreteClosedForm}
 				\end{equation}
 				However, while discrete systems are easier to handle than continuous systems (e.g., computers work discretely), the world is inherently continuous. Hence, systems are often \emph{discretized} by using discrete indices \(\cdot_k\) corresponding to the value at time \(t_k = k h\), where \(h\) is the \emph{sampling time}. To apply a discrete control signal \( \vec{u}_k \) to a continuous system, it is usually applied using a step function, i.e., \( u(t) = u(t_k) \) for \( t \in [t_k, t_{k + 1}) \). To compute a discrete system from a continuous system, the difference quotient can be used:
 				\begin{equation}
@@ -202,43 +203,137 @@
 		% end
 	% end
 
-	\section{Linear Quadratic Regulator} % 3.1, 3.2, 3.5, 3.6, 3.7, 3.8, 3.10, 3.11, 3.13, 3.35, 12.6, 12.7
-		\todo{Content}
+	\section{Linear Quadratic Regulator}
+		This section introduces the linear quadratic regulator (LQR), an unconstrained optimal control method for simple linear systems. Of course, to perform optimal control, a notion of \emph{optimality} has to be defined. This definition also defines the overall objective of the controller. Some notions are:
+		\begin{itemize}
+			\item \eqmakebox[optimalControl][l]{\emph{Terminal Control Problem:}} the system shall be as close to a given terminal state as possible within a given period of time
+			\item \eqmakebox[optimalControl][l]{\emph{Minimum Time:}} reach the terminal state in minimum time
+			\item \eqmakebox[optimalControl][l]{\emph{Minimum Energy:}} reach the terminal state with minimum expenditure
+		\end{itemize}
+		All of these goals are subsumed in the \emph{cost function} \(J\) of an optimal control problem.
 
-		\subsection{Cost Functions} % 3.14, 3.15, 3.16, 3.17
-			\todo{Content}
+		\subsection{Cost Functions}
+			As seen already, the cost function is the core component of an optimal control problem defining \emph{optimality}. Some examples for cost functions are
+			\begin{align}
+				J &= E(\vec{x}(t_e)) &
+				J &= t_e,\, \vec{x}(t_e) = \vec{x}_d &
+				J &= \sum_{k = 1}^{N - 1} L\bigl( \vec{u}_k \bigr) \simeq \int_{t_0}^{t_e}\! L\bigl( \vec{u}(\tau) \bigr) \dd{\tau}
+			\end{align}
+			encoding a terminal cost, minimum time, and minimum energy, respectively (from left to right). The last cost has to be augmented for continuous problems by replacing the sum with an integral, indicated by \( \simeq \). Note that these functions can be combined, e.g., by defining an energy cost and a terminal cost. Also note that \(L\) in the energy cost is pretty general and might even represent quantities aside from energy.
+
+			In a \emph{regulation}, the desired setpoint \(\vec{x}_d\) is constant (and usually zero by shifting the coordinates appropriately) and does not depend on time. The goal is therefore to stabilize the system at the desired state. With \emph{tracking}, the setpoint is time-variant and the goal is to steer the system to follow the trajectory (trajectory tracking).
 		% end
 
-		\subsection{LQR Formulation} % 3.18, 3.19, 3.20
-			\todo{Content}
+		\subsection{LQR Formulation}
+			In the LQR setting, a linear time-discrete system along with a quadratic cost function
+			\begin{equation}
+				J = \frac{1}{2} \sum_{k = 1}^{N - 1} \vec{x}_k^\transposed \mat{Q} \vec{x}_k + \vec{u}_k^\transposed \mat{R} \vec{u}_k + \vec{x}_N^\transposed \mat{S} \vec{x}_N.  \label{eqn:lqrCost}
+			\end{equation}
+			with\footnote{For a matrix \(\mat{M}\), \( \mat{M} \succeq 0\) and \( \mat{M} \succ 0 \) mean that \(\mat{M}\) is (semi) positive definite.} \( \mat{Q} \succeq 0 \), \( \mat{R} \succ 0 \), \( \mat{S} \succ 0 \). Besides the dynamics \( \vec{x}_{k + 1} = \mat{A}_k \vec{x}_k + \mat{B}_k \vec{u} \), no further constraints are considered. The optimal control problem is now framed as follows (with \( \tilde{\vec{u}} = \vec{u}_{1:N - 1} = \{ \vec{u}_1, \vec{u}_2, \dots, \vec{u}_{N - 1} \} \)):
+			\begin{align}
+				\min_{\tilde{\vec{u}}}\; & \frac{1}{2} \sum_{k = 1}^{N - 1} \vec{x}_k^\transposed \mat{Q} \vec{x}_k + \vec{u}_k^\transposed \mat{R} \vec{u}_k + \vec{x}_N^\transposed \mat{S} \vec{x}_N \\
+				\text{s.t.}\qquad&
+					\begin{aligned}
+						\vec{x}_{k + 1} &= \mat{A}_k \vec{x}_k + \mat{B}_k \vec{u}_k
+					\end{aligned}
+				\label{eqn:lqr}
+			\end{align}
+			In the upcoming sections, this problem is solved in two different fashions.
 		% end
 
-		\subsection{Batch Optimization} % 3.21, 3.22, 3.23, 3.24
-			\todo{Content}
+		\subsection{Batch Optimization}
+			The straightforward approach for solving \eqref{eqn:lqr} in the time-invariant case is to use batch optimization over the variables \(\tilde{\vec{u}}\) by treating them as a function of the initial state \(\vec{x}_0\) by exploiting the closed form solution \eqref{eqn:discreteClosedForm} and writing it in vector form:
+			\begin{equation}
+				\underbrace{\begin{bmatrix}
+					\vec{x}_0 \\
+					\vec{x}_1 \\
+					\vec{x}_2 \\
+					\vdots \\
+					\vec{x}_{N - 1}
+					\vec{x}_N
+				\end{bmatrix}}_{\tilde{\vec{x}} \,\coloneqq}
+				=
+				\underbrace{\begin{bmatrix}
+					\mat{I} \\
+					\mat{A} \\
+					\mat{A}^2 \\
+					\vdots \\
+					\mat{A}^{N - 1} \\
+					\mat{A}^N
+				\end{bmatrix}}_{\tilde{\mat{A}} \,\coloneqq}
+				\vec{x}_0
+				+
+				\underbrace{\begin{bmatrix}
+					\mat{O}                   & \cdots                    & \cdots                    & \cdots  & \mat{O} \\
+					\mat{B}                   & \mat{O}                   & \cdots                    & \cdots  & \mat{O} \\
+					\mat{A} \mat{B}           & \mat{B}                   & \mat{O}                   & \cdots  & \mat{O} \\
+					\vdots                    & \ddots                    & \ddots                    & \ddots  & \vdots  \\
+					\mat{A}^{N - 2}\, \mat{B} & \mat{A}^{N - 3}\, \mat{B} & \ddots                    & \mat{B} & \mat{O} \\
+					\mat{A}^{N - 1}\, \mat{B} & \mat{A}^{N - 2}\, \mat{B} & \mat{A}^{N - 3}\, \mat{B} & \cdots  & \mat{B}
+				\end{bmatrix}}_{\tilde{\mat{B}} \,\coloneqq}
+				\underbrace{\begin{bmatrix}
+					\vec{u}_0 \\
+					\vec{u}_1 \\
+					\vec{u}_2 \\
+					\vdots \\
+					\vec{u}_{N - 1}
+				\end{bmatrix}}_{\tilde{\vec{u}} \,\coloneqq}
+			\end{equation}
+			Using the matrices defined above, this can be written shortly as \( \tilde{\vec{x}} = \tilde{\mat{A}} \vec{x}_0 + \tilde{\mat{B}} \tilde{\vec{u}} \). Similarly, the cost function \eqref{eqn:lqrCost} can be reformulated as \( J(\vec{x}_0, \tilde{\vec{u}}) \propto \tilde{\vec{x}}^\transposed \tilde{\mat{Q}} \tilde{\vec{x}} + \tilde{\vec{u}}^\transposed \tilde{\mat{R}} \tilde{\vec{u}} \) with
+			\begin{align}
+				\tilde{\mat{Q}} &= \diag(\underbrace{\mat{Q}, \mat{Q}, \dots, \mat{Q}}_{N\text{ times}}, \mat{S}) &
+				\tilde{\mat{R}} &= \diag(\underbrace{\mat{R}, \mat{R}, \cdots, \mat{R}}_{N\text{ times}}).
+			\end{align}
+			By plugging \(\tilde{\vec{x}}\) into this cost function, it can be solved in closed form, yielding the optimal control inputs
+			\begin{equation}
+				\tilde{\vec{u}}^\ast = -\mat{H}^{-1}\, \mat{F}^\transposed \vec{x}_0,\qquad
+			\end{equation}
+			with \( \mat{H} = \tilde{\mat{B}}^\transposed \tilde{\mat{Q}} \tilde{\mat{B}} + \tilde{\mat{R}} \) and \( \mat{F} = \tilde{\mat{A}}^\transposed \tilde{\mat{Q}} \tilde{\mat{B}} \).
+
+			However, while this approach is simplistic, it a major caveat: no feedback is involved (the control signals just depend on the initial value, i.e., it is an open-look controller). Hence, if the real system deviates from the model, the control inputs might be suboptimal or even harmful. This problem is addressed by the next solution method which also exploits the special structure of the problem.
 		% end
 
-		\subsection{Dynamic Programming} % 3.25
-			\todo{Content}
+		\subsection{Dynamic Programming}
+			As seen before, applying batch optimization---while being straightforward---is not ideal as the solution does not incorporate the system's feedback. An alternative approach is to use \emph{dynamic programming}. The underlying idea of dynamic programming is that partial trajectories of trajectories are optimal, too. In other words: a trajectory composed of partial optimal ones is optimal. A relevant quantity for solving LQR with this principle is the optimal \emph{cost to go}, also called the \emph{value function}:
+			\begin{equation}
+				J_j^\ast(\vec{x}_j) = \min_{\vec{u}_{j:N - 1}}\; \frac{1}{2} \sum_{k = j}^{N - 1} \vec{x}_k^\transposed \mat{Q} \vec{x}_k + \vec{u}_k^\transposed \mat{R} \vec{u}_k + \vec{x}_N^\transposed \mat{S} \vec{x}_N.
+			\end{equation}
+			This function quantifies the optimal cost when starting from state \(\vec{x}_j\) at time \(j\). By solving this problem\footnote{See "Robot Learning" (\url{https://fabian.damken.net/summaries/cs/elective/ce/role/role-summary.pdf}) for a more thorough (stochastic) treatment.} recursively starting from \(j = N\), the optimal control input at time step \(k\) is found to be
+			\begin{equation}
+				\vec{u}_k^\ast = \mat{K}_k \vec{x}_k
+			\end{equation}
+			with \( \mat{K}_k = -\bigl( \mat{B}^\transposed \mat{P}_{k + 1} \mat{B} + \mat{R} \bigr)^{-1\,} \mat{B}^\transposed \mat{P}_{k + 1} \mat{A} \) and optimal cost \( J_k^\ast(\vec{x}_j) = \vec{x}_k^\transposed \mat{P}_k \vec{x}_k / 2 \). Here, \( \mat{P}_k \) is given by the \emph{discrete time-variant algebraic Riccati equation}
+			\begin{equation}
+				\mat{P}_k = \mat{Q} + \mat{A}^\transposed \mat{P}_{k + 1} \mat{A} - \mat{A}^\transposed \mat{P}_{k + 1} \mat{B} \bigl( \mat{R} + \mat{B}^\transposed \mat{P}_{k + 1} \mat{B} \bigr)^{-1\,} \mat{B}^\transposed \mat{P}_{k + 1} \mat{A}
+			\end{equation}
+			which has to be calculated from \( k = N, N - 1, \dots, 1 \), starting with \( \mat{P}_N = \mat{S} \). With \(N \to \infty\), \(\mat{P}_k\) becomes \(k\)-independent and the Riccati equation becomes an implicit algebraic equation, the \emph{discrete time algebraic Riccati equation} (DARE):
+			\begin{equation}
+				\mat{P} = \mat{Q} + \mat{A}^\transposed \mat{P} \mat{A} - \mat{A}^\transposed \mat{P} \mat{B} \bigl( \mat{R} + \mat{B}^\transposed \mat{P} \mat{B} \bigr)^{-1\,} \mat{B}^\transposed \mat{P} \mat{A}.  \tag{DARE}
+			\end{equation}
+			Thus, also \(\mat{K}\) become time-invariant and the feedback control law becomes time-invariant, too. Note that the Riccati equation only converges to the above value if \( (\mat{A}, \mat{B}) \) is stabilizable and \( (\mat{Q}^{1/2}, \mat{A}) \) is detectable.
 
-			\subsubsection{Optimal Cost-to-Go} % 3.26
-				\todo{Content}
-			% end
-
-			\subsubsection{Recursive Solution} % 3.27, 3.28, 3.29
-				\todo{Content}
-			% end
-
-			\subsubsection{Infinite Horizon} % 3.30, 3.31
-				\todo{Content}
-			% end
+			For continuous dynamics and cost, the optimal input is given as \( \vec{u}^\ast(t) = \mat{K}(t) \vec{x}(t) \) with \( \mat{K}(t) = -\mat{R}^{-1} \mat{B}^\transposed \mat{P}(t)\) and the solution of the \emph{continuous time Riccati equation} (CARE):
+			\begin{equation}
+				-\dot{\mat{P}}(t) = \mat{P}(t) \mat{A} + \mat{A}^\transposed \mat{P}(t) - \mat{P}(t) \mat{B} \mat{R}^{-1\,} \mat{B}^\transposed \mat{P}(t) + \mat{Q}  \tag{CARE}\label{eqn:care}
+			\end{equation}
+			The optimal cost is again \( J_t^\ast\bigl(\vec{x}(t)\bigr) = \vec{x}^\transposed(t) \mat{P}(t) \vec{x}(t) / 2 \). For an infinite horizon, all of this becomes again time-invariant with \( \dot{\mat{P}} = \mat{O} \), turning \eqref{eqn:care} again into al algebraic equation.
 		% end
 
-		\subsection{Stability} % 3.32, 3.33, 12.8
-			\todo{Content}
-		% end
+		\subsection{Stability}
+			\begin{theorem}[Stability of the Time-Discrete LQR with Infinite Horizon]
+				Consider a time-discrete linear system with quadratic cost where \( (\mat{A}, \mat{B}) \) is stabilizable and \( (\mat{A}, \mat{Q}^{1/2}) \) is detectable. Then the solution
+				\begin{align}
+					\vec{u}_k^\ast &= \mat{K} \vec{x}_k \\
+					\mat{K} &= -\bigl( \mat{B}^\transposed \mat{P} \mat{B} + \mat{R} \bigr)^{-1\,} \mat{B}^\transposed \mat{P} \mat{A} \\
+					\mat{P} &= \mat{Q} + \mat{A}^\transposed \mat{P} \mat{A} - \mat{A}^\transposed \mat{P} \mat{B} \bigl( \mat{R} + \mat{B}^\transposed \mat{P} \mat{B} \bigr)^{-1\,} \mat{B}^\transposed \mat{P} \mat{A}
+				\end{align}
+				of the optimal control problem asymptotically stabilizes the system \( \vec{x}_{k + 1} = \mat{A} \vec{x}_k + \mat{B} \vec{u}_k \).
+			\end{theorem}
+			\begin{proof}[Proof Sketch]
+				Showing asymptotic stability can be done by proofing that the infinite horizon cost \( J^\ast(\vec{x}_k) = \vec{x}_k^\transposed \mat{P} \vec{x}_k \) is a strict Lyapunov function of the (controlled) system.
+			\end{proof}
 
-		\subsection{Outlook} % 3.36
-			\todo{Content}
+			Note that for finite-horizon LQR, the optimal input is not necessarily stabilizing!
 		% end
 	% end
 

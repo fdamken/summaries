@@ -337,63 +337,110 @@
 		% end
 	% end
 
-	\section{Constrained Optimization} % 4.1, 4.2, 4.3, 4.4, 4.28, 12.9
-		\todo{Content}
+	\section{Constrained Static Optimization}
+		So far, optimal control has been considered without any constraints. However, most real systems have constraints (e.g., a car shall stay on the road, forces are limited, \dots). This section focuses on optimization with constraints in a \emph{static} setting, i.e., where the system does not evolve (it is not a \emph{dynamic} system). The general form of such an optimization problem is
+		\begin{align}
+			\min_{\vec{u} \,\in\, \R^n}\; & F(\vec{u}) \\
+			\text{s.t.}\qquad&
+			\begin{aligned}[t]
+				\vec{G}(\vec{u}) &= \vec{0} \\
+				\vec{H}(\vec{u}) &\leq \vec{0}
+			\end{aligned}
+		\end{align}
+		where \( F : \R^n \to \R \), \( \vec{G} : \R^n \to \R^m \), and \( \vec{H} : \R^n \to \R^p \) are the objective function, equality, and inequality constraints, respectively. The \(=\) and \(\leq\) in the constraints are element-wise (with a slight abuse of notation). A constraint is called \emph{active} if the solution \(\vec{u}^\ast\) causes the constraint to vanish (thus, equality constraints are always active and inequality constraints may be inactive).
 
-		\subsection{Nomenclature} % 4.5, 4.6, 4.7, 4.8
-			\todo{Content}
+		The optimization problem is \emph{feasible} if the feasible set \( \mathcal{U} = \{ \vec{u} : \vec{G}(\vec{u}) = \vec{0}, \vec{H}(\vec{u}) \leq \vec{0} \} \) is non-empty. With this set, the following notions of optimality can be defined:
+		\begin{definition}[Local Optimality]
+			A point \( \vec{u}^\ast \) is \emph{locally optimal} if \( F(\vec{u}) \geq F(\vec{u}^\ast) \) for all \( \vec{u} \in \mathcal{U} \) with \( \lVert \vec{u} - \vec{u}^\ast \rVert \leq R \) for some \( R > 0 \), i.e., for all points in a vicinity of \(\vec{u}^\ast\).
+		\end{definition}
+		\begin{definition}[Global Optimality]
+			A point \( \vec{u}^\ast \) is \emph{globally optimal} if \( F(\vec{u}) \geq F(\vec{u}^\ast) \) for all \( \vec{u} \in \mathcal{U} \).
+		\end{definition}
+		In both cases, the optimal cost is \( p^\ast = F(\vec{u}^\ast) \). If the problem is infeasible, it is said to have optimal cost \( p^\ast = \infty \).
+
+		\subsection{Convexity}
+			It turns out that \emph{convex} optimization problems are especially easy: every local optimum is a global optimum. To discuss this further, first convexity and a few other nomenclature have to be defined:
+			\begin{definition}[Convex Sets]
+				A set \(\mathcal{U}\) is \emph{convex} iff \( \lambda \vec{u} + (1 - \lambda) \vec{v} \in \mathcal{U} \) holds for all \(\vec{u}, \vec{v} \in \mathcal{U}\) and \( \lambda \in [0, 1] \). That is, all points on a line between two arbitrary points lie in the set, too.
+			\end{definition}
+			\begin{definition}[Convex Functions]
+				A function \( F : \mathcal{U} \to \R \) is \emph{convex} iff \( F\bigl( \lambda \vec{u} + (1 - \lambda) \vec{v} \bigr) \leq \lambda F(\vec{u}) + (1 - \lambda) F(\vec{v}) \) holds for all \( \vec{u}, \vec{v} \in \mathcal{U} \) and \( \lambda \in [0, 1] \). A function is \emph{strictly} convex iff the relaxed inequality is never equal.
+			\end{definition}
+
+			For convex functions, it is possible to use the derivatives of the function (if it is differentiable) to check its convexity:
+			\begin{theorem}[First Order Condition for Convexity]
+				A differentiable function \( F : \mathcal{U} \to \R \) is \emph{convex} iff \( F(\vec{v}) \geq F(\vec{u}) + \grad{F}^\transposed(\vec{u}) (\vec{v} - \vec{u}) \) holds for all \( \vec{u}, \vec{v} \in \mathcal{U} \) where \( \grad{F} \) is the gradient of \(F\).
+			\end{theorem}
+			\begin{theorem}[Second Order Condition for Convexity]
+				A twice differentiable function \( F : \mathcal{U} \to \R \) is \emph{convex} iff \( \grad^2 F(\vec{u}) \succeq 0 \) holds for all \( \vec{u} \in \mathcal{U} \) where \( \grad^2 F \) is the Hessian of \(F\).
+			\end{theorem}
+
+			Additionally, the further discussion needs the notion of \emph{(sub-)level sets:}
+			\begin{definition}[Level Sets]
+				The \emph{level set} \(L_c\) of a function \( F : \mathcal{U} \to \R \) is the set of values for which \(F\) takes on a constant value \(c\), i.e., \( L_c \coloneqq \{ \vec{u} : F(\vec{u}) = c \} \).
+			\end{definition}
+			\begin{definition}[Sublevel Sets]
+				The \emph{sublevel set} \(L_c^-\) of a function \( F : \mathcal{U} \to \R \) is the set of values for which \(F\) takes on a value equal or less than a constant \(c\), i.e., \( L_c^- \coloneqq \{ \vec{u} : F(\vec{u}) \leq c \} \). Note that if \(F\) is convex or concave, \(L_c^-\) is convex.
+			\end{definition}
+			\begin{theorem}[Convexity of Level Sets]
+				Let \( F : \mathcal{U} \to \R \) be a convex function. Then the level set \(L_c\) of \(F\) for some constant \(c\) is convex.
+			\end{theorem}
+			\begin{proof}
+				Let \(L_c^-\) and \(L_{-c}^-\) be the sublevel sets of \(F\) and \(-F\), respectively. As \(F\) is convex, \(-F\) is concave and hence both \(L_c^-\) and \(L_{-c}^-\) are convex. By definition, \( L_c^- \cap L_c^+ = \{ \vec{u} : F(\vec{u}) \leq c \} \cap \{ \vec{u} : -F(\vec{u}) \leq -c \} = \{ \vec{u} : F(\vec{u}) \leq c \} \cap \{ \vec{u} : F(\vec{u}) \geq c \} = \{ \vec{u} : F(\vec{u}) = c \} = L_c \) is the level set of \(F\) for \(c\). Hence, as the intersection of convex sets is convex again, \(L_c\) is convex.
+			\end{proof}
+
+			\subsubsection{Convex Optimization Problems and Optimality}
+				\begin{theorem}[Global Optimality of Convex Optimization Problems]
+					For an optimization problem with a convex feasibility set \( \mathcal{U} \) and a convex objective function, a \emph{convex} optimization problem, every locally optimal solution is globally optimal.
+				\end{theorem}
+				\todo{Proof of global optimality of convex optimization problems.}
+
+				To check convexity of an optimization problem, it usually suffices to look at the objective and constraints separately due to the properties of convex sets, namely that the intersection of two convex sets is still convex. If all constraints are convex, their respective (sub-) level sets are convex too, and hence the feasibility set is convex.
+			% end
 		% end
 
-		\subsection{Global and Local Optimality} % 4.9
-			\todo{Content}
+		\subsection{Quadratic Programming}
+			If the objective function is a quadratic function \( J(\vec{u}) = \vec{u}^\transposed \mat{Q} \vec{u} + \vec{q}^\transposed \vec{u} + r \) with \( \mat{Q} \in \R^{n \times n} \), \( \mat{Q} \succeq 0 \), \( \vec{q} \in \R^n \), and \( r \in \R \) and the constraints are affine, the problem is called q \emph{quadratic program} (QP). For QPs, the optimal \(\vec{u}^\ast\) is either inside the feasible set or at its boundary. If the inequality constraints are quadratic and convex, too, the problem is called a \emph{quadratically constrained quadratic program} (QCQP) and the feasible set is an intersection of the ellipsoids defined by the constraints. Quadratic programs are a friendly class of problems for which many efficient solvers exist.
 		% end
 
-		\subsection{Convexity} % N/A
-			\todo{Content}
-
-			\subsubsection{Convex Sets} % 4.10, 4.11, 4.12, 4.13
-				\todo{Content}
-			% end
-
-			\subsubsection{Convex Functions} % 4.14, 4.15
-				\todo{Content}
-			% end
-
-			\subsubsection{(Sub-) Level Sets} % 4.16
-				\todo{Content}
-			% end
-
-			\subsubsection{Convex Optimization Problems and Optimality} % 4.18, 4.19
-				\todo{Content}
-			% end
+		\subsection{Optimality Conditions for Constrained Optimization Problems} % 4.22
+			The optimality conditions for constrained optimization problems use the (generalized) Lagrangian:
+			\begin{definition}[(Generalized) Lagrangian]
+				For an optimization problem with objective \(F(\vec{u})\), equality constraints \( \vec{G}(\vec{u}) = \vec{0} \), and inequality constraints \( \vec{H}(\vec{u}) \leq \vec{0} \), the \emph{generalized Lagrangian} is
+				\begin{equation}
+					\mathcal{L}(\vec{u}, \vec{\lambda}, \vec{\mu}) = F(\vec{u}) + \vec{\lambda}^\transposed \vec{G}(\vec{u}) + \vec{\mu}^\transposed \vec{H}(\vec{u})
+				\end{equation}
+				with the \emph{Lagrange multipliers} \(\vec{\lambda}\) and \(\vec{\mu}\). If no inequality constraints are present, this is called the \emph{Lagrangian} and with inequality constraints it is the \emph{generalized} Lagrangian.
+			\end{definition}
+			The Lagrangian is a weighted sum of the objective and the constraints. It can now be used to characterize the optimality conditions for the optimization problem:
+			\begin{theorem}[Necessary First Order Conditions (Karush-Kuhn-Tucker)]
+				Let \(\vec{u}^\ast\) be a (local) extrema of \(F\) subject to \( \vec{G}(\vec{u}^\ast) = \vec{0} \) and \( \vec{H}(\vec{u}^\ast) \leq \vec{0} \), then there exist Lagrangian multipliers \( \vec{\lambda}^\ast \) and \( \vec{\mu}^\ast \) such that all of the following hold:
+				\begin{equation}
+					\begin{aligned}
+						\grad_{\vec{u}} \mathcal{L}(\vec{u}^\ast, \vec{\lambda}^\ast, \vec{\mu}^\ast) &= \vec{0} \\
+						\grad_{\vec{\lambda}} \mathcal{L}(\vec{u}^\ast, \vec{\lambda}^\ast, \vec{\mu}^\ast) &= \vec{0} \\
+						\grad_{\vec{\mu}} \mathcal{L}(\vec{u}^\ast, \vec{\lambda}^\ast, \vec{\mu}^\ast) &\leq \vec{0} \\
+						\bigl(\vec{\mu}^\ast\bigr)^\transposed \vec{H}(\vec{u}^\ast) &= \vec{0} \\
+						\vec{\mu}^\ast &\geq \vec{0}
+					\end{aligned}  \tag{KKT}\label{eqn:kkt}
+				\end{equation}
+				For problems with strong duality, these conditions are also \emph{sufficient}.
+			\end{theorem}
+			\begin{theorem}[Necessary Second Oder Conditions]
+				Let \(\vec{u}^\ast\) be such that the \ref{eqn:kkt}-conditions hold. If \(\vec{u}^\ast\) is a minimum, the following holds for all \(\vec{p}\) with \( \vec{p}^\transposed \grad_{\vec{u}} \vec{G}(\vec{u}^\ast) = 0 \):
+				\begin{equation}
+					\vec{p}^\transposed \bigl( \grad_{\vec{u}}^2 \mathcal{L}(\vec{u}^\ast, \vec{\lambda}^\ast, \vec{\mu}^\ast) \bigr) \vec{p} \geq 0
+				\end{equation}
+				If this inequality is strict, this condition is also \emph{sufficient.}
+			\end{theorem}
 		% end
 
-		\subsection{Quadratic Programming} % 4.20, 4.21
-			\todo{Content}
-		% end
+		\subsection{Numerical Solvers}
+			A variety of numerical solvers exist for constrained optimization problems, and especially fast solvers exist for QPs (e.g., Matlab's \texttt{quadprog} and \texttt{fmincon}). Some approaches are interior point, trust region, and active set, and the class of sequential quadratic programming (SQP) methods\footnote{See "Optimization of Static and Dynamic Systems" (\url{https://fabian.damken.net/summaries/cs/elective/ce/opt/opt-summary.pdf}) for a more thorough study of numerical optimization techniques}.
 
-		\subsection{Optimality Conditions for Constraints Optimization Problems} % 4.22
-			\todo{Content}
+			SQP methods use a Taylor approximation of the objective (quadratic) and constraints (linear) to solve the optimization problem. By applying this method multiple times, it usually converges to a good local minimum. Another method for dealing with constraints is to reformulate them and integrate them into the objective by using barrier functions and penalty terms: penalty methods add a term \(\epsilon(\vec{u})\) to the objective that has a high values once a constraint is violated, forcing the optimizer to look elsewhere. Common choices for such a barrier term are logarithmic barrier functions and exact penalty functions. An alternative method is to allow the constraints to be violated. This is done by introducing a slack variable \( \vec{H}(\vec{u}) \leq \epsilon \) and penalize it in the objective with a function \( \Theta(\epsilon) \), e.g., a quadratic function in \(\epsilon\)
 
-			\subsubsection{Lagrangian} % 4.23, 4.24
-				\todo{Content}
-			% end
-
-			\subsubsection{Generalized Lagrangian and KKT-Conditions} % 4.25, 4.26
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Numerical Solver} % 6.23, 6.24, 6.25, 6.30
-			\todo{Content}
-
-			\subsubsection{Penalty Functions} % 6.26, 6.27, 6.28, 6.29
-				\todo{Content}
-			% end
-
-			\subsubsection{Soft Constraints} % 6.31, 6.32
-				\todo{Content}
-			% end
+			\todo{Numerical Solvers; 6.23, 6.24, ..., 6.32}
 		% end
 	% end
 % end

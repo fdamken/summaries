@@ -38,7 +38,7 @@ def main():
             ylim = np.max(np.abs(ax.get_ylim()))
             ax.set_ylim((-ylim, ylim))
     plt.tight_layout()
-    fig.savefig("tmp-stability.pgf")
+    fig.savefig("tmp-stability.pdf")
 
 
 if __name__ == "__main__":

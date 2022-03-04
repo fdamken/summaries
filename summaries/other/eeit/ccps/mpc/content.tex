@@ -242,6 +242,8 @@
 		% end
 
 		\subsection{Batch Optimization}
+			\label{subsec:batchOpt}
+
 			The straightforward approach for solving \eqref{eqn:lqr} in the time-invariant case is to use batch optimization over the variables \(\tilde{\vec{u}}\) by treating them as a function of the initial state \(\vec{x}_0\) by exploiting the closed form solution \eqref{eqn:discreteClosedForm} and writing it in vector form:
 			\begin{equation}
 				\underbrace{\begin{bmatrix}
@@ -249,7 +251,7 @@
 					\vec{x}_1 \\
 					\vec{x}_2 \\
 					\vdots \\
-					\vec{x}_{N - 1}
+					\vec{x}_{N - 1} \\
 					\vec{x}_N
 				\end{bmatrix}}_{\tilde{\vec{x}} \,\coloneqq}
 				=
@@ -338,6 +340,8 @@
 	% end
 
 	\section{Constrained Static Optimization}
+		\label{sec:staticOpt}
+
 		So far, optimal control has been considered without any constraints. However, most real systems have constraints (e.g., a car shall stay on the road, forces are limited, \dots). This section focuses on optimization with constraints in a \emph{static} setting, i.e., where the system does not evolve (it is not a \emph{dynamic} system). The general form of such an optimization problem is
 		\begin{align}
 			\min_{\vec{u} \,\in\, \R^n}\; & F(\vec{u}) \\
@@ -445,72 +449,239 @@
 	% end
 % end
 
-\chapter{Nominal Model Predictive Control} % 5.1, 5.2, 5.3, 5.4, 5.5, 5.38, 12.10
+\chapter{Nominal Model Predictive Control}
 	\label{c:mpcNominal}
 
-	\todo{Content}
+	So far, optimal control without constraints (LQR) and constrained optimization without dynamics (KKT) has been covered. However, in MPC, an optimal control problem should be solved while taking constraints into account. This chapter deals with the simplest case of MPC, \emph{nominal} MPC. In nominal MPC, it is assumed that the model at hand is perfect, i.e., that the real system evolves exactly as the model predicts. Subsequently, after introducing nominal MPN and receding horizon control, certain properties regarding stability as discussed.
 
-	\section{Receding Horizon} % 5.6, 5.7, 5.8, 5.9, 5.10, 5.11
-		\todo{Content}
-	% end
+	The general MPC problem has the form
+	\begin{align}
+		\min_{\tilde{\vec{u}}}\; & \sum_{k = 0}^{\infty} F(\vec{x}_k, \vec{u}_k) \\
+		\text{s.t.}\quad&
+			\begin{aligned}[t]
+				\vec{x}_{k + 1} &= \vec{f}(\vec{x}_k, \vec{u}_k),\, \vec{x}_0 \\
+				\vec{x}_k &\in \mathcal{X} \\
+				\vec{u}_k &\in \mathcal{U}
+			\end{aligned}
+	\end{align}
+	with stage cost \(F\), the state dynamics \(\vec{f}\) with initial state \(\vec{x}_0\), and state and input constraints \(\mathcal{X}\) and \(\mathcal{U}\), respectively. With LQR-conformant cost, the optimal controller would be stabilizable in general. However, solving this problem with optimal control is impossible due to the constraints. Also, due to the infinite time horizon, it is not possible to apply batch normalization as the number of variables are infinite. The underlying idea of MPC now is to approximate the infinite horizon problem by a finite horizon problem
+	\begin{equation}
+		\begin{aligned}
+			\min_{\tilde{\vec{u}}}\, & E(\vec{x}_n) + \sum_{k = 0}^{N - 1} F(\vec{x}_k, \vec{u}_k) \\
+			\text{s.t.}\quad&
+				\begin{aligned}[t]
+					\vec{x}_{k + 1} &= \vec{f}(\vec{x}_k, \vec{u}_k),\, \vec{x}_0 \\
+					\vec{x}_k &\in \mathcal{X} \\
+					\vec{u}_k &\in \mathcal{U} \\
+					\vec{x}_N &\in \mathcal{E}
+				\end{aligned}
+		\end{aligned}
+		\label{eqn:recedingHorizon}
+	\end{equation}
+	with a terminal cost \(E\) and terminal constraints \(\mathcal{E}\). These can be interpreted as follows: the terminal cost approximates the "remainder" of the cost behind the horizon and the terminal constraints approximate the "remainder" of the constraints. However, even this finite-horizon MPC cannot be solved using dynamic programming due to the constraints; but it is possible to apply batch optimization! By repeatedly solving the batch optimization problem, feedback is incorporated by re-computing the batch solution at every time step and applying only a single input. That is, the feedback is given by repeatedly measuring the state and incorporating it as the initial value of the dynamical systems. This method is also called \emph{receding horizon control}.
 
-	\section{Nominal MPC} % 5.12, 5.13
-		\todo{Content}
-	% end
+	Then the problem of MPC boils down to two pressing questions:
+	\begin{itemize}
+		\item How to guarantee that the optimal control problem is feasible in every time step?
+		\item How to guarantee that the optimal solution of the finite horizon approximate actually stabilizes the system?
+	\end{itemize}
+	The remainder of this chapter mostly deals with these two questions in \emph{nominal} settings. As already said, this means that the system model is a perfect representation and the plant will behave exactly as predicted. Note that this is not true in reality (due to modeling errors, noise, etc.) but is a purely theoretical assumption\footnote{Although, as discussed in \autoref{sec:inherentRobustness}, it turns out that even nominal MPC is (to some extend) robust towards modeling errors.}. Incorporating uncertainties into the model and control is covered in \autoref{c:mpcRobust} and \ref{c:mpcStochastic}.
 
-	\section{Linear MPC} % 5.14, 5.15
-		\todo{Content}
-	% end
+	\section{Linear MPC}
+		\emph{Linear} MPC assumes a linear system model and a quadratic stage cost, leaving the following optimization problem (at time instance \(i\)):
+		\begin{equation}
+			\begin{aligned}
+				\min_{\tilde{\vec{u}}}\; & \vec{x}_{i + N}^\transposed \mat{S} \vec{x}_{i + N} \sum_{k = i}^{i + N - 1} \vec{x}_k^\transposed \mat{Q} \vec{x}_k + \vec{u}_k^\transposed \mat{R} \vec{u}_k \\
+				\text{s.t.}\quad &
+					\begin{aligned}
+						\vec{x}_{k + 1} &= \mat{A} \vec{x}_k + \mat{B} \vec{u}_k,\, \vec{x}_i \\
+						\vec{x}_k &\in \mathcal{X} \\
+						\vec{u}_k &\in \mathcal{U} \\
+						\vec{x}_{i + N} &\in \mathcal{E}
+					\end{aligned}
+			\end{aligned}
+			\label{eqn:linearRecedingHorizon}
+		\end{equation}
+		where \(\mathcal{X}\), \(\mathcal{U}\), and \(\mathcal{E}\) are convex sets. As the dynamics, constraints, and cost are time-invariant, the notation can be simplified by assuming \(i = 0\); cf. \eqref{eqn:recedingHorizon} with the initial state \(\vec{x}_0\) being equal to the \(i\)-th measured state.
 
-	\section{Recursive Feasibility and Stability} % 5.16, 5.17, 5.18, 5.19, 5.20, 5.21, 12.11
-		\todo{Content}
+		\subsection{Feasibility and Stability}
+			Recall from \autoref{sec:staticOpt} that a static optimization problem is feasible iff the feasible set is non-empty. In dynamic optimization, an optimal control problem is feasible iff the constraints on the states and controls, \(\mathcal{X}\) and \(\mathcal{U}\), the terminal constraints \(\mathcal{E}\), and the dynamics are satisfied. Hence, checking feasibility is more tedious as it has to be checked whether there exists an input sequence satisfying all constraints (a \emph{admissible} input sequence).
 
-		\subsection{\dots using a Terminal Equality} % 5.22
-			\todo{Content}
+			\begin{definition}[Admissible Input Sequence]
+				An input sequence \( U(\vec{x}_0) \coloneqq (\vec{u}_0, \vec{u}_1, \dots, \vec{u}_{N - 1}) \) for an initial state \(\vec{x}_0\) is \emph{admissible} iff all constraints are satisfied:
+				\begin{align}
+					\forall k = 0, 1, \dots, N - 1 : \vec{u}_k &\in \mathcal{U} &
+					\forall k = 0, 1, \dots, N - 2 : \vec{f}(\vec{x}_k, \vec{u}_k) &\in \mathcal{X} &
+					\vec{f}(\vec{x}_{N - 1}, \vec{u}_{N - 1}) &\in \mathcal{E}
+				\end{align}
+			\end{definition}
+			\begin{definition}[Feasible Initial Conditions]
+				Let \( \mathcal{X}_0 \coloneqq \bigl\{ \vec{x}_0 : \text{exists an admissible }U(\vec{x}_0) \bigr\} \) be the \emph{set of feasible initial conditions}.
+			\end{definition}
 
-			\subsubsection{Achieving Recursive Feasibility} % 5.23, 5.24
-				\todo{Content}
+			With these two definitions, proofing feasibility of linear MPC means to show that \(\mathcal{X}_0\) is non-empty for all consecutive time steps, i.e., the states need to stay in \(\mathcal{X}_0\) for all time (also called \emph{recursive} feasibility). However, even for nominal MPC, this can (in general) not be guaranteed due to the finite-horizon problem being "shortsighted": the controller might drive the system towards the boundary of the constraints in the long run which it cannot account for as the horizon is too short. Once MPC "sees" the problem, it may be impossible to countersteer due to input bounds.
+
+			While recursive feasibility is impossible to achieve for general linear MPC, it is achievable for some (important) special cases using the terminal constraints and cost. These are studied in the upcoming sections.
+
+			\subsubsection{Terminal Equality}
+				By fixing the terminal state to zero, i.e., \( \mathcal{E} = \{ \vec{0} \} \), the terminal cost vanishes. Then recursive feasibility and stability can be shown using the terminal set and Lyapunov functions, respectively. However, requiring that \( \vec{x}_N = \vec{0} \) is restrictive and makes the set of feasible initial conditions (for the first control problem) small. This is due to the requirement that the origin is reachable in \(N\) steps. While this can be tackled by increasing \(N\), this increases the computational effort as the number of optimization variables increases. Also, it just pushes the problem away a bit.
+
+				\begin{theorem}[Recursively Feasibility of Linear MPC With Terminal Equality Constraint]
+					Linear MPC with the receding horizon optimal control problem \eqref{eqn:linearRecedingHorizon} is recursively feasible if the initial problem is feasible and \( \mathcal{E} = \{ \vec{0} \} \).
+				\end{theorem}
+				\begin{proof}
+					Let the linear MPC be feasible for the first instantiation with \(i = 0\) and the initial condition \(\vec{x}_0\). Let \( (\vec{u}_0^\ast, \vec{u}_1^\ast, \dots, \vec{u}_{N - 1}^\ast) \) be the optimal admissible input sequence. The corresponding state sequence end, by the terminal constraints, with \( \vec{x}_N^\ast = \vec{0} \). As the MPC is nominal, the system evolves to \( \vec{x}_1 = \vec{x}_1^\ast = \mat{A} \vec{x}_0 + \mat{B} \vec{u}_0^\ast \). For \(i = 1\), \(\vec{x}_1^\ast\) is used as the input sequence. Therefore, the previous input sequence \( (\vec{u}_1^\ast, \dots, \vec{u}_{N - 1}^\ast) \) is still admissible and optimal, but one entry too short. This can be fixed by appending \( \vec{u}_N^\ast = \vec{0} \), yielding \( \vec{x}_{N + 1}^\ast = \mat{A} \vec{x}_N^\ast + \mat{B} \vec{u}_N^\ast = \mat{A} \vec{0} + \mat{B} \vec{0} = \vec{0} \). This next terminal state still fulfills the state constraints. Hence, by repeating this procedure, linear MPC with zero terminal state is recursively feasible.
+				\end{proof}
+
+				\begin{theorem}[Asymptotic Stability of Linear MPC With Terminal Equality Constraint]
+					Linear MPC with the receding horizon optimal control problem \eqref{eqn:linearRecedingHorizon} is asymptotically stable if the initial problem is feasible and \( \mathcal{E} = \{ \vec{0} \} \).
+				\end{theorem}
+				\begin{proof}
+					\todo{Proof of stability of linear MPC; 5.25, 5.26, 5.27}
+				\end{proof}
 			% end
 
-			\subsubsection{Achieving Stability} % 5.25, 5.26, 5.27
-				\todo{Content}
+			\subsubsection{Terminal Inequality}
+				To fix the problems introduced by a terminal equality constraint (namely that ht feasible set of initial conditions is small), this section extends the terminal set to have more than a single value. For discusses which properties the terminal set has to fulfill, a few definitions are needed beforehand:
+				\begin{definition}[Invariant Set]
+					A set \(\mathcal{S}\) is \emph{positively invariant} for a system \( \vec{x}_{k + 1} = \vec{f}(\vec{x}_k) \) if \( \vec{x}_k \in \mathcal{S} \) holds for all \( k \in \N_+ \) given that \( \vec{x}_0 \in \mathcal{S} \). In other words: trajectories starting in an invariant set, stay in the invariant set. The unique set that contains all positively invariant sets is called the \emph{maximum positively invariant set}.
+				\end{definition}
+				\begin{definition}[Control Invariant Set]
+					A set \(\mathcal{S}\) is \emph{control invariant} for a system \( \vec{x}_{k + 1} = \vec{f}(\vec{x}_k, \vec{u}_k) \) if for all \( \vec{x}_k \in \mathcal{S} \) there exists an input \( \vec{u}_k \in \mathcal{U} \) such that \( \vec{f}(\vec{x}_k, \vec{u}_k) \in \mathcal{S} \) holds. In other words: every state in a control invariant set can be steered such that the successor is still in the set. The set containing all other control invariant sets is called the \emph{maximum control invariant set} and is denoted \(\mathcal{S}_\infty\). Let \( \vec{u}_k = \kappa_{\vec{f}}^{\mathcal{S}}(\vec{x}_k) \) be the control law ensuring control invariance.
+				\end{definition}
+
+				Using these definitions, it can be shown that linear MPC with a control invariant terminal set is recursively feasible and stabilizing. However, finding the terminal constraint set is rather hard and there is no general "recipe" to do it. For linear systems, one approach is to use unconstrained, infinite-horizon LQR, and finding the maximum invariant set under the closed-loop control law.
+				\todo{5.37: What's a pre-set?}
+
+				\begin{theorem}[Recursively Feasibility of Linear MPC With Terminal Inequality Constraint]
+					Linear MPC with the receding horizon optimal control problem \eqref{eqn:linearRecedingHorizon} is recursively feasible (i.e., \(\mathcal{X}_0\) is positively invariant) if the initial problem \(\mathcal{E}\) is control invariant.
+				\end{theorem}
+				\begin{proof}
+					\todo{Proof of recursive feasibility of linear MPC; 5.33, 5.34}
+				\end{proof}
+
+				\begin{theorem}[Asymptotic Stability of Linear MPC With Terminal Inequality Constraint]
+					Linear MPC with the receding horizon optimal control problem \eqref{eqn:linearRecedingHorizon} is asymptotically stable if the initial problem \(\mathcal{E}\) is control invariant.
+				\end{theorem}
+				\begin{proof}
+					\todo{Proof of stability of linear MPC; 5.32, 5.35, 5.36}
+				\end{proof}
 			% end
 		% end
-
-		\subsection{\dots using a Terminal Set} % 5.28, 5.29
-			\todo{Content}
-
-			\subsubsection{Invariant Sets} % 5.30, 5.31
-				\todo{Content}
-			% end
-
-			\subsubsection{Stability of MPC} % 5.32, 5.37, 6.10
-				\todo{Content}
-			% end
-
-			\subsubsection{Showing Recursive Feasibility} % 5.33, 5.34
-				\todo{Content}
-			% end
-
-			\subsubsection{Showing Stability} % 5.35, 5.36, 6.8, 6.9
-				\todo{Content}
-			% end
-		% end
 	% end
 
-	\section{Solving MPC Problem} % 6.11, 6.12, 6.33, 12.12
-		\todo{Content}
+	\section{Solving MPC Problem}
+		Until now, (nominal) MPC was studied from a rather theoretical perspective without actually solving it. This sections deals with two methods for reformulating a (linear) MPC problem in a quadratic program that can be solved efficiently. For nonlinear MPC, the prevalent approach is to approximate the problem locally to get quadratic optimization problems. Reformulating the optimal control problem as a QP can be done in two versions: with and without substituting the dynamics.
 
-		\subsection{Reformulation Linear MPC as a QP} % 6.13, 6.22
-			\todo{Content}
+		\subsection{Option A: Substituting the Dynamics}
+			This first idea is directly borrowed from batch optimization in LQR (\autoref{subsec:batchOpt}). To incorporate the linear constraints
+			\begin{align}
+				\mathcal{U} &= \{ \vec{u} : \mat{A}_u \vec{u} \leq \vec{b}_u \} &
+				\mathcal{X} &= \{ \vec{x} : \mat{A}_x \vec{x} \leq \vec{b}_x \} &
+				\mathcal{E} &= \{ \vec{x} : \mat{A}_f \vec{x} \leq \vec{b}_f \}
+			\end{align}
+			they are reformulated into a single constraint \( \tilde{\mat{H}} \vec{u} \leq \vec{w} + \mat{E} \vec{x}_0 \). In a first step, the constraints
+			\begin{align}
+				\mat{A}_u \vec{u}_k &\leq \vec{b}_u &
+				\mat{A}_x \vec{x}_k &\leq \vec{b}_x &
+				\mat{A}_f \vec{x}_N &\leq \vec{b}_f
+			\end{align}
+			for \( k = 0, 1, \dots, N - 1 \) are batched using the matrices and vectors
+			\begin{align}
+				\tilde{\mat{A}}_u &= \diag(\underbrace{\mat{A}_u, \mat{A}_u, \dots, \mat{A}_u}_{N\text{ times}}) &
+				\tilde{\vec{b}}_u &= \bigl(\underbrace{\vec{b}_u^\transposed, \vec{b}_u^\transposed, \dots, \vec{b}_u^\transposed}_{N\text{ times}}\bigr)^\transposed \\
+				\tilde{\mat{A}}_x &= \diag(\underbrace{\mat{A}_x, \mat{A}_x, \dots, \mat{A}_x}_{N\text{ times}}, \mat{A}_f) &
+				\tilde{\vec{b}}_x &= \bigl(\underbrace{\vec{b}_x^\transposed, \vec{b}_x^\transposed, \dots, \vec{b}_x^\transposed}_{N\text{ times}}, \vec{b}_f^\transposed\bigr)^\transposed
+			\end{align}
+			yielding \( \tilde{\mat{A}}_u \tilde{\vec{u}} \leq \tilde{\vec{b}}_u \) and \( \tilde{\mat{A}}_x \tilde{\vec{x}} \leq \tilde{\vec{b}}_x \) with the usual abuse of notation. Note that the control constraints are already in the wanted form (with \( \vec{w} \triangleq \tilde{\vec{b}}_u \)). Reformulating the state constraint is simply by plugging in the (batched) state dynamics:
+			\begin{equation}
+				\tilde{\mat{A}}_x \tilde{\vec{x}} \leq \tilde{\vec{b}}_x
+				\qquad\iff\qquad
+				\tilde{\mat{A}}_x (\tilde{\mat{A}} \vec{x}_0 + \tilde{\mat{B}} \tilde{\vec{u}}) \leq \tilde{\vec{b}}_x
+				\qquad\iff\qquad
+				\tilde{\mat{A}}_x \tilde{\mat{B}} \tilde{\vec{u}} \leq \tilde{\vec{b}}_x - \tilde{\mat{A}}_x \tilde{\mat{A}} \vec{x}_0.
+			\end{equation}
+			Plugging it all together, the constraints are compactly represented as \( \tilde{\mat{H}} \vec{u} \leq \vec{w} + \mat{E} \vec{x}_0 \) with
+			\begin{align}
+				\tilde{\mat{H}} &= \begin{bmatrix} \tilde{\mat{A}}_u \\ \tilde{\mat{A}}_x \end{bmatrix} &
+				\vec{w} &= \begin{bmatrix} \tilde{\vec{b}}_u \\ \tilde{\vec{b}}_x \end{bmatrix} &
+				\mat{E} &= \begin{bmatrix} \mat{O} \\ \tilde{\mat{A}}_x \tilde{\mat{A}} \end{bmatrix}
+			\end{align}
+			where \(\mat{O}\) are zeros such that \(\mat{E}\) has the appropriate size. After all of this, the QP to solve is as simple as
+			\begin{equation}
+				\begin{aligned}
+					\min_{\tilde{\vec{u}}}\; & \tilde{\vec{u}}^\transposed \mat{H} \tilde{\vec{u}} + 2 \vec{x}_0^\transposed \mat{F} \vec{u} + \vec{x}_0^\transposed \mat{G} \vec{x}_0 \\
+					\text{s.t.}\quad &
+						\begin{aligned}
+							\tilde{\mat{H}} \tilde{\vec{u}} &\leq \vec{w} + \mat{E} \vec{x}_0
+						\end{aligned}
+				\end{aligned}
+				\label{eqn:qpA}
+			\end{equation}
+			with \( \mat{H} = \tilde{\mat{B}}^\transposed \tilde{\mat{Q}} \tilde{\mat{B}} + \tilde{\mat{R}} \), \( \mat{F} = \tilde{\mat{A}}^\transposed \tilde{\mat{Q}} \tilde{\mat{B}} \), and \( \mat{G} = \tilde{\mat{A}}^\transposed \tilde{\mat{Q}} \tilde{\mat{A}} \).
+		% end
 
-			\subsubsection{\dots with Substitution} % 6.14, 6.15, 6.16, 6.17
-				\todo{Content}
-			% end
+		\subsection{Option B: Adding the Dynamics as Constraints}
+			The second approach is to extend the optimization variables by the states,
+			\begin{equation}
+				\vec{z} \coloneqq \begin{bmatrix} \vec{x}_1^\transposed & \vec{x}_2^\transposed & \cdots & \vec{x}_N^\transposed & \vec{u}_0^\transposed & \vec{u}_1^\transposed & \vec{u}_{N - 1}^\transposed \end{bmatrix}^\transposed
+			\end{equation}
+			and adding the dynamics as an equality constraint. With
+			\begin{align}
+				\mat{H}_\mathrm{eq} &=
+					\begin{bmatrix}
+						\mat{I}  &          &         &          &         & -\mat{B} &          &          &        &          \\
+						-\mat{A} & \mat{I}  &         &          &         &          & -\mat{B} &          &        &          \\
+						         & -\mat{A} & \mat{I} &          &         &          &          & -\mat{B} &        &          \\
+						         &          & \ddots  & \ddots   &         &          &          &          & \ddots &          \\
+						         &          &         & -\mat{A} & \mat{I} &          &          &          &        & -\mat{B}
+					\end{bmatrix} &
+				\mat{E}_\mathrm{eq} &=
+					\begin{bmatrix}
+						\mat{A} \\
+						\mat{O} \\
+						\vdots \\
+						\mat{O}
+					\end{bmatrix}
+			\end{align}
+			the dynamics can be expressed as \( \mat{H}_\mathrm{eq} \vec{z} = \mat{E}_\mathrm{eq} \vec{x}_0 \) in term of the extended optimization variables \(\vec{z}\). Similarly, the state, terminal, and control constraints can be expressed as \( \mat{H}_\mathrm{in} \vec{z} \leq \vec{w} + \mat{E}_\mathrm{in} \vec{x}_0 \) with
+			\begin{align}
+				\mat{H}_\mathrm{in} &=
+					\begin{bmatrix}
+						\mat{O}                   & \mat{O} \\
+						\tilde{\mat{A}}_x         & \mat{O} \\
+						\mat{O} \tilde{\mat{A}}_u &
+					\end{bmatrix} &
+				\vec{w}_\mathrm{in} &=
+					\begin{bmatrix}
+						\tilde{\vec{b}}_x \\
+						\tilde{\vec{b}}_u
+					\end{bmatrix} &
+				\mat{E}_\mathrm{in} &=
+					\begin{bmatrix}
+						-\mat{A}_x \\
+						\mat{O}    \\
+						\vdots     \\
+						\mat{O}
+					\end{bmatrix}
+			\end{align}
+			and \(\tilde{\mat{A}}_x\) and \(\tilde{\mat{A}}_u\) defined as in option A. Finally, with \( \bar{\mat{H}} = \diag(\tilde{\mat{Q}}, \tilde{\mat{R}}) \), the QP is as follows:
+			\begin{equation}
+				\begin{aligned}
+					\min_{\vec{z}}\; & \vec{z}^\transposed \bar{\mat{H}} \vec{z} \\
+					\text{s.t.}\quad &
+						\begin{aligned}[t]
+							\mat{H}_\mathrm{eq} \vec{z} &= \mat{E}_\mathrm{eq} \vec{x}_0 \\
+							\mat{H}_\mathrm{in} \vec{z} &\leq \mat{E}_\mathrm{in} \vec{x}_0
+						\end{aligned}
+				\end{aligned}
+				\label{eqn:qpB}
+			\end{equation}
+			A comparison of the two methods is given in the next section.
+		% end
 
-			\subsubsection{\dots without Substitution} % 6.18, 6.19, 6.20, 6.21
-				\todo{Content}
-			% end
+		\subsection{Comparison of A and B}
+			Both presented versions, \eqref{eqn:qpA} and \eqref{eqn:qpB}, can be efficiently solved by QP solvers. The main difference is that option A has \(Nm\) variables (with \(m\) input dimensionality) and option B has \(N (n + m)\) variables (with \(n\) being the state dimensionality). While it seems that option A must be more efficient, option B has sparse cost and constraint functions while option A is dense. Note also that option B has the advantage that it can easily be applied to nonlinear MPC.
 		% end
 	% end
 % end
@@ -521,6 +692,8 @@
 	\todo{Content}
 
 	\section{Inherent Robustness of Nominal MPC} % 7.4, 7.5, 7.6, 7.7, 7.8, 7.9, 7.10, 7.11
+		\label{sec:inherentRobustness}
+
 		\todo{Content}
 	% end
 

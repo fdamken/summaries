@@ -300,7 +300,7 @@
 			\begin{equation}
 				J_j^\ast(\vec{x}_j) = \min_{\vec{u}_{j:N - 1}}\; \frac{1}{2} \sum_{k = j}^{N - 1} \vec{x}_k^\transposed \mat{Q} \vec{x}_k + \vec{u}_k^\transposed \mat{R} \vec{u}_k + \vec{x}_N^\transposed \mat{S} \vec{x}_N.
 			\end{equation}
-			This function quantifies the optimal cost when starting from state \(\vec{x}_j\) at time \(j\). By solving this problem\footnote{See "Robot Learning" (\url{https://fabian.damken.net/summaries/cs/elective/ce/role/role-summary.pdf}) for a more thorough (stochastic) treatment.} recursively starting from \(j = N\), the optimal control input at time step \(k\) is found to be
+			This function quantifies the optimal cost when starting from state \(\vec{x}_j\) at time \(j\). By solving this problem\footnote{See "Robot Learning" (\url{https://fabian.damken.net/summaries/cs/elective/ce/role/}) for a more thorough (stochastic) treatment.} recursively starting from \(j = N\), the optimal control input at time step \(k\) is found to be
 			\begin{equation}
 				\vec{u}_k^\ast = \mat{K}_k \vec{x}_k
 			\end{equation}
@@ -440,7 +440,7 @@
 		% end
 
 		\subsection{Numerical Solvers}
-			A variety of numerical solvers exist for constrained optimization problems, and especially fast solvers exist for QPs (e.g., Matlab's \texttt{quadprog} and \texttt{fmincon}). Some approaches are interior point, trust region, and active set, and the class of sequential quadratic programming (SQP) methods\footnote{See "Optimization of Static and Dynamic Systems" (\url{https://fabian.damken.net/summaries/cs/elective/ce/opt/opt-summary.pdf}) for a more thorough study of numerical optimization techniques}.
+			A variety of numerical solvers exist for constrained optimization problems, and especially fast solvers exist for QPs (e.g., Matlab's \texttt{quadprog} and \texttt{fmincon}). Some approaches are interior point, trust region, and active set, and the class of sequential quadratic programming (SQP) methods\footnote{See "Optimization of Static and Dynamic Systems" (\url{https://fabian.damken.net/summaries/cs/elective/ce/opt/}) for a more thorough study of numerical optimization techniques}.
 
 			SQP methods use a Taylor approximation of the objective (quadratic) and constraints (linear) to solve the optimization problem. By applying this method multiple times, it usually converges to a good local minimum. Another method for dealing with constraints is to reformulate them and integrate them into the objective by using barrier functions and penalty terms: penalty methods add a term \(\epsilon(\vec{u})\) to the objective that has a high values once a constraint is violated, forcing the optimizer to look elsewhere. Common choices for such a barrier term are logarithmic barrier functions and exact penalty functions. An alternative method is to allow the constraints to be violated. This is done by introducing a slack variable \( \vec{H}(\vec{u}) \leq \epsilon \) and penalize it in the objective with a function \( \Theta(\epsilon) \), e.g., a quadratic function in \(\epsilon\)
 
@@ -899,141 +899,253 @@
 	% end
 % end
 
-\chapter{Machine Learning in Model Predictive Control} % 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8, 9.9, 9.10, 9.12, 12.16, 12.17
+\chapter{Machine Learning in Model Predictive Control}
 	\label{c:ml}
 
-	\todo{Content}
+	The previous sections covered the first part of this document: model predictive control. In this section, machine learning and its applications in control theory are discussed\footnote{Note that this chapter is \emph{not} and introduction to machine learning. See one of "Statistical Machine Learning" (\url{https://fabian.damken.net/summaries/cs/elective/vc/statml/}) or "Data Mining and Machine Learning" (\url{https://fabian.damken.net/summaries/cs/elective/iws/dmml/}) for a more thorough treatment.}. An extremely related concept to MPC is \emph{reinforcement learning} where an agent autonomously learns to steer a system by maximizing a \emph{reward} (which is equivalent to minimizing a cost by flipping the sign). Compared to MPC, it leverages data instead of a given model although some approaches build an internal model and some approaches in MPC use data, too. Hence, the boundary is rather fluid. This chapter first discusses applications of ML in MPC and subsequently covers two regression models; Gaussian processes and (artificial) neural networks.
 
-	\section{Machine Learning for MPC} % 9.11, 9.13, 10.8
-		\todo{Content}
+	\section{Machine Learning for MPC}
+		In ML-supported MPC, one or more of the components (system model, desired reference, uncertainties/disturbances, constraints, cost function, or even the control inputs directly) as learned from data with the system model being component replaced most often.
 
-		\subsection{Modeling Dynamical Systems with ML} % 9.14
-			\todo{Content}
+		\label{10.3, 10.4}
 
-			\subsubsection{Implications} % 9.15, 9.16, 9.19
-				\todo{Content}
+		\subsection{Learning State Dynamics}
+			Modeling the dynamics of a system using ML, two basic approaches exist: pure ML models using a black box and a combination of first principles and ML models (gray box):
+			\begin{align}
+				\vec{x}_{k + 1} &= \vec{f}_\mathrm{ml}(\vec{x}_k, \vec{u}_k; k) &
+				\vec{x}_{k + 1} &= \vec{f}_\mathrm{fp}(\vec{x}_k, \vec{u}_k; k) + \vec{f}_\mathrm{ml}(\vec{x}_k, \vec{u}_k; k)
+			\end{align}
+			In the former, the accounts for the residual error (e.g., friction). A usual choice is to use a linear first-principle model and a nonlinear ML model. If the ML model only depends on \(k\), it models the noise. This can be useful to improve the quality of robust MPC by extrapolating the noise (which might be misleading and is often used in repetitive scenarios). For training these models, three common approaches are \emph{offline}, \emph{online}, and \emph{iterative} learning (see \autoref{fig:offlineOnlineIterative}) which are explained in more detail in the following sections.
 
-				\paragraph{Safe Sets} % 9.17
-					\todo{Content}
+			\begin{figure}
+				\centering
+				\begin{subfigure}[b]{0.3\linewidth}
+					\centering
+					\begin{tikzpicture}[every node/.style = { draw, rectangle, minimum width = 2cm, minimum height = 0.75cm }]
+						\node (learning) {Learning};
+						\node [below = 1 of learning] (control) {Control};
+						\draw [->] (learning) to (control);
+					\end{tikzpicture}
+					\caption{Offline Learning}
+				\end{subfigure}
+				\hfill
+				\begin{subfigure}[b]{0.3\linewidth}
+					\centering
+					\begin{tikzpicture}[every node/.style = { draw, rectangle, minimum width = 2cm, minimum height = 0.75cm }]
+						\node (learning) {Learning};
+						\node [below = 1 of learning] (control) {Control};
+						\draw [->] (learning) to (control);
+						\coordinate [left = 0.75 of control] (a);
+						\coordinate [right = 0.75 of control] (b);  % For symmetry.
+						\draw [->] (control) to (a) |- (learning);
+						\draw [->, opacity = 0] (control) to (b) |- (learning);
+					\end{tikzpicture}
+					\caption{Offline Learning}
+				\end{subfigure}
+				\hfill
+				\begin{subfigure}[b]{0.3\linewidth}
+					\centering
+					\begin{tikzpicture}[abc/.style = { draw, rectangle, minimum width = 2cm, minimum height = 0.75cm }]
+						\node [abc] (control) {Control};
+						\node [abc, below = 0.5 of control] (learning) {Learning};
+						\draw [->] (control) to (learning);
+						\node [left = 0.25 of control] {1st Iteration};
+						\node [right = 0.25 of control] {\phantom{1st Iteration}};  % For symmetry.
+						\node [abc, below = 0.5 of learning] (control) {Control};
+						\draw [->] (learning) to (control);
+						\node [abc, below = 0.5 of control] (learning) {Learning};
+						\draw [->] (control) to (learning);
+						\node [left = 0.25 of control] {2nd Iteration};
+						\node [right = 0.25 of control] {\phantom{2nd Iteration}};  % For symmetry.
+					\end{tikzpicture}
+					\caption{Offline Learning}
+				\end{subfigure}
+				\caption{Different types of training a machine learning model combined with control.}
+				\label{fig:offlineOnlineIterative}
+			\end{figure}
+
+			\subsubsection{Offline Learning}
+				When training offline, i.e., before the control law is deployed, the training can be time-consuming as it does not have to be executed in real time. However, MPC has to deal with nonlinear dynamics as powerful ML models are usually nonlinear. Also, during training, it has be be made sure that the model is continuously differentiable, a proper MPC-ML-model combination is chosen (e.g., if the model is good, use nominal MPC; if it is bad, use robust or stochastic MPC), and real-time feasibility of the prediction is ensured.
+
+				Overall, this is the most boring method of combining MPC and ML.
+			% end
+
+			\subsubsection{Online Learning}
+				In online learning, the training data is collected while running the controller (cf. adaptive control and adaptive MPC) making it possible to adapt the model fast and easy when the situation changes. However, it is quite resource remanding as the training phase is done online. Also, the model accuracy is not known beforehand, making it hard to guarantee stability or robustness. One idea of guaranteeing stability or robustness is to have a fallback controller that is not learning-based which can take over if learning-based MPC fails. Another approach is to directly design a robust MPC that can handle changing models.
+
+				\paragraph{Safe Sets}
+					\emph{Safe sets} implement the first approach with an alternative "safe" controller: if the state is inside a \emph{safe set} \(\mathcal{S}\), learning-supported MPC is used. If it is not, a \emph{safe controller} \( \pi_\mathcal{S}(\vec{x}) \) that guarantees invariance of \(\mathcal{S}\) takes over. To find such a set, the sublevel set \( L_\alpha^- \) of a Lyapunov function \(V(\vec{x})\) of the closed-loop system \( \dot{\vec{x}} = \vec{f}\bigl( \vec{x}, \pi_\mathcal{S}(\vec{x}) \bigr) \) can be used.
 				% end
 
-				\paragraph{Robust Learning Supported Tube MPC} % 9.18
-					\todo{Content}
+				\paragraph{Learning-Supported Tube MPC}
+					For robust learning-supported tube MPC, two models are used: one which is never updated, incorporates (additive) uncertainty, and is used to ensure constraint satisfaction and one which is updated online and is used for increase performance:
+					\begin{equation}
+						\begin{aligned}
+							\min_{\tilde{\vec{v}}}\; & E(\vec{\zeta}_N) + \sum_{k = 0}^{N - 1} F(\vec{\zeta}_k, \vec{v}_k) \\
+							\text{s.t.}\quad&
+								\begin{aligned}[t]
+									\vec{z}_{k + 1} &= \mat{A} \vec{z}_k + \mat{B} \vec{v}_k,\, \vec{z}_0 = \vec{x}^i \\
+									\vec{\zeta}_{k + 1} &= \mat{A} \vec{\zeta}_k + \mat{B} \vec{v}_k + \vec{f}_\mathrm{ml}(\vec{\zeta}_k, \vec{v}_k),\, \vec{\zeta}_0 = \vec{x}^i \\
+									\vec{z}_k &\in \mathcal{X} \ominus \mat{K} \mathcal{R} \\
+									\vec{z}_N &\in \mathcal{E} \\
+									\vec{v}_k &\in \mathcal{U} \ominus \mat{K} \mathcal{R}
+								\end{aligned}
+						\end{aligned}
+					\end{equation}
 				% end
+			% end
+
+			\subsubsection{Iterative Learning}
+				In iterative learning, the same task is performed repeatedly and the model is updated between the batches by training with the data collected in the previous batch. This has the benefit of no real-time requirements and being able to evaluate the model before deploying it. Iterative learning can also be used to update different parts of the optimal control problem (e.g., reference and constraints).
 			% end
 		% end
 
-		\subsection{Modeling External Signals} % 10.3, 10.4
-			\todo{Content}
+		\subsection{Learning Constraints}
+			Usually, the constraints are known (e.g., actuator limitations, safety regulations, desired operating range). But the constraints can be learned, too. For example, the tightening of the constraints can be learned by modeling the model uncertainties. Another special case is learning the terminal regions by incorporating previous trajectories.
 		% end
 
-		\subsection{Modeling Constraints} % 10.5
-			\todo{Content}
+		\subsection{Learning Cost Functions}
+			Like constraints, the cost function is usually known as it is a pure design decision, does not reflect a physical property, and can be chosen freely. Hence, for simplicity, it is usually chosen to be a quadratic cost. In some special cases, it might be beneficial to learn the costs from data. Some methods are approximating the infinite horizon cost with reinforcement learning, updating the cost in between batches, and training a neural network to learn the cost from demonstrations.
 		% end
 
-		\subsection{Modeling Cost Functions} % 10.6
-			\todo{Content}
-		% end
-
-		\subsection{Learning Control Input: Replacing MPC} % 10.7
-			\todo{Content}
+		\subsection{Learning Control Input: Replacing MPC}
+			When the control input is learned directly, this basically completely replaces MPC with ML. This faces the main drawback of MPC that it is time-consuming. One way of replacing MPC completely is by running MPC offline and training a ML model (e.g., a neural network) to directly map states to the optimal input. This model can then be deployed online allowing fast control.
 		% end
 	% end
 
-	\section{Gaussian Processes} % 10.1, 10.9, 10.35, 12.18
-		\todo{Content}
+	\section{Gaussian Processes}
+		This section introduces \emph{Gaussian processes} (GPs), a ML model with great applicability and outstanding capabilities of uncertainty estimation\footnote{Note that the treatment of GPs is quite limited here. See Rasmussen and Williams: "Gaussian Processes for Machine Learning" for a very thorough treatment.}. A GP works with a dataset \( \mathcal{D} \coloneqq \{ (\vec{\xi}_i, \gamma_i)_{i = 1, 2, \dots, n} \} \) which contains features \(\vec{\xi}_i \in \R^d\) and corresponding labels \(\gamma_i \in \R\) generated from an unknown function \( \vec{f} : \R^d \to \R \) with Gaussian noise \( \epsilon \sim \mathcal{N}(0, \sigma_n^2) \), i.e., \( \gamma_i = \mathcal{N}\bigl(f(\vec{\xi}_i), \sigma_n^2\bigr) \). To simplify the further discussion, the data is organized into matrices and vectors:
+		\begin{align}
+			\mat{\Xi} &= \begin{bmatrix} \vec{\xi}_1^\transposed \\ \vec{\xi}_2^\transposed \\ \vdots \\ \vec{\xi}_k^\transposed \end{bmatrix} \in \R^{n \times d} &
+			\mat{\Xi}_\ast &= \begin{bmatrix} \vec{\xi}_{\ast 1}^\transposed \\ \vec{\xi}_{\ast 2}^\transposed \\ \vdots \\ \vec{\xi}_{\ast k}^\transposed \end{bmatrix} \in \R^{k \times d}
+		\end{align}
+		The starred data represents the test data, i.e., the data unobserved during training.
 
-		\subsection{Setup and Definition} % 10.10, 10.17, 10.18, 10.19
-			\todo{Content}
+		Formally, a GP is a stochastic process for which any finite subset of random variables is jointly Gaussian. This can be understand as a GP being a Gaussian distribution over functions. To represent the GP, a \emph{mean function} \( m : \R^d \to \R \) and a covariance function \( k : \R^d \times \R^d \to \R \). These functions encode the belief of how the prior evolves (usually, a zero-mean prior is chosen to encode no prior knowledge). The prior covariance function \(k\) then represents the influence of the data points on each other (usually such that close points influence each other more than points far away from each other). The data points \( f(\mat{\Xi}_\ast) \) are then distributed according to the GP, i.e.,
+		\begin{equation}
+			f(\mat{\Xi}_\ast) \sim \mathcal{N}\bigl( m(\mat{\Xi}_\ast), k(\mat{\Xi}_\ast, \mat{\Xi}_\ast) \bigr).
+		\end{equation}
+		Note that the notation \( m(\mat{\Xi}_\ast) \) is a slight abuse of notation and corresponds to invoking \(m\) for each \(\vec{\xi}_\ast\) in \(\mat{\Xi}_\ast\). The same goes for \( k(\cdot, \cdot) \), however, this returns a symmetric covariance values. The prior mean and covariance function usually depend on hyper-parameters \(\theta\) which can be estimated from data or incorporate actual prior knowledge.
+
+		Some example of prior mean functions are constant, linear, or quadratic in \(\vec{\xi}\). Usually, a zero mean is used. Note that the prior mean can be an arbitrary function. The covariance function, however, has to fulfill some criteria summarized in the following definition:
+		\begin{definition}[Covariance Function]
+			A function \( k : \R^d \times \R^d \to \R : (\vec{\xi}, \vec{\xi}') \mapsto k(\vec{\xi}, \vec{\xi}') \) is a \emph{covariance function} (or \emph{positive definite kernel}) if for all \( \vec{\xi}_1, \vec{\xi}_2, \dots, \vec{\xi}_n \in \R^d \), the matrix \( (\mat{K})_{ij} = k(\vec{\xi}_i, \vec{\xi}_j) \) is positive semi-definite and symmetric (for all \(n \in \N_+\)).
+		\end{definition}
+		Only with these constraints the result of a covariance matrix can be used as a covariance matrix for a Gaussian distribution. Note that the kernel is written as a function of the inputs, but gives the covariance of the outputs. A covariance function that only depends on the difference \( \vec{\xi} - \vec{\xi}' \) is called \emph{stationary} and a covariance function that only depends on the magnitude of the difference \( \lvert \vec{\xi} - \vec{\xi}' \rvert \) is called \emph{isotropic} or \emph{radial}. The next section lists some commonly used covariance functions and some of their properties.
+
+		\subsection{Covariance Functions}
+			As training a GP well usually boils down to selecting the right covariance function, it is useful to know a few\dots
+
+			\paragraph{Squared Exponential}
+				One of the most used kernels is the \emph{squared exponential} (SE) kernel
+				\begin{equation}
+					k(\vec{\xi}, \vec{\xi}') = \sigma_f^2 \exp\biggl\{ -\frac{\lvert \vec{\xi} - \vec{\xi}' \rvert^2}{2 \ell^2} \biggr\}
+				\end{equation}
+				with \emph{signal variance} \( \sigma_f^2 \) and \emph{length scale} \( \ell^2 \). Due to its infinite differentiability, it yields very smooth functions. The signal variance just scales the covariance and therefore the vertical output scale without changing the mean and the length scale control smoothness, i.e., a short length scale exhibits rough functions.
+			% end
+
+			\paragraph{Squared Exponential with Automatic Relevance Determination}
+				By assigning a separate length scale to each input,
+				\begin{equation}
+					k(\vec{\xi}, \vec{\xi}') = \sigma_f^2 \exp\biggl\{ -\frac{1}{2} (\vec{\xi} - \vec{\xi}')^\transposed \mat{\Lambda}^{-1} (\vec{\xi} - \vec{\xi}') \biggr\},
+				\end{equation}
+				with \( \mat{\Lambda} = \diag(\ell_1^2, \ell_2^2, \dots, \ell_d^2) \), learning the length scale affects the influence of the separate input dimensions on the output. That is, the inverse length scale \( \ell_i^{-2} \) can be understood as weighting factors of the corresponding dimensions.
+			% end
+
+			\paragraph{Periodic Kernel}
+				The periodic kernel
+				\begin{equation}
+					k(\vec{\xi}, \vec{\xi}') = \sigma_f^2 \exp\biggl\{ -\frac{2 \sin^2\bigl( (\vec{\xi} - \vec{\xi}') / p \bigr)}{\ell^2} \biggr\}
+				\end{equation}
+				introduces periodicity and is thus useful for modeling periodic functions. Like the SE kernel, it yields very smooth functions.
+			% end
+
+			\paragraph{Linear Kernel}
+				The linear kernel
+				\begin{equation}
+					k(\vec{\xi}, \vec{\xi}') = \sigma_b^2 + \sigma_f^2 \frac{(\vec{\xi} - c)^\transposed (\vec{\xi}' - c)}{\ell^2}
+				\end{equation}
+				yields affine functions with an offset \(c\) where \( \sigma_b^2 \) introduces a bias in \(c\).
+			% end
+
+			\paragraph{Many, Many More}
+				There are much more kernels useful for different things, e.g., Matérn, dot product, rational quadratic, etc.
+			% end
 		% end
 
-		\subsection{GP Regression} % 10.20
-			\todo{Content}
-
-			\subsubsection{Prior Distribution} % 10.21, 10.26
-				\todo{Content}
-
-				\paragraph{Mean Function} % 10.22, 10.37, 10.38, 10.39
-					\todo{Content}
-				% end
-
-				\paragraph{Covariance Function} % 10.23, 10.24, 10.25, 10.40, 10.49, 10.50
-					\todo{Content}
-				% end
-			% end
-
-			\subsubsection{Posterior Distribution} % 10.27, 10.28
-				\todo{Content}
-			% end
-
-			\subsubsection{Noise Observations} % 10.51, 10.52
-				\todo{Content}
-			% end
+		\subsection{GP Prediction}
+			To predict new values with a GP, the distribution is condition on the training data. That is, first a joint distribution
+			\begin{equation}
+				\begin{bmatrix}
+					f(\mat{\Xi}) \\
+					f(\mat{\Xi}_\ast)
+				\end{bmatrix}
+				\sim
+				\mathcal{N}\Biggl(
+					\begin{bmatrix}
+						m(\mat{\Xi}) \\
+						m(\mat{\Xi}_\ast)
+					\end{bmatrix},\,
+					\begin{bmatrix}
+						k(\mat{\Xi}, \mat{\Xi}) & k(\mat{\Xi}, \mat{\Xi}_\ast) \\
+						k(\mat{\Xi}_\ast, \mat{\Xi}) & k(\mat{\Xi}_\ast, \mat{\Xi}_\ast)
+					\end{bmatrix}
+				\Biggr)
+			\end{equation}
+			is formed and then conditioned on \( f(\mat{\Xi}) \) using basic properties of the Gaussian. The posterior is therefore given by \( f(\mat{\Xi}_\ast) \sim \mathcal{N}(\mu_\ast, \sigma_\ast^2) \) with
+			\begin{align}
+				\mu_\ast &= m(\mat{\Xi}_\ast) + k(\mat{\Xi}_\ast, \mat{\Xi}) k^{-1}(\mat{\Xi}, \mat{\Xi}) \bigl( f(\mat{\Xi}) - m(\mat{\Xi}) \bigr) \\
+				\sigma_\ast^2 &= k(\mat{\Xi}_\ast, \mat{\Xi}_\ast) - k(\mat{\Xi}_\ast, \mat{\Xi}) k^{-1}(\mat{\Xi}, \mat{\Xi}) k(\mat{\Xi}, \mat{\Xi}_\ast)
+			\end{align}
+			For no observation noise, the predictions now perfectly match the training data, i.e., the conditioning points.
 		% end
 
-		\subsection{Hyper-Parameter Learning} % 10.29
-			\todo{Content}
-
-			\subsubsection{Influence of the Hyper-Parameters} % 10.41, 10.42, 10.43, 10.44, 10.45, 10.46, 10.47
-				\todo{Content}
-			% end
-
-			\subsubsection{Automatic Relevance Determination} % 10.48
-				\todo{Content}
-			% end
+		\subsection{Hyper-Parameter Optimization}
+			To find the optimal hyper-parameters, gradient ascent is performed on the log-likelihood:
+			\begin{equation}
+				\log p(\vec{y} \given \mat{\Xi}, \theta)
+					= \underbrace{-\frac{1}{2} \bigl( \vec{y} - m(\mat{\Xi}) \bigr)^\transposed k^{-1}(\mat{\Xi}, \mat{\Xi}) \bigl( \vec{y} - m(\mat{\Xi}) \bigr)}_\text{Data Fit}
+					  \underbrace{-\frac{1}{2} \log \lvert \mat{K} \rvert}_\text{Complexity Penalty}
+					  \underbrace{-\frac{n}{2} \log(2\pi)}_\text{Normalization}
+			\end{equation}
+			This is based on the assumption that the posterior over the parameters is sharply peaked around the optimum and hence the posterior can be approximated by the exact value (called \emph{empirical Bayes}).
 		% end
 
-		\subsection{Dynamic Process Models} % 10.32, 10.33
-			\todo{Content}
+		\subsection{Advantages and Drawbacks}
+			A major drawback of GPs is the computationally expensive matrix inversion in the posterior computation (which is cubic in the number of data points). This large resource demand limits the online applicability of GPs. But sometimes, the various advantages outweigh the drawbacks:
+			\begin{itemize}
+				\item posterior distribution provides uncertainty quantification (aleatoric and epistemic)
+				\item any function can be learned by using the approximate kernels
+				\item good results even with few data
+				\item prior knowledge can be incorporated via the mean (e.g., a first-principle model)
+				\item Gaussian processes are somewhat robust towards overfitting
+				\item automatic relevance determination can eliminate input dimensions that are irrelevant
+			\end{itemize}
 		% end
 
-		\subsection{Benefits and Drawbacks} % 10.30, 10.31
-			\todo{Content}
+		\subsection{Dynamic Process Models}
+			So far, only GPs with a one-dimensional output have been considered. But in a state-space model, often multiple dimensions are needed. Often, the simple approach of training as many independent GPs as the problem has dimensions is used. This ignores the correlation between outputs, but reduces the computational effort that would be required for multi-dimensional GPs.
+
+			In MPC, GPs are usually used to incorporate the uncertainty estimation into stochastic MPC to tighten the constraints. However, propagating the uncertainty more than one time step is challenging and an open research topic. Hence, usually only the mean is propagated (mean prediction) and the uncertainty estimation is taken from a single step only.
 		% end
 	% end
 
-	\section{(Artificial) Neural Networks} % 11.1, 11.3, 11.25, 12.19
-		\todo{Content}
+	\section{(Artificial) Neural Networks}
+		Artificial neural networks are---in their pure form---a relatively simple yet powerful way to approximate any function\footnote{Like before, this is not a thorough study. See "Deep Learning: Architectures and Methods" (\url{https://fabian.damken.net/summaries/cs/elective/iws/dlam/}) for a deeper (haha) treatment.}. This chapter just lists some advantages and drawbacks and leaves the detailed discussion to the aforementioned document.
 
-		\subsection{Setup} % 11.4, 11.6, 11.7, 11.8
-			\todo{Content}
-		% end
-
-		\subsection{Signal Direction} % 11.9, 11.10, 11.11
-			\todo{Content}
-		% end
-
-		\subsection{Connections Between Nodes} % 11.12
-			\todo{Content}
-		% end
-
-		\subsection{Activation Functions} % 11.13
-			\todo{Content}
-		% end
-
-		\subsection{Training} % 11.14, 11.15, 11.16, 11.17
-			\todo{Content}
-
-			\subsubsection{Optimization Algorithm} % 11.18
-				\todo{Content}
-			% end
-
-			\subsubsection{Challenges} % 11.19, 11.20
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Neural Networks in MPOC} % 11.24
-			\todo{Content}
-		% end
-
-		\subsection{Benefits and Drawbacks} % 11.23
-			\todo{Content}
-		% end
-	% end
-
-	\section{Remarks on Nomenclature} % 11.21
-		\todo{Content}
+		Advantages:
+		\begin{itemize}
+			\item efficiently trainable using parallel compute units (e.g., graphics cards)
+			\item once the network is trained, the training data can be discarded (cf. Gaussian processes)
+			\item neural networks can learn complicated behavior that is hard to model using first principles
+			\item in theory, by the universal function approximation theorem, every function can be approximated
+		\end{itemize}
+		Drawbacks:
+		\begin{itemize}
+			\item large networks are prone to overfit
+			\item training of large networks is hard (local minima, vanishing gradient, exploding gradient, \dots)
+			\item interpretation is hard; hence, neural networks have to be tested on unseen data
+		\end{itemize}
 	% end
 % end
 

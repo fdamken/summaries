@@ -485,15 +485,15 @@
 		\item How to guarantee that the optimal control problem is feasible in every time step?
 		\item How to guarantee that the optimal solution of the finite horizon approximate actually stabilizes the system?
 	\end{itemize}
-	The remainder of this chapter mostly deals with these two questions in \emph{nominal} settings. As already said, this means that the system model is a perfect representation and the plant will behave exactly as predicted. Note that this is not true in reality (due to modeling errors, noise, etc.) but is a purely theoretical assumption\footnote{Although, as discussed in \autoref{sec:inherentRobustness}, it turns out that even nominal MPC is (to some extend) robust towards modeling errors.}. Incorporating uncertainties into the model and control is covered in \autoref{c:mpcRobust} and \ref{c:mpcStochastic}.
+	The remainder of this chapter mostly deals with these two questions in \emph{nominal} settings. As already said, this means that the system model is a perfect representation and the plant will behave exactly as predicted. Note that this is not true in reality (due to modeling errors, noise, etc.) but is a purely theoretical assumption\footnote{Although it turns out that even nominal MPC is (to some extend) robust towards modeling errors.}. Incorporating uncertainties into the model and control is covered in \autoref{c:mpcRobust} and \ref{c:mpcStochastic}.
 
 	\section{Linear MPC}
 		\emph{Linear} MPC assumes a linear system model and a quadratic stage cost, leaving the following optimization problem (at time instance \(i\)):
 		\begin{equation}
 			\begin{aligned}
-				\min_{\tilde{\vec{u}}}\; & \vec{x}_{i + N}^\transposed \mat{S} \vec{x}_{i + N} \sum_{k = i}^{i + N - 1} \vec{x}_k^\transposed \mat{Q} \vec{x}_k + \vec{u}_k^\transposed \mat{R} \vec{u}_k \\
+				\min_{\tilde{\vec{u}}}\; & \vec{x}_{i + N}^\transposed \mat{S} \vec{x}_{i + N} + \sum_{k = i}^{i + N - 1} \vec{x}_k^\transposed \mat{Q} \vec{x}_k + \vec{u}_k^\transposed \mat{R} \vec{u}_k \\
 				\text{s.t.}\quad &
-					\begin{aligned}
+					\begin{aligned}[t]
 						\vec{x}_{k + 1} &= \mat{A} \vec{x}_k + \mat{B} \vec{u}_k,\, \vec{x}_i \\
 						\vec{x}_k &\in \mathcal{X} \\
 						\vec{u}_k &\in \mathcal{U} \\
@@ -648,9 +648,9 @@
 			\begin{align}
 				\mat{H}_\mathrm{in} &=
 					\begin{bmatrix}
-						\mat{O}                   & \mat{O} \\
-						\tilde{\mat{A}}_x         & \mat{O} \\
-						\mat{O} \tilde{\mat{A}}_u &
+						\mat{O}           & \mat{O}           \\
+						\tilde{\mat{A}}_x & \mat{O}           \\
+						\mat{O}           & \tilde{\mat{A}}_u
 					\end{bmatrix} &
 				\vec{w}_\mathrm{in} &=
 					\begin{bmatrix}
@@ -686,43 +686,175 @@
 	% end
 % end
 
-\chapter{Robust Model Predictive Control} % 7.1, 7.3, 7.20, 7.32, 12.13, 12.14
+\chapter{Robust Model Predictive Control}
 	\label{c:mpcRobust}
 
-	\todo{Content}
+	So far, in nominal MPC, it was assumed that the predictive model is perfect. However, this is never the case in practice due to invalid modeling assumptions, incorrect parameter, noise, and unmodeled disturbances. When these errors are "small enough", nominal MPC still often works in practice: is is inherently robust by repeatedly measuring the states. Hence, in practice often simply the nominal method is used even though stability cannot be proven. If it does not, it is necessary to incorporate uncertainty into the system's model and MPC solution. Abstractly, this deviation can be incorporated by adding uncertainties \(\vec{w}_k\) to the model, i.e., \( \vec{x}_{k + 1} = \vec{f}(\vec{x}_k, \vec{u}_k, \vec{w}_k) \). The two common types of uncertain models are parametric uncertainties (here shown for the linear case)
+	\begin{equation}
+		\vec{f}(\vec{x}_k, \vec{u}_k, \vec{w}_k) = \mat{A}_k(\vec{w}_k) \vec{x}_k + \mat{B}_k(\vec{w}_k) \vec{u}_k
+	\end{equation}
+	and additive uncertainty
+	\begin{equation}
+		\vec{f}(\vec{x}_k, \vec{u}_k, \vec{w}_k) = \vec{f}(\vec{x}_k, \vec{u}_k) + \vec{w}_k.  \label{eqn:additiveUncertainty}
+	\end{equation}
+	In both cases, the uncertainty can be time-dependent (as in the above equations) or time-independent (by dropping the \(\cdot_k\)). This section deals with the controller design for additive time-dependent uncertainties \eqref{eqn:additiveUncertainty}. The goal for the control law is to satisfy the state and control constraints \(\mathcal{X}\) and \(\mathcal{U}\) for all uncertainties (at least with a given probability), to optimize the objective (e.g., expected or worst-case cost), and to stabilize the closed-loop system.
 
-	\section{Inherent Robustness of Nominal MPC} % 7.4, 7.5, 7.6, 7.7, 7.8, 7.9, 7.10, 7.11
-		\label{sec:inherentRobustness}
+	For additive uncertainty, two types are covered in this summary: bounded and stochastic uncertainty (left and right, respectively):
+	\begin{align}
+		\vec{w}_k &\in \mathcal{W} &
+		\vec{w}_k &\sim \mathcal{N}(\vec{\mu}, \mat{\Sigma})
+	\end{align}
+	In the former case, the noise lies within a bounded set \(\mathcal{W}\) and it is possible to consider worst case scenarios as the disturbances have a maximum/minimum. The state predictions are then sets of states. For stochastic uncertainties, this is not possible as the Gaussian distribution is unbounded (even though very small/high deviations from the mean have low probability). Hence, predictions are distributions over values. This chapter covers bounded uncertainty as \emph{robust} MPC and \autoref{c:mpcStochastic} covers stochastic uncertainty as \emph{stochastic} MPC.
 
-		\todo{Content}
+	For a linear time-independent system with time-dependent additive noise, the dynamics equation is
+	\begin{equation}
+		\vec{x}_{k + 1} = \mat{A} \vec{x}_k + \mat{B} \vec{x}_k + \vec{w}_k  \label{eqn:discreteAdditiveUncertainty}
+	\end{equation}
+	with the solution
+	\begin{equation}
+		\vec{x}_k
+			= \underbrace{\mat{A}^{k\,} \vec{x}_0 + \sum_{j = 0}^{k - 1} \mat{A}^{k - j - 1\,} \mat{B} \vec{u}_j}_{\vec{z}_k \,\coloneqq} + \sum_{j = 0}^{k - 1} \mat{A}^{k - j - 1\,} \vec{w}_j
+			= \vec{z}_k + \sum_{j = 0}^{k - 1} \mat{A}^{k - j - 1\,} \vec{w}_j.
+		\label{eqn:discreteAdditiveUncertaintyClosedForm}
+	\end{equation}
+	\begin{proof}
+		Showing \eqref{eqn:discreteAdditiveUncertaintyClosedForm} is done by induction. The base case, \( k = 0 \), holds trivially. Similarly, \( k = 1 \) holds:
+		\begin{equation}
+			\vec{x}_1
+				= \mat{A}^{1\,} \vec{x}_0 + \sum_{j = 0}^{0} \mat{A}^{-j\,} \mat{B} \vec{u}_j + \sum_{j = 0}^{0} \mat{A}^{-j\,} \vec{w}_j
+				= \mat{A} \vec{x}_0 + \mat{A}^{0\,} \mat{B} \vec{u}_j + \mat{A}^{0\,} \vec{w}_j
+				= \mat{A} \vec{x}_0 + \mat{B} \vec{u}_j + \vec{w}_j
+		\end{equation}
+		For the induction set, assume that \eqref{eqn:discreteAdditiveUncertaintyClosedForm} holds for some \(k\). It then follows that it also holds for \(k + 1\):
+		\begin{align}
+			\vec{x}_{k + 1}
+				&= \mat{A} \vec{x}_k + \mat{B} \vec{u}_k + \vec{w}_k \\
+				&= \mat{A} \biggl( \mat{A}^{k\,} \vec{x}_0 + \sum_{j = 0}^{k - 1} \mat{A}^{k - j - 1\,} \mat{B} \vec{u}_j + \sum_{j = 0}^{k - 1} \mat{A}^{k - j - 1\,} \vec{w}_j \biggr) + \mat{B} \vec{u}_k + \vec{w}_k \\
+				&= \mat{A}^{k + 1\,} \vec{x}_0 + \sum_{j = 0}^{k - 1} \mat{A}^{(k + 1) - j - 1\,} \mat{B} \vec{u}_j + \sum_{j = 0}^{k - 1} \mat{A}^{(k + 1) - j - 1\,} \vec{w}_j + \mat{B} \vec{u}_k + \vec{w}_k \\
+				&= \mat{A}^{k + 1\,} \vec{x}_0 + \sum_{j = 0}^{k - 1} \mat{A}^{(k + 1) - j - 1\,} \mat{B} \vec{u}_j + \sum_{j = 0}^{k - 1} \mat{A}^{(k + 1) - j - 1\,} \vec{w}_j + \mat{A}^{(k + 1) - k - 1} \vec{u}_k + \mat{A}^{(k + 1) - k - 1} \vec{w}_k \\
+				&= \mat{A}^{k + 1\,} \vec{x}_0 + \sum_{j = 0}^{k} \mat{A}^{(k + 1) - j - 1\,} \mat{B} \vec{u}_j + \sum_{j = 0}^{k} \mat{A}^{(k + 1) - j - 1\,} \vec{w}_j \\
+		\end{align}
+		Hence, \eqref{eqn:discreteAdditiveUncertaintyClosedForm} is the solution of \eqref{eqn:discreteAdditiveUncertainty}.
+	\end{proof}
+
+	With the solution \eqref{eqn:discreteAdditiveUncertaintyClosedForm} the question of how to compute the cost function remains as the uncertainties are unknown. Let \( \tilde{J}(\vec{x}_k, \tilde{\vec{u}}, \tilde{\vec{w}}) \) be the \emph{uncertain} cost-to-go (where \( \tilde{\vec{w}} \) contains all future uncertainties similar), there are three fundamental methods to form a certain cost-to-go:
+	\begin{align}
+		J(\vec{x}^i, \tilde{\vec{u}}) &= \tilde{J}(\vec{x}^i, \tilde{\vec{u}}, \vec{0}) &
+		J(\vec{x}^i, \tilde{\vec{u}}) &= \max_{\tilde{\vec{w}} \,\in\, \mathcal{W}}\, \tilde{J}(\vec{x}^i, \tilde{\vec{u}}, \tilde{\vec{w}}) &
+		J(\vec{x}^i, \tilde{\vec{u}}) &= \E_{\tilde{\vec{w}}}\bigl[ \tilde{J}(\vec{x}^i, \tilde{\vec{u}}, \tilde{\vec{w}}) \bigr]
+		\label{eqn:certainCostFunctions}
+	\end{align}
+	From left to right, these are called \emph{nominal}, \emph{expected}, and \emph{worst case} cost. Note that the worst case and expected cost are only applicable in bounded and stochastic settings, respectively.
+
+	\section{Minimax MPC}
+		In \emph{minimax} MPC, the worst-case cost function \eqref{eqn:certainCostFunctions} is simply plugged into the general formulation, yielding the following nested optimization problem:
+		\begin{equation}
+			\begin{aligned}
+				\min_{\tilde{\vec{u}}} \max_{\tilde{\vec{w}}}\; & \tilde{J}(\vec{x}^i, \tilde{\vec{u}}, \tilde{\vec{w}}) \\
+				\text{s.t.}\quad &
+					\begin{aligned}[t]
+						\vec{x}_{k + 1} &= \mat{A} \vec{x}_k + \mat{B} \vec{u}_k + \vec{w}_k,\, \vec{x}_0 = \vec{x}^i \\
+						\vec{x}_k &\in \mathcal{X} \\
+						\vec{u}_k &\in \mathcal{U} \\
+						\vec{x}_N &\in \mathcal{E} \\
+						\vec{w}_k &\in \mathcal{W}
+					\end{aligned}
+			\end{aligned}
+		\end{equation}
+		While this formulation is straightforward and easy to implement, it is extremely hard to solve due to the nested optimizations. Hence, it is slow and hardly applicable in real-time and thus has very few practical applications. However, current research on approximations on bilevel optimization might enhance applicability in the future.
 	% end
 
-	\section{Uncertain Models} % 7.12, 7.13, 7.14
-		\todo{Content}
-
-		\subsection{System Evolution} % 7.15, 7.16
-			\todo{Content}
-		% end
+	\section{Robust Open-Loop MPC}
+		In robust MPC, the nominal cost function is used (opposed to minimax MPC), and the uncertainties are incorporated by tightening the constraints. This is based on the idea that if the nominal systems stays withing the tightened constraints, the uncertain system will satisfy the regular constraints. To discuss this further, notions of set additions and subtractions are needed:
+		\begin{definition}[Minkowski/Set Sum]
+			Let \( A, B \subseteq \R^n \). The \emph{Minkowski sum} is then
+			\begin{equation}
+				A \oplus B \coloneqq \{ \vec{a} + \vec{b} \forwhich \vec{a} \in A, \vec{b} \in B \}.
+			\end{equation}
+			With a slight abuse of notation, let \( \vec{v} \oplus A \equiv \{ \vec{v} \} \oplus A \) for a \( \vec{v} \in \R^n \). Note that set addition is symmetric.
+		\end{definition}
+		\begin{definition}[Pontryagin/Set Difference]
+			Let \( A, B \subseteq \R^n \). The \emph{Pontryagin difference} is then
+			\begin{equation}
+				A \ominus B \coloneqq \{ a \in A \forwhich \forall b \in B : a + b \in A \}.
+			\end{equation}
+			Note that set subtraction is \emph{not} symmetric.
+		\end{definition}
+		These definitions of set summation and subtractions can now be used to describe the system's predictions. With the uncertain system evolution \( \vec{x}_k = \vec{z}_k + \sum_{j = 0}^{k - 1} \mat{A}^{k - j - 1\,} \vec{w}_j \) the state constraints are tightened as
+		\begin{equation}
+			\vec{x}_k \in \vec{z}_k \oplus \bigl( \mathcal{W} \oplus \mat{A} \mathcal{W} \oplus \mat{A}^{2\,} \mathcal{W} \oplus \cdots \oplus \mat{A}^{k - 1\,} \mathcal{W} \bigr) \subseteq \mathcal{X}.
+		\end{equation}
+		Ensuring that this constraint is satisfied can be done by enforcing the following constraint on the nominal states:
+		\begin{equation}
+			\vec{z}_k \in \mathcal{X} \ominus \bigl( \mathcal{W} \oplus \mat{A} \mathcal{W} \oplus \mat{A}^{2\,} \mathcal{W} \oplus \cdots \oplus \mat{A}^{k - 1\,} \mathcal{W} \bigr).
+		\end{equation}
+		Applying the same tightening on the terminal constraints yields the following optimization problem:
+		\begin{equation}
+			\begin{aligned}
+				\min_{\tilde{\vec{u}}}\; & E(\vec{z}_N) + \sum_{k = 0}^{N - 1} F(\vec{z}_k, \vec{u}_k) \\
+				\text{s.t.}\quad&
+					\begin{aligned}[t]
+						\vec{z}_{k + 1} &= \mat{A} \vec{z}_k + \mat{B} \vec{u}_k,\, \vec{z}_0 = \vec{x}^i \\
+						\vec{z}_k &\in \mathcal{X} \ominus \bigl( \mathcal{W} \oplus \mat{A} \mathcal{W} \oplus \mat{A}^{2\,} \mathcal{W} \oplus \cdots \oplus \mat{A}^{k - 1\,} \mathcal{W} \bigr) \\
+						\vec{z}_N &\in \mathcal{E} \ominus \bigl( \mathcal{W} \oplus \mat{A} \mathcal{W} \oplus \mat{A}^{2\,} \mathcal{W} \oplus \cdots \oplus \mat{A}^{N - 1\,} \mathcal{W} \bigr) \\
+						\vec{u}_k &\in \mathcal{U}
+					\end{aligned}
+			\end{aligned}
+		\end{equation}
+		This problem is numerically tractable, incorporates the constraints, and does not have nested optimizations. Going even further, the tightened constraints can be calculated offline before the optimization! To study recursive feasibility, again some definitions have to be imposed:
+		\begin{definition}[Robust Invariant Set]
+			A set \(S\) is \emph{robustly positively invariant} for a system \( \vec{x}_{k + 1} = \vec{f}(\vec{x}_k, \vec{w}_k) \) if \( \vec{f}(\vec{x}, \vec{w}) \in \mathcal{S} \) holds for all \( \vec{x} \in \mathcal{S} \) and \( \vec{w} \in \mathcal{W} \).
+		\end{definition}
+		By choose the terminal set to be robustly positively invariant, feasibility can be shown: the computed trajectory is feasible for any disturbances, and hence it is feasible for the actual observation. However, the primary problem of robust open-loop is that the feasible initial set becomes very small or even empty as the uncertainty prediction becomes very wide. Hence, the "tube" of feasible values becomes small.
 	% end
 
-	\section{Cost Functions for Uncertain Systems} % 7.17, 7.18
-		\todo{Content}
-	% end
+	\section{Tube MPC}
+		\emph{Tube MPC} tackles the primary problem of robust open-loop MPC, namely the wide uncertainty prediction, by using additional feedback controlling the size of the tube. The controller is then composed of two parts, i.e., \( \vec{u}^i = \vec{v}^i + \vec{\mu}^i \), where the first part steers the nominal system to the origin and the second parts steers the uncertain trajectory to the nominal one. The first part is given by the nominal MPC law and the second part is chosen to have a linear feedback gain, \( \vec{\mu}^i = \mat{K} (\vec{x}^i - \vec{z}^i) \), as linear systems are considered here. To design a tube MPC controller, the following basic steps have to be done:
+		\begin{enumerate}
+			\item compute the error \( \vec{e} \) between the nominal and uncertain states with linear feedback
+			\item calculate the set \(\mathcal{R}\) the error remains in
+			\item setup a nominal MPC with tightened constraints using \(\mathcal{E}\)
+			\item apply the combined control law
+		\end{enumerate}
+		To compute the error, its dynamics have to be considered. Let the error be \( \vec{e}_k \coloneqq \vec{x}_k - \vec{z}_k \). Then its dynamics are given through the state dynamics (with, as defined above, \( \vec{u}_k = \vec{v}_k + \vec{\mu}_k \) and \( \vec{\mu}_k = \mat{K} \vec{e}_k \)):
+		\begin{align}
+			\vec{e}_{k + 1}
+				&= \vec{x}_{k + 1} - \vec{z}_{k + 1}
+				 = \mat{A} \vec{x}_k + \mat{B} \vec{u}_k + \vec{w}_k - \mat{A} \vec{z}_k - \mat{B} \vec{v}_k
+				 = \mat{A} \vec{e}_k + \mat{B} \vec{u}_k + \vec{w}_k - \mat{B} \vec{v}_k \\
+				&= \mat{A} \vec{e}_k + \mat{B} (\vec{v}_k + \vec{\mu}_k) + \vec{w}_k - \mat{B} \vec{v}_k
+				 = \mat{A} \vec{e}_k + \mat{B} \vec{\mu}_k + \vec{w}_k
+				 = \mat{A} \vec{e}_k + \mat{B} \mat{K} \vec{e}_k + \vec{w}_k
+				 = (\mat{A} + \mat{B} \mat{K}) \vec{e}_k + \vec{w}_k.
+		\end{align}
+		Now \(\mat{K}\) is chosen such that \( (\mat{A} + \mat{B} \mat{K}) \) is stable, i.e., that the error does not grow indefinitely. Since \( (\mat{A} + \mat{B} \mat{K}) \) is stable and the noise is bounded, the set \( \mat{R}_k \) with \( \vec{e}_k \in \mat{R}_k \) can be computed as
+		\begin{equation}
+			\mathcal{R}_k
+				= \mat{W} \oplus (\mat{A} + \mat{B} \mat{K}) \mathcal{W} \oplus (\mat{A} + \mat{B} \mat{K})^{2\,} \mat{W} \oplus \cdots \oplus (\mat{A} + \mat{B} \mat{K})^{k - 1\,} \mat{W}
+				= \bigoplus_{j = 0}^{k - 1}\, (\mat{A} + \mat{B} \mat{K})^{j\,} \mathcal{W}
+		\end{equation}
+		assuming that \( \vec{e}_0 = \vec{0} \). Instead of using the time-variant set \(\mathcal{R}_k\), it is also possible to calculate the outer hull of all \(\mathcal{R}_k\), the \emph{minimum} robust invariant set, via
+		\begin{equation}
+			\mathcal{R} = \bigoplus_{j = 0}^{\infty}\, (\mat{A} + \mat{B} \mat{K})^{j\,} \mathcal{W}.
+		\end{equation}
+		Note that sometimes this set converges after a finite amount of steps; if it does not, a large number instead of infinity can be used to approximate \(\mathcal{R}\).
 
-	\section{Minimax MPC} % 7.19
-		\todo{Content}
-	% end
+		With all these ingredients, the optimal control problem
+		\begin{equation}
+			\begin{aligned}
+				\min_{\tilde{\vec{v}}}\; & E(\vec{z}_N) + \sum_{k = 0}^{N - 1} F(\vec{z}_k, \vec{v}_k) \\
+				\text{s.t.}\quad&
+					\begin{aligned}[t]
+						\vec{z}_{k + 1} &= \mat{A} \vec{z}_k + \mat{B} \vec{v}_k,\, \vec{z}_0 = \vec{x}^i \\
+						\vec{z}_k &\in \mathcal{X} \ominus \mathcal{R} \\
+						\vec{z}_N &\in \mathcal{E} \\
+						\vec{u}_k &\in \mathcal{U} \ominus \mat{K} \mathcal{R}
+					\end{aligned}
+			\end{aligned}
+		\end{equation}
+		is solved in every instance \(i\), and subsequently the control input \( \vec{u}^i = \vec{v}_0^\ast + \mat{K} (\vec{x}^i - \vec{z}^i) \) is applied to the system. Note that the gain \(\mat{K}\) and all constraint sets can be computed beforehand as they are independent of \(\vec{x}^i\) and \(i\) itself. Additionally, the terminal cost and constraints have to be adjusted to obtain stability which is not covered here.
 
-	\section{Set Subtraction and Addition} % 7.21, 7.22, 7.23
-		\todo{Content}
-	% end
-
-	\section{Robust Open-Loop MPC} % 7.24, 7.25, 7.26
-		\todo{Content}
-	% end
-
-	\section{Tube MPC} % 7.27, 7.28, 7.29, 7.30, 7.31
-		\todo{Content}
+		By adding the additional feedback controller, the uncertainty tubes are kept small and therefore the feasible sets are bigger.
 	% end
 % end
 

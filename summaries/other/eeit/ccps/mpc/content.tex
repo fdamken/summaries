@@ -765,6 +765,8 @@
 	% end
 
 	\section{Robust Open-Loop MPC}
+		\label{sec:robustOpenLoopMpc}
+
 		In robust MPC, the nominal cost function is used (opposed to minimax MPC), and the uncertainties are incorporated by tightening the constraints. This is based on the idea that if the nominal systems stays withing the tightened constraints, the uncertain system will satisfy the regular constraints. To discuss this further, notions of set additions and subtractions are needed:
 		\begin{definition}[Minkowski/Set Sum]
 			Let \( A, B \subseteq \R^n \). The \emph{Minkowski sum} is then
@@ -809,6 +811,8 @@
 	% end
 
 	\section{Tube MPC}
+		\label{sec:tubeMpc}
+
 		\emph{Tube MPC} tackles the primary problem of robust open-loop MPC, namely the wide uncertainty prediction, by using additional feedback controlling the size of the tube. The controller is then composed of two parts, i.e., \( \vec{u}^i = \vec{v}^i + \vec{\mu}^i \), where the first part steers the nominal system to the origin and the second parts steers the uncertain trajectory to the nominal one. The first part is given by the nominal MPC law and the second part is chosen to have a linear feedback gain, \( \vec{\mu}^i = \mat{K} (\vec{x}^i - \vec{z}^i) \), as linear systems are considered here. To design a tube MPC controller, the following basic steps have to be done:
 		\begin{enumerate}
 			\item compute the error \( \vec{e} \) between the nominal and uncertain states with linear feedback
@@ -858,29 +862,40 @@
 	% end
 % end
 
-\chapter{Stochastic Model Predictive Control} % 8.1, 8.8, 8.13, 8.22, 12.13, 12.15
+\chapter{Stochastic Model Predictive Control}
 	\label{c:mpcStochastic}
 
-	\todo{Content}
+	So far, bounded noise \( \vec{w} \in \mathcal{W} \) has been considered. In this chapter, the noise is additive and distributed with some Gaussian \( \mathcal{N}(\vec{\mu}, \mat{\Sigma}) \). The Gaussian is a reasonable choice for the noise usually justified with the distribution being somewhat natural with heights/weights/etc. and sensor/measurement noise being normally distributed. Also, it is often the result of a sum of many random variables even if these are not Gaussian distributed (central limit theorem). However, the usual reason for assuming Gaussians is that they are easy to work with: the complete distribution is described by the mean and (co-) variance and linear transformations of Gaussians result in Gaussians again. For this chapter, assume that while the noise \(\vec{w}_k\) is time-dependent, the distribution is not, i.e., mean and covariance are constant.
 
-	\section{Stochastic Uncertainty} % 8.9, 8.10, 8.11
-		\todo{Content}
+	If the noise has zero mean and all entries are independent (i.e., the covariance matrix is diagonal), the nominal and expected cost function are equivalent (for linear systems with a quadratic cost function). Hence, simply taking the expected value might not incorporate the constraints well and robust/tube MPC that was introduced before is not applicable due to the Gaussian being unbounded (it is impossible to compute the worst-case cost).
+
+	\section{Chance Constraints}
+		\emph{Chance constraints} reduce the stochastic MPC problem to a robust MPC problem by demanding constraint satisfaction only with a certain probability. The constraints can then be written as
+		\begin{equation}
+			p(\vec{x}_k \in \mathcal{X}) \leq p_x
+		\end{equation}
+		where \(p_x\) is a given desired probability \( p_x \in (0, 1) \) and the set \(\mathcal{X}\) is chosen such that the probability of a state lying in it is greater than \(p_x\). The constraint is therefore not valid for all \(\vec{w}\), but the most probable ones. For Gaussian noise, the chance constraints can be reformulated as deterministic constraints on the mean:
+		\begin{equation}
+			p(\vec{x}_k \in \mathcal{X}) \leq p_x
+			\qquad\iff\qquad
+			\E[\vec{x}] \in \tilde{\mathcal{X}}
+		\end{equation}
+		with \( \tilde{\mathcal{X}} = \mathcal{X} \ominus \mathcal{R} \) where \(\mathcal{R}\) is constructed based on the variance\footnote{For instance, with \( n = 1 \) and \( p_x = 0.95 \), the set is \( \mathcal{R} = [-2 \sigma_x, 2 \sigma_x] \) with \( w \sim \mathcal{N}(0, \sigma_x^2) \).}.
 	% end
 
-	\section{Uncertain System Evolution} % 8.12
-		\todo{Content}
+	\section{Stochastic Tube MPC}
+		Similar to robust open-loop MPC (\autoref{sec:robustOpenLoopMpc}), stochastic MPC with chance constraints suffers from the uncertainty tubes getting very wide and the feasibility set shrinks. \emph{Stochastic tube MPC} is analogous to tube MPC (\autoref{sec:tubeMpc}) and used an additional linear feedback law for controlling the tube size. As before, the state tightening is chosen such that the constraints are satisfied with a given probability. The input constraints, on the other hand, are still deterministic and shall be fulfilled in a deterministic sense, i.e., without chance constraints.
 	% end
 
-	\section{Chance Constraints} % 8.14, 8.15, 8.16, 8.17
-		\todo{Content}
-	% end
-
-	\section{Stochastic Tube MPC} % 8.18, 8.19
-		\todo{Content}
-	% end
-
-	\section{Outlook} % 8.20, 8.21
-		\todo{Content}
+	\section{Outlook}
+		Stochastic MPC is a broad field and this chapter only touched the tip of the iceberg. For example: in a nonlinear system model, the states will in general not be normally distributed anymore even if the noise is Gaussian. Propagating uncertainties through such a nonlinear system is still open research. Some ideas are:
+		\begin{itemize}
+			\item approximating the non-Gaussian distribution by a Gaussian distribution (e.g., moment matching, Taylor series expansion, mean predictions, etc.)
+			\item using Monte Carlo simulations
+			\item polynomial chaos expansion
+			\item and many more\dots
+		\end{itemize}
+		Also, stability and recursive feasibility are an open end, too: due to the probabilistic nature, also recursive feasibility may be lost. Discussing these properties requires extensions to probabilistic convergence.
 	% end
 % end
 

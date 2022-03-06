@@ -463,7 +463,7 @@
 	with stage cost \(F\), the state dynamics \(\vec{f}\) with initial state \(\vec{x}_0\), and state and input constraints \(\mathcal{X}\) and \(\mathcal{U}\), respectively. With LQR-conformant cost, the optimal controller would be stabilizable in general. However, solving this problem with optimal control is impossible due to the constraints. Also, due to the infinite time horizon, it is not possible to apply batch normalization as the number of variables are infinite. The underlying idea of MPC now is to approximate the infinite horizon problem by a finite horizon problem
 	\begin{equation}
 		\begin{aligned}
-			\min_{\tilde{\vec{u}}}\, & E(\vec{x}_n) + \sum_{k = 0}^{N - 1} F(\vec{x}_k, \vec{u}_k) \\
+			\min_{\tilde{\vec{u}}}\, & E(\vec{x}_N) + \sum_{k = 0}^{N - 1} F(\vec{x}_k, \vec{u}_k) \\
 			\text{s.t.}\quad&
 				\begin{aligned}[t]
 					\vec{x}_{k + 1} &= \vec{f}(\vec{x}_k, \vec{u}_k),\, \vec{x}_0 \\
@@ -474,7 +474,7 @@
 		\end{aligned}
 		\label{eqn:recedingHorizon}
 	\end{equation}
-	with a terminal cost \(E\) and terminal constraints \(\mathcal{E}\). These can be interpreted as follows: the terminal cost approximates the "remainder" of the cost behind the horizon and the terminal constraints approximate the "remainder" of the constraints. However, even this finite-horizon MPC cannot be solved using dynamic programming due to the constraints; but it is possible to apply batch optimization! By repeatedly solving the batch optimization problem, feedback is incorporated by re-computing the batch solution at every time step and applying only a single input. That is, the feedback is given by repeatedly measuring the state and incorporating it as the initial value of the dynamical systems. This method is also called \emph{receding horizon control}.
+	with a terminal cost \(E\) and terminal constraints \(\mathcal{E}\). These can be interpreted as follows: the terminal cost approximates the "remainder" of the cost behind the horizon\footnote{A straightforward approach is to chose the terminal cost to be the optimal cost of an LQR controller. If the system is not linear, this cost can be obtained by linearizing the system around the set point.} and the terminal constraints approximate the "remainder" of the constraints. However, even this finite-horizon MPC cannot be solved using dynamic programming due to the constraints; but it is possible to apply batch optimization! By repeatedly solving the batch optimization problem, feedback is incorporated by re-computing the batch solution at every time step and applying only a single input. That is, the feedback is given by repeatedly measuring the state and incorporating it as the initial value of the dynamical systems. This method is also called \emph{receding horizon control}.
 
 	Then the problem of MPC boils down to two pressing questions:
 	\begin{itemize}

@@ -17,8 +17,8 @@ latest_successful_commit="$(curl -s 'https://api.github.com/repos/fdamken/summar
 
 echo "Searching documents changed since commit $latest_successful_commit."
 
-files="$(find . -type f | sed 's@^./@@g')"
-#files="$(git diff --name-only "$latest_successful_commit")"
+#files="$(find . -type f | sed 's@^./@@g')"
+files="$(git diff --name-only "$latest_successful_commit")"
 documents="$(echo "$files" | sed -nr 's@^summaries/([^/]+)/([^/]+)/([^/]+)/([^/]+)/.+$@\1 \2 \3 \4@g p' | sort | uniq)"
 if [[ "$documents" == "" ]]; then
     echo "No changed documents found."

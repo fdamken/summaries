@@ -20,8 +20,6 @@ echo "Searching documents changed since commit $latest_successful_commit."
 files="$(find . -type f | sed 's@^./@@g')"
 #files="$(git diff --name-only "$latest_successful_commit")"
 documents="$(echo "$files" | sed -nr 's@^summaries/([^/]+)/([^/]+)/([^/]+)/([^/]+)/.+$@\1 \2 \3 \4@g p' | sort | uniq)"
-echo "$documents"
-exit 0
 if [[ "$documents" == "" ]]; then
     echo "No changed documents found."
     exit 0

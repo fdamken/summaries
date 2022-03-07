@@ -119,7 +119,7 @@
 			\subsubsection{Lyapunov Stability and Lyapunov Function}
 				For nonlinear systems, multiple or even infinite or no equilibrium points might exist, making characterization of stability difficult. One option is \emph{Lyapunov stability}:
 				\begin{definition}[Lyapunov Stability]
-					An equilibrium point \(\bar{\vec{x}}\) is \emph{Lyapunov stable} iff for all \(t\) and  for all \(\epsilon > 0\) there exists a \(\delta(\epsilon) > 0\) such that \( \lVert \vec{x}(t) - \bar{\vec{x}} \rVert < \epsilon \) if \( \lVert \vec{x}(0) - \bar{\vec{x}} \rVert > \delta(\epsilon) \).
+					An equilibrium point \(\bar{\vec{x}}\) is \emph{Lyapunov stable} iff for all \(\epsilon > 0\) there exists a \(\delta(\epsilon) > 0\) such that for all \(t\), \( \lVert \vec{x}(t) - \bar{\vec{x}} \rVert < \epsilon \) holds if \( \lVert \vec{x}(0) - \bar{\vec{x}} \rVert < \delta(\epsilon) \).
 				\end{definition}
 
 				This builds on the intuition that stability causes the system to stay close to an equilibrium point of the system starts close to it. Lyapunov stability can be further extended to asymptotic stability of nonlinear systems by requiring that the equilibrium is attractive:
@@ -135,7 +135,7 @@
 						\item \( V(\vec{x}) > 0 \) for all \( \vec{x} \in D \setminus \{ \vec{0} \} \)
 						\item \( V\bigl( \vec{f}(\vec{x}) \bigr) - V(\vec{x}) \leq 0 \) for all \( \vec{x} \in D \)
 					\end{enumerate}
-					If additionally \( V\bigl( \vec{f}(\vec{x}) \bigr) - V(\vec{x}) > 0 \) holds for all \( \vec{x} \in D \setminus \{ \vec{0} \} \), \(V\) is a \emph{strict} Lyapunov function.
+					If additionally \( V\bigl( \vec{f}(\vec{x}) \bigr) - V(\vec{x}) < 0 \) holds for all \( \vec{x} \in D \setminus \{ \vec{0} \} \), \(V\) is a \emph{strict} Lyapunov function.
 				\end{definition}
 				\begin{definition}[Continuous Lyapunov Functions]
 					A continuously differentiable function \( V : D \to \R \), \( D \subseteq \R^n \) is a \emph{Lyapunov function} for a system \( \dot{\vec{x}} = \vec{f}(\vec{x}) \) if all of the following hold:
@@ -144,7 +144,7 @@
 						\item \( V(\vec{x}) > 0 \) for all \( \vec{x} \in D \setminus \{ \vec{0} \} \)
 						\item \( \dot{V}(\vec{x}) \leq 0 \) for all \( \vec{x} \in D \)
 					\end{enumerate}
-					If additionally \( \dot{V}(\vec{x}) > 0 \) holds for all \( \vec{x} \in D \setminus \{ \vec{0} \} \), \(V\) is a \emph{strict} Lyapunov function.
+					If additionally \( \dot{V}(\vec{x}) < 0 \) holds for all \( \vec{x} \in D \setminus \{ \vec{0} \} \), \(V\) is a \emph{strict} Lyapunov function.
 				\end{definition}
 				\begin{theorem}[Lyapunov Functions for Stability]
 					If a Lyapunov functions exists for a dynamical system, it is \emph{locally stable} in \( \vec{x} = \vec{0} \). If the Lyapunov function is strict, the equilibrium is locally \emph{asymptotically} stable.
@@ -211,8 +211,8 @@
 		\subsection{Cost Functions}
 			As seen already, the cost function is the core component of an optimal control problem defining \emph{optimality}. Some examples for cost functions are
 			\begin{align}
-				J &= E(\vec{x}(t_e)) &
-				J &= t_e,\, \vec{x}(t_e) = \vec{x}_d &
+				J &= E(\vec{x}(t_f)) &
+				J &= t_f,\, \vec{x}(t_f) = \vec{x}_d &
 				J &= \sum_{k = 1}^{N - 1} L\bigl( \vec{u}_k \bigr) \simeq \int_{t_0}^{t_e}\! L\bigl( \vec{u}(\tau) \bigr) \dd{\tau}
 			\end{align}
 			encoding a terminal cost, minimum time, and minimum energy, respectively (from left to right). The last cost has to be augmented for continuous problems by replacing the sum with an integral, indicated by \( \simeq \). Note that these functions can be combined, e.g., by defining an energy cost and a terminal cost. Also note that \(L\) in the energy cost is pretty general and might even represent quantities aside from energy.
@@ -223,11 +223,11 @@
 		\subsection{LQR Formulation}
 			In the LQR setting, a linear time-discrete system along with a quadratic cost function
 			\begin{equation}
-				J = \frac{1}{2} \sum_{k = 1}^{N - 1} \vec{x}_k^\transposed \mat{Q} \vec{x}_k + \vec{u}_k^\transposed \mat{R} \vec{u}_k + \vec{x}_N^\transposed \mat{S} \vec{x}_N.  \label{eqn:lqrCost}
+				J = \vec{x}_N^\transposed \mat{S} \vec{x}_N + \sum_{k = 1}^{N - 1} \vec{x}_k^\transposed \mat{Q} \vec{x}_k + \vec{u}_k^\transposed \mat{R} \vec{u}_k.  \label{eqn:lqrCost}
 			\end{equation}
 			with\footnote{For a matrix \(\mat{M}\), \( \mat{M} \succeq 0\) and \( \mat{M} \succ 0 \) mean that \(\mat{M}\) is (semi) positive definite.} \( \mat{Q} \succeq 0 \), \( \mat{R} \succ 0 \), \( \mat{S} \succ 0 \). Besides the dynamics \( \vec{x}_{k + 1} = \mat{A}_k \vec{x}_k + \mat{B}_k \vec{u} \), no further constraints are considered. The optimal control problem is now framed as follows (with \( \tilde{\vec{u}} = \vec{u}_{1:N - 1} = \{ \vec{u}_1, \vec{u}_2, \dots, \vec{u}_{N - 1} \} \)):
 			\begin{align}
-				\min_{\tilde{\vec{u}}}\; & \frac{1}{2} \sum_{k = 1}^{N - 1} \vec{x}_k^\transposed \mat{Q} \vec{x}_k + \vec{u}_k^\transposed \mat{R} \vec{u}_k + \vec{x}_N^\transposed \mat{S} \vec{x}_N \\
+				\min_{\tilde{\vec{u}}}\; & \vec{x}_N^\transposed \mat{S} \vec{x}_N + \sum_{k = 1}^{N - 1} \vec{x}_k^\transposed \mat{Q} \vec{x}_k + \vec{u}_k^\transposed \mat{R} \vec{u}_k \\
 				\text{s.t.}\qquad&
 					\begin{aligned}
 						\vec{x}_{k + 1} &= \mat{A}_k \vec{x}_k + \mat{B}_k \vec{u}_k
@@ -294,13 +294,13 @@
 		\subsection{Dynamic Programming}
 			As seen before, applying batch optimization---while being straightforward---is not ideal as the solution does not incorporate the system's feedback. An alternative approach is to use \emph{dynamic programming}. The underlying idea of dynamic programming is that partial trajectories of trajectories are optimal, too. In other words: a trajectory composed of partial optimal ones is optimal. A relevant quantity for solving LQR with this principle is the optimal \emph{cost to go}, also called the \emph{value function}:
 			\begin{equation}
-				J_j^\ast(\vec{x}_j) = \min_{\vec{u}_{j:N - 1}}\; \frac{1}{2} \sum_{k = j}^{N - 1} \vec{x}_k^\transposed \mat{Q} \vec{x}_k + \vec{u}_k^\transposed \mat{R} \vec{u}_k + \vec{x}_N^\transposed \mat{S} \vec{x}_N.
+				J_j^\ast(\vec{x}_j) = \min_{\vec{u}_{j:N - 1}}\; \vec{x}_N^\transposed \mat{S} \vec{x}_N + \sum_{k = j}^{N - 1} \vec{x}_k^\transposed \mat{Q} \vec{x}_k + \vec{u}_k^\transposed \mat{R} \vec{u}_k.
 			\end{equation}
 			This function quantifies the optimal cost when starting from state \(\vec{x}_j\) at time \(j\). By solving this problem\footnote{See "Robot Learning" (\url{https://fabian.damken.net/summaries/cs/elective/ce/role/}) for a more thorough (stochastic) treatment.} recursively starting from \(j = N\), the optimal control input at time step \(k\) is found to be
 			\begin{equation}
 				\vec{u}_k^\ast = \mat{K}_k \vec{x}_k
 			\end{equation}
-			with \( \mat{K}_k = -\bigl( \mat{B}^\transposed \mat{P}_{k + 1} \mat{B} + \mat{R} \bigr)^{-1\,} \mat{B}^\transposed \mat{P}_{k + 1} \mat{A} \) and optimal cost \( J_k^\ast(\vec{x}_j) = \vec{x}_k^\transposed \mat{P}_k \vec{x}_k / 2 \). Here, \( \mat{P}_k \) is given by the \emph{discrete time-variant algebraic Riccati equation}
+			with \( \mat{K}_k = -\bigl( \mat{B}^\transposed \mat{P}_{k + 1} \mat{B} + \mat{R} \bigr)^{-1\,} \mat{B}^\transposed \mat{P}_{k + 1} \mat{A} \) and optimal cost \( J_k^\ast(\vec{x}_j) = \vec{x}_k^\transposed \mat{P}_k \vec{x}_k \). Here, \( \mat{P}_k \) is given by the \emph{discrete time-variant algebraic Riccati equation}
 			\begin{equation}
 				\mat{P}_k = \mat{Q} + \mat{A}^\transposed \mat{P}_{k + 1} \mat{A} - \mat{A}^\transposed \mat{P}_{k + 1} \mat{B} \bigl( \mat{R} + \mat{B}^\transposed \mat{P}_{k + 1} \mat{B} \bigr)^{-1\,} \mat{B}^\transposed \mat{P}_{k + 1} \mat{A}
 			\end{equation}
@@ -314,7 +314,7 @@
 			\begin{equation}
 				-\dot{\mat{P}}(t) = \mat{P}(t) \mat{A} + \mat{A}^\transposed \mat{P}(t) - \mat{P}(t) \mat{B} \mat{R}^{-1\,} \mat{B}^\transposed \mat{P}(t) + \mat{Q}  \tag{CARE}\label{eqn:care}
 			\end{equation}
-			The optimal cost is again \( J_t^\ast\bigl(\vec{x}(t)\bigr) = \vec{x}^\transposed(t) \mat{P}(t) \vec{x}(t) / 2 \). For an infinite horizon, all of this becomes again time-invariant with \( \dot{\mat{P}} = \mat{O} \), turning \eqref{eqn:care} again into al algebraic equation.
+			The optimal cost is again \( J_t^\ast\bigl(\vec{x}(t)\bigr) = \vec{x}^\transposed(t) \mat{P}(t) \vec{x}(t) \). For an infinite horizon, all of this becomes again time-invariant with \( \dot{\mat{P}} = \mat{O} \), turning \eqref{eqn:care} again into al algebraic equation.
 		% end
 
 		\subsection{Stability}
@@ -382,12 +382,6 @@
 			\begin{definition}[Sublevel Sets]
 				The \emph{sublevel set} \(L_c^-\) of a function \( F : \mathcal{U} \to \R \) is the set of values for which \(F\) takes on a value equal or less than a constant \(c\), i.e., \( L_c^- \coloneqq \{ \vec{u} : F(\vec{u}) \leq c \} \). Note that if \(F\) is convex or concave, \(L_c^-\) is convex.
 			\end{definition}
-			\begin{theorem}[Convexity of Level Sets]
-				Let \( F : \mathcal{U} \to \R \) be a convex function. Then the level set \(L_c\) of \(F\) for some constant \(c\) is convex.
-			\end{theorem}
-			\begin{proof}
-				Let \(L_c^-\) and \(L_{-c}^-\) be the sublevel sets of \(F\) and \(-F\), respectively. As \(F\) is convex, \(-F\) is concave and hence both \(L_c^-\) and \(L_{-c}^-\) are convex. By definition, \( L_c^- \cap L_c^+ = \{ \vec{u} : F(\vec{u}) \leq c \} \cap \{ \vec{u} : -F(\vec{u}) \leq -c \} = \{ \vec{u} : F(\vec{u}) \leq c \} \cap \{ \vec{u} : F(\vec{u}) \geq c \} = \{ \vec{u} : F(\vec{u}) = c \} = L_c \) is the level set of \(F\) for \(c\). Hence, as the intersection of convex sets is convex again, \(L_c\) is convex.
-			\end{proof}
 
 			\subsubsection{Convex Optimization Problems and Optimality}
 				\begin{theorem}[Global Optimality of Convex Optimization Problems]
@@ -498,7 +492,7 @@
 			\end{aligned}
 			\label{eqn:linearRecedingHorizon}
 		\end{equation}
-		where \(\mathcal{X}\), \(\mathcal{U}\), and \(\mathcal{E}\) are convex sets. As the dynamics, constraints, and cost are time-invariant, the notation can be simplified by assuming \(i = 0\); cf. \eqref{eqn:recedingHorizon} with the initial state \(\vec{x}_0\) being equal to the \(i\)-th measured state.
+		where \(\mathcal{X}\), \(\mathcal{U}\), and \(\mathcal{E}\) are convex sets. As the dynamics, constraints, and cost are time-invariant, the notation can be simplified by assuming \(i = 0\); cf. \eqref{eqn:recedingHorizon} with the initial state \(\vec{x}_0 = \vec{x}^i\) where \(\vec{x}^i\) is the \(i\)-th measured state.
 
 		\subsection{Feasibility and Stability}
 			Recall from \autoref{sec:staticOpt} that a static optimization problem is feasible iff the feasible set is non-empty. In dynamic optimization, an optimal control problem is feasible iff the constraints on the states and controls, \(\mathcal{X}\) and \(\mathcal{U}\), the terminal constraints \(\mathcal{E}\), and the dynamics are satisfied. Hence, checking feasibility is more tedious as it has to be checked whether there exists an input sequence satisfying all constraints (a \emph{admissible} input sequence).
@@ -830,7 +824,7 @@
 		Now \(\mat{K}\) is chosen such that \( (\mat{A} + \mat{B} \mat{K}) \) is stable, i.e., that the error does not grow indefinitely. Since \( (\mat{A} + \mat{B} \mat{K}) \) is stable and the noise is bounded, the set \( \mat{R}_k \) with \( \vec{e}_k \in \mat{R}_k \) can be computed as
 		\begin{equation}
 			\mathcal{R}_k
-				= \mat{W} \oplus (\mat{A} + \mat{B} \mat{K}) \mathcal{W} \oplus (\mat{A} + \mat{B} \mat{K})^{2\,} \mat{W} \oplus \cdots \oplus (\mat{A} + \mat{B} \mat{K})^{k - 1\,} \mat{W}
+				= \mathcal{W} \oplus (\mat{A} + \mat{B} \mat{K}) \mathcal{W} \oplus (\mat{A} + \mat{B} \mat{K})^{2\,} \mathcal{W} \oplus \cdots \oplus (\mat{A} + \mat{B} \mat{K})^{k - 1\,} \mathcal{W}
 				= \bigoplus_{j = 0}^{k - 1}\, (\mat{A} + \mat{B} \mat{K})^{j\,} \mathcal{W}
 		\end{equation}
 		assuming that \( \vec{e}_0 = \vec{0} \). Instead of using the time-variant set \(\mathcal{R}_k\), it is also possible to calculate the outer hull of all \(\mathcal{R}_k\), the \emph{minimum} robust invariant set, via

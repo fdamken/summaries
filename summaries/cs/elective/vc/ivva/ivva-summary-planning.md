@@ -2,7 +2,7 @@
 
 ## Folien
 
-Done/Structured/Totan: 0/890/1168; 0%/76%/100%
+Done/Structured/Total: 0/702/1168; 0%/60%/100%
 
 * [x] Kapitel  0: Organisation (20)
 * [x] Kapitel  1: Einführung in die Informationsvisualisierung (82)
@@ -13,8 +13,8 @@ Done/Structured/Totan: 0/890/1168; 0%/76%/100%
 * [x] Kapitel  6: Techniken 1 (91)
 * [x] Kapitel  7: Techniken 2 (66)
 * [x] Kapitel  8: Visualisierung Geobasierter Daten und Karten (91)
-* [x] Kapitel  9: Einführung in Visual Analytics (77+19)
-* [x] Kapitel 10: Analyse für die Visualisierung (92)
+* [ ] Kapitel  9: Einführung in Visual Analytics (77+19)
+* [ ] Kapitel 10: Analyse für die Visualisierung (92)
 * [ ] Kapitel 11: Von Daten zu Mustern (101)
 * [ ] Kapitel 12: Von Mustern zu Modellen (90)
 * [ ] Kapitel 13: Kognitive Psychologie und Evaluation (87)
@@ -202,31 +202,3 @@ Done/Structured/Totan: 0/890/1168; 0%/76%/100%
             * Darstellung von Richtungen {8.87}
             * Darstellung von Geschwindigkeiten {8.88}
             * Darstellung von Vielen Trajektorien {8.89}
-* Visual Analytics {9.1, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8, 9.9, 9.10, 9.11, 9.12, 9.13, 9.14, 9.45, 9.46, 9.47, 9.48, 9.76, 9.+, 10.88, 10.89, 10.90}
-    - Definition {9.15, 9.16, 9.17, 9.18}
-        + Das KDD-Modell {9.19, 9.20, 9.21, 9.22, 9.23, 9.24, 9.25, 9.26, 9.27, 9.28}
-        + Informationsvisualisierung vs. Visual Analytics {9.29, 9.30}
-        + Der Visual Analytics Prozess {9.31, 9.32, 9.33, 9.34, 9.35, 9.36, 9.37, 9.38, 9.39, 9.40}
-        + Wissenschaft des Analytischen Schließens {9.41, 9.42, 9.43, 9.44}
-    - Stärken und Schwächen von Mensch und Maschine {9.49, 9.50, 9.61, 9.62, 9.63, 9.64, 9.65, 9.66, 9.67, 9.68, 9.69, 9.70, 9.71, 9.72, 9.73}
-        + Was sind Muster? {9.51, 9.52, 9.53, 9.54, 9.55, 9.56, 9.57, 9.58, 9.59, 9.60}
-    - Automatische Verfahren zur Visualisierung {10.1, 10.2, 10.3, 10.4, 10.5, 10.6, 10.7, 10.8, 10.9, 10.10, 10.11, 10.12, 10.13, 10.14, 10.15, 10.16, 10.17, 10.18, 10.52, 10.53, 10.54, 10.55, 10.56, 10.57, 10.88, 10.89, 10.90}
-        + Sampling {10.19}
-        + Aggregation/Clustering {10.20, 10.21, 10.23}
-            * Text/Topic Mining {10.22}
-        + Filtering {10.24}
-        + Dimensionsreduktion {10.25, 10.26, 10.27, 10.28}
-            * Feature Selektion {10.29}
-            * Feature Sortierung {10.30, 10.31}
-        + Ergebnismanagement {10.33, 10.34, 10.35, 10.36, 10.37}
-        + Apophenie {10.38, 10.39}
-            * Zufall {10.40, 10.41, 10.42, 10.43}
-            * Alternative Erklärungen {10.44}
-        + Zu Viele Parameter {10.46, 10.47, 10.48}
-            * Intelligent Visual Analytics Queries {10.49, 10.50}
-    - Visualisierung für Automatische Verfahren {10.58, 10.59, 10.60, 10.61, 10.62, 10.72, 10.86, 10.87, 10.88, 10.89, 10.90, 11.14, 11.15}
-        + Beispiele {N/A}
-            * k-Means {10.63, 10.64, 10.65, 10.66, 10.67}
-            * Feature Selektion {10.68, 10.69, 10.70, 10.71}
-        + Modellvisualisierung {10.73, 10.74, 10.75, 10.76, 10.77, 10.78, 11.16}
-        + Musterexploration {10.79, 10.80, 10.81, 10.82, 10.83, 10.84, 10.85, 11.17}

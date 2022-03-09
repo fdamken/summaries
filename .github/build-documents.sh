@@ -1,5 +1,11 @@
 #!/bin/bash
 
+scope="$1"
+if [[ "$scope" != all ]] && [[ "$scope" != changed ]]; then
+    echo "E: scope '$scope' is neither 'all' nor 'changed'." >&2
+    exit 128
+fi
+
 set -o errexit
 set -o nounset
 
@@ -7,18 +13,28 @@ set -o nounset
 # Extract the root repository directory from the location of this script.
 root="$(dirname $(dirname $(readlink -f $0)))"
 
-first_commit="4f56a06ecd6c7accc897ce58f9ca458a83de2e3a"  # This will never change.
-latest_successful_commit="$(curl -s 'https://api.github.com/repos/fdamken/summaries/actions/runs' | jq -r "
-    .workflow_runs
-        | map(select(.status == \"completed\" and .conclusion == \"success\"))
-        | .[0].head_commit.id
-        | if . == null then \"$first_commit\" else . end
-")"
 
-echo "Searching documents changed since commit $latest_successful_commit."
-
-#files="$(find . -type f | sed 's@^./@@g')"
-files="$(git diff --name-only "$latest_successful_commit")"
+case "$scope" in
+    all)
+        echo "Compiling everything."
+        files="$(find . -type f | sed 's@^./@@g')"
+        ;;
+    changed)
+        first_commit="4f56a06ecd6c7accc897ce58f9ca458a83de2e3a"  # This will never change.
+        latest_successful_commit="$(curl -s 'https://api.github.com/repos/fdamken/summaries/actions/runs' | jq -r "
+            .workflow_runs
+                | map(select(.status == \"completed\" and .conclusion == \"success\"))
+                | .[0].head_commit.id
+                | if . == null then \"$first_commit\" else . end
+        ")"
+        echo "Searching documents changed since commit $latest_successful_commit."
+        files="$(git diff --name-only "$latest_successful_commit")"
+        ;;
+    *)
+        echo "E: Unknown scope '$scope'." >&2
+        exit 128
+        ;;
+esac
 documents="$(echo "$files" | sed -nr 's@^summaries/([^/]+)/([^/]+)/([^/]+)/([^/]+)/.+$@\1 \2 \3 \4@g p' | sort | uniq)"
 if [[ "$documents" == "" ]]; then
     echo "No changed documents found."

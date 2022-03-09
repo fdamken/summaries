@@ -85,6 +85,7 @@
 \RequirePackage{tikzpeople}
 \RequirePackage{tikz}
 \RequirePackage{xspace}
+\RequirePackage{xstring}
 \RequirePackage[\fdsummary@todoopts]{todonotes}
 \pgfplotsset{compat = newest}
 % Load TikZ libraries.

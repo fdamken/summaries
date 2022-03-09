@@ -1,31 +1,63 @@
 % !TeX spellcheck = de_DE
 
-\chapter{Einleitung} % 0.3, 0.4, 1.12, 1.19, 1.20, 1.21, 1.22
-    \todo{Content}
+\chapter{Einleitung}
+    In dieser Zusammenfassung werden zwei Themen behandelt: Informationsvisualisierung und Visual Analytics. Dabei sollen die Frage beantwortet werden, wie verschiedene Daten \emph{gut} visualisiert werden können und wie Visualisierung die Analyse unterstützen können. Viele Ideen der folgenden Kapitel und grundlegender Techniken bauen dabei auf dem Verständnis grundlegender Prozesse des Gehirns ab. Denn: Eine Visualisierung soll dem Gehirn des*der Nutzer*in Arbeit abnehmen. Dabei sollen für jede Visualisierung die folgenden drei Fragen beantwortet werden:
+    \begin{itemize}
+    	\item Was wird wie dargestellt?: Formale Beschreibung einer Visualisierung.
+    	\item Was ist gut und (möglichst) ohne Anstrengung sichtbar?: Prinzipien der Wahrnehmung kennen und anwenden.
+    	\item Was hilft dem*der Nutzer*in bei der Aufgabe?: Beschreibung und Wahrnehmungsprinzipien im Kontext einer Aufgabe bewerten.
+    \end{itemize}
+	Ein relevantes, bisher noch nicht erwähntes, Wort in den obigen Fragen ist die \emph{Aufgabe}. Zu Beginn jeder Visualisierung muss zunächst die \emph{Aufgabe} der Visualisierung identifiziert werden. Dies sind oftmals Entscheidungen, die (objektiv) durch Daten und Informationen getroffen werden (sollten). Dies ist in \autoref{fig:aufgabe} dargestellt. In der Praxis werden jedoch häufig einfach Visualisierungkataloge (große Datenbanken mit Visualisierungstechniken) nach einer "schönen" Visualisierung durchsucht. Dadurch wird das Dasein der Visualisierung als Werkzeug jedoch zu dem Zweck gemacht, \dh die Visualisierung wird ein Selbstzweck. Dies sollte eigentlich nie der Fall sein!
 
-    \section{Einleitende Beispiele} % N/A
-        \todo{Content}
+	Oft die Aussage getroffen, dass "ein Bild mehr sagt als tausend Worte." Im Allgemeinen sollte allerdings eher gesagt werden, dass ein Bild etwas \emph{anderes} als tausend Worte sagt: Sprachliche Artefakte (wozu auch Zahlen gehören), werden von dem Gehirn \emph{bewusst} und verarbeitet und oftmals in eine zeitliche Reihenfolge gebracht. Eine Visualisierung der selben Daten hingegen ist ein bildliches Artefakt und erlaubt eine \emph{unbewusste} Verarbeitung, bei der die Informationen im Raum strukturiert werden. Dadurch können komplexe Zusammenhänge sehr schnell vermittelt und erfasst werden.
 
-        \subsection{Orangener Punkt, Blauer Punkt} % 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 1.10, 1.11
-            \todo{Content}
-        % end
+	\begin{figure}
+		\centering
+		\begin{tikzpicture}[->, every node/.style = { draw, rectangle, minimum width = 3cm, minimum height = 0.75cm }]
+			\node (daten) {Daten};
+			\node [right = 1 of daten] (vis) {Visualisierung};
+			\node [right = 1 of vis] (wissen) {Wissen};
+			\node [right = 1 of wissen] (entscheidung) {Entscheidung};
 
-        \subsection{Anscombe's Quartet} % 1.23, 1.24, 1.25, 1.26, 1.27
-            \todo{Content}
-        % end
-    % end
+			\draw (daten) -- (vis);
+			\draw (vis) -- (wissen);
+			\draw (wissen) -- (entscheidung);
+		\end{tikzpicture}
+		\caption[Von Daten zu Entscheidungen]{Eine Visualisierung dient immer der Erfüllung einer Aufgabe und soll zu einem Erkenntnisgewinn führen. Oftmals steht am Ende davon eine Entscheidung, die objektiv durch Daten getroffen werden soll. Bei der Erstellung einer Visualisierung sollte dieser Prozess also rückwärts durchgeführt werden, \dh ausgehend von der Frage, welche Entscheidung getroffen werden soll.}
+		\label{fig:aufgabe}
+	\end{figure}
 
-    \section{Visualisierungkataloge und die Visualisierungaufgabe} % 1.13, 1.14, 1.15, 1.16, 1.17, 1.18
-        \todo{Content}
-    % end
+	\section{Anwendungen von Visualisierungen}
+		Die Anwendung einer Visualisierung, lässt sich in zwei Kategorien einteilen: \emph{Erfassen} und \emph{Produzieren} von Informationen, wobei erstere durch Informationsvisualisierung und letztere durch Visual Analytics "bearbeitet" werden.
 
-    \section{Definition von Informationsvisualisierung} % 1.28, 1.29, 1.30, 1.37, 1.42, 1.43, 1.44, 1.45
-        \todo{Content}
+		Innerhalb der Informationsvisualisierung werden die folgenden Gruppen unterschieden:
+		\begin{itemize}
+			\item \eqmakebox[ivAufgaben][l]{\emph{Explain:}} Es sollen bekannte Informationen an andere vermittelt werden (möglicherweise, aber nicht immer, interaktiv).
+			\item \eqmakebox[ivAufgaben][l]{\emph{Explore:}} Es sollen neue Information auf Basis von Daten gefunden oder unsichere Informationen bestätigt werden (üblicherweise sehr interaktiv; das Ziel ist nicht immer bekannt).
+			\item \eqmakebox[ivAufgaben][l]{\emph{Enjoy:}}   Zwanglose und durch Neugier getriebene Begegnung mit den Daten; dabei ist die Aufgabe selten bekannt.
+		\end{itemize}
+		Von diesen drei Arten der Informationsvisualisierung werden in dieser Zusammenfassung vor allem die ersten beiden behandelt.
 
-        \subsection{Beispiele} % 1.31, 1.32, 1.33, 1.34, 1.35, 1.36
-            \todo{Content}
-        % end
-    % end
+		Innerhalb der Visual Analytics werden die folgenden Gruppen unterschieden:
+		\begin{itemize}
+			\item \eqmakebox[vaAufgaben][l]{\emph{Annotate}}
+			\item \eqmakebox[vaAufgaben][l]{\emph{Record}}
+			\item \eqmakebox[vaAufgaben][l]{\emph{Derive}}
+		\end{itemize}
+	% end
+
+	\section{Identifizierung der Visualisierungsaufgabe}
+		Bei der Identifizierung der Aufgabe sollte auch mit einbezogen werden,
+		\begin{itemize}
+			\item welche Informationen als bekannt vorausgesetzt werden,
+			\item welche Informationen gesucht werden, und
+			\item was mit den neuen Informationen gemacht wird oder gemacht werden soll.
+		\end{itemize}
+		Das Design der Visualisierung bestimmt damit essentiell, wie gut mit der Visualisierung gearbeitet werden kann durch Wiedererkennung bekannter Informationen und Erkennung neuer Informationen. Die erste Regel ist dabei, wie bereits erwähnt, das die Visualisierung ein Werkzeug und kein Selbstzweck ist. Das lässt sich wie folgt zusammenfassen:
+		\begin{center}
+			Have something to tell or something to ask!
+		\end{center}
+	% end
 
     \section{Negativbeispiele} % 1.47, 1.48, 1.49, 1.50, 1.51, 1.52, 1.53, 1.54, 1.55, 1.56, 1.57, 1.58, 1.59
         \todo{Content}
@@ -33,6 +65,8 @@
 % end
 
 \chapter{Der Informationsvisualisierungsprozess} % 1.60, 1.61, 1.62, 1.63, 1.64, 1.65, 1.66, 1.67, 1.68, 1.69, 1.70, 1.71, 1.72, 1.73, 1.74, 1.75, 1.76
+	\label{c:visualisierungsprozess}
+
     \todo{Content}
 
     \section{Daten und Datenvorverarbeitung} % 4.1, 4.6, 4.7, 4.8, 4.9, 4.10

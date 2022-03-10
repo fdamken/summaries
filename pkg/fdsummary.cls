@@ -43,8 +43,8 @@
 % Core Packages.
 \RequirePackage[T1]{fontenc}
 \RequirePackage[utf8]{inputenc}
-\fdsummary@ifde{\RequirePackage[main = ngerman, english]{babel}}
-\fdsummary@ifen{\RequirePackage[main = english, ngerman]{babel}}
+\fdsummary@ifde{\RequirePackage[main = ngerman, USenglish]{babel}}
+\fdsummary@ifen{\RequirePackage[main = USenglish, ngerman]{babel}}
 % Other Packages.
 \RequirePackage[ruled, vlined, linesnumbered]{algorithm2e}
 \RequirePackage[normalem]{ulem}

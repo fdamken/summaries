@@ -663,124 +663,243 @@
 		% end
 	% end
 
-	\section{Interaktion} % 5.1, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.20, 5.21, 5.68
+	\section{Interaktion}
 		\label{sec:interaktion}
 
-		\todo{Content}
+		In diesem Abschnitt werden verschiedene Methoden beschrieben, um Interaktion mit einer Visualisierung zu ermöglichen. Diese ist hilfreich, da unmöglich auf alle Fragestellungen, die Nutzer*innen haben könnten, einzugehen bei dem Design der Visualisierung. Außerdem ist es häufig nicht möglich, alle Daten auf einmal zu zeigen, die durch Interaktion eingeblendet werden können. Ebenfalls kann Interaktion der Exploration dienlich sein. Im Informationsvisualisierungsprozess (\autoref{fig:visualisierungsprozess}) wird \emph{Interaktion} durch den rückführenden Pfeil von Mensch zu den einzelnen Schritten eingebunden. Dabei ist wichtig zu unterscheiden, dass dies nicht die "Interaktionsmöglichkeiten" eines*einer Entwicklers*Entwicklerin beschreibt, sondern die direkte Interaktion durch eine*n Nutzer*in.
 
-		\subsection{Benutzungsschnittstellen} % 5.9, 5.10, 5.11, 5.12, 5.13, 5.17, 5.30
-			\todo{Content}
+		\subsection{Benutzungsschnittstellen}
+			Der Begriff des \emph{User-Centered Design} wurde zuerst von Donald Norman geprägt, der sich mit dem Design von Gegenständen, Aufmerksamkeit und vielen weiteren Themen beschäftigt hat. Dabei hat er ein Modell zur Interaktion entwickelt, welches in \autoref{fig:normanInteraktion} dargestellt ist. Demnach durchläuft ein Mensch die folgenden Schritte bei der Ausführung einer Interaktion:
+			\begin{enumerate}
+				\item Entscheiden, was zu tun ist
+				\item Formulieren einer Absicht
+				\item Spezifikation einer Handlung
+				\item Ausführen einer Handlung
+				\item Wahrnehmung der Reaktion des Systems
+				\item Interpretation des Systemzustands
+				\item Vergleich zwischen dem tatsächlichen Zustand und dem ursprünglichen Ziel
+			\end{enumerate}
+			Dabei gibt es viele Probleme bei den Übergängen zwischen den Stufen. Zunächst sollte klar sein, welche Funktionen und Interaktionen möglich sind und wie diese durchgeführt werden können (Icons, Buttons, etc.). Des Weiteren sollte der Zustand des Systems leicht erkennbar sein. Solche \emph{Benutzer*innenschnittstellen} sind nach DIN EN ISO 9241-110 alle Bestandteile eines interaktiven Systems, die Informationen und Steuerelemente zur Verfügung stellen, die notwendig sind, um eine bestimmte Aufgabe zu erledigen.
 
-			\subsubsection{Bedienung und Interaktion nach Norman} % 5.14, 5.15, 5.16
-				\todo{Content}
-			% end
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[->, blub/.style = { draw, rectangle, minimum height = 0.75cm, minimum width = 3cm }]
+					\node [blub] (a) {Entscheiden};
+					\node [blub, below = 0.5 of a, xshift = 2cm] (b) {Formulieren};
+					\node [blub, below = 0.5 of b, xshift = 2cm] (c) {Spezifizieren};
+					\node [blub, below = 0.5 of c, xshift = 2cm] (d) {Ausführen};
+					\node [blub, above = 0.5 of d, xshift = 2cm] (e) {Wahrnehmen};
+					\node [blub, above = 0.5 of e, xshift = 2cm] (f) {Interpretieren};
+					\node [blub, above = 0.5 of f, xshift = 2cm] (g) {Vergleichen};
+					\draw (a) to (b);
+					\draw (b) to (c);
+					\draw (c) to (d);
+					\draw (d) to (e);
+					\draw (e) to (f);
+					\draw (f) to (g);
+				\end{tikzpicture}
+				\caption{Interaktionsmodell nach Norman}
+				\label{fig:normanInteraktion}
+			\end{figure}
 
-			\subsubsection{ISO 9241} % 5.18
-				\todo{Content}
-			% end
+			\subsubsection{Interaktionsmodi nach Spence}
+				Robert Spence hat mehrere Modi der Interaktion (\emph{Interaktionsmodi}) identifiziert, mit denen ein System modifiziert werden kann. Diese sind \emph{kontinuierliche}, \emph{schrittweise}, \emph{passive} und \emph{gemischte} Interaktionen.
 
-			\subsubsection{Interaktionsmodi nach Spence} % 5.22, 5.23
-				\todo{Content}
-
-				\paragraph{Kontinuierliche Interaktion} % 5.24
-					\todo{Content}
+				\paragraph{Kontinuierliche Interaktion}
+					Bei der kontinuierlichen Interaktion ändert sich die Visualisierung kontinuierlich und direkt (\bspw ein Zoom). Dafür ist es wichtig, dass das System hochperformant reagiert.
 				% end
 
-				\paragraph{Schrittweise Interaktion} % 5.25, 5.26, 5.27
-					\todo{Content}
+				\paragraph{Schrittweise Interaktion}
+					In der schrittweisen Integration findet die Interaktion entlang verschiedener Schritte statt (\zB in der Navigation: Was sind mögliche Schritte von hier aus?). Dabei definiert Spence zwei Arten von \emph{Sensitivity}, die, motiviert durch die Sozialwissenschaft in der "Sensitivity" die zwischenmenschliche Aufmerksamkeit beschreibt, die Aufmerksamkeit beschreibt, welche Bewegungen ausführbar sind (Movement, SM) und welche Handlungen dafür nötig sind (Interaction, SI). Eine wichtige Komponente ist damit die \emph{Affordance}, also der "Aufforderungscharakter" von Objekt sowie \emph{Residues}, Hinweise auf entfernte Funktionen. Beim Interaktionsdesign müssen diese Faktoren bestmöglich unterstützt werden, um eine angenehme Interaktion zu gestalten.
 				% end
 
-				\paragraph{Passive Interaktion} % 5.28
-					\todo{Content}
+				\paragraph{Passive Interaktion}
+					Passive Interaktion baut auf dem Aspekt auf, dass Nutzer*innen viel Zeit mit Augenbewegungen, Wahrnehmung und Verarbeitungsprozessen verbringen. Daher beinhaltet eine passive Interaktion auch sich ändernde Repräsentationen, aus denen die Nutzer*innen hilfreiche Informationen ziehen. Beispiele sind statistische Darstellungen, Browsing und nicht direkt von dem*der Nutzer*in beeinflusste Bewegungen.
 				% end
 
-				\paragraph{Gemischte Interaktion} % 5.29
-					\todo{Content}
+				\paragraph{Gemischte Interaktion}
+					Gemischte Interaktionen können, wie der Name schon sagt, sämtliche anderen Interaktionsmodi enthalten und kombinieren.
+				% end
+
+				\paragraph{Akzeptable Antwortzeiten}
+					Da das System eine gewisse Zeit benötigt, um auf eine Anfrage oder Interaktion zu reagieren, wurde untersucht, was die noch akzeptablen Antwortzeiten sind. Dabei wurden die folgenden Werte gefunden:
+					\begin{itemize}
+						\item \eqmakebox[antwortzeit][l]{Animationen, fließende Bewegungen und kontinuierliche Interaktion:} \SI{0.1}{\second}
+						\item \eqmakebox[antwortzeit][l]{Reaktion auf Benutzer*innenaktionen:}                               \SI{1}{\second}
+						\item \eqmakebox[antwortzeit][l]{Komplexe Anfragen:}                                                 \SIrange{5}{30}{\second}
+					\end{itemize}
+					Für sämtliche Aktionen die länger als \SI{1}{\second} dauern, sollte dabei ein Fortschrittsbalken hinzugefügt werden.
 				% end
 			% end
 		% end
 
-		\subsection{Interaktionstechniken} % 5.31, 5.32, 5.33, 5.48
-			\todo{Content}
+		\subsection{Interaktionstechniken}
+			Nachdem im vorherigen Abschnitt die grundlegenden theoretischen Ergebnis im Bezug auf Interaktion behandelt wurden, werden in diesem Abschnitt einige konkrete Techniken behandelt. Dabei gibt es viel Gestaltungsspielraum und verschiedene Taxonomien, \zB:
+			\begin{itemize}
+				\item Systemnahe Interaktionstechniken
+				\item Dimensionen der Interaktionstechniken (Spence; Interaktionsmodi)
+				\item Interaktionsoperatoren (Ward und Yang; Interaktionsräume: screen-space, data-value-space, attribute-space, etc.)
+				\item Benutzer*innenaufgaben (Amar, Eagon, Stasko; Werte abrufen, Filtern, Extrema finden, Anomalien finden, Korrelieren, etc.)
+				\item Kategorien der Interaktion (Yi et al.)
+			\end{itemize}
+			In folgenden Abschnitten werden \emph{systemnahen} Interaktionstechniken und \emph{Kategorien} von Interaktion behandelt.
 
-			\subsubsection{Systemnahe Interaktionstechniken} % 5.35
-				\todo{Content}
+			\subsubsection{Systemnahe Interaktionstechniken}
+				Die systemnahen Interaktionstechniken teilen sich weiter auf in Selektion, Navigation, Shneidermans Mantra, Fokus und Kontext, Überblick und Detail sowie Brushing und Linking:
 
-				\paragraph{Selektion} % 5.36
-					\todo{Content}
+				\paragraph{Selektion}
+					Das Ziel der Selektion ist Identifikation eines bestimmten Objekts oder Definition einer (beliebigen) Teilmenge. Dafür gibt das System Feedback in Form einer Markierung mit einer geeigneten visuellen Auszeichnung (\zB einkreisen). Das \emph{Fitts Law} ist dabei die Zeit, die zum Selektieren benötigt wird,
+					\begin{equation}
+						\mathit{Selektionszeit} = a + b \log_2(\frac{D}{W} + 1),
+					\end{equation}
+					wobei \(D\) die Distanz zum Zentrum und \(W\) die Größe/Ausdehnung des Ziels sind und \(a\) und \(b\) empirisch ermittelte Konstanten.
 				% end
 
-				\paragraph{Navigation} % 5.37, 5.38, 5.39
-					\todo{Content}
+				\paragraph{Navigation}
+					Zur Navigation gibt es viele verschiedene Optionen, \bspw Tastatur, Maus/Touchscreen (2D-absolut), Space-Maus (6D-relativ), Trackingsysteme (6D-relativ/absolut) sowie Kombinationen dieser (\zB werden Computerspiele üblicherweise mit Tastatur und Maus gesteuert). Dabei gibt es wiederum verschiedenste Kamerametaphern wie World-in-Hand, Eyeball-in-Hand, "Gehende" Kamera oder "Fliegende" Kamera. Alternative können Zoom-und-Pan-Methoden wie in Google Maps oder verschiedenste andere Darstellungsformen verwendet werden. Hilfreich dabei sind Visualisierungen als Orientierungshilfe (lokal und global).
+
+					Werden Zoom-Verfahren (die auch der Navigation angehören) verwendet, wird zwischen geometrischem Zoom (der "nur" Objekte vergrößert) und semantischem Zoom (wodurch mehr Daten angezeigt werden) unterschieden.
 				% end
 
-				\paragraph{Shneidermans Mantra} % 5.40, 5.41, 5.42, 5.43
-					\todo{Content}
+				\paragraph{Shneidermans Mantra}
+					\begin{enumerate}
+						\item Überblick über alle Daten
+						\item Zoom und Filter
+						\item Details auf Anfrage
+					\end{enumerate}
+					Demnach sollen zunächst alle Daten in grober Art und Weise angezeigt werden, aus denen der*die Nutzer*in anschließend relevante Daten auswählen (Filtern) und sich die Details dieser anzeigen lassen kann. Eine alternative Version für die visuelle Suche ist "Suche, Zeige Kontext, Expandiere auf Anfrage".
 				% end
 
-				\paragraph{Fokus und Kontext} % 5.44, 5.45
-					\todo{Content}
+				\paragraph{Fokus und Kontext}
+					Fokus und Kontext ist eine Art der Interaktion die Raum schafft abhängig von Benutzer*innenfokus. Dies wird oft realisiert durch eine "Fischauge"-Darstellung, bei der lokal der Detailgrad erhöht wird. Diese Technik ist gut kombinierbar mit Level of Detail-Methoden und fügt sich gut in Shneidermans Mantra ein. Durch die Fischaugen- oder Magic Lens-Darstellung wird der Kontext beibehalten, was bei dem Verständnis hilft. Die Magic Lens-Darstellung ist dabei ähnlich zu einer Lupe, \dh es werden lokal Details hervorgehoben, aber die Umgebung wird -- im Gegensatz zum Fischauge -- nicht verzerrt. Allerdings wird beiden Fällen die Wahrnehmung räumlicher Eigenschaft beeinflusst.
 				% end
 
-				\paragraph{Überblick und Detail} % 5.46
-					\todo{Content}
+				\paragraph{Überblick und Detail}
+					Bei dieser Interaktionstechnik werden mehrere Visualisierungen hierarchisch gekoppelt, wobei lokal die Detailstufe erhöht wird. Dabei bleiben räumliche Beziehungen erhalten indem die "höhere" Visualisierung klein eingeblendet wird. Dies hat den Nachteil, dass eventuell Details verdeckt werden.
 				% end
 
-				\paragraph{Brushing und Linking} % 5.47
-					\todo{Content}
+				\paragraph{Brushing und Linking}
+					Bei Brushing und Linking werden bei der durch Auswahl (Brushing) von Datenpunkten in einer Visualisierung die korrespondierenden Daten in einer anderen Visualisierung hervorgehoben (Linking). Diese Technik ist daher insbesondere für Visualisierungen hilfreich, in denen mehrere Perspektiven der gleichen Daten angezeigt werden.
 				% end
 			% end
 
-			\subsubsection{Kategorien der Interaktion nach Yi et al.} % 5.49, 5.50, 5.51, 5.52
-				\todo{Content}
+			\subsubsection{Kategorien der Interaktion}
+				Nach Yi et al.~sind die Kategorien der Interaktion wie folgt, wobei das Ziel dieser Kategorisierung eine stärkere Verbindung von Interaktionstechnik und Aufgaben ist:
+				\begin{itemize}
+					\item \eqmakebox[yietal][l]{Selektion:} "markiere etwas interessantes"
+					\item \eqmakebox[yietal][l]{Exploration:} "zeige etwas anderes"; Exploration
+					\item \eqmakebox[yietal][l]{Rekonfiguration:} "zeige eine andere Zusammenstellung"
+					\item \eqmakebox[yietal][l]{Enkodierung:} "zeige eine andere Repräsentation"
+					\item \eqmakebox[yietal][l]{Abstrahieren/Spezialisieren:} "zeige weniger oder mehr Details"; Überblick und Detail
+					\item \eqmakebox[yietal][l]{Filtern:} "zeige etwas unter Bedingungen"; Shneidermans Mantra
+					\item \eqmakebox[yietal][l]{Bezug:} "zeige Beziehungen der Elemente"; Brushing und Linking
+				\end{itemize}
 			% end
 		% end
 
-		\subsection{Design} % 5.54, 5.55
-			\todo{Content}
+		\subsection{Design}
+			In diesem Abschnitt wird das tatsächlich \emph{Design} der Interaktion behandelt, also die Umsetzung als User Interface.
 
-			\subsubsection{Leitsätze} % 5.56
-				\todo{Content}
+			\subsubsection{Leitsätze}
+				Die Leitsätze der Human-Computer-Interaction sind aufgeteilt in die \emph{Navigation}, \emph{Organisation der Anzeige}, \emph{Erzeugung von Aufmerksamkeit} sowie der \emph{Unterstützung der Dateneingabe}:
 
-				\paragraph{Navigation} % 5.57
-					\todo{Content}
+				\paragraph{Navigation}
+					Im Nutzungskontext "Web" haben sich die folgenden "Best Practices" im HCI etabliert:
+					\begin{itemize}
+						\item Arbeitsabläufe sollten stets standardisiert sein.
+						\item Bei eingebetteten Links sollte eine klare Beschreibung des Ziels vorliegen.
+						\item Überschriften sollten sprechend und eindeutig sein.
+						\item Für eine ausschließende Auswahl sollten Radio Buttons verwendet werden.
+						\item Websites sollten ohne weiteres druckbar sein.
+						\item Bei größeren Bildern sollten Thumbnails als Vorschau gezeigt werden.
+					\end{itemize}
 				% end
 
-				\paragraph{Organisation} % 5.58
-					\todo{Content}
+				\paragraph{Organisation der Anzeige}
+					\begin{itemize}
+						\item Die Anzeige sollte Konsistent sein.
+						\item Die Informationsaufnahme durch den*die Benutzer*in sollte möglichst effizient sein.
+						\item Das Gedächtnis sollte nur minimal belastet werden, \dh Informationen sollten immer da vorhanden sein, wo sie benötigt werden.
+						\item Anzeigen sollten flexibel und individualisierbar sein.
+						\item Wo immer möglich sollte eine grafische Darstellung anstelle von Texten und Zahlen verwendet werden.
+						\item Das Design sollte schwarz-weiß gehalten werden, wobei Farben genau dann eingeführt werden, wenn diese hilfreich sin.
+						\item Der*die Nutzer*in muss beim Design involviert werden!
+					\end{itemize}
 				% end
 
-				\paragraph{Erzeugung von Aufmerksamkeit} % 5.59
-					\todo{Content}
+				\paragraph{Erzeugung von Aufmerksamkeit}
+					Die Erzeugung von Aufmerksamkeit, um diese des*der Nutzers*Nutzerin zu lenken stellt einen wichtigen Faktor dar, damit der*die Nutzer*in auf der Website nicht "verloren" geht. Die folgenden Leitlinien haben sich diesbezüglich etabliert:
+					\begin{itemize}
+						\item Intensive Farben sollten für wichtige Aspekte reserviert werden.
+						\item Markierungen
+						\item Größe
+						\item max. drei Schriftarten
+						\item Blinkende Elemente (mit \SIrange{2}{4}{\hertz}) nur in limitierten Bereichen
+						\item max. vier Standardfarben, alles weitere nur für die gelegentliche Nutzung
+						\item Weiche Töne für positives, harte Töne für negatives Feedback
+					\end{itemize}
+					Generell gilt bei dem erhaschen von Aufmerksamkeit: Weniger ist mehr!
 				% end
 
-				\paragraph{Unterstützung der Dateneingabe} % 5.60
-					\todo{Content}
+				\paragraph{Unterstützung der Dateneingabe}
+					\begin{itemize}
+						\item Konsistenz der Dateneingaben
+						\item Minimierung der Nutzer*innenaktionen
+							\begin{itemize}
+								\item Mausklick statt Befehlseingabe
+								\item Auswahl aus Listen statt Freitext
+								\item Möglichst wenige Wechsel des Eingabegerätes (Expert*innen nutzen häufig lieber die Tastatur als zur Maus zu greifen)
+							\end{itemize}
+						\item Möglichst wenig Nutzung des Gedächtnisses
+						\item Die Dateneingabe sollte flexibel und individualisierbar sein.
+					\end{itemize}
 				% end
 			% end
 
-			\subsubsection{Prinzipien} % 5.61
-				\todo{Content}
+			\subsubsection{Prinzipien}
+				Neben den obigen Leitlinien zum Interaktionsdesign haben sich noch eine Prinzipien entwickelt, wie das Design angegangen werden sollte:
 
-				\paragraph{Ermittlung des fachlichen Niveaus des Nutzers} % 5.62
-					\todo{Content}
+				\paragraph{Ermittlung des fachlichen Niveaus des*der Nutzers*Nutzerin}
+					Die Ermittlung des fachlichen Niveaus ist essentiell zur effizienten Gestaltung des User Interface:
+					\begin{itemize}
+						\item Anfänger*innen und Erstnutzer*innen benötigen intensive Hilfsdialoge, die die Abläufe erklären.
+						\item Sachkundige, gelegentliche Nutzer*innen benötigen konsistente und wiederkehrende Abläufe sowie sinnvolle, aber knappe Meldungen.
+						\item Expert*innen benötigen schnelle Antwortzeiten, Shortcuts, Abkürzungen, Feedback im Hintergrund statt Vordergrund und andere beschleunigende Dialoge.
+					\end{itemize}
 				% end
 
-				\paragraph{Ermittlung der Arbeitsaufgaben} % 5.63
-					\todo{Content}
+				\paragraph{Ermittlung der Arbeitsaufgaben}
+					Bei der Ermittlung der Aufgaben ist die Häufigkeit dieser ein wichtiger Maßstab bei dem Interface-Design. Häufige Aufgaben sollten dabei schnell erledigt werden können (\zB Kopieren und Einfügen), während weniger häufige oder seltene Aufgaben auch länger dauern dürfen.
 				% end
 
-				\paragraph{Wahl des Interaktionsstils} % 5.64
-					\todo{Content}
+				\paragraph{Wahl des Interaktionsstils}
+					Bei der Wahl des Interaktionsstils gibt es einige Optionen, \zB Kommandozeile, Eingabeformular, Menüauswahl, Direkte Manipulation und Spracherkennung.
 				% end
 
-				\paragraph{Die Acht Goldenden Regeln der Gestaltung} % 5.65, 5.66
-					\todo{Content}
+				\paragraph{Die Acht Goldenden Regeln der Gestaltung}
+					\begin{enumerate}
+						\item Konsistenz wo immer möglich (Abläufe, Farben, Layout, Fonts, Menüs, etc.)
+						\item Universelle Benutzbarkeit (Anfänger*innen bis Expert*innen, Altersgruppen, Behinderungen, technische Vorlieben, etc.)
+						\item Informatives Feedback für jede Aktion
+						\item Design von Dialogen, die mehrere Aktionen zum Abschluss führen (Beschleunigung)
+						\item Verhinderung von Fehlern (\zB invaliden Konfigurationen)
+						\item Einfaches rückgängig machen von Aktionen
+						\item Unterstützung eines Gefühls der Kontrolle über die Schnittstelle
+						\item Reduktion der Gedächtnisbelastung (Daumenregel: ca. sieben Informationen können zeitgleich im Arbeitsgedächtnis gehalten werden)
+							\begin{itemize}
+								\item Nicht zu viele Informationen auf einer Anzeige
+								\item Rasche Wechsel führen zu Change Blindness, \dh andere, potentiell wichtige, Änderungen werden übersehen
+							\end{itemize}
+					\end{enumerate}
 				% end
 			% end
 
-			\subsubsection{Menschliche Reaktionszeit} % 5.67
-				\todo{Content}
+			\subsubsection{Menschliche Reaktionszeit}
+				Empirisch wurde das \emph{Nick-Hyman-Gesetz} zur menschlichen Reaktionszeit ermittelt. Diese beträgt demnach
+				\begin{equation}
+					\mathit{Reaktionszeit} = a + b \log_2(C),
+				\end{equation}
+				wobei \(C\) die Anzahl Auswahlmöglichkeiten und \(a\) und \(b\) empirisch zu ermittelnde Konstanten sind. Dürfen Menschen gelegentlich Fehler machen (\zB wenn Aktionen zurückgenommen werden können), so kann die Reaktionszeit deutlich erhöht werden.
 			% end
 		% end
 	% end

@@ -2,13 +2,13 @@
 
 ## Folien
 
-Done/Structured/Total: 0/702/1168; 0%/60%/100%
+Done/Structured/Total: 279/702/1168; 24%/60%/100%
 
-* [x] Kapitel  0: Organisation (20)
-* [x] Kapitel  1: Einführung in die Informationsvisualisierung (82)
-* [x] Kapitel  2: Die Visuelle Abbildung (90+15)
+* [X] Kapitel  0: Organisation (20)
+* [X] Kapitel  1: Einführung in die Informationsvisualisierung (82)
+* [X] Kapitel  2: Die Visuelle Abbildung (90+15)
 * [x] Kapitel  3: Wahrnehmung, Position und Layout (105)
-* [x] Kapitel  4: Datenvorverarbeitung (72)
+* [X] Kapitel  4: Datenvorverarbeitung (72)
 * [x] Kapitel  5: Interaktion (70)
 * [x] Kapitel  6: Techniken 1 (91)
 * [x] Kapitel  7: Techniken 2 (66)

@@ -750,7 +750,7 @@
 				\paragraph{Selektion}
 					Das Ziel der Selektion ist Identifikation eines bestimmten Objekts oder Definition einer (beliebigen) Teilmenge. Dafür gibt das System Feedback in Form einer Markierung mit einer geeigneten visuellen Auszeichnung (\zB einkreisen). Das \emph{Fitts Law} ist dabei die Zeit, die zum Selektieren benötigt wird,
 					\begin{equation}
-						\mathit{Selektionszeit} = a + b \log_2(\frac{D}{W} + 1),
+						\mathit{Selektionszeit} = a + b \log_2\biggl(\frac{D}{W} + 1\biggr),
 					\end{equation}
 					wobei \(D\) die Distanz zum Zentrum und \(W\) die Größe/Ausdehnung des Ziels sind und \(a\) und \(b\) empirisch ermittelte Konstanten.
 				% end
@@ -905,94 +905,321 @@
 	% end
 % end
 
-\chapter{Spezialisierte Visualisierungstechniken} % 6.3, 6.4, 6.5, 6.52
-	\todo{Content}
+\chapter{Spezialisierte Visualisierungstechniken}
+	In diesem Kapitel werden einige für bestimmte Daten spezialisierte Visualisierungstechniken behandelt, \bspw für hochdimensionale oder sehr viele Daten.
 
-	\section{Hochdimensionale Daten} % 6.6, 6.7, 6.8, 6.9, 6.10, 6.11, 6.17, 6.53
-		\todo{Content}
+	\section{Hochdimensionale Daten}
+		Zu Beginn muss die Frage gestellt werden, was "hochdimensional" ist. Denn: "Hoch"dimensional kann sogar schon drei quantitative Attribute bedeuten: Ein Scatterplot kann \bspw problemlos zwei quantitative Dimensionen Dimension darstellen, bei drei quantitativen -- und spätestens bei vieren -- wird es jedoch schwer. Selbst wenn die dritte Dimension nominal ist, wird diese unbewusst als abhängige Variable wahrgenommen, was \ggf nicht gewollt ist. Eine Möglichkeit ist die Darstellung in einem 3D-Plot, aber erstens bricht dies spätestens bei vier Dimensionen zusammen und zweitens sind diese Art von Visualisierungen schwer zu lesen -- auch wenn dies durch Hilfslinien oder Interaktion (\bspw Rotation) verbessert werden kann.
 
-		\subsection{Quantitative Daten} % 6.12
-			\todo{Content}
+		Grundsätzlich gilt: Fast alle Techniken zur Darstellung hochdimensionaler Daten sind nicht dazu geeignet, einzelne Datenwerte abzulesen sondern dienen in erster Linie dazu Trends und Verteilungen sichtbar zu machen, um Muster, Ausreißer und/oder Abhängigkeiten zu finden. Sollen zusätzlich Werte abgelesen werden, ist dies durch Interaktion (\zB Tooltips) realisierbar.
 
-			\subsubsection{Scatterplot-Matrix} % 6.14, 6.15, 6.16
-				\todo{Content}
+		Eine Übersicht über die vorgestellten Techniken ist in \autoref{tab:hochdimDaten} zu finden.
+
+		\begin{sidewaystable}
+			\centering
+			\begin{tabular}{l|lccccl}
+				\toprule
+				\textbf{Name} & \textbf{Dimensionstyp} & \textbf{\#Dimensionen} & \textbf{\#Datensätze} & \textbf{Anord.?} & \textbf{Lesb. (Int.)} & \textbf{Aufgabe} \\ \midrule
+				\textbf{Scatterplot-Matrix} & quantitativ & \numrange{4}{8} & \numrange{100}{10000} & \(++\) & \(+\) (\(++\)) & paarweise Korrelationen finden \\ \midrule
+				\textbf{Starplot} & quantitativ\textsuperscript{2} & \numrange{4}{15} & \numrange{10}{100} & \(---\) & \(\circ\) (\(+\)) & Vergleich in vielen Dimensionen \\ \midrule
+				\textbf{Parallele Koordinaten} & quantitativ\textsuperscript{2} & ca. \num{30}\textsuperscript{1} & \numrange{100}{1000} & \(--\) & \(-\) (\(+\)/\(++\)) & \multirowcell{2}[][l]{paarweise Korrelationen finden\\Suchen in nD} \\ \midrule
+				\textbf{RadViz} & quantitativ & \numrange{4}{15} & \numrange{10}{1000} & \(---\) & \(-\) (\(\circ\)/\(-\)) & lineare Abhängigkeiten finden \\ \midrule
+				\textbf{Parallel Sets} & nominal\textsuperscript{3} & ca. \num{30}\textsuperscript{1} & "unendlich" & \(--\) & \(\circ\) (\(+\)/\(++\)) & \multirowcell{2}[][l]{paarweise Korrelationen finden\\Suche in nD} \\ \midrule
+				\textbf{Mosaik-Plot} & nominal\textsuperscript{3} & \numrange{4}{6} & "unendlich" & \(--\) & \(-\) (\(\circ\)) & \multirowcell{2}[][l]{Häufigkeiten vergleichen\\paarweise Abhängigkeiten finden} \\ \midrule
+				\textbf{KV-Map} & nominal\textsuperscript{3} & \numrange{4}{10} & "unendlich" & \(-\) & \(--\) (\(\circ\)) & \multirowcell{2}[][l]{Korrelationen in nD finden\\Muster in nD finden} \\ \midrule
+				\textbf{Tabellen} & alle & \(30+\) & \numrange{100}{1000} & \(+\) & \(+\) (\(++\)) & Vergleichen, Korrelationen finden \\
+				\bottomrule
+			\end{tabular}
+			\caption[Übersicht über Visualisierungstechniken für hochdimensionale Daten]{
+				Übersicht über Visualisierungstechniken für hochdimensionale Daten \\
+				\textsuperscript{1} limitiert durch die Bildbreite/-höhe \\
+				\textsuperscript{2} auch nominale Daten können mit einer beliebigen Anordnung verwendet werden \\
+				\textsuperscript{3} durch Diskretisierung können auch quantitative Daten verwendet werden
+			}
+			\label{tab:hochdimDaten}
+		\end{sidewaystable}
+
+		\subsection{Quantitative Daten}
+			Dieser Abschnitt behandelt Visualisierungstechniken für hochdimensionale quantitative Daten, \dh Daten mit vielen quantitativen Attributen. Im Allgemeinen lassen sich diese Verfahren jedoch alle auf kategorische Daten anwenden.
+
+			\subsubsection{Scatterplot-Matrix}
+				Eine der bekanntesten Techniken ist die \emph{Scatterplot-Matrix}, in der alle Attribute sowohl auf die x- und y-Position als auch die Attributsnamen selbst auf diese abgebildet werden. Dadurch ergibt sich eine Matrix an Scatterplots, die für sich genommen jeweils ein Attributspaar darstellen (siehe \autoref{fig:scatterplotmatrix}).
+
+				\begin{figure}
+					\centering
+					\includegraphics[width=\linewidth]{scatterplotmatrix}
+					\caption[Visualisierungstechnik (nD-Quantitativ): Scatterplot-Matrix]{Visualisierungstechnik (nD-Quantitativ): Scatterplot-Matrix\\Quelle: \url{https://observablehq.com/@d3/brushable-scatterplot-matrix}}
+					\label{fig:scatterplotmatrix}
+				\end{figure}
+
+				\paragraph{Stärken}
+				\begin{itemize}
+					\item geeignet für 4 bis 8 Dimensionen
+					\item getreue Darstellung paarweiser Abhängigkeiten
+					\item komplexe Abhängigkeiten sind über Brushing und Linking darstellbar
+					\item weitgehend unabhängig von der Zeilen/Spalten-Anordnung
+					\item kaum Verzerrung der Wahrnehmung
+				\end{itemize}
+
+				\paragraph{Schwächen}
+				\begin{itemize}
+					\item skaliert schlecht für viele Datenpunkte (Overplotting)
+					\item zeigt "nur" paarweise Abhängigkeiten
+				\end{itemize}
 			% end
 
-			\subsubsection{Starplot} % 6.18, 6.19, 6.20, 6.23
-				\todo{Content}
+			\subsubsection{Starplot}
+				Die Idee des \emph{Starplots} ist, unabhängige Dimensionen radial um einen gemeinsamen Ursprung anzuordnen und die Daten als Linie zwischen diesen Achsen darzustellen (siehe \autoref{fig:starplot}). Um mehrere Daten zu visualisieren können entweder mehrere Farben verwendet werden oder mehrere kleine Plots, sogenannte \emph{Small Multiples}\footnote{Small Multiples ist eine generelle Art, viele Daten darzustellen und beschränkt sich nicht nur auf Starplots.} erstellt werden. Dabei wird allerdings die Vergleichbarkeit schwerer, die jedoch durch eine geeignete Anordnung der Plots (ähnliche nebeneinander) zu teilen wiederhergestellt werden kann. Eine weitere Technik zur Verbesserung der Vergleichbarkeit ist das Malen einer Fläche statt einer Linie, da dies die Formwahrnehmung verstärkt.
 
-				\paragraph{Small Multiple Plots} % 6.21, 6.22
-					\todo{Content}
-				% end
+				\paragraph{Stärken}
+				\begin{itemize}
+					\item geeignet für 4 bis 15 Dimensionen
+					\item Ähnlichkeit über Formwahrnehmung
+				\end{itemize}
+
+				\paragraph{Neutral}
+				\begin{itemize}
+					\item einfache Korrelationen zwischen benachbarten Achsen sind gut sichtbar
+				\end{itemize}
+
+				\paragraph{Schwächen}
+				\begin{itemize}
+					\item skaliert schlecht für viele Datenpunkte
+					\item Abhängig von der Anordnung der Achsen
+					\item nur Korrelation benachbarter Achsen sichtbar
+				\end{itemize}
+
+				\begin{figure}
+					\centering
+					\includegraphics[width=0.35\linewidth]{starplot}
+					\caption[Visualisierungstechnik (nD-Quantitativ): Starplot]{Visualisierungstechnik (nD-Quantitativ): Starplot\\Quelle: Vorlesungsfolien}
+					\label{fig:starplot}
+				\end{figure}
 			% end
 
-			\subsubsection{Parallele Koordinaten} % 6.24, 6.25, 6.26, 6.27
-				\todo{Content}
+			\subsubsection{Parallele Koordinaten}
+				\emph{Parallele Koordinaten} folgen der gleichen Idee wie Starplots, "rollen" die Achsen jedoch ab, \dh sie werden nebeneinander dargestellt (siehe \autoref{fig:parallelekoordinaten}). Diese Technik ist sehr populär und wird -- im Vergleich zu Starplots -- eher selten in "Small Multiples" eingesetzt. Das größte Problem bei parallelen Koordinaten ist dabei das Overplotting, \dh der Plot wird nicht lesbar, da zu viele Daten angezeigt werden. Dieses Problem kann allerdings sehr gut durch Interaktionen (\zB Brushing und Linking) abgeschwächt werden, indem \bspw eine durchgehende Linie hervorgehoben wird. Auch helfen Filter und interaktiv sortierbar Achsen weiter.
 
-				\paragraph{\dots mit Interaktion} % 6.28
-					\todo{Content}
-				% end
+				\paragraph{Stärken}
+				\begin{itemize}
+					\item im Prinzip beliebig viele Achsen
+					\item einfache Korrelationen zwischen benachbarten Achsen sind gut sichtbar
+				\end{itemize}
+
+				\paragraph{Schwächen}
+				\begin{itemize}
+					\item skaliert schlecht für viele Datenpunkte
+					\item Linienzüge können in Kreuzungen nicht verfolgt werden
+					\item Abhängig von der Anordnung der Achsen
+					\item Achsenrichtung beeinflusst die Wahrnehmung
+					\item nur Korrelation benachbarter Achsen sichtbar
+				\end{itemize}
+
+				\begin{figure}
+					\centering
+					\includegraphics[width=0.5\linewidth]{parallelekoordinaten}
+					\caption[Visualisierungstechnik (nD-Quantitativ): Parallele Koordinaten]{Visualisierungstechnik (nD-Quantitativ): Parallele Koordinaten\\Quelle: Vorlesungsfolien}
+					\label{fig:parallelekoordinaten}
+				\end{figure}
 			% end
 
-			\subsubsection{RadViz} % 6.29, 6.30, 6.31
-				\todo{Content}
+			\subsubsection{RadViz}
+				\emph{RadViz} nutzt, ebenso wie ein Starplot, ein radiales Layout der Achsen, allerdings werden keine Linien verbunden, sondern hohe Werte in einer Achse "ziehen" den Punkt in Richtung dieses Achsenendes, sodass ein Datenpunkt am Ende nur als ein Punkt angezeigt wird (siehe \autoref{fig:radviz}). Zur Erstellung eines solchen Plots werden die Daten zunächst min-max-normiert und anschließend die Achsenvektoren entsprechend gewichtet, \dh
+				\begin{align}
+					u_1 &= \frac{\sum_{j = 1}^{n}}{y_j \cos(\alpha_j)}{\sum_{j = 1}^{n} y_j} &
+					u_2 &= \frac{\sum_{j = 1}^{n}}{y_j \sin(\alpha_j)}{\sum_{j = 1}^{n} y_j}
+				\end{align}
+				wobei \(\alpha_j\) den Winkel der \(j\)-ten Achse und \(u_1\) und \(u_2\) die horizontale \bzw vertikale Position darstellen.
+
+				\paragraph{Stärken}
+				\begin{itemize}
+					\item platzsparend
+					\item relative Datenverhältnisse sind gut sichbar
+				\end{itemize}
+
+				\paragraph{Schwächen}
+				\begin{itemize}
+					\item Achsenanordnung bestimmt die Position
+					\item redundante Achsen verzerren das Ergebnis
+					\item Punktposition ist nicht eindeutig aufgrund der Normierung
+				\end{itemize}
+
+				\begin{figure}
+					\centering
+					\includegraphics[width=0.3\linewidth]{radviz}
+					\caption[Visualisierungstechnik (nD-Quantitativ): RadViz]{Visualisierungstechnik (nD-Quantitativ): RadViz\\Quelle: Vorlesungsfolien}
+					\label{fig:radviz}
+				\end{figure}
 			% end
 		% end
 
-		\subsection{Kategorische Daten} % 6.32
-			\todo{Content}
+		\subsection{Kategorische Daten}
+			Dieser Abschnitt behandelt Visualisierungstechniken für hochdimensionale kategorische Daten, \dh Daten mit vielen nominalen oder ordinalen Attributen. Im Allgemeinen lassen sich dafür ebenfalls alle Verfahren aus dem vorherigen Abschnitt anwenden, es gibt jedoch auch einige spezielle Verfahren.
 
-			\subsubsection{Parallel Sets} % 6.34, 6.35, 6.36, 6.37
-				\todo{Content}
+			\subsubsection{Parallel Sets}
+				\emph{Parallel Sets} sind ähnlich zu parallelen Koordinaten, stellen jedoch Datenmengen mit einem bestimmten Attributswert dar, die sich an jeder Achse aufteilen. Des weiteren werden die Achsen oft übereinander statt nebeneinander angeordnet (siehe \autoref{fig:parallelsets}). Durch die Einfärbung nach dem ersten Attribut kann die Zugehörigkeit auch später noch zuordnen. Durch Transparenz wird zusätzlich sichergestellt, dass der Verlauf auch bei Überschneidungen noch sichtbar ist.
 
-				\paragraph{\dots mit Interaktion} % 6.38
-					\todo{Content}
-				% end
+				Durch Interaktion lassen sich, wie bei parallelen Koordinaten, einige der unten aufgelisteten Nachteile entschärfen. Dabei kann \bspw die Achsen- und Kategorienreihenfolge verändert sowie Teilmengen hervorgehoben werden. Außerdem könnte die Kategorie, welche die Farbe bestimmt, auswählbar gemacht werden.
+
+				\begin{figure}
+					\centering
+					\includegraphics[width=0.9\linewidth]{parallelsets}
+					\caption[Visualisierungstechnik (nD-Kategorisch): Parallel Sets]{Visualisierungstechnik (nD-Kategorisch): Parallel Sets\\Quelle: \url{https://www.jasondavies.com/parallel-sets/}}
+					\label{fig:parallelsets}
+				\end{figure}
+
+				\paragraph{Stärken}
+				\begin{itemize}
+					\item skaliert für beliebig viele Daten (da die Anzahl angezeigter Linien nur von der Anzahl Kategorien und Werte in diesen abhängt)
+					\item geeignet für 20 und mehr Dimensionen
+				\end{itemize}
+
+				\paragraph{Schwächen}
+				\begin{itemize}
+					\item Abhängig von der Anordnung der Achsen
+					\item Abhängig von der Anordnung der Kategorien
+					\item häufige Kategorien dominieren seltene (Overplotting)
+					\item Abhängigkeit von der Zeichnungsreihenfolge (durch Überlagerung; Overplotting)
+				\end{itemize}
 			% end
 
-			\subsubsection{Mosaic-Plot} % 6.39, 6.40, 6.41
-				\todo{Content}
+			\subsubsection{Mosaik-Plot}
+				Ein \emph{Mosaik-Plot} basiert auf der rekursiven Teilung von Flächen, \dh für die Werte eines Attributs wird die Wertmenge horizontal oder vertikal geteilt, was eine neue Untermenge ergibt. Dabei wird bei jeder Teilung in anderes Attribut gewählt, bis alle darzustellenden Attribute aufgebraucht sind. Der Ort der Teilung entspricht dabei, wie bei den Parallel Sets, der Häufigkeit (siehe \autoref{fig:mosaicplot}).
+
+				\paragraph{Stärken}
+				\begin{itemize}
+					\item effiziente Nutzung des Raums
+					\item skaliert für beliebig viele Daten (da die Anzahl angezeigter Flächen nur von der Anzahl Kategorien und Werte in diesen abhängt)
+					\item Abhängigkeit des zweiten vom ersten Attribut gut sichtbar
+					\item Abhängigkeit des \((i - 1)\)-ten vom \(i\)-ten Attribut einigermaßen gut sichtbar
+				\end{itemize}
+
+				\paragraph{Schwächen}
+				\begin{itemize}
+					\item Abhängig von der Reihenfolge der Attribute
+					\item Abhängig von der Anordnung der Kategorien
+					\item schwere Lesbarkeit bei mehreren Variablen
+					\item allgemein schlecht vergleichbar und lesbar
+					\item Nullwerte müssen gesondert behandelt werden, da die entsprechende Kachel sonst einfach verschwindet
+				\end{itemize}
+
+				\begin{figure}
+					\centering
+					\includegraphics[width=0.8\linewidth]{mosaicplot}
+					\caption[Visualisierungstechnik (nD-Kategorisch): Mosaik-Plot]{Visualisierungstechnik (nD-Kategorisch): Mosaik-Plot\\Hinweis: Die Farbe innerhalb der Kacheln kann weitere Daten darstellen; die Skala wurde hier bewusst weggelassen, da dies nicht direkt Teil der Idee eines Mosaik-Plots ist.\\Quelle: \url{https://rkabacoff.github.io/datavis/Models.html}}
+					\label{fig:mosaicplot}
+				\end{figure}
 			% end
 
-			\subsubsection{KV-Map} % 6.42, 6.43, 6.44, 6.45, 6.45, 6.46, 6.47, 6.48
-				\todo{Content}
+			\subsubsection{KV-Map}
+				Die \emph{KV-Map} ist eine fortgeschrittene Visualisierungstechnik, die zunächst -- wie bei einem Mosaik-Plot -- die Daten rekursiv einteilt. Dabei bleibt die Größe der Kacheln jedoch gleich verteilt und die Häufigkeit wird auf die Farbe abgebildet (entweder direkt die Anzahl Elemente oder ob die Attribute statistisch unabhängig sind).
+
+				\paragraph{Stärken}
+				\begin{itemize}
+					\item geeignet für ca. 10 Attribute
+					\item Abhängigkeiten zwischen \emph{allen} Attributen sichtbar
+					\item nutzt die Fähigkeit, Frequenzen und Wiederholungen wahrzunehmen
+				\end{itemize}
+
+				\paragraph{Schwächen}
+				\begin{itemize}
+					\item Wahrnehmung muss gelernt werden
+					\item Muster sind nicht interpretierbar (hierzu sollten automatische Verfahren genutzt werden: Visual Analytics)
+				\end{itemize}
 			% end
 
-			\subsubsection{Tabelle} % 6.49, 6.50, 6.51
-				\todo{Content}
+			\subsubsection{Tabelle}
+				Eine ganz allgemeine Form der Visualisierung ist eine Tabelle, in der Spalten für Attribute und Zeilen für Items verwendet werden. Dabei werden die Werte grafisch und nicht durch Text dargestellt, \bspw durch Farbe zur Indikation ob ein Wert "hoch" ist. Es können allerdings sehr vielfältige "klein" Visualisierungen verwendet werden.
+
+				\paragraph{Stärken}
+				\begin{itemize}
+					\item Tabellen sind vertraut
+					\item geeignet für 20 und mehr Attribute (als Heatmap)
+					\item im Extremfall ein Datensatz pro Pixelzeile
+					\item Attribute können kategorisch oder quantitativ sein
+					\item Sortierung offenbart Korrelationen über viele Attribute
+				\end{itemize}
+
+				\paragraph{Schwächen}
+				\begin{itemize}
+					\item limitiert auf mehrere hundert Datensätze
+				\end{itemize}
 			% end
 		% end
 	% end
 
-	\section{Große Datenmengen} % 6.54, 6.55
-		\todo{Content}
+	\section{Große Datenmengen}
+		Dieser Abschnitt behandelt spezialisierte Methoden zur Darstellung "vieler" Daten. Wie bereits bei hochdimensionalen ist die Bedeutung "viel" relativ zu sein: Bei der mentalen Verarbeitung kann dies bereits in der Größenordnung von wenigen Datenpunkten ("mehr Daten, als man verstehen kann"), bei High-Performance-computing bei vielen Millionen Datenpunkten ("mehr Daten, als man verarbeiten/speichern kann") zutreffen. Dieser Abschnitt behandelt vornehmlich "mehr Daten, als man Anzeigen kann", während "normale" Visualisierungstechniken in den Bereich "mehr Daten, als man lesen kann" fallen. Die Anzahl Datenpunkte liegt damit in der Größenordnung von einigen tausend bis zehntausenden Punkten.
 
-		\subsection{Ordnen} % 6.57, 6.57
-			\todo{Content}
+		\subsection{Ordnen}
+			In diesem Abschnitt werden Methoden behandelt, die unter dem Begriff "Ordnen" zusammengefasst werden. Dies sind \bspw Dimensionsreduktion, Feature-Selektion und Sortieren. Bei der Dimensionsreduktion wird versucht, die Attribute so zu kombinieren, dass die Daten besser gruppiert/unterschieden werden können, bei der Feature-Selektion ist die zentrale Frage, welche Attribute tatsächlich wichtig sind und die Sortierung (als Interaktion und automatischer Prozess) stellt die Frage, wonach eigentlich gesucht wird.
 
-			\subsubsection{Dimensionsreduktion und Feature Selektion} % 6.59, 6.60, 6.61, 6.62, 6.63, 6.82
-				\todo{Content}
+			\subsubsection{Dimensionsreduktion}
+				Ein Grundproblem der Visualisierung ist, dass ein Bildschirm (und ein Blatt Papier) nur zwei Dimensionen haben. Des weiteren sind Dimensionen, die über der dritten liegen, nur schwer bis gar nicht verständlich. Das zweite große Problem -- der "Curse of Dimensionality" -- tritt in der Algorithmik auf, wenn je mehr Attribute zwei Items haben, desto eher unterscheiden sie sich auch in einem davon, \dh es werden exponentiell mehr Daten benötigt, um "den Raum zu füllen". Des weiteren werden Berechnungen sehr langsam und redundante Dimensionen verzerren die Ergebnisse (da wiederholte Informationen übergewichtet werden).
 
-				\paragraph{Principal Component Analysis (PCA)} % 6.64, 6.65, 6.66, 6.67
-					\todo{Content}
+				Formal ist das Problem der Dimensionsreduktion wie folgt definiert: Gegeben seien Daten \( \mathcal{X} \) mit \(n > 2\) Attributen \( \vec{x} = (x_1, x_2, \dots, x_n) \in \mathcal{X} \) sowie eine Distanzfunktion \( \mathrm{dist}_n(\cdot, \cdot) \), die einen Abstand/Unterschied zwischen zwei Datenpunkten in \(n\) Dimensionen berechnen kann. Dann wird in der Dimensionsreduktion eine Abbildung \( \mathit{reduce} : \mathcal{X} \to \R^k \) gesucht, sodass \( \mathrm{dist}_k(\vec{x}, \vec{y}) \) sich wie \( \mathrm{dist}_n(\vec{x}, \vec{y}) \) verhält (für alle \( \vec{x}, \vec{y} \in \mathcal{X} \)). In der Visualisierung wird dabei oft \( k = 2 \) und \( \mathrm{dist}_2(\vec{x}, \vec{y}) = \lVert \vec{x} - \vec{y} \rVert_2 \) gewählt.
+
+				Im Folgenden werden einige übliche Verfahren zur Dimensionsreduktion angeschnitten. Eine Übersicht ist in \autoref{tab:dimRed} zu finden.
+
+				\begin{table}
+					\centering
+					\begin{tabular}{l|ll}
+						\toprule
+						\textbf{Verfahren} & \textbf{Besonderheiten und Stärken} & \textbf{Schwächen} \\ \midrule
+						\textbf{PCA} & \multirowcell{3}[][l]{lineares Verfahren\\erhält die Varianz im Originalraum\\einfache, geschlossene Lösung} & keine nichtlineare Zsmh. \\ \midrule
+						\textbf{LDA} & \multirowcell{3}[][l]{lineares Verfahren\\benötigt gelabelte Daten\\sucht Achsen, die die Labels möglichst gut trennen} & keine nichtlineare Zsmh. \\ \midrule
+						\textbf{MDS} & \multirowcell{3}[][l]{nichtlineares Verfahren\\benötigt nur Distanzen, keine Datenpunkte} & Lösung wird nur approximiert \\ \midrule
+						\textbf{SOM} & \multirowcell{2}[][l]{nichtlineares Verfahren\\auch zur Gruppierung der Daten geeignet} & \multirowcell{2}[][l]{Lösung wird nur approximiert\\relativ viele Parameter} \\
+						\bottomrule
+					\end{tabular}
+					\caption{Übersicht über verschiedene Dimensionsreduktionsverfahren}
+					\label{tab:dimRed}
+				\end{table}
+
+				\paragraph{Hauptkomponentenanalyse (Principal Component Analysis, PCA)}
+					Die \emph{Hauptkomponentenanalyse} eignet sich gut für Daten mit linearen Abhängigkeiten, kann aber mittels Kernel-PCA auch auf nichtlineare Zusammenhänge erweitert werden. Die Reduktionsfunktion wird dabei durch Maximierung der Varianz entlang der \emph{Hauptkomponenten} gefunden, welche über die Kovarianzmatrix berechnet werden können, sofern die Achsen im Ursprungsraum orthogonal zueinander stehen. Durch die Varianz entlang der einzelnen Achsen kann dann der Informationsverlust als \emph{erklärte Varianz} quantifiziert werden. Bei PCA handelt es sich also um eine "verlustbehaftete Kompression".
 				% end
 
-				\paragraph{Linear Discriminant Analysis (LDA)} % 6.68, 6.69
-					\todo{Content}
+				\paragraph{Linear Discriminant Analysis (LDA)}
+					\emph{Linear Discriminant Analysis} benötigt in Klassen geteilte ("gelabelte") Daten und es werden Achsen gesucht, die die Klassen gut unterscheiden, \dh es wird die \emph{Reinheit} der Klassen bewertet. Dabei sind die neuen Achsen Linearkombinationen der alten Achsen. Eine übliche Methode ist die Optimierung des \emph{Fisher-Kriteriums}, welches dafür sorgt, dass die Mittelwerte der Klassen maximal weit auseinander und die Varianzen innerhalb der Klassen möglichst klein werden.
 				% end
 
-				\paragraph{Multidimensional Scaling (MDS)} % 7.70, 6.71, 6.72, 6.73
-					\todo{Content}
+				\paragraph{Multidimensional Scaling (MDS)}
+					Bei \emph{Multidimensional Scaling} werden die Daten so in einem niedrigdimensionalen Raum angeordnet, dass die Distanzen aus dem Originalraum möglichst gut abgebildet sind. Dies wird durch direkte Minimierung des Fehlers
+					\begin{equation}
+						\sum_{i, j = 1}^{n} \bigl( d_n(\vec{x}_i, \vec{x}_j) - d_k\bigl( \mathrm{reduce}(\vec{x}_i), \mathrm{reduce}(\vec{x}_i) \bigr) \bigr)
+					\end{equation}
+					erreicht. Die Methode funktioniert daher auch mit Daten, bei denen ausschließlich die Entfernungen bekannt sind und ist, mit Modifikationen, auch auf nominale Daten anwendbar. Die Transformation kann dabei beliebig komplex (auch nichtlinear) sein.
 				% end
 
-				\paragraph{Self-Organizing Map (SOM)} % 6.74, 6.75, 6.76, 6.77, 6.78, 6.79, 6.80, 6.81
-					\todo{Content}
+				\paragraph{Self-Organizing Map (SOM)}
+					Eine \emph{Self-Organizing Map} (SOM) ist ein Verfahren zur automatischen Anordnung von Visualisierungen (häufig Zeitserien) in einem Raster, dessen Vorgehen analog zu k-Means ist:
+					\begin{enumerate}
+						\item Jede Zelle (in einem fixen Raster) wird zufällig initialisiert. Diese Zellenwerte (die \emph{Prototypen}) entsprechen den Zentroiden bei k-Means.
+						\item Jede Zeitserie wird der Zelle mit dem ähnlichsten (\bspw Euklidische Distanz) Prototyp zugeordnet.
+						\item Die Prototypen einer Zelle sowie ihre direkten Nachbarn werden so verändert, dass sie den Originaldaten, die der Zelle zugeordnet wurden, ähnlicher werden. Ferne Nachbarn (zweiten Grades) werden so verändert, dass sie den Originaldaten unähnlicher werden.
+						\item Schritt 2 und 3 werden so lange wiederholt, bis das Verfahren konvergiert, wodurch die Nachbarschaft in Schritt 3 immer kleiner wird.
+					\end{enumerate}
 				% end
+			% end
+
+			\subsubsection{Feature-Selektion}
+				Ähnlich wie in der Dimensionsreduktion kann die \emph{Feature-Selektion} formal definiert werden: Seien \(\mathcal{X}\) wieder die Daten, dann wählt die Feature-Selektion davon \( k < n \) \emph{relevante} Attribute aus. Dabei ist \emph{relevant} so definiert, dass eine Vorhersage über eine (unbekannte) Eigenschaft eines Datenpunktes basierend auf den reduzierten Features das gleiche Ergebnis liefern soll wie eine Vorhersage auf den originalen Features. Die Relevanz hängt also davon ab, welche Frage gestellt wird.
+
+				Weitere Details zu Feature-Selektionsverfahren werden im Visual Analytics-Teil behandelt, siehe \todo{ref feature selection va}.
 			% end
 		% end
 
-		\subsection{Aggregieren} % 6.83, 6.84, 6.85, 6.86, 6.87, 6.88, 6.89, 6.90
-			\todo{Content}
+		\subsection{Aggregieren}
+			Eine weitere Gruppe an Techniken für den Umgang mit vielen Daten ist die Aggregation. Diese basiert auf zwei Annahmen: Erstens wird ein Verfahren benötigt, welches beliebig viele Daten darstellen kann; Zweitens wird die Annahme getroffen, dass der*die Nutzer*in nicht an einzelnen Werten, sondern nur an zusammengefassten Informationen, interessiert ist. Basierend darauf gibt es drei (unabhängige) Fragestellungen bei der Aggregation, die allesamt im Kontext der Aufgabe zu sehen sind:
+			\begin{enumerate}
+				\item \emph{Welche} Items werden zusammengefasst? \\
+					Im Allgemeinen kann jede Unterteilung prinzipiell eine sinnvolle Unterteilung liefern.
+				\item \emph{Wie} werden die Items zusammengefasst? \\
+					Beispielsweise Zählen der Items, Durchschnittswert eines Attributs, häufigster Wert, Varianz eines Attributs, minimale Differenz zweier Attribute, uvm., wobei Anzahl und Durchschnitt die häufigsten Methoden sind.
+				\item Wie wird das \emph{dargestellt?} \\
+					Hier gibt es so viele Möglichkeiten wie es Möglichkeiten zur Visualisierung gibt, die Aggregation stellt nur eine Abstraktion dar. Denn: Durch die Aggregation wurde nur ein neuer Datenpunkt, \bzw neue Items, erstellt, der auf beliebige Weise visualisiert werden kann. Es ist für eine Visualisierung also egal, woher die Items kommen.
+			\end{enumerate}
 		% end
 	% end
 

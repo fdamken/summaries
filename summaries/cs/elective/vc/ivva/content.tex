@@ -1155,6 +1155,8 @@
 			In diesem Abschnitt werden Methoden behandelt, die unter dem Begriff "Ordnen" zusammengefasst werden. Dies sind \bspw Dimensionsreduktion, Feature-Selektion und Sortieren. Bei der Dimensionsreduktion wird versucht, die Attribute so zu kombinieren, dass die Daten besser gruppiert/unterschieden werden können, bei der Feature-Selektion ist die zentrale Frage, welche Attribute tatsächlich wichtig sind und die Sortierung (als Interaktion und automatischer Prozess) stellt die Frage, wonach eigentlich gesucht wird.
 
 			\subsubsection{Dimensionsreduktion}
+				\label{subsubsec:dimred}
+
 				Ein Grundproblem der Visualisierung ist, dass ein Bildschirm (und ein Blatt Papier) nur zwei Dimensionen haben. Des weiteren sind Dimensionen, die über der dritten liegen, nur schwer bis gar nicht verständlich. Das zweite große Problem -- der "Curse of Dimensionality" -- tritt in der Algorithmik auf, wenn je mehr Attribute zwei Items haben, desto eher unterscheiden sie sich auch in einem davon, \dh es werden exponentiell mehr Daten benötigt, um "den Raum zu füllen". Des weiteren werden Berechnungen sehr langsam und redundante Dimensionen verzerren die Ergebnisse (da wiederholte Informationen übergewichtet werden).
 
 				Formal ist das Problem der Dimensionsreduktion wie folgt definiert: Gegeben seien Daten \( \mathcal{X} \) mit \(n > 2\) Attributen \( \vec{x} = (x_1, x_2, \dots, x_n) \in \mathcal{X} \) sowie eine Distanzfunktion \( \mathrm{dist}_n(\cdot, \cdot) \), die einen Abstand/Unterschied zwischen zwei Datenpunkten in \(n\) Dimensionen berechnen kann. Dann wird in der Dimensionsreduktion eine Abbildung \( \mathit{reduce} : \mathcal{X} \to \R^k \) gesucht, sodass \( \mathrm{dist}_k(\vec{x}, \vec{y}) \) sich wie \( \mathrm{dist}_n(\vec{x}, \vec{y}) \) verhält (für alle \( \vec{x}, \vec{y} \in \mathcal{X} \)). In der Visualisierung wird dabei oft \( k = 2 \) und \( \mathrm{dist}_2(\vec{x}, \vec{y}) = \lVert \vec{x} - \vec{y} \rVert_2 \) gewählt.
@@ -1703,96 +1705,119 @@
 		% end
 	% end
 
-	\section{Geobasierte Daten und Karten} % 8.1, 8.4, 8.5, 8.6, 8.7, 8.8, 8.9, 8.10, 8.11, 8.12, 8.90
+	\section{Ortsbezogene Daten und Karten}
 		\label{sec:karten}
 
-		\todo{Content}
+		Bisher wurde größtenteils Daten genutzt, die nicht auf Orte bezogen waren (mit Ausnahme einiger kleiner Diskussionen über deren Datentype). Viele der heute gesammelten Daten basieren jedoch stark auf Orten, \bspw Standortverläufe. Diese können sehr gut auf Karten angezeigt werden. Es gibt jedoch auch nicht-ortsbezogene Daten, die gut auf einer Art Karte angezeigt werden können. Es stellt sich daher die Frage, was genau eine Karte eigentlich ist?
 
-		\subsection{Karten als Metapher} % 8.13, 8.14, 8.15, 8.16, 8.17, 8.18, 8.19, 8.24, 8.25, 8.55, 8.56
-			\todo{Content}
+		Im Vergleich zu einfachen Streudiagrammen mit ortsbezogenen Daten, bei denen die anderen Punkte als Bezugspunkt funktionieren, sind die Bezugspunkte auf einer geografischen Karte durch "Weltwissen" und Assoziation von bekannten Orten. Diese Assoziationen liefern dann eine Hilfe bei der Interpretation, da sie bereits vertraut sind. Des weiteren definiert eine Karte implizit eine Form von "Distanz", die auf Allgemeinwissen basiert. Dabei ist die Distanz nicht unbedingt die Luftlinie, sondern wird \bspw durch Wasser oder Land verzerrt (indem die Distanz als Reisezeit wahrgenommen wird). Aber auch andere Faktoren sind relevant, \zB Länder, Klimata, Vegetation, Visumspflicht, etc.. Ebenfalls sind beeinflussen Höhenänderungen die Wahrnehmung einer Distanz.
 
-			\subsubsection{Karten und Schematisierungen} % 8.20, 8.21, 8.22, 8.23
-				\todo{Content}
+		In diesem Kapitel wird auf weitere Details von Karten, sowohl geografischer als auch schematischer Natur, eingegangen und die Designprinzipien aus den vergangenen Kapiteln auf Karten angewendet.
+
+		\subsection{Karten als Metapher}
+			Bei der Darstellung von Daten auf einer Karte gibt es einen schließenden Übergang zwischen einer tatsächlich geografischen Abbildung, einer verzerrten Abbildung und einer abstrakten Visualisierung, die die geografischen Daten wenn überhaupt nur noch schematisch Darstellt (siehe \autoref{fig:karteabstrakt}). Dabei können die Karten unterschiedliche (abstrakte) Eingabedaten haben, \zB tatsächliche ortsbezogene Daten oder Daten mit einer abstrakten Topologie, die die Intuition für "Abstände" und "Ähnlichkeit" ausnutzen wollen. Diese Darstellung abstrakter Daten auf Karten wird \emph{Imitation} genannt.
+
+			Dabei können viele weitere Elemente des Weltwissens eines*einer Nutzers*Nutzerin verwendet werden, \zB die Rangordnung von Straßen über deren Breite, Darstellung von Höhe durch Höhenlinien und Länder anhand der Form ihrer Grenzen. Durch gezielte Ausnutzung dieser Faktoren wird eine effiziente Suche und Interpretation ermöglicht.
+
+			\begin{figure}
+				\centering
+				\includegraphics[width=0.75\linewidth]{mapabstraction}
+				\caption[Illustration des Übergangs zwischen geografischen und schematischen Karten]{Der Übergang zwischen einer geografischen Kartendarstellung (links) und einer abstrakten schematischen Darstellung (rechts) ist fließend. Dazwischen liegen die verzerrten Karten.\\Quelle: S. Schöttler et al., "Visualizing and Interacting with Geospatial Networks: A Survey and Design Space."}
+				\label{fig:karteabstrakt}
+			\end{figure}
+		% end
+
+		\subsection{Ortsbezogene Daten}
+			In diesem Abschnitt werden einige Darstellungsmethoden für klassische geografische Daten behandelt und insbesondere diskutiert, weshalb eine flache Darstellung des Globus immer verzerrt ist. \emph{Geografische Orte} können dabei Punkte, Linien (\zB Wege) oder Flächen (\zB Länder) sein, also alles was die Fülle an visuellen Marks zu bieten hat.
+
+			\subsubsection{Kartenprojektion}
+				Eine \emph{Kartenprojekt} beschreibt die Abbildung einer 3D-Position auf dem Globus (charakterisiert durch Längen- und Breitengrad, da der Radius annähernd gleich bleibt) auf eine 2D-Position einer flachen Karte. Die kann als die Definition einer View Transformation für die visuelle Abbildung einer Koordinate verstanden werden. Im Allgemeinen ist dieses Problem jedoch nicht perfekt lösbar, sodass alle der folgenden Eigenschaften beibehalten werden:
+				\begin{itemize}
+					\item Entfernungen auf der Erdoberfläche sollten proportional zu Entfernungen auf der Karte sein.
+					\item Flächen auf der Erdoberfläche sollten proportional zu Flächen auf der Karte sein.
+					\item Winkel auf der Erdoberfläche sollten proportional zu Winkeln auf der Karte sein.
+				\end{itemize}
+				Diese Eigenschaften werden auch Distanztreue, Flächentreue und Winkeltreue genannt. Es ist allerdings unmöglich, alle drei Kriterien für eine Abbildung der gesamten Erdkugel zu erfüllen! Im Folgenden werden einige Verfahren behandelt, die dies dennoch versuchen, \bzw auf einige Eigenschaften zugunsten anderer verzichten. Seien dazu \(\varphi\) und \(\theta\) der Längen-, \bzw Breitengrad eines Ortes (analog zu dem Azimut- und Polarwinkel in Kugelkoordinaten). Zur Visualisierung der Projektionen werden \emph{tissotsche Indikatrix} verwendet, welche als Kreise auf die Erdoberfläche gezeichnet werden und sich durch eine Projektion verändern (siehe \autoref{fig:tissot}). So wird sichtbar, so am meisten Verzerrung stattfindet.
+
+				Es ist allerdings in einigen Fällen möglich, das Projektionsproblem zu umgehen, indem nur kleine Bereiche unter einer Plattprojektion betrachtet werden. Dies liegt daran, dass die Erde auf kleinen Gebieten annähernd flach ist. Des weiteren sollte die Projektion immer an die konkrete Aufgabe angepasst werden. Ist es beispielsweise wichtig, dass die Nachbarschaft erhalten bleibt (zur \emph{inkrementellen Suche}), sollte eine solche Projektion genutzt werden. Ebenso ist für bestimmte Anwendungen die Wiedererkennung bestimmter Orte extrem relevant, da darüber die Suche und Identifikation erleichtert werden.
+
+				\begin{figure}
+					\centering
+					\includegraphics[width=0.3\linewidth]{tissotworld}
+					\caption{Tissotsche Indikatrix auf dem Globus}
+					\label{fig:tissot}
+				\end{figure}
+
+				\paragraph{Plattkarte}
+					Die Plattkarte ist die einfachste Darstellung und übernimmt einfach linear die Längen- und Breitengrade:
+					\begin{align}
+						x &= \varphi &
+						y &= \theta
+					\end{align}
+					Durch Anwendung dieser Projektion auf \autoref{fig:tissot} ergibt sich \autoref{fig:plattkarte}. Da diese Projektion weder Distanz-, Flächen- noch Winkeltreu ist, wird sie im Allgemeine nicht verwendet.
+
+					\begin{figure}
+						\centering
+						\def\svgwidth{\linewidth}
+						\input{plattkarte.pdftex}
+						\caption{Verzerrung durch die Plattkarten-Projektion}
+						\label{fig:plattkarte}
+					\end{figure}
+				% end
+
+				\paragraph{Mercator-Projektion}
+					Die Mercator-Projektion
+					\begin{align}
+						x &= \varphi &
+						y &= \mathrm{arctanh}(\sin\theta)
+					\end{align}
+					ist die verbreitetste Projektion, da sie winkeltreu ist und dadurch zur Navigation verwendet werden kann. Die Anwendung dieser Projektion auf \autoref{fig:tissot} ist in \autoref{fig:mercator} zu sehen.
+
+					\begin{figure}
+						\centering
+						\includegraphics[width=0.6\linewidth]{mercator}
+						\caption{Verzerrung durch die Mercator-Projektion}
+						\label{fig:mercator}
+					\end{figure}
+				% end
+
+				\paragraph{Winkel-Tripel}
+					Durch die komplexe Winkel-Tripel-Projektion ist es möglich, eine Flächentreue Darstellung zu erhalten, welche allerdings weder Winkel- noch Längentreu ist. Die Anwendung dieser Projektion auf \autoref{fig:tissot} ist in \autoref{fig:winkeltripel} zu sehen.
+
+					\begin{figure}
+						\centering
+						\def\svgwidth{\linewidth}
+						\input{winkeltripel.pdftex}
+						\caption{Verzerrung durch die Winkel-Tripel-Projektion}
+						\label{fig:winkeltripel}
+					\end{figure}
+				% end
+			% end
+
+			\subsubsection{Verzerrte Darstellungen}
+				Unter \emph{verzerrte Darstellung} wird eine Visualisierung verstanden, welche getreue Darstellungen bewusst aufgibt, um andere Eigenschaften hervorzuheben\footnote{Achtung: Die Darstellung einer weiteren Eigenschaft auf der Karte, \zB durch Farbe, führt nicht zu einer verzerrten Darstellung! Nur wenn die Darstellung einer Eigenschaft die Positionen der Orte verschiebt ist dies eine verzerrte Darstellung.}. Dabei werden meisten Winkel, Entfernungen und Flächen verzerrt und seltener die Nachbarschaft oder der Wiedererkennungswert. Ein Beispiel aus dem Alltag sind Liniennetzpläne einer U-Bahn, die primär eine Darstellung desselben ist, aber auch versucht, die Nachbarschaft eines Ortes beizubehalten. Dabei wird insbesondere die Entfernung zwischen den Orten verzerrt, um entweder mehr Stationen einfügen zu können oder lange Fahrtzeiten auszublenden.
+
+				Eine weitere Art von verzerrten Karten sind Kartogramme, die eine geografische Karte verzerren. Ein Beispiel ist in \autoref{fig:worldmap} zu sehen. Um eine solche Karte zu erstellen wird ein Gitter über die "echten" Raumkoordinaten gelegt und die Knoten gewichtet. Dadurch werden benachbarte Gitterknoten in leere Bereiche gedrückt, bis eine monotone "Gewichtsverteilung" entsteht (dies kann unter anderem den Flächenbias reduzieren, da die Fläche nun tatsächlich die Daten abbildet). Zur Einteilung von Kartogrammen gibt es verschiedene Kriterien, \zB stetig/diskret und der Grad der Form- und Nachbarschaftserhaltung (dabei sollen auch "nicht-Nachbarschaften" erhalten bleiben). Als sehr weit gefasste Karte können dies auch Small Multiples sein, die grob in eine geografische Ordnung gebracht werden (\zB für jedes Bundesland eine Grafik).
+
+				\begin{figure}
+					\centering
+					\includegraphics[width=0.6\linewidth]{worldmapper}
+					\caption[Beispiel für eine verzerrte Karte]{Auf dieser verzerrten Karte wird die Wähler*innenpopulation der Bundestagswahl 2021 dargestellt, wobei die Karte so verzerrt wurde, dass sie die Wähler*innendichte darstellt (\dh eine Flächeneinheit enthält die gleiche Anzahl Wähler*innen unabhängig von dessen Position). Das Gitter wurde über die Karte gelegt um die Richtung der jeweiligen Ausdehnung hervorzuheben.}
+					\label{fig:worldmap}
+				\end{figure}
 			% end
 		% end
 
-		\subsection{Geobezogene Daten} % 8.26, 8.27, 8.28, 8.29
-			\todo{Content}
+		\subsection{Nicht-Ortsbezogene Daten}
+			Die Darstellung nicht-ortsbezogener Daten kann \zB sinnvoll sein, um die bestehenden Intuitionen auszunutzen. Das größte Problem ist dabei die Festlegung des Ortes, also die Abbildung der Daten auf zwei Koordinaten und die Auswahl relevanter Landmarken zur Orientierung. Für ersteres können sämtlich besprochenen Verfahren zur Dimensionsreduktion (\autoref{subsubsec:dimred}) und Graph-Layouting (\autoref{sec:visGraphen}) genutzt werden.
 
-			\subsubsection{Kartenprojektion} % 8.30, 8.31, 8.32, 8.35, 8.36, 8.37, 8.38
-				\todo{Content}
-
-				\paragraph{Plattkarte} % 8.32
-					\todo{Content}
-				% end
-
-				\paragraph{Mercator Projektion} % 8.33
-					\todo{Content}
-				% end
-
-				\paragraph{Winkel-Tripel} % 8.34
-					\todo{Content}
-				% end
-			% end
-
-			\subsubsection{Verzerrte Darstellungen} % 8.39, 8.40, 8.41, 8.42
-				\todo{Content}
-
-				\paragraph{Metro-Map} % 8.43
-					\todo{Content}
-				% end
-
-				\paragraph{(Stetige) Kartogramme} % 8.44, 8.45, 8.46, 8.47, 8.48, 8.49, 8.50, 8.51
-					\todo{Content}
-				% end
-			% end
-
-			\subsubsection{Abstrakte Geovisualisierungen} % 8.52, 8.53, 8.54
-				\todo{Content}
-			% end
+			Weitere Herausforderungen sind (eventuell) die Konstruktion einer Topographie, die im Hintergrund dargestellt werden kann und die Wahl geeigneter Metaphern um Informationen und Beziehungen effektiv und konsistent zu übersetzen.
 		% end
 
-		\subsection{Nicht-Geobezogene Daten} % 8.57, 8.58, 8.59, 8.60, 8.61, 8.69
-			\todo{Content}
+		\subsection{Raum-Zeit Daten}
+			Bei der Darstellung von orts- und zeitbezogenen Daten müssen drei Attribute (zwei für den Raum und eine für die Zeit) in einer Visualisierung untergebracht werden, welche sonst üblicherweise auf die Position abgebildet werden. Die einfachste Variante dafür ist ein 3D-Diagramm, was allerdings schnell unübersichtlich werden kann.
 
-			\subsubsection{Wikipedia World Map} % 8.62, 8.63
-				\todo{Content}
-
-			\subsubsection{Themescapes} % 8.64
-				\todo{Content}
-			% end
-
-			\subsubsection{Themengebiete} % 8.65
-				\todo{Content}
-			% end
-
-			\subsubsection{Gmap World of Music} % 8.66
-				\todo{Content}
-			% end
-
-			\subsubsection{Metro-Map Immitation} % 8.67
-				\todo{Content}
-			% end
-
-			\subsubsection{Rekonstruktion von Terrain aus Knotenattribut} % 8.68
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Raum-Zeit Daten} % 8.84, 8.85, 8.86
-			\todo{Content}
-
-			\subsubsection{Darstellung von Richtungen} % 8.87
-				\todo{Content}
-			% end
-
-			\subsubsection{Darstellung von Geschwindigkeiten} % 8.88
-				\todo{Content}
-			% end
-
-			\subsubsection{Darstellung von Vielen Trajektorien} % 8.89
-				\todo{Content}
-			% end
+			Für andere Arten von Visualisierungen wird angenommen, dass Bewegung stetig im Raum sind (\dh Punkte dürfen verbunden werden) und durch Trajektorien beschrieben werden. Unter dieser Annahme ist es möglich, Bewegungsdaten nur zweidimensional Aufzutragen und die Bewegungsrichtung zu markieren (wenn es nicht zu viele Überschneidungen gibt oder Trajektorien gibt; wobei dies durch Interaktion und Bundling abgeschwächt werde kann). Soll die Geschwindigkeit dargestellt werden, kann dies \bspw über Farbe passieren.
 		% end
 	% end
 % end

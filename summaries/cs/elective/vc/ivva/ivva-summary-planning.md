@@ -2,7 +2,7 @@
 
 ## Folien
 
-Done/Structured/Total: 611/702/1168; 52%/60%/100%
+Done/Structured/Total: 702/1168/1168; 60%/100%/100%
 
 * [X] Kapitel  0: Organisation (20)
 * [X] Kapitel  1: Einführung in die Informationsvisualisierung (82)
@@ -12,12 +12,12 @@ Done/Structured/Total: 611/702/1168; 52%/60%/100%
 * [X] Kapitel  5: Interaktion (70)
 * [X] Kapitel  6: Techniken 1 (91)
 * [X] Kapitel  7: Techniken 2 (66)
-* [x] Kapitel  8: Visualisierung Geobasierter Daten und Karten (91)
-* [ ] Kapitel  9: Einführung in Visual Analytics (77+19)
-* [ ] Kapitel 10: Analyse für die Visualisierung (92)
-* [ ] Kapitel 11: Von Daten zu Mustern (101)
-* [ ] Kapitel 12: Von Mustern zu Modellen (90)
-* [ ] Kapitel 13: Kognitive Psychologie und Evaluation (87)
+* [X] Kapitel  8: Visualisierung Geobasierter Daten und Karten (91)
+* [x] Kapitel  9: Einführung in Visual Analytics (77+19)
+* [x] Kapitel 10: Analyse für die Visualisierung (92)
+* [x] Kapitel 11: Von Daten zu Mustern (101)
+* [x] Kapitel 12: Von Mustern zu Modellen (90)
+* [x] Kapitel 13: Kognitive Psychologie und Evaluation (87)
 
 
 ## Struktur
@@ -202,3 +202,112 @@ Done/Structured/Total: 611/702/1168; 52%/60%/100%
             * Darstellung von Richtungen {8.87}
             * Darstellung von Geschwindigkeiten {8.88}
             * Darstellung von Vielen Trajektorien {8.89}
+* Visual Analytics {9.1, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8, 9.9, 9.10, 9.11}
+    - Definition {9.12, 9.13, 9.14, 9.41, 9.42, 9.43, 9.44, 9.45, 9.46, 9.47, 9.48}
+    - Das Knowledge Discovery Process (KDD) Modell {9.15, 9.16, 9.17, 9.18, 9.19, 9.29, 9.30}
+        + placeholder
+            * placeholder
+                - Schritt 1: Kennenlernen der Anwendungsdomäne {9.20}
+                - Schritt 2: Auswahl der Daten {9.21}
+                - Schritt 3: Datenvorverarbeitung {9.22, 9.23}
+                - Schritt 4: Bestimmung der Data-Mining-Aufgabe {9.24}
+                - Schritt 5: Auswahl des Data-Mining-Verfahrens {9.25}
+                - Schritt 6: Datentransformation und Reduktion {9.26}
+                - Schritt 7: Data-Mining {9.27}
+                - Schritte 8 und 9: Interpretation, Bewertung und Nutzung {9.28}
+    - Integration des Informationsvisualisierungsprozesses und dem KDD-Modell {9.31, 9.32, 9.33, 9.34, 9.35, 9.36, 9.37, 9.38, 9.39, 9.40, 9.74, 9.75, 9.76, 12.88}
+    - Stärken und Schwächen von Mensch und Maschine {9.49, 9.50, 9.73}
+        + Was ist eigentlich ein Muster? {9.51, 9.52, 9.53, 9.54, 9.55, 9.56, 9.57, 9.60}
+        + Ähnlichkeit {11.5, 11.6, 11.7, 11.8, 11.9, 11.10, 11.11, 11.12, 11.13, 11.25, 11.26, 11.93}
+            * Informelle und Formale Ähnlichkeit {11.31, 11.32}
+            * Ähnlichkeiten im KDD-Modell {11.33, 11.34, 11.35, 11.36, 11.37, 11.38}
+        + Mensch vs. Maschine {9.58, 9.59, 9.61, 9.62}
+            * Schwächen des Menschen {9.63, 9.64, 9.65, 9.66}
+            * Schwächen der Maschine {9.67, 9.68, 9.69, 9.70, 9.71, 9.72}
+    - Von Daten zu Mustern zu Modellen {10.61, 10.62, 11.18, 11.19, 11.27, 11.28, 11.29, 11.45, 12.5, 12.6, 12.7, 12.8, 12.9, 12.10, 12.11}
+        + Grundbegriffe {12.16, 12.18}
+            * Clustering und Dimensionsreduktion {11.21, 11.22, 11.23, 11.24}
+            * Klassifikation {12.13, 12.14, 12.15, 12.17}
+            * Overfitting {12.33, 12.34, 12.35, 12.36}
+        + Clustering {11.94}
+            * k-Means {10.63, 10.64, 10.65, 10.66, 10.67}
+            * Semi-Supervised Clustering {11.49, 11.50}
+            * Hierarchisches Clustering {11.71, 11.72, 11.73, 11.74, 11.75}
+            * Noch mehr Clusteringverfahren (DBScan) {11.79, 11.80, 11.81, 11.82}
+        + Dimensionsreduktion {11.83, 11.84, 11.94}
+            * Feature Selektion {10.68, 10.69, 10.70, 10.71}
+        + Klassifikation {12.57, 12.58, 12.60, 12.61, 12.62, 12.75, 12.81}
+            * Entscheidungsbäume {12.20, 12.21, 12.22, 12.23, 12.31}
+                - Beispiel: Optimierung {12.25, 12.26}
+                - Beispiel: Qualitätsmaße {12.27, 12.28, 12.29, 12.30}
+            * Stützvektormaschinen {12.67, 12.68, 12.69, 12.70, 12.71}
+            * k-Nächste Nachbarn {12.72, 12.73, 12.74}
+            * Weitere Verfahren {12.76, 12.77, 12.78, 12.79}
+    - Automatische Verfahren für die Visualisierung {10.4, 10.5, 10.6, 10.7, 10.8, 10.9, 10.10, 10.11, 10.12, 10.13, 10.14, 10.15, 10.16, 10.51, 10.52, 10.53, 10.54, 10.55, 10.56, 10.57, 10.88, 11.14}
+        + Zu viele Daten {10.17, 10.18}
+            * Sampling {10.19}
+            * Aggregation/Clustering {10.20, 10.21, 10.22, 10.23}
+            * Filtern {10.24}
+        + Zu viele Beziehungen {10.26, 10.27}
+            * Dimensionsreduktion {10.28}
+            * Feature Selektion {10.29, 10.30, 10.31}
+        + Zu viele Ergebnisse {10.33, 10.34}
+            * Ergebnismanagement {10.35, 10.36}
+            * History-Management {10.37}
+        + Illusion von Mustern {10.39}
+            * Menschen haben kein Auge für Zufall {10.40, 10.41, 10.42, 10.43}
+            * Menschen haben kein Auge für alternative Erklärungen {10.44}
+        + Zu viel Interaktion {10.46, 10.47}
+            * Suche nach optimalen Parameter {10.48}
+            * Automatische Parametereinstellung {10.49}
+            * Intelligent Visual Analytics Queries {10.50}
+    - Visualisierungen für Automatische Verfahren {10.58, 10.59, 10.60, 10.61, 10.72, 10.73, 10.74, 10.86, 10.87, 10.88, 11.15, 11.46, 11.95, 11.96, 11.97, 11.98, 11.99, 12.83, 12.84, 12.85, 12.86}
+        + Intransparenz des Modells {10.76, 10.77}
+            * Modellvisualisierung {10.78, 11.16}
+        + "Falsche" Muster {10.80, 10.81}
+            * Musterexploration {10.82, 10.83, 10.84, 10.85, 11.17}
+        + Abhängigkeit der Ergebnisse von den Parametern {11.40}
+            * Black-Box Integration {11.41, 11.42, 11.43, 11.44, 11.45}
+        + Einbeziehung von Expert*innenwissen {11.47, 11.48, 11.52, 11.93}
+            * Visual Input Editing {11.53, 11.54, 11.55, 11.56, 11.57, 11.58}
+            * Visual Data Editing {11.59}
+        + Ergebnisse sind nur Lokal Optimal {11.61, 11.62, 11.93}
+            * White-Box Integration {11.63, 11.64, 11.65, 11.66, 12.24}
+        + Verbindung zwischen Daten und Ergebnis ist Intransparent {11.68, 11.93}
+            * Model-Data-Linking {11.69, 11.78}
+                - \dots in Verbindung mit Modellvisualisierung {11.76}
+                - \dots in Verbindung mit Musterexploration {11.77}
+        + Verschiedene Clusterformen {11.85, 11.86}
+            * Self-Organizing Maps (SOM) {11.87, 11.88, 11.89, 11.90}
+                - Einschränkungen {11.91, 11.92}
+        + Trennung von Mustern und Rauschen {12.38, 12.39, 12.65}
+            * Visual Input Editing {12.40, 12.41, 12.42}
+        + Beliebige Muster sind nicht Modellierbar {12.44, 12.45, 12.65}
+            * Modell-Daten-Interaktion {12.46, 12.47, 12.48, 12.49, 12.50, 12.51, 12.52}
+        + Undifferenzierte Bewertung {12.54, 12.55, 12.65}
+            * Visual Model Verification {12.56, 12.59, 12.63, 12.64}
+    - Querverbindungen der Forschungsgebiete {12.82}
+* Kognitive Psychologie {13.1, 13.4, 13.5, 13.6, 13.7, 13.8, 13.9, 13.10, 13.11}
+    - Kognitive Psychologie {13.65}
+        + Einführung {13.12, 13.13, 13.14, 13.15, 13.16, 13.17, 13.18, 13.19}
+        + Aufmerksamkeit {13.21, 13.22, 13.23, 13.24}
+        + Gedächtnis {13.25, 13.26, 13.27}
+        + Wissenrepräsentation {13.28, 13.29}
+        + Denken, Entscheiden, Urteilen {13.30, 13.31}
+            * Deduktives Schließen {13.32, 13.33}
+            * Abduktives Schließen {13.34, 13.35}
+            * Entscheidungsfindung und Framing {13.36, 13.37, 13.38}
+            * Problemlösung {13.39, 13.43}
+            * Expert*innenfähigkeiten {13.44, 13.45, 13.46, 13.47, 13.48, 13.49}
+        + Mentale Modelle {13.50, 13.51, 13.52, 13.53, 13.54, 13.55, 13.56, 13.57}
+            * Problemlösung {13.58}
+            * Interaktion {13.59, 13.60, 13.61, 13.62}
+            * Mensch-Orientierte Interaktion {13.63, 13.64}
+    - Evaluation und Design-Studien {13.66, 13.85}
+        + Evaluation {13.67, 13.68, 13.69, 13.70, 13.79}
+            * Testmethoden {13.71, 13.72}
+            * Laborexperiment {13.73}
+            * Nutzer*innenstudie {13.74}
+            * Feldstudie {13.75}
+            * Evaluation im Nested Model {13.76, 13.77, 13.78}
+        + Iterativer Designprozess {13.80, 13.81, 13.82, 13.83, 13.84}

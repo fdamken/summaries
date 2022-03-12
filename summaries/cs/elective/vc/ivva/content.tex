@@ -147,7 +147,7 @@
 
 				\begin{figure}
 					\centering
-					\begin{tikzpicture}[align = center, class/.style = { draw, rectangle, minimum width = 3cm, minimum height = 0.75cm }]
+					\begin{tikzpicture}[align = center, class/.style = { }]
 						\node [class] (datentypen) {\textbf{Datentypen}};
 
 						\node [class, below = 1.5 of datentypen, xshift = -5cm] (nominal) {\textbf{Nominal}};
@@ -1193,6 +1193,8 @@
 				% end
 
 				\paragraph{Self-Organizing Map (SOM)}
+					\label{p:som}
+
 					Eine \emph{Self-Organizing Map} (SOM) ist ein Verfahren zur automatischen Anordnung von Visualisierungen (häufig Zeitserien) in einem Raster, dessen Vorgehen analog zu k-Means ist:
 					\begin{enumerate}
 						\item Jede Zelle (in einem fixen Raster) wird zufällig initialisiert. Diese Zellenwerte (die \emph{Prototypen}) entsprechen den Zentroiden bei k-Means.
@@ -1223,119 +1225,481 @@
 		% end
 	% end
 
-	\section{Zeitbasierte Daten} % 7.3, 7.4, 7.5, 7.6, 7.29
+	\section{Zeitbasierte Daten}
 		\label{sec:visZeitbasiert}
 
-		\todo{Content}
+		Nachdem in den vorherigen Abschnitten die Visualisierung von hochdimensionalen Daten und großen Datenmengen behandelt wurde, werden in diesem Abschnitt spezielle Techniken zur Darstellung (vieler) Zeitreihen behandelt. \emph{Zeitbezogene Daten} sind dabei Daten, bei denen mindestens ein Key einen Zeitstempel enthält, welcher entweder absolut oder relativ ist. Da die Zeit meistens ein unabhängiges Attribut ist, wird die (fast) immer auf die Position, \zB die horizontale Achse, abgebildet. Dabei bestimmten die Wahl der Marks die Interpretation der Daten, siehe \autoref{tab:zeitreihenMarks}.
 
-		\subsection{Viele Zeitreihen} % N/A
-			\todo{Content}
+		Eine Übersicht über alle in diesem Abschnitt behandelten Verfahren ist in \autoref{fig:zeitreihen} zu finden.
 
-			\subsubsection{Filtern} % 7.7
-				\todo{Content}
+		\begin{table}
+			\centering
+			\begin{tabular}{c|cc}
+				\toprule
+				                           & \textbf{Kontinuierliche Änderung} & \textbf{Diskrete Messungen} \\ \midrule
+				 \textbf{Einzelne Werte}   &              Linien               &           Punkte            \\
+				\textbf{Anhäufung/Zuwachs} &              Flächen              &           Balken            \\ \bottomrule
+			\end{tabular}
+			\caption{Interpretation verschiedener Marks bei Zeitreihen}
+			\label{tab:zeitreihenMarks}
+		\end{table}
+
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[align = center, class/.style = { }]
+				\node [class] (datentypen) {\textbf{Grundlage: Eine (kontinuierliche) Zeitreihe}};
+
+				\node [class, below = 1.5 of datentypen, xshift = -5cm] (nominal) {\textbf{Viele Zeitreihen}};
+				\coordinate [below = 0.5 of nominal] (a);
+				\node [right = 0.5 of a] (aa) {\eqmakebox[zeitreihenViele][l]{Heatmaps}};
+				\node [below = 0 of aa] (ab) {\eqmakebox[zeitreihenViele][l]{Horizon Plots}};
+				\node [below = 0 of ab] (ac) {\eqmakebox[zeitreihenViele][l]{Filtern und Aggregation}};
+				\node [below = 0 of ac] (ad) {\eqmakebox[zeitreihenViele][l]{Small Multiples}};
+				\draw (nominal) |- (aa);
+				\draw (nominal) |- (ab);
+				\draw (nominal) |- (ac);
+				\draw (nominal) |- (ad);
+
+				\node [class, below = 1.5 of datentypen] (ordinal) {\textbf{Periodische Zeitreihen}};
+				\coordinate [below = 0.5 of ordinal] (b);
+				\node [right = 0.5 of b] (ba) {\eqmakebox[zeitreihenPeriodisch][l]{Reguläres Layout}};
+				\node [below = 0 of ba] (bb) {\eqmakebox[zeitreihenPeriodisch][l]{Radiales Layout}};
+				\draw (ordinal) |- (ba);
+				\draw (ordinal) |- (bb);
+
+				\node [class, below = 1.5 of datentypen, xshift = 5cm] (quantitativ) {\textbf{Diskrete Zeitreihen}};
+				\coordinate [below = 0.5 of quantitativ] (c);
+				\node [right = 0.5 of c] (ca) {\eqmakebox[zeitreihenDiskret][l]{Sequenzen}};
+				\node [below = 0 of ca] (cb) {\eqmakebox[zeitreihenDiskret][l]{Gantt-Chart}};
+				\node [below = 0 of cb] (cc) {\eqmakebox[zeitreihenDiskret][l]{Sequenzbaum}};
+				\draw (quantitativ) |- (ca);
+				\draw (quantitativ) |- (cb);
+				\draw (quantitativ) |- (cc);
+
+				\path (datentypen) to coordinate(needle) (ordinal);
+				\draw (datentypen) -- (needle) -| (nominal);
+				\draw (datentypen) -- (ordinal);
+				\draw (datentypen) -- (needle) -| (quantitativ);
+			\end{tikzpicture}
+			\caption{Übersicht über verschiedene Zeitreihendarstellungen}
+			\label{fig:zeitreihen}
+		\end{figure}
+
+		\subsection{Viele Zeitreihen}
+			Zur Darstellung vieler Zeitreihen die, wenn sie alle als Linie in einer Visualisierung gezeichnet werden würden, zu Overplotting führen, gibt es verschiedene Optionen, die hier behandelt werden.
+
+			\subsubsection{Filtern}
+				Die einfachste Option zur Darstellung vieler Zeitreihen ist die Filterung, \bspw durch Interaktives Brushing. Dabei kann \zB ein Wertebereich markiert werden und es werden nur Daten angezeigt, die durch diesen Bereich laufen.
 			% end
 
-			\subsubsection{Heatmaps} % 7.8
-				\todo{Content}
+			\subsubsection{Heatmaps}
+				Die Darstellung von Zeitreihen als \emph{Heatmap} (mit der Zeit in der horizontalen Position und den Werten farblich dargestellt) lassen sich sehr viele Zeitreihen kompakt darstellen, da pro Zeile nur eine Pixelreihe benötigt wird. Die Daten werden also im Allgemeinen nicht aggregiert, sondern nur sehr kompakt dargestellt.
 
-				\paragraph{\dots mit Aggregation} % 7.12
-					\todo{Content}
-				% end
+				\paragraph{Stärken}
+				\begin{itemize}
+					\item sehr kompakte Darstellung vieler Zeitreihen
+					\item gute Vergleichbarkeit von Trends entlang der Zeitachse
+				\end{itemize}
+
+				\paragraph{Schwächen}
+				\begin{itemize}
+					\item keine gute Vergleichbarkeit von Werten
+				\end{itemize}
 			% end
 
-			\subsubsection{Horizon Plots} % 7.9, 7.10, 7.11
-				\todo{Content}
+			\subsubsection{Horizon Plots}
+				Ein \emph{Horizon Plot} ist eine Mischung aus Liniendiagramm und Heatmap, bei denen die Werte sowohl auf die Farbe als auch die Höhe abgebildet werden. Dabei wird die Höhenachse jedoch für verschiedene Skalen genutzt, die durch die Farben einer divergierenden Farbskala gekennzeichnet werden (siehe \autoref{fig:horizonplot}).
+
+				\begin{figure}
+					\centering
+					\includegraphics[width=\linewidth]{horizonplot}
+					\caption[Visualisierungstechnik (viele Zeitreihen): Horizon Plot]{Visualisierungstechnik (viele Zeitreihen): Horizon Plot\\Quelle: Vorlesungsfolien}
+					\label{fig:horizonplot}
+				\end{figure}
+
+				\paragraph{Stärken}
+				\begin{itemize}
+					\item sehr kompakte Darstellung vieler Zeitreihen (etwas 50 bis 100)
+					\item bessere Vergleichbarkeit von Werten als bei Heatmaps
+				\end{itemize}
+
+				\paragraph{Schwächen}
+				\begin{itemize}
+					\item konkrete Werte sind komplex abzulesen
+				\end{itemize}
 			% end
 
-			\subsubsection{Small Multiples} % 7.13
-				\todo{Content}
+			\subsubsection{Heatmaps mit Aggregation}
+				Bei einer Heatmap mit Aggregation wird jeder Pixel einer Ebene (mit Zeit- und Werteachse) durch eine "Dichte" der Linien bestimmt, die durch den jeweiligen Punkt gehen würden (\emph{Density Heatmap}). Dadurch werden viele Zeitreihen auf wenige Details reduziert und es können Trends erkannt werden.
+			% end
 
-				\paragraph{\dots mit Aggregation} % 7.14
-					\todo{Content}
-				% end
+			\subsubsection{Small Multiples}
+				Wie bereits bei der Visualisierung von hochdimensionalen Daten können auch hier Small Multiples eingesetzt werden, indem die Zeitreihen in einem Raster angeordnet werden. Dadurch leidet allerdings die Vergleichbarkeit, da nur benachbarte Reihen gut vergleichbar sind -- außerdem führen horizontale und vertikale vergleiche zu verschiedenen Ergebnisse, da einmal Werte und einmal Zeitverläufe verglichen werden. Eine Abhilfe schafft hier die Aggregation durch Self-Organizing Maps (siehe \autoref{p:som}), die die Zeitreihen gruppiert und zusammenfasst. Dies erfordert jedoch irgendeine Form von Cluster, was sehr aufwendig sein kann. Dafür skaliert der Ansatz allerdings auf deutlich mehr Zeitreihen.
 			% end
 		% end
 
-		\subsection{Periodische Zeitreihen} % 7.15
-			\todo{Content}
+		\subsection{Periodische Zeitreihen}
+			Eine spezielle Art von Zeitreihen sind \emph{periodische}, bei denen sich einige Abläufe wiederholen (\zB Jahre, Monate, Woche, Pulsschläge, Schall, etc.). Das Ziel ist dabei eine Visualisierung über die Zyklen hinweg. Dabei entstehen die Herausforderungen, die Periodenlänge zu bestimmen sofern diese nicht bekannt ist und mit variablen Frequenzen umzugehen (\bspw Puls). Die folgenden Ansätze dienen der reinen Visualisierung unter der Annahme, dass die Periodenlänge \(\lambda\) bereits bekannt ist.
 
-			\subsubsection{Spiral Layouts} % 7.16, 7.17
-				\todo{Content}
+			\subsubsection{Spirallayout}
+				\emph{Spirallayouts} "rollen" die Zeitachse auf, \dh die Daten werden spiralförmig aufgetragen (siehe \autoref{fig:spirallayout}). Durch Variation der Periodenlänge \(\lambda\) können, sobald die Visualisierung "einrastet", Muster gefunden werden. Zur Erstellung der Grafik werden Polarkoordinaten \( r = \tilde{r} t / \lambda \), \( \varphi = 2 \pi t / \lambda \) mit einem Radius \(\tilde{r}\) genutzt.
+
+				\paragraph{Stärken}
+				\begin{itemize}
+					\item kompakt (wie die meisten radialen Layouts)
+				\end{itemize}
+
+				\paragraph{Schwächen}
+				\begin{itemize}
+					\item die Zeitachse wird nach außen breiter; Verzerrung
+					\item funktioniert nur bedingt als Liniengrafik
+				\end{itemize}
+
+				\begin{figure}
+					\centering
+					\includegraphics[width=0.5\linewidth]{spirallayout}
+					\caption[Visualisierungstechnik (periodische Zeitreihen): Spirallayout]{Visualisierungstechnik (periodische Zeitreihen): Spirallayout\\Quelle: Vorlesungsfolien}
+					\label{fig:spirallayout}
+				\end{figure}
 			% end
 
-			\subsubsection{Matrix-Layout} % 7.18
-				\todo{Content}
+			\subsubsection{Matrix-Layout}
+				Bei einem \emph{Matrix-Layout} werden die einzelnen Zeitreihen gestapelt, basierend auf dem Modulo-Operator:
+				\begin{align}
+					x &= t \mathbf{ mod } \lambda &
+					y &= \lfloor t / \lambda \rfloor
+				\end{align}
+				Wie bei einem Spirallayout können Muster durch Variation von \(\lambda\) und visuellem "Einrasten" gefunden werden. Dieses Layout funktioniert im Prinzip auch mit Liniendiagrammen, ist aber häufig als Heatmap anzutreffen.
 			% end
 		% end
 
-		\subsection{Diskrete Ereignisse} % 7.19, 7.20, 7.21
-			\todo{Content}
+		\subsection{Diskrete Ereignisse}
+			Bei \emph{Ereignissen} haben diese zwar einen Zeitstempel, aber nicht unbedingt ein quantitatives Attribut, welches auf eine y-Achse abbildbar wäre\footnote{Eine kontinuierliche, "normal", Reitreihe kann durch Diskretisierung in eine Serie diskreter Ereignisse zerlegt werden indem die x- und y-Achse in einzelne Bereiche geteilt werden.}, \dh die Ereignisse sind Dimensionslose Punkte im Raum (\bspw Deadlines). Bei der Darstellung gibt es dann viel Gestaltungsspielraum abhängig davon, was relevant ist: die Reihenfolge der Ereignisse oder die Dauer zwischen diesen:
+			\begin{itemize}
+				\item Ist die Reihenfolge das primär interessante, können die Ereignisse als Sequenz ohne Abstand dargestellt werden.
+				\item Ist jedoch der Abstand zwischen den Ereignissen interessant, so können diese als Gantt-Chart dargestellt werden.
+			\end{itemize}
+			Eine andere Herangehensweise stellt ein \emph{Sequenzbaum} dar: Dabei wird eine Zeitreihe in wiederkehrende Muster basierend auf der Reihenfolge zerlegt. Dabei entspricht die Ebene des Baums (wobei der Wurzelknoten auf ebene 0 ist) der Länge der Sequenz, die betrachtet wird. In jedem Knoten wird dann die Anzahl der Sequenzen geschrieben, die dem Pfad vom Wurzelknoten bis zu dem Knoten entsprechen. Dies ist am besten an einem Beispiel zu verstehen, siehe dafür \autoref{fig:sequenzbaum}. Als alternative können die Zahlen in den Knoten auch weg gelassen werden und die Anzahl durch die Breite der Kanten repräsentiert werden, was den Sequenzbaum kompakter macht.
 
-			\subsubsection{Sequenzbaum} % 7.22, 7.23, 7.24, 7.25, 7.26, 7.27
-				\todo{Content}
-			% end
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[
+							every node/.style = { minimum width = 0.5cm, minimum height = 0.5cm, inner sep = 0 },
+							event/.style = { draw, rectangle },
+							er/.style = { event, draw = TUDa-9d, fill = TUDa-9b },
+							ey/.style = { event, draw = TUDa-7c, fill = TUDa-7a },
+							eb/.style = { event, draw = TUDa-1c, fill = TUDa-1a },
+							ek/.style = { event, draw = black,   fill = TUDa-0c },
+							noitems/.style = { fill = white },
+						]
+					\node [er] (n) {};
+					\coordinate (A) at (n.south);
+					\node [ey, right = 0.1 of n] (n) {};
+					\node [eb, right = 0.1 of n] (n) {};
+					\node [eb, right = 0.1 of n] (n) {};
+					\node [er, right = 0.1 of n] (n) {};
+					\node [ey, right = 0.1 of n] (n) {};
+					\node [ey, right = 0.1 of n] (n) {};
+					\node [eb, right = 0.1 of n] (n) {};
+					\node [er, right = 0.1 of n] (n) {};
+					\node [ek, right = 0.1 of n] (n) {};
+					\node [eb, right = 0.1 of n] (n) {};
+					\node [ey, right = 0.1 of n] (n) {};
+					\node [ey, right = 0.1 of n] (n) {};
+					\node [eb, right = 0.1 of n] (n) {};
+					\node [eb, right = 0.1 of n] (n) {};
+					\node [er, right = 0.1 of n] (n) {};
+					\node [eb, right = 0.1 of n] (n) {};
+					\node [eb, right = 0.1 of n] (n) {};
+					\node [ey, right = 0.1 of n] (n) {};
+					\node [ey, right = 0.1 of n] (n) {};
+					\node [eb, right = 0.1 of n] (n) {};
+					\node [eb, right = 0.1 of n] (n) {};
+					\node [er, right = 0.1 of n] (n) {};
+					\node [ek, right = 0.1 of n] (n) {};
+					\node [eb, right = 0.1 of n] (n) {};
+					\node [eb, right = 0.1 of n] (n) {};
+					\node [ey, right = 0.1 of n] (n) {};
+					\node [eb, right = 0.1 of n] (n) {};
+					\coordinate (B) at (n.south);
+					\path (A) to coordinate(C) (B);
+
+					\node [draw, circle, below = 0.5 of C] {} [sibling distance = 3.5cm]
+						child {
+							node[er]{5} [sibling distance = 0.75cm]
+								child { node[er]{0} }
+								child { node[ey]{2} }
+								child { node[eb]{1} }
+								child { node[ek]{2} }
+						}
+						child {
+							node[ey]{8} [sibling distance = 0.75cm]
+								child { node[er]{0} }
+								child { node[ey]{3} }
+								child { node[eb]{5} }
+								child { node[ek]{0} }
+						}
+						child {
+							node[eb]{13} [sibling distance = 0.75cm]
+								child { node[er]{4} }
+								child { node[ey]{3} }
+								child { node[eb]{5} }
+								child { node[ek]{0} }
+						}
+						child {
+							node[ek]{2} [sibling distance = 0.75cm]
+								child { node[er]{0} }
+								child { node[ey]{0} }
+								child { node[eb]{2} }
+								child { node[ek]{0} }
+						}
+					;
+				\end{tikzpicture}
+				\caption[Beispiel für einen Sequenzbaum]{Beispiel für einen Sequenzbaum. Die Zahl eines Knotens repräsentiert, wie oft das Muster, welches durch verfolgen vom Wurzelknoten zu diesem Knoten entsteht, vorkommt. Die Summe der Zahlen der Kinder eines Knotens muss damit immer der Zahl in diesem Knoten entsprechen (per Definition).}
+				\label{fig:sequenzbaum}
+			\end{figure}
 		% end
 	% end
 
-	\section{Graphen und Bäume} % 7.30, 7.31, 7.32, 7.33, 7.34, 7.65
+	\section{Graphen und Bäume}
 		\label{sec:visGraphen}
 
-		\todo{Content}
+		In diesem Abschnitt wird die Visualisierung von Graphen und, als Spezialfall, von Bäumen behandelt. Insbesondere Graphen sind sehr komplexe Datenstrukturen, die sich auch einer Knotenmenge \(\mathcal{V}\) und einer Kantenmenge \( \mathcal{E} \subseteq \mathcal{V} \times \mathcal{V} \) zusammensetzen. Dabei können sowohl Kanten als auch Knoten weitere Attribute enthalten; außerdem können die Knoten implizit durch die Kantenliste gegeben sein. Zur weiteren Behandlung von Visualisierungen müssen zunächst einige Begriffe definiert werden:
+		\begin{itemize}
+			\item Eine Folge von Knoten ist ein \emph{Weg} gdw.~aufeinander folgende Knoten durch Kanten verbunden sind.
+			\item Ein Graph ist \emph{zusammenhängend} gdw.~zwischen je zwei Knoten ein Weg existiert.
+			\item Ein Graph ist \emph{gerichtet} gdw.~die Kanten nicht symmetrisch sind, \dh \( (v_1, v_2) \in \mathcal{E} \not\implies (v_2, v_1) \in \mathcal{E} \).
+			\item Ein Graph ist \emph{azyklisch} gdw.~es keinen Weg gibt, der einen Knoten mehrfach erreicht.
+			\item Ein \emph{Baum} ist ein azyklischer, zusammenhängender Graph.
+		\end{itemize}
+		Bei der Visualisierung kann dann im Allgemeinen gesagt werden, dass die Visualisierung eines Baumes leicht, die eines gerichteten, azyklischen Graphen mittel bis leicht und die eines allgemeinen Graphs extrem schwer ist. Dies basiert darauf, dass die ersten beiden Graphen eine \emph{topologische Ordnung} beschreiben.
+
+		Eine Übersicht über die vorgestellten Verfahren ist in \autoref{fig:graphen} zu finden.
+
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[align = center, class/.style = { }]
+				\node [class] (datentypen) {\textbf{Definitionen: Graphen und Bäume}};
+
+				\node [class, below = 1.5 of datentypen, xshift = -5cm] (nominal) {\textbf{Baum Layouts}};
+				\coordinate [below = 0.5 of nominal] (a);
+				\node [right = 0.5 of a] (aa) {\eqmakebox[graphlayoutBaum][l]{NLD (regulär)}};
+				\node [below = 0 of aa] (ab) {\eqmakebox[graphlayoutBaum][l]{NLD (radial)}};
+				\node [below = 0 of ab] (ac) {\eqmakebox[graphlayoutBaum][l]{Sunburst (regulär)}};
+				\node [below = 0 of ac] (ad) {\eqmakebox[graphlayoutBaum][l]{Sunburst (radial)}};
+				\node [below = 0 of ad] (ae) {\eqmakebox[graphlayoutBaum][l]{Treemap (regulär)}};
+				\draw (nominal) |- (aa);
+				\draw (nominal) |- (ab);
+				\draw (nominal) |- (ac);
+				\draw (nominal) |- (ad);
+				\draw (nominal) |- (ae);
+
+				\node [class, below = 1.5 of datentypen] (ordinal) {\textbf{Allgemeine Graphlayouts}};
+				\coordinate [below = 0.5 of ordinal] (b);
+				\node [right = 0.5 of b] (ba) {\eqmakebox[graphlayoutAllg][l]{Force-Directed}};
+				\node [below = 0 of ba] (bb) {\eqmakebox[graphlayoutAllg][l]{Layer-Based}};
+				\node [below = 0 of bb] (bc) {\eqmakebox[graphlayoutAllg][l]{Constraint-Based}};
+				\draw (ordinal) |- (ba);
+				\draw (ordinal) |- (bb);
+				\draw (ordinal) |- (bc);
+
+				\node [class, below = 1.5 of datentypen, xshift = 5cm] (quantitativ) {\textbf{Skalierbarkeit}};
+				\coordinate [below = 0.5 of quantitativ] (c);
+				\node [right = 0.5 of c] (ca) {\eqmakebox[graphlayoutSkal][l]{Edge Bundling}};
+				\node [below = 0 of ca] (cb) {\eqmakebox[graphlayoutSkal][l]{Fokus und Kontext}};
+				\draw (quantitativ) |- (ca);
+				\draw (quantitativ) |- (cb);
+
+				\path (datentypen) to coordinate(needle) (ordinal);
+				\draw (datentypen) -- (needle) -| (nominal);
+				\draw (datentypen) -- (ordinal);
+				\draw (datentypen) -- (needle) -| (quantitativ);
+			\end{tikzpicture}
+			\caption[Übersicht über verschiedene Graph- und Baumdarstellungen]{Übersicht über verschiedene Graph- und Baumdarstellungen; Die Abkürzung "NLD" steht für "Node-Link-Diagramm".}
+			\label{fig:graphen}
+		\end{figure}
 
 		\subsection{Bäume} % 7.35, 7.47
-			\todo{Content}
+			Im Folgenden wird angenommen, dass jeder Baum einen \emph{Wurzelknoten} \(v_1\) ohne Eltern besitzt\footnote{In jedem Baum gibt es aufgrund der Azyklizität mindestens einen solchen Knoten.}.
 
-			\subsubsection{Node-Link-Diagramm} % 7.36, 7.37, 7.38
-				\todo{Content}
+			\subsubsection{Node-Link-Diagramm}
+				Die einfachste Visualisierung ist ein \emph{Node-Link-Diagramm}, in dem Knoten als Punkt und Kanten als Linien dargestellt werden. Der Abstand zur Wurzel definiert dabei die vertikale Position (siehe \autoref{fig:nodelinkdiagramm}). Die Kanten werden dabei explizit dargestellt und es ist immer möglich, ein kreuzungsfreies (\emph{planares}) Layout zu finden. Ein offenes Problem ist eine "gute" Positionierung innerhalb einer Ebene. Des weiteren wird das Diagramm bei vielen Kindknoten sehr breit. Einige Gütekriterien für ein gut strukturiertes Layout sind:
+				\begin{itemize}
+					\item keine Kreuzungen
+					\item alle Knoten einer Hierarchiestufe auf gleicher Höhe
+					\item möglichst schmal (um den Platz einer Seite gut auszunutzen)
+					\item Elternknoten zentriert über den Kindknoten
+					\item Symmetrien sollten erkennbar sein
+					\item Ordnungserhaltend
+					\item erstellbar in linearer Zeit
+				\end{itemize}
+				Im Allgemeinen sind nicht alle dieser Anforderungen gleichzeitig erfüllbar. Zur Optimierung der Kriterien können \bspw Knoten verschoben oder Teilbäume vertauscht werden.
+
+				\begin{figure}
+					\centering
+					\includegraphics[width=0.5\linewidth]{nodelinkdiagram}
+					\caption[Visualisierungstechnik (Bäume): Node-Link-Diagramm]{Visualisierungstechnik (Bäume): Node-Link-Diagramm\\Quelle: Vorlesungsfolien}
+					\label{fig:nodelinkdiagramm}
+				\end{figure}
 			% end
 
-			\subsubsection{Radiales Layout} % 7.39
-				\todo{Content}
+			\subsubsection{Radiales Node-Link-Diagramm}
+				Eine Option dem Problem der Breite bei einem Node-Link-Diagramm entgegen zu wirken ist, dieses "aufzurollen". Dabei wird der Wurzelknoten in der Mitte platziert und die Baumtiefe wird durch den Radius abgebildet. Dadurch wird die Breite limitiert, allerdings kann es schwer sein, das Gesamtbild zu erfassen.
 			% end
 
-			\subsubsection{TreeMaps} % 7.40, 7.41
-				\todo{Content}
+			\subsubsection{TreeMaps}
+				Bei \emph{TreeMaps} wird die Beziehung zwischen Knoten dargestellt als eine "enthalten in"-Beziehung. Dabei wird der Wurzelknoten repräsentiert durch die Gesamtfläche des Bildes und die Kindknoten werden, ähnlich wie bei einem Mosaik-Plot (siehe \autoref{subsubsec:mosaik}), durch Teilung des Raums dargestellt (siehe \autoref{fig:treemap}). Die Kanten werden also nicht explizit dargestellt, sondern der Fokus wird auf die Struktur gelegt. Eine Option ist, den Flächeninhalt der Knoten gleichmäßig oder anhand bestimmter Eigenschaften des Knotens (\zB Dateigröße oder Anzahl Kindknoten) zu bestimmen.
 
-				\paragraph{Cushions} % 7.42
-					\todo{Content}
-				% end
+				Um die Linien zur Abgrenzung der Knoten zu reduzieren, können \emph{Cushions} verwendet werden. Das sind Farbverläufe die, wenn man sie nebeneinander Setzt, eine Abgrenzung sichtbar werden lassen. Dadurch müssen keine expliziten Kanten mehr gezeichnet werden. Eine weitere Variante von TreeMaps sind \emph{Squarified} TreeMaps, in auf der gleichen Hierarchiestufe sowohl vertikal und horizontal geteilt wird (abhängig davon, wie Platz ist). Dadurch ist die TreeMap besser lesbar und entartete Rechtecke werden vermieden, allerdings ist die direkte Eltern-Kind-Beziehung nicht mehr eindeutig.
 
-				\paragraph{Squarified} % 7.43, 7.44
-					\todo{Content}
-				% end
+				\begin{figure}
+					\centering
+					\includegraphics[width=0.5\linewidth]{treemap}
+					\caption[Visualisierungstechnik (Bäume): TreeMaps]{Visualisierungstechnik (Bäume): TreeMaps; Das enthaltene Node-Link-Diagramm (blau) dient nur der Illustration. Die TreeMap ist die untere blaue Ebene.\\Quelle: Vorlesungsfolien}
+					\label{fig:treemap}
+				\end{figure}
 			% end
 
-			\subsubsection{Icicle Plot und Sunburst} % 7.45, 7.46
-				\todo{Content}
+			\subsubsection{Icicle-Plots und Sunburst}
+				\emph{Icicle-Plots} und \emph{Sunbursts} sind, ähnlich wie TreeMaps, raumfüllende Techniken, bei denen die Knotengrößen über Flächen dargestellt werden. Bei einem Icicle-Plot werden, wie bei einer TreeMap, die Kanten nicht explizit dargestellt, sondern die Kindknoten unter dem jeweiligen Elternknoten platziert. Dabei nimmt der Wurzelknoten die gesamte Breite ein und die Kindknoten werden immer kleiner. Ein Sunburst ist dann genau das gleiche, nur aufgerollt (\autoref{fig:iciclesunburst}).
+
+				\begin{figure}
+					\centering
+					\begin{subfigure}{0.49\linewidth}
+						\centering
+						\includegraphics[width=0.5\linewidth]{icicle}
+						\caption{Icicle-Plot}
+					\end{subfigure}
+					\hfill
+					\begin{subfigure}{0.49\linewidth}
+						\centering
+						\includegraphics[width=0.5\linewidth]{sunburst}
+						\caption{Sunburst}
+					\end{subfigure}
+					\caption[Visualisierungstechnik (Bäume): Icicle-Plot und Sunbursts]{Visualisierungstechnik (Bäume): Icicle-Plot und Sunbursts; Die enthaltenen Node-Link-Diagramme dienen nur der Illustration und sind nicht Teil des jeweiligen Plots.\\Quelle: Vorlesungsfolien}
+					\label{fig:iciclesunburst}
+				\end{figure}
 			% end
 		% end
 
-		\subsection{Allgemeine Graphen} % 7.48, 7.49, 7.50
-			\todo{Content}
+		\subsection{Allgemeine Graphen}
+			Während im vorherigen Abschnitt das "einfache" Problem der Baumvisualisierung behandelt wurde, geht es in diesem Abschnitt um die Visualisierung allgemeiner Graphen und damit um ein sehr viel schwereres Problem.
 
-			\subsubsection{Layouts} % 7.51
-				\todo{Content}
+			\paragraph{Node-Link-Diagramm}
+				Grundlegend bauen die meisten der folgenden Visualisierungen auf einem einfachen Node-Link-Diagramm auf, in dem die Knoten durch Punkte und die Kanten durch Striche dargestellt werden. Das große Problem -- welches von verschiedenen Verfahren auf unterschiedlichste Arten gelöst wird -- ist das Layouting der Kanten und Knoten.
 
-				\paragraph{Force-Directed} % 7.52, 7.53, 7.54
-					\todo{Content}
+				\subparagraph{Stärken}
+				\begin{itemize}
+					\item die Pfade sind nachverfolgbar
+					\item gerichtete Kanten sind explizit darstellbar (\zB als Pfeile)
+					\item im Prinzip für bis zu \num{10000} Knoten brauchbar
+				\end{itemize}
+
+				\subparagraph{Schwächen}
+				\begin{itemize}
+					\item zwei Layouting-Dimensionen (Position)
+					\item Graphen mit vielen Kanten (dichte Graphen) sind kaum lesbar
+				\end{itemize}
+			% end
+
+			\paragraph{Adjazenzmatrix}
+				Eine andere Kategorie an Visualisierungen baut auf der \emph{Adjazenzmatrix} des Graphen auf. Dabei werden die Knoten über beide Achsen verteilt und die Kanten in der entstehenden Matrix markiert.
+
+				\subparagraph{Stärken}
+				\begin{itemize}
+					\item keine Überlappungen
+					\item dichte Graphen sind gut darstellbar
+					\item gerichtete Kanten erzeugen Asymmetrie und sind somit gut sichtbar
+					\item "nur" eine Layouting-Dimension (Sortierung)
+				\end{itemize}
+
+				\subparagraph{Schwächen}
+				\begin{itemize}
+					\item Verfolgung von Pfaden ist schwer
+					\item dünn besetzte Graphen nutzen den Platz nicht aus
+					\item Sortierung beeinflusst die Struktur
+					\item "nur" für wenige hundert Knoten nutzbar
+				\end{itemize}
+			% end
+
+			\subsubsection{Layouts}
+				Wie bereits erwähnt ist das größte Problem von Node-Link-Diagrammen das Layouting, also das finden eines Layouts, welches die folgenden Anforderungen erfüllen sollte:
+				\begin{itemize}
+					\item Vermeidung unnötiger Kantenüberschneidungen (idealerweise planare Darstellung)
+					\item übereinander liegenden Knoten sollten vermieden werden (Overplotting)
+					\item verbundene Knoten sollten nah beieinander sein, \dh die Kanten sollten kurz sein
+					\item stark verbundene Teilgraphen sollten gut erkennbar sein
+					\item der gegebene Platz sollte ausgenutzt werden
+					\item benachbarte Knoten sollten im Durchschnitt gleich weit voneinander entfernt sein
+				\end{itemize}
+				Die bereits erwähnt ist das Layouting sehr schwierig, wenn nicht sogar das schwerste (algorithmische) Visualisierungsproblem, welches im Allgemeinen noch ungelöst ist. Die im folgenden vorgestellten Verfahren liefern dementsprechend nur Approximationen und keine exakte Lösungen.
+
+				\paragraph{Force-Directed}
+					Eines der ersten vorgestellten Verfahren ist das \emph{Force-Directed} Layout. Dabei werden die Knoten und Kanten als Feder-Masse System mit zusätzlichen abstoßenden Kräften, wenn zwei Knoten nicht verbunden sind. Die anziehenden Kräfte nehmen dabei linear mit dem Abstand zu während die Abstoßenden Kräfte quadratisch abnehmen. Durch eine Physiksimulation der Kräfte und Bewegungen entsteht dann ein Layout gemäß dieser Kräfte. Sobald sich keine Knoten mehr bewegen, ist das Layout fertig.
+
+					\subparagraph{Stärken}
+					\begin{itemize}
+						\item sehr einfach, es ist kein Wissen über den Graph notwendig
+						\item erlaubt Interaktion (\zB Verschiebung der Knoten)
+						\item Kanten und Knoten können gewichtet werden
+					\end{itemize}
+
+					\subparagraph{Schwächen}
+					\begin{itemize}
+						\item lange Laufzeit bei vielen Knoten und Kanten
+						\item keine optimal Lösung
+					\end{itemize}
 				% end
 
-				\paragraph{Layer-Based: Sugiyama} % 7.55, 7.56, 7.57
-					\todo{Content}
+				\paragraph{Layer-Based (Sugiyama)}
+					Ein \emph{Layer-Based} Verfahren eignet sich für gerichtete, azyklische Graphen und ist durch "Entfernung" von Schleifen oder eine künstlicher "Richtung" des Graphen auch auf allgemeine Graphen anwendbar. In einem ersten Schritt werden die Kanten entsprechend ihrer Entfernung zu den "Wurzelknoten" (den Knoten ohne Eltern) von links nach rechts in Schichten einsortiert. Dabei bleibt die Höhe eines Knoten in seiner Spalte zunächst unbestimmt. Das Sugiyama-Layout nutzt im zweiten Schritt (dem Zuordnen einer Höhe) einen einfachen lokalen Greedy-Algorithmus. In jeder Iteration werden einfache Modifikationen (\zB Vertauschung von zwei Knoten) in einer Spalte durchgeführt, evaluiert und die beste beibehalten. Sobald keine Verbesserung mehr möglich ist, fährt der Algorithmus mit der nächsten Spalte fort. Es existieren auch komplexe Backtracking-basierte Algorithmen, die hier nicht diskutiert werden.
+
+					\subparagraph{Stärken}
+					\begin{itemize}
+						\item einfaches Verfahren
+						\item strukturiert (azyklische) Graphen
+						\item definiert eine Hauptrichtung
+					\end{itemize}
+
+					\subparagraph{Schwächen}
+					\begin{itemize}
+						\item Graphen mit (wenigen) Zyklen müssen gesondert behandelt werden
+						\item nicht brauchbar für Graphen mit vielen Zyklen
+					\end{itemize}
 				% end
 
-				\paragraph{Constraint-Based: Metro-Map} % 7.58, 7.59, 7.60
-					\todo{Content}
+				\paragraph{Constraint-Based (Metro-Map)}
+					Bei einem \emph{Constraint-Based} Layout werden bestimmte Bedingungen gestellt, innerhalb derer der Graph angeordnet wird. Das bekannteste Beispiel solcher Layouts sind \emph{Metro-Maps} (vgl.~Liniennetzpläne). Die charakteristischen Merkmale eines solchen Layouts sind:
+					\begin{itemize}
+						\item Knoten sind auf einem Gitter angeordnet
+						\item Kanten verlaufen nur in bestimmten Winkeln
+						\item Kantenkreuzungen sind häufig Knoten
+						\item Knotenform ist an die Kreuzungsform angepasst
+					\end{itemize}
+					Dabei übernimmt das Verfahren einige Ideen des Sugiyama-Layouts: Für die Qualität des Layouts werden, abgeleitet aus den obigen Merkmalen, einige Kriterien festgelegt und ein Layout danach bewertet. Durch eine iterative lokale Verbesserung konvergiert das Verfahren dann gegen ein lokales Optimum.
+
+					\subparagraph{Stärken}
+					\begin{itemize}
+						\item Anwendbar auf allgemeine Graphen, aber das Knoten-Kanten-Verhältnis sollte "ausgewogen" sein
+						\item visuell stark strukturiert und dadurch (vergleichsweise) einfach zu lesen
+					\end{itemize}
+
+					\subparagraph{Schwächen}
+					\begin{itemize}
+						\item teilweise komplexe Heuristiken
+						\item nur lokal optimale Lösungen
+						\item "Pfade" müssen \ggf definiert werden
+					\end{itemize}
 				% end
 			% end
 
-			\subsubsection{(Hierarchisches) Edge-Bundling} % 7.61, 7.62
-				\todo{Content}
+			\subsubsection{(Hierarchisches) Edge-Bundling}
+				Ein großes Problem bei vielen Layouts ist nicht-Lesbarkeit durch zu viele Kanten. Dem kann entgegengewirkt werden indem "ähnliche" Kanten, also Kanten, die aus einem Knotencluster in einen anderen laufen, gebündelt werden. Dabei werden die Kanten nicht mehr als kürzeste Wege zwischen Knoten gezeichnet, sind dadurch aber besser lesbar. Eine Erweiterung dieser Idee stellt \emph{hierarchisches} Edge-Bundling dar: Die Grundidee ist, dass die Knoten innerhalb einer Hierarchie liegen und eine Kante statt des direkten Weges über die Hierarchie zum gemeinsamen Vorfahren läuft. Dadurch durchlaufen mehrere Kanten den gleichen Pfad, was eine Bündelung ergibt.
 			% end
-		% end
 
-		\subsection{"Search, Show Context, Expand on Demand"} % 7.63, 7.64
-			\todo{Content}
+			\subsubsection{"Search, Show Context, Expand on Demand"}
+				Die Grundidee von "Search, Show Context, Expand on Demand" ist, nicht direkt den ganzen Graph anzuzeigen. Stattdessen werden nur die wichtigsten Knoten sowie deren Nachbarschaft angezeigt, wobei sich die Wichtigkeit daraus ergibt, welche Knoten zuletzt angeklickt oder in einer Suche gefunden wurden. Zu Beginn müssen dafür die Knoten auf irgendeine Weise sinnvoll gefiltert werden. Dadurch wird das Layout auf die Aufgabe vereinfacht und der Fokus verschiebt sich auf die relevanten Knoten. Verbindungen zu weiteren, nicht dargestellten, Knoten können dabei als Verbindung in den "leeren Raum" dargestellt werden.
+			% end
 		% end
 	% end
 

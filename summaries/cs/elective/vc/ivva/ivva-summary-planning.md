@@ -2,7 +2,7 @@
 
 ## Folien
 
-Done/Structured/Total: 702/1168/1168; 60%/100%/100%
+Done/Structured/Total: 702+77+19/1168/1168; 60%/100%/100%
 
 * [X] Kapitel  0: Organisation (20)
 * [X] Kapitel  1: Einführung in die Informationsvisualisierung (82)
@@ -13,7 +13,7 @@ Done/Structured/Total: 702/1168/1168; 60%/100%/100%
 * [X] Kapitel  6: Techniken 1 (91)
 * [X] Kapitel  7: Techniken 2 (66)
 * [X] Kapitel  8: Visualisierung Geobasierter Daten und Karten (91)
-* [x] Kapitel  9: Einführung in Visual Analytics (77+19)
+* [X] Kapitel  9: Einführung in Visual Analytics (77+19)
 * [x] Kapitel 10: Analyse für die Visualisierung (92)
 * [x] Kapitel 11: Von Daten zu Mustern (101)
 * [x] Kapitel 12: Von Mustern zu Modellen (90)

@@ -48,6 +48,59 @@
 	\end{tikzpicture}
 }
 
+\newcommand{\tikzKdd}{
+	\begin{tikzpicture}[
+				align = center,
+				repr/.style = {
+					draw,
+					rectangle,
+					minimum width = 2.1cm,
+					minimum height = 1cm,
+				}
+			]
+		\node [repr] (data) {Daten};
+		\node [repr, right = 1 of data, yshift = 1cm] (targetData) {Zieldaten};
+		\node [repr, right = 1 of targetData, yshift = 1cm] (preprocessedData) {Vorverarb.\\Daten};
+		\node [repr, right = 1 of preprocessedData, yshift = 1cm] (transformedData) {Transf.\\Daten};
+		\node [repr, right = 1 of transformedData, yshift = 1cm] (patterns) {Muster};
+		\node [repr, right = 1 of patterns, yshift = 1cm] (knowledge) {Wissen};
+
+		\draw [->] (data) to coordinate(selection) node[yshift = 0.3cm, anchor = south east]{Selektion} (targetData);
+		\draw [->] (targetData) to coordinate(preprocessing) node[yshift = 0.3cm, anchor = south east]{Vorverarbeitung} (preprocessedData);
+		\draw [->] (preprocessedData) to coordinate(transformation) node[yshift = 0.3cm, anchor = south east]{Transformation} (transformedData);
+		\draw [->] (transformedData) to coordinate(dataMining) node[yshift = 0.3cm, anchor = south east]{Data Mining} (patterns);
+		\draw [->] (patterns) to coordinate(interpretation) node[yshift = 0.3cm, anchor = south east]{Interpretation\\und Evaluation} (knowledge);
+		\coordinate [below = 0.75 of selection] (needle);
+		\path let \p1 = (needle), \p2 = (interpretation) in coordinate(needle) at (\x2, \y1);
+		\draw [->, dashed] (interpretation) -- (needle) -| (selection);
+		\draw [->, dashed] (interpretation) -- (needle) -| (preprocessing);
+		\draw [->, dashed] (interpretation) -- (needle) -| (transformation);
+		\draw [->, dashed] (interpretation) -- (needle) -| (dataMining);
+	\end{tikzpicture}
+}
+
+\NewEnviron{ivvaIntegration}{
+	\begin{tikzpicture}[->, every node/.style = { draw, rectangle, minimum height = 0.75cm, minimum width = 2.5cm }]
+		\node (daten) {Daten};
+		\node [below = 0.5 of daten] (parameter) {Parameter};
+		\node [below = 0.5 of parameter] (verfahren) {Verfahren};
+		\node [below = 0.5 of verfahren] (zwErgebnis) {Zw.-Ergebnis};
+		\node [below = 0.5 of zwErgebnis] (bewertung) {Bewertung};
+		\node [below = 0.5 of bewertung] (ergebnis) {Ergebnis};
+		\coordinate [above = 0.15 of verfahren.west] (a);
+		\coordinate [below = 0.15 of verfahren.west] (b);
+		\coordinate [left = 0.5 of a] (A);
+		\coordinate [left = 0.5 of b] (B);
+		\draw (verfahren) to (zwErgebnis);
+		\draw (zwErgebnis) to (bewertung);
+		\draw (bewertung) to (ergebnis);
+		\draw (parameter) to (verfahren);
+		\draw (daten) -| (A) -- (a);
+		\draw [dashed] (bewertung) -| (B) -- (b);
+		\BODY
+	\end{tikzpicture}
+}
+
 \chapter{Einleitung}
 	In dieser Zusammenfassung werden zwei Themen behandelt: Informationsvisualisierung und Visual Analytics. Dabei sollen die Frage beantwortet werden, wie verschiedene Daten \emph{gut} visualisiert werden können und wie Visualisierung die Analyse unterstützen können. Viele Ideen der folgenden Kapitel und grundlegender Techniken bauen dabei auf dem Verständnis grundlegender Prozesse des Gehirns ab. Denn: Eine Visualisierung soll dem Gehirn des*der Nutzer*in Arbeit abnehmen. Dabei sollen für jede Visualisierung die folgenden drei Fragen beantwortet werden:
 	\begin{itemize}
@@ -909,6 +962,8 @@
 	In diesem Kapitel werden einige für bestimmte Daten spezialisierte Visualisierungstechniken behandelt, \bspw für hochdimensionale oder sehr viele Daten.
 
 	\section{Hochdimensionale Daten}
+		\label{sec:highdim}
+
 		Zu Beginn muss die Frage gestellt werden, was "hochdimensional" ist. Denn: "Hoch"dimensional kann sogar schon drei quantitative Attribute bedeuten: Ein Scatterplot kann \bspw problemlos zwei quantitative Dimensionen Dimension darstellen, bei drei quantitativen -- und spätestens bei vieren -- wird es jedoch schwer. Selbst wenn die dritte Dimension nominal ist, wird diese unbewusst als abhängige Variable wahrgenommen, was \ggf nicht gewollt ist. Eine Möglichkeit ist die Darstellung in einem 3D-Plot, aber erstens bricht dies spätestens bei vier Dimensionen zusammen und zweitens sind diese Art von Visualisierungen schwer zu lesen -- auch wenn dies durch Hilfslinien oder Interaktion (\bspw Rotation) verbessert werden kann.
 
 		Grundsätzlich gilt: Fast alle Techniken zur Darstellung hochdimensionaler Daten sind nicht dazu geeignet, einzelne Datenwerte abzulesen sondern dienen in erster Linie dazu Trends und Verteilungen sichtbar zu machen, um Muster, Ausreißer und/oder Abhängigkeiten zu finden. Sollen zusätzlich Werte abgelesen werden, ist dies durch Interaktion (\zB Tooltips) realisierbar.
@@ -1149,6 +1204,8 @@
 	% end
 
 	\section{Große Datenmengen}
+		\label{sec:bigdata}
+
 		Dieser Abschnitt behandelt spezialisierte Methoden zur Darstellung "vieler" Daten. Wie bereits bei hochdimensionalen ist die Bedeutung "viel" relativ zu sein: Bei der mentalen Verarbeitung kann dies bereits in der Größenordnung von wenigen Datenpunkten ("mehr Daten, als man verstehen kann"), bei High-Performance-computing bei vielen Millionen Datenpunkten ("mehr Daten, als man verarbeiten/speichern kann") zutreffen. Dieser Abschnitt behandelt vornehmlich "mehr Daten, als man Anzeigen kann", während "normale" Visualisierungstechniken in den Bereich "mehr Daten, als man lesen kann" fallen. Die Anzahl Datenpunkte liegt damit in der Größenordnung von einigen tausend bis zehntausenden Punkten.
 
 		\subsection{Ordnen}
@@ -1822,429 +1879,695 @@
 	% end
 % end
 
-\chapter{Visual Analytics} % 9.1, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8, 9.9, 9.10, 9.11
-    \todo{Content}
+\chapter{Visual Analytics}
+	In den vorherigen Kapitel wurde der erste Teil, die Informationsvisualisierung, behandelt. Dabei ging es darum, wie Daten dargestellt werden. In der Visual Analytics, diesem Kapitel, geht es hingegen darum, wie eine Visualisierung für die Analyse genutzt werden kann und umgekehrt. Die Informationsvisualisierung ist also nur eine Komponente. Allerdings ist sie mehr als nur eine Visualisierung von Ergebnissen, sondern die automatische Modellierung und die Visualisierung bestehen gleichberechtigt nebeneinander und werden für verschiedene Teilaufgaben verwendet.
 
-    \section{Definition} % 9.12, 9.13, 9.14, 9.41, 9.42, 9.43, 9.44, 9.45, 9.46, 9.47, 9.48
-        \todo{Content}
-	% end
+	\section{Definition}
+		Für die Visual Analytics gibt es im Grunde zwei große Definition, wobei die zweite sehr viel Allgemeiner ist:
+		\begin{itemize}
+			\item "Visual Analytics ist die Kombination automatischer Analysetechniken mit interaktiven Visualisierungen um große und komplexe Daten zu verstehen und auf deren Basis Entscheidungen treffen zu können." (Keim et al., 2008)
+			\item "Visual Analytics ist die Wissenschaft des analytischen Schließens, unterstützt durch interaktive, visuelle Schnittstellen." (Thomas und Cook, 2005)
+		\end{itemize}
+		Diese beiden Definitionen und ihre Bedeutung werden nun genauer beleuchtet.
 
-    \section{Das Knowledge Discovery Process (KDD) Modell} % 9.15, 9.16, 9.17, 9.18, 9.19, 9.29, 9.30
-        \todo{Content}
+		\subsection{Definition nach Keim et al.}
+			Die erstere, ältere, vereint zwei wichtige Vorgänger der Visual Analytics, die \emph{Informationsvisualisierung}\footnote{"Nutzung von computerunterstützten, interaktiven, visuellen Repräsentierungen abstrakter Daten mit dem Ziel, das Erkenntnisvermögen zu verbessern" (Card et al., 1999)} und die \emph{Knowledge Discovery (in Databases)}\footnote{"nicht-trivialer Prozess für die Suche nach validen, neuen, potentiell relevanten und nutzbaren Mustern in Datenbeständen" (Fayyad et al., 1996)} (KDD). Um diese Definition im Detail zu verstehen, ist es zunächst wichtig, das KDD-Modell zu verstehen.
 
-        \paragraph{Schritt 1: Kennenlernen der Anwendungsdomäne} % 9.20
-            \todo{Content}
-		% end
+			\subsubsection{Der Knowledge Discovery Prozess und das KDD-Modell}
+				Das KDD-Modell stellt, ähnlich wie der Informationsvisualisierungsprozess, den Prozess der \emph{Knowledge Discovery}, also dem Entdecken von Wissen, in einer einfachen Pipeline dar (siehe \autoref{fig:kdd}). Im Folgenden werden die einzelnen Schritte des Modells im Detail beschrieben:
+				\begin{enumerate}
+					\item Im ersten Schritt (\emph{Kennenlernen der Anwendungsdomäne}) muss die Anwendungsdomäne im Detail kennen gelernt werden. Dies bedeutet, dass die Daten und die Fragestellung gesichtet werden müssen. Des weiteren wird die Relevanz der Daten sowie die der Zwischenergebnisse und die Analyse beurteilt und die Fragestellung der Anwendung wird in die Analyse übersetzt. Hierbei können bereits kleinere Visualisierungen angewendet werden, \zB um die Rohdaten anzuschauen.
+					\item Im zweiten Schritt (\emph{Auswahl der Daten}) müssen die Daten zu Weiterverwendung selektiert werden. Dies geschieht auf verschiedensten Kriterien, \zB Relevant, Repräsentativität, Vollständigkeit ("Sauberkeit"), Verfügbarkeit und eventuellen Kosten.
+					\item Anschließend müssen die Daten, wie bei der Informationsvisualisierung, vorverarbeitet werden (\emph{Datenvorverarbeitung}). Dabei können alle aus \autoref{sec:dataTransformation} bekannten Verfahren angewendet werden.
+					\item Im vierten Schritt wird die Data-Mining-Aufgabe bestimmt (\emph{Bestimmung der Data-Mining-Aufgabe}), \dh ob ein Clustering-, Klassifikations, Regressions- oder ein anderes Problem vorliegt.
+					\item Basierend auf der im vierten Schritt identifiziert Aufgabe wird nun ein passendes Verfahren gewählt (\emph{Auswahl des Data-Mining-Verfahrens}). Hierfür stehen hunderte Verfahren zur Verfügung, von denen in \autoref{sec:dataMining} einige vorgestellt werden.
+					\item Vor Anwendung des Verfahrens müssen die Daten eventuell erneut vorverarbeitet und an die Anforderungen der Methode angepasst werden (\emph{Datentransformation und Reduktion}). Dieser Schritt ist neben der ursprünglichen Vorverarbeitung der aufwendigste Schritt und kann \zB Verfahren zur Dimensionsreduktion beinhalten.
+					\item Im siebten Schritt wird das Data-Mining-Verfahren tatsächlich angewendet. Dies inkludiert die Auswahl passender Parameter und Qualitätskriterien. Das Ergebnis sind Muster und/oder Modelle.
+					\item Im abschließenden Schritt werden die Ergebnisse gesichtet, getestet und zur Vermittlung an den*die Anwender*in aufbereitet (insbesondere werden die Ergebnisse in den Kontext der Aufgabe gesetzt). Es ist alternativ auch möglich, die Daten (automatisiert) weiter zu verwenden.
+				\end{enumerate}
 
-        \paragraph{Schritt 2: Auswahl der Daten} % 9.21
-            \todo{Content}
-		% end
-
-        \paragraph{Schritt 3: Datenvorverarbeitung} % 9.22, 9.23
-            \todo{Content}
-		% end
-
-        \paragraph{Schritt 4: Bestimmung der Data-Mining-Aufgabe} % 9.24
-            \todo{Content}
-		% end
-
-        \paragraph{Schritt 5: Auswahl des Data-Mining-Verfahrens} % 9.25
-            \todo{Content}
-		% end
-
-        \paragraph{Schritt 6: Datentransformation und Reduktion} % 9.26
-            \todo{Content}
-		% end
-
-        \paragraph{Schritt 7: Data-Mining} % 9.27
-            \todo{Content}
-		% end
-
-        \paragraph{Schritte 8 und 9: Interpretation, Bewertung und Nutzung} % 9.28
-            \todo{Content}
-		% end
-	% end
-
-    \section{Integration des Informationsvisualisierungsprozesses und dem KDD-Modell} % 9.31, 9.32, 9.33, 9.34, 9.35, 9.36, 9.37, 9.38, 9.39, 9.40, 9.74, 9.75, 9.76, 12.88
-        \todo{Content}
-	% end
-
-    \section{Stärken und Schwächen von Mensch und Maschine} % 9.49, 9.50, 9.73
-        \todo{Content}
-
-        \subsection{Was ist eigentlich ein Muster?} % 9.51, 9.52, 9.53, 9.54, 9.55, 9.56, 9.57, 9.60
-            \todo{Content}
-
-        \subsection{Ähnlichkeit} % 11.5, 11.6, 11.7, 11.8, 11.9, 11.10, 11.11, 11.12, 11.13, 11.25, 11.26, 11.93
-            \todo{Content}
-
-            \subsubsection{Informelle und Formale Ähnlichkeit} % 11.31, 11.32
-                \todo{Content}
+				\begin{figure}
+					\centering
+					\tikzKdd
+					\caption{Das Knowledge Discovery Prozess-Modell}
+					\label{fig:kdd}
+				\end{figure}
 			% end
 
-            \subsubsection{Ähnlichkeiten im KDD-Modell} % 11.33, 11.34, 11.35, 11.36, 11.37, 11.38
-                \todo{Content}
+			\subsubsection{Gemeinsamkeiten zwischen dem KDD-Modell und dem Visualisierungsprozess}
+				Beide Modelle -- das KDD-Modell und der Visualisierungsprozess -- sind Datenflussmodelle, bei denen die Schritte interaktiv und iterativ ab, \dh die Schritte können wiederholt werden und das Wissen am Ende der jeweiligen Pipeline wird nicht (vollständig) automatisch generiert. Weitere Gemeinsamkeiten sind die Vorverarbeitung und die Interpretation/Evaluation durch den Menschen mit dem Ziel des (Aufgaben-bezogenen) Erkenntnisgewinns. Die charakteristischen Schritte des jeweiligen Prozesses sind die visuelle Abbildung, View Transformation und das Ergebnis als "Bild" bei der Informationsvisualisierung und der Einsatz von Data-Mining-Verfahren im KDD-Modell, wobei die Darstellung der Ergebnisse nicht strikt definiert ist.
 			% end
 		% end
 
-        \subsection{Mensch vs. Maschine} % 9.58, 9.59, 9.61, 9.62
-            \todo{Content}
+		\subsection{Definition nach Thomas und Cook}
+			Die zweite Definition von Visual Analytics als \emph{Wissenschaft des analytischen Schließens} ist sehr viel Allgemeiner und beschreibt dabei die Herleitung von Entscheidungen aus empirischen Daten, die Falsifikation/Bestätigung von Hypothesen und die Entwicklung von Methoden zur Herleitung (\bspw Data-Mining, Simulation, Präsentation, etc.). Das übergreifende Ziel ist dabei die nachvollziehbare Verknüpfung aller elementaren Daten. Eine Illustration dieses Konzepts mit einzelnen Schritten ist in \autoref{fig:cook} zu sehen. Technologien der Visual Analytics bewegen sich dabei auf zwei Achsen zwischen der Findung eines Modells und der Visualisierung sowie den Ebenen des Modells von Thomas und Cook (siehe \autoref{fig:va}).
 
-            \subsubsection{Schwächen des Menschen} % 9.63, 9.64, 9.65, 9.66
-                \todo{Content}
-			% end
+			\begin{figure}
+				\centering
+				\begin{tikzpicture}[<->, every node/.style = { draw, rectangle, minimum height = 0.75cm, minimum width = 5cm }]
+					\node (a) {Szenario, Entscheidung};
+					\node [below = 0.75 of a] (b) {Hypothesen, Empfehlungen};
+					\node [below = 0.75 of b] (c) {Argumente, Modelle};
+					\node [below = 0.75 of c] (d) {Muster};
+					\node [below = 0.75 of d] (e) {Elementare Daten};
 
-            \subsubsection{Schwächen der Maschine} % 9.67, 9.68, 9.69, 9.70, 9.71, 9.72
-                \todo{Content}
-			% end
+					\draw (a) to (b);
+					\draw (b) to (c);
+					\draw (c) to (d);
+					\draw (d) to (e);
+				\end{tikzpicture}
+				\caption{Illustration der Schritte der "Wissenschaft des analytischen Schließens"}
+				\label{fig:cook}
+			\end{figure}
+
+			\begin{figure}
+				\centering
+				\includegraphics[width=\linewidth]{va}
+				\caption[Die zwei Achsen der Visual Analytics]{Die zwei Achsen der Visual Analytics\\Quelle: Vorlesungsfolien}
+				\label{fig:va}
+			\end{figure}
 		% end
 	% end
 
-    \section{Von Daten zu Mustern zu Modellen} % 10.61, 10.62, 11.18, 11.19, 11.27, 11.28, 11.29, 11.45, 12.5, 12.6, 12.7, 12.8, 12.9, 12.10, 12.11
-        \todo{Content}
+	\section{Das Visual Analytics Prozessmodell}
+		Bereits im KDD-Prozess werden Visualisierungen für die Sichtung von (Zwischen-) Ergebnissen genutzt, wobei die Verfahren häufig nebeneinander und strikt getrennt verwendet werden. In der Visual Analytics wird diese strikte Trennung aufgebrochen und stattdessen eine direkte Verbindung hergestellt (siehe \autoref{fig:direkteVerbindung}). Diese \emph{direkte Verbindung} ist das Herzstück der modernen Visual Analytics, während die "alte" Vorgehensweise nur die indirekte Verbindung ausweist. Es kann im neuen Modell \zB die Interaktion mit einer Visualisierung das Modell beeinflussen.
 
-        \subsection{Grundbegriffe} % 12.16, 12.18
-            \todo{Content}
+		Da sich über eine Reiteration jede direkte Kopplung auch als eine indirekte Kopplung realisieren kann, wirkt die Unterscheidung zunächst arbiträr. Diese kann klar definiert werden: Findet zwischen zwei Techniken ein direkter Datenfluss oder -austausch statt, so ist die Kopplung \emph{direkt}, sonst \emph{indirekt}. Bei einer indirekten Kopplung muss der*die Nutzer*in zwischen dem Output und dem erneuten Input also händisch eingreifen. Bei einer direkten Kopplung genügt es hingegen, die Daten neu zu laden ohne irgendwie einzugreifen. Im Idealfall ist dies sogar transparent, sodass nur mit der Visualisierung gearbeitet werden muss.
 
-            \subsubsection{Clustering und Dimensionsreduktion} % 11.21, 11.22, 11.23, 11.24
-                \todo{Content}
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[->, cmp/.style = { draw, rectangle, minimum height = 0.75cm, minimum width = 3cm }]
+				\node (eingabe) {Eingabe};
+				\node [cmp, right = 1cm of eingabe] (daten) {Daten};
+				\node [cmp, right = 2cm of daten, yshift =  1.25cm] (visualisierung) {Visualisierung};
+				\node [cmp, right = 2cm of daten, yshift = -1.25cm] (modell) {Modell};
+				\node [cmp, right = 2cm+3cm+2cm of daten] (erkenntnis) {Erkenntnis};
+				\draw (eingabe) to (daten);
+				\draw (daten.east) to[out = 0, in = 180] (visualisierung.west);
+				\draw (daten.east) to[out = 0, in = 180] (modell.west);
+				\draw (visualisierung.east) to[out = 0, in = 180] (erkenntnis.west);
+				\draw (modell.east) to[out = 0, in = 180] (erkenntnis.west);
+				\draw [<->, TUDa-9c] (visualisierung) to node[fill = white]{\textbf{Direkte Verbindung}} (modell);
+				\coordinate [below = 3.5 of erkenntnis] (a);
+				\draw [dashed] (erkenntnis) to (a) -| coordinate(b) (eingabe);
+				\path (a) to node[above]{Indirekte Verbindung} (b);
+				\draw (visualisierung.east) to[out = 0, in = 90, looseness = 3] node[above, yshift = 0.2cm]{Informationsvisualisierung} (visualisierung.north);
+				\draw (modell.east) to[out = 0, in = -90, looseness = 3] node[below, yshift = -0.3cm]{Knowledge Discovery} (modell.south);
+			\end{tikzpicture}
+			\caption{Das Visual Analytics Prozessmodell}
+			\label{fig:direkteVerbindung}
+		\end{figure}
+	% end
+
+	\section{Stärken und Schwächen von Mensch und Maschine}
+		Da das Hauptziel der Visual Analytics die Verbesserung von automatischen Verfahren durch Visualisierung und anders herum ist, muss zunächst verstanden werden, was die Stärken und Schwächen von Mensch und Maschine ist und wo ein automatisches Verfahren dem Menschen oder ein Mensch dem automatischen Verfahren helfen kann. Dabei ist die eigentliche zentrale Frage
+		\begin{center}
+			Was ist ein Muster?
+		\end{center}
+		Diese Frage wird von verschiedenen Menschen und automatischen Verfahren sehr unterschiedlich beantwortet und ist, da automatische Verfahren insbesondere Muster finden sollen, sehr relevant um Verbesserungen und Hilfestellungen zu identifizieren.
+
+		Im Rahmen des KDD-Modells wurde die folgende Definition eines Musters vorgeschlagen: "Ausdruck in einer formalen Sprache oder ein Modell, das eine Teilmenge aller Datensätze beschreibt" (Fayyad et al., 1996). In anderen Worten ist ein Muster also eine nicht zufällige Teilmenge von Daten (\zB formal ausgedrückt durch SQL-Queries, algebraische Ausdrücke oder periodische Folgen als Teilmenge aller Ziffernfolgen). Diese Definition setzt allerdings eine formale Beschreibung eines Musters voraus, es gibt allerdings auch Daten, die keiner formalen Definition genügen, aber allgemein auch als Muster anerkannt sind, \zB Design Patterns in der Softwareentwickler, die Menge aller Bauwerke, die "Haus" genannt werden, die Menge aller Bekannten, die als "Freunde" bezeichnet werden, die Menge aller Musikstücke, die einer Person gefallen, uvm.. Diese Muster sind für die Datenanalyse oft interessanter, da sie real existierende Dinge darstellen. Allerdings sind sie auch um ein vielfaches schwerer, da ein Mensch es oftmals nicht schafft, eine formale Definition zu finden.
+
+		Eine weitere Definition eines Musters, die insbesondere in der Informationsvisualisierung relevant ist, ist: "Ein visuelles Muster ist ein \emph{subjektiver} Sinneseindruck, der Informationen über \emph{mehrere} Elemente eines Bildes zusammenfasst". Nach dieser Definition muss sich ein Muster also nicht unbedingt wiederholen, noch muss es zusammenhängend oder formal definiert sein.
+
+		Unabhängig von der genauen Definition kann sich allerdings auf einige Eigenschaften von Mustern geeinigt werden, die sowohl in der Informationsvisualisierung als auch im KDD-Modell gelten:
+		\begin{enumerate}
+			\item Ein Muster ist eine Teilmenge einer Grundmenge (\zB die Menge aller Bauwerke).
+			\item Ein Muster hat \emph{mehr als ein} Element und enthält \emph{nicht alle} Elemente.
+			\item Ein Muster wird nicht als Zufall erfasst/berechnet/gesehen/gelernt/vermutet/etc..
+		\end{enumerate}
+		Dabei gibt es Modell- und nicht-Modellbasierte Muster. Ein Modell kann dabei verschieden ausgeprägt sein, \bspw ein Beschreibungsmodell, welches es ermöglicht, Muster zu unterscheiden oder ein Prognosemodell, welches es ermöglicht, auch vorher unbekannte Instanzen zuzuordnen. Bei der Knowledge Discovery werden Muster dabei fast immer zusammen mit einem Modell erzeugt, welches dieses Muster beschreibt.
+
+		Ein Überblick über die verschiedenen und gemeinsamen Eigenschaften eines Musters in der Informationsvisualisierung und im KDD-Prozess ist in \autoref{tab:muster} gegeben.
+
+		\begin{table}
+			\centering
+			\begin{tabular}{l|l}
+				\toprule
+				\textbf{Informationsvisualisierung}         & \textbf{Knowledge Discovery}  \\ \midrule
+				Sinneseindruck                              & Ausdruck in formaler Sprache  \\
+				ohne Modell definiert                       & durch ein Modell spezifiziert \\
+				räumlich begrenzter Bereich des Sichtfeldes & (lesbar)                      \\
+				subjektiv                                   & objektiv                      \\
+				nicht formalisiert                          & reproduzierbar                \\
+				nicht (direkt) kommunizierbar               & "nachweisbar nicht zufällig"  \\
+				 \multicolumn{2}{c}{Zusammenfassung mehrere Datensätze zu einem Artefakt}   \\ \bottomrule
+			\end{tabular}
+			\caption{Verschiedene/Gemeinsame Eigenschaften eines "Musters" in Informationsvisualisierung und Knowledge Discovery}
+			\label{tab:muster}
+		\end{table}
+
+		\subsection{Mensch vs. Maschine}
+			Wenn ein Mensch ein Muster erkennen soll, so ist eine geeignete Visualisierung notwendig, da Menschen primär in Bildern Muster erkennen. Dadurch können auch Muster gefunden werden, die vorher nicht spezifiziert wurden und es kann die Erkennung komplexester Muster gelernt werden. Daraus folgt allerdings, dass die Ergebnisse stark von dem*der Anwender*in abhängen, nicht direkt nutzbar und deterministisch sind. Soll hingegen eine Maschine ein Muster erkennen, so ist ein formaler Algorithmus notwendig. Die Entwicklung eines solchen Algorithmus ist jedoch schwierig und grenzt den Suchraum bereits durch das Design stark ein. Allerdings ist das Ergebnis eine formale, nutzbare Beschreibung des Musters. Diese Divergenz in den Anforderungen hat verschiedene Vor- und Nachteile, die sich in den Schwächen von Mensch und Maschine widerspiegeln. Eine Übersicht dieser ist in \autoref{tab:staerken} gegeben. In den folgenden Abschnitten werden die Schwächen genauer beleuchtet, da diese zu den Kernpunkten der Visual Analytics führen.
+
+			\begin{table}
+				\centering
+				\begin{tabular}{l|l}
+					\toprule
+					\textbf{Stärken des Menschen}                      & \textbf{Stärken der Maschine}         \\ \midrule
+					flexible, robuste Wahrnehmung                      & Kontrollierbarkeit                    \\
+					Mustererkennung unter schwierigsten Bedingungen    & Wiederholbarkeit                      \\
+					Wahrnehmung ungewöhnlicher/unerwarteter Ereignisse & großer Arbeitsspeicher                \\
+					Datenunsicherheit                                  & Deduktives Schließen                  \\
+					Kreativität                                        & Schnelligkeit                         \\
+					Langzeitgedächtnis, Weltwissen                     & Präzision                             \\
+					Urteilskompetenz                                   & Zuverlässigkeit                       \\
+					(Induktives Schließen)                             & Multitasking                          \\
+					Abduktives Schließen (Hypothesenbildung)           & Ausdauer                              \\ \midrule
+					\textbf{Schwächen des Menschen}                    & \textbf{Schwächen der Maschine}       \\ \midrule
+					kleines Arbeitsgedächtnis                          & Rauschen                              \\
+					sequentielle, sprachliche Verarbeitung             & Mehrdeutigkeit                        \\
+					hochdimensionalen Daten                            & Datenunsicherheit                     \\
+					geringe Ausdauer                                   & Formale Beschreibung notwendig        \\
+					Abhängigkeit von äußeren Einflüssen                & sehr begrenze Anpassung an neue Reize \\
+					Nichtreproduzierbarkeit                            & \emph{sehr} hochdimensionale Daten    \\
+					Abduktives Schließen (Falsche Prämissen)           &
+				\end{tabular}
+				\caption{Stärken und Schwächen von Mensch und Maschine}
+				\label{tab:staerken}
+			\end{table}
+
+			\subsubsection{Schwächen des Menschen}
+				Das Arbeitsgedächtnis eines Menschen ist sehr klein und kann zur selben Zeit nur drei bis fünf Informationselement bereit halten. Dadurch können komplexe Zusammenhänge nicht ohne Hilfsmittel zusammengeführt und erkennt werden, was die Interpretation von Mustern beeinflusst. Ebenso sind die Ergebnisse nichtreproduzierbar, da Sinneseindrücke nicht sprachlich fixiert und formalisiert sind. Eine Formalisierung wird erst nach der Interpretation "künstlich" eingefügt. Da das Denken außerdem in 2D/3D verankert ist, können Menschen im Allgemeinen schlecht mit hochdimensionalen Daten umgehen, da die hier auftretenden Effekten der Intuition widersprechen und dadurch schwer vorstellbar sind.
 			% end
 
-            \subsubsection{Klassifikation} % 12.13, 12.14, 12.15, 12.17
-                \todo{Content}
-			% end
+			\subsubsection{Schwächen der Maschine}
+				Die Schwächen einer Maschine sind, annähernd komplementär zu den Schwächen eines Menschen. So kann eine Maschine \bspw schlecht mit Mehrdeutigkeiten umgehen und erstellt eher eine Beschreibung eines sehr komplexen Musters statt drei einfache Muster zu erkennen. Außerdem können Datenpunkte sogar zu mehreren Mustern gehören, was das Problem nochmal komplexer macht. Des weiteren sind Maschinen schlecht darin, mit Rauschen und Unsicherheiten umzugehen und falsche Daten führen eher zu komplexeren Modellen statt dem Eliminieren einzelner Datenpunkte als Ausreißer. Ferner schränkt bereits die Wahl des Data-Mining-Verfahrens die erkennbaren Muster ein: Kann ein Modell \bspw gut Rechtecke beschreiben, wird die Beschreibung eines Kreises schwer und umgekehrt.
 
-            \subsubsection{Overfitting} % 12.33, 12.34, 12.35, 12.36
-                \todo{Content}
+				Zusammengefasst werden viele dieser Symptome als \emph{Okchams Dilemma:}
+				\begin{center}
+					"Keine formale Sprache ist in der Lage, in \emph{jedem} Fall gleichzeitig das genauste \emph{und} einfachste Modell zu repräsentieren."
+				\end{center}
 			% end
 		% end
 
-        \subsection{Clustering} % 11.94
-            \todo{Content}
+		\subsection{Ähnlichkeit}
+			Eine der Hauptkomponenten bei der Mustererkennung (insbesondere dem Finden von Gruppierungen) ist die Definition einer \emph{Ähnlichkeit}. Die Definition einer solchen Ähnlichkeit und die entsprechende Anordnung ist allerdings extrem schwer und baut bei Menschen häufig auf das Objekt selbst und Vorwissen und Interessen des*der Nutzers*Nutzerin auf. Daher ist die Ähnlichkeit auch häufig nicht deterministisch\dots~Für Data-Mining-Verfahren muss die Ähnlichkeit häufig als ein \emph{Distanzmaß} \( \mathrm{dist}(\vec{x}, \vec{y}) \) zwischen zwei Datenpunkten \(x\) und \(y\) definiert werden. Dies kann \zB die \emph{Manhatten-}, \emph{Euklidische-} oder \emph{Maximums-Distanz} (in dieser Reihenfolge):
+			\begin{align}
+				d_1(\vec{x}, \vec{y}) &= \sum_i \lvert x_i - y_i \rvert &
+				d_2(\vec{x}, \vec{y}) &= \sqrt{\sum_i (x_i - y_i)^2} &
+				d_\infty(\vec{x}, \vec{y}) &= \max_i \lvert x_i - y_i \rvert
+			\end{align}
+			Viele andere Distanzmaße können in der \emph{Enzyklopädie der Distanzen} (ISBN-13: 978-3-662-52844-0) gefunden werden.
 
-            \subsubsection{k-Means} % 10.63, 10.64, 10.65, 10.66, 10.67
-                \todo{Content}
+			Eine andere Möglichkeit zur Distanzrepräsentation ist die explizite Auflistung dieser in einer Matrix. Diese \emph{Ähnlichkeitsmatrix} enthält dann alle Distanzen für jedes Punktepaar. Während dieser Ansatz Vorwissen auch ohne explizite mathematische Modellierung abbilden kann, damit sehr flexibel ist und die Datenpunkte auch keine Attribute benötigen, kann er einige Problem hervorrufen. Zunächst steigt der Speicherverbrauch quadratisch mit der Anzahl der Datenpunkte. Des weiteren ist nicht garantiert, dass die so definierte Ähnlichkeit tatsächlich eine Metrik ist (Dreiecksungleichung), weshalb manche Verfahren zusammenbrechen können. Außerdem ist ein Clustering so möglicherweise schon durch den Menschen vorgegeben und die Stärken der Maschine werden nicht verwendet.
+
+			Die erste Aufgabe zur Anwendung von Data-Mining-Verfahren besteht also in der Wahl einer geeigneten Ähnlichkeitsmetrik, die die Anforderungen und Fragestellungen des*der Fachexperten*Fachexpertinnen möglichst gut abbildet. Dabei kann es hilfreich sein, die Expert*innen zunächst zu befragen, \bzw sie Daten manuell sortieren zu lassen, um eine Idee für die relevanten Aspekte zu bekommen. Anschließend sollte auch beim durchlaufen des KDD-Modells immer Rücksprache gehalten und Zwischenergebnisse diskutiert werden. So kann es \bspw passieren, dass eine Diskretisierung oder Entrauschung wichtige Details entfernt, sodass das angeschlossene Modell gar keine korrekten Antworten mehr geben kann. Es sollte also immer die formale Ähnlichkeit in Form einer Formel mit der informellen Ähnlichkeit in Form der Meinung eines*einer Expert*in sichergestellt werden, wobei die (Zwischen-) Ergebnisse visualisiert werden müssen.
+		% end
+	% end
+
+	\section{Automatische Verfahren}
+		\label{sec:dataMining}
+
+		Um die Verbesserung automatischer Verfahren behandeln zu können, ist es zunächst hilfreich, eine Idee davon zu bekommen, wie diese Verfahren arbeiten. Dabei gehen die meisten Verfahren ähnliche Schritte durch, die in \autoref{fig:autoVerfahren} gezeigt sind. Die meisten Verfahren werden dabei zur Extraktion von Mustern und Erstellung von Modellen genutzt. Im Folgenden werden einige Grundbegriffe und Verfahren behandelt, denen im weiteren Verlauf dieses Kapitels einige Erweiterungen hinzugefügt werden, um sie mit Visualisierung und Interaktion zu verbinden.
+
+		\todo{Visual Analytics: Automatische Verfahren} \emph{Ich habe diesen Abschnitt erst einmal ausgelassen, da ich sehr knapp in der Zeit bin und das meiste eh schon bekannt ist aus anderen Zusammenfassungen und Veranstaltungen (siehe \zB \href{https://fabian.damken.net/summaries/cs/elective/iws/dmml}{\emph{Data Mining und Maschinelles Lernen}}\footnote{\url{https://fabian.damken.net/summaries/cs/elective/iws/dmml}} oder \href{https://fabian.damken.net/summaries/cs/elective/vc/statml}{\emph{Statistical Machine Learning}}\footnote{\url{https://fabian.damken.net/summaries/cs/elective/vc/statml}}).}
+
+		\begin{figure}
+			\centering
+			\begin{ivvaIntegration}
+			\end{ivvaIntegration}
+			\caption[Grundlegende Schritte automatischer Verfahren]{Darstellung der grundlegenden Schritte von automatischen Verfahren. Das Zwischenergebnis hat dabei häufig, aber nicht immer, die gleiche Form wie das Ergebnis, wird allerdings iterativ verändert. Hat es dir gleiche Form, so können die selben Visualisierungstechniken für das Zwischenergebnis wie für das Ergebnis angewendet werden.}
+			\label{fig:autoVerfahren}
+		\end{figure}
+
+		\subsection{Grundbegriffe}
+			\todo{Visual Analytics: Automatische Verfahren: Grundbegriffe; 12.16, 12.18}  Folien: 12.16, 12.18
+
+			\subsubsection{Clustering und Dimensionsreduktion}
+				\todo{Visual Analytics: Automatische Verfahren: Grundbegriffe: Clustering und Dimensionsreduktion; 11.18, 11.19, 11.21, 11.22, 11.23, 11.24, 11.28}  Folien: 11.18, 11.19, 11.21, 11.22, 11.23, 11.24, 11.28
 			% end
 
-            \subsubsection{Semi-Supervised Clustering} % 11.49, 11.50
-                \todo{Content}
+			\subsubsection{Klassifikation}
+				\todo{Visual Analytics: Automatische Verfahren: Grundbegriffe: Klassifikation; 12.13, 12.14, 12.15, 12.17}  Folien: 12.13, 12.14, 12.15, 12.17
 			% end
 
-            \subsubsection{Hierarchisches Clustering} % 11.71, 11.72, 11.73, 11.74, 11.75
-                \todo{Content}
-			% end
-
-            \subsubsection{Noch mehr Clusteringverfahren (DBScan)} % 11.79, 11.80, 11.81, 11.82
-                \todo{Content}
+			\subsubsection{Overfitting}
+				\todo{Visual Analytics: Automatische Verfahren: Grundbegriffe: Overfitting; 12.33, 12.34, 12.35, 12.36}  Folien: 12.33, 12.34, 12.35, 12.36
 			% end
 		% end
 
-        \subsection{Dimensionsreduktion} % 11.83, 11.84, 11.94
-            \todo{Content}
+		\subsection{Clustering}
+			\todo{Visual Analytics: Automatische Verfahren: Clustering; 11.94}  Folien: 11.94
 
-            \subsubsection{Feature Selektion} % 10.68, 10.69, 10.70, 10.71
-                \todo{Content}
+			\subsubsection{k-Means}
+				\todo{Visual Analytics: Automatische Verfahren: Clustering: k-Means; 10.63, 10.64, 10.65, 10.66, 10.67}  Folien: 10.63, 10.64, 10.65, 10.66, 10.67
+			% end
+
+			\subsubsection{Semi-Supervised Clustering}
+				\todo{Visual Analytics: Automatische Verfahren: Clustering: Semi-Supervised Clustering; 11.49, 11.50}  Folien: 11.49, 11.50
+			% end
+
+			\subsubsection{Hierarchisches Clustering}
+				\todo{Visual Analytics: Automatische Verfahren: Clustering: Hierarchisches Clustering; 11.71, 11.72, 11.73, 11.74, 11.75}  Folien: 11.71, 11.72, 11.73, 11.74, 11.75
+			% end
+
+			\subsubsection{Noch mehr Clusteringverfahren (DBScan)}
+				\todo{Visual Analytics: Automatische Verfahren: Clustering: Noch mehr Clusteringverfahren (DBScan); 11.79, 11.80, 11.81, 11.82}  Folien: 11.79, 11.80, 11.81, 11.82
 			% end
 		% end
 
-        \subsection{Klassifikation} % 12.57, 12.58, 12.60, 12.61, 12.62, 12.75, 12.81
-            \todo{Content}
+		\subsection{Dimensionsreduktion}
+			\todo{Visual Analytics: Automatische Verfahren: Dimensionsreduktion; 11.83, 11.84, 11.94}  Folien: 11.83, 11.84, 11.94
 
-            \subsubsection{Entscheidungsbäume} % 12.20, 12.21, 12.22, 12.23, 12.31
-                \todo{Content}
+			\subsubsection{Feature Selektion}
+				\todo{Visual Analytics: Automatische Verfahren: Dimensionsreduktion: Feature Selektion; 10.68, 10.69, 10.70, 10.71}  Folien: 10.68, 10.69, 10.70, 10.71
+			% end
+		% end
 
-                \paragraph{Beispiel: Optimierung} % 12.25, 12.26
-                    \todo{Content}
+		\subsection{Klassifikation}
+			\todo{Visual Analytics: Automatische Verfahren: Klassifikation; 12.57, 12.58, 12.60, 12.61, 12.62, 12.75, 12.81}  Folien: 12.57, 12.58, 12.60, 12.61, 12.62, 12.75, 12.81
+
+			\subsubsection{Entscheidungsbäume}
+				\todo{Visual Analytics: Automatische Verfahren: Klassifikation: Entscheidungsbäume; 12.20, 12.21, 12.22, 12.23, 12.31}  Folien: 12.20, 12.21, 12.22, 12.23, 12.31
+
+				\paragraph{Beispiel: Optimierung}
+					\todo{Visual Analytics: Automatische Verfahren: Klassifikation: Entscheidungsbäume: Beispiel: Optimierung; 12.25, 12.26}  Folien: 12.25, 12.26
 				% end
 
-                \paragraph{Beispiel: Qualitätsmaße} % 12.27, 12.28, 12.29, 12.30
-                    \todo{Content}
+				\paragraph{Beispiel: Qualitätsmaße}
+					\todo{Visual Analytics: Automatische Verfahren: Klassifikation: Entscheidungsbäume: Beispiel: Qualitätsmaße; 12.27, 12.28, 12.29, 12.30}  Folien: 12.27, 12.28, 12.29, 12.30
 				% end
 			% end
 
-            \subsubsection{Stützvektormaschinen} % 12.67, 12.68, 12.69, 12.70, 12.71
-                \todo{Content}
+			\subsubsection{Stützvektormaschinen}
+				\todo{Visual Analytics: Automatische Verfahren: Klassifikation: Stützvektormaschinen; 12.67, 12.68, 12.69, 12.70, 12.71}  Folien: 12.67, 12.68, 12.69, 12.70, 12.71
 			% end
 
-            \subsubsection{k-Nächste Nachbarn} % 12.72, 12.73, 12.74
-                \todo{Content}
+			\subsubsection{k-Nächste Nachbarn}
+				\todo{Visual Analytics: Automatische Verfahren: Klassifikation: k-Nächste Nachbarn; 12.72, 12.73, 12.74}  Folien: 12.72, 12.73, 12.74
 			% end
 
-            \subsubsection{Weitere Verfahren} % 12.76, 12.77, 12.78, 12.79
-                \todo{Content}
+			\subsubsection{Weitere Verfahren}
+				\todo{Visual Analytics: Automatische Verfahren: Klassifikation: Weitere Verfahren; 12.76, 12.77, 12.78, 12.79}  Folien: 12.76, 12.77, 12.78, 12.79
 			% end
 		% end
 	% end
 
-    \section{Automatische Verfahren für die Visualisierung} % 10.4, 10.5, 10.6, 10.7, 10.8, 10.9, 10.10, 10.11, 10.12, 10.13, 10.14, 10.15, 10.16, 10.51, 10.52, 10.53, 10.54, 10.55, 10.56, 10.57, 10.88, 11.14
-        \todo{Content}
+	\section{Automatische Verfahren für die Visualisierung}
+		In diesem Abschnitt werden einige Techniken behandelt, um Visualisierungen jenseits der Standard-Pipeline durch automatische Verfahren zu verbessern. Dabei wird immer die folgende Struktur beibehalten: Zunächst wird (in jedem der folgenden Abschnitte) ein Problem einer Visualisierung beschrieben und anschließend, in den Unterabschnitten, eine oder mehrere Lösungsmethoden vorgestellt. Dabei bauen die Ideen auf der in \autoref{fig:direkteVerbindung} beschriebenen \emph{direkten Verbindung} zwischen automatisierten Verfahren und Visualisierungen auf, wobei praktisch jeder Teil des Informationsvisualisierungsprozesses interaktiv und teilautomatisch verbessert werden kann und damit Ansatzpunkt für Techniken der Visual Analytics ist. Die grundlegende Idee ist dabei immer, dass Visualisierungen nicht nur als \emph{Terminaloperation} gesehen werden sollten, sondern als Schritte, die auch Daten produzieren können.
 
-        \subsection{Zu viele Daten} % 10.17, 10.18
-            \todo{Content}
+		Abschließend an alle folgenden Abschnitte wird in \autoref{subsec:autoVisZsm} eine Übersicht über die vorgestellten Verfahren gegeben.
 
-            \subsubsection{Sampling} % 10.19
-                \todo{Content}
+		\subsection{Zu viele Daten}
+			Visualisierungen haben vor allem dann große Schwierigkeiten, wenn der Bildschirmplatz nicht ausreicht zur Darstellung aller Daten oder das menschliche Arbeitsgedächtnis nicht ausreicht, um die Daten angemessen zu verarbeiten. Die Daten können dann nicht "einzeln" zu Informationen verarbeitet werden und ein Teil der enthaltenen Informationen geht verloren.
+
+			Ansatzpunkte zur Verbesserung sind \zB eine Reduktion der Datenmenge (\zB durch Sampling, Aggregation/Clustering oder Filtern der "relevanten" Elemente) oder ein "Bereinigen" der Visualisierung (\zB durch visuelle Aggregation, hervorheben der "relevanten" Daten oder geschicktes Layouting). Viele dieser Punkte wurden bereits bei der Informationsvisualisierung behandelt, siehe dazu \autoref{sec:bigdata}.
+
+			\subsubsection{Sampling}
+				Beim \emph{Sampling} wird die Datenmenge durch Ziehung (üblicherweise zufälliger) Beispiele so verkleinert, dass sie für eine Visualisierung noch sinnvoll ist. Das zentrale Problem ist die Entscheidung, wie viele Samples notwendig sind, um eine zentrale Aussage der Daten nicht zu verfälschen. Ein Interaktiosansatz ist hier den*die Anwender*in selbst entscheiden zu lassen, wann genug Daten angezeigt werden\footnote{Dies kann aber wiederum zu ungewollten Biases führen; vgl. \(p\)-Hacking.}.
 			% end
 
-            \subsubsection{Aggregation/Clustering} % 10.20, 10.21, 10.22, 10.23
-                \todo{Content}
+			\subsubsection{Aggregation}
+				Bei der \emph{Aggregation} werden mehrere Datenelemente zu Mengen zusammengefasst und diese Mengen visualisiert.
 			% end
 
-            \subsubsection{Filtern} % 10.24
-                \todo{Content}
-			% end
-		% end
-
-        \subsection{Zu viele Beziehungen} % 10.26, 10.27
-            \todo{Content}
-
-            \subsubsection{Dimensionsreduktion} % 10.28
-                \todo{Content}
+			\subsubsection{Clustering}
+				\emph{Clustering} dient der Vorverarbeitung und generiert Cluster-IDs, die dann als "normal" Daten weiterverwendet werden können.
 			% end
 
-            \subsubsection{Feature Selektion} % 10.29, 10.30, 10.31
-                \todo{Content}
+			\subsubsection{Filtern}
+				Beim \emph{Filtern} werden Gewichtungen für die einzelnen Datenpunkte nach \emph{degree-of-interest} berechnet und entsprechend nur die höchste angezeigt. Durch spätere Nutzerinteraktion wird dann ein \emph{Fokus} beschrieben, nach dem die Daten neu gewichtet oder andere Daten angezeigt werden können
 			% end
 		% end
 
-        \subsection{Zu viele Ergebnisse} % 10.33, 10.34
-            \todo{Content}
+		\subsection{Zu viele Dimensionen}
+			Während die Visualisierung von drei Dimensionen schon schwer ist, ist die Visualisierung von vier und mehr Dimensionen noch nicht einmal mehr vorstellbar. Daher stoßen Visualisierungstechniken hier an technische und menschliche Grenzen.
 
-            \subsubsection{Ergebnismanagement} % 10.35, 10.36
-                \todo{Content}
+			Ansatzpunkte zur Verbesserung sind \zB Dimensionsreduktion, Feature Selektion und Feature Sortierung. Viele dieser Verfahren wurden bereits bei der Informationsvisualisierung behandelt, siehe dazu \autoref{sec:highdim}.
+
+			\subsubsection{Dimensionsreduktion}
+				Bei der \emph{Dimensionsreduktion} wird versucht, Daten in einer hohen Dimension auf eine niedrigere Dimension abzubilden und so verlustbehaftet zu "Komprimieren". Bekannte Techniken sind hier \zB PCA, LDA, MDS und SOM.
 			% end
 
-            \subsubsection{History-Management} % 10.37
-                \todo{Content}
-			% end
-		% end
+			\subsubsection{Feature (Subset) Selektion}
+				Da eine Visualisierung nur eine gewisse Anzahl Features/Attribute darstellen kann, wird bei der \emph{Feature Selektion} versucht, diejenigen Features/Attribute zu finden, die maximal viel Informationen beinhalten. Dies sind im Allgemeine Features, die statistisch unabhängig sind, also keine redundanten Daten enthalten. Des weiteren können Duplikate, also Featurevektoren, die "zu ähnlich" sind, entfernt werden.
 
-        \subsection{Illusion von Mustern} % 10.39
-            \todo{Content}
-
-            \subsubsection{Menschen haben kein Auge für Zufall} % 10.40, 10.41, 10.42, 10.43
-                \todo{Content}
-			% end
-
-            \subsubsection{Menschen haben kein Auge für alternative Erklärungen} % 10.44
-                \todo{Content}
+				Insbesondere bei Visualisierungen, die stark von der Sortierung der Attribute abhängen (wie Parallele Koordinaten oder Matrixvisualisierungen) kann eine Feature Selektion sinnvoll sein.
 			% end
 		% end
 
-        \subsection{Zu viel Interaktion} % 10.46, 10.47
-            \todo{Content}
+		\subsection{Zu viele Ergebnisse}
+			Da die Ergebnisse einer Visualisierung informell sind und verschiedene Nutzer*innen verschiedene Ergebnisse durch Interaktion produzieren, werden sehr viele Resultate produziert und gehen über die Zeit vergessen Des weiteren sind sie nicht direkt vergleichbar.
 
-            \subsubsection{Suche nach optimalen Parameter} % 10.48
-                \todo{Content}
+			Ansatzpunkte zur Verbesserung sind \zB Organisationswerkzeuge zur Abstraktion und Vergleich/Bewertung/Austausch der Ergebnisse oder Historie-Mechanismen zur Speicherung der durchgeführten Aktionen. Diese sind allerdings im Bereich der Visualisierung noch wenig erforscht.
+
+			\subsubsection{Ergebnismanagement}
+				Im \emph{Ergebnismanagement} wird das Szenario betrachtet, das ein*e Nutzer*in Daten über mehrere Stunden hinweg analysiert und nebenbei interessante Muster markiert. Da ein Mensch sich nicht alle diese Muster merken kann, sollen die relevanten Muster identifiziert, gespeichert und Bezüge zwischen ihnen hergestellt werden. Ein direkter Ansatz ist alle Muster zu speichern (als Mengen) und diese anschließend als neuen Datentyp in einem neuen Datensatz zu interpretieren und visualisieren.
 			% end
 
-            \subsubsection{Automatische Parametereinstellung} % 10.49
-                \todo{Content}
-			% end
-
-            \subsubsection{Intelligent Visual Analytics Queries} % 10.50
-                \todo{Content}
-			% end
-		% end
-	% end
-
-    \section{Visualisierungen für Automatische Verfahren} % 10.58, 10.59, 10.60, 10.61, 10.72, 10.73, 10.74, 10.86, 10.87, 10.88, 11.15, 11.46, 11.95, 11.96, 11.97, 11.98, 11.99, 12.83, 12.84, 12.85, 12.86
-        \todo{Content}
-
-        \subsection{Intransparenz des Modells} % 10.76, 10.77
-            \todo{Content}
-
-            \subsubsection{Modellvisualisierung} % 10.78, 11.16
-                \todo{Content}
+			\subsubsection{Historie-Mechanismen}
+				\emph{Historie-Mechanismen} betrachten das gleiche Szenario wie Ergebnismanagement-Tools, \dh die Analyseergebnisse werden über längere Zeit aufgezeichnet. Die Ergebnisse beinhalten dabei Muster, Visualisierungseinstellungen und Notizen, sodass eine Historie sichtbar wird. Eine Darstellungsform ist \zB ein Baum ähnlich zu einem Commit-Tree in Git.
 			% end
 		% end
 
-        \subsection{"Falsche" Muster} % 10.80, 10.81
-            \todo{Content}
+		\subsection{Apophänie}
+			\emph{Apophänie} beschreibt, dass Menschen häufig in allen möglichen Datenanhäufungen Gesichter erkennen, obwohl diese nicht vorhanden sind. Allgemein ist es ein Problem von Visualisieren, wenn Muster wahrnehmbar sind, die gar keine sind. Eine visuelle Auffälligkeit implizit noch keine statistische Auffälligkeit!
 
-            \subsubsection{Musterexploration} % 10.82, 10.83, 10.84, 10.85, 11.17
-                \todo{Content}
+			\subsubsection{Zufall}
+				Im Allgemeinen sind Menschen schlecht darin zu erkennen und/oder zu akzeptieren, dass Daten zufällig sind. Des weiteren konstruieren Menschen Hypothesen und Zusammenhänge häufig nur aus wenigen, meist einem, Sample (\zB Kaufempfehlungen von Freunden oder Einschätzungen des Verhaltens Fremder). Deshalb müssen die Ergebnisse von Visualisierungen durch statistische Tests validiert werden, wobei es allerdings keine eindeutige Beziehung zwischen der Visualisierung und dem dazu passenden Test gibt, \dh die Null-Hypothese muss bekannt und simuliert sein.
+
+				Die Ergebnisse eines statistischen Tests können in die Visualisierung eingebunden werden, um klar zu machen, welche Ergebnisse signifikant sind und welche nicht. Dabei ist das Testverfahren allerdings im Allgemeinen nicht automatisch wählbar!
+			% end
+
+			\subsubsection{Alternative Erklärungen}
+				Ein weiteres Problem liegt in der Generierung von Hypothesen: Menschen sind häufig schlecht in der Lage dazu, alternative Erklärungen zu einem gegebenen Phänomen zu finden.
 			% end
 		% end
 
-        \subsection{Abhängigkeit der Ergebnisse von den Parametern} % 11.40
-            \todo{Content}
+		\subsection{Zu viele Parameter}
+			Ein weiteres Problem von Visualisierungen liegt in der Anzahl der Parameter bei Interaktionen. Hat eine Visualisierung zu viele Parameter, so liegt es nahe, dass ein*e Nutzer*in diese dazu nutzt, das erwartete Resultat absichtlich hervorzuheben statt wirklich in den Daten zu explorieren. Außerdem sind verschiedene Visualisierungen und Ergebnisse schwer vergleichbar und die Interaktion muss gelernt werden.
 
-            \subsubsection{Black-Box Integration} % 11.41, 11.42, 11.43, 11.44, 11.45
-                \todo{Content}
+			Ansatzpunkte zur Verbesserung sind \zB eine Automatische Steuerung mit automatischer Suche nach guten Parametern oder eine Nutzer*innenführung mit Parameterempfehlungen.
+
+			\subsubsection{Automatische Parameterselektion}
+				Um die Interaktionsparameter automatisch zu setzen, müssen mehrere Parameterkombinationen generiert und getestet werden. So ist es potentiell möglich, optimale Parameter zu finden.
+			% end
+
+			\subsubsection{Intelligent Visual Analytics Queries}
+				Bei \emph{Intelligent Visual Analytics Queries} wird der Prozess der Interpretation der Visualisierung, Suchen der Einstellungen in der Oberfläche und einstellen der Parameter abgekürzt. Dies geschieht durch die Extraktion relevanter Muster aus der Interaktion mit den Daten, woraus eine automatische Steuerung abgeleitet wird.
 			% end
 		% end
 
-        \subsection{Einbeziehung von Expert*innenwissen} % 11.47, 11.48, 11.52, 11.93
-            \todo{Content}
+		\subsection{Übersicht über die vorgestellten Verfahren}
+			\label{subsec:autoVisZsm}
 
-            \subsubsection{Visual Input Editing} % 11.53, 11.54, 11.55, 11.56, 11.57, 11.58
-                \todo{Content}
-			% end
-
-            \subsubsection{Visual Data Editing} % 11.59
-                \todo{Content}
-			% end
-		% end
-
-        \subsection{Ergebnisse sind nur Lokal Optimal} % 11.61, 11.62, 11.93
-            \todo{Content}
-
-            \subsubsection{White-Box Integration} % 11.63, 11.64, 11.65, 11.66, 12.24
-                \todo{Content}
-			% end
-		% end
-
-        \subsection{Verbindung zwischen Daten und Ergebnis ist Intransparent} % 11.68, 11.93
-            \todo{Content}
-
-            \subsubsection{Model-Data-Linking} % 11.69, 11.78
-                \todo{Content}
-
-                \paragraph{\dots in Verbindung mit Modellvisualisierung} % 11.76
-                    \todo{Content}
-				% end
-
-                \paragraph{\dots in Verbindung mit Musterexploration} % 11.77
-                    \todo{Content}
-				% end
-			% end
-		% end
-
-        \subsection{Verschiedene Clusterformen} % 11.85, 11.86
-            \todo{Content}
-
-            \subsubsection{Self-Organizing Maps (SOM)} % 11.87, 11.88, 11.89, 11.90
-                \todo{Content}
-
-                \paragraph{Einschränkungen} % 11.91, 11.92
-                    \todo{Content}
-				% end
-			% end
-		% end
-
-        \subsection{Trennung von Mustern und Rauschen} % 12.38, 12.39, 12.65
-            \todo{Content}
-
-            \subsubsection{Visual Input Editing} % 12.40, 12.41, 12.42
-                \todo{Content}
-			% end
-		% end
-
-        \subsection{Beliebige Muster sind nicht Modellierbar} % 12.44, 12.45, 12.65
-            \todo{Content}
-
-            \subsubsection{Modell-Daten-Interaktion} % 12.46, 12.47, 12.48, 12.49, 12.50, 12.51, 12.52
-                \todo{Content}
-			% end
-		% end
-
-        \subsection{Undifferenzierte Bewertung} % 12.54, 12.55, 12.65
-            \todo{Content}
-
-            \subsubsection{Visual Model Verification} % 12.56, 12.59, 12.63, 12.64
-                \todo{Content}
-			% end
+			\begin{itemize}
+				\item Innerhalb der Transformationen: Sampling, Aggregation, Clusterung und Filtering
+				\item Bei zu vielen Dimensionen: Dimensionsreduktion und Feature (Subset) Selektion
+				\item Bei zu vielen Ergebnisse: Ergebnismanagement und Historie-Mechanismen, um vergangene Einstellungen zu speichern
+				\item Apophänie entgegenwirken: Einblendung von Daten zur statistischen Signifikanz und statistischer Testergebnisse
+				\item Bei zu vielen Parameter für die Interaktion: Automatische (Vor-) Einstellung der Parameter und Intelligen Visual Analytics Queries
+			\end{itemize}
 		% end
 	% end
 
-    \section{Querverbindungen der Forschungsgebiete} % 12.82
-        \todo{Content}
+	\section{Visualisierungen für Automatische Verfahren}
+		In dem vorherigen Abschnitt wurden Verfahren für die Verbesserung von Visualisierungen durch automatische Verfahren behandelt. In diesem Abschnitt geht es nun um den umgekehrten Fall, also die Verbesserung automatischer Verfahren durch Visualisierung. Dabei werden die Verfahren im Rahmen der in \autoref{fig:autoVerfahren} vorgestellten allgemeinen Struktur automatischer Verfahren behandelt und versucht, jeden einzelnen Schritt (Daten, Verfahren, Parameter, Zwischenergebnis, Bewertung und das Ergebnis) zu visualisieren, \bzw visuelle Verfahren einzusetzen. In der Praxis werden dabei häufig mehrere der im Folgenden vorgestellten Strategien zeitgleich ver- und teilweise sogar für mehrere Verfahren gleichzeitig angewendet.
+
+		Wie im vorherigen Abschnitt wird in jedem der folgenden Abschnitte zunächst ein Problem automatischer Verfahren und dann, in den Unterabschnitten, einige Lösungsmethoden auf Basis von Visualisierungen vorgestellt. I Abschließend wird in \autoref{subsec:visAutoZsm} ein Überblick über die vorgestellten Verfahren und ihre Einordnung in das Modell aus \autoref{fig:autoVerfahren} gegeben.
+
+		\subsection{Ergebnis "Unsichtbar"}
+			Häufig ist das Ergebnis eines Data-Mining-Verfahrens, das gefundene Modell, nicht sichtbar und das neue Wissen kann nicht "gelesen" oder interpretiert werden, da es häufig zu komplex ist.
+
+			\subsubsection{Modellvisualisierung}
+				In der \emph{Modellvisualisierung} wird ein Modell, welches von einem Data-Mining-Verfahren gefunden wurde, als Datensatz betrachtet und visualisiert. Dabei kann die ganze Fülle an Methoden und Techniken aus der Informationsvisualisierung verwendet werden. Für manche Modelle gibt es sogar eine "natürliche" Visualisierung, \zB bei Markov-Netzwerken und Entscheidungsbäumen. Es gibt jedoch auch Fälle, in denen neue Visualisierungen entworfen werden müssen.
+			% end
+		% end
+
+		\subsection{Zu viele Ergebnisse}
+			Wie auch bei der Visualisierung liefern auch automatische Verfahren häufig zu viele Ergebnisse, die es zu Interpretieren und zu Bewerten gilt (ist das Muster "richtig" oder "falsch"). Dabei soll unter anderem geklärt werden, warum Elemente ein Muster bilden, worin sich zwei Muster unterscheiden und welche Muster nützlich sind. Aufgrund der vielen Ergebnisse ist dies allerdings nur schwerlich "manuell" (durch explizite Sichtung der Ergebnisse) zu bewerkstelligen.
+
+			\subsubsection{Musterexploration}
+				Ein Lösungsansatz ist die \emph{Musterexploration}, bei der es mehrere Optionen gibt: Bei der \emph{Detailvisualisierung} wird eine "normale" Visualisierung der Daten verwendet werden, in der die zu einem Muster gehörenden Datenpunkte hervorgehoben werden. Bei einer \emph{abstrakten} Visualisierung wird ein Muster als ein Datum behandelt und diese Visualisiert, \bspw in einem Scatterplot, wobei ähnliche Muster nahe beieinander bleiben. Zur Ähnlichkeit kann \bspw der Jaccard-Index \( \mathrm{Jaccard}(A, B) = \lvert A \cap B \rvert / \lvert A \cup B \rvert \), \dh die Anzahl gemeinsamer Elemente, verwendet werden. Eine Kombination abstrakter und detailreicher Visualisierung kann \zB durch Small Multiple/Glyphen geschehen, die aus Basis der Abstraktion in einem Scatterplot angeordnet werden. Das Layout sagt dabei aus, welche Muster ähnlich sind und die Detailansicht zeigt, welche Eigenschaften diese Elemente haben.
+
+				Alternativ können die Muster auch direkt als Mengen dargestellt werden, \zB Hierarchie die Muster zusammenfasst, die Teilmengen anderer Muster sind. Diese Darstellung ähnelt sehr dem Verfahren eines Entscheidungsbaums.
+			% end
+		% end
+
+		\subsection{Effekt von Parameter unvorhersehbar}
+			In einem Data-Mining-Verfahren werden üblicherweise eine ganze Reihe von Parametern an gegeben vorausgesetzt, deren Einfluss auf das Ergebnis allerdings oftmals nicht intuitiv oder schwer zu sehen ist. Die Suche nach guten Parametern ist daher häufig "Trial and Error" und wird noch dadurch erschwert, dass die Parameter sich häufig gegenseitig beeinflussen. Während hierfür eine ganze fFülle an automatischen Verfahren und Frameworks (\zB Optuna\footnote{\url{https://optuna.org}}) entwickelt wurden, sind auch interaktive und auf Visualisierungen basierende Lösungen denkbar.
+
+			\subsubsection{Black-Box-Integration}
+				Bei der \emph{Black-Box-Integration} wird versucht, einen direkten visuellen Bezug der Ergebnisse zu den Parametern herzustellen. Dafür wird die Parameterauswahl interaktiv gestaltet, das Verfahren ausgeführt und die Ergebnisse angezeigt. Die finalen Parameter können dann anhand des Ergebnisses gewählt werden. Das Verfahren heißt \emph{Black-Box}, da das Modell selbst nicht sichtbar ist, sondern nur die Ergebnisse (oder Qualitätskriterien) angezeigt werden. Dies ist das erste Verfahren, welches mehrere Komponenten eines automatischen Systems darstellt und mit diesen interagiert.
+			% end
+		% end
+
+		\subsection{Expert*innenwissen bleibt unberücksichtigt}
+			Die meisten automatischen Verfahren, insbesondere unüberwachte (\emph{unsupervised}) Methoden, haben Probleme, Expert*innenwissen einzubeziehen. Dies kann jedoch sehr sinnvoll sein, da Expert*innen die Daten häufig besser kennen als Softwareentwickler*innen. Durch die nicht-Einbeziehung finden die Verfahren häufig nur einfache Zusammenhänge und damit oft im Kontext der Aufgabe unwichtige Zusammenhänge. Denn einfache Zusammenhänge waren vermutlich vorher schon bekannt, \dh das Verfahren unterstützt nicht.
+
+			\subsubsection{Visual Input Editing}
+				Bei \emph{Visual Input Editing} werden die Eingabedaten des Verfahrens (visuell) editiert, um bekanntes Wissen abzubilden. Dabei muss die Visualisierung allerdings die Anwendung des Wissens erleichtern. Dabei sind drei grundlegende Verfahren, \bzw Arten der vermittelten Informationen, zu unterscheiden:
+				\begin{itemize}
+					\item Eine beispielhafte Implementierung ist dem Algorithmus zu zeigen, wie ein*e Expert*in \emph{urteilt}. Dazu müssen die Verfahren modifiziert werden, \bspw zu semi-überwachtem Clustering, wo der*die Expert*in nur nach einem Urteil \bzgl paarweiser Ähnlichkeit befragt wird.
+					\item Alternativ kann der*die Expert*in auch befragt werden, wie er*sie die Daten ordnet. Dazu können die Objekte \bspw durch Drag\&Drop innerhalb eines Bildes angeordnet werden, was über den Abstand innerhalb des Bildes eine Ähnlichkeit definiert. Zur Reduktion der Datenmenge ist es dabei sinnvoll, nur einige Samples anzuzeigen (sonst bräuchte man das Verfahren nicht) und zu generalisieren.
+					\item Eine weitere Möglichkeit ist dem Algorithmus zu zeigen, wie ein*e Expert*in die Daten "sieht". Dabei werden wieder einige Samples der Daten angezeigt und ein*e Expert*in zieht Linien durch diese Daten, um sie in Bereich zu trennen. Dadurch wird dann eine Abstandsfunktion induziert.
+				\end{itemize}
+				Bei all diesen Verfahren ist die gewählte Visualisierung entscheidend dafür, ob der Ansatz funktioniert. Es sollte deshalb eine "gewohnte" Darstellung verwendet werden. Es ist außerdem zu unterscheiden, ob Details angezeigt werden (\bspw als Glpyhen oder Small Multiples) oder ob nur die Verteilung visualisiert wird.
+			% end
+		% end
+
+		\subsection{Ergebnisse sind häufig nicht Optimal}
+			Die meisten automatischen Verfahren finden nicht die global optimale Lösung, sondern nur eine \emph{lokale}. Dies ist ein inhärentes Problem von Data-Mining-Verfahren, da diese auf komplexen Optimierungsproblem aufbauen (vgl.~Layouting für allgemeine Graphen).
+
+			\subsubsection{White-Box-Integration}
+				Üblicherweise erzeugen automatische Verfahren direkt Ergebnisse als Black-Box. Bei der \emph{White-Box-Integration} werden zusätzlich die Zwischenergebnisse visualisiert, um einen Eindruck der laufen Optimierung zu bekommen. Beispielsweise können bei k-Means die Zentroide und deren Einfluss auf die benachbarten Punkte über die Iterationen hinweg visualisiert werden. Dabei kann das Verfahren jederzeit angehalten werden, um die Punkte manuell zu verschieben oder neue Zentroide hinzuzufügen. Bei White-Box-Integrationen ist also sichtbar, wie das Verfahren arbeitet und basiert auf einer Visualisierung des Modells oder der Muster. Leider erlauben nur sehr weniger Verfahren eine detaillierte White-Box-Analyse, da entweder die Analyse oder die Optimierung zu komplex sind.
+
+				Ein großes Problem von Clustering-Verfahren tritt auf, wenn die Cluster sehr unterschiedliche Formen haben (\zB runde, eckige und lang gezogene Cluster in den selben Daten). k-Means kann sogar ausschließlich runde Cluster finden! Eine beispielhaftes Verfahren, in dem White-Box-Integration angewendet werden kann, sind Self-Organizing Maps (SOMs). Die Daten werden dabei in ein Gitter angeordnet und nach Ähnlichkeit sortiert. Zur Integration werden auf einer Karte die Startpunkte festgelegt (und fix gehalten), sodass sich die Karte um diese Fixpunkte herum anordnet. Dabei gibt es jedoch Einschränkungen, wenn die SOM eine Projektion aus einem hochdimensionalen Raum darstellt: Wie kann festgestellt werden, dass die Projektion nicht (perfekt) funktioniert? Ein Indikator ist, wenn einige Zellen der SOM wie Rauschen aussehen, während gut sortierte Zellen nur aussehen wie massives Overplotting ähnlicher Daten. Dies ist Teil der \emph{visuellen Verifikation} (siehe \autoref{subsubsec:vmv}).
+			% end
+		% end
+
+		\subsection{Verbindung zwischen Daten und Ergebnis ist Intransparent}
+			Eigentlich sind die Daten und das Ergebnis nur unterschiedliche Darstellungen des gleichen Sachverhalts, da letzteres ja auch ersteren extrahiert wird. Bei vielen Data-Mining-Verfahren ist dieser Zusammenhang jedoch intransparent und nicht nachvollziehbar (das Modell ist nicht \emph{interpretier-} und \emph{erklärbar}).
+
+			\subsubsection{Model-Data-Linking}
+				Im \emph{Model-Data-Linking} wird versucht, ein Zusammenhang zwischen den Eingabedaten und den Ergebnissen herzustellen. Dabei darf das Ergebnis allerdings nicht überall von den Daten beeinflusst werden, \dh die Daten sind im Modell lokalisierbar und das Modell ist in den Daten lokalisierbar. Dabei werden Modell- und Datenvisualisierung verbunden zu einer einzigen Visualisierung, in denen die dargestellten visuellen Elemente durch räumliche Nähe oder Interaktion (Brushing und Linking) mit einander verknüpft werden.
+
+				Für ein hierarchisches Clustering kann \zB die Reihenfolge der Cluster in einem Dendrogramm, der Informationsgewinn durch die jeweiligen Teilung (durch die Höhe) und die Ähnlichkeit der Cluster (durch räumliche Nähe) visualisiert werden. Dabei ist die horizontale Anordnung allerdings sehr komplex. Die Daten können dann unter dem Dendrogramm angezeigt werden (\bspw als Heatmap).
+
+				Eine andere Option ist die Kombination mit Musterexploration, bei denen eine Visualisierung des Modells mit einer Mustervisualisierung verknüpft wird. In obigem Beispiel würde die Heatmap dann durch Abstraktionen von den Clustern, den Mustern, ersetzt werden.
+			% end
+		% end
+
+		\subsection{Trennung von Mustern und Rauschen}
+			Ein weiteres Problem automatisierter Verfahren ist die Trennung von Mustern und Rauschen sowie die Trennung von unterschiedlichen Mustern. Die nicht-Fähigkeit, diese voneinander zu unterscheiden führt häufig zu Overfitting und "Kompromisslösungen", bei denen alle Muster mäßig gut beschrieben werden, statt ein einzelnes Muster "perfekt" zu beschreiben.
+
+			\subsubsection{Visual Input Editing}
+				Eine Lösung, wie bereits bei der Einbeziehung von Expert*innenwissen behandelt wurde, ist \emph{Visual Input Editing.} Dabei wird die Arbeit auf Mensch und Maschine aufgeteilt, \dh der Mensch ist für die Erkennung von Mustern zuständig, während die Maschine sich um die Modellierung "einfacher" Muster kümmert. Die Idee ist dabei, dass der Mensch das Muster Markiert und die Originallabels durch "entrauschte" ersetzt werden. Das Muster wird also Interaktiv (\bspw durch Anklicken von Datenpunkten) definiert und so in das Verfahren gegeben. Dieser Ansatz funktioniert für alle Klassifikationsverfahren unter der Voraussetzung, dass die Visualisierung tatsächlich alle Klassen zeigt.
+			% end
+		% end
+
+		\subsection{Modelliert das Verfahren das korrekte Muster?}
+			Durch die bereits erwähnte intransparenz von automatischen Verfahren ist es ebenfalls nicht möglich zu prüfen, ob tatsächlich das korrekte Muster modelliert wurde, unter anderem da Verfahren nicht beliebige Muster (gleich) gut modellieren können.
+
+			\subsubsection{Modell-Daten-Interaktion}
+				Eine Lösung ist die \emph{Modell-Daten-Interaktion} als Erweiterung des \emph{Model-Data-Linking}. Dabei werden die Ergebnisse des Modells mit dem "ursprünglichen" Muster der Eingabedaten visuell verglichen. Daraufhin können die ausgewählten Daten angepasst werden, bis das Verfahren das korrekte Muster identifiziert.
+			% end
+		% end
+
+		\subsection{Undifferenzierte Bewertung}
+			Das letzte Problem, welches hier behandelt wird, ist dass die Bewertung innerhalb automatischer Verfahren im Allgemeinen undifferenziert ist. Dies liegt daran, dass ein Verfahren immer schlecht darin ist, sich selbst zu bewerten und blind die gleichen Bewertungsmetriken für alle Daten und Klassen anwendet. Dadurch können systematische Fehler nicht erkannt werden und die Fehler werden unterschiedlich stark gewichtet. Des Weiteren können Fehler schlecht lokalisiert werden.
+
+			\subsubsection{Visuelle Modellverifikation}
+				\label{subsubsec:vmv}
+
+				In der \emph{visuellen (Modell-) Verifikation} wird versucht zu validieren, ob ein Modell systematische Fehler macht oder sich die Fehler in bestimmten Klassen/Daten häufen. Dazu wird zunächst ein Qualitätsmaß definiert, welches den Unterschied zwischen den tatsächlichen und den modellierten Daten beschreibt (diese Bewertung kann nominal, ordinal oder quantitativ sein). Eine häufige Wahl ist die Anzahl falsch klassifizierter Beispiele, welche allerdings schlecht für die Suche nach Verbesserungsmöglichkeiten geeignet ist. Eine verfeinerte Darstellung liefert hingegen die Konfusionsmatrix, in der die Fehler verschiedener Klassen verglichen werden. Zusätzlich können verschiedene Fehlerarten unterschiedlich gewichtet werden, um das Verfahren zu verbessern. Bei dieser Gewichtung fließt Weltwissen des*der Expert*in ein.
+
+				Ebenfalls möglich ist eine Visualisierung der Fehler"landschaft", indem das Bewertungskriterium als weiteres Datenattribut aufgefasst wird. Ein Spezialfall sind Residuen-Plots, die die Abweichungen in einem Mosaik-Plot zusammen mit der statistischen Signifikanz darstellen.
+
+				Wird durch die visuelle Verifikation ein systematischer Fehler entdeckt, sollte das Verfahren angepasst werden!
+			% end
+		% end
+
+		\subsection{Überblick über die vorgestellten Methoden}
+			Eine Übersicht über die vorgestellten Integrationsvarianten von Visualisierungen in automatische Verfahren ist in \autoref{fig:integrationsvarianten1} und \ref{fig:integrationsvarianten2} gegeben.
+
+			\begin{figure}
+				\centering
+				\begin{subfigure}[t]{0.49\linewidth}
+					\centering
+					\begin{ivvaIntegration}
+						\node [right = 1 of ergebnis] (viz1) {Viz};
+						\draw (ergebnis) -- (viz1);
+					\end{ivvaIntegration}
+					\caption{\textbf{Modellvisualisierung}\\Problem: Ergebnis unsichtbar\\Ziel: Ergebnisse verständlich darstellen}
+				\end{subfigure}
+				\hfill
+				\begin{subfigure}[t]{0.49\linewidth}
+					\centering
+					\begin{ivvaIntegration}
+						\node [right = 1 of ergebnis] (viz1) {Viz};
+						\draw (ergebnis) -- (viz1);
+					\end{ivvaIntegration}
+					\caption{\textbf{Musterexploration}\\Problem: Musterbewertung\\Ziel: Gemeinsamkeiten/Unterschiede erkennen}
+				\end{subfigure}
+				\\[0.5cm]
+				\begin{subfigure}[t]{0.49\linewidth}
+					\centering
+					\begin{ivvaIntegration}
+						\node [right = 1 of daten] (viz1) {Viz};
+						\node [right = 1 of ergebnis] (viz2) {Viz};
+						\draw (daten) -- (viz1);
+						\draw (ergebnis) -- (viz2);
+						\draw [<->] (viz1) -- (viz2);
+					\end{ivvaIntegration}
+					\caption{\textbf{Model-Data-Linking}\\Problem: Bezug zw. Daten/Ergebnis unsichtbar\\Ziel: Ergebnisse plausibel machen}
+				\end{subfigure}
+				\hfill
+				\begin{subfigure}[t]{0.49\linewidth}
+					\centering
+					\begin{ivvaIntegration}
+						\node [right = 1 of daten] (viz1) {Viz};
+						\node [right = 1 of ergebnis] (viz2) {Viz};
+						\draw [<->] (daten) -- (viz1);
+						\draw (ergebnis) -- (viz2);
+						\draw [<->] (viz1) -- (viz2);
+					\end{ivvaIntegration}
+					\caption{\textbf{Modell-Daten-Interaktion}\\Problem: Bewertung des Verfahrens ist schwierig\\Ziel: Vergleich mit visuellem Muster}
+				\end{subfigure}
+				\caption[Übersicht über die Integrationsvarianten (Teil 1/2)]{Übersicht über die Integrationsvarianten (Teil 1/2). Ein Pfeil in eine Richtung (\(\rightarrow\)) beschreibt eine "normale" Interaktion, die Dinge innerhalb der Visualisierung ändert. Beidseitige Pfeile (\(\leftrightarrow\)) beschreiben Interaktionen, die auch außerhalb der Visualisierung in andere Verfahren eingreift.}
+				\label{fig:integrationsvarianten1}
+			\end{figure}
+			\begin{figure}
+				\centering
+				\begin{subfigure}[t]{0.49\linewidth}
+					\centering
+					\begin{ivvaIntegration}
+						\node [right = 1 of parameter] (viz1) {Viz};
+						\node [right = 1 of bewertung] (viz2) {Viz};
+						\node [right = 1 of ergebnis] (viz3) {Viz};
+						\draw [<->] (parameter) -- (viz1);
+						\draw (bewertung) -- (viz2);
+						\draw (ergebnis) -- (viz3);
+						\draw (viz2) -- (viz3);
+						\draw (viz2) -- (viz1);
+					\end{ivvaIntegration}
+					\caption{\textbf{Black-Box-Integration}\\Problem: Effekt von Parameter unvorhersagbar\\Ziel: Neue Parameter effizient testen}
+				\end{subfigure}
+				\hfill
+				\begin{subfigure}[t]{0.49\linewidth}
+					\centering
+					\begin{ivvaIntegration}
+						\node [right = 1 of daten] (viz1) {Viz};
+						\node [right = 1 of zwErgebnis] (viz2) {Viz};
+						\node [right = 1 of bewertung] (viz3) {Viz};
+						\draw (daten) -- (viz1);
+						\draw [<->] (zwErgebnis) -- (viz2);
+						\draw (bewertung) -- (viz3);
+						\draw (viz2) -- (viz1);
+						\draw (viz2) -- (viz3);
+					\end{ivvaIntegration}
+					\caption{\textbf{White-Box-Integration}\\Problem: Optimierung ist schwierig\\Ziel: Verbesserung durch Eingriff des Menschen}
+				\end{subfigure}
+				\\[0.5cm]
+				\begin{subfigure}[t]{0.49\linewidth}
+					\centering
+					\begin{ivvaIntegration}
+						\node [right = 1 of daten] (viz1) {Viz};
+						\draw [<->] (daten) -- (viz1);
+					\end{ivvaIntegration}
+					\caption{
+						\textbf{Visual Input Editing}\\
+						Problem A: Keine Einbeziehung von Weltwissen\\
+						Problem B: Unterscheidung Mustern/Rauschen\\
+						Ziel A: Wissen in die Analyse einbringen\\
+						Ziel B: Stärken des Menschen einsetzen
+					}
+				\end{subfigure}
+				\hfill
+				\begin{subfigure}[t]{0.49\linewidth}
+					\centering
+					\begin{ivvaIntegration}
+						\node [right = 1 of daten] (viz1) {Viz};
+						\node [right = 1 of bewertung] (viz2) {Viz};
+						\node [right = 1 of ergebnis] (viz3) {Viz};
+						\draw (daten) -- (viz1);
+						\draw [<->] (bewertung) -- (viz2);
+						\draw (ergebnis) -- (viz3);
+						\draw (viz2) -- (viz3);
+						\draw (viz2) -- (viz1);
+					\end{ivvaIntegration}
+					\caption{\textbf{Visuelle Modellverifikation}\\Problem: Autom. Bewertung undifferenziert\\Ziel: Detaillierte Diagnose}
+				\end{subfigure}
+				\caption[Übersicht über die Integrationsvarianten (Teil 2/2)]{Übersicht über die Integrationsvarianten (Teil 1/2). Ein Pfeil in eine Richtung (\(\rightarrow\)) beschreibt eine "normale" Interaktion, die Dinge innerhalb der Visualisierung ändert. Beidseitige Pfeile (\(\leftrightarrow\)) beschreiben Interaktionen, die auch außerhalb der Visualisierung in andere Verfahren eingreift.}
+				\label{fig:integrationsvarianten2}
+			\end{figure}
+		% end
 	% end
 % end
 
 \chapter{Kognitive Psychologie} % 13.1, 13.4, 13.5, 13.6, 13.7, 13.8, 13.9, 13.10, 13.11
-    \todo{Content}
+	\todo{Content}
 
-    \section{Kognitive Psychologie} % 13.65
-        \todo{Content}
+	\section{Kognitive Psychologie} % 13.65
+		\todo{Content}
 
-        \subsection{Einführung} % 13.12, 13.13, 13.14, 13.15, 13.16, 13.17, 13.18, 13.19
-            \todo{Content}
+		\subsection{Einführung} % 13.12, 13.13, 13.14, 13.15, 13.16, 13.17, 13.18, 13.19
+			\todo{Content}
 		% end
 
-        \subsection{Aufmerksamkeit} % 13.21, 13.22, 13.23, 13.24
-            \todo{Content}
+		\subsection{Aufmerksamkeit} % 13.21, 13.22, 13.23, 13.24
+			\todo{Content}
 		% end
 
-        \subsection{Gedächtnis} % 13.25, 13.26, 13.27
-            \todo{Content}
+		\subsection{Gedächtnis} % 13.25, 13.26, 13.27
+			\todo{Content}
 		% end
 
-        \subsection{Wissenrepräsentation} % 13.28, 13.29
-            \todo{Content}
+		\subsection{Wissenrepräsentation} % 13.28, 13.29
+			\todo{Content}
 		% end
 
-        \subsection{Denken, Entscheiden, Urteilen} % 13.30, 13.31
-            \todo{Content}
+		\subsection{Denken, Entscheiden, Urteilen} % 13.30, 13.31
+			\todo{Content}
 
-            \subsubsection{Deduktives Schließen} % 13.32, 13.33
-                \todo{Content}
+			\subsubsection{Deduktives Schließen} % 13.32, 13.33
+				\todo{Content}
 			% end
 
-            \subsubsection{Abduktives Schließen} % 13.34, 13.35
-                \todo{Content}
+			\subsubsection{Abduktives Schließen} % 13.34, 13.35
+				\todo{Content}
 			% end
 
-            \subsubsection{Entscheidungsfindung und Framing} % 13.36, 13.37, 13.38
-                \todo{Content}
+			\subsubsection{Entscheidungsfindung und Framing} % 13.36, 13.37, 13.38
+				\todo{Content}
 			% end
 
-            \subsubsection{Problemlösung} % 13.39, 13.43
-                \todo{Content}
+			\subsubsection{Problemlösung} % 13.39, 13.43
+				\todo{Content}
 			% end
 
-            \subsubsection{Expert*innenfähigkeiten} % 13.44, 13.45, 13.46, 13.47, 13.48, 13.49
-                \todo{Content}
+			\subsubsection{Expert*innenfähigkeiten} % 13.44, 13.45, 13.46, 13.47, 13.48, 13.49
+				\todo{Content}
 			% end
 		% end
 
-        \subsection{Mentale Modelle} % 13.50, 13.51, 13.52, 13.53, 13.54, 13.55, 13.56, 13.57
-            \todo{Content}
+		\subsection{Mentale Modelle} % 13.50, 13.51, 13.52, 13.53, 13.54, 13.55, 13.56, 13.57
+			\todo{Content}
 
-            \subsubsection{Problemlösung} % 13.58
-                \todo{Content}
+			\subsubsection{Problemlösung} % 13.58
+				\todo{Content}
 			% end
 
-            \subsubsection{Interaktion} % 13.59, 13.60, 13.61, 13.62
-                \todo{Content}
+			\subsubsection{Interaktion} % 13.59, 13.60, 13.61, 13.62
+				\todo{Content}
 			% end
 
-            \subsubsection{Mensch-Orientierte Interaktion} % 13.63, 13.64
-                \todo{Content}
+			\subsubsection{Mensch-Orientierte Interaktion} % 13.63, 13.64
+				\todo{Content}
 			% end
 		% end
 	% end
 
-    \section{Evaluation und Design-Studien} % 13.66, 13.85
-        \todo{Content}
+	\section{Evaluation und Design-Studien} % 13.66, 13.85
+		\todo{Content}
 
-        \subsection{Evaluation} % 13.67, 13.68, 13.69, 13.70, 13.79
-            \todo{Content}
+		\subsection{Evaluation} % 13.67, 13.68, 13.69, 13.70, 13.79
+			\todo{Content}
 
-            \subsubsection{Testmethoden} % 13.71, 13.72
-                \todo{Content}
+			\subsubsection{Testmethoden} % 13.71, 13.72
+				\todo{Content}
 			% end
 
-            \subsubsection{Laborexperiment} % 13.73
-                \todo{Content}
+			\subsubsection{Laborexperiment} % 13.73
+				\todo{Content}
 			% end
 
-            \subsubsection{Nutzer*innenstudie} % 13.74
-                \todo{Content}
+			\subsubsection{Nutzer*innenstudie} % 13.74
+				\todo{Content}
 			% end
 
-            \subsubsection{Feldstudie} % 13.75
-                \todo{Content}
+			\subsubsection{Feldstudie} % 13.75
+				\todo{Content}
 			% end
 
-            \subsubsection{Evaluation im Nested Model} % 13.76, 13.77, 13.78
-                \todo{Content}
+			\subsubsection{Evaluation im Nested Model} % 13.76, 13.77, 13.78
+				\todo{Content}
 			% end
 		% end
 
-        \subsection{Iterativer Designprozess} % 13.80, 13.81, 13.82, 13.83, 13.84
-            \todo{Content}
+		\subsection{Iterativer Designprozess} % 13.80, 13.81, 13.82, 13.83, 13.84
+			\todo{Content}
 		% end
 	% end
 % end

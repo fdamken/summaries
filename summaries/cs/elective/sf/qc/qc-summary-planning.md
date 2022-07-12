@@ -1,0 +1,118 @@
+# QC Summary Planning
+
+## Slides
+
+Done/Structured/Total: 0/0/268; 0%/0%/100%
+
+- [x] Chapter  2: Basics (18)
+- [x] Chapter  3: Basics (24)
+- [x] Chapter  4: Universal Quantum Gates (23)
+- [x] Chapter  5: Algorithms (25)
+- [x] Chapter  6: Algorithms (21)
+- [x] Chapter  7: Algorithms (24)
+- [x] Chapter  8: Algorithms (21)
+- [x] Chapter  9: Algorithms (25)
+- [x] Chapter 10: Quantum Error Correction (26)
+- [x] Chapter 11: Nonlocality (25)
+- [x] Chapter 12: Measurement-Based Quantum Computing (25)
+- [x] Chapter 13: Recap (11)
+- [x] Exercise  1
+- [x] Exercise  2
+- [x] Exercise  3
+- [x] Exercise  4
+- [x] Exercise  5
+- [x] Exercise  6
+- [x] Exercise  7
+- [x] Exercise  8
+- [x] Exercise  9
+- [x] Exercise 10
+- [ ] Notes -> do on-the-go
+
+
+## Subjects
+
+- Preliminaries {N/A}
+    - Complex Numbers, Vectors, and Matrices {E1.1, E1.2, E1.3}
+    - Continued Fraction Expansion {7.24, E7.4}
+- Postulates of Quantum Mechanics {2.1, 2.2, 2.3}
+    - States {2.4, 2.5, 2.6, 2.7, 3.2}
+    - Evolution {2.8, 2.9, 2.10, 3.2}
+        - Gates {2.11, 2.12, 2.13}
+    - Measurement {2.14, 2.15, 2.16, 2.17, 2.18, 3.2}
+    - Composite Systems and Tensor Products {3.3, 3.4, 3.5}
+        - Entanglement {3.6, 3.7}
+            - Multipartite {12.3, 12.4, 12.5, 12.16}
+            - Graph States {12.7, 12.8}
+        - Multi-Qubit Gates {3.8, 3.9, 3.10, E3.2, E3.3}
+    - Protocols {N/A}
+        - No-Cloning {3.12, 3.13, 3.14, 3.15}
+        - Quantum Teleportation {3.16, 3.17, 3.18}
+            - Concatenated Teleportation {???}
+        - Dense-Coding {E2.4, E3.1}
+    - Why these postulates? {3.20, 3.21, 3.22, 3.23, 3.24, 4.3, 4.4, 4.5, 4.6}
+- Computational Complexity {4.7, 4.8, 9.4, 9.5, 9.6}
+- Universal Computation {3.11, 4.9, 4.10, 4.11, 4.23, 5.2}
+    - Classical Analogy {4.12}
+    - Universal Quantum Gates {4.13, 4.14}
+        - Proof {4.15}
+            - Part 1/3: Unitaries as Two-Level Unitaries {4.16}
+            - Part 2/3: Decomposition of Two-Level Unitaries {4.17, 4.18, E4.1, E4.2, E4.3}
+            - Part 3/3: Approximation of Single-Qubit Gates {4.19, 4.20, 4.21}
+        - Final Gate Count {4.22}
+- Algorithms {5.3}
+    - Quantum Parallelism {5.4, 5.5}
+        - Interference {5.6, 5.7}
+        - The Query Unitary {6.4, 6.5, 6.6, 6.21}
+        - Deutsch's Approach {5.8, 5.9, 5.10}
+    - Deutsch-Josza Algorithm {5.11, 5.12, 5.13, 5.14, E6.2, E6.3}
+    - Bernstein-Vazirani Algorithm {5.15, 5.16, 5.17, 5.22, 5.23, 5.24, 5.25, 5.18, 6.8}
+    - Simon's Algorithm {6.11, 6.21, E6.4}
+        - Problem {6.12, 6.13}
+        - Classical Approach {6.13, 6.14}
+        - Quantum Approach {N/A}
+            - Circuit {6.15, 6.16, 6.17, 6.18}
+            - Post-Processing {6.18, 6.19}
+            - Remarks {6.20}
+    - Quantum Fourier Transform {8.6, 8.7}
+        - Binary Fraction Expansion {8.7, 8.8, 8.20, 8.21}
+        - Quantum Circuit {8.8, 8.9, 8.10, E7.1, E7.3, E8.2}
+        - Remarks {8.11}
+    - Shor's Algorithm {7.3, 7.4, 7.5, 7.6}
+        - Period Finding {7.7, 7.8, 7.9, 7.10, 7.23, 8.3, 8.4}
+            - Using Quantum Fourier Transform {7.11, 7.12, 7.13, 7.14, 7.15}
+            - Post-Processing {7.16}
+                - Maximizing the \(P(y)\) {7.17, 7.18}
+                - Recovering the Period {7.19, 7.20, 7.21}
+                - Remarks {7.22}
+        - From Period Finding to Factoring {8.12, 8.13, 8.14, 8.15, 8.16}
+            - Remarks {8.17}
+        - Summary {8.18, 8.19}
+    - Grover's Algorithm {9.2, 9.3, 9.25, E9.1, E9.2}
+        - Classical Approach {9.7}
+        - Quantum Approach {9.7, 9.8}
+            - Circuit {9.9, 9.10, 9.11}
+                - Illustration {9.12, 9.15, 9.16, 9.17, 9.18, 9.19, 9.20}
+                - Algebraic Proof {9.13, 9.14}
+            - Multiple Solutions {9.21, 9.22}
+            - Remarks {9.23, 9.24}
+- Quantum Error Correction {10.1, 10.2, 10.3, 10.4, 10.5, 10.6, 10.7, 10.16, 10.26}
+    - Tackling Bit-Flips {10.7, 10.8, 10.9, 10.10}
+    - Tackling Phase-Flips {10.11, 10.12, E10.1}
+    - Shor's Code {10.13, E10.2}
+        - Universal Error Correction {10.14, 10.15}
+    - Steane Code {10.17}
+    - Fault-Tolerance and Transversality {10.18, 10.19, 10.20, 10.21, 10.22, 10.23, E10.3}
+    - Threshold Theorem {10.23, 10.24, 10.25}
+- Quantum Nonlocality {11.3}
+    - Elements of Reality {11.4, 11.5, 11.6, 11.7, 11.8, 11.9, 11.10}
+    - CHSH Inequality {11.12, 11.13, 11.14, 11.15}
+    - Quantum Violation of the CHSH Inequality {11.16, 11.17, 11.21}
+    - Tsirelson's Bound and Quantum Key Distribution {11.22, 11.23, 11.24, 11.25}
+- Measurement-Based Quantum Computing {12.1, 12.9, 12.10, 12.11, 12.12, 12.25}
+    - Identity {12.13, 12.14}
+    - Arbitrary Rotations {12.15, 12.16, 12.17}
+    - CNOT {12.18}
+    - Cluster States {12.19, 12.20}
+    - Handling Errors {12.20, 12.21, 12.22, 12.23, 12.24}
+- Appendix
+    - Important Gates {???, E3.2, E3.3}

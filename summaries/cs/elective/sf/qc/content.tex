@@ -1,12 +1,78 @@
-\chapter{Preliminaries} % N/A
-    \todo{Content}
+\chapter{Preliminaries}
+    In this chapter we discuss the groundwork for the upcoming topics. Along with these subjects, basic knowledge from linear algebra is required.
 
-    \section{Complex Numbers, Vectors, and Matrices} % E1.1, E1.2, E1.3
-        \todo{Content}
+    \section{Complex Numbers}
+    	One of the underlying principles of \ac{QM} and therefore \ac{QC}, too, are complex numbers. This section summarizes some results for them \emph{very briefly.}
+
+    	Let \( z = a + ib \in \C \) be a complex number with the real and imaginary components \( \Re(z) = a, \Im(z) = b \in \R \). Its magnitude is
+    	\begin{equation}
+    		\lvert z \rvert \coloneqq \sqrt{a^2 + b^2} = \sqrt{z z^\ast}
+    	\end{equation}
+    	with the \emph{complex conjugate} \( z^\ast = a - ib \). The complex conjugate is distributive over addition and multiplication\footnote{For other useful properties, see \url{https://en.wikipedia.org/wiki/Complex_conjugate\#Properties}.}, i.e., \( (z_1 + z_2)^\ast = z_1^\ast + z_2^\ast \) and \( (z_1 z_2)^\ast = z_1^\ast z_2^\ast \) holds for two complex numbers \( z_1, z_2 \in \C \). Any complex number can also be written in polar form \( z = r e^{i \varphi} \) with magnitude
+    	\begin{equation}
+    		\lvert z \rvert = \sqrt{z z^\ast} = \sqrt{r e^{i \varphi} r e^{-i \varphi}} = \sqrt{r^2 e^{i \varphi - i \varphi}} = \sqrt{r^2} = \lvert r \rvert.
+    	\end{equation}
+    	\begin{definition}[\(n\)-th Root of Unity]
+	    	We call the special complex number \( \omega_n = e^{2 \pi i / n} \) the \emph{\(n\)-th root of unity.}
+    	\end{definition}
+    	\begin{theorem}[Power Sum of \(n\)-th Roots of Unity]
+    		Let \( \omega_n \) be the \(n\)-th root of unity with \( n > 1 \). Then \( \sum_{k = 0}^{n - 1} \omega_n^k = 0 \).
+    	\end{theorem}
+    	\begin{proof}
+    		\begin{equation}
+    			\sum_{k = 0}^{n - 1} \omega_n^k
+    				= \frac{1 - \omega_n^n}{1 - \omega_n}
+    				= \frac{1 - e^{2 i \pi}}{1 - \omega_n}
+    				= \frac{1 - 1}{1 - \omega_n}
+    				= \frac{0}{1 - \omega_n}
+    				= 0
+    		\end{equation}
+    	\end{proof}
     % end
 
-    \section{Continued Fraction Expansion} % 7.24, E7.4
-        \todo{Content}
+    \section{Continued Fraction Expansion}
+        Let \( x \in (0, 1) \) be a real number\footnote{Note that the restriction on the interval \( (0, 1) \) is purely for convenience as we only have \(x\)'s between zero and one down the line. It is also possible to extend \aclp{CFE} to \(\R\).}. Then we can express this number as its \emph{\ac{CFE}}
+        \begin{equation}
+        	x = \frac{1}{a_0 + \frac{1}{a_1 + \frac{1}{a_2 + \cdots}}}
+        \end{equation}
+        where \( a_0, a_1, \dots \in \N^+ \). The \ac{CFE} of \(x\) is finite iff \(x\) is rational. The sums
+        \begin{align}
+        	\frac{1}{a_0} &&
+        	\frac{1}{a_0 + \frac{1}{a_1}} &&
+        	\frac{1}{a_0 + \frac{1}{a_1 + \frac{1}{a_2}}} &&
+        	\cdots
+        \end{align}
+        are called \emph{partial sums.} For calculating \( a_0, a_1, \dots \), let
+        \begin{align}
+        	x_0 &\coloneqq \frac{1}{a_0 + \frac{1}{a_1 + \frac{1}{a_2 + \cdots}}} &
+        	x_1 &\coloneqq \frac{1}{a_1 + \frac{1}{a_2 + \cdots}} &
+        	x_2 &\coloneqq \frac{1}{a_2 + \cdots} &
+        	\cdots
+        \end{align}
+        then the coefficients are \( a_i = [1 / x_i] \), where the brackets indicate the integral part, i.e., the part in front of the decimal. If for any \(j\), \(x_j = 0\), the \ac{CFE} terminates and the number is exactly represented.
+
+        \begin{example}
+        	Let \( x = \num{11490} / 2^{14} \approx 0.701294 \). Then the \ac{CFE} is calculated as follows:
+        	\begin{center}
+        		\begin{tabular}{c|ccc}
+        			\toprule
+        			 \(i\)  &    \(x_i\)     &  \(1 / x_i\)  & \(a_i\)  \\ \midrule
+        			\num{0} & \num{0.701294} & \num{1.42594} & \num{1}  \\ \bottomrule
+        			\num{1} & \num{0.42594}  & \num{2.34777} & \num{2}  \\ \bottomrule
+        			\num{2} & \num{0.34777}  & \num{2.87544} & \num{2}  \\ \bottomrule
+        			\num{3} & \num{0.87544}  & \num{1.14228} & \num{1}  \\ \bottomrule
+        			\num{4} & \num{0.14228}  & \num{7.02830} & \num{7}  \\ \bottomrule
+        			\num{5} & \num{0.02830}  & \num{35.3333} & \num{35} \\ \bottomrule
+        			\num{6} & \num{0.33333}  &    \num{3}    & \num{3}  \\ \bottomrule
+        			\num{7} &    \num{0}     &               &          \\ \bottomrule
+        		\end{tabular}
+        	\end{center}
+        	The final \ac{CFE} is therefore
+        	\begin{equation}
+        		x = \frac{1}{1 + \frac{1}{2 + \frac{1}{2 + \frac{1}{1 + \frac{1}{7 + \frac{1}{35 + \frac{1}{3}}}}}}}
+        	\end{equation}
+        	with the coefficients \( (a_0, a_1, a_2, a_3, a_4, a_5, a_6) = (1, 2, 2, 1, 7, 35, 3) \).
+        \end{example}
     % end
 % end
 

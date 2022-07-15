@@ -77,66 +77,539 @@
 % end
 
 \chapter{Postulates of Quantum Mechanics}
-	\todo{Content}
+	In this chapter we discuss the postulates of \ac{QM} and some important protocols and results in \ac{QC} such as the \emph{no-cloning theorem.} This theorem states that it is impossible to copy a quantum state!
 
-	\section{States} % 2.4, 2.5, 2.6, 2.7, 3.2
-		\todo{Content}
+	\section{States}
+		In classical computing, a bit is either \num{0} or \num{1}. A quantum bit, a \emph{qubit,} however, is more general and has the basis states \(\ket{0}\) and \(\ket{1}\). The states are formed by basis vectors \( \ket{0} = (1, 0)^\dagger \) and \( \ket{1} = (0, 1)^\dagger \). More generally, an arbitrary quantum state \(\ket{\psi}\) can be a combination of the basis states, \( \ket{\psi} = c_0 \ket{0} + c_1 \ket{1} \), a \emph{superposition} (with complex coefficients \( c_0, c_1 \in \C \)). However, the state has to be normalized, i.e., \( \lvert \braket{\psi}{\psi} \rvert^2 = 1 \). The left part of this inner product is called a \emph{bra} vector representing the conjugate transpose of the right side, the \emph{ket} vector.
+
+		The following postulate digests this idea more formally.
+
+		\begin{postulate}[Quantum State]
+			Any closed physical system can be associated with a Hilbert space \(\mathcal{H}\). The state of the system is completely described by a state vector \( \ket{\psi} = \sum_{i = 0}^{d - 1} c_i \ket{i} \) with \( \sum_{i = 0}^{d - 1} \lvert c_i \rvert^2 = 1 \) where \( \{ \ket{i} \}_{i = 0}^{d - 1} \) forms a basis of \( \mathcal{H}^d \).
+		\end{postulate}
+		\begin{remark}
+			The basis is not confined to the \emph{computational basis} \( \{ \ket{0}, \ket{1} \} \), although this basis is often used. It may be any other orthonormal basis of \(\mathcal{H}\), see \autoref{subsec:otherBasis}. For basis of Hilbert spaces with \(d > 2\), see \autoref{sec:composite}.
+		\end{remark}
+
+		Instead of writing out the complex coefficients \(c_0\) and \(c_1\), we can also parameterize an arbitrary superposition with angles \( \gamma, \varphi, \theta \in \R \):
+		\begin{equation}
+			\ket{\psi}
+				= c_0 \ket{0} + c_1 \ket{1}
+				= e^{i \gamma} \biggl( \cos\frac{\theta}{2} \ket{0} + e^{i \varphi} \sin\frac{\theta}{2} \ket{1} \biggr).
+		\end{equation}
+		However, as we will see in \autoref{sec:measurement}, a global phase such as \(e^{i \gamma}\) vanishes in all important calculations as \( e^{i \gamma} e^{-i \gamma} = 1 \). Hence, we can also parameterize any state with just two angles \( \varphi \in (0, 2\pi] \) and \( \theta \in (0, \pi] \):
+		\begin{equation}
+			\ket{\psi} = \cos\frac{\theta}{2} \ket{0} + e^{i \varphi} \sin\frac{\theta}{2} \ket{1}.
+		\end{equation}
+		Checking that this state is actually normalized is straightforward:
+		\begin{align}
+			\braket{\psi}{\psi}
+				&= \biggl( \cos\frac{\theta}{2} \bra{0} + e^{-i \varphi} \sin\frac{\theta}{2} \bra{1} \biggr) \biggl( \cos\frac{\theta}{2} \ket{0} + e^{i \varphi} \sin\frac{\theta}{2} \ket{1} \biggr) \\
+				&= \cos\frac{\theta}{2} \bra{0} + e^{-i \varphi} \sin\frac{\theta}{2} \bra{1} \biggr) \biggl( \cos\frac{\theta}{2} \ket{0} + e^{i \varphi} \sin\frac{\theta}{2} \ket{1} \biggr) \\
+				&= \cos^2\frac{\theta}{2} \underbrace{\braket{0}{0}}_{= 1}
+					+ e^{i \varphi} \cos\frac{\theta}{2} \sin\frac{\theta}{2} \underbrace{\braket{0}{1}}_{= 0}
+					+ e^{-i \varphi} \cos\frac{\theta}{2} \sin\frac{\theta}{2} \underbrace{\braket{1}{0}}_{= 0}
+					+ e^{i \varphi} e^{-i \varphi} \sin\frac{\theta}{2} \sin\frac{\theta}{2} \underbrace{\braket{1}{1}}_{= 1} \\
+				&= \cos^2\frac{\theta}{2} + \sin^2\frac{\theta}{2}
+			 = 1.
+		\end{align}
+		Note that in this case \( \braket{\psi}{\psi} = 1 \), so \( \lvert \braket{\psi}{\psi} \rvert^2 = 1 \) holds, too, and we can drop the absolute-square. In most of the following discussions where we need explicit parametrization, we confine ourselves to real coefficients, i.e., \(\varphi = 0\). This simplifies the discussion as now there is only one parameter \(\theta\).
 	% end
 
-	\section{Evolution} % 2.8, 2.9, 2.10, 3.2
-		\todo{Content}
+	\section{Evolution}
+		The evolution of quantum states, i.e., how they pass between states, is described by linear transformations \(U\), also called \emph{gates.} These gates transform a quantum state \(\ket{\psi}\) into another quantum state \(\ket{\psi'}\). In quantum circuits, we denote an application of \(U_1\) and then \(U_2\) to a state \(\ket{\psi}\), i.e., \( U_2 U_1 \ket{\psi} \), as:
+		\begin{equation}
+			\Qcircuit {
+				\lstick{\ket{\psi}} & \gate{U_1} & \gate{U_2} & \rstick{U_2 U_1 \ket{\psi}} \qw
+			}
+		\end{equation}
 
-		\subsection{Gates} % 2.11, 2.12, 2.13
-			\todo{Content}
+		\begin{postulate}[State Evolution]
+			The evolution \( \ket{\psi(t_0)} \overset{U}{\longto} \ket{\psi(t)} \) of a closed physical system is described by a unitary transformation \( U U^\dagger = \ID \).
+		\end{postulate}
+
+		\begin{theorem}[Unitarity of Quantum Gates]
+			A linear quantum gate \(U\) is unitary, i.e., \( U U^\dagger = \ID \).
+		\end{theorem}
+		\begin{proof}
+			\todo{Proof: Unitarity of Quantum Gates}
+%			Let \( U = \begin{bmatrix} u_{00} & u_{01} \\ u_{10} & u_{11} \end{bmatrix} \) be an arbitrary gate. Then application of this gate to \(\ket{0}\), \(\ket{1}\), \(\bra{0}\), and \(\bra{1}\) must produce a \emph{normalized} quantum state:
+%			\begin{align}
+%				\lVert U \ket{0} \rVert_2^2 &= \lvert u_{00} \rvert^2 + \lvert u_{10} \rvert^2 \overset{!}{=} 1 &
+%				\lVert U \ket{1} \rVert_2^2 &= \lvert u_{01} \rvert^2 + \lvert u_{11} \rvert^2 \overset{!}{=} 1 \\
+%				\lVert \bra{0} U \rVert_2^2 &= \lvert u_{00} \rvert^2 + \lvert u_{01} \rvert^2 \overset{!}{=} 1 &
+%				\lVert \bra{1} U \rVert_2^2 &= \lvert u_{10} \rvert^2 + \lvert u_{11} \rvert^2 \overset{!}{=} 1
+%			\end{align}
+%			From these four constraints it follows that the columns and rows of \(U\) must be normalized. It remains to be shown that they are orthogonal. The application of \(U\) to \( \ket{+} = (\ket{0} + \ket{1}) / \sqrt{2} \) and \( \ket{+_y} = (\ket{0} + i \ket{1}) / \sqrt{2} \) must produce normalized states, too:
+%			\begin{align}
+%				\lVert U \ket{+} \rVert_2^2
+%					&= \frac{1}{2} \bigl( \lvert u_{00} + u_{01} \rvert^2 + \lvert u_{10} + u_{11} \rvert^2 \bigr) \\
+%					&= \frac{1}{2} \bigl( (u_{00} + u_{01}) (u_{00} + u_{01})^\ast + (u_{10} + u_{11}) (u_{10} + u_{11})^\ast \bigr) \\
+%					&= \frac{1}{2} \bigl( (u_{00} + u_{01}) (u_{00}^\ast + u_{01}^\ast) + (u_{10} + u_{11}) (u_{10}^\ast + u_{11}^\ast) \bigr) \\
+%					&= \frac{1}{2} \bigl( u_{00} (u_{00}^\ast + u_{01}^\ast) + u_{01} (u_{00}^\ast + u_{01}^\ast) + u_{10} (u_{10}^\ast + u_{11}^\ast) + u_{11} (u_{10}^\ast + u_{11}^\ast) \bigr) \\
+%					&= \frac{1}{2} \bigl( u_{00} u_{00}^\ast + u_{00} u_{01}^\ast + u_{01} u_{00}^\ast + u_{01} u_{01}^\ast + u_{10} u_{10}^\ast + u_{10} u_{11}^\ast + u_{11} u_{10}^\ast + u_{11} u_{11}^\ast \bigr) \\
+%					&= \frac{1}{2} \bigl( \underbrace{\lvert u_{00} \rvert^2 + \lvert u_{01} \rvert^2}_{= 1} + \underbrace{\lvert u_{10} \rvert^2 + \lvert u_{11} \rvert^2}_{= 1} + u_{00} u_{01}^\ast + u_{01} u_{00}^\ast + u_{10} u_{11}^\ast + u_{11} u_{10}^\ast \bigr) \\
+%					&= 1 + \frac{1}{2} \bigl( u_{00} u_{01}^\ast + u_{01} u_{00}^\ast + u_{10} u_{11}^\ast + u_{11} u_{10}^\ast \bigr) \overset{!}{=} 1 \\
+%				\lVert U \ket{+_y} \rVert_2^2
+%					&= \frac{1}{2} \bigl( \lvert u_{00} + i u_{01} \rvert^2 + \lvert u_{10} + i u_{11} \rvert^2 \bigr) \\
+%					&= \frac{1}{2} \bigl( (u_{00} + i u_{01}) (u_{00} + i u_{01})^\ast + (u_{10} + i u_{11}) (u_{10} + i u_{11})^\ast \bigr) \\
+%					&= \frac{1}{2} \bigl( (u_{00} + i u_{01}) (u_{00}^\ast - i u_{01}^\ast) + (u_{10} + i u_{11}) (u_{10}^\ast - i u_{11}^\ast) \bigr) \\
+%					&= \frac{1}{2} \bigl( u_{00} (u_{00}^\ast - i u_{01}^\ast) + i u_{01} (u_{00}^\ast - i u_{01}^\ast) + u_{10} (u_{10}^\ast - i u_{11}^\ast) + i u_{11} (u_{10}^\ast - i u_{11}^\ast) \bigr) \\
+%					&= \frac{1}{2} \bigl( u_{00} u_{00}^\ast - i u_{00} u_{01}^\ast + i u_{01} u_{00}^\ast + u_{01} u_{01}^\ast + u_{10} u_{10}^\ast - i u_{10} u_{11}^\ast + i u_{11} u_{10}^\ast + u_{11} u_{11}^\ast \bigr) \\
+%					&= \frac{1}{2} \bigl( \underbrace{\lvert u_{00} \rvert^2 + \lvert u_{01} \rvert^2}_{= 1} + \underbrace{\lvert u_{10} \rvert^2 + \lvert u_{11} \rvert^2}_{= 1} - i u_{00} u_{01}^\ast + i u_{01} u_{00}^\ast - i u_{10} u_{11}^\ast + i u_{11} u_{10}^\ast \bigr) \\
+%					&= 1 + \frac{1}{2} \bigl( - i u_{00} u_{01}^\ast + i u_{01} u_{00}^\ast - i u_{10} u_{11}^\ast + i u_{11} u_{10}^\ast \bigr) \overset{!}{=} 1
+%			\end{align}
+		\end{proof}
+
+		\subsection{Gates}
+			% TODO: Interpretation of unitaries as rotations in the Bloch sphere.
+			In this section we collect the most important single-qubit gates. They are summarized in \autoref{tab:gates} and their semantics are given in the caption.
+
+			\begin{theorem}[Decomposition of Two-By-Two Unitary Matrices]
+				Every unitary matrix \( U \in \C^{2 \times 2} \) can be decomposed into three rotations as \( U = e^{i \alpha} R_z(\beta) R_y(\gamma) R_z(\delta) \).
+			\end{theorem}
+
+			From this theorem, one might think that it is necessary to implement every rotation in the lab for a universal quantum computer. Fortunately, this is not the case! As we will see in \autoref{c:universality}, only three gates are necessary to implement arbitrary rotations.
+
+			\begin{table}
+				\centering
+				\begin{tabular}{l|ll|ll}
+					\toprule
+						  \(U\)
+						& \(U \ket{0}\)
+						& \(U \ket{1}\)
+						& \(U \ket{+}\)
+						& \(U \ket{-}\)
+						\\ \midrule
+						  \( X = \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix} = H Z H \)
+						& \(  \ket{1} \)
+						& \(  \ket{0} \)
+						& \(  \ket{+} \)
+						& \( -\ket{-} \)
+						\\
+						  \( Y = \begin{bmatrix} 0 & -i \\ i & 0 \end{bmatrix} \equiv X Z \)
+						& \(  i \ket{1} \)
+						& \( -i \ket{0} \)
+						& \( -i \ket{-} \)
+						& \(  i \ket{+} \)
+						\\
+						  \( Z = \begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix} \)
+						& \(  \ket{0} \)
+						& \( -\ket{1} \)
+						& \(  \ket{-} \)
+						& \(  \ket{+} \)
+						\\
+						  \( H = \frac{1}{\sqrt{2}} \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix} \)
+						& \( \ket{+} \)
+						& \( \ket{-} \)
+						& \( \ket{0} \)
+						& \( \ket{1} \)
+						\\
+						  \( R_y(\gamma) = \begin{bmatrix} c_\gamma & -s_\gamma \\ s_\gamma & c_\gamma \end{bmatrix} \)
+						& \(  c_\gamma \ket{0} + s_\gamma \ket{1} \)
+						& \( -s_\gamma \ket{0} + c_\gamma \ket{1} \)
+						& \(  c_\gamma \ket{+} - s_\gamma \ket{-} \)
+						& \(  s_\gamma \ket{+} + c_\gamma \ket{-} \)
+						\\
+						  \( R_z(\beta) = \begin{bmatrix} e^{i \beta / 2} & 0 \\ 0 & e^{-i \beta / 2} \end{bmatrix} \)
+						& \( e^{ i \beta / 2} \ket{0} \)
+						& \( e^{-i \beta / 2} \ket{1} \)
+						& \( e^{ i \beta / 2} \ket{0} + e^{-i \beta / 2} \ket{1} \)
+						& \( e^{ i \beta / 2} \ket{0} - e^{-i \beta / 2} \ket{1} \)
+						\\
+					\bottomrule
+				\end{tabular}
+				\caption[Common Single-Qubit Gates]{Common qubit gates and their effect on the computational and Hadamard basis. For brevity, let \( c_\gamma \coloneqq \cos(\gamma / 2) \) and \( s_\gamma \coloneqq \sin(\gamma / 2) \). The gates have the following effects in the computational basis: \(X\) implements a logical not, \(Y\) combines a phase flip and logical not, \(Z\) implements a phase flip, \(H\) creates an equal superposition, \(R_y(\gamma)\) rotates around an arbitrary angle \(\gamma\), and \(R_z(\beta)\) adds a phase. In Hadamard basis, the gates have the following effects: \(X\) implement a phase flip, \(Y\) combined a phase flip and logical not, \(Z\) implements a logical not, \(H\) creates an equal superposition, \(R_y(\gamma)\) rotates around an arbitrary angle \(\gamma\), and \(R_z(\beta)\) adds a phase.}
+				\label{tab:gates}
+			\end{table}
 		% end
 	% end
 
-	\section{Measurement} % 2.14, 2.15, 2.16, 2.17, 2.18, 3.2
-		\todo{Content}
+	\section{Measurement}
+		\label{sec:measurement}
+
+		We will now discuss the last postulate of \ac{QM} which is concerned with \emph{measurements.} The central result is that measuring a quantum system is inherently \emph{probabilistic,} i.e., the outcome of a measurement is not deterministic and truly random. For any quantum state \( \ket{\psi} \), the probability of measuring an outcome \(v_i\) is given by the absolute-square of the inner product between the "measurement state" \(\ket{v_i}\) and the state \(\ket{\psi}\):
+		\begin{equation}
+			P(i) = \lvert \ip{v_i}{\psi} \rvert^2.
+		\end{equation}
+		The value of this inner product (without the absolute-square) is called the \emph{probability amplitude} and can be negative or even complex. Immediately after a measurement, the state \(\ket{\psi}\) collapses into a post-measurement state \(\ket{\psi'}\). This post-measurement state is
+		\begin{equation}
+			\ket{\psi'} = \frac{M_i \ket{\psi}}{N_i}
+		\end{equation}
+		where \( M_i = \op{v_i}{v_i} \) and \( N_i = \sqrt{P(i)} \) are the \emph{measurement operator} and \emph{normalization constant,} respectively. These results are digested in the following postulate.
+
+		\begin{postulate}[Quantum Measurement]
+			Quantum measurements are described by a collection of measurement operators \( \{ M_i \} \) where \(i\) indicated the outcome of the experiment. Let \(\ket{\psi}\) be the state before the measurement, then the state immediately after the measurement is \( \ket{\psi'} = M_i \ket{\psi} / N_i \) where \( N = \sqrt{P(i)} \) is for normalization.
+		\end{postulate}
+
+		\begin{theorem}[Measurement of Pure Quantum States]
+			For \emph{pure} states \(\ket{\psi}\), the post-measurement state \(\ket{\psi'}\) after a measurement of \(\ket{v_i}\) is \(\ket{\psi'} = \ket{v_i}\).
+		\end{theorem}
+		\begin{proof}
+			\begin{equation}
+				\frac{M_i \ket{\psi}}{N_i}
+					= \frac{\op{v_i}{v_i} \ket{\psi}}{\sqrt{P(i)}}
+					= \frac{\op{v_i}{v_i} \ket{\psi}}{\sqrt{\lvert \ip{v_i}{\psi} \rvert^2}}
+					= \frac{\ket{v_i} \ip{v_i}{\psi}}{\lvert \ip{v_i}{\psi} \rvert}
+					= \ket{v_i} \frac{\ip{v_i}{\psi}}{\lvert \ip{v_i}{\psi} \rvert}
+					\equiv \ket{v_i}
+			\end{equation}
+		\end{proof}
 	% end
 
-	\section{Composite Systems and Tensor Products} % 3.3, 3.4, 3.5
-		\todo{Content}
+	\section{Composite Systems and Tensor Products}
+		\label{sec:composite}
 
-		\subsection{Entanglement} % 3.6, 3.7
-			\todo{Content}
+		As in classical computing where we are concerned with more than one bit, \ac{QC} also works with more than one qubit. The formalism for this are \emph{tensor products} \( \mathcal{H}^2 \otimes \mathcal{H}^2 \) between the Hilbert spaces of the individual qubits. Its basis vectors are also constructed using tensor products:
+		\begin{align}
+			\ket{0} \otimes \ket{0} &= \begin{bmatrix} 1 \\ 0 \\ 0 \\ 0 \end{bmatrix} &
+			\ket{0} \otimes \ket{1} &= \begin{bmatrix} 0 \\ 1 \\ 0 \\ 0 \end{bmatrix} &
+			\ket{1} \otimes \ket{0} &= \begin{bmatrix} 0 \\ 0 \\ 1 \\ 0 \end{bmatrix} &
+			\ket{1} \otimes \ket{1} &= \begin{bmatrix} 0 \\ 0 \\ 0 \\ 1 \end{bmatrix}
+		\end{align}
+		For two single-qubit operators \( A = \begin{bmatrix} a_{00} & a_{01} \\ a_{10} & a_{11} \end{bmatrix} \) and \( B = \begin{bmatrix} b_{00} & b_{01} \\ b_{10} & b_{11} \end{bmatrix} \), the tensor product is carried out as
+		\begin{equation}
+			A \otimes B
+				= \begin{bmatrix} a_{00} & a_{01} \\ a_{10} & a_{11} \end{bmatrix} \otimes \begin{bmatrix} b_{00} & b_{01} \\ b_{10} & b_{11} \end{bmatrix}
+				= \begin{bmatrix} a_{00} \begin{bmatrix} b_{00} & b_{01} \\ b_{10} & b_{11} \end{bmatrix} & a_{01} \begin{bmatrix} b_{00} & b_{01} \\ b_{10} & b_{11} \end{bmatrix} \\ a_{10} \begin{bmatrix} b_{00} & b_{01} \\ b_{10} & b_{11} \end{bmatrix} & a_{11} \begin{bmatrix} b_{00} & b_{01} \\ b_{10} & b_{11} \end{bmatrix} \end{bmatrix}
+				=
+					\begin{bmatrix}
+						a_{00} b_{00} & a_{00} b_{01} & a_{01} b_{00} & a_{01} b_{01} \\
+						a_{00} b_{10} & a_{00} b_{11} & a_{01} b_{10} & a_{01} b_{11} \\
+						a_{10} b_{00} & a_{10} b_{01} & a_{11} b_{00} & a_{11} b_{01} \\
+						a_{10} b_{10} & a_{10} b_{11} & a_{11} b_{10} & a_{11} b_{11}
+					\end{bmatrix}
+		\end{equation}
+		with some abuse of notation. This definition has the effect of applying unitary \(A\) to the first and unitary \(B\) to the second qubit in a tensor-multiplied Hilbert space, i.e.,
+		\begin{equation}
+			(A \otimes B) (\ket{\psi}_1 \otimes \ket{\psi}_2) = (A \ket{\psi}_1) \otimes (B \ket{\psi}_2)
+		\end{equation}
+		For brevity, we often write product state as \( \ket{0} \otimes \ket{1} \doteq \ket{0} \ket{1} \doteq \ket{01} \) and the application of product operators as \( (A \otimes B) (\ket{0} \otimes \ket{1}) \doteq A \otimes B \ket{0} \otimes \ket{1} = A_1 B_2 \ket{01} \). As long as it is clear which unitary is applied to which qubit, a variety of notations may be used. For brevity, we also often write \( \ket{\psi}^{\otimes N} \doteq \underbrace{\ket{\psi} \otimes \dots \otimes \ket{\psi}}_{N\text{ times}} \) and the same for gates.
 
-			\subsubsection{Multipartite} % 12.3, 12.4, 12.5, 12.16
-				\todo{Content}
+		\subsection{Entanglement}
+			A \emph{composite} or \emph{product} state is a state \(\ket{\psi_{12}}\) that can be written as the product of two individual states \( \ket{\psi_1} = \alpha_1 \ket{0} + \beta_1 \ket{1} \) and \( \ket{\psi_2} = \alpha_2 \ket{0} + \beta_2 \ket{1} \):
+			\begin{equation}
+				\ket{\psi_{12}}
+					= \ket{\psi_1} \otimes \ket{\psi_2}
+					= (\alpha_1 \ket{0} + \beta_1 \ket{1}) \otimes (\alpha_2 \ket{0} + \beta_2 \ket{1})
+					= \alpha_1 \alpha_2 \ket{00} + \alpha_1 \beta_2 \ket{01} + \beta_1 \alpha_2 \ket{10} + \beta_1 \beta_2 \ket{11}
+			\end{equation}
+			However, there are states that cannot be written like this!
+
+			\begin{definition}[Entangled State]
+				A quantum state \( \ket{\psi_{12}} \in \mathcal{H}_1 \otimes \mathcal{H}_2 \) is called \emph{entangled} if there are no states \( \ket{\psi_1} \in \mathcal{H}_1 \) and \( \ket{\psi_2} \in \mathcal{H}_2 \) such that \( \ket{\psi_{12}} = \ket{\psi_1} \otimes \ket{\psi_2} \).
+			\end{definition}
+
+			\begin{theorem}[Simple Entangled States]
+				All states \( \ket{\psi_\theta} = \cos\frac{\theta}{2} \ket{00} + \sin\frac{\theta}{2} \ket{11} \), \( \theta \in (0, \pi/2] \) are entangled.
+			\end{theorem}
+			\begin{proof}
+				Let \( \ket{\psi_1} \coloneqq \alpha_1 \ket{0} + \beta_1 \ket{1} \) and \( \ket{\psi_2} \coloneqq \alpha_2 \ket{0} + \beta_2 \ket{1} \) with coefficients \( \alpha_1, \alpha_2, \beta_1, \beta_2 \in \C \). Assume that \( \ket{\psi_\theta} = \ket{\psi_1} \otimes \ket{\psi_2} \). Hence,
+				\begin{equation}
+					\ket{\psi_\theta}
+						= \alpha_1 \alpha_2 \ket{00} + \alpha_1 \beta_2 \ket{01} + \beta_1 \alpha_2 \ket{10} + \beta_1 \beta_2 \ket{11}
+						\overset{!}{=} \cos\frac{\theta}{2} \ket{00} + \sin\frac{\theta}{2} \ket{11}
+				\end{equation}
+				By comparing coefficients, all of the following must hold: \( \alpha_1 \alpha_2 = \neq 0 \), \( \beta_1 \beta_2 = \neq 0 \), and \( \alpha_1 \beta_2 = \beta_1 \alpha_2 = 0 \). From the first two constraints it follows that all coefficients must be non-zero which contradicts the last constraint. Hence, the state is entangled.
+			\end{proof}
+
+			One important special case of this result is the \emph{Bell state} \(\ket{\Phi^+} \coloneqq \frac{1}{\sqrt{2}} (\ket{00} + \ket{11})\) which we will study further in \autoref{c:nonlocality}.
+
+			\subsubsection{Multipartite}
+				So far, we only studied entanglement of two parties \(\mathcal{H}_1\) and \(\mathcal{H}_2\). However, it is also possible to describe entanglement between three or more parties. For three parties \(\mathcal{H}_1\), \(\mathcal{H}_2\), and \(\mathcal{H}_3\), there can be a variety of different entanglements:
+				\begin{align}
+					\ket{\psi_{123}} &= \ket{\psi_{12}} \otimes \ket{\psi_3} &
+					\ket{\psi_{123}} &= \ket{\psi_1} \otimes \ket{\psi_{23}} &
+					\ket{\psi_{123}} &= \ket{\psi_2} \otimes \ket{\psi_{13}}
+				\end{align}
+				For more than two parties, a state \(\ket{\psi}_{123}\) that cannot be expressed as a product of its components is called \emph{\ac{GME}.} To check whether some state is \ac{GME} can be done explicitly analogous to the above proof of two-party entanglement by checking all the above cases along with
+				\begin{equation}
+					\ket{\psi{123}} = \ket{\psi_1} \otimes \ket{\psi_2} \otimes \ket{\psi_3}.
+				\end{equation}
+				However, for \(N\) qubits the (potentially) entangled state has \(2^N\) coefficients! The complexity of this checking is therefore \(\mathcal{O}(\text{scary})\). There are, however, less straightforward, but easier-to-check procedures for validating whether a state is \ac{GME}, but these are out of scope of this course.
 			% end
 
-			\subsubsection{Graph States} % 12.7, 12.8
-				\todo{Content}
+			\subsubsection{Graph States}
+				Although general methods for checking \ac{GME} is out of scope, we will still look at the most famous example: \emph{graph states.} Graph states a multi-qubit states corresponding to the mathematical structure of a graph. Let \( G = (V, E) \) be a graph with vertices \(V\) and edges \(E\). Then the corresponding multi-qubit state is
+				\begin{equation}
+					\ket{G} = \prod_{e \in E} \CZ_e \ket{+}^{\otimes \lvert V \rvert}
+				\end{equation}
+				where \( \CZ_e = \diag(1, 1, 1, -1) \) is a controlled-Z-gate (see \autoref{subsec:multiQubitGates}) acting on the qubits of the edge. These graph states allowed for a new language to reason about quantum states. For instance, when measuring the first qubit of the following graph state in Z-basis,
+				\begin{center}
+					\begin{tikzpicture}
+						\node [draw, circle, fill = black, label = above:1] (a) at (1, 1.5) {};
+						\node [draw, circle, fill = black, label = below:2] (b) at (0, 0  ) {};
+						\node [draw, circle, fill = black, label = below:3] (c) at (2, 0  ) {};
+						\draw (a) to (b);
+						\draw (a) to (c);
+						\draw (b) to (c);
+					\end{tikzpicture}
+				\end{center}
+				it just disappears, dropping the connections to the second and third qubit:
+				\begin{center}
+					\begin{tikzpicture}
+						\node [draw, circle, fill = black, label = below:2] (b) at (0, 0  ) {};
+						\node [draw, circle, fill = black, label = below:3] (c) at (2, 0  ) {};
+						\draw (b) to (c);
+					\end{tikzpicture}
+				\end{center}
+				Similar rules exist for other measurements, but these are again out of scope for this course.
 			% end
 		% end
 
-		\subsection{Multi-Qubit Gates} % 3.8, 3.9, 3.10, E3.2, E3.3
-			\todo{Content}
+		\subsection{Multi-Qubit Gates}
+			\label{subsec:multiQubitGates}
+
+			So far, we only discussed local gates acting on a single qubit (remember, gates combined with tensor products are applied on each gate individually). While this already allows some calculations, it does not allow interplay of multiple qubits or generation of entangled states which are very important for various protocols (see \autoref{sec:protocols}). Hence, we need \emph{multi-qubit gates} \(U\) that cannot be written as the product of local gates, i.e., \( U \neq U_1 \otimes \dots \otimes U_N \).
+
+			\paragraph{CNOT-Gate}
+				The simplest is the CNOT-gate:
+				\begin{align}
+					\begin{aligned}
+						\Qcircuit {
+							\lstick{\ket{x}} & \ctrl{1} & \rstick{\ket{x}}          \qw \\
+							\lstick{\ket{y}} & \targ    & \rstick{\ket{x \oplus y}} \qw
+						}
+					\end{aligned}
+					&&
+					\CNOT_{12} =
+						\begin{bmatrix}
+							1 & 0 & 0 & 0 \\
+							0 & 1 & 0 & 0 \\
+							0 & 0 & 0 & 1 \\
+							0 & 0 & 1 & 0
+						\end{bmatrix}
+					&&
+					\begin{tabular}{c|c}
+						\textbf{Input} & \textbf{Output} \\ \midrule
+						 \(\ket{00}\)  &  \(\ket{00}\)   \\
+						 \(\ket{01}\)  &  \(\ket{01}\)   \\
+						 \(\ket{10}\)  &  \(\ket{11}\)   \\
+						 \(\ket{11}\)  &  \(\ket{10}\)
+					\end{tabular}
+				\end{align}
+				This gate is a \emph{controlled} gate and applied the X-gate to the second qubit iff the first qubit is \(1\). The indices \(\CNOT_{ij}\) indicate that the gate is acting on the \(j\)-th qubit (the \emph{target}) and controlled by the \(i\)-th qubit. This gate can be extended to more than two qubits (with \(n - 1\) control qubits and a single target). For \(n = 3\), it is called the \emph{Toffoli gate} which can be used to represent classical logical operations like logical not, and, or, and not-and.
+			% end
+
+			\paragraph{SWAP-Gate}
+				Another important two-qubit gate is the SWAP-gate
+				\begin{align}
+					\begin{aligned}
+						\Qcircuit {
+							\lstick{\ket{a}} & \qswap      & \rstick{\ket{b}} \qw \\
+							\lstick{\ket{b}} & \qswap \qwx & \rstick{\ket{a}} \qw
+						}
+					\end{aligned}
+					&&
+					\begin{aligned}
+						\Qcircuit {
+							\lstick{\ket{a}} & \ctrl{1} & \targ     & \ctrl{1} & \rstick{\ket{b}} \qw \\
+							\lstick{\ket{b}} & \targ    & \ctrl{-1} & \targ    & \rstick{\ket{b}} \qw \\
+						}
+					\end{aligned}
+				\end{align}
+				which simply switches the state of two qubits. The circuit on the right is the implementation of the SWAP-gate. Showing their equivalence is straightforward:
+				\begin{align}
+					\ket{00}
+						\overset{\CNOT_{12}}{\longto} \ket{00}
+						\overset{\CNOT_{21}}{\longto} \ket{00}
+						\overset{\CNOT_{12}}{\longto} \ket{00}
+					&&
+					\ket{01}
+						\overset{\CNOT_{12}}{\longto} \ket{01}
+						\overset{\CNOT_{21}}{\longto} \ket{11}
+						\overset{\CNOT_{12}}{\longto} \ket{10}
+					\\
+					\ket{10}
+						\overset{\CNOT_{12}}{\longto} \ket{11}
+						\overset{\CNOT_{21}}{\longto} \ket{01}
+						\overset{\CNOT_{12}}{\longto} \ket{01}
+					&&
+					\ket{11}
+						\overset{\CNOT_{12}}{\longto} \ket{10}
+						\overset{\CNOT_{21}}{\longto} \ket{10}
+						\overset{\CNOT_{12}}{\longto} \ket{11}
+				\end{align}
+				As unitary transformations are linear, we almost always only have to show the equivalence for the basis states as every state can be expressed as a superposition of them. This simplifies a lot of derivations! As the above circuit implements swapping for the basis states, it is a valid implementation of the SWAP-gate.
+			% end
+
+			\paragraph{Controlled-U-Gate}
+				Note that any gate \(U\) can be used in a controlled fashion:
+				\begin{align}
+					\begin{aligned}
+						\Qcircuit {
+							\lstick{\ket{x}} & \ctrl{1} & \rstick{\ket{x}}     \qw \\
+							\lstick{\ket{y}} & \gate{U} & \rstick{U^x \ket{y}} \qw
+						}
+					\end{aligned}
+					&&
+					\mathit{CU}_{12} =
+						\begin{bmatrix}
+							\ID & 0 \\
+							0   & U
+						\end{bmatrix}
+				\end{align}
+				To implement this gate in practice, it can be decomposed into CNOT-gates and single-qubit gates (see \autoref{subsubsec:controlledUnitaries}).
+			% end
+
+			\paragraph{Preparing the Bell State}
+				Equipped with these tools, we can prepare the Bell state \(\ket{\Phi^+}\) with the following circuit:
+				\begin{align}
+					\begin{aligned}
+						\Qcircuit {
+							\lstick{\ket{0}}_1 & \gate{H} & \ctrl{1} & \qw \\
+							\lstick{\ket{0}}_2 & \qw      & \targ    & \qw
+						}
+					\end{aligned}
+					&&
+					\ket{00}
+						\overset{H_1}{\longto} \frac{1}{\sqrt{2}} (\ket{0} + \ket{1}) \ket{0}
+						\overset{\CNOT_{12}}{\longto} \frac{1}{\sqrt{2}} (\ket{00} + \ket{11}) = \ket{\Phi^+}
+				\end{align}
+				For brevity, we will write
+				\begin{equation}
+					\Qcircuit {
+						\lstick{\ket{0}} & \multigate{1}{\Phi^+} & \qw \\
+						\lstick{\ket{0}} & \ghost{\Psi^+}        & \qw
+					}
+				\end{equation}
+				from now on whenever a Bell state is prepared between two qubits. Also, we will leave out the explicit derivation of the Bell state will from derivations.
+			% end
 		% end
 	% end
 
-	\section{Protocols} % N/A
-		\todo{Content}
+	\section{Protocols}
+		\label{sec:protocols}
 
-		\subsection{No-Cloning} % 3.12, 3.13, 3.14, 3.15
-			\todo{Content}
+		In this section we discuss some essential protocols in \ac{QC} and the no-cloning theorem. These protocols are not complete algorithms (which are discussed in \autoref{c:algorithms}), but illustrate essential ideas supporting some of the algorithms.
+
+		\subsection{No-Cloning}
+			While the no-cloning theorem is not really a protocol, it is an extremely important result for \ac{QC} and thus also covered here.
+
+			\begin{theorem}[No-Cloning]
+				Let \(\ket{\psi}\) be some state. Then there exists no \(U\) such that \( U \ket{\psi} \ket{0} = \ket{\psi}\ket{\psi} \). That is, no circuit exists that copies an arbitrary quantum state.
+			\end{theorem}
+			\begin{proof}
+				Assume that \(U\) is a cloning circuit and let \(\ket{\psi}\) and \(\ket{\phi}\) be arbitrary states. Then we can compute
+				\begin{equation}
+					(\bra{\phi}\bra{\phi}) (\ket{\psi}\ket{\psi})
+						= \ip{\phi}{\psi} \ip{\psi}{\phi}
+						= (\ip{\phi}{\psi})^2.
+				\end{equation}
+				However, we can also express the composite states as \( \ket{\phi}\ket{\phi} = U \ket{\phi}\ket{0} \) and \( \ket{\psi}\ket{\psi} = U \ket{\psi}\ket{0} \) using the definition of the cloning circuit \(U\). Hence,
+				\begin{equation}
+					\bra{0}\bra{\phi} \underbrace{U^\dagger U}_{= \ID} \ket{\psi}\ket{0}
+						= \bra{0}\bra{\phi} \ket{\psi}\ket{0}
+						= \ip{0}{0} \ip{\phi}{\psi}
+						= \ip{\phi}{\psi}.
+				\end{equation}
+				Therefore, \( (\ip{\phi}{\psi})^2 = \ip{\phi}{\psi} \) holds. The states \(\ket{\phi}\) and \(\ket{\psi}\) are therefore orthogonal, \( \ip{\phi}{\psi} = 0 \), or equal, \( \ip{\phi}{\psi} = 1 \). This corresponds to classical data (either \num{0} or \num{1}) and no arbitrary quantum states. Hence, there exists no such \(U\).
+			\end{proof}
+
+			This theorem is a fundamental result of \ac{QC} and hinders some algorithms down the line. But it is not new! In fact, the no-cloning theorem is \emph{equivalent} to Heisenberg's uncertainty principles stating that for any quantum system there exist two properties which cannot both be measured with certainty. Proofing this equivalence would go as follows (proofing both directions using contraposition):
+			\begin{itemize}
+				\item From no-cloning to Heisenberg: if Heisenberg's uncertainty principle would be false, we could measure everything with certainty and thus prepare a second state simply by transferring the measured data, violating the no-cloning theorem.
+				\item From Heisenberg to no-cloning: if the no-cloning theorem would be false, we could copy an arbitrary quantum state an arbitrary number of times and thus measure the state with arbitrary precision, violating Heisenberg's uncertainty principle.
+			\end{itemize}
 		% end
 
-		\subsection{Quantum Teleportation} % 3.16, 3.17, 3.18
-			\todo{Content}
+		\subsection{Quantum Teleportation}
+			With \emph{quantum teleportation,} it is possible to teleport an arbitrary quantum state from one position to another (e.g., from Alice's to Bob's lab) using entanglement. Both parties (Alice and Bob) previously shared a Bell state \(\ket{\Phi^+}\) and now Alice wants to transmit her state \(\ket{\psi}\) over to Bob, but they cannot meet and have no secure communication channel. However, Alice can publicly announce two classical bits of information that Bob will read.
 
-			\subsubsection{Concatenated Teleportation} % ???
-				\todo{Content}
+			Consider the following circuit:
+			\begin{equation}
+				\Qcircuit {
+					\lstick{\ket{\psi}} & \ustick{A'} \qw & \qw                   & \ctrl{1} & \gate{H} & \meter & \ustick{m_2} \cw         & \cw \cwx[2]    &                         \\
+					\lstick{\ket{0}}    & \ustick{A}  \qw & \multigate{1}{\Phi^+} & \targ    & \qw      & \meter & \ustick{m_1} \cw \cwx[1] &                &                         \\
+					\lstick{\ket{0}}    & \ustick{B}  \qw & \ghost{\Phi^+}        & \qw      & \qw      & \qw    & \gate{X^{m_1}}           & \gate{Z^{m_2}} & \rstick{\ket{\psi}} \qw
+				}  \label{eq:teleportation}
+			\end{equation}
+			Note how the state \(\ket{\psi}\) is teleported from qubit \(A\) to qubit \(B\). Also note that the state is not cloned as Alice's measurement destroys her copy. To see that the above circuit actually copies the state, we can simply calculate what it does to the circuit. Let \( \ket{\psi} = c_0 \ket{0} + c_1 \ket{1} \) be the qubit to be copied. Right before the measurements, the system has the following state:
+			\begin{align}
+					&\quad (c_0 \ket{0} + c_1 \ket{1})_{A'} \ket{00}_{AB} \\
+				\prescript{\Phi^+_{AB}}{}{\longto}
+					&\quad \frac{1}{\sqrt{2}} (c_0 \ket{0} + c_1 \ket{1})_{A'} (\ket{00} + \ket{11})_{AB} \\
+				\prescript{\CNOT_{A' A}}{}{\longto}
+					&\quad \frac{1}{\sqrt{2}} \bigl( c_0 \ket{0}_{A'} (\ket{00} + \ket{11})_{AB} + c_1 \ket{1}_{A'} (\ket{10} + \ket{01})_{AB} \bigr) \\
+				\prescript{H_{A'}}{}{\longto}
+					&\quad \frac{1}{\sqrt{2}} \bigl( c_0 \ket{+}_{A'} (\ket{00} + \ket{11})_{AB} + c_1 \ket{-}_{A'} (\ket{10} + \ket{01})_{AB} \bigr) \\
+				   =&\quad \frac{1}{2} \bigl( c_0 (\ket{0} + \ket{1})_{A'} (\ket{00} + \ket{11})_{AB} + c_1 (\ket{0} - \ket{1})_{A'} (\ket{10} + \ket{01})_{AB} \bigr) \\
+				   =&\quad \frac{1}{2} \bigl(
+							  \ket{00}_{A' A} (c_0 \ket{0} + c_1 \ket{1})_B
+							+ \ket{01}_{A' A} (c_0 \ket{1} + c_1 \ket{0})_B \\&\quad\qquad\qquad
+							+ \ket{10}_{A' A} (c_0 \ket{0} - c_1 \ket{1})
+							+ \ket{11}_{A' A} (c_0 \ket{1} - c_1 \ket{0})_B
+						\bigr)
+			\end{align}
+			When now measuring the first two qubits, the following outcomes and post-measurement states are present, and the corresponding corrections have to be applied to recover \(\ket{\psi}\):
+			\begin{center}
+				\centering
+				\begin{tabular}{cc|c|c}
+					\(m_1\) & \(m_2\) &        \(\ket{\psi'}_B\)        & Correction \\ \midrule
+					 \(0\)  &  \(0\)  & \( c_0 \ket{0} + c_1 \ket{1} \) &  \(\ID\)   \\
+					 \(0\)  &  \(1\)  & \( c_0 \ket{1} + c_1 \ket{0} \) &   \(X\)    \\
+					 \(1\)  &  \(0\)  & \( c_0 \ket{0} - c_1 \ket{1} \) &   \(Z\)    \\
+					 \(1\)  &  \(1\)  & \( c_0 \ket{1} - c_1 \ket{0} \) &   \(ZX\)
+				\end{tabular}
+			\end{center}
+			With \( U^1 = U \) and \( U^0 = \ID \), the corrections can be summarized into \( Z^{m_2} X^{m_1} \) which are the last two gates of circuit \eqref{eq:teleportation}.
+
+			We therefore teleported a qubit from A to B! Note that this does \emph{not} allow transmission of information faster-than-light as the two classical bits have to be transmitted. Without them, the qubit is worthless as Bob cannot interpret it correctly\footnote{One might argue that Bob might get lucky and read out the correct information. But this kind of "faster-than-light transportation" is also possible classically: you can just guess what the information is---but does not actually transmit information!}. It also does not violate the no-cloning theorem as Alice's copy is destroyed during the measurement.
+
+			\subsubsection{Concatenated Teleportation}
+				\todo{Concatenated Teleportation; ???}
 			% end
 		% end
 
-		\subsection{Dense-Coding} % E2.4, E3.1
-			\todo{Content}
+		\subsection{Dense-Coding}
+			We are now concerned with the "opposite" problem of qubit teleportation: instead of teleporting a qubit's state, we physically transport it to another location but encode two classical bits of information in it. That is, we transmit two bits of classical information by only transmitting a single qubit. Consider the following circuit:
+			\begin{equation}
+				\Qcircuit {
+					\lstick{\ket{0}} & \ustick{A} \qw & \multigate{1}{\Phi^+} & \gate{U} & \ctrl{1} & \gate{H} & \meter & \rstick{m_1} \cw \\
+					\lstick{\ket{0}} & \ustick{B} \qw & \ghost{\Phi^+}        & \qw      & \targ    & \qw      & \meter & \rstick{m_2} \cw
+				}
+			\end{equation}
+			After creating the Bell state, Alice applies a unitary \( U \in \{ \ID, X, Z, ZX \} \) and subsequently transmits the qubit to Bob. He, now in possession of both qubits \(A\) and \(B\), now applies the rest of the gates to read out what unitary Alice applied. The measurement results are as follows:
+			\begin{center}
+				\begin{tabular}{c|cc}
+					 \(U\)  & \(m_1\) & \(m_2\) \\ \midrule
+					\(\ID\) &  \(0\)  &  \(0\)  \\
+					 \(X\)  &  \(0\)  &  \(1\)  \\
+					 \(Z\)  &  \(1\)  &  \(0\)  \\
+					\(ZX\)  &  \(1\)  &  \(1\)
+				\end{tabular}
+			\end{center}
+			Validating this is analogous to the teleportation and left as an exercise to the reader.
+
+			Again, this protocol does not allow faster-than-light communication as the qubit has to be physically transmitted. A combination with the teleportation protocol is possible, but this in turns requires the classical transmission of two bits, so still no faster-than-light transmission is possible.
 		% end
 	% end
 
-	\section{Why these postulates?} % 3.20, 3.21, 3.22, 3.23, 3.24, 4.3, 4.4, 4.5, 4.6
-		\todo{Content}
+	\section{Why these postulates?}
+		One might ask \emph{why} the postulates are as is (e.g., Why probabilities in the first place? Why amplitudes and not real positive numbers? Why the Euclidean norm and not an arbitrary \(p\)-norm? Why linearity?). The hard way to understand this is:
+		\begin{enumerate}
+			\item learn classical physics
+			\item learn why classical physics is not sufficient
+			\item learn quantum physics
+			\item maybe hear about why amplitudes and not probabilities
+		\end{enumerate}
+		However, this course is not the place to squeeze in at least one year worth of lectures just to understand the postulates. Instead, we will take a more pragmatic approach, starting from why we use the Euclidean norm.
+
+		\paragraph{Why the Euclidean Norm?}
+			Consider \( \vec{v} = (v_1, v_2, \dots, v_N) \) describing the probabilities of an event with \(N\) possible outcomes. We impose a condition \( \lVert \vec{v} \rvert_p = 1 \) to ensure normalization. The most natural choice would be \( p = 1 \), i.e., requiring that the sum of the magnitudes is unity. However, remember that we want to apply transformations \(\mat{A}\) to the vector and still keep the normalization condition: \( \lVert \vec{v} \rVert_p = \lVert \mat{A} \vec{v} \rVert_p = 1 \). For any \(p\), this condition only allows permutations \( v_i \mapsto v_j \) and sign flips \( v_i \mapsto -v_i \). None of these are capable of encoding everything interesting! However, for \( p \in \{ 1, 2 \} \), these matrices can encode more things. For \( p = 1 \), stochastic matrices are allows and for \( p = 2 \), we can use unitary matrices! For higher \(p\), no interesting behavior can be encoded. A very practical argument why we use \(p = 2\) is therefore that otherwise \ac{QM} would be very boring.
+		% end
+
+		\paragraph{Why Complex Numbers?}
+			Again, we can bring up a very practical argument: only complex number are algebraically closed. Consider, for instance, a unitary gate \(U\). Applying this gate takes \(t\) time. If we want to apply it for only \(t/2\) time, we need to take its square-root \( U = VV = V^2 \). With being closed under this operation, it might be that there is no such gate! But as we are able to apply it for only \(t/2\) time, there must be some form of square-root-\(U\) in the universe. Hence, we have to use complex numbers. Take, for instance, the gate \( U = Z = \diag(1, -1) = \bigl(\diag(1, i)\bigr)^2 \).
+		% end
+
+		\paragraph{Why Linearity?}
+			We always have the assumption that gates progress our state linearly. If it would not, i.e., if it would progress nonlinearly, we could solve NP-complete problems! But this is unrealistic, so we confine ourselves to linear evolution\dots
+		% end
+
+		\paragraph{What is Quantum Mechanics About?}
+			Quantum mechanics is not about matter, energy, waves, nor particles. Instead, its solely about information, probabilities, and observables and how these relate to each other! Whenever seeing two linear operators in \ac{QM}, the sole answer to whether they commute conveys large amounts of information.
+		% end
 	% end
 % end
 
@@ -145,6 +618,8 @@
 % end
 
 \chapter{Universal Computation} % 3.11, 4.9, 4.10, 4.11, 4.23, 5.2
+	\label{c:universality}
+
 	\todo{Content}
 
 	\section{Classical Analogy} % 4.12
@@ -158,6 +633,8 @@
 			\todo{Content}
 
 			\subsubsection{Part 1/3: Unitaries as Two-Level Unitaries} % 4.16
+				\label{subsubsec:controlledUnitaries}
+
 				\todo{Content}
 			% end
 
@@ -177,6 +654,8 @@
 % end
 
 \chapter{Algorithms} % 5.3
+	\label{c:algorithms}
+
 	\todo{Content}
 
 	\section{Quantum Parallelism} % 5.4, 5.5
@@ -353,6 +832,8 @@
 % end
 
 \chapter{Quantum Nonlocality} % 11.3
+	\label{c:nonlocality}
+
 	\todo{Content}
 
 	\section{Elements of Reality} % 11.4, 11.5, 11.6, 11.7, 11.8, 11.9, 11.10

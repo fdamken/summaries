@@ -1225,18 +1225,93 @@
 		% end
 	% end
 
-	\section{Other Codes} % 10.17
+	\section{Other Codes}
 		\label{subsec:otherCodes}
 
-		\todo{Content}
+		As already mentioned, the Shor code is not \emph{optimal} in the sense of saving qubits. There exist several smaller ones, for instance the \emph{Steane code}
+		\begin{align}
+			\ket{0}_L &= \frac{1}{\sqrt{8}} (\ket{0000000} + \ket{1010101} + \ket{0110011} + \ket{1100110} + \ket{0001111} + \ket{1011010} + \ket{0111100} + \ket{1101001}) \\
+			\ket{1}_L &= \frac{1}{\sqrt{8}} (\ket{1111111} + \ket{0101010} + \ket{1001100} + \ket{0011001} + \ket{1110000} + \ket{0100101} + \ket{1000011} + \ket{0010110})
+		\end{align}
+		or five-qubit codes. However, the Steane code has some nice properties which we will discuss in the next section.
 	% end
 
 	\section{Fault-Tolerance and Transversality} % 10.18, 10.19, 10.20, 10.21, 10.22, 10.23, E10.3
-		\todo{Content}
+		\label{subsec:faultTolerance}
+
+		In fault-tolerant \ac{QC}, the idea is to perform all operations in encoded states (i.e., logical qubits), without ever decoding. One code supporting this is the Steane code we saw in the previous section. It allows us to execute certain gates \emph{transversely.} That is, we can design a gate that has the same effect on the individual physical qubits as on the logical qubits. For the Steane code, the basic gates are simply tensor-products of single-qubit gates:
+		\begin{align}
+			X_L &= X_1 \otimes X_2 \otimes \dots \otimes X_7 &
+			Z_L &= Z_1 \otimes Z_2 \otimes \dots \otimes Z_7 &
+			H_L &= H_1 \otimes H_2 \otimes \dots \otimes H_7
+		\end{align}
+		While they acting on the individual qubits is trivial, one can also show that:
+		\begin{align}
+			X_L \ket{0}_L &=  \ket{1}_L &
+			X_L \ket{1}_L &=  \ket{0}_L \\
+			Z_L \ket{0}_L &=  \ket{0}_L &
+			Z_L \ket{1}_L &= -\ket{1}_L \\
+			H_L \ket{0}_L &= \frac{1}{\sqrt{2}} (\ket{0}_L + \ket{1}_L) = \ket{+}_L &
+			H_L \ket{1}_L &= \frac{1}{\sqrt{2}} (\ket{0}_L - \ket{1}_K) = \ket{-}_L
+		\end{align}
+		An important property to consider in fault-tolerant \ac{QC} is how errors propagate. For the X-gate, for instance, an error does not propagate to other physical qubits as the gate is local and can be corrected with the Steane code. Application of a CNOT-gate withing a Steane block, however, may propagate an error onto a second qubit which can not be corrected! Instead, a logical CNOT-gate
+		\begin{equation}
+			\CNOT_L \ket{x}_L \ket{y}_L \mapsto \ket{x}_L \ket{x \oplus y}_L = \CNOT_{1, 8} \otimes \CNOT_{2, 9} \otimes \dots \otimes \CNOT_{7, 14}
+		\end{equation}
+		has to be used that only works across two blocks (see \autoref{fig:logicalCnot} for the circuit). The T-gate, however, cannot be implemented transversely. Its fault-tolerant implementation is more complicated and out of scope for this course.
+		\todo{Fault-Tolerance: Proof that T-gate cannot be implemented transversely.}
+
+		The general scheme of performing fault-tolerant \ac{QC} is:
+		\begin{enumerate}
+			\item prepare quantum state in logical qubit
+			\item apply fault-tolerant gate
+			\item correct errors
+			\item go to second step until the algorithm is finished
+		\end{enumerate}
+		As we already saw, the second step is the fundamental challenge as it is hard to come up with fault-tolerant gates, which we define as follows:
+		\begin{definition}[Fault-Tolerance]
+			A procedure is called \emph{fault-tolerant} if the failure of one component causes at most one error in each encoded block at the output step.
+		\end{definition}
+
+		\begin{figure}
+			\centering
+			\begin{equation}
+				\Qcircuit @C=2em @R=0.25em @!R {
+					& \ctrl{8} & \qw & \qw & \qw & \qw & \qw & \qw & \qw \\
+					& \qw & \ctrl{8} & \qw & \qw & \qw & \qw & \qw & \qw \\
+					& \qw & \qw & \ctrl{8} & \qw & \qw & \qw & \qw & \qw \\
+					& \qw & \qw & \qw & \ctrl{8} & \qw & \qw & \qw & \qw \\
+					& \qw & \qw & \qw & \qw & \ctrl{8} & \qw & \qw & \qw \\
+					& \qw & \qw & \qw & \qw & \qw & \ctrl{8} & \qw & \qw \\
+					& \qw & \qw & \qw & \qw & \qw & \qw & \ctrl{8} & \qw \\
+					&&&&&&&& \\
+					& \targ & \qw & \qw & \qw & \qw & \qw & \qw & \qw \\
+					& \qw & \targ & \qw & \qw & \qw & \qw & \qw & \qw \\
+					& \qw & \qw & \targ & \qw & \qw & \qw & \qw & \qw \\
+					& \qw & \qw & \qw & \targ & \qw & \qw & \qw & \qw \\
+					& \qw & \qw & \qw & \qw & \targ & \qw & \qw & \qw \\
+					& \qw & \qw & \qw & \qw & \qw & \targ & \qw & \qw \\
+					& \qw & \qw & \qw & \qw & \qw & \qw & \targ & \qw \\
+				}
+			\end{equation}
+			\caption{Fault-Tolerant CNOT-Gate}
+			\label{fig:logicalCnot}
+		\end{figure}
 	% end
 
-	\section{Threshold Theorem} % 10.23, 10.24, 10.25
-		\todo{Content}
+	\section{Threshold Theorem}
+		So far, we assumed that the \ac{QEC} itself works perfectly. But what if the error correction itself causes errors again? Like for classical repetition codes, we can simply re-encode the bits, building up a layered coding architecture. Let \(m\) be the number of places where an error can occur, then the probability of an error using a single coding layer is upper-bounded by \( p_e^{(1)} = (mp)^2 \). For \(k\) layers, the error probability is \( p_e^{(k)} = (mp)^{2^k} \) which, analogous to classical error correction, converges to zero for \(k \to \infty\) if \(p < 1/m\). Hence, we can achieve any error probability \(\epsilon\) with a large enough \(k\).
+
+		This brings us to the \emph{threshold theorem:}
+		\begin{theorem}[Threshold Theorem]
+			A quantum circuit with \(p(n)\) gates on \(n\) qubits may be simulated with an error probability of at most \(\epsilon > 0\) using\footnote{Note that in the lecture, this bound is written as \( \mathcal{O}\bigl( p(n) \, \mathrm{poly}( \log(p(n)/\epsilon) ) \bigr) \).}
+			\begin{equation}
+				\mathcal{O}\Biggl( p(n) \, \log^c \frac{p(n)}{\epsilon} \Biggr)
+			\end{equation}
+			gates (for some constant \(c\) when the gates fail with probability of at most \(p\) given that \(p < p_\mathrm{th}\) for some code-dependent constant threshold \(p_\mathrm{th}\).
+		\end{theorem}
+		For the Steane code, \( p_\mathrm{th} \approx 10^{-5} \). Hence, to factor numbers with around \num{2000}, we would needs millions of millions of qubits! This is the sole reason why we do not have quantum computing at the moment!
+		% TODO: Look again at the theshold theorem.
 	% end
 % end
 

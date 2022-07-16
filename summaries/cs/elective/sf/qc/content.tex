@@ -119,7 +119,7 @@
 	\section{Evolution}
 		The evolution of quantum states, i.e., how they pass between states, is described by linear transformations \(U\), also called \emph{gates.} These gates transform a quantum state \(\ket{\psi}\) into another quantum state \(\ket{\psi'}\). In quantum circuits, we denote an application of \(U_1\) and then \(U_2\) to a state \(\ket{\psi}\), i.e., \( U_2 U_1 \ket{\psi} \), as:
 		\begin{equation}
-			\Qcircuit {
+			\Qcircuit @C=1em @R=1em {
 				\lstick{\ket{\psi}} & \gate{U_1} & \gate{U_2} & \rstick{U_2 U_1 \ket{\psi}} \qw
 			}
 		\end{equation}
@@ -219,7 +219,7 @@
 						\\
 					\bottomrule
 				\end{tabular}
-				\caption[Common Single-Qubit Gates]{Common qubit gates and their effect on the computational and Hadamard basis. For brevity, let \( c_\gamma \coloneqq \cos(\gamma / 2) \) and \( s_\gamma \coloneqq \sin(\gamma / 2) \). The gates have the following effects in the computational basis: \(X\) implements a logical not, \(Y\) combines a phase flip and logical not, \(Z\) implements a phase flip, \(H\) creates an equal superposition, \(R_y(\gamma)\) rotates around an arbitrary angle \(\gamma\), and \(R_z(\beta)\) adds a phase. In Hadamard basis, the gates have the following effects: \(X\) implement a phase flip, \(Y\) combined a phase flip and logical not, \(Z\) implements a logical not, \(H\) creates an equal superposition, \(R_y(\gamma)\) rotates around an arbitrary angle \(\gamma\), and \(R_z(\beta)\) adds a phase.}
+				\caption[Common Single-Qubit Gates]{Common qubit gates and their effect on the computational and Hadamard basis. For brevity, let \( c_\gamma \coloneqq \cos(\gamma / 2) \) and \( s_\gamma \coloneqq \sin(\gamma / 2) \). The gates have the following effects in the computational basis: \(X\) implements a logical not, \(Y\) combines a phase-flip and logical not, \(Z\) implements a phase-flip, \(H\) creates an equal superposition, \(R_y(\gamma)\) rotates around an arbitrary angle \(\gamma\), and \(R_z(\beta)\) adds a phase. In Hadamard basis, the gates have the following effects: \(X\) implement a phase-flip, \(Y\) combined a phase-flip and logical not, \(Z\) implements a logical not, \(H\) creates an equal superposition, \(R_y(\gamma)\) rotates around an arbitrary angle \(\gamma\), and \(R_z(\beta)\) adds a phase.}
 				\label{tab:gates}
 			\end{table}
 		% end
@@ -366,7 +366,7 @@
 				The simplest is the CNOT-gate:
 				\begin{align}
 					\begin{aligned}
-						\Qcircuit {
+						\Qcircuit @C=1em @R=1em {
 							\lstick{\ket{x}} & \ctrl{1} & \rstick{\ket{x}}          \qw \\
 							\lstick{\ket{y}} & \targ    & \rstick{\ket{x \oplus y}} \qw
 						}
@@ -395,14 +395,14 @@
 				Another important two-qubit gate is the SWAP-gate
 				\begin{align}
 					\begin{aligned}
-						\Qcircuit {
+						\Qcircuit @C=1em @R=1.5em {
 							\lstick{\ket{a}} & \qswap      & \rstick{\ket{b}} \qw \\
 							\lstick{\ket{b}} & \qswap \qwx & \rstick{\ket{a}} \qw
 						}
 					\end{aligned}
 					&&
 					\begin{aligned}
-						\Qcircuit {
+						\Qcircuit @C=1em @R=1em {
 							\lstick{\ket{a}} & \ctrl{1} & \targ     & \ctrl{1} & \rstick{\ket{b}} \qw \\
 							\lstick{\ket{b}} & \targ    & \ctrl{-1} & \targ    & \rstick{\ket{b}} \qw \\
 						}
@@ -437,7 +437,7 @@
 				Note that any gate \(U\) can be used in a controlled fashion:
 				\begin{align}
 					\begin{aligned}
-						\Qcircuit {
+						\Qcircuit @C=1em @R=1em {
 							\lstick{\ket{x}} & \ctrl{1} & \rstick{\ket{x}}     \qw \\
 							\lstick{\ket{y}} & \gate{U} & \rstick{U^x \ket{y}} \qw
 						}
@@ -456,7 +456,7 @@
 				Equipped with these tools, we can prepare the Bell state \(\ket{\Phi^+}\) with the following circuit:
 				\begin{align}
 					\begin{aligned}
-						\Qcircuit {
+						\Qcircuit @C=1em @R=1em {
 							\lstick{\ket{0}}_1 & \gate{H} & \ctrl{1} & \qw \\
 							\lstick{\ket{0}}_2 & \qw      & \targ    & \qw
 						}
@@ -468,7 +468,7 @@
 				\end{align}
 				For brevity, we will write
 				\begin{equation}
-					\Qcircuit {
+					\Qcircuit @C=1em @R=1em {
 						\lstick{\ket{0}} & \multigate{1}{\Phi^+} & \qw \\
 						\lstick{\ket{0}} & \ghost{\Psi^+}        & \qw
 					}
@@ -518,7 +518,7 @@
 
 			Consider the following circuit:
 			\begin{equation}
-				\Qcircuit {
+				\Qcircuit @C=1em @R=1em {
 					\lstick{\ket{\psi}} & \ustick{A'} \qw & \qw                   & \ctrl{1} & \gate{H} & \meter & \ustick{m_2} \cw         & \cw \cwx[2]    &                         \\
 					\lstick{\ket{0}}    & \ustick{A}  \qw & \multigate{1}{\Phi^+} & \targ    & \qw      & \meter & \ustick{m_1} \cw \cwx[1] &                &                         \\
 					\lstick{\ket{0}}    & \ustick{B}  \qw & \ghost{\Phi^+}        & \qw      & \qw      & \qw    & \gate{X^{m_1}}           & \gate{Z^{m_2}} & \rstick{\ket{\psi}} \qw
@@ -564,7 +564,7 @@
 		\subsection{Dense-Coding}
 			We are now concerned with the "opposite" problem of qubit teleportation: instead of teleporting a qubit's state, we physically transport it to another location but encode two classical bits of information in it. That is, we transmit two bits of classical information by only transmitting a single qubit. Consider the following circuit:
 			\begin{equation}
-				\Qcircuit {
+				\Qcircuit @C=1em @R=1em {
 					\lstick{\ket{0}} & \ustick{A} \qw & \multigate{1}{\Phi^+} & \gate{U} & \ctrl{1} & \gate{H} & \meter & \rstick{m_1} \cw \\
 					\lstick{\ket{0}} & \ustick{B} \qw & \ghost{\Phi^+}        & \qw      & \targ    & \qw      & \meter & \rstick{m_2} \cw
 				}
@@ -659,7 +659,7 @@
 
 	In general, a quantum circuit is just a unitary \(U\) and measurements,
 	\begin{equation}
-		\Qcircuit {
+		\Qcircuit @C=1em @R=1em {
 			\lstick{\ket{x_1}} & \multigate{3}{U} & \meter \\
 			\lstick{\ket{x_2}} & \ghost{U}        & \meter \\
 			\lstick{\raisebox{5.5pt}{\vdots}}    & \ghost{U}        & \rstick{\raisebox{4.8pt}{\vdots}} \qw \\
@@ -707,7 +707,7 @@
 			\end{aligned}
 			&&
 			\begin{aligned}
-				\Qcircuit {
+				\Qcircuit @C=1em @R=1em {
 					\lstick{\ket{x}} & \gate{X} & \ctrl{1} & \gate{X} & \rstick{\ket{x}} \qw \\
 					\lstick{\ket{y}} & \gate{X} & \ctrl{1} & \gate{X} & \rstick{\ket{y}} \qw \\
 					\lstick{\ket{1}} & \qw      & \targ    & \qw      & \rstick{\ket{x \lor y}} \qw
@@ -737,7 +737,7 @@
 		\begin{theorem}[Universal Set of Quantum Gates]
 			The following set of quantum gates is universal: \( \langle H, S, \CNOT, T \rangle \).
 		\end{theorem}
-		\begin{proof}[Sketch]
+		\begin{proof}[Proof Sketch]
 			The proof of this theorem has three parts:
 			\begin{enumerate}
 				\item every unitary matrix can be decomposed into the product of two-level\footnote{A two-level unitary matrix is a matrix that only acts non-trivially on at most two vector components.} unitary matrices
@@ -754,14 +754,14 @@
 
 			Let \( U \eqqcolon e^{i \alpha} A X B X C \) be a decomposition of \(U\) such that \( A B C = \ID \) (note that this is always possible due to \autoref{th:twoByTwoDecomposition}). The following circuit implements a controlled-U-gate:
 			\begin{equation}
-				\Qcircuit {
+				\Qcircuit @C=1em @R=1em {
 					& \qw      & \ctrl{1} & \qw      & \ctrl{1} & \gate{E} & \qw \\
 					& \gate{C} & \targ    & \gate{B} & \targ    & \gate{A} & \qw
 				}
 			\end{equation}
 			with \( E \coloneqq \diag(1, e^{i \alpha}) \). For \(\ket{0x}\), both \(E\) and the CNOT-gates have no effect and therefore due to \(A B C = \ID\), the state is left as is. For \(\ket{1x}\), both \(E\) and the CNOT-gates are applied and therefore the unitary \(C X B X A\) acts on the second qubit together with the global phase \(e^{i \alpha}\), which is equivalent to applying \(U\). Similarly,
 			\begin{equation}
-				\Qcircuit {
+				\Qcircuit @C=1em @R=1em {
 					& \qw              & \ctrl{1} & \qw              & \ctrl{1} & \gate{E^\dagger} & \qw \\
 					& \gate{A^\dagger} & \targ    & \gate{B^\dagger} & \targ    & \gate{C^\dagger} & \qw
 				}
@@ -770,7 +770,7 @@
 
 			The controlled-controlled-U-gate is realized by
 			\begin{equation}
-				\Qcircuit {
+				\Qcircuit @C=1em @R=1em {
 					& \qw      & \ctrl{1} & \qw              & \ctrl{1} & \ctrl{2} & \qw \\
 					& \ctrl{1} & \targ    & \ctrl{1}         & \targ    & \qw      & \qw \\
 					& \gate{V} & \qw      & \gate{V^\dagger} & \qw      & \gate{V} & \qw
@@ -946,26 +946,288 @@
 	% end
 % end
 
-\chapter{Quantum Error Correction} % 10.1, 10.2, 10.3, 10.4, 10.5, 10.6, 10.7, 10.16, 10.26
-	\todo{Content}
+\chapter{Quantum Error Correction}
+	So far, we assumed that applying gates works perfectly, i.e., that the state transform exactly as our mathematical model predicts. However, in the real world, (quantum) computers are noisy and by no means perfect. In classical computing, the errors that might occur when sending a message (e.g., through the internet or through time by saving it to disk) are confined to bit-flips. In order to make a computer resilient towards bit-flips, the most simplistic approach is to just copy the data and define \emph{logical bits}
+	\begin{align}
+		0 &\mapsto 000 \eqqcolon 0_L &
+		1 &\mapsto 111 \eqqcolon 1_L.
+	\end{align}
+	This is called \emph{encoding} and the protocol is called the \emph{code} (in this case, \emph{repetition} code). Decoding the message works by a majority vote, i.e.:
+	\begin{align}
+		000 &\mapsto 0 &
+		001 &\mapsto 0 &
+		010 &\mapsto 0 &
+		011 &\mapsto 1 \\
+		100 &\mapsto 0 &
+		101 &\mapsto 1 &
+		110 &\mapsto 1 &
+		111 &\mapsto 1
+	\end{align}
+	This means that a decoding error happens only if more than one bit is flipped. In other words: the encoding is resilient w.r.t. to one bit-flip. Assume that a bit-flip happens with probability \(p\) (see \autoref{fig:bitFlipChannelClassical}). Then the error probability is
+	\begin{equation}
+		p_e^{(1)} \coloneqq P(\text{two or more flipped})
+			= 3 P(\text{exactly two flipped}) + P(\text{all flipped})
+			= 3 p^2 (1 - p) + p^3
+			< 3p^2,
+	\end{equation}
+	where \( 3p^2 \) is an upper bound. If we re-apply the encoding (and therefore encode a logical bit into nine physical bits), the new error probability is \( p_e^{(2)} = 3 (3p^2)^2 \). In general, after \(k\) applications of the encoding, the error probability is proportional to \( (3p)^{2^k} \). Hence, \( (3p)^{2^k} \to_{k \to \infty} 0 \) for \(p < 1/3\) and we can achieve an arbitrarily good encoding for finite \(k\).
 
-	\section{Tackling Bit-Flips} % 10.7, 10.8, 10.9, 10.10
-		\todo{Content}
+	But can we directly transfer this principle to \ac{QEC}? No, because:
+	\begin{itemize}
+		\item We cannot copy data due to the no-cloning theorem---but would it even help as measurements destroy everything anyway?
+		\item We do not have discrete error but a continuum---do we need infinite precision to locate the error?
+		\item Measuring destroys the message---how to do decode?
+	\end{itemize}
+	Fortunately though, all of these problems can be circumvented and \ac{QEC} is possible. We will now cover two kinds of errors: bit-flips and phase-flips and will subsequently see that correcting these suffices to correct all possible errors, effectively reducing the continuum of errors to a finite set.
+
+	\begin{figure}
+		\centering
+		\begin{subfigure}[b]{0.3\linewidth}
+			\centering
+			\begin{tikzpicture}[->]
+				\node (a) {\(0\)};
+				\node [below = 1 of a] (b) {\(1\)};
+				\node [right = 3 of a] (c) {\(0\)};
+				\path let \p1 = (c), \p2 = (b) in node (d) at (\x1, \y2) {\(1\)};
+				\draw (a) to node[above]{\( 1 - p \)} (c);
+				\draw (a) to node[above, pos = 0.4]{\( p \)} (d);
+				\draw (b) to node[below, pos = 0.4]{\( p \)} (c);
+				\draw (b) to node[below]{\( 1 - p \)} (d);
+			\end{tikzpicture}
+			\caption{Classical Bit-Flip}
+			\label{fig:bitFlipChannelClassical}
+		\end{subfigure}
+		~
+		\begin{subfigure}[b]{0.3\linewidth}
+			\centering
+			\begin{tikzpicture}[->]
+				\node (a) {\(\ket{\psi}\)};
+				\node [below = 1 of a] (b) {};
+				\node [right = 3 of a] (c) {\(\ket{\psi}\)};
+				\path let \p1 = (c), \p2 = (b) in node (d) at (\x1, \y2) {\(X \ket{\psi}\)};
+				\draw (a) to node[above]{\( 1 - p \)} (c);
+				\draw (a) to node[above, pos = 0.4]{\( p \)} (d);
+			\end{tikzpicture}
+			\caption{Quantum Phase-Flip}
+			\label{fig:bitFlipChannelQuantum}
+		\end{subfigure}
+		~
+		\begin{subfigure}[b]{0.3\linewidth}
+			\centering
+			\begin{tikzpicture}[->]
+				\node (a) {\(\ket{\psi}\)};
+				\node [below = 1 of a] (b) {};
+				\node [right = 3 of a] (c) {\(\ket{\psi}\)};
+				\path let \p1 = (c), \p2 = (b) in node (d) at (\x1, \y2) {\(Z \ket{\psi}\)};
+				\draw (a) to node[above]{\( 1 - p \)} (c);
+				\draw (a) to node[above, pos = 0.4]{\( p \)} (d);
+			\end{tikzpicture}
+			\caption{Quantum Bit-Flip}
+			\label{fig:phaseFlipChannelQuantum}
+		\end{subfigure}
+		\caption[Bit/Phase-Flip Channels]{State diagram for classical/quantum bit/phase-flip channels while sending a message. A bit/phase-flip happens with probability \(p\) and the message is left untouched with probability \(1 - p\).}
+		\label{fig:flipChannel}
+	\end{figure}
+
+	\section{Tackling Bit-Flips}
+		We start by fixing bit-flips. To encode the message, we copy the coefficients of an arbitrary state \( \ket{\psi} = \alpha \ket{0} + \beta \ket{1} \) to two encoding qubits:
+		\begin{equation}
+			\begin{aligned}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{\psi}} & \ctrl{1} & \ctrl{2} & \qw \\
+					\lstick{\ket{0}}    & \targ    & \qw      & \qw \\
+					\lstick{\ket{0}}    & \qw      & \targ    & \qw
+				}
+			\end{aligned}
+			= \alpha \ket{000} + \beta \ket{000}
+			\eqqcolon \alpha \ket{0}_L + \beta \ket{1}_L
+		\end{equation}
+		Note that we did not actually copy the state, but only the \emph{coefficients} which does not violate the no-cloning theorem! We now assume that an error only happens on exactly one qubit (because otherwise we are not able to recover anyway). We encode this as follows:
+		\begin{align}
+			\begin{aligned}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{\psi}} & \ctrl{1} & \ctrl{2} & \gate{X^i} & \qw \\
+					\lstick{\ket{0}}    & \targ    & \qw      & \gate{X^j} & \qw \\
+					\lstick{\ket{0}}    & \qw      & \targ    & \gate{X^k} & \qw
+				}
+			\end{aligned}
+			&&
+			\begin{tabular}{ccc|c}
+				\(i\) & \(j\) & \(k\) & State                                    \\ \midrule
+				\(0\) & \(0\) & \(0\) & \( \alpha \ket{000} + \beta \ket{111} \) \\
+				\(1\) & \(0\) & \(0\) & \( \alpha \ket{100} + \beta \ket{011} \) \\
+				\(0\) & \(1\) & \(0\) & \( \alpha \ket{010} + \beta \ket{101} \) \\
+				\(0\) & \(0\) & \(1\) & \( \alpha \ket{001} + \beta \ket{110} \)
+			\end{tabular}
+		\end{align}
+		Fortunately, all possible result states are orthogonal! Hence, we can uniquely identify my measuring even though they are all in superposition. However, if we would simply measure, we would destroy the state. We therefore copy the state again into two \emph{helper qubits} which we can then measure:
+		\begin{align}
+			\begin{aligned}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{\psi}} & \ctrl{1} & \ctrl{2} & \gate{X^i} & \ctrl{3} & \qw      & \qw      & \qw      & \qw    & \multigate{2}{C}     & \qw \\
+					\lstick{\ket{0}}    & \targ    & \qw      & \gate{X^j} & \qw      & \ctrl{2} & \ctrl{3} & \qw      & \qw    & \ghost{C}            & \qw \\
+					\lstick{\ket{0}}    & \qw      & \targ    & \gate{X^k} & \qw      & \qw      & \qw      & \ctrl{2} & \qw    & \ghost{C}            & \qw \\
+					                    &          &    & \lstick{\ket{0}} & \targ    & \targ    & \qw      & \qw      & \meter & \rstick{x} \cw \cwx  & \\
+					                    &          &    & \lstick{\ket{0}} & \qw      & \qw      & \targ    & \targ    & \meter & \rstick{y} \cw \cwx  &
+				}
+			\end{aligned}
+			&&
+			\begin{tabular}{cc|c}
+				\(x\) & \(y\) & Correction \(C\) \\ \midrule
+				\(0\) & \(0\) &     \(\ID\)      \\
+				\(0\) & \(1\) &     \(X_3\)      \\
+				\(1\) & \(0\) &     \(X_1\)      \\
+				\(1\) & \(1\) &     \(X_2\)
+			\end{tabular}
+		\end{align}
+		The interpretation of this is as follows: for \(x = 1\), we conclude that the first and second qubit have different values. Similarly, \(y = 1\) encodes that the second and third qubit have different values. If they have the same value, the CNOT-gates would either be not applied or cancel each other out. Note again that the sole reason why this works is that the state are orthogonal! From this discussion, we can deduce the above corrections.
+
+		This approach is also called a \emph{parity check} of \(Z_1 Z_2\) and \(Z_2 Z_3\), i.e., a parity check in Z-basis.
 	% end
 
-	\section{Tackling Phase-Flips} % 10.11, 10.12, E10.1
-		\todo{Content}
+	\section{Tackling Phase-Flips}
+		Correcting phase-flips (see \autoref{fig:phaseFlipChannelQuantum}) is analogous to correcting bit-flips, but in Hadamard basis. The encoding circuit including the error model along with the resulting states therefore is:
+		\begin{align}
+			\begin{aligned}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{\psi}} & \ctrl{1} & \ctrl{2} & \gate{H} & \gate{Z^i} & \qw \\
+					\lstick{\ket{0}}    & \targ    & \qw      & \gate{H} & \gate{Z^j} & \qw \\
+					\lstick{\ket{0}}    & \qw      & \targ    & \gate{H} & \gate{Z^k} & \qw
+				}
+			\end{aligned}
+			&&
+			\begin{tabular}{ccc|c}
+				\(i\) & \(j\) & \(k\) & State                                    \\ \midrule
+				\(0\) & \(0\) & \(0\) & \( \alpha \ket{+++} + \beta \ket{---} \) \\
+				\(1\) & \(0\) & \(0\) & \( \alpha \ket{-++} + \beta \ket{+--} \) \\
+				\(0\) & \(1\) & \(0\) & \( \alpha \ket{+-+} + \beta \ket{-+-} \) \\
+				\(0\) & \(0\) & \(1\) & \( \alpha \ket{++-} + \beta \ket{--+} \)
+			\end{tabular}
+		\end{align}
+		By applying Hadamard again in the decoding circuit, the identity \( H Z H = X \) directly tells us that we need to apply the same corrections as for bit-flips:
+		\begin{align}
+			\begin{aligned}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{\psi}} & \ctrl{1} & \ctrl{2} & \gate{H} & \gate{Z^i} & \gate{H} & \ctrl{3} & \qw      & \qw      & \qw      & \qw    & \multigate{2}{C}     & \qw \\
+					\lstick{\ket{0}}    & \targ    & \qw      & \gate{H} & \gate{Z^j} & \gate{H} & \qw      & \ctrl{2} & \ctrl{3} & \qw      & \qw    & \ghost{C}            & \qw \\
+					\lstick{\ket{0}}    & \qw      & \targ    & \gate{H} & \gate{Z^k} & \gate{H} & \qw      & \qw      & \qw      & \ctrl{2} & \qw    & \ghost{C}            & \qw \\
+					                    &          &          &          &    & \lstick{\ket{0}} & \targ    & \targ    & \qw      & \qw      & \meter & \rstick{x} \cw \cwx  & \\
+					                    &          &          &          &    & \lstick{\ket{0}} & \qw      & \qw      & \targ    & \targ    & \meter & \rstick{y} \cw \cwx  &
+				}
+			\end{aligned}
+			&&
+			\begin{tabular}{cc|c}
+				\(x\) & \(y\) & Correction \(C\) \\ \midrule
+				\(0\) & \(0\) &     \(\ID\)      \\
+				\(0\) & \(1\) &     \(X_3\)      \\
+				\(1\) & \(0\) &     \(X_1\)      \\
+				\(1\) & \(1\) &     \(X_2\)
+			\end{tabular}
+		\end{align}
+		This approach is a parity check of \(X_1 X_2\) and \(X_2 X_3\), i.e., a parity check in X-basis.
+
+		\todo{QEC: The lecture says that phase-flips should be corrected by applying Z-gates---but why???}
 	% end
 
-	\section{Shor's Code} % 10.13, E10.2
-		\todo{Content}
+	\section{Shor's Code}
+		The idea of \emph{Shor's code} is to concatenate the circuits discussed before, using the bit-flip correction three times for each physical qubit of the phase-flip parity check. The whole circuit is shown in \autoref{fig:shorsCode}. One can easily verify that Shor's code used the following mapping for logical qubits:
+		\begin{equation}
+			\begin{aligned}
+				\ket{0} &\mapsto \frac{\ket{000} + \ket{111}}{\sqrt{2}} \otimes \frac{\ket{000} + \ket{111}}{\sqrt{2}} \otimes \frac{\ket{000} + \ket{111}}{\sqrt{2}} \eqqcolon \ket{0}_L \\
+				\ket{1} &\mapsto \frac{\ket{000} - \ket{111}}{\sqrt{2}} \otimes \frac{\ket{000} - \ket{111}}{\sqrt{2}} \otimes \frac{\ket{000} - \ket{111}}{\sqrt{2}} \eqqcolon \ket{1}_L
+			\end{aligned}
+			\label{eq:shorCode}
+		\end{equation}
+		An important feature of Shor's code is that it is not only capable of correcting \(X\) or \(Z\) errors, but also \(XZ\) errors, i.e., simultaneous bit- and phase-flips. With this feature, it is possible to correct any possible error (see \autoref{subsec:universalQEC}). However, Shor's code is not optimal as it uses so many qubits. It is also possible to use only seven or even five qubits, see \autoref{subsec:otherCodes}.
 
-		\subsection{Universal Error Correction} % 10.14, 10.15
-			\todo{Content}
+\begin{figure}
+	\centering
+\begin{equation}
+\resizebox{0.9\linewidth}{!}{
+\Qcircuit @C=1em @R=1em {
+\lstick{\ket{\psi}_1} & \ctrl{5} & \ctrl{10} & \gate{H} &        \qw         & \ctrl{1} & \ctrl{2} &    \gate{X^i}    & \gate{Z^\ell}    & \ctrl{3} &   \qw    &   \qw    &   \qw    &  \qw   & \multigate{2}{C_1}    & \gate{H} & \ctrl{15} &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   &   \multigate{12}{C}  & \qw \\
+&          &           &          & \lstick{\ket{0}_2} &  \targ   &   \qw    &    \gate{X^j}    & \gate{Z^m}       &   \qw    & \ctrl{2} & \ctrl{3} &   \qw    &  \qw   & \ghost{C_1}           & \gate{H} &    \qw    & \ctrl{14} &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   &       \ghost{C}      & \qw \\
+&          &           &          & \lstick{\ket{0}_3} &   \qw    &  \targ   &    \gate{X^k}    & \gate{Z^n}       &   \qw    &   \qw    &   \qw    & \ctrl{2} &  \qw   & \ghost{C_1}           & \gate{H} &    \qw    &    \qw    & \ctrl{13} &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   &       \ghost{C}      & \qw \\
+&          &           &          &                    &          &          &                  & \lstick{\ket{0}} &  \targ   &  \targ   &   \qw    &  \qw     & \meter & \rstick{x_1} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &                      &     \\
+&          &           &          &                    &          &          &                  & \lstick{\ket{0}} &   \qw    &   \qw    &  \targ   &  \targ   & \meter & \rstick{y_1} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &                      &     \\
+\lstick{\ket{0}_4}   &  \targ   &    \qw    & \gate{H} &        \qw         & \ctrl{1} & \ctrl{2} &    \gate{X^i}    & \gate{Z^\ell}    & \ctrl{3} &   \qw    &   \qw    &   \qw    &  \qw   & \multigate{2}{C_2}    & \gate{H} &    \qw    &    \qw    &    \qw    & \ctrl{10} &   \qw    &   \qw    & \ctrl{11} &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   &       \ghost{C}      & \qw \\
+&          &           &          & \lstick{\ket{0}_5} &  \targ   &   \qw    &    \gate{X^j}    & \gate{Z^m}       &   \qw    & \ctrl{2} & \ctrl{3} &   \qw    &  \qw   & \ghost{C_2}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    & \ctrl{9} &   \qw    &    \qw    & \ctrl{10} &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   &       \ghost{C}      & \qw \\
+&          &           &          & \lstick{\ket{0}_6} &   \qw    &  \targ   &    \gate{X^k}    & \gate{Z^n}       &   \qw    &   \qw    &   \qw    & \ctrl{2} &  \qw   & \ghost{C_2}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    & \ctrl{8} &    \qw    &    \qw    & \ctrl{9} &   \qw    &   \qw    &   \qw    & \qw &  \qw   &       \ghost{C}      & \qw \\
+&          &           &          &                    &          &          &                  & \lstick{\ket{0}} &  \targ   &  \targ   &   \qw    &   \qw    & \meter & \rstick{x_2} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &                      &     \\
+&          &           &          &                    &          &          &                  & \lstick{\ket{0}} &   \qw    &   \qw    &  \targ   &  \targ   & \meter & \rstick{y_2} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &                      &     \\
+\lstick{\ket{0}_7}   &   \qw    &   \targ   & \gate{H} &        \qw         & \ctrl{1} & \ctrl{2} &    \gate{X^i}    & \gate{Z^\ell}    & \ctrl{3} &   \qw    &   \qw    &   \qw    &  \qw   & \multigate{2}{C_3}    & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    & \ctrl{6} &   \qw    &   \qw    & \qw &  \qw   &       \ghost{C}      & \qw \\
+&          &           &          & \lstick{\ket{0}_8} &  \targ   &   \qw    &    \gate{X^j}    & \gate{Z^m}       &   \qw    & \ctrl{2} & \ctrl{3} &   \qw    &  \qw   & \ghost{C_3}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    & \ctrl{5} &   \qw    & \qw &  \qw   &       \ghost{C}      & \qw \\
+&          &           &          & \lstick{\ket{0}_9} &   \qw    &  \targ   &    \gate{X^k}    & \gate{Z^n}       &   \qw    &   \qw    &   \qw    & \ctrl{2} &  \qw   & \ghost{C_3}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    & \ctrl{4} & \qw &  \qw   &       \ghost{C}      & \qw \\
+&          &           &          &                    &          &          &                  & \lstick{\ket{0}} &  \targ   &  \targ   &   \qw    &   \qw    & \meter & \rstick{x_3} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &         \cwx         &     \\
+&          &           &          &                    &          &          &                  & \lstick{\ket{0}} &   \qw    &   \qw    &  \targ   &  \targ   & \meter & \rstick{y_3} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &         \cwx         &     \\
+&          &           &          &                    &          &          &                  & \lstick{\ket{0}} &   \qw    &   \qw    &   \qw    &   \qw    &  \qw   & \qw                   &   \qw    &   \targ   &   \targ   &   \targ   &   \targ   &  \targ   &  \targ   &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw & \meter &  \rstick{x} \cw \cwx &     \\
+&          &           &          &                    &          &          &                  & \lstick{\ket{0}} &   \qw    &   \qw    &   \qw    &   \qw    &  \qw   & \qw                   &   \qw    &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \targ   &   \targ   &  \targ   &  \targ   &  \targ   &  \targ   & \qw & \meter &  \rstick{y} \cw \cwx &
+}
+}
+		\end{equation}
+		\caption[Shor's Code]{Quantum circuit for encoding in Shor's code (the left part until the error gates \(X\) and \(Z\)) and for decoding (everything to the right of the error gates). The matrices \(C_1\), \(C_2\), \(C_3\), and \(C\) denote the corresponding correction matrices for the bit flip ("inner" code) and the phase flip ("outer" code).}
+		\label{fig:shorsCode}
+\end{figure}
+
+		\subsection{Universal Error Correction}
+			\label{subsec:universalQEC}
+
+			As already discussed is the Shor code capable of correcting \(XZ\)-type errors acting on a single qubit. From this we can conclude that the Shor code is in fact capable of correcting arbitrary errors, even non-unitary ones, as long as they act on a single qubit and are valid quantum operations.
+
+			\begin{theorem}[Universal Error Correct]
+				The Shor code is capable of correcting arbitrary errors.
+			\end{theorem}
+			\begin{proof}
+				W.l.o.g, assume that the error happens on the first qubit and is described by \( E_1 \in \C^{2 \times 2} \). We can express this matrix using the three Pauli matrices:
+				\begin{equation}
+					E = \alpha_0 \ID_1 + \alpha_1 X_1 + \alpha_2 Z_1 + \alpha_3 X_1 Z_1
+				\end{equation}
+				This is easy to verify by calculating the right-hand-side, equating it to \(E_1\), and explicitly solving the resulting linear system of equations:
+				\begin{equation}
+					\begin{bmatrix}
+						e_{11} & e_{21} \\
+						e_{21} & e_{22}
+					\end{bmatrix}
+					=
+					\begin{bmatrix}
+						\alpha_0 + \alpha_2 & \alpha_1 - \alpha_3 \\
+						\alpha_1 + \alpha_3 & \alpha_0 - \alpha_2
+					\end{bmatrix}
+					\qquad\implies\qquad
+					\begin{bmatrix}
+						\alpha_0 \\
+						\alpha_1 \\
+						\alpha_2 \\
+						\alpha_3
+					\end{bmatrix}
+					=
+					\frac{1}{2}
+					\begin{bmatrix}
+						e_{11} + e_{22} \\
+						e_{12} + e_{21} \\
+						e_{11} - e_{22} \\
+						e_{21} - e_{12}
+					\end{bmatrix}
+				\end{equation}
+				Let \( \ket{\psi}_L = \alpha \ket{0}_L + \beta \ket{1}_L \) be a logical qubit encoded with Shor's code (see \eqref{eq:shorCode} for the logical basis states). Then, by linearity, an application of the error operator \(E_1\) yields
+				\begin{equation}
+					E_1 \ket{\psi}_L = \alpha_0 \ket{\psi}_L + \alpha_1 X_1 \ket{\psi}_L + \alpha_2 Z_1 \ket{\psi}_L + \alpha_3 X_1 Z_1 \ket{\psi}_L.
+				\end{equation}
+				By dropping the last six qubits from the basis states (as the error only acts on the first qubit), each individual error has the following effect on \( \ket{\psi}_K \):
+				\begin{align}
+					  \ID_1 \ket{\psi}_L &= \frac{\alpha}{\sqrt{2}} (\ket{000} + \ket{111}) \otimes \ket{\cdots} + \frac{\beta}{\sqrt{2}} (\ket{000} - \ket{111}) \otimes \ket{\cdots} \\
+					    X_1 \ket{\psi}_L &= \frac{\alpha}{\sqrt{2}} (\ket{100} + \ket{011}) \otimes \ket{\cdots} + \frac{\beta}{\sqrt{2}} (\ket{100} - \ket{011}) \otimes \ket{\cdots} \\
+					    Z_1 \ket{\psi}_L &= \frac{\alpha}{\sqrt{2}} (\ket{000} - \ket{111}) \otimes \ket{\cdots} + \frac{\beta}{\sqrt{2}} (\ket{000} + \ket{111}) \otimes \ket{\cdots} \\
+					X_1 Z_1 \ket{\psi}_L &= \frac{\alpha}{\sqrt{2}} (\ket{100} - \ket{011}) \otimes \ket{\cdots} + \frac{\beta}{\sqrt{2}} (\ket{100} + \ket{011}) \otimes \ket{\cdots}
+				\end{align}
+				As these states are mutually orthogonal, measuring the parity qubits uniquely identifies one of the four errors and the state collapses onto either one of them. Subsequently, Shor's code can be used to correct the individual errors. Hence, Shor's code can be used to correct arbitrary errors.
+			\end{proof}
 		% end
 	% end
 
-	\section{Steane Code} % 10.17
+	\section{Other Codes} % 10.17
+		\label{subsec:otherCodes}
+
 		\todo{Content}
 	% end
 

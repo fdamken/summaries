@@ -613,8 +613,45 @@
 	% end
 % end
 
-\chapter{Computational Complexity} % 4.7, 4.8, 9.4, 9.5, 9.6
-	\todo{Content}
+\chapter{Computational Complexity}
+	In this chapter we cover the basic ideas of complexity theory. As the core motivation behind \ac{QC} is to speed up certain tasks, we first have to lay the ground for discussing what "speed up" actually means. In computer science, the \emph{complex} of an algorithm describes the resources required to run it. This resource is often \emph{space} or \emph{time.} That is, how much memory or time it takes to run a specific algorithm. To assign a complexity to a problem instead of a specific algorithm, we assign say that the problem has the complexity of the best algorithm solving it.
+
+	The most common complexity classes are depicted in \autoref{fig:complexityZoo}. These are:
+	\begin{itemize}
+		\item P: problems that are solvable in polynomial time (graph connectivity, testing if a number is prime, matchmaking, sorting, linear search, \dots)
+		\item \ac{BQP}: problems solvable on a quantum computer with bounded error probability (e.g., \( P(\text{error}) \leq 2/3 \)) (factoring, discrete logarithm, \dots?)
+		\item NP: problems believed to not be solvable in polynomial time (graph isomorphism, \dots)
+		\item NP-complete: hard problems that can be reduced on each other and for which the solution can be checked in polynomial time (box packing, map coloring, traveling salesman, \(n \times n\) Sudoku, \dots)
+		\item PSPACE: problems which need polynomial amount of memory (\(n \times n\) chess, \(n \times n\) Go, \dots)
+	\end{itemize}
+	These complexity classes are defined such that \(\text{P} \subseteq \text{BQP} \subseteq \text{NP} \subseteq \text{PSPACE}\). A big open problem of computer science is whether \( \text{P} \neq \text{NP} \), i.e., whether we can solve all problems "fast." A similar question comes up for \ac{QC}: is \( \text{P} \neq \text{BQP} \), i.e., are there problems that can actually be solved faster on a quantum computer?
+
+	To assess the complexity of a quantum algorithm, we count the gates required to implement the circuit. We will see in the next chapter (\autoref{c:universality}) how this scales with the problem size.
+
+	\begin{figure}
+		\centering
+		\begin{tikzpicture}[class/.style = { minimum height = 0.75cm }]
+			\def\dist{0.25cm};
+
+			\node [class, draw, circle, inner sep = \dist] (p) {P};
+			\node [class, right = 1 of p] (bqp) {BQP};
+			\node [class, right = 1 of bqp] (np) {NP};
+			\node [class, right = 1 of np, draw, circle, inner sep = \dist] (npComplete) {NP-Complete};
+			\node [class, right = 1 of npComplete] (pspace) {PSPACE};
+
+			\path (p.west) to coordinate(b) (bqp.east);
+			\path (p.west) to coordinate(c) (np.east);
+			\draw let \p1 = ($(p.west) - (b)$), \n1 = {veclen(\x1, \y1)} in (b) node[draw, circle, minimum width = 2*(\n1+1*\dist)](b){};
+			\draw let \p1 = ($(p.west) - (c)$), \n1 = {veclen(\x1, \y1)} in (c) node[draw, circle, minimum width = 2*(\n1+2*\dist)](c){};
+			\path let \p1 = (c.west),      \p2 = (c.north) in coordinate[xshift = -\dist, yshift =  \dist](A) at (\x1, \y2);
+			\path let \p1 = (pspace.east), \p2 = (c.north) in coordinate[xshift = +\dist, yshift =  \dist](B) at (\x1, \y2);
+			\path let \p1 = (pspace.east), \p2 = (c.south) in coordinate[xshift = +\dist, yshift = -\dist](C) at (\x1, \y2);
+			\path let \p1 = (c.west),      \p2 = (c.south) in coordinate[xshift = -\dist, yshift = -\dist](D) at (\x1, \y2);
+			\draw (A) to (B) to (C) to (D) to cycle;
+		\end{tikzpicture}
+		\caption{The Computational Complexity Zoo}
+		\label{fig:complexityZoo}
+	\end{figure}
 % end
 
 \chapter{Universal Computation} % 3.11, 4.9, 4.10, 4.11, 4.23, 5.2

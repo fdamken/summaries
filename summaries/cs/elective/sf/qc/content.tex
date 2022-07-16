@@ -165,7 +165,7 @@
 			% TODO: Interpretation of unitaries as rotations in the Bloch sphere.
 			In this section we collect the most important single-qubit gates. They are summarized in \autoref{tab:gates} and their semantics are given in the caption.
 
-			\begin{theorem}[Decomposition of Two-By-Two Unitary Matrices]
+			\begin{theorem}[Decomposition of Two-By-Two Unitary Matrices]  \label{th:twoByTwoDecomposition}
 				Every unitary matrix \( U \in \C^{2 \times 2} \) can be decomposed into three rotations as \( U = e^{i \alpha} R_z(\beta) R_y(\gamma) R_z(\delta) \).
 			\end{theorem}
 
@@ -654,39 +654,149 @@
 	\end{figure}
 % end
 
-\chapter{Universal Computation} % 3.11, 4.9, 4.10, 4.11, 4.23, 5.2
+\chapter{Universal Computation}
 	\label{c:universality}
 
-	\todo{Content}
+	In general, a quantum circuit is just a unitary \(U\) and measurements,
+	\begin{equation}
+		\Qcircuit {
+			\lstick{\ket{x_1}} & \multigate{3}{U} & \meter \\
+			\lstick{\ket{x_2}} & \ghost{U}        & \meter \\
+			\lstick{\raisebox{5.5pt}{\vdots}}    & \ghost{U}        & \rstick{\raisebox{4.8pt}{\vdots}} \qw \\
+			\lstick{\ket{x_n}} & \ghost{U}        & \meter
+		}
+	\end{equation}
+	with an initialization \( \ket{x_1 x_2 \dots x_n} \). However, this circuit has to be constructed somehow from gates we have available in the lab. this raises the natural question of what gates we have to implement to build every unitary---and whether there are actually a set of gates fulfilling this.
 
-	\section{Classical Analogy} % 4.12
-		\todo{Content}
-	% end
+	\begin{definition}[Universal Set of Gates]
+		A set of gates \(\mathcal{G}\) is called \emph{universal} if any unitary can be approximated with arbitrary accuracy using only gates from this set. With a gate \(U\) and its approximation \(V\), let
+		\begin{equation}
+			E(U, V) = \max_{\ket{\psi}}\; \lVert (U - V) \ket{\psi} \rVert
+		\end{equation}
+		be the \emph{error} between \(U\) and \(V\). Note that this error is an upper bound on the probability error \( \lvert P_U - P_V \rvert \leq 2 E(U, V) \) quantifying the difference in the probability distributions induced by applying \(U\) or \(V\) to a state.
+	\end{definition}
 
-	\section{Universal Quantum Gates} % 4.13, 4.14
-		\todo{Content}
+	Note that is analogous to classical computing. There we could also decompose every algorithm into a set of universal logical gates. For instance, the sets \( \{\, \text{AND}, \text{OR}, \text{NOT} \,\} \) and \( \{\, \text{NAND} \,\} \) are both universal and can represent every possible classical circuit. We formulate this into a theorem:
 
-		\subsection{Proof} % 4.15
-			\todo{Content}
+	\begin{theorem}[Classical Set of Universal Gates]  \label{th:classicalUniversal}
+		The sets \( \{\, \text{AND}, \text{OR}, \text{NOT} \,\} \) and \( \{\, \text{NAND} \,\} \) and universal for all classical logic gates.
+	\end{theorem}
+	\begin{proof}
+		By induction.
+	\end{proof}
 
-			\subsubsection{Part 1/3: Unitaries as Two-Level Unitaries} % 4.16
-				\label{subsubsec:controlledUnitaries}
+	\begin{theorem}[Embedding of Classical Circuits]
+		Every classical circuit can be embedded in a quantum circuit performing the equivalent operation, but reversibly.
+	\end{theorem}
+	\begin{proof}
+		To proof this, we use that \( \{\, \text{AND}, \text{NOT}, \text{OR} \,\} \) is universal for all classical gates (\autoref{th:classicalUniversal}). We therefore only have to show that these gates can be resembled using quantum circuits. For this, we use the X-, CNOT-, and Toffoli-gate:
+		\begin{align}
+			\begin{aligned}
+				\Qcircuit{
+					\lstick{\ket{x}} & \ctrl{2} & \rstick{\ket{x}} \qw \\
+					\lstick{\ket{y}} & \ctrl{1} & \rstick{\ket{y}} \qw \\
+					\lstick{\ket{0}} & \targ    & \rstick{\ket{x \land y}} \qw
+				}
+			\end{aligned}
+			&&
+			\begin{aligned}
+				\Qcircuit{
+					\lstick{\ket{x}} & \ctrl{1} & \rstick{\ket{y}} \qw \\
+					\lstick{\ket{1}} & \targ    & \rstick{\ket{\lnot x}} \qw
+				}
+			\end{aligned}
+			&&
+			\begin{aligned}
+				\Qcircuit {
+					\lstick{\ket{x}} & \gate{X} & \ctrl{1} & \gate{X} & \rstick{\ket{x}} \qw \\
+					\lstick{\ket{y}} & \gate{X} & \ctrl{1} & \gate{X} & \rstick{\ket{y}} \qw \\
+					\lstick{\ket{1}} & \qw      & \targ    & \qw      & \rstick{\ket{x \lor y}} \qw
+				}
+			\end{aligned}
+		\end{align}
+		Showing the equivalence is trivial. Note that in the logical or, the Toffoli-gate functions as a not-and due to the target qubit being set to \(\ket{1}\).
+	\end{proof}
 
-				\todo{Content}
-			% end
+	\section{Universal Quantum Gates}
+		In this section we will go over the proof of universality. Some common groups of quantum gates that are discussed are, for instance, the \emph{Pauli group} \( \mathcal{P} = \langle X, Z \rangle \) from which all the Pauli-gates can be constructed:
+		\begin{equation}
+			\langle X, Z \rangle
+				\longto \{ X^2 = Z^2 = \ID, X, XZ = iY, ZX = -iY, Z \}
+				\equiv \{ \ID, X, Y, Z \}.
+		\end{equation}
+		Another important group is the \emph{Clifford group} \( \mathcal{C} = \langle H, S, \CNOT \rangle \) with
+		\begin{equation}
+			\langle H, S, \CNOT \rangle
+				\longto \{ H^2 = \ID, S^2 = Z, \dots \}.
+		\end{equation}
+		However, we have the following result:
+		\begin{theorem}[Gottesman-Knill Theorem]
+			Circuits build using solely gates from the Clifford group can be efficiently simulated on a classical computer.
+		\end{theorem}
+		Hence, the Clifford group is not enough as we will never see a speedup when just using its gates! However, if we add the T-gate \( T = \diag(1, e^{i \pi / 4}) \), we get a universal set of gates:
+		\begin{theorem}[Universal Set of Quantum Gates]
+			The following set of quantum gates is universal: \( \langle H, S, \CNOT, T \rangle \).
+		\end{theorem}
+		\begin{proof}[Sketch]
+			The proof of this theorem has three parts:
+			\begin{enumerate}
+				\item every unitary matrix can be decomposed into the product of two-level\footnote{A two-level unitary matrix is a matrix that only acts non-trivially on at most two vector components.} unitary matrices
+				\item every two-level unitary matrix can be decomposed into CNOT- and single-qubit gates
+				\item every single-qubit gate can be approximated with arbitrary accuracy by \( \langle H, T \rangle \)
+			\end{enumerate}
+			which we will cover in greater detail.
 
-			\subsubsection{Part 2/3: Decomposition of Two-Level Unitaries} % 4.17, 4.18, E4.1, E4.2, E4.3
-				\todo{Content}
-			% end
+			\emph{Part 1/3:}  \todo{Universality Proof: Part 1/3; 4.16}
+			For an \(n\)-qubit gate \(U\), at most \( 2^{n - 1} (2^n - 1) \in \mathcal{O}(4^n) \) two-level unitary matrices are needed.
 
-			\subsubsection{Part 3/3: Approximation of Single-Qubit Gates} % 4.19, 4.20, 4.21
-				\todo{Content}
-			% end
-		% end
+			\emph{Part 2/3:}
+			Let \(\tilde{U} \in \C^{2{n + 1} \times 2^{n + 1}}\) be a two-level unitary matrix acting on \(n + 1\) qubits. Assume w.l.o.g. that \(\tilde{U}\) is a block diagonal matrix \( \tilde{U} = \diag(\ID, U) \), where \( U \in \C^{2 \times 2} \) contains the four non-trivial entries of \(\tilde{U}\). Hence, \(\tilde{U}\) is a the \(n\)-controlled version of \(U\), i.e., \(U\) is only applied to the \((n + 1)\)-th qubit iff the first \(n\) qubits are \num{1}. To show that this gate can be constructed using just single-qubit gates and CNOT-gates, we first construct a controlled-U-gate, then a controlled-controlled-U-gate, and subsequently expand this to an \(n\)-controlled-U-gate.
 
-		\subsection{Final Gate Count} % 4.22
-			\todo{Content}
-		% end
+			Let \( U \eqqcolon e^{i \alpha} A X B X C \) be a decomposition of \(U\) such that \( A B C = \ID \) (note that this is always possible due to \autoref{th:twoByTwoDecomposition}). The following circuit implements a controlled-U-gate:
+			\begin{equation}
+				\Qcircuit {
+					& \qw      & \ctrl{1} & \qw      & \ctrl{1} & \gate{E} & \qw \\
+					& \gate{C} & \targ    & \gate{B} & \targ    & \gate{A} & \qw
+				}
+			\end{equation}
+			with \( E \coloneqq \diag(1, e^{i \alpha}) \). For \(\ket{0x}\), both \(E\) and the CNOT-gates have no effect and therefore due to \(A B C = \ID\), the state is left as is. For \(\ket{1x}\), both \(E\) and the CNOT-gates are applied and therefore the unitary \(C X B X A\) acts on the second qubit together with the global phase \(e^{i \alpha}\), which is equivalent to applying \(U\). Similarly,
+			\begin{equation}
+				\Qcircuit {
+					& \qw              & \ctrl{1} & \qw              & \ctrl{1} & \gate{E^\dagger} & \qw \\
+					& \gate{A^\dagger} & \targ    & \gate{B^\dagger} & \targ    & \gate{C^\dagger} & \qw
+				}
+			\end{equation}
+			implements the controlled-\(U^\dagger\)-gate necessary for the next step (the proof is analogous).
+
+			The controlled-controlled-U-gate is realized by
+			\begin{equation}
+				\Qcircuit {
+					& \qw      & \ctrl{1} & \qw              & \ctrl{1} & \ctrl{2} & \qw \\
+					& \ctrl{1} & \targ    & \ctrl{1}         & \targ    & \qw      & \qw \\
+					& \gate{V} & \qw      & \gate{V^\dagger} & \qw      & \gate{V} & \qw
+				}  \label{eq:ccu}
+			\end{equation}
+			with \(V\) being the half-U-gate, i.e., \( V^2 = U \). For \(\ket{00x}\), no gate is ever applied. For \(\ket{01x}\), \(V\) and \(V^\dagger\) are applied, canceling each other out. For \(\ket{10x}\), \(V^\dagger\) and \(V\) are applied, canceling each other out. For \(\ket{11x}\), however, both \(V\) but not \(V^\dagger\) are applied (due to the CNOT-gates canceling the activation on the second qubit), resulting in \(VV = V^2 = U\) being applied to the this qubit. Hence, this circuit realizes the controlled-controlled-U-gate. By some clever arrangement, this circuit needs eight single-qubit gates and six CNOT-gates.
+
+			To build the \(n\)-controlled-U-gate, we add the new control bits to the front and expand the control lines of \eqref{eq:ccu} to these qubits, using an \((n - 1)\)-controlled-gate. Finally, we end up using \( \mathcal{O}(n^2) \) CNOT- and single-qubit gates.
+			\todo{Universality Proof: Part 2/3: Why don't we need exponentially many gates here, too?}
+
+			\emph{Part 3/3:}  \todo{Universality Proof: Part 3/3; 4.21}
+%			By the triangle inequality, error of multiple gates accumulate linearly, i.e.,
+%			\begin{equation}
+%				E(U_n \dots U_2 U_1, V_n \dots U_2 U_1) \leq \sum_{i = 1}^{n} E(U_i, V_i).
+%			\end{equation}
+%			With the decomposition \( U = R_{\hat{n}}(\delta) R_{\hat{m}}(\gamma) R_{\hat{n}}(\beta) \)
+			By the \emph{Solovay-Kitaev theorem,} approximating a circuit with \(m\) CNOT- and single-qubit up to an accuracy \(\epsilon\) requires \( \mathcal{O}\bigl( m \log^2(m / \epsilon) \bigr) \) gates from \( \langle H, T \rangle \).
+
+			This concludes the proof sketch and we end up with
+			\begin{equation}
+				\mathcal{O}\Biggl( 4^n 2^n \log^2\biggl( \frac{4^n 2^n}{\epsilon} \biggr) \Biggr)
+			\end{equation}
+			gates to approximate an arbitrary \(n\)-qubit quantum circuit.
+		\end{proof}
+
+		From this discussion and the final gate count that scales exponentially with the number of qubit, it does not appear clear why anyone should think that \( \text{BQP} \neq \text{P} \). Even classical circuits need an exponential amount of time on a quantum computer! This is the reason why algorithms that are efficient on a quantum computer are rare and require a large amount of creativity. The next chapter covers nearly all quantum algorithms that we know so far, which only reinforces the argument how much creativity is necessary to invent new ones.
 	% end
 % end
 

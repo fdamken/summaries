@@ -660,10 +660,10 @@
 	In general, a quantum circuit is just a unitary \(U\) and measurements,
 	\begin{equation}
 		\Qcircuit @C=1em @R=1em {
-			\lstick{\ket{x_1}} & \multigate{3}{U} & \meter \\
-			\lstick{\ket{x_2}} & \ghost{U}        & \meter \\
-			\lstick{\raisebox{5.5pt}{\vdots}}    & \ghost{U}        & \rstick{\raisebox{4.8pt}{\vdots}} \qw \\
-			\lstick{\ket{x_n}} & \ghost{U}        & \meter
+			\lstick{\ket{x_1}}     & \multigate{3}{U} & \meter \\
+			\lstick{\ket{x_2}}     & \ghost{U}        & \meter \\
+			\raisebox{5pt}{\vdots} &                  & \raisebox{5pt}{\vdots} \\
+			\lstick{\ket{x_n}}     & \ghost{U}        & \meter
 		}
 	\end{equation}
 	with an initialization \( \ket{x_1 x_2 \dots x_n} \). However, this circuit has to be constructed somehow from gates we have available in the lab. this raises the natural question of what gates we have to implement to build every unitary---and whether there are actually a set of gates fulfilling this.
@@ -800,36 +800,187 @@
 	% end
 % end
 
-\chapter{Algorithms} % 5.3
+\chapter{Algorithms}
 	\label{c:algorithms}
 
-	\todo{Content}
+	After discussing basic protocols and results in \autoref{sec:protocols}, we will now go over actual algorithms. After a discussion of the main idea underlying all algorithms, \emph{quantum parallelism,} in \autoref{sec:parallelism}, we will cover the following algorithms:
+	\begin{itemize}
+		\item Deutsch-Josza Algorithm (\autoref{sec:deutschJosza}) \\
+			Finds out whether a function is constant or balanced. Main purpose is to show quantum speedup compared to deterministic classical computing. Exponential speedup, but efficiently solvable on a probabilistic classical computer.
+		\item Bernstein-Vazirani Algorithm (\autoref{sec:bernsteinVazirani}) \\
+			Finds a binary string hidden in a special function. Main purpose is to show quantum speedup compared to probabilistic classical computing. Linear speedup.
+		\item Simon's Algorithm (\autoref{sec:simons}) \\
+			Finds the periodicity of a 2-to-1-function. Exponential speedup!
+		\item Quantum Fourier Transform (\autoref{sec:qft}) \\
+			Finds the periods hidden in data; quantum version of the famous Fourier transform. Exponential speedup!
+		\item Shor's Algorithm (\autoref{sec:shors}) \\
+			Factors two large numbers; can be used to break RSA encryption. Almost exponential speedup.
+		\item Grover's Algorithm (\autoref{sec:grovers}) \\
+			Finds a value in an unstructured\footnote{Here, \emph{unstructured} refers to the search space which has no special structure, e.g., being sorted which would allow efficient classical algorithms such as binary search.} pool of values. Square-root speedup.
+	\end{itemize}
+	A brief overview over the most important aspects of each algorithm is given in \autoref{tab:algorithms}, but I recommend to first work through this chapter and then take a look at the table.
 
-	\section{Quantum Parallelism} % 5.4, 5.5
-		\todo{Content}
+	\begin{table}
+		\centering
+		\begin{tabular}{ll|ll}
+			\toprule
+			\textbf{Name}                & \textbf{Tackled Problem} & \textbf{Classical Complexity} & \textbf{Quantum Complexity}             \\ \midrule
+			Deutsch-Josza Algorithm      & Deutsch's Problem        & \(\mathcal{O}(2^n)\)          & \(\mathcal{O}(1)\)                      \\
+			Bernstein-Vazirani Algorithm & Hidden String            & \(\mathcal{O}(n)\)            & \(\mathcal{O}(1)\)                      \\
+			Simon's Algorithm            & Simon's Problem          & \(\mathcal{O}(2^n)\)          & \(\mathcal{O}(n)\)                      \\
+			Quantum Fourier Transform    & Fourier Transform        & \(\mathcal{O}(2^n)\)          & \(\mathcal{O}(n^2)\)                    \\
+			Shor's Algorithm             & Factoring                & \(\mathcal{O}(e^{\log N})\)   & \(\mathcal{O}\bigl( (\log N)^3 \bigr)\) \\
+			Grover's Algorithm           & Unstructured Search      & \(\mathcal{O}(N - M)\)        & \(\mathcal{O}(\sqrt{N / M})\)           \\ \bottomrule
+		\end{tabular}
+		\caption{Quantum Algorithms}
+		\label{tab:algorithms}
+	\end{table}
 
-		\subsection{Interference} % 5.6, 5.7
-			\todo{Content}
+	\section{Quantum Parallelism}
+		\label{sec:parallelism}
+
+		In \autoref{c:universality}, we saw that it is possible to implement arbitrary circuits on a quantum computer. However, exponentially many gates where necessary! So what is the reason why we think that \ac{QC} accelerates computation? Classically, we can evaluate some function only one input at a time. In \ac{QC}, however, we can make use of the linear evolution. We can therefore prepare a superposition, apply the query unitary, and therefore evaluate it on all \(2^n\) inputs simultaneously. For brevity, we denote quantum wires containing more than one qubit as follows:
+		\begin{equation}
+			\Qcircuit @C=1em @R=1em {
+				\lstick{\ket{0}^n} & /\qw & \gate{H} & /\qw & \gate{U} & /\qw & \qw
+			}
+		\end{equation}
+		However, we can not use the calculation of this circuit as we do not know which input produced which output! We therefore have to come up with a better approach based on \emph{interference.}
+
+		\subsection{Interference and Deutsch's Approach}
+			Consider a function \( f : \{ 0, 1 \}^n \to \{ 0, 1 \} : x \mapsto f(x) \) with the unitary \( U_f : \ket{x}\ket{y} \mapsto \ket{x}\ket{y \oplus f(x)} \) (we will proof that this is in fact a unitary transformation in \autoref{subsec:queryUnitary}). In circuit notation, we write:
+			\begin{equation}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{x}^n} & \multigate{1}{U_f} & \rstick{\ket{x}^n} \qw \\
+					\lstick{\ket{y}}   & \ghost{U_f}        & \rstick{\ket{y \oplus f(x)}} \qw
+				}
+			\end{equation}
+			This circuit keeps the inputs and the outputs together! We can now make use of superposition,
+			\begin{equation}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{0}^n} & /\qw & \gate{H} & /\qw & \multigate{1}{U_f} & /\qw & \qw \\
+					\lstick{\ket{0}}   &  \qw & \qw      &  \qw & \ghost{U_f}        &  \qw & \qw
+				}
+			\end{equation}
+			which produces the following output:
+			\begin{equation}
+				\ket{0}^n\ket{0}
+					\overset{H_{1:n}}{\longto} \frac{1}{\sqrt{2^n}} (\ket{0} + \ket{1})^{\otimes n} \otimes \ket{0}
+					\overset{U_f}{\longto} \frac{1}{\sqrt{2^n}} \sum_{x \in \{ 0, 1 \}^n} \ket{x} \ket{f(x)}
+			\end{equation}
+			We have now evaluated \(f\) with just one call for all possible inputs! However, we cannot read all the results as a measurement would collapse the superposition onto just one evaluation and we could have just called the classical implementation. Hence, we need a slightly different approach to quantum parallelism.
+
+			Assume \(n = 1\), i.e., a single input qubit. Then \emph{Deutsch's approach} is to also use a superposition as the "input" for the target qubit and to apply a second Hadamard gate after the unitary on the input qubit:
+			\begin{equation}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{0}} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \qw \\
+					\lstick{\ket{1}} & \gate{H} & \ghost{U_f}        & \qw      & \qw
+				}  \label{eq:deutschsApproach}
+			\end{equation}
+			The core idea is now how \(U_f\) acts an the product state of a basis state \(\ket{x}\) and \(\ket{-}\):
+			\begin{align}
+				U_f \biggl( \ket{x} \otimes \frac{1}{\sqrt{2}} (\ket{0} - \ket{1}) \biggr)
+					&= \ket{x} \otimes \frac{1}{\sqrt{2}} (\ket{0 \oplus f(x)} - \ket{1 \oplus f(x)}) \\
+					&= \ket{x} \otimes \frac{1}{\sqrt{2}}
+						\begin{cases*}
+							\ket{0} - \ket{1} & if \( f(x) = 0 \) \\
+							\ket{1} - \ket{0} & if \( f(x) = 1 \)
+						\end{cases*} \\
+					&= (-1)^{f(x)} \ket{x} \otimes \frac{1}{\sqrt{2}} (\ket{0} - \ket{1})
+			\end{align}
+			This shows that we can pull the result of \(f(x)\) from the second qubit and put it to a global phase! We can now continue the evaluation of \eqref{eq:deutschsApproach}:
+			\begin{align}
+				(H \otimes \ID) U_f (H \otimes H) \ket{0}\ket{1}
+					&= (H \otimes \ID) U_f \biggl[ \frac{1}{\sqrt{2}} (\ket{0} + \ket{1}) \otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}} \biggr] \\
+					&= (H \otimes \ID) \frac{1}{\sqrt{2}} U_f \biggl[ \ket{0} \otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}} + \ket{1} \otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}} \biggr] \\
+					&= (H \otimes \ID) \frac{1}{\sqrt{2}} \biggl[ (-1)^{f(0)} \ket{0} \otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}} + (-1)^{f(1)} \ket{1} \otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}} \biggr] \\
+					&= (H \otimes \ID) \frac{1}{\sqrt{2}} \biggl[ (-1)^{f(0)} \ket{0} + (-1)^{f(1)} \ket{1} \biggr] \otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}} \\
+					&= (H \otimes \ID) \frac{1}{\sqrt{2}}
+						\begin{cases*}
+							\pm (\ket{0} + \ket{1}) & if \( f(0) = f(1) \) \\
+							\pm (\ket{0} - \ket{1}) & if \( f(0) \neq f(1) \)
+						\end{cases*}
+						\otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}} \\
+					&=
+						\begin{cases*}
+							\pm \ket{0} & if \( f(0) = f(1) \) \\
+							\pm \ket{1} & if \( f(0) \neq f(1) \)
+						\end{cases*}
+						\otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}} \\
+					&= \pm \ket{f(0) \oplus f(1)} \otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}} \\
+					&\equiv \ket{f(0) \oplus f(1)} \otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}}
+			\end{align}
+			Finally, we can measure the first qubit. But we did still not read out evaluations of \(f\)! It turns out that in \ac{QC}, we can often not read out individual results, but global properties of functions. In this case, a measurement \num{0} means that our function is constant and \num{1} that it is not. Also, we did not use the target qubit in the end---it was only useful for transferring function results into the global phase. In fact, we usually apply a Hadamard gate to it in the end to restore the original state. Hence, the entire "algorithm" of Deutsch's approach is:
+			\begin{equation}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{0}} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \rstick{\ket{f(0) \oplus f(1)}} \qw \\
+					\lstick{\ket{1}} & \gate{H} & \ghost{U_f}        & \gate{H} & \rstick{\ket{1}} \qw
+				}
+			\end{equation}
+			This approach uses quantum parallelism and interference to learn a global property of \(f\). All subsequent algorithms will rely on this or a similar technique for their speedup along with massive classical post-processing in some cases.
 		% end
 
 		\subsection{The Query Unitary} % 6.4, 6.5, 6.6, 6.21
-			\todo{Content}
-		% end
+			\label{subsec:queryUnitary}
 
-		\subsection{Deutsch's Approach} % 5.8, 5.9, 5.10
-			\todo{Content}
+			So far, we have just assumed that \( U_f : \ket{x}\ket{y} \mapsto \ket{x}\ket{y \oplus f(x)} \) is a unitary transformation for any function \(f\). In this section we will see that this is actually the case and how \(U_f\) looks.
+
+			\begin{theorem}[Query Unitary]
+				Let \( f : \{ 0, 1 \}^n \to \{ 0, 1 \} : x \mapsto f(x) \) be some function. Then the mapping \( U_f : \ket{x}\ket{y} \mapsto \ket{x}\ket{y \oplus f(x)} \) is unitary.
+			\end{theorem}
+			\begin{proof}
+				We proof this by constructing \(U_f\). Let \( i, k \in \{ 0, 1 \}^n \) and \( j, \ell \in \{ 0, 1 \} \), then the \( (ij, k\ell) \)-th matrix element of \(U_f\) is
+				\begin{equation}
+					\bra{j}\!\!\mel{i}{U_f}{k}\!\ket{\ell}
+						= \bra{j} \bra{i} \bigl( U_f \ket{k} \ket{\ell} \bigr)
+						= \bra{j} \bra{i} \bigl( \ket{k} \ket{\ell \oplus f(k)} \bigr)
+						= \braket{i}{k} \braket{j}{\ell \oplus f(k)}
+						= \delta_{i, k} \delta_{j, \ell \oplus f(k)}.
+				\end{equation}
+				From this we see that the matrix \(U_f\) is block-diagonal w.r.t. the first \(n\) qubits. The \(ik\)-th block (which we can also call the \(i\)-th or \(k\)-th block as the matrix is diagonal) is then
+				\begin{equation}
+					(U_f)_{ik}
+					=
+					\begin{bmatrix}
+						\delta_{0, 0 \oplus f(k)} & \delta_{0, 1 \oplus f(k)} \\
+						\delta_{1, 0 \oplus f(k)} & \delta_{1, 1 \oplus f(k)}
+					\end{bmatrix}
+					=
+					\begin{bmatrix}
+						\delta_{0, f(k)} & \delta_{0, 1 \oplus f(k)} \\
+						\delta_{1, f(k)} & \delta_{1, 1 \oplus f(k)}
+					\end{bmatrix}
+					=
+					\begin{bmatrix}
+						\delta_{0, f(k)} & \delta_{1, f(k)} \\
+						\delta_{1, f(k)} & \delta_{0, f(k)}
+					\end{bmatrix}
+					\doteq
+					\begin{bmatrix}
+						m_k & 1 \oplus m_k \\
+						1 \oplus m_k & m_k
+					\end{bmatrix}
+				\end{equation}
+				with \( m_k \coloneqq \delta_{0, f(k)} \). As \(m_k\) is constant within the \(k\)-th block, it is either \(\ID\) or \(X\) for \(f(k) = 0\) or \(f(k) = 1\), respectively. As a block-diagonal matrix of unitary matrices is still unitary, \(U_f\) is unitary for every \(f\).
+			\end{proof}
 		% end
 	% end
 
 	\section{Deutsch-Josza Algorithm} % 5.11, 5.12, 5.13, 5.14, E6.2, E6.3
+		\label{sec:deutschJosza}
+
 		\todo{Content}
 	% end
 
 	\section{Bernstein-Vazirani Algorithm} % 5.15, 5.16, 5.17, 5.22, 5.23, 5.24, 5.25, 5.18, 6.8
+		\label{sec:bernsteinVazirani}
+
 		\todo{Content}
 	% end
 
 	\section{Simon's Algorithm} % 6.11, 6.21, E6.4
+		\label{sec:simons}
+
 		\todo{Content}
 
 		\subsection{Problem} % 6.12, 6.13
@@ -858,6 +1009,8 @@
 	% end
 
 	\section{Quantum Fourier Transform} % 8.6, 8.7
+		\label{sec:qft}
+
 		\todo{Content}
 
 		\subsection{Binary Fraction Expansion} % 8.7, 8.8, 8.20, 8.21
@@ -874,6 +1027,8 @@
 	% end
 
 	\section{Shor's Algorithm} % 7.3, 7.4, 7.5, 7.6
+		\label{sec:shors}
+
 		\todo{Content}
 
 		\subsection{Period Finding} % 7.7, 7.8, 7.9, 7.10, 7.23, 8.3, 8.4
@@ -914,6 +1069,8 @@
 	% end
 
 	\section{Grover's Algorithm} % 9.2, 9.3, 9.25, E9.1, E9.2
+		\label{sec:grovers}
+
 		\todo{Content}
 
 		\subsection{Classical Approach} % 9.7
@@ -1317,6 +1474,8 @@
 
 \chapter{Quantum Nonlocality} % 11.3
 	\label{c:nonlocality}
+
+	%This chapter is a bit different from the previous as we will discuss a general phenomenon of \ac{QM} and not only \ac{QC}: \emph{quantum nonlocality.}
 
 	\todo{Content}
 

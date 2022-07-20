@@ -15,16 +15,17 @@
 		\begin{definition}[\(n\)-th Root of Unity]
 			We call the special complex number \( \omega_n = e^{2 \pi i / n} \) the \emph{\(n\)-th root of unity.}
 		\end{definition}
-		\begin{theorem}[Power Sum of \(n\)-th Roots of Unity]
-			Let \( \omega_n \) be the \(n\)-th root of unity with \( n > 1 \). Then \( \sum_{k = 0}^{n - 1} \omega_n^k = 0 \).
+		\begin{theorem}  \label{th:rootsOfUnity}
+			Let \( \omega_n \) be the \(n\)-th root of unity with \( n > 1 \). Then \( \sum_{k = 0}^{n - 1} \omega_n^{ak} = 0 \) holds for every constant \(a \in \Z\).
 		\end{theorem}
 		\begin{proof}
 			\begin{equation}
-				\sum_{k = 0}^{n - 1} \omega_n^k
-					= \frac{1 - \omega_n^n}{1 - \omega_n}
-					= \frac{1 - e^{2 i \pi}}{1 - \omega_n}
-					= \frac{1 - 1}{1 - \omega_n}
-					= \frac{0}{1 - \omega_n}
+				\sum_{k = 0}^{n - 1} \omega_n^{ak}
+					= \sum_{k = 0}^{n - 1} (\omega_n^a)^k
+					= \frac{1 - (\omega_n^a)^n}{1 - \omega_n^a}
+					= \frac{1 - e^{2 i a \pi}}{1 - \omega_n^a}
+					= \frac{1 - 1}{1 - \omega_n^a}
+					= \frac{0}{1 - \omega_n^a}
 					= 0
 			\end{equation}
 		\end{proof}
@@ -88,7 +89,7 @@
 			Any closed physical system can be associated with a Hilbert space \(\mathcal{H}\). The state of the system is completely described by a state vector \( \ket{\psi} = \sum_{i = 0}^{d - 1} c_i \ket{i} \) with \( \sum_{i = 0}^{d - 1} \lvert c_i \rvert^2 = 1 \) where \( \{ \ket{i} \}_{i = 0}^{d - 1} \) forms a basis of \( \mathcal{H}^d \).
 		\end{postulate}
 		\begin{remark}
-			The basis is not confined to the \emph{computational basis} \( \{ \ket{0}, \ket{1} \} \), although this basis is often used. It may be any other orthonormal basis of \(\mathcal{H}\), see \autoref{subsec:otherBasis}. For basis of Hilbert spaces with \(d > 2\), see \autoref{sec:composite}.
+			The basis is not confined to the \emph{computational basis} \( \{ \ket{0}, \ket{1} \} \), although this basis is often used. It may be any other orthonormal basis of \(\mathcal{H}\), see \autoref{subsec:hadamardGate}. For basis of Hilbert spaces with \(d > 2\), see \autoref{sec:composite}.
 		\end{remark}
 
 		Instead of writing out the complex coefficients \(c_0\) and \(c_1\), we can also parameterize an arbitrary superposition with angles \( \gamma, \varphi, \theta \in \R \):
@@ -222,6 +223,61 @@
 				\caption[Common Single-Qubit Gates]{Common qubit gates and their effect on the computational and Hadamard basis. For brevity, let \( c_\gamma \coloneqq \cos(\gamma / 2) \) and \( s_\gamma \coloneqq \sin(\gamma / 2) \). The gates have the following effects in the computational basis: \(X\) implements a logical not, \(Y\) combines a phase-flip and logical not, \(Z\) implements a phase-flip, \(H\) creates an equal superposition, \(R_y(\gamma)\) rotates around an arbitrary angle \(\gamma\), and \(R_z(\beta)\) adds a phase. In Hadamard basis, the gates have the following effects: \(X\) implement a phase-flip, \(Y\) combined a phase-flip and logical not, \(Z\) implements a logical not, \(H\) creates an equal superposition, \(R_y(\gamma)\) rotates around an arbitrary angle \(\gamma\), and \(R_z(\beta)\) adds a phase.}
 				\label{tab:gates}
 			\end{table}
+
+			\subsubsection{The Hadamard Gate}
+				\label{subsec:hadamardGate}
+
+				A special gate we regularly use is the Hadamard gate \(H\). As shown in \autoref{tab:gates} transforms it the computational basis states into an equal superposition of themselves:
+				\begin{align}
+					H \ket{0} &= \frac{1}{\sqrt{2}} (\ket{0} + \ket{1}) \eqqcolon \ket{+} &
+					H \ket{1} &= \frac{1}{\sqrt{2}} (\ket{0} - \ket{1}) \eqqcolon \ket{-}
+					\label{eq:hadamardBasis}
+				\end{align}
+				As these states are extremely important, we often denote them as \(\ket{+}\) and \(\ket{-}\) which are again basis states of the Hilbert space as the following hold:
+				\begin{align}
+					\ip{+}{+} &= 1 &
+					\ip{+}{-} &= 0 &
+					\ip{-}{+} &= 0 &
+					\ip{-}{-} &= 1
+				\end{align}
+				As these vectors are the Eigenvectors of \(X\), we often call this basis the X-basis while the computational basis is also often called Z-basis.
+
+				Of course, we might also want to apply the Hadamard gate to a composite state (see \autoref{sec:composite} for an introduction to composite states). As the application and transformation into the computational basis "by hand" is quite tedious,
+				\begin{equation}
+					H^{\otimes 2} \ket{00}
+						= \frac{1}{2} (\ket{0} + \ket{1}) \otimes (\ket{0} - \ket{1})
+						= \frac{1}{2} (\ket{00} - \ket{01} + \ket{10} - \ket{11}),
+				\end{equation}
+				we often make use of the following result.
+				\begin{theorem}[Hadamard Gate on Basis States]  \label{th:hadamardGate}
+					Let \(\ket{x}\) be any basis state with \(n\) qubits identified by the bit string \( x \in \{ 0, 1 \}^n \). Then applying Hadamard gates on the individual qubits yields
+					\begin{equation}
+						H^{\otimes n} \ket{x} = \frac{1}{\sqrt{2^n}} \sum_{y \in \{ 0, 1 \}^n} (-1)^{x \dotproduct y} \ket{y},
+					\end{equation}
+					where \(z\) sums over all possible \(n\)-bit strings, i.e., the basis states, and \( x \dotproduct y \) is the bit-wise dot-product of \(x\) and \(y\) modulo \(2\).
+				\end{theorem}
+				\begin{proof}
+					We proof this by induction. For \(n = 1\), we have
+					\begin{equation}
+						H \ket{x}
+							= \frac{1}{\sqrt{2}} \bigl( (-1)^{x \cdot 0} \ket{0} + (-1)^{x \cdot 1} \ket{1} \bigr)
+							= \frac{1}{\sqrt{2}} \bigl( \ket{0} + (-1)^x \ket{1} \bigr)
+					\end{equation}
+					matching \eqref{eq:hadamardBasis}. Assume now that the statement holds for some \(n\) and let \( x \eqqcolon x_1 x_: \) be a splitting of the \((n + 1)\)-bit string such that \( x_1 \in \{ 0, 1 \} \) and \( x_: \in \{ 0, 1 \}^n \) and analogous for \( y \eqqcolon y_1 y_: \). We show that the statement also holds for \(n + 1\):
+					\begin{align}
+						H^{\otimes (n + 1)} \ket{x}
+							&= H^{\otimes (n + 1)} \ket{x_1}\ket{x_:}
+							 = H \ket{x_1} \otimes H^{\otimes n} \ket{x_:} \\
+							&\overset{\mathclap{(\dagger)}}{=} \frac{1}{\sqrt{2}} \bigl( \ket{0} + (-1)^{x_1} \ket{1} \bigr) \otimes \frac{1}{\sqrt{2^n}} \sum_{y_: \in \{ 0, 1 \}^n} (-1)^{x_: \dotproduct y_:} \ket{y_:} \\
+							&= \frac{1}{\sqrt{2}} \bigl( (-1)^{x_1 \cdot 0} \ket{0} + (-1)^{x_1 \cdot 1} \ket{1} \bigr) \otimes \frac{1}{\sqrt{2^n}} \sum_{y_: \in \{ 0, 1 \}^n} (-1)^{x_: \dotproduct y_:} \ket{y_:} \\
+							&= \frac{1}{\sqrt{2}} \sum_{y_1 \in \{ 0, 1 \}} (-1)^{x_1 \cdot y_1} \ket{y_1} \otimes \frac{1}{\sqrt{2^n}} \sum_{y_: \in \{ 0, 1 \}^n} (-1)^{x_: \dotproduct y_:} \ket{y_:} \\
+							&= \frac{1}{\sqrt{2^{n + 1}}} \sum_{\substack{y_1 \in \{ 0, 1 \} \\ y_: \in \{ 0, 1 \}^n}} (-1)^{x_1 \cdot y_1} \ket{y_1} \otimes (-1)^{x_: \dotproduct y_:} \ket{y_:} \\
+							&= \frac{1}{\sqrt{2^{n + 1}}} \sum_{\substack{y_1 \in \{ 0, 1 \} \\ y_: \in \{ 0, 1 \}^n}} (-1)^{x_1 \cdot y_1 \oplus x_: \dotproduct y_:} \ket{y_1}\ket{y_:}
+							 = \frac{1}{\sqrt{2^{n + 1}}} \sum_{y \in \{ 0, 1 \}^{n + 1}} (-1)^{x \cdot y} \ket{y}
+					\end{align}
+					We used the induction hypothesis in step \((\dagger)\). This completes the proof and shows that the formulation of the Hadamard gates holds for all \(n\).
+				\end{proof}
+			% end
 		% end
 	% end
 
@@ -839,13 +895,13 @@
 	\section{Quantum Parallelism}
 		\label{sec:parallelism}
 
-		In \autoref{c:universality}, we saw that it is possible to implement arbitrary circuits on a quantum computer. However, exponentially many gates where necessary! So what is the reason why we think that \ac{QC} accelerates computation? Classically, we can evaluate some function only one input at a time. In \ac{QC}, however, we can make use of the linear evolution. We can therefore prepare a superposition, apply the query unitary, and therefore evaluate it on all \(2^n\) inputs simultaneously. For brevity, we denote quantum wires containing more than one qubit as follows:
+		In \autoref{c:universality}, we saw that it is possible to implement arbitrary circuits on a quantum computer. However, exponentially many gates where necessary! So what is the reason why we think that \ac{QC} accelerates computation? Classically, we can evaluate some function only one input at a time. In \ac{QC}, however, we can make use of the linear evolution. We can therefore prepare a superposition, apply the query unitary, and therefore evaluate it on all \(2^n\) inputs simultaneously. For brevity, we denote quantum wires containing more than one qubit as
 		\begin{equation}
 			\Qcircuit @C=1em @R=1em {
 				\lstick{\ket{0}^n} & /\qw & \gate{H} & /\qw & \gate{U} & /\qw & \qw
 			}
 		\end{equation}
-		However, we can not use the calculation of this circuit as we do not know which input produced which output! We therefore have to come up with a better approach based on \emph{interference.}
+		or will simply keep the multi-qubit wire implicit. However, we can not use the calculation of this circuit as we do not know which input produced which output! We therefore have to come up with a better approach based on \emph{interference.}
 
 		\subsection{Interference and Deutsch's Approach}
 			Consider a function \( f : \{ 0, 1 \}^n \to \{ 0, 1 \} : x \mapsto f(x) \) with the unitary \( U_f : \ket{x}\ket{y} \mapsto \ket{x}\ket{y \oplus f(x)} \) (we will proof that this is in fact a unitary transformation in \autoref{subsec:queryUnitary}). In circuit notation, we write:
@@ -875,7 +931,7 @@
 				\Qcircuit @C=1em @R=1em {
 					\lstick{\ket{0}} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \qw \\
 					\lstick{\ket{1}} & \gate{H} & \ghost{U_f}        & \qw      & \qw
-				}  \label{eq:deutschsApproach}
+				}  \label{eq:deutschsApproachPartially}
 			\end{equation}
 			The core idea is now how \(U_f\) acts an the product state of a basis state \(\ket{x}\) and \(\ket{-}\):
 			\begin{align}
@@ -888,7 +944,7 @@
 						\end{cases*} \\
 					&= (-1)^{f(x)} \ket{x} \otimes \frac{1}{\sqrt{2}} (\ket{0} - \ket{1})
 			\end{align}
-			This shows that we can pull the result of \(f(x)\) from the second qubit and put it to a global phase! We can now continue the evaluation of \eqref{eq:deutschsApproach}:
+			This shows that we can pull the result of \(f(x)\) from the second qubit and put it to a global phase! We can now continue the evaluation of \eqref{eq:deutschsApproachPartially}:
 			\begin{align}
 				(H \otimes \ID) U_f (H \otimes H) \ket{0}\ket{1}
 					&= (H \otimes \ID) U_f \biggl[ \frac{1}{\sqrt{2}} (\ket{0} + \ket{1}) \otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}} \biggr] \\
@@ -915,12 +971,12 @@
 				\Qcircuit @C=1em @R=1em {
 					\lstick{\ket{0}} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \rstick{\ket{f(0) \oplus f(1)}} \qw \\
 					\lstick{\ket{1}} & \gate{H} & \ghost{U_f}        & \gate{H} & \rstick{\ket{1}} \qw
-				}
+				}  \label{eq:deutschsApproach}
 			\end{equation}
 			This approach uses quantum parallelism and interference to learn a global property of \(f\). All subsequent algorithms will rely on this or a similar technique for their speedup along with massive classical post-processing in some cases.
 		% end
 
-		\subsection{The Query Unitary} % 6.4, 6.5, 6.6, 6.21
+		\subsection{The Query Unitary}
 			\label{subsec:queryUnitary}
 
 			So far, we have just assumed that \( U_f : \ket{x}\ket{y} \mapsto \ket{x}\ket{y \oplus f(x)} \) is a unitary transformation for any function \(f\). In this section we will see that this is actually the case and how \(U_f\) looks.
@@ -966,139 +1022,769 @@
 		% end
 	% end
 
-	\section{Deutsch-Josza Algorithm} % 5.11, 5.12, 5.13, 5.14, E6.2, E6.3
+	\section{Deutsch-Josza Algorithm}
 		\label{sec:deutschJosza}
 
-		\todo{Content}
+		In this section we explore the \emph{Deutsch-Josza algorithm} used to solve \emph{Deutsch's problem.} We first describe the problem, then the classical solution, and finally the quantum approach. Alongside we discuss complexity arguments and run-time.
+
+		\subsection{Problem}
+			Assume a function \( f : \{ 0, 1 \}^n \to \{ 0, 1 \} \) that is either \emph{constant} or \emph{balanced,} i.e., \( f(x) = a \) for all \(x\) or \( f(x) = 0 \) for half \(x\) and \( f(x) = 1 \) for the other half. We want to find out which of these cases \(f\) falls into, i.e., whether \(f\) is constant or balanced. This problem is also called \emph{Deutsch's problem.}
+		% end
+
+		\subsection{Classical Approach}
+			To determine with certainty whether a given function (of \(n\) bits) is constant or balanced, we need to evaluate it for one more than half the inputs. That is, \( 2^{n - 1} + 1 \) times. The classical algorithm is therefore in \( \mathcal{O}(2^n) \).
+		% end
+
+		\subsection{Quantum Approach}
+			For solving Deutsch's problem in a quantum way, we directly apply Deutsch's approach \eqref{eq:deutschsApproach} with a unitary \(U_f\) implementing \(f\). This yields the following state (while dropping the last qubit as its state does not convey information) before the final Hadamard-layer:
+			\begin{equation}
+				\frac{1}{\sqrt{2^n}} H^{\otimes n} \sum_x (-1)^{f(x)} \ket{x}  \label{eq:deutschJosza1}
+			\end{equation}
+			We now have two cases: either \(f\) is constant or \(f\) is balanced. We first consider the first (constant) case. Then the above state reduces to
+			\begin{equation}
+				\frac{1}{\sqrt{2^n}} H^{\otimes n} \sum_x (-1)^{f(x)} \ket{x}
+					= \pm \frac{1}{\sqrt{2^n}} H^{\otimes n} \sum_x \ket{x}
+					= \pm H^{\otimes n} \ket{+}^{\otimes n}
+					= \pm \ket{0}^{\otimes n}
+					\equiv \ket{0}^{\otimes n}.
+			\end{equation}
+			We now turn to the second case, a balanced \(f\). For this, we separate the \(x\)'s into \(x'\) and \(x''\) which are the values for which \(f(x') = 0\) and \(f(x'') = 1\), respectively. Using \eqref{th:hadamardGate}, we can write the state \eqref{eq:deutschJosza1} as
+			\begin{align}
+				\frac{1}{\sqrt{2^n}} H^{\otimes n} \sum_x (-1)^{f(x)} \ket{x}
+					&= \frac{1}{\sqrt{2^n}} H^{\otimes n} \biggl[ \sum_{x'} \ket{x'} - \sum_{x''} \ket{x''} \biggr] \\
+					&= \frac{1}{2^n} \biggl[ \sum_{x'} \sum_y (-1)^{x' \dotproduct y} \ket{y} - \sum_{x''} \sum_y (-1)^{x'' \dotproduct y} \ket{y} \biggr] \\
+					&= \frac{1}{2^n} \sum_y \biggl[ \sum_{x'} (-1)^{x' \dotproduct y} - \sum_{x''} (-1)^{x'' \dotproduct y} \biggr] \ket{y} \\
+					&= \frac{1}{2^n} \Biggl( \biggl[ \sum_{x'} (-1)^{0} \ket{y} - \sum_{x''} (-1)^{0} \ket{y} \biggr] + \sum_{y \neq 0} \biggl[ \sum_{x'} (-1)^{x' \dotproduct y} - \sum_{x''} (-1)^{x'' \dotproduct y} \biggr] \ket{y} \Biggr) \\
+					&= \frac{1}{2^n} \Biggl( \biggl[ \sum_{x'} \ket{y} - \sum_{x''} \ket{y} \biggr] + \sum_{y \neq 0} \biggl[ \sum_{x'} (-1)^{x' \dotproduct y} - \sum_{x''} (-1)^{x'' \dotproduct y} \biggr] \ket{y} \Biggr) \\
+					&= \frac{1}{2^n} \sum_{y \neq 0} \biggl[ \sum_{x'} (-1)^{x' \dotproduct y} - \sum_{x''} (-1)^{x'' \dotproduct y} \biggr] \ket{y}
+			\end{align}
+			and remove \(\ket{0}^{\otimes n}\)! Hence, it is impossible to measure all zeros for a balanced function and we can therefore deduce the following rules:
+			\begin{itemize}
+				\item if all measurement outcomes are zero, \(f\) is constant
+				\item if any measurement outcome is one, \(f\) is balanced
+			\end{itemize}
+			Opposed to the classical algorithm which needed \( 2^{n - 1} + 1 \) calls of \(f\), the Deutsch-Josza algorithm only needed a single call and is therefore in \( \mathcal{O}(1) \).
+		% end
+
+		\subsection{Remarks}
+			We saw that the Deutsch-Josza algorithm provides an exponential speedup over the classical solution. This gives a good start for \ac{QC} and shows that we may actually be faster than classical computing given that we come up with a clever algorithm. However, it turns out that Deutsch's problem as absolutely no real applications and that probabilistic classical computers can also do a pretty good job at solving it.
+
+			The algorithm is summarized in \autoref{alg:deutschJosza}.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{constant or balanced function \( f : \{0, 1\}^n \to \{ 0, 1 \} \)}
+				\KwOut{whether the function is constant or balanced}
+				\tcp{Run quantum circuit.}
+				\( \displaystyle\qquad\qquad
+					\Qcircuit @C=1em @R=1em {
+						\lstick{\ket{0}^{\otimes n}} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \meter & \rstick{x} \cw \\
+						\lstick{\ket{1}}             & \gate{H} & \ghost{U_f}        & \gate{H} & \qw    & \qw
+					}
+				\) \;
+				\If{all \(x\) are zero}{
+					\Return "constant" \;
+				}
+				\Return "balanced" \;
+				\caption{Deutsch-Josza Algorithm}
+				\label{alg:deutschJosza}
+			\end{algorithm}
+		% end
+
+		\subsection{Modified Deutsch-Josza Algorithm} % E6.2, E6.3
+			\todo{Modified Deutsch-Josza Algorithm}
+		% end
 	% end
 
 	\section{Bernstein-Vazirani Algorithm} % 5.15, 5.16, 5.17, 5.22, 5.23, 5.24, 5.25, 5.18, 6.8
 		\label{sec:bernsteinVazirani}
 
-		\todo{Content}
+		In this section we explore the \emph{Bernstein-Vazirani algorithm} used to extract a hidden string from a function. We first describe the problem, then the classical solution, and finally the quantum approach. Alongside we discuss complexity arguments and run-time.
+
+		\subsection{Problem}
+			Assume a function \( f : \{ 0, 1 \}^n \to \{ 0, 1 \} \) that is either \emph{constant} or \emph{balanced,} i.e., \( f(x) = a \) for all \(x\) or \( f(x) = 0 \) for half \(x\) and \( f(x) = 1 \) for the other half. We want to find out which of these cases \(f\) falls into, i.e., whether \(f\) is constant or balanced. This problem is also called \emph{Deutsch's problem.}
+
+			Assume a function \( f : \{ 0, 1 \}^n \to \{ 0, 1 \} \) that hides a bit string \( s \in \{ 0, 1 \}^n \) as follows:
+			\begin{equation}
+				f(x) = x \dotproduct s = x_1 s_1 \oplus x_2 s_2 \oplus \dots \oplus x_n s_n.
+			\end{equation}
+			The goal of the problem is to find \(s\) with as few calls of \(f\) as possible.
+		% end
+
+		\subsection{Classical Approach}
+			Classically, we would need \(n\) evaluations of \(f\) on the basis vectors, i.e., \( f(e_j) = s_j \) and the classical solution is therefore \(\mathcal{O}(n)\).
+		% end
+
+		\subsection{Quantum Approach}
+			For the quantum approach, we again directly apply Deutsch's approach \(\eqref{eq:deutschsApproach}\) with a unitary \(U_f\) implementing \(f\). Before the final Hadamard-layer, we now have the following state (dropping the last qubit as it does not convey any information):
+			\begin{equation}
+				\frac{1}{\sqrt{2^n}} \sum_x (-1)^{f(x)} \ket{x}  \label{eq:bernsteinVazirani1}
+			\end{equation}
+			As before, it boils down to cleverly manipulating the state to find an interpretation of the measurement outcomes. We now plug in the definition of \(f\) (and replace the module-two-sum with an actual sum as we are only using the result in an exponent of \(-1\)). By cleverly using power rules and rearranging sum and tensor product, we find that the state is:
+			\begin{align}
+				\frac{1}{\sqrt{2^n}} \sum_x (-1)^{f(x)} \ket{x}
+					&= \frac{1}{\sqrt{2^n}} \sum_x (-1)^{\sum_{i = 1}^{n} x_i s_i} \ket{x}
+					 = \frac{1}{\sqrt{2^n}} \sum_x \bigotimes_{i = 1}^{n} (-1)^{x_i s_i} \ket{x_i}_i \\
+					&= \frac{1}{\sqrt{2^n}} \bigotimes_{i = 1}^{n} \sum_{x_i} (-1)^{x_i s_i} \ket{x_i}_i
+					 = \frac{1}{\sqrt{2^n}} \bigotimes_{i = 1}^{n} \ket{0}_i + (-1)^{s_i} \ket{1}_i
+					 = \bigotimes_{i = 1}^{n} \begin{cases*} \ket{+}_i & if \( s_i = 0 \) \\ \ket{-}_i & if \( s_i = 1 \) \end{cases*}
+			\end{align}
+			And if we apply the Hadamard-gate again, we simply get the state \(\ket{s}\)! Measuring therefore reveals \(s\) with certainty. Much like in the Deutsch-Josza algorithm, we only need a single invocation of \(U_f\) and therefore this algorithm is also in \(\mathcal{O}(1)\).
+		% end
+
+		\subsection{Remarks}
+			We saw that the Bernstein-Vazirani algorithm provides a linear speedup over the classical solution. While the applications of this algorithm are still fairly limited, it gives rise to some ideas that will become useful later on. Also, the hidden string problem is not efficiently solvable on classical computers, also probabilistic classical computers!
+
+			The algorithm is summarized in \autoref{alg:bernsteinVazirani}.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{function \( f : \{0, 1\}^n \to \{ 0, 1 \} : x \mapsto x \dotproduct s \) with a hidden string \( s \in \{ 0, 1 \}^n \)}
+				\KwOut{the hidden string \(s\)}
+				\tcp{Run quantum circuit.}
+				\( \displaystyle\qquad\qquad
+					\Qcircuit @C=1em @R=1em {
+						\lstick{\ket{0}^{\otimes n}} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \meter & \rstick{s} \cw \\
+						\lstick{\ket{1}}             & \gate{H} & \ghost{U_f}        & \gate{H} & \qw    & \qw
+					}
+				\) \;
+				\Return \(s\) \;
+				\caption{Bernstein-Vazirani Algorithm}
+				\label{alg:bernsteinVazirani}
+			\end{algorithm}
+		% end
 	% end
 
-	\section{Simon's Algorithm} % 6.11, 6.21, E6.4
+	\section{Simon's Algorithm}
 		\label{sec:simons}
 
-		\todo{Content}
+		From this section on, the algorithms become more involved. Most notable, we will need classical post-processing to make sense of the measurements. The first algorithm of this kind is Simon's algorithm which solves Simon's problem (which, as usual, will be introduced before looking at any approaches). Also, it is the first algorithm that gives us the solution only up to some probability.
 
-		\subsection{Problem} % 6.12, 6.13
-			\todo{Content}
+		\subsection{Problem}
+			In \emph{Simon's problem} we again try to find a string \( a \in \{ 0, 1 \}^n \) hidden in a function \( f : \{ 0, 1 \}^n \to \{ 0, 1 \}^n \). However, we assume that \(f\) is a two-to-one-function such that \( f(x) = f(y) \) iff \( x = y \oplus a \) where \( \oplus \) denotes bit-wise addition. We are therefore trying to find a period \(a\) of a function \(f\) under bit-wise addition such that \( f(x \oplus a) = f(x) \).
 		% end
 
-		\subsection{Classical Approach} % 6.13, 6.14
-			\todo{Content}
+		\subsection{Classical Approach}
+			Classically, we evaluate \(f\) at various different inputs and compare the result to the previous results. If we find a match, we can directly compute the period \(a\). If we do not find a match on the \(j\)-th evaluation, we have eliminated
+			\begin{equation}
+				1 + 2 + \dots + (j - 1) = j (j - 1) / 2
+			\end{equation}
+			possible values of \(a\). This is due to our choice of the inputs: we always choose different values and compare the output to all lower. In the first iteration, we cannot compare to anything. In the second, we eliminate one \(a\). In the third, we eliminate two others, and so on. As there are \( 2^n - 1 \) possible choices of \(a\), we do not have an acceptable probability of finding \(a\) as long as \( j (j - 1) / 2 \ll 2^n \). Hence, we need around \( j = \sqrt{2^n} \) iterations! Therefore, the classical approach is in \( \mathcal{O}(\sqrt{2^n}) \).
+
+			% TODO: Simon's Algorithm: Classical: Why are the differences of inputs all different?
 		% end
 
-		\subsection{Quantum Approach} % N/A
-			\todo{Content}
+		\subsection{Quantum Approach}
+			As mentioned already is the quantum approach to Simon's problem---Simon's algorithm---more complicated than both Deutsch-Josza and Bernstein-Vazirani and requires classical post-processing. We therefore split up this section into the quantum circuit and the classical post-processing.
 
-			\subsubsection{Circuit} % 6.15, 6.16, 6.17, 6.18
-				\todo{Content}
+			\subsubsection{Circuit}
+				Opposed to the previous two algorithms, we do not directly apply Deutsch's approach. Instead, we only put the first \(n\) qubits into a superposition and use zero-qubits for the targets:
+				\begin{equation}
+					\Qcircuit @C=1em @R=1em {
+						\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \qw & \meter & \rstick{y} \cw \\
+						\lstick{\ket{0}^n} & \qw      & \ghost{U_f}        & \meter   &     &        &
+					}
+				\end{equation}
+				After the \(U_f\)-gate, we have the state
+				\begin{equation}
+						\ket{0}^n\ket{0}^n
+					\overset{H^{\otimes n}}{\longto}
+						\ket{+}^n\ket{0}^n
+							= \frac{1}{\sqrt{2^n}} \sum_x \ket{x}\ket{0}^n
+					\overset{U_f}{\longto}
+						\frac{1}{\sqrt{2^n}} \sum_x \ket{x}\ket{f(x)}
+							= \frac{1}{\sqrt{2^n}} \sum_{x_i} \frac{\ket{x_i} + \ket{x_i \oplus a}}{2} \ket{f(x_i)}
+				\end{equation}
+				where the sums over \(x\) are over all \(n\)-bit binary strings and the last sum (over \(x_i\)) is over the individual values producing distinct values \(f(x_i)\). As \(f\) is a two-to-one function where \(f(x) = f(x \oplus a)\) for a constant a, we can pull in this second value explicitly by adding \(a\). By now measuring the target qubits (the ones storing the result of \(f\)), we collapse the first \(n\) qubits onto a state containing only one \(x_i\) and its "periodic equivalent":
+				\begin{equation}
+					\frac{1}{\sqrt{2}} (\ket{x_i} + \ket{x_i \oplus a}).
+				\end{equation}
+				Note that while this seems great at a first glance, we cannot directly extract \(a\) from this state as we can only measure once, giving us either \(x_i\) or \(x_i \oplus a\), and we cannot guarantee to end up in this state again by just repeating this experiment (as we might collapse onto a different \(f(x)\)). By no-cloning, we can also not just copy the state and just repeating until we get the same outcome again would reduce the quantum approach to the classical approach, but with the overhead of buying a quantum computer.
+
+				We therefore have to do some more work. Using the idea of Deutsch's approach again (interference) and applying \(H\) with \autoref{th:hadamardGate}, we can pull the computation results into a phase (we drop the index \(\cdot_i\) here for brevity) and remove \(x\) from the parts "that matter":
+				\begin{align}
+					\frac{1}{\sqrt{2}} H^{\otimes n} (\ket{x_i} + \ket{x_i \oplus a})
+						&= \frac{1}{\sqrt{2^{n + 1}}} \sum_y \bigl[ (-1)^{x \dotproduct y} + (-1)^{(x \oplus a) \dotproduct y} \bigr] \ket{y} \\
+						&= \frac{1}{\sqrt{2^{n + 1}}} \sum_y \bigl[ (-1)^{x \dotproduct y} + (-1)^{x \dotproduct y} (-1)^{a \dotproduct y} \bigr] \ket{y} \\
+						&= \frac{1}{\sqrt{2^{n + 1}}} \sum_y (-1)^{x \dotproduct y} \bigl[ 1 + (-1)^{a \dotproduct y} \bigr] \ket{y} \\
+						&= \frac{1}{\sqrt{2^{n + 1}}} \sum_y (-1)^{x \dotproduct y} \delta_{a \dotproduct y, 0} \ket{y}
+						 = \frac{1}{\sqrt{2^{n - 1}}} \sum_{y,\, a \dotproduct y = 0} (-1)^{x \dotproduct y} \ket{y}
+				\end{align}
+				After applying the Hadamard gate, we are only left with an equal superposition of \(y\)'s that have the property of \( a \dotproduct y = 0 \) which there are \(2^{n - 1}\) many. We quickly want to give an argument why thus number is correct. Assume w.l.o.g.\footnote{As \(a \neq 0\), at least one bit must be one and we can just reorder our bits.} that the last bit of \(a\) is one, i.e., \(a\) has the form \( a = a_1 a_2 \dots a_{n - 1} 1 \) with arbitrary \( a_1, a_2, \dots, a_{n - 1} \). Then the first \(n - 1\) bits of \( y = y_1 y_2 \dots y_{n - 1} y_n \) can be freely chosen from \( \{ 0, 1 \} \) and the last bit has to be \( y_n = a_1 y_1 \oplus a_2 y_2 \oplus \dots \oplus a_{n - 1} y_{n - 1} \). Therefore, we have \(2^{n - 1}\) possible \(y\)'s.
+
+				Measuring the first \(n\) qubits at this point yields us one \(y\) that fulfills the constraint \( a \dotproduct y = 0 \). By repeating this procedure \(m\) times, we get \(m\) constraint on \(a\) and what remains is some classical post-processing to determine \(a\).
 			% end
 
-			\subsubsection{Post-Processing} % 6.18, 6.19
-				\todo{Content}
-			% end
+			\subsubsection{Post-Processing}
+				As we saw in the previous section, after the quantum part we end up with \(m\) constraints
+				\begin{align}
+					a \dotproduct y_1 &= 0 &
+					a \dotproduct y_2 &= 0 &
+					&\cdots&
+					a \dotproduct y_m &= 0
+				\end{align}
+				on the period \(a\). However, if \(y_i\) is zero, we do not learn anything about \(a\) and if \(y_i = y_j\) for \(i \neq j\), we also do not learn anything new. But as there are exponentially many \(y\)', we have\footnote{Note that with a similar probability we might get two measurement outcomes during the first measurement that equal each other and with a \SI{50}{\percent} chance we get the second value of \(y\) and can instantly deduce \(a\). But this probability is \emph{very} low.}
+				\begin{equation}
+					P(y_i = 0 \lor y_i = y_j) = \frac{1}{2^{n - 1}} \approx 0.
+				\end{equation}
+				Hence, we have a high chance of learning something about \(a\) with each measurement and every time we learn something, we \emph{half} the number of possible \(a\)'s (cf. classically where we only get a linear reduction) and we need \(n\) distinct non-zero values to uniquely determine \(a\). Overall, we have the following theorem:
 
-			\subsubsection{Remarks} % 6.20
-				\todo{Content}
+				\begin{theorem}[Simon's Algorithm]
+					The probability \(p\) of acquiring enough information to uniquely determine \(a\) with \(n + m\) invocations satisfies
+					\begin{equation}
+						p > 1 - \frac{1}{2^{m + 1}}.
+					\end{equation}
+				\end{theorem}
+				\begin{proof}
+					See Mermin, 2016, Appendix G.
+				\end{proof}
+
+				Hence, with \(m = 20\), the odds of finding \(a\) are one to more than a million. Hence, Simon's algorithm is in \( \mathcal{O}(n) \).
 			% end
+		% end
+
+		\subsection{Remarks}
+			We saw that Simon's algorithm provides an exponential speedup over the classical solution. And while applications of Simon's problem are rare, its main contribution to \ac{QC} was motivating the ideas behind \emph{Shor's algorithm} which has very practical applications and which we will discuss in \autoref{sec:shors} after covering \ac{QFT} in \autoref{sec:qft}.
+
+			The algorithm is summarized in \autoref{alg:simons}.
+
+			\begin{algorithm}  \DontPrintSemicolon  % TODO: Only run until Y contains n linearly independent samples?
+				\KwIn{two-to-one function \( f : \{ 0, 1 \}^n \to \{ 0, 1 \}^n \) with the property \( f(x) = f(x \oplus a) \) for a constant period \( a \in \{ 0, 1 \}^n \); number of additional calls \( m \)}
+				\KwOut{the period \(a\)}
+				\( \mathcal{Y} \gets \{ \} \)  \quad\tcp{Prepare the sample set.}
+				\ForEach{\( i = 1, 2, \dots, n + m \)}{
+					\tcp{Run quantum circuit.}
+					\( \displaystyle\qquad\qquad
+						\Qcircuit @C=1em @R=1em {
+							\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \qw & \meter & \rstick{y_i} \cw \\
+							\lstick{\ket{0}^n} & \qw      & \ghost{U_f}        & \meter   &     &        &
+						}
+					\) \;
+					\tcp{Rule out uninforming zeros and duplicates.}
+					\If{\( y_i \neq 0 \) and \( y_i \not\in \mathcal{Y} \)}{
+						\( \mathcal{Y} \gets \mathcal{Y} \cup \{ y_i \} \)  \quad\tcp{Add "meaningful" sample to the sample set.}
+					}
+				}
+				\( a^\ast \gets \mathrm{solve}_a \bigl\{ a \dotproduct y_i \bigforwhich i = 1, 2, \dots, n + m \bigr\} \)  \quad\tcp{Gauss-Jordan Elimination}
+				\Return \( a^\ast \) \;
+				\caption{Simon's Algorithm}
+				\label{alg:simons}
+			\end{algorithm}
 		% end
 	% end
 
-	\section{Quantum Fourier Transform} % 8.6, 8.7
+	\section{Quantum Fourier Transform}
 		\label{sec:qft}
 
-		\todo{Content}
+		For Shor's algorithm (\autoref{sec:shors}), we will need a quantum version of the famous Fourier transform, \emph{\acf{QFT}.} in this section we will see how we can implement this transform and what it complexity is compared to the classical Fourier transform. We define the \ac{QFT} as follows:
+		\begin{definition}[Quantum Fourier Transform]  \label{def:qft}
+			The \emph{quantum Fourier transform} of an arbitrary state \(\ket{j}\) of an orthonormal basis \( \ket{0}, \ket{1}, \dots, \ket{2^n - 1} \) is a linear transformation such that
+			\begin{equation}
+				\ket{j} \overset{U_\mathrm{FT}}{\longto} \frac{1}{\sqrt{2^n}} \sum_{k = 0}^{2^n - 1} e^{2 \pi i j k / 2^n} \ket{k}  \label{eq:qft}
+			\end{equation}
+			where \(j\) and \(k\) are the decimal representations of their binary counterpart, i.e., "actual" numbers. On an arbitrary state \(\ket{x}\), the action is
+			\begin{equation}
+				\sum_{j = 0}^{2^n - 1} x_j \ket{j} \overset{U_\mathrm{FT}}{\longto} \sum_{k = 0}^{2^n - 1} y_k \ket{k}
+				\quad\text{with}\quad
+				y_k = \frac{1}{\sqrt{2^n}} \sum_{j = 0}^{2^n - 1} x_j e^{2 \pi i j k / 2^n}.
+			\end{equation}
+		\end{definition}
+		Before implementing a circuit implementing \ac{QFT}, we first want to show that the operator is actually unitary:
+		\begin{theorem}
+			The \acl{QFT} as defined in \autoref{def:qft} is a unitary transformation.
+		\end{theorem}
+		\begin{proof}
+			Let \( \ket{\alpha} \) and \( \ket{\beta} \) be arbitrary basis states (of the same basis). To show that \(U_\mathrm{FT}\) is a unitary transformation, it is enough to show that the transformed basis states are still orthonormal. This is due to
+			\begin{equation}
+				\bra{\alpha} U_\mathrm{FT}^\dagger U_\mathrm{FT} \ket{\beta}
+					= \bra{\alpha} \underbrace{U_\mathrm{FT}^\dagger U_\mathrm{FT}}_{= \ID} \ket{\beta}
+					= \bra{\alpha} \ket{\beta}
+					= \delta_{\alpha \beta}
+			\end{equation}
+			and \( U_\mathrm{FT}^\dagger U_\mathrm{FT} = \ID \) holding if and only if \(U_\mathrm{FT}\) is unitary. We proceed by calculating the first inner product (and applying \(U_\mathrm{FT}\) according to its definition):
+			\begin{align}
+				\bra{\alpha} U_\mathrm{FT}^\dagger U_\mathrm{FT} \ket{\beta}
+					&= \frac{1}{2^n} \Biggl( \sum_{k_1 = 0}^{2^n - 1} e^{-2 \pi i \alpha k_1 / 2^n} \bra{k_1} \Biggr) \Biggl( \sum_{k_2 = 0}^{2^n - 1} e^{2 \pi i \beta k_2 / 2^n} \ket{k_2} \Biggr) \\
+					&= \frac{1}{2^n} \sum_{k_1 = 0}^{2^n - 1} \sum_{k_2 = 0}^{2^n - 1} e^{-2 \pi i \alpha k_1 / 2^n} e^{2 \pi i \beta k_2 / 2^n} \ip{k_1}{k_2}
+					 = \frac{1}{2^n} \sum_{k_1 = 0}^{2^n - 1} \sum_{k_2 = 0}^{2^n - 1} e^{-2 \pi i \alpha k_1 / 2^n} e^{2 \pi i \beta k_2 / 2^n} \delta_{k_1 k_2} \\
+					&= \frac{1}{2^n} \sum_{k = 0}^{2^n - 1} e^{-2 \pi i \alpha k / 2^n} e^{2 \pi i \beta k / 2^n}
+					 = \frac{1}{2^n} \sum_{k = 0}^{2^n - 1} e^{2 \pi i (\alpha - \beta) k / 2^n}
+			\end{align}
+			We now have to continue the proof piecewise. For \(\alpha = \beta\), the inner product is obviously \num{1}. For \(\alpha \neq \beta\), the sum is a special case of \autoref{th:rootsOfUnity} with \( a \triangleq \alpha - \beta \) and \( n \triangleq 2^n \) and therefore it is equal to zero. Hence, the basis states keep their orthonormality and \(U_\mathrm{FT}\) is indeed a unitary transformation.
+		\end{proof}
+		We now continue with building the circuit implementing \ac{QFT}.
 
-		\subsection{Binary Fraction Expansion} % 8.7, 8.8, 8.20, 8.21
-			\todo{Content}
+		Note that this "algorithm" is different from the previous ones in that we do not go over the classical discrete Fourier transform. We will just use the result of the \ac{QFT} during the discussion of Shor's algorithm.
+
+		\subsection{Binary Fraction Expansion}
+			To build the \ac{QFT} circuit, we first rewrite \eqref{eq:qft} a bit using the notation \( \ket{j} = \ket{j_1 j_2 \dots j_n} \) with \( j = \sum_{i = 1}^{n} j_i 2^{n - i} \) and the recursively defined \emph{binary fraction}
+			\begin{align}
+				0.j &\coloneqq \frac{j}{2} &
+				0.j_1 j_2 j_3 \dots j_n &\coloneqq \frac{j_1}{2} + \frac{1}{2} 0.j_2 j_3 \dots j_n
+				\label{eq:binaryFraction}
+			\end{align}
+			which can also be written as
+			\begin{equation}
+				0.j_1 j_2 \dots j_n = \sum_{i = 1}^{n} \frac{j_i}{2^i}.
+			\end{equation}
+			The that it is the \emph{order} and not the \emph{indices} of the arguments that matter here! This is why the recursive definition is clearer. With these notations at hand, we have the following result:
+			\begin{theorem}[Binary Fraction Expansion of QFT]
+				The \ac{QFT} result (\autoref{def:qft}) can be expressed as follows:
+				\begin{equation}
+					\ket{j_1 j_2 \dots j_n}
+					\overset{U_\mathrm{FT}}{\longto}
+					\frac{1}{\sqrt{2^n}} \Bigl( \bigl( \ket{0} + e^{2 \pi i 0.j_n} \ket{1} \bigr) \otimes \bigl( \ket{0} + e^{2 \pi i 0.j_{n - 1} j_n} \ket{1} \bigr) \otimes \dots \otimes \bigl( \ket{0} + e^{2 \pi i 0.j_1 j_2 \dots j_n} \ket{1} \bigr) \Bigr)
+				\end{equation}
+				using binary fractions \eqref{eq:binaryFraction}.
+			\end{theorem}
+			\begin{proof}
+				As usual, we show this equivalence by clever manipulation of the state. For brevity, we drop the normalization constant as it stays the same anyway. By rearranging and using the definition of exponents, we have
+				\begin{align}
+					\sum_{k = 0}^{2^n - 1} e^{2 \pi i j k / 2^n} \ket{k}
+						&= \sum_{k_1} \sum_{k_2} \dots \sum_{k_n} e^{2 \pi i j \sum_{\ell = 1}^{n} k_\ell 2^{n - \ell} / 2^n} \ket{k_1 k_2 \dots k_n} \\
+						&= \sum_{k_1} \sum_{k_2} \dots \sum_{k_n} e^{2 \pi i j \sum_{\ell = 1}^{n} k_\ell 2^{-\ell}} \ket{k_1 k_2 \dots k_n}
+						 = \sum_{k_1} \sum_{k_2} \dots \sum_{k_n} \bigotimes_{\ell = 1}^{n} e^{2 \pi i j k_\ell 2^{-\ell}} \ket{k_\ell} \eqqcolon (\ast).
+				\end{align}
+				We now pull the sums into the tensor product one by one and add them explicitly:
+				\begin{align}
+					(\ast)
+						&= \sum_{k_1} \sum_{k_2} \dots \sum_{k_{n - 1}} \bigotimes_{\ell = 1}^{n} e^{2 \pi i j k_\ell 2^{-\ell}} \ket{k_\ell} \otimes \Biggl[ \sum_{k_n} e^{2 \pi i j k_n / 2^n} \ket{k_n} \Biggr] \\
+						&= \sum_{k_1} \sum_{k_2} \dots \sum_{k_{n - 1}} \bigotimes_{\ell = 1}^{n} e^{2 \pi i j k_\ell 2^{-\ell}} \ket{k_\ell} \otimes \Bigl[ e^{2 \pi i j \cdot 0 / 2^n} \ket{0} + e^{2 \pi i j \cdot 1 / 2^n} \ket{1} \Bigr] \\
+						&= \sum_{k_1} \sum_{k_2} \dots \sum_{k_{n - 1}} \bigotimes_{\ell = 1}^{n} e^{2 \pi i j k_\ell 2^{-\ell}} \ket{k_\ell} \otimes \Bigl[ \ket{0} + e^{2 \pi i j / 2^n} \ket{1} \Bigr] \\
+						&= \sum_{k_1} \sum_{k_2} \dots \sum_{k_{n - 2}} \bigotimes_{\ell = 1}^{n} e^{2 \pi i j k_\ell 2^{-\ell}} \ket{k_\ell} \otimes \Bigl[ \ket{0} + e^{2 \pi i j / 2^{n - 1}} \ket{1} \Bigr] \otimes \Bigl[ \ket{0} + e^{2 \pi i j / 2^n} \ket{1} \Bigr] \\
+						&= \cdots \\
+						&= \bigoplus_{\ell = 1}^{n} \Bigl[ \ket{0} + \underbrace{e^{2 \pi i j 2^{-\ell}}}_{\alpha_\ell \coloneqq} \ket{1} \Bigr]
+				\end{align}
+				But this is till not the form we desire! We have to rearrange phases of the \(\ket{1}\)'s more:
+				\begin{equation}
+					\alpha_\ell
+						= e^{2 \pi i j 2^{-\ell}}
+						= e^{2 \pi i \sum_{m = 1}^{n} j_m 2^{n - m} 2^{-\ell}}
+						= e^{2 \pi i \sum_{m = 1}^{n} j_m 2^{n - m - \ell}}
+						= \prod_{m = 1}^{n} e^{2 \pi i j_m 2^{n - \ell - m}}
+				\end{equation}
+				In this product, however, all terms with \( m \leq n - \ell \) are \(1\) as \( 2^{n - \ell - m} \in \N_0 \) for \( m \leq n - \ell \) and therefore they disappear from the product:
+				\begin{equation}
+					\prod_{m = 1}^{n} e^{2 \pi i j_m 2^{n - \ell - m}}
+						= \prod_{m = n - \ell + 1}^{n} e^{2 \pi i j_m 2^{n - \ell - m}}
+						 = e^{2 \pi i \sum_{m = n - \ell + 1}^{n} j_m 2^{n - \ell - m}}
+						 \doteq e^{2 \pi i 0.j_{n - \ell + 1} j_{n - \ell + 2} \dots j_{n}}
+				\end{equation}
+				As the last equivalence is a bit hard to see, consider \(\ell = 1\), \(\ell = 2\), and \(\ell = n\) explicitly:
+				\begin{itemize}
+					\item \( \sum_{m = n - 1 + 1}^{n} j_m 2^{n - 1 - m} = \sum_{m = n}^{n} j_m 2^{n - 1 - m} = j_n / 2 = 0.j_n \)
+					\item \( \sum_{m = n - 2 + 1}^{n} j_m 2^{n - 2 - m} = \sum_{m = n - 1}^{n} j_m 2^{n - 2 - m} = j_{n - 1} / 2 + j_n / 4 \)
+					\item \( \sum_{m = n - n + 1}^{n} j_m 2^{n - n - m} = \sum_{m = 1}^{n} j_m 2^{-m} = j_1 / 2 + j_2 / 4 + \dots + j_n / 2^n \)
+				\end{itemize}
+				Plugging everything together, we have the result that we wanted to show.
+			\end{proof}
 		% end
 
-		\subsection{Quantum Circuit} % 8.8, 8.9, 8.10, E7.1, E7.3, E8.2
-			\todo{Content}
+		\subsection{Quantum Circuit}
+			As the \ac{QFT} is not simply an application of a unitary (or at least we do not want to use a bruteforce approach to generate it), we need to consider the qubits individually. First, we show that
+			\begin{equation}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{j_1}}       & \gate{H} & \gate{R_2} & \qw & \cdots & & \gate{R_{n - 1}} & \gate{R_n} & \qw      & \qw & \cdots & & \qw              & \qw              & \qw      & \qw        & \qw      & \rstick{\ket{J_1}} \qw \\
+					\lstick{\ket{j_2}}       & \qw      & \ctrl{-1}  & \qw & \cdots & & \qw              & \qw        & \gate{H} & \qw & \cdots & & \gate{R_{n - 2}} & \gate{R_{n - 1}} & \qw      & \qw        & \qw      & \rstick{\ket{J_2}} \qw \\
+					\lstick{\ket{j_{n - 1}}} & \qw      & \qw        & \qw & \cdots & & \ctrl{-2}        & \qw        & \qw      & \qw & \cdots & & \ctrl{-1}        & \qw              & \gate{H} & \gate{R_2} & \qw      & \rstick{\ket{J_{n - 1}}} \qw \\
+					\lstick{\ket{j_n}}       & \qw      & \qw        & \qw & \cdots & & \qw              & \ctrl{-3}  & \qw      & \qw & \cdots & & \qw              & \ctrl{-2}        & \qw      & \ctrl{-1}  & \gate{H} & \rstick{\ket{J_n}} \qw
+				}
+				\label{eq:qftCircuitPart}
+			\end{equation}
+			produces the following states (with \( R_k \coloneqq \diag(1, e^{2 \pi i / 2^k}) \)):
+			\begin{equation}
+				\begin{aligned}
+					\ket{J_1} &= \frac{1}{\sqrt{2}} \bigl( \ket{0} + e^{2 \pi i 0.j_1 j_2 \dots j_{n - 1} j_n} \ket{1} \bigr) &
+					\ket{J_2} &= \frac{1}{\sqrt{2}} \bigl( \ket{0} + e^{2 \pi i 0.j_2 \dots j_{n - 1} j_n} \ket{1} \bigr) \\
+					\ket{J_{n - 1}} &= \frac{1}{\sqrt{2}} \bigl( \ket{0} + e^{2 \pi i 0.j_{n - 1} j_n} \ket{1} \bigr) &
+					\ket{J_n} &= \frac{1}{\sqrt{2}} \bigl( \ket{0} + e^{2 \pi i 0.j_n} \ket{1} \bigr)
+				\end{aligned}
+				\label{eq:qftCircuitStates}
+			\end{equation}
+			For the first qubit, we have
+			\begin{align}
+				\ket{j_1 j_2 \dots j_{n - 1} j_n}
+					&\overset{H_1}{\longto}
+						\frac{1}{\sqrt{2}} \bigl( \ket{0} + \underbrace{(-1)^{j_1}}_{\mathclap{= e^{\pi i j_1} = e^{2 \pi i j_1 / 2}}} \ket{1} \bigr) \ket{j_2 \dots j_{n - 1} j_n}
+							= \frac{1}{\sqrt{2}} \bigl( \ket{0} + e^{2 \pi i 0.j_1} \ket{1}) \ket{j_2 \dots j_{n - 1} j_n} \\
+					&\overset{\mathit{CR}_2}{\longto}
+						\frac{1}{\sqrt{2}} \bigl( \ket{0} + e^{2 \pi i 0.j_1} e^{2 \pi i j_2 / 4} \ket{1} \bigr) \ket{j_2 \dots j_{n - 1} j_n}
+							= \frac{1}{\sqrt{2}} \bigl( \ket{0} + e^{2 \pi i 0.j_1 j_2} \ket{1} \bigr) \ket{j_2 \dots j_{n - 1} j_n} \\
+					&\longto \cdots \\
+					&\overset{\mathit{CR}_n}{\longto}
+							\frac{1}{\sqrt{2}} \bigl( \ket{0} + e^{2 \pi i 0.j_1 j_2 \dots j_n} \ket{1} \bigr) \ket{j_2 \dots j_{n - 1} j_n}.
+			\end{align}
+			As the result of the second qubit is independent of the first qubit and so on (i.e., the \(i\)-th qubit does not effect the \(j\)-th qubit for \(j > i\)), we can repeat this procedure for the rest of the qubits. Hence, the circuit \eqref{eq:qftCircuitPart} indeed produces the states \eqref{eq:qftCircuitStates}. However, compared to the definition of the \ac{QFT}, \autoref{def:qft}, the phases of the qubits are flipped. We therefore have to apply SWAP-gates between qubit \(1\) and \(n\), \(2\) and \(n - 1\), and so on.
+
+			This concludes the derivation/proof of the quantum circuit for \ac{QFT}.
 		% end
 
-		\subsection{Remarks} % 8.11
-			\todo{Content}
+		\subsection{Remarks}
+			For implementing the \ac{QFT} we needed \(n\) Hadamard gates, \( (n - 1) + \cdots + 2 + 1 = n (n - 1) / 2 \) controlled-\(R_k\)-gates and \( \lfloor n/2 \rfloor \) SWAP-gates. As a swap gates needs \(3\) CNOT-gates and an arbitrary controlled gates needs \(2\) CNOT-gates and \(3\) single-qubit gates, we need a total of
+			\begin{equation}
+				n + \frac{n (n - 1)}{2} \cdot 5 + \biggl\lfloor \frac{n}{2} \biggr\rfloor \cdot 3 \in \mathcal{O}(n^2)
+			\end{equation}
+			gates to implement the \acl{QFT}. Compared to the classical discrete Fourier transform which has complexity \( \mathcal{O}(n 2^n) \), this is an exponential speedup! However, as usual, we cannot read out the result and need to find clever ways of applying the \ac{QFT} to use its power.
+
+			The algorithm is summarized in \autoref{alg:qft}.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{state \(\ket{j_1 j_2 \dots j_{n - 1} j_n}\)}
+				\KwOut{its Fourier-transformed state}
+				\tcp{Run quantum circuit.}
+				\( \displaystyle\qquad\quad
+					\Qcircuit @C=1em @R=1em {
+						\lstick{\ket{j_1}}       & \gate{H} & \gate{R_2} & \qw & \cdots & & \gate{R_{n - 1}} & \gate{R_n} & \qw      & \qw & \cdots & & \qw              & \qw              & \qw      & \qw        & \qw      & \qswap      & \qw         & \rstick{\ket{k_1}} \qw \\
+						\lstick{\ket{j_2}}       & \qw      & \ctrl{-1}  & \qw & \cdots & & \qw              & \qw        & \gate{H} & \qw & \cdots & & \gate{R_{n - 2}} & \gate{R_{n - 1}} & \qw      & \qw        & \qw      & \qw \qwx    & \qswap      & \rstick{\ket{k_2}} \qw \\
+						\lstick{\ket{j_{n - 1}}} & \qw      & \qw        & \qw & \cdots & & \ctrl{-2}        & \qw        & \qw      & \qw & \cdots & & \ctrl{-1}        & \qw              & \gate{H} & \gate{R_2} & \qw      & \qw \qwx    & \qswap \qwx & \rstick{\ket{k_{n - 1}}} \qw \\
+						\lstick{\ket{j_n}}       & \qw      & \qw        & \qw & \cdots & & \qw              & \ctrl{-3}  & \qw      & \qw & \cdots & & \qw              & \ctrl{-2}        & \qw      & \ctrl{-1}  & \gate{H} & \qswap \qwx & \qw         & \rstick{\ket{k_n}} \qw
+					}
+				\) \;
+				\Return \( \ket{k_1 k_2 \dots k_{n - 1} k_n} \) \;
+				\caption{Quantum Fourier Transform}
+				\label{alg:qft}
+			\end{algorithm}
 		% end
 	% end
 
-	\section{Shor's Algorithm} % 7.3, 7.4, 7.5, 7.6
+	\section{Shor's Algorithm}
 		\label{sec:shors}
 
-		\todo{Content}
+		In this section we will finally explore the most well-known quantum algorithm, \emph{Shor's algorithm.} It solves the problem of finding the factors of a large number \(N\) \emph{efficiently} and polynomial in \(N\). The difficulty of factoring is crucial for modern-day cryptography as RSA (a very common public-key crypto-system) solely relies on the fact that factoring is \emph{hard.} As factoring is closely related to finding the period of a function, we split this section into two parts: the first is concerned with finding the period of a special function (similar to Simon's algorithm) and the second takes the steps from period finding to factoring which is purely classical.
 
-		\subsection{Period Finding} % 7.7, 7.8, 7.9, 7.10, 7.23, 8.3, 8.4
-			\todo{Content}
+		\subsection{Period Finding}
+			The first step in Shor's algorithm and the most ingenious ideas are in finding the period \(r\) of some function \(f\) under \emph{ordinary addition} (cf. Simon's algorithm which considered modulo-two addition). The best classical algorithms solving this problem scale exponentially with the number of bits of \(r\). With \ac{QC}, we can find an algorithm that scales slightly faster than cubic.
 
-			\subsubsection{Using Quantum Fourier Transform} % 7.11, 7.12, 7.13, 7.14, 7.15
-				\todo{Content}
+			We want to find the period \(r\) of the function \( f : \{ 0, 1 \}^n \to \{ 0, 1 \}^{n_0} : x \mapsto b^x \,\mathbf{mod}\, N \) such that \( f(x) = f(x + r) \). We denote the number of bits of \(N\) as \(n_0\) and let \( n \coloneqq n_0 \). We also have \( 2^{n_0} > N > r \).
+
+			\subsubsection{Quantum Circuit}
+				Like in Simon's algorithm, we prepare the state \( \ket{0}^{\otimes n} \ket{0}^{\otimes n_0} \), apply \(H^{\otimes n}\) to the first \(n\) gates, apply \( U_f : \ket{x}\ket{y} \mapsto \ket{x}\ket{y \oplus f(x)} \), and measure the last \(n_0\) qubits. This collapses our state as follows:
+				\begin{equation}
+					\frac{1}{\sqrt{2^n}} \sum_{x = 0}^{2^n - 1} \ket{x}\ket{f(x)}
+					\quad\overset{\text{measure}}{\longto}\quad
+					\ket{\psi_n} = \frac{1}{\sqrt{m}} \sum_{k = 0}^{m - 1} \ket{x_0 + kr}.
+				\end{equation}
+				We now have a superposition of inputs to \(f\) that all yield the same value when applying \(f\) where \( 0 \leq x_0 < r \) and \( m \approx \lfloor 2^n / r \rfloor \). Like with Simon's algorithm, we now have the problem that a measurement destroys the superposition and we are not guaranteed to end up in the same one again and we cannot clone the state due to the no-cloning theorem. As always, we therefore need to find a clever way of learning \(r\). The main problem is the "base" \(x_0\) which is the changing variable (as \(r\) is constant by assumption). We only want to extract the frequency of the values---which is exactly what \ac{QFT} does.
 			% end
 
-			\subsubsection{Post-Processing} % 7.16
-				\todo{Content}
+			\subsubsection{Using Quantum Fourier Transform}
+				We saw in the previous section that we end up with the post-measurement state \( \ket{\psi_n} = \frac{1}{\sqrt{m}} \sum_{k = 0}^{m - 1} \ket{x_0 + kr} \) of which we want to extract the frequency \(r\) (i.e., we want to put it into a phase such that we are able to read it out). We now apply \ac{QFT} according to \autoref{def:qft}:
+				\begin{align}
+					U_\mathrm{FT} \ket{\psi_n}
+						&= \frac{1}{\sqrt{m 2^n}} \sum_{k = 0}^{m - 1} U_\mathrm{FT} \ket{x_0 + kr}
+						 = \frac{1}{\sqrt{m 2^n}} \sum_{k = 0}^{m - 1} \sum_{y = 0}^{2^n - 1} e^{2 \pi i (x_0 + kr) y / 2^n} \ket{y} \\
+						&= \frac{1}{\sqrt{m 2^n}} \sum_{y = 0}^{2^n - 1} \sum_{k = 0}^{m - 1} e^{2 \pi i (x_0 + kr) y / 2^n} \ket{y}
+						 = \sum_{y = 0}^{2^n - 1} \underbrace{e^{2 \pi i x_0 y / 2^n}}_{(\dagger)} \Biggl[ \frac{1}{\sqrt{m 2^n}} \sum_{k = 0}^{m - 1} e^{2 \pi i k r y / 2^n} \Biggr] \ket{y}
+				\end{align}
+				As \(x_0\) only appears in the relative phase \((\dagger)\) which has no effect on the measurement (as its magnitude is \num{1} and the states \(\ket{y}\) are orthonormal), we have successfully eliminated \(x_0\) from our calculations! The probability of some measurement \(y_0\) is therefore
+				\begin{equation}
+					P(y_0) = \frac{1}{m 2^n} \Biggl\lvert \sum_{k = 0}^{m - 1} e^{2 \pi i k r y / 2^n} \Biggr\rvert^2.  \label{eq:shorProb}
+				\end{equation}
+				This concludes the intermediate goal of eliminating \(x_0\) from our mathematical framework. Next, we have to interpret our measurement outcomes by analyzing the probability \eqref{eq:shorProb} deeper.
+			% end
 
-				\paragraph{Maximizing the \(P(y)\)} % 7.17, 7.18
-					\todo{Content}
+			\subsubsection{Post-Processing}
+				We are now at the point where we start the classical post-processing which is where the ingenious ideas that make Shor's algorithm work come into play. The result from the above quantum computations is that we measure \(y\) with probability \( P(y) = \frac{1}{m 2^n} \bigl\lvert \sum_{k = 0}^{m - 1} e^{2 \pi i k r y / 2^n} \bigr\rvert^2 \). Note that we dropped the index \(\cdot_0\) for brevity.
+
+				\paragraph{Calculating the Probability of "Success"}
+					First, we show that there is a reasonable probability to get a \(y\) "close" to an integer multiple of \(2^n/r\). We say that \(y\) is close to \( j 2^n/r \) (the \(j\)-th multiple) if there exists an \( \lvert \delta_j \rvert \leq 1/2 \) such that
+					\begin{equation}
+						y = j \frac{2^n}{r} + \delta_j \eqqcolon y_j.
+					\end{equation}
+					We do this by inserting \(y_j\) into \eqref{eq:shorProb} and lower-bounding the probability:
+					\begin{align}
+						P(y_j)
+							&= \frac{1}{m 2^n} \Biggl\lvert \sum_{k = 0}^{m - 1} e^{2 \pi i k r y_j / 2^n} \Biggr\rvert^2
+							 = \frac{1}{m 2^n} \Biggl\lvert \sum_{k = 0}^{m - 1} e^{2 \pi i k r (j 2^n/r + \delta_j) / 2^n} \Biggr\rvert^2
+							 = \frac{1}{m 2^n} \Biggl\lvert \sum_{k = 0}^{m - 1} \underbrace{e^{2 \pi i k j}}_{= (e^{2 \pi i})^{jk} = 1} e^{2 \pi i k r \delta_j / 2^n} \Biggr\rvert^2 \\
+							&= \frac{1}{m 2^n} \Biggl\lvert \sum_{k = 0}^{m - 1} e^{2 \pi i k r \delta_j / 2^n} \Biggr\rvert^2
+							 = \frac{1}{m 2^n} \Biggl\lvert \sum_{k = 0}^{m - 1} \bigl( e^{2 \pi i r \delta_j / 2^n} \bigr)^k \Biggr\rvert^2
+							 \overset{\mathclap{(\dagger)}}{=} \frac{1}{m 2^n} \Biggl\lvert \frac{1 - e^{2 \pi i m r \delta_j / 2^n}}{1 - e^{2 \pi i r \delta_j / 2^n}} \Biggr\rvert^2 \\
+							&\overset{\mathclap{(\ddagger)}}{=} \frac{1}{m 2^n} \Biggl\lvert \frac{1 - \cos(2 \pi i m r \delta_j / 2^n) - i \sin(2 \pi i m r \delta_j / 2^n)}{1 - \cos(2 \pi i r \delta_j / 2^n) - i \sin(2 \pi i r \delta_j / 2^n)} \Biggr\rvert^2
+							 \overset{\mathclap{(\ast)}}{=} \frac{1}{m 2^n} \frac{\sin^2(\pi m r \delta_j / 2^n)}{\sin^2(\pi r \delta_j / 2^n)}
+					\end{align}
+					In the marked steps, we used the following: \((\dagger)\) Geometric series, \((\ddagger)\) Euler's formula, \((\ast)\) the following relation:
+					\begin{align}
+						\bigl\lvert 1 - \cos(2 \varphi) - i \sin(2 \varphi) \bigr\rvert^2
+							&= \bigl( 1 - \cos(2 \varphi) \bigr)^2 + \sin^2(2 \varphi)
+							 = 1 - 2 \cos(2 \varphi) + \cos^2(2 \varphi) + \sin^2(2 \varphi) \\
+							&= 1 - 2 \cos(2 \varphi) + 1
+							 = 2 \bigl( 1 - \cos(2 \varphi) \bigr)
+							 = 4 \sin^2(\varphi)
+					\end{align}
+					With the two approximations \( m \approx 2^n/r \) and \( \sin x \approx x \) for small \(x\), we arrive at
+					\begin{equation}
+						\frac{1}{m 2^n} \frac{\sin^2(\pi i m r \delta_j / 2^n)}{\sin^2(\pi i r \delta_j / 2^n)}
+							\approx \frac{r}{(2^n)^2} \frac{\sin^2(\pi \delta_j)}{(\pi r \delta_j / 2^n)^2}
+							= \frac{1}{r} \Biggl( \frac{\sin(\pi \delta_j)}{\pi \delta_j} \Biggr)^2.  \label{eq:shorsApprox}
+					\end{equation}
+					Let \( x \coloneqq \pi \delta_j \). As we can lower-bound \( \sin x \) by \(x/(\pi/2)\) in the interval \( x \in [-\pi/2, \pi/2] \), see \autoref{fig:sinX}, we can lower-bound \eqref{eq:shorsApprox} as follows:
+					\begin{equation}
+						\frac{1}{r} \Biggl( \frac{\sin(\pi \delta_j)}{\pi \delta_j} \Biggr)^2
+							\geq \frac{1}{r} \Biggl( \frac{2 \pi \delta_j}{\pi^2 \delta_j} \Biggr)^2
+							= \frac{1}{r} \Biggl( \frac{2}{\pi} \Biggr)^2
+							= \frac{2}{\pi^2 r}
+							\approx \frac{\num{0.405}}{r}
+					\end{equation}
+					As there are \(r - 1\) different\footnote{As \( y_j \in \{ 1, 2, \dots, 2^n - 1 \} \) and also \( y_j = j 2^n/r + \delta_j \), we can see that \( j \) has to be one of \( \{ 1, 2, \dots, r - 1 \} \). For \( j = r \), we have \( y_r = r 2^n / r + \delta_r = 2^n + \delta_r \geq 2^n - 1/2 > 2^n - 1 \) as \( \lvert \delta_j \rvert \leq 1/2 \). For \( j = 0 \), we have \( y_0 = 0 \cdot 2^n / r + \delta_0 = \delta_0 \) and therefore \(y_0 = 0\) as \(y_0\) can only take integral values. However, we do not learn anything about \(r\) with \(y = 0\) and we therefore discard it from the probability discussion. Hence, we end up with \(r - 1\) "useful" values of \(j\).} \(j\) and the above probability is for a specific \(j\), out final probability of getting a measurement in vicinity of an integer multiple of \(2^n/r\) is greater than \SI{40}{\percent}! What remains is to recover the period from collecting multiple samples (cf. Simon's algorithm).
+
+					\begin{figure}
+						\centering
+						% Plot[{(Sin[x])^2, (2 x/\[Pi])^2}, {x, -\[Pi]/2, \[Pi]/2}, PlotLegends -> "Expressions", ImageSize -> Large]
+						\includegraphics[width=0.5\linewidth]{sin-x.pdf}
+						\caption[Lower Bound of Sine]{Lower bound of \(\sin x\) in the interval \( x \in [-\pi/2, \pi/2] \) by \(x/(\pi/2)\).}
+						\label{fig:sinX}
+					\end{figure}
 				% end
 
-				\paragraph{Recovering the Period} % 7.19, 7.20, 7.21
-					\todo{Content}
-				% end
+				\paragraph{Recovering the Period}
+					We saw that after running the quantum circuit and measuring, we end up with \(\ell\) samples \( y_1, y_2, \dots, y_\ell \). Suppose that these are exact, i.e., \( \delta_j = 0 \) for all \(j\). We could then recover the period by calculating
+					\begin{equation}
+						\gcd\biggl( j_1 \frac{2^n}{r},\, j_2 \frac{2^n}{r},\, \dots,\, j_\ell \frac{2^n}{r} \biggr) = \frac{2^n}{r}.  \label{eq:shorGcd}
+					\end{equation}
+					However, we do not have the exact values and the \(y\)'s are just in a vicinity around integer multiples of \(2^n/r\)! By reformulating the "closeness" of \(y_j\) as follows and choosing a relaxed upper bound,
+					\begin{equation}
+						y_j = j \frac{2^n}{r} + \delta_j
+						\quad\iff\quad
+						\biggl\lvert y_j - 2^n \frac{j}{r} \biggr\rvert \leq \frac{1}{2}
+						\quad\implies\quad
+						\biggl\lvert \frac{y_j}{2^n} - \frac{j}{r} \biggr\rvert = \biggl\lvert \frac{j}{r} - \frac{y_j}{2^n} \biggr\rvert \leq \frac{1}{2 \cdot 2^n} = \frac{1}{2 \cdot (2^{n_0})^2} \leq \frac{1}{2 r^2},
+						\label{eq:shorRelaxed}
+					\end{equation}
+					we can apply the following theorem from number theory using \acl{CFE}:
+					\begin{theorem}  \label{th:numberTheory}
+						If \( \lvert \sfrac{p}{q} - x \rvert \leq \flatfrac{1}(\!2 q^2) \) with real \(x\) and \(\sfrac{p}{q}\), then \(\sfrac{p}{q}\) will appear in the \ac{CFE} of \(x\) as a partial sum.
+					\end{theorem}
+					\begin{proof}
+						See Nielsen and Chuang, Appendix A4.4.
+					\end{proof}
 
-				\paragraph{Remarks} % 7.22
-					\todo{Content}
+					With this theorem, we can recover the exact multiples \( j \flatfrac{2^n} r \) with \( p \triangleq j \), \( q \triangleq r \), and \( x \triangleq \sfrac{y_j}{2^n} \). Subsequently, we apply \eqref{eq:shorGcd}. We have now successfully recovered the period \(r\) with overwhelming probability! By relaxing the upper bound on the error in \eqref{eq:shorRelaxed}, the \(y\)'s are not required to be \emph{closest} to integral multiples, but they can also be the second, third, fourth, etc. closest. This upper bound ramps up the probability of measuring a useful \(y\) to \SI{95}{\percent}!
+
+					At this point we finished the period finding which was the hard part of Shor's algorithm. Next, we will look at how to go from period finding to factoring and will finally summarize the algorithm. The real clever part of Shor's algorithm lies in using \eqref{eq:shorRelaxed} to recover the exact integral multiples.
+
+					\todo{Period Finding via CFE: Example! (from the Exercise)}
 				% end
 			% end
 		% end
 
-		\subsection{From Period Finding to Factoring} % 8.12, 8.13, 8.14, 8.15, 8.16
-			\todo{Content}
-
-			\subsubsection{Remarks} % 8.17
-				\todo{Content}
-			% end
+		\subsection{From Period Finding to Factoring}
+			After the first step (period finding), we found an \(r\) such that \( f(x) = f(x + r) \) for \( f(x) = b^x \,\mathbf{mod}\, N \). We now use this result for finding the factors of \(N\). We do this recursively. First, find a factor \(p\) of \(N\). Than we know \(N = p q\). Now, find the factors of \(p\) and \(q\) until all of them are prime. As \(N\) has at most \(\log_2 N\) factors and finding a factor has polynomial complexity, we can solve the whole problem in polynomial time. We focus on finding \emph{large} factors of a single number \(N\) as we can easily identify small factors such as \( 2, 3, 5, \dots \) and get rid of them. With the following procedure (where all congruencies are modulo \(N\)),
+			\begin{enumerate}
+				\item Pick a random \(a\). If \(a\) is not co-prime\footnote{\emph{Co-prime} means that \( \gcd(a, N) = 1 \) which is easy to check using Euclid's algorithm.} to \(N\), we found a factor and terminate.
+				\item Find the smallest \(r\) such that \( a^{x + r} \equiv a^x \). From this we know that\footnote{Due to \( a^{x + r} \equiv a^x \,\iff\, a^x a^r \equiv a^x \,\iff\, a^r \equiv 1 \).} \( a^r \equiv 1 \).
+				\item If \(r\) is odd, abort and go to first step. Otherwise, let \( x \coloneqq a^{r/2} \,\mathbf{mod}\, N \). From this we know that\footnote{Due to \( a^r \equiv 1 \,\iff\, a^r - 1 \equiv 0 \,\iff\, x^2 - 1 \equiv 0 \).} \( x^2 - 1 = (x - 1) (x + 1) \equiv 0 \).
+				\item We know that\footnote{Due to \( x - 1 \equiv 0 \,\iff\, x \equiv 1 \,\iff\, a^{r/2} \equiv 1 \).} \( x - 1 \not\equiv 0 \), contradicting the assumption that \(r\) is the smallest period (as \(\sfrac{r}{2}\) would be one, too).
+				\item If \( x + 1 \not\equiv 0 \), abort and go to the first step.
+				\item We now know that \( p \coloneqq \gcd(x - 1, N) > 1 \) and \( q \coloneqq \gcd(x + 1, N) > 1 \) due to \( (x - 1) (x + 1) \equiv 0 \). If \(p\) and \(q\) are prime, we also have \( N = p q \). If they are not, we can still find factors by division.
+			\end{enumerate}
+			we managed to factor \(N\) efficiently! However, at two steps (3 and 5), we have to be lucky that our assumptions hold. With some number theory, one can show that the probability of this is greater than \SI{50}{\percent} which is not bad (see Mermin, 2007, Appendix M for details).
 		% end
 
-		\subsection{Summary} % 8.18, 8.19
-			\todo{Content}
+		\subsection{Remarks}
+			We saw that Shor's algorithm provides an exponential speedup over the classical solution. And compared to the algorithms before, we can apply this problem to break RSA and public-key crypto! However, as we will see in \autoref{sec:downer}, modern-day quantum computer are far from being able to apply this algorithm to real-world problems as we have far too few qubits available (around a thousand while we need thousands of millions).
+
+			The algorithm is summarized in \autoref{alg:shors} using the period finding in \autoref{alg:period}, the actual quantum part.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{composite number \(N\)}
+				\KwOut{non-trivial factor of \(N\)}
+				get rid of small factors \;
+				sample \( a \in (0, N) \). \;
+				\If{\( \gcd(a, N) > 1 \)}{
+					\tcp{The GCD already is a factor of \(N\).}
+					\Return \( \gcd(a, N) \) \;
+				}
+				find minimum \(r\) such that \( a^r \equiv 1  \mod N \) using \autoref{alg:period}  \quad\tcp{Quantum Part.}
+				\If{\(r\) is odd}{
+					\textbf{abort} and sample new \(a\) \;
+				}
+				\If{\( a^{r/2} + 1 \equiv 0 \mod N \)}{
+					\textbf{abort} and sample new \(a\) \;
+				}
+				\( p, q \gets \gcd(a^{r/2} \pm 1, N) \) \;
+				\tcp{Return only non-trivial factors.}
+				\If{\( p > 1 \)}{
+					\Return \(p\) \;
+				}
+				\If{\( q > 1 \)}{
+					\Return \(q\) \;
+				}
+				\Return "FAILED" \;
+				\caption{Shor's Algorithm}
+				\label{alg:shors}
+			\end{algorithm}
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{function \( f : \{ 0, 1 \}^n \to \{ 0, 1 \}^{n_0} = a^x \,\mathbf{mod}\, N \) with the property \( f(x) = f(x + r) \) for a constant period \( r \in \{ 0, 1 \}^n \) with \( n = 2n_0 \); tries \(m\)}
+				\KwOut{the period \(r\)}
+				\( \mathcal{R} \gets \{ \} \)  \quad\tcp{Prepare period candidate set.}
+				\ForEach{\( k = 1, 2, \dots, m \)}{
+					\tcp{Run quantum circuit.}
+					\( \displaystyle\qquad\qquad
+						\Qcircuit @C=1em @R=1em {
+							\lstick{\ket{0}^n}     & \gate{H} & \multigate{1}{U_f} & \qw    & \gate{U_\mathrm{FT}} & \meter & \rstick{y_k} \cw \\
+							\lstick{\ket{0}^{n_0}} & \qw      & \ghost{U_f}        & \meter &                      &        &
+						}
+					\) \;
+					\If{\( y_k = 0 \)}{
+						\tcp{A zero \(y\) does not convey any information.}
+						\textbf{continue} \;
+					}
+					\tcp{Recover period candidates.}
+					\( p_{k, i}/q_{k, i} \gets \) irreducible numerator/denominator of \(i\)-th partial sum of \( y_k/2^n \) \;
+					\ForEach{\( i = 0, 1, \dots \)}{
+						\If{\( q_{k, i + 1} > N \)}{
+							\tcp{Add period candidate to the candiate set.}
+							\( r_k \gets q_{k, i} \) \;
+							\( \mathcal{R} \gets \mathcal{R} \cup \{ r_k \} \) \;
+						}
+					}
+				}
+				\( r^\ast \gets \mathrm{lcm}(\mathcal{R}) \)  \quad\tcp{least common multiple}
+				\Return \( r^\ast \) \;
+				\caption{Period Finding Algorithm}
+				\label{alg:period}
+			\end{algorithm}
 		% end
 	% end
 
-	\section{Grover's Algorithm} % 9.2, 9.3, 9.25, E9.1, E9.2
+	\section{Grover's Algorithm}
 		\label{sec:grovers}
 
-		\todo{Content}
+		We will now look at \emph{Grover's algorithm,} a very \emph{different} quantum algorithm implementing unstructured search. Opposed to Shor's algorithm, however, it is much simpler and does not involve and post-processing. As before, we first go over the problem description, then the classical approach, followed by the quantum, and finally we finish up with some remarks.
 
-		\subsection{Classical Approach} % 9.7
-			\todo{Content}
+		\subsection{Problem}
+			The problem solved by Grover's algorithm is very general: suppose a list (or puzzle or whatever) with \( N = 2^n \) possibilities. There are \(K < N\) correct options and we want to find one of them. Let \( f : \{ 0, 1 \}^n \to \{ 0, 1 \} : x \mapsto f(x) \) be a function that is \num{1} iff \(x\) was a solution.
 		% end
 
-		\subsection{Quantum Approach} % 9.7, 9.8
-			\todo{Content}
+		\subsection{Classical Approach}
+			Classically, we need \(N - K\) queries of \(f\) to get a solution with certainty (if we queries the first \(N - K\) options, the last \(K\) options must be solutions, hence \(N - K\)).
+		% end
 
-			\subsubsection{Circuit} % 9.9, 9.10, 9.11
-				\todo{Content}
+		\subsection{Quantum Approach}
+			We can again directly apply Deutsch's approach \eqref{eq:deutschsApproach}. As usual, we will neglect the final qubit and write the state (before the final Hadamard-layer!) as
+			\begin{equation}
+				\frac{1}{\sqrt{2^n}} \sum_x (-1)^{f(x)} \ket{x}.
+			\end{equation}
+			Note that the only \(\ket{x}\) with a bit flip are the solutions \(x^\ast\) we are looking for. However, as usual, we cannot simply measure the state but have to find clever ways of reading out the information. Instead, we introduce a new unitary transformation \(\tilde{U}\) followed by Hadamard layers:
+			\begin{equation}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \gate{\tilde{U}} & \gate{H} & \qw \\
+					\lstick{\ket{0}}   & \gate{H} & \ghost{U_f}        & \qw      & \qw              & \qw      & \qw
+				}
+			\end{equation}
+			This unitary transformation is defined as
+			\begin{equation}
+				\tilde{U}
+					\coloneqq 2 \ket{0}^n\prescript{n}{}{\bra{0}} - \ID
+					= \diag(1, -1, -1, \dots, -1).
+			\end{equation}
+			For brevity, we write \( U_R \coloneqq H^{\otimes n} \tilde{U} H^{\otimes n} \) and \( G \coloneqq U_R U_f \) which we call \emph{Grover's unitary.} We claim (and show) now that applying \(G\) for \(\sqrt{N}\) times,
+			\begin{equation}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{G} & \multigate{1}{G} & \qw & \cdots & & \multigate{1}{G} & \meter & \rstick{x^\ast} \cw \\
+					                   &          & \ghost{G}        & \ghost{G}        & \qw & \cdots & & \ghost{G}        & \qw    & \qw
+				}
+			\end{equation}
+			yields a correct result \( f(x^\ast) = 1 \) when measuring with almost unit probability. We will now first look an at algebraic derivation why this is the case and then look at a graphical illustration.
 
-				\paragraph{Illustration} % 9.12, 9.15, 9.16, 9.17, 9.18, 9.19, 9.20
-					\todo{Content}
-				% end
-
-				\paragraph{Algebraic Proof} % 9.13, 9.14
-					\todo{Content}
-				% end
+			\subsubsection{Algebraic Derivation}
+				First, we derive what \(U_R\) actually does. Let \( \ket{\psi} = \frac{1}{\sqrt{N}} \sum_x \ket{x} \) be the equal superposition of all basis states (note that this is also the input to the first Grover-unitary). Then we can write \(U_R\) as
+				\begin{equation}
+					H^{\otimes n} \tilde{U} H^{\otimes n}
+						= H^{\otimes n} \bigl( 2 \ket{0}^n\prescript{n}{}{\bra{0}} - \ID \bigr) H^{\otimes n}
+						= 2 \bigl( H^{\otimes n} \ket{0}^n \bigr) \bigl( \prescript{n}{}{\bra{0}} H^{\otimes n} \bigr) - \ID
+						= 2 \ketbra{\psi}{\psi} - \ID.
+				\end{equation}
+				For further derivations, let
+				\begin{align}
+					\ket{\alpha} &\coloneqq \frac{1}{\sqrt{N - K}} \sum_{x,\, f(x) = 0} \ket{x} &
+					\ket{\beta} &\coloneqq \frac{1}{\sqrt{K}} \sum_{x,\, f(x) = 1} \ket{x}
+				\end{align}
+				be states in superposition of all the non-solutions and solutions, respectively. We can then reformulate \(\ket{\psi}\) as
+				\begin{equation}
+					\ket{\psi}
+						= \sqrt{\frac{N - K}{N}} \ket{\alpha} + \sqrt{\frac{K}{N}} \ket{\beta}
+						\doteq \cos\frac{\theta}{2} \ket{\alpha} + \sin\frac{\theta}{2} \ket{\beta}
+				\end{equation}
+				with an appropriate \(\theta\). By applying \( G = U_r U_f \), we have
+				\begin{align}
+					U_R U_f \ket{\psi}
+						&= U_R \biggl[ \cos\frac{\theta}{2} \ket{\alpha} - \sin\frac{\theta}{2} \ket{\beta} \biggr]
+						 = U_R \biggl[ \cos\frac{\theta}{2} \ket{\alpha} + \sin\frac{\theta}{2} \ket{\beta} - 2 \sin\frac{\theta}{2} \ket{\beta} \biggr]
+						 = U_R \biggl[ \ket{\psi} - 2 \sin\frac{\theta}{2} \ket{\beta} \biggr] \\
+						&= \bigl( 2 \ketbra{\psi}{\psi} - \ID \bigr) \biggl[ \ket{\psi} - 2 \sin\frac{\theta}{2} \ket{\beta} \biggr]
+						 = 2 \ket{\psi} \underbrace{\ip{\psi}{\psi}}_{\mathclap{= 1}} - 4 \sin\frac{\theta}{2} \ket{\psi} \underbrace{\ip{\psi}{\beta}}_{\mathclap{= \sin(\theta/2)}} - \ket{\psi} + 2 \sin\frac{\theta}{2} \ket{\beta} \\
+						&= 2 \ket{\psi} - 4 \sin^2\frac{\theta}{2} \ket{\psi} - \ket{\psi} + 2 \sin\frac{\theta}{2} \ket{\beta}
+						 = \ket{\psi} - 4 \sin^2\frac{\theta}{2} \ket{\psi} + 2 \sin\frac{\theta}{2} \ket{\beta} \\
+						&= \cos\frac{\theta}{2} \ket{\alpha} + 3 \sin\frac{\theta}{2} \ket{\beta} - 4 \sin^2\frac{\theta}{2} \biggl( \cos\frac{\theta}{2} \ket{\alpha} + \sin\frac{\theta}{2} \ket{\beta} \biggr) \\
+						&= \cos\frac{\theta}{2} \ket{\alpha} + \sin\frac{\theta}{2} \ket{\beta} - 4 \sin^2\frac{\theta}{2} \cos\frac{\theta}{2} \ket{\alpha} - 4 \sin^2\frac{\theta}{2}\sin\frac{\theta}{2} \ket{\beta} + 2 \sin\frac{\theta}{2} \ket{\beta} \\
+						&= \biggl( 1 - 4 \sin^2\frac{\theta}{2} \biggr) \cos\frac{\theta}{2} \ket{\alpha} + \biggl( 3 - 4 \sin^2\frac{\theta}{2} \biggr) \sin\frac{\theta}{2} \ket{\beta}
+						 = \cos\frac{3 \theta}{2} \ket{\alpha} + \sin\frac{3 \theta}{2} \ket{\beta}
+				\end{align} % TODO: Grover's Algorithm: Fill trig. gaps!
+				where we uses some trigonometric identities in the last step. Furthermore, we can show (by induction) that after \(k\) steps, we have the state
+				\begin{equation}
+					G^k \ket{\psi} = \cos(\frac{2k + 1}{2} \theta) \ket{\alpha} + \sin(\frac{2k + 1}{2} \theta) \ket{\beta}.
+				\end{equation}
+				That is, with every \(k\), we rotate around the non-solutions \(\ket{\alpha}\) and the solutions \(\ket{\beta}\). So how many iterations \(k\) do we need to get a success probability close to one? If we approximate \(\ket{\beta}\)'s amplitude with one, we can derive what \(k\) should be:
+				\begin{equation}
+					\sin(\frac{2k + 1}{2} \theta) \approx 1
+					\quad\implies\quad
+					\frac{2k + 1}{2} \theta \approx \frac{\pi}{2}
+					\quad\implies\quad
+					k \approx \frac{\pi}{2 \theta} - \frac{1}{2} \approx \frac{\pi}{2 \theta}
+					\label{eq:groversApprox}
+				\end{equation}
+				Note that the last approximation is valid as \(k\) is an integer anyway and we can always use the ceiling. If we assume that the initial probability is small, i.e., \(\theta\) is small, we can approximate it:
+				\begin{equation}
+					\sin\frac{\theta}{2} \approx \frac{\theta}{2} \overset{!}{=} \sqrt{\frac{K}{N}}
+					\quad\implies\quad
+					\theta \approx 2 \sqrt{\frac{K}{N}}
+				\end{equation}
+				Plugging this result back into \eqref{eq:groversApprox} yields
+				\begin{equation}
+					k
+						\approx \frac{\pi}{2 \theta}
+						\approx \frac{\pi}{2 \cdot 2 \sqrt{\frac{K}{N}}}
+						= \frac{\pi}{4} \sqrt{\frac{N}{K}}
+				\end{equation}
+				Grover's algorithm is therefore in \( \mathcal{O}(\sqrt{N / K}) \). As \(\theta\) gets scales with \(K\), fewer iterations are necessary to find a solution in a pool of multiple solutions. Also, the probability oscillates with a higher frequency. Interestingly, applying \(G\) too often reduces the probability of getting a correct readout again! But on a large scale, this is not a problem as we can always check a solution by invoking \(f\) for the measurement outcome.
 			% end
 
-			\subsubsection{Multiple Solutions} % 9.21, 9.22
-				\todo{Content}
+			\subsubsection{Illustration}
+				\todo{Grover's Algorithm: Illustration; 9.12, 9.15, 9.16, 9.17, 9.18, 9.19, 9.20}
 			% end
+		% end
 
-			\subsubsection{Remarks} % 9.23, 9.24
-				\todo{Content}
-			% end
+		\subsection{Remarks}
+			We saw that Grover's algorithm provides a square-root speedup over the classical solution and an even greater speedup if there are multiple solutions. Compared to Shor's algorithm, no post-processing is necessary and not so many qubits are necessary. Also, Grover's algorithm is a general-purpose search algorithm as long as we can implement the query unitary. However, to determine the number of \(G\)-applications, we must know how many solutions exist. If we do not know this, we have to guess and possibly run the algorithm over and over again. We also have the following theorem:
+			\begin{theorem}[BBBV Theorem]
+				Grover's algorithm is optimal for black-box unstructured search problems.
+			\end{theorem}
+			If there would exist a more efficient algorithm, we could solve all problems in NP.
+
+			The algorithm is summarized in \autoref{alg:grovers}.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{function \( f : \{0, 1\}^n \to \{ 0, 1 \} : x \mapsto f(x) \) which is \num{1} for a solution; optional: number of solutions \(K\) or number of iterations \(k\)}
+				\KwOut{a solution \(x^\ast\) with almost unit probability if \(K\) is given}
+				\If{\(K\) is given}{
+					\( k = \lceil \frac{\pi}{4} \cdot \sqrt{\frac{N}{K}} \rceil \)  \quad\tcp{Calculate number of iterations.}
+				}
+				\tcp{Run quantum circuit.}
+				\( \displaystyle\qquad\qquad
+					\Qcircuit @C=1em @R=1em {
+						\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{G^k} & \meter & \rstick{x^\ast} \cw \\
+						\lstick{\ket{0}}   & \gate{H} & \ghost{G^k}        & \qw    & \qw
+					}
+				\) \;
+				\Return \(x^\ast\) \;
+				\caption{Grover's Algorithm}
+				\label{alg:grovers}
+			\end{algorithm}
+		% end
+
+		\subsection{Modified Grover's Algorithm}
+			\todo{Grover's Algorithm: Modification; 9.24}
 		% end
 	% end
 % end
@@ -1457,6 +2143,8 @@
 	% end
 
 	\section{Threshold Theorem}
+		\label{sec:downer}
+
 		So far, we assumed that the \ac{QEC} itself works perfectly. But what if the error correction itself causes errors again? Like for classical repetition codes, we can simply re-encode the bits, building up a layered coding architecture. Let \(m\) be the number of places where an error can occur, then the probability of an error using a single coding layer is upper-bounded by \( p_e^{(1)} = (mp)^2 \). For \(k\) layers, the error probability is \( p_e^{(k)} = (mp)^{2^k} \) which, analogous to classical error correction, converges to zero for \(k \to \infty\) if \(p < 1/m\). Hence, we can achieve any error probability \(\epsilon\) with a large enough \(k\).
 
 		This brings us to the \emph{threshold theorem:}

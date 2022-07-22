@@ -244,7 +244,8 @@
 
 				Of course, we might also want to apply the Hadamard gate to a composite state (see \autoref{sec:composite} for an introduction to composite states). As the application and transformation into the computational basis "by hand" is quite tedious,
 				\begin{equation}
-					H^{\otimes 2} \ket{00}
+					H^{\otimes 2} \ket{01}
+						= \ket{+-}
 						= \frac{1}{2} (\ket{0} + \ket{1}) \otimes (\ket{0} - \ket{1})
 						= \frac{1}{2} (\ket{00} - \ket{01} + \ket{10} - \ket{11}),
 				\end{equation}
@@ -1947,29 +1948,27 @@
 				\(0\) & \(0\) & \(1\) & \( \alpha \ket{++-} + \beta \ket{--+} \)
 			\end{tabular}
 		\end{align}
-		By applying Hadamard again in the decoding circuit, the identity \( H Z H = X \) directly tells us that we need to apply the same corrections as for bit-flips:
+		By applying Hadamard again in the decoding circuit:
 		\begin{align}
 			\begin{aligned}
 				\Qcircuit @C=1em @R=1em {
-					\lstick{\ket{\psi}} & \ctrl{1} & \ctrl{2} & \gate{H} & \gate{Z^i} & \gate{H} & \ctrl{3} & \qw      & \qw      & \qw      & \qw    & \multigate{2}{C}     & \qw \\
-					\lstick{\ket{0}}    & \targ    & \qw      & \gate{H} & \gate{Z^j} & \gate{H} & \qw      & \ctrl{2} & \ctrl{3} & \qw      & \qw    & \ghost{C}            & \qw \\
-					\lstick{\ket{0}}    & \qw      & \targ    & \gate{H} & \gate{Z^k} & \gate{H} & \qw      & \qw      & \qw      & \ctrl{2} & \qw    & \ghost{C}            & \qw \\
-					                    &          &          &          &    & \lstick{\ket{0}} & \targ    & \targ    & \qw      & \qw      & \meter & \rstick{x} \cw \cwx  & \\
-					                    &          &          &          &    & \lstick{\ket{0}} & \qw      & \qw      & \targ    & \targ    & \meter & \rstick{y} \cw \cwx  &
+					\lstick{\ket{\psi}} & \ctrl{1} & \ctrl{2} & \gate{H} & \gate{Z^i} & \gate{H} & \ctrl{3} & \qw      & \qw      & \qw      & \qw    & \multigate{2}{H}     & \multigate{2}{C}     & \qw \\
+					\lstick{\ket{0}}    & \targ    & \qw      & \gate{H} & \gate{Z^j} & \gate{H} & \qw      & \ctrl{2} & \ctrl{3} & \qw      & \qw    & \ghost{H}            & \ghost{C}            & \qw \\
+					\lstick{\ket{0}}    & \qw      & \targ    & \gate{H} & \gate{Z^k} & \gate{H} & \qw      & \qw      & \qw      & \ctrl{2} & \qw    & \ghost{H}            & \ghost{C}            & \qw \\
+					                    &          &          &          &    & \lstick{\ket{0}} & \targ    & \targ    & \qw      & \qw      & \meter & \cw                  & \rstick{x} \cw \cwx  & \\
+					                    &          &          &          &    & \lstick{\ket{0}} & \qw      & \qw      & \targ    & \targ    & \meter & \cw                  & \rstick{y} \cw \cwx  &
 				}
 			\end{aligned}
 			&&
 			\begin{tabular}{cc|c}
 				\(x\) & \(y\) & Correction \(C\) \\ \midrule
 				\(0\) & \(0\) &     \(\ID\)      \\
-				\(0\) & \(1\) &     \(X_3\)      \\
-				\(1\) & \(0\) &     \(X_1\)      \\
-				\(1\) & \(1\) &     \(X_2\)
+				\(0\) & \(1\) &     \(Z_3\)      \\
+				\(1\) & \(0\) &     \(Z_1\)      \\
+				\(1\) & \(1\) &     \(Z_2\)
 			\end{tabular}
 		\end{align}
 		This approach is a parity check of \(X_1 X_2\) and \(X_2 X_3\), i.e., a parity check in X-basis.
-
-		\todo{QEC: The lecture says that phase-flips should be corrected by applying Z-gates---but why???}
 	% end
 
 	\section{Shor's Code}
@@ -1988,23 +1987,23 @@
 \begin{equation}
 \resizebox{0.9\linewidth}{!}{
 \Qcircuit @C=1em @R=1em {
-\lstick{\ket{\psi}_1} & \ctrl{5} & \ctrl{10} & \gate{H} &        \qw         & \ctrl{1} & \ctrl{2} & \gate{X^{i_1}} & \gate{Z^{\ell_1}} & \ctrl{3} &   \qw    &   \qw    &   \qw    &  \qw   & \multigate{2}{C_1}    & \gate{H} & \ctrl{15} &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   &   \multigate{12}{C}  & \qw \\
-                      &          &           &          & \lstick{\ket{0}_2} &  \targ   &   \qw    & \gate{X^{j_1}} & \gate{Z^{m_1}}    &   \qw    & \ctrl{2} & \ctrl{3} &   \qw    &  \qw   & \ghost{C_1}           & \gate{H} &    \qw    & \ctrl{14} &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   &       \ghost{C}      & \qw \\
-                      &          &           &          & \lstick{\ket{0}_3} &   \qw    &  \targ   & \gate{X^{k_1}} & \gate{Z^{n_1}}    &   \qw    &   \qw    &   \qw    & \ctrl{2} &  \qw   & \ghost{C_1}           & \gate{H} &    \qw    &    \qw    & \ctrl{13} &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   &       \ghost{C}      & \qw \\
-                      &          &           &          &                    &          &          &                & \lstick{\ket{0}}  &  \targ   &  \targ   &   \qw    &  \qw     & \meter & \rstick{x_1} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &                      &     \\
-                      &          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &  \targ   &  \targ   & \meter & \rstick{y_1} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &                      &     \\
- \lstick{\ket{0}_4}   &  \targ   &    \qw    & \gate{H} &        \qw         & \ctrl{1} & \ctrl{2} & \gate{X^{i_2}} & \gate{Z^{\ell_2}} & \ctrl{3} &   \qw    &   \qw    &   \qw    &  \qw   & \multigate{2}{C_2}    & \gate{H} &    \qw    &    \qw    &    \qw    & \ctrl{10} &   \qw    &   \qw    & \ctrl{11} &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   &       \ghost{C}      & \qw \\
-                      &          &           &          & \lstick{\ket{0}_5} &  \targ   &   \qw    & \gate{X^{j_2}} & \gate{Z^{m_2}}    &   \qw    & \ctrl{2} & \ctrl{3} &   \qw    &  \qw   & \ghost{C_2}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    & \ctrl{9} &   \qw    &    \qw    & \ctrl{10} &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   &       \ghost{C}      & \qw \\
-                      &          &           &          & \lstick{\ket{0}_6} &   \qw    &  \targ   & \gate{X^{k_2}} & \gate{Z^{n_2}}    &   \qw    &   \qw    &   \qw    & \ctrl{2} &  \qw   & \ghost{C_2}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    & \ctrl{8} &    \qw    &    \qw    & \ctrl{9} &   \qw    &   \qw    &   \qw    & \qw &  \qw   &       \ghost{C}      & \qw \\
-                      &          &           &          &                    &          &          &                & \lstick{\ket{0}}  &  \targ   &  \targ   &   \qw    &   \qw    & \meter & \rstick{x_2} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &                      &     \\
-                      &          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &  \targ   &  \targ   & \meter & \rstick{y_2} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &                      &     \\
- \lstick{\ket{0}_7}   &   \qw    &   \targ   & \gate{H} &        \qw         & \ctrl{1} & \ctrl{2} & \gate{X^{i_3}} & \gate{Z^{\ell_3}} & \ctrl{3} &   \qw    &   \qw    &   \qw    &  \qw   & \multigate{2}{C_3}    & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    & \ctrl{6} &   \qw    &   \qw    & \qw &  \qw   &       \ghost{C}      & \qw \\
-                      &          &           &          & \lstick{\ket{0}_8} &  \targ   &   \qw    & \gate{X^{j_3}} & \gate{Z^{m_3}}    &   \qw    & \ctrl{2} & \ctrl{3} &   \qw    &  \qw   & \ghost{C_3}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    & \ctrl{5} &   \qw    & \qw &  \qw   &       \ghost{C}      & \qw \\
-                      &          &           &          & \lstick{\ket{0}_9} &   \qw    &  \targ   & \gate{X^{k_3}} & \gate{Z^{n_3}}    &   \qw    &   \qw    &   \qw    & \ctrl{2} &  \qw   & \ghost{C_3}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    & \ctrl{4} & \qw &  \qw   &       \ghost{C}      & \qw \\
-                      &          &           &          &                    &          &          &                & \lstick{\ket{0}}  &  \targ   &  \targ   &   \qw    &   \qw    & \meter & \rstick{x_3} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &         \cwx         &     \\
-                      &          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &  \targ   &  \targ   & \meter & \rstick{y_3} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &         \cwx         &     \\
-                      &          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &   \qw    &   \qw    &  \qw   & \qw                   &   \qw    &   \targ   &   \targ   &   \targ   &   \targ   &  \targ   &  \targ   &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw & \meter &  \rstick{x} \cw \cwx &     \\
-                      &          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &   \qw    &   \qw    &  \qw   & \qw                   &   \qw    &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \targ   &   \targ   &  \targ   &  \targ   &  \targ   &  \targ   & \qw & \meter &  \rstick{y} \cw \cwx &
+\lstick{\ket{\psi}_1} & \ctrl{5} & \ctrl{10} & \gate{H} &        \qw         & \ctrl{1} & \ctrl{2} & \gate{X^{i_1}} & \gate{Z^{\ell_1}} & \ctrl{3} &   \qw    &   \qw    &   \qw    &  \qw   & \multigate{2}{C_1}    & \gate{H} & \ctrl{15} &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &   \multigate{12}{C}  & \qw \\
+&          &           &          & \lstick{\ket{0}_2} &  \targ   &   \qw    & \gate{X^{j_1}} & \gate{Z^{m_1}}    &   \qw    & \ctrl{2} & \ctrl{3} &   \qw    &  \qw   & \ghost{C_1}           & \gate{H} &    \qw    & \ctrl{14} &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+&          &           &          & \lstick{\ket{0}_3} &   \qw    &  \targ   & \gate{X^{k_1}} & \gate{Z^{n_1}}    &   \qw    &   \qw    &   \qw    & \ctrl{2} &  \qw   & \ghost{C_1}           & \gate{H} &    \qw    &    \qw    & \ctrl{13} &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &  \targ   &  \targ   &   \qw    &  \qw     & \meter & \rstick{x_1} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &                      &     \\
+&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &  \targ   &  \targ   & \meter & \rstick{y_1} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &                      &     \\
+\lstick{\ket{0}_4}   &  \targ   &    \qw    & \gate{H} &        \qw         & \ctrl{1} & \ctrl{2} & \gate{X^{i_2}} & \gate{Z^{\ell_2}} & \ctrl{3} &   \qw    &   \qw    &   \qw    &  \qw   & \multigate{2}{C_2}    & \gate{H} &    \qw    &    \qw    &    \qw    & \ctrl{10} &   \qw    &   \qw    & \ctrl{11} &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+&          &           &          & \lstick{\ket{0}_5} &  \targ   &   \qw    & \gate{X^{j_2}} & \gate{Z^{m_2}}    &   \qw    & \ctrl{2} & \ctrl{3} &   \qw    &  \qw   & \ghost{C_2}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    & \ctrl{9} &   \qw    &    \qw    & \ctrl{10} &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+&          &           &          & \lstick{\ket{0}_6} &   \qw    &  \targ   & \gate{X^{k_2}} & \gate{Z^{n_2}}    &   \qw    &   \qw    &   \qw    & \ctrl{2} &  \qw   & \ghost{C_2}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    & \ctrl{8} &    \qw    &    \qw    & \ctrl{9} &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &  \targ   &  \targ   &   \qw    &   \qw    & \meter & \rstick{x_2} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &                      &     \\
+&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &  \targ   &  \targ   & \meter & \rstick{y_2} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &                      &     \\
+\lstick{\ket{0}_7}   &   \qw    &   \targ   & \gate{H} &        \qw         & \ctrl{1} & \ctrl{2} & \gate{X^{i_3}} & \gate{Z^{\ell_3}} & \ctrl{3} &   \qw    &   \qw    &   \qw    &  \qw   & \multigate{2}{C_3}    & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    & \ctrl{6} &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+&          &           &          & \lstick{\ket{0}_8} &  \targ   &   \qw    & \gate{X^{j_3}} & \gate{Z^{m_3}}    &   \qw    & \ctrl{2} & \ctrl{3} &   \qw    &  \qw   & \ghost{C_3}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    & \ctrl{5} &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+&          &           &          & \lstick{\ket{0}_9} &   \qw    &  \targ   & \gate{X^{k_3}} & \gate{Z^{n_3}}    &   \qw    &   \qw    &   \qw    & \ctrl{2} &  \qw   & \ghost{C_3}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    & \ctrl{4} & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &  \targ   &  \targ   &   \qw    &   \qw    & \meter & \rstick{x_3} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &         \cwx         &     \\
+&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &  \targ   &  \targ   & \meter & \rstick{y_3} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &         \cwx         &     \\
+&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &   \qw    &   \qw    &  \qw   & \qw                   &   \qw    &   \targ   &   \targ   &   \targ   &   \targ   &  \targ   &  \targ   &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw & \meter & \cw      &  \rstick{x} \cw \cwx &     \\
+&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &   \qw    &   \qw    &  \qw   & \qw                   &   \qw    &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \targ   &   \targ   &  \targ   &  \targ   &  \targ   &  \targ   & \qw & \meter & \cw      &  \rstick{y} \cw \cwx &
 }
 }
 		\end{equation}
@@ -2160,27 +2159,105 @@
 	% end
 % end
 
-\chapter{Quantum Nonlocality} % 11.3
+\chapter{Quantum Nonlocality}
 	\label{c:nonlocality}
 
-	%This chapter is a bit different from the previous as we will discuss a general phenomenon of \ac{QM} and not only \ac{QC}: \emph{quantum nonlocality.}
+	This chapter is a bit different from the previous as we will discuss a general phenomenon of \ac{QM} and not only \ac{QC}: \emph{quantum nonlocality.} We will see that \ac{QM} is inherently different from classical physics in that it is not composed of \emph{elements of reality.}
 
-	\todo{Content}
+	Of course, \ac{QM} is real in the sense that it exists. Hence, what do we mean by \emph{elements of reality?}
+	\begin{definition}[Elements of Reality]  \label{def:real}
+		If there is a physical quantity which we can predict with certainty (i.e., what the outcome will be when measuring it), it is \emph{real,} whether we perform an experiment or not.
+	\end{definition}
+	In \ac{QM}, consider the Bell state \( \ket{\Phi^+} = \frac{1}{\sqrt{2}} (\ket{00} + \ket{11}) \) where the first qubit belongs to Alice and the second belongs to Bob which are extremely far away from each other in separate labs. If Alice measures "\(+\)" on her side, the measurement "\(+\)" becomes an element of reality for Bob. So when did it become real? We have two options:
+	\begin{enumerate}
+		\item It has been real ever since.
+		\item It became real once Alice made her measurement.
+	\end{enumerate}
+	We call these two assumptions "local realism" and "locality," respectively. As we assume the Alice's and Bob's lab where far apart from each other, locality would contradict special relativity.
 
-	\section{Elements of Reality} % 11.4, 11.5, 11.6, 11.7, 11.8, 11.9, 11.10
-		\todo{Content}
+	\section{CHSH Inequality}
+		Assume that Alice and Bob have both two options for altering their measurement, \(A_1\) and \(A_2\), and \(B_1\) and \(B_2\), respectively. Either measurement yields either "\(+\)" or "\(-\)". They repeat their experiment multiple times and record their measurements in a table
+		\begin{center}
+			\begin{tabular}{c|cc|cc}
+				  \(\#\)   &  \(A_1\)   &  \(A_2\)   &  \(B_1\)   &  \(B_2\)   \\ \midrule
+				  \(0\)    &   \(+\)    &            &            &   \(-\)    \\
+				  \(1\)    &   \(+\)    &            &            &   \(+\)    \\
+				  \(2\)    &            &   \(+\)    &            &   \(+\)    \\
+				  \(3\)    &            &   \(-\)    &   \(+\)    &            \\
+				\(\vdots\) & \(\vdots\) & \(\vdots\) & \(\vdots\) & \(\vdots\)
+			\end{tabular}
+		\end{center}
+		Suppose that we want to fill in the blanks in the table (and we cannot just repeat the same experiment again and take a different measurement). This is only possible, if our measured physical quantity is real and we have the famous \emph{CHSH inequality.}
+
+		\begin{theorem}[CHSH Inequality]
+			Assume that the experiment log can be filled in, i.e., that the physical quantities are real. Then the following inequality holds:
+			\begin{equation}
+				\beta \coloneqq \E[A_1, B_1] + \E[A_1, B_2] + \E[A_2, B_1] - \E[A_2, B_2] \leq 2.
+			\end{equation}
+			Where \( \E[X, Y] = \sum_{x, y} x y P(x, y \given X, Y) \) is the expectation of \(X\) and \(Y\).
+		\end{theorem}
+		\begin{proof}
+			We can easily proof this by enumerating all assignments of \( A_1, A_2, B_1, B_2 \in \{ +1, -1 \} \):
+			\begin{align}
+				A_1 B_1 + A_1 B_2 + A_2 B_1 - A_2 B_2
+					&= A_1 (B_1 + B_2) + A_2 (B_1 - B_2)
+					 \leq \bigl\lvert A_1 (B_1 + B_2) \bigr\rvert + \bigl\lvert A_2 (B_1 - B_2) \bigr\rvert \\
+					&= \bigl\lvert B_1 + B_2 \bigr\rvert + \bigl\lvert B_1 - B_2 \bigr\rvert
+					 \leq 2
+			\end{align}
+			Note that we did not \emph{explicitly} enumerate all values, but this is effectively an enumeration.
+		\end{proof}
+		But what happens if Alice and Bob share a Bell state?
 	% end
 
-	\section{CHSH Inequality} % 11.12, 11.13, 11.14, 11.15
-		\todo{Content}
+	\section{Quantum Violation of the CHSH Inequality}
+		Assume that the different measurements Alice and Bob can take are characterized by the following operators,
+		\begin{align}
+			A_1 &= Z_1 &
+			A_2 &= X_1 &
+			B_1 &= \frac{Z_2 + X_2}{\sqrt{2}} &
+			B_2 &= \frac{Z_2 - X_2}{\sqrt{2}}.
+		\end{align}
+		We can now explicitly calculate \(\beta\) (and drop the explicit \(\otimes\) for brevity, it should be clear where to insert one from the indices):
+		\begin{align}
+			\beta
+				&= \E[A_1, B_1] + \E[A_1, B_2] + \E[A_2, B_1] - \E[A_2, B_2] \\
+				&= \mel{\Phi^+}{A_1 B_1}{\Phi^+} + \mel{\Phi^+}{A_1 B_2}{\Phi^+} + \mel{\Phi^+}{A_2 B_1}{\Phi^+} - \mel{\Phi^+}{A_2 B_2}{\Phi^+} \\
+				&= \bra{\Phi^+} \bigl( A_1 B_1 + A_1 B_2 + A_2 B_1 - A_2 B_2 \bigr) \ket{\Phi^+} \\
+				&= \bra{\Phi^+} \biggl( Z_1 \frac{Z_2 + X_2}{\sqrt{2}} + Z_1 \frac{Z_2 - X_2}{\sqrt{2}} + X_1 \frac{Z_2 + X_2}{\sqrt{2}} - X_1 \frac{Z_2 - X_2}{\sqrt{2}} \biggr) \ket{\Phi^+} \\
+				&= \frac{1}{\sqrt{2}} \bra{\Phi^+} \bigl( Z_1 (Z_2 + X_2) + Z_1 (Z_2 - X_2) + X_1 (Z_2 + X_2) - X_1 (Z_2 - X_2) \bigr) \ket{\Phi^+} \\
+				&= \frac{1}{\sqrt{2}} \bra{\Phi^+} \bigl( Z_1 Z_2 + Z_1 X_2 + Z_1 Z_2 - Z_1 X_2 + X_1 Z_2 + X_1 X_2 - X_1 Z_2 + X_1 X_2 \bigr) \ket{\Phi^+} \\
+				&= \frac{2}{\sqrt{2}} \bra{\Phi^+} \bigl( Z_1 Z_2 + X_1 X_2 \bigr) \ket{\Phi^+}
+				 = \sqrt{2} \Bigl(\! \mel{\Phi^+}{Z_1 Z_2}{\Phi^+} + \mel{\Phi^+}{X_1 X_2}{\Phi^+} \Bigr) \\
+				&\overset{\mathclap{(\ast)}}{=} \sqrt{2} \Bigl( \ip{\Phi^+}{\Phi^+} + \ip{\Phi^+}{\Phi^+} \Bigr)
+				 = 2 \sqrt{2}
+		\end{align}
+		In \((\ast)\) we used the fact that neither \(Z_1 Z_2\) nor \(X_1 X_2\) alter the Bell state. But this quantity is greater than \(2\) and therefore violates the CHSH inequality! As we ruled out locality by putting Alice and Bob so far away that neither one is in the light cone of the other, nature is not \emph{real} in the sense of \autoref{def:real}. Also, quantum correlations are extremely important and stronger than anything we will ever see in "classical" physics.
 	% end
 
-	\section{Quantum Violation of the CHSH Inequality} % 11.16, 11.17, 11.21
-		\todo{Content}
+	\section{Tsirelson's Bound}
+		We saw that in classical physics, the correlation \(\beta\) of two random variables is bounded by \(\beta \leq 2\). In quantum mechanics, however, we can achieve \( \beta_q = 2 \sqrt{2} \). In fact, we have the following theorem:
+		\begin{theorem}[Tsirelson's Bounds]
+			The maximum possible correlation in quantum mechanics is \(\beta_Q = 2 \sqrt{2}\) which is achieved only by the Bell state.
+		\end{theorem}
+		From this we can conclude also, that if an experiment exhibits a correlation of \(\beta_Q \approx 2 \sqrt{2}\), the shared state was a Bell state!
 	% end
 
-	\section{Tsirelson's Bound and Quantum Key Distribution} % 11.22, 11.23, 11.24, 11.25
-		\todo{Content}
+	\section{Quantum Key Distribution}
+		Tsirelson's Bound also allows \emph{\ac{QKD},} i.e., a protocol in which two parties (Alice and Bob) agree on a secret key (cf. Diffie-Hellman). Compared to the setting before, Bob now also has a third measurement \(B_3\). \ac{QKD} now takes the following steps.
+		\begin{enumerate}
+			\item Alice and Bob share a qubit through a trusted channel.
+			\item Alice makes measurements \(A_1\) and \(A_2\) at random.
+			\item Bob makes measurements \(B_1\), \(B_2\), and sometimes (with lower probability) \(B_3 = Z_2\) at random.
+			\item Repeat from first step a certain number of rounds.
+			\item Alice announces a random set of rounds.
+			\item Alice and Bob announce their measurement result in the announced set of rounds.
+			\item Both compute \(\beta_Q\) and if \(\beta_Q \ll 2 \sqrt{2}\), they abort as they do not share a Bell state.
+			\item Bob announces the subset of rounds he measured in basis \( Z_2 \).
+			\item Alice announces the subset if rounds she measured in basis \( Z_1 \).
+			\item They are now guaranteed to have measured the same bits due to quantum correlation.
+		\end{enumerate}
+		Interestingly, this protocol is secure under any attack as "not even the universe" know the key. This protocol is known as \emph{device-independent \ac{QKD}.} However, it requires sharing a qubit through a trusted channel which is nearly impossible to achieve.
 	% end
 % end
 

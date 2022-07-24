@@ -1,44 +1,99 @@
-\chapter{Introduction} % 1.1, 1.2, 1.3, 1.4, 1.5
-	\todo{Content}
+\chapter{Introduction}
+	In this course we will look at lots of methods from the domain of \emph{\ac{RL}.} \ac{RL} is an approach for agent-oriented learning where the agent learns by repeatedly acting with the environment and from rewards. Also, it does not know how the world works in advance. \ac{RL} is therefore close to how humans learn and tries to tackle the fundamental challenge of \ac{AI}:
+	\begin{center}
+		"The fundamental challenge in \acl{AI} and \acl{ML} is learning to make good decisions under uncertainty." (Emma Brunskill)
+	\end{center}
+	\ac{RL} is so general that every \ac{AI} problem can be phrased in its framework of learning by interacting. However, the typical setting is that at every time step, an agent perceives the state of the environment and chooses an action based on these perceptions. Subsequently, the agent gets a numerical reward and tries to maximize this reward by finding a suitable strategy. This procedure is illustrated in \autoref{fig:rl}.
 
-	\section{Recent and Not-So-Recent Successes} % 1.6, 1.7, 1.8, 1.9
-		\todo{Content}
+	\section{Artificial Intelligence}
+		The core question of \ac{AI} is how to build "intelligent" machines, requiring that the machine is able to adapt to its environment and handle unstructured and unseen environments. Classically, \ac{AI} was an "engine" producing answers to various queries based on rules designed by a human expert in the field. In (supervised) \ac{ML}, the rules are instead learned from a (big) data set and the "engine" produces answers based on the data. However, this approach (leaning from labeled data) is not sufficient for \ac{RL} as demonstrations might be imperfect, the correspondence problem, and that we cannot demonstrate everything. We can break these issues down as follows: supervised learning does not allow "interventions" (trial-and-error) and evaluative feedback (reward).
+
+		The core idea leading to \ac{RL} was to not program machines to simulate an adult brain, but to simulate a child's brain that is still learning. \ac{RL} formalizes this idea of intelligence to interpret rich sensory input and choosing complex actions. We know that this may be possible as us humans do it all the time. This lead to the \ac{RL} view on \ac{AI} depicted in \autoref{fig:rl} and is based on the hypothesis that learning from a scalar reward is sufficient to yield intelligent behavior (Sutton and Barto, 2018).
+
+		\begin{figure}
+			\centering
+			\begin{tikzpicture}[->, cmp/.style = { draw, rectangle, minimum width = 2.5cm, minimum height = 0.75cm }]
+				\node [cmp] (agent) {Agent};
+				\node [cmp, right = 2 of agent] (env) {Environment};
+				\coordinate [above = 0.5 of agent] (a);
+				\coordinate [above = 0.5 of env] (b);
+
+				\coordinate [left = 0.5 of agent.south] (agentL);
+				\coordinate [right = 0.5 of agent.south] (agentR);
+				\coordinate [below = 1.25 of agentL] (fL);
+				\coordinate [below = 0.50 of agentR] (fR);
+
+				\coordinate [left = 0.5 of env.south] (envL);
+				\coordinate [right = 0.5 of env.south] (envR);
+				\coordinate [below = 0.50 of envL] (eL);
+				\coordinate [below = 1.25 of envR] (eR);
+
+				\draw (agent) to (a) to node[above]{Action \(a_t\)} (b) to (env);
+				\draw (envL) to (eL) to node[below]{Reward \( r_t \gets r_{t + 1} \)} (fR) to (agentR);
+				\draw (envR) to (eR) to node[below]{State \( s_t \gets s_{t + 1} \)} (fL) to (agentL);
+			\end{tikzpicture}
+			\caption{The Reinforcement Learning Cycle}
+			\label{fig:rl}
+		\end{figure}
 	% end
 
-	\section{"Artificial Intelligence"} % 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18
-		\todo{Content}
-	% end
+	\section{Reinforcement Learning Formulation}
+		\ac{RL} tries to \emph{maximize the long-term reward} by finding a strategy/policy with the general assumption that it is easier to assess a behavior by specifying a cost than specifying the behavior directly. In general, we have the following things different to most (un)supervised settings:
+		\begin{itemize}
+			\item no supervision, but only a reward signal
+			\item feedback (reward) is always delayed and not instantaneous
+			\item time matters, the data is sequential and by no means i.i.d.
+			\item the agent's actions influence the subsequent data, i.e., the agent generates its own data
+		\end{itemize}
+		In addition to this, \ac{RL} is challenged by a numerous complicated factors and issues, e.g., dynamic state-dependent environments, stochastic and unknown dynamics and rewards, exploration vs. exploitation, delayed rewards (how to assign a temporal credit), and very complicated systems (large state spaces with unstructured dynamics). For designing an \ac{RL}-application, we usually have to choose the state representation, decide how much prior knowledge we want to put into the agent, choose an algorithm for learning, design an objective function, and finally decide how we evaluate the resulting agent. By all these decisions, we want to reach a variety of goals, e.g., convergence, consistency, good generalization abilities, high learning speed (performance), safety, and stability. However, we are usually pretty restricted in terms of computation time, available data, restrictions in the way we act (e.g., safety constraints), and online vs. offline learning.
 
-	\section{Reinforcement Learning Formulation} % 1.19, 1.20, 1.21, 1.22, 1.23, 1.24, 1.25
-		\todo{Content}
+		This sounds like a lot and, in fact, is! We therefore often limit ourselves onto specific (probably simpler) sub-problems and solve them efficiently under some assumptions. Some common flavors of the \ac{RL} problem are, for instance:
+		\begin{itemize}
+			\item \emph{Full:} no additional assumptions, the agent can only probe the environment through the state dynamics and its actions; the agent has to understand the environment
+			\item \emph{Filtered State and Sufficient Statistics:} assumption of a local Markov property (i.e., the next state only depends on the current state and action, and not on the past), decomposable rewards (into specific time steps); we can show that every problem is a (probably infinite) instance of this assumption, but how to filter the state to get such properties?
+			\item \emph{Markovian Observable State:} assume that we can observe the state fulfilling the Markov property directly
+			\item \emph{Further Simplifications:} contextual bandits (the dynamics do not depend on the action or the past and current state at all); bandits (only a single state)
+		\end{itemize}
+		We can summarize the different \ac{RL}-like problems in a matrix, see \autoref{tab:problemClassification}.
 
-		\subsection{Flavors} % 1.26, 1.31
-			\todo{Content}
+		\begin{table}
+			\centering
+			\begin{tabular}{c||cc}
+				\toprule
+				            & actions \emph{do not} change the state of the world & actions change the state of the world \\ \midrule
+				 no model   &                (Multi-Armed) Bandits                &        Reinforcement Learning         \\
+				known model &                   Decision Theory                   &       Optimal Control, Planning       \\ \bottomrule
+			\end{tabular}
+			\caption{Problem Classification}
+			\label{tab:problemClassification}
+		\end{table}
 
-			\paragraph{Full} % 1.27
-				\todo{Content}
-			% end
-
-			\paragraph{Partially Observable Markov Decision Problem} % 1.28
-				\todo{Content}
-			% end
-
-			\paragraph{Markov Decision Problem} % 1.29
-				\todo{Content}
-			% end
-
-			\paragraph{Further Simplifications} % 1.30
-				\todo{Content}
-			% end
+		\subsection{Components}
+			To solve an \ac{RL} problem, we need three ingredients:
+			\begin{enumerate}
+				\item Model Learning
+					\begin{itemize}
+						\item we want to approximate and learn the state transfer using methods from supervised learning
+						\item need to generate actions for model identification
+						\item estimation of the model or the model's parameters
+					\end{itemize}
+				\item Optimal Control/Planning
+					\begin{itemize}
+						\item generation of optimal control inputs
+					\end{itemize}
+				\item Performance Evaluation
+			\end{enumerate}
 		% end
-
-		\subsection{Components} % 1.33, 1.34, 1.35
-			\todo{Content}
-		% end
 	% end
 
-	\section{Wrap-Up} % 1.36, 1.37, 1.38
-		\todo{Content}
+	\section{Wrap-Up}
+		\begin{itemize}
+			\item why \ac{RL} is crucial for \ac{AI} and why all other approaches are ultimately doomed
+			\item background and characteristics of \ac{RL}
+			\item classification of \ac{RL} problems
+			\item core components of \ac{RL} algorithms
+		\end{itemize}
+		% TODO: Reading Assignment: Sutton, Chapter 1
 	% end
 % end
 

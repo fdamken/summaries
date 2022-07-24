@@ -97,98 +97,196 @@
 	% end
 % end
 
-\chapter{Preliminaries} % N/A
-	\todo{Content}
+\chapter{Preliminaries}
+	In this chapter we cover some preliminaries that are necessary for understanding the rest of the course. Note that most of this content is dense and should be used as a reference throughout this course as oppose to an actual introduction to the topic.
 
-	\section{Functional Analysis} % 2.56
-		\todo{Content}
+	\section{Functional Analysis}
+		\begin{definition}[Normed Vector Space]
+			A \emph{normed vector space} is a vector space \(\mathcal{X}\) over \(X\) equipped with a \emph{norm} \( \lVert \cdot \rVert : \mathcal{X} \to \R \) that has the following properties:
+			\begin{enumerate}
+				\item \( \lVert x \rVert \geq 0 \) for all \( x \in \mathcal{X} \) and \( \lVert x \rVert = 0 \) iff \( x = 0 \) (non-negativity)
+				\item \( \lVert \alpha x \rVert = \lvert \alpha \rvert \lVert x \rVert \) for all \( \alpha \in X \) and \( x \in \mathcal{X} \) (homogenity)
+				\item \( \lVert x_1 + x_2 \rVert \leq \lVert x_1 \rVert + \lVert x_2 \rVert \) for all \( x_1, x_2 \in \mathcal{X} \) (triangle inequality)
+			\end{enumerate}
+		\end{definition}
+		For the rest of this course we usually use real finite-dimensional vectors spaces \( \mathcal{X} = \R^d \), \( d \in \N^+ \), the \(L_\infty\)-norm \( \lVert \cdot \rVert_\infty \), and (weighted) \(L_2\)-norms \( \lVert \cdot \rVert_{2, \rho} \).
 
-		\subsection{Normed Vector Spaces} % 2.57
-			\todo{Content}
-		% end
+		\begin{definition}[Complete Vector Space]
+			A vector space \(\mathcal{X}\) is \emph{complete} if every Cauchy sequence\footnote{This section is already overflowing with mathematical rigor compared to the rest of the course, so we will skip the definition of a Cauchy sequence here.} in \(\mathcal{X}\) has a limit in \(\mathcal{X}\).
+		\end{definition}
 
-		\subsection{Contractions} % 2.58
-			\todo{Content}
-		% end
+		\begin{definition}[Contraction Mapping]
+			Let \(\mathcal{X}\) be a vector space equipped with a norm \(\lVert \cdot \rVert\). An operator \( T : \mathcal{X} \to \mathcal{X} \) is called an \emph{\(\alpha\)-contraction mapping} if \( \exists \alpha \in [0, 1) : \forall x_1, x_2 \in \mathcal{X} : \lVert T x_1 - T x_2 \rVert \leq \alpha \lVert x_1 - x_2 \rVert \). If only \( \exists \alpha \in [0, 1] : \forall x_1, x_2 \in \mathcal{X} : \lVert T x_1 - T x_2 \rVert \leq \alpha \lVert x_1 - x_2 \rVert \), \(T\) is called \emph{non-expanding.}
+		\end{definition}
 
-		\subsection{Fixed Point (Theorem)} % 2.59, 2.60
-			\todo{Content}
-		% end
+		\begin{definition}[Lipschitz Continuity]
+			Let \(\mathcal{X}\) and \(\mathcal{Y}\) be vector spaces equipped with norms \(\lVert \cdot \rVert_X\) and \(\lVert \cdot \rVert_Y\), respectively. A function \( f : \mathcal{X} \to \mathcal{Y} \) is called \emph{Lipschitz-continuous} if \( \exists L \geq 0 : \forall x_1, x_2 \in \mathcal{Y} : \lVert f(x_1) - f(x_2) \rVert_Y \leq L \lVert x_1 - x_2 \rVert_X \).
+		\end{definition}
+
+		\begin{remark}
+			Obviously, every contraction mapping is also Lipschitz-continuous with Lipschitz-constant \(L \triangleq \alpha\) and is therefore continuous. Also, the product of two Lipschitz-continuous mappings is Lipschitz-continuous and therefore \(T^n = T \circ \dots \circ T\) is Lipschitz-continuous, too.
+		\end{remark}
+
+		\begin{definition}[Fixed Point]
+			Let \(\mathcal{X}\) be a vector space equipped and let \( T : \mathcal{X} \to \mathcal{X} \) be an operator. Then \(x \in \mathcal{X}\) is a \emph{fixed point} of \(T\) if \( T x = x \).
+		\end{definition}
+
+		\begin{theorem}[Banach Fixed Point Theorem]
+			Let \(\mathcal{X}\) be a complete vector space with a norm \(\lVert \cdot \rVert\) and let \( T : \mathcal{X} \to \mathcal{X} \) be an \(\alpha\)-contraction mapping. Then \(T\) has a unique fixed point \(x^\ast \in \mathcal{X}\) and for all \(x_0 \in \mathcal{X}\) the sequence \( x_{n + 1} = T x_n \) converges to \(x^\ast\) geometrically, i.e., \( \lVert x_n - x^\ast \rVert \leq \alpha^n \lVert x_0 - x^\ast \rVert \).
+		\end{theorem}
 	% end
 
-	\section{Statistics} % N/A
-		\todo{Content}
+	\section{Statistics}
+		This section introduces some concepts of statistics, but you should
 
-		\subsection{Stochastic Processes} % 2.5, 2.6
-			\todo{Content}
+		\subsection{Monte-Carlo Estimation}
+			Let \(X\) be a random variable with mean \( \mu = \E[X] \) and variance \( \sigma^2 = \Var[X] \) and let \( \{ x_i \}_{i = 1}^{n} \) be i.i.d. realizations of \(X\). We then have the \emph{empirical mean} \( \hat{\mu}_n = \frac{1}{n} \sum_{i = 1}^{n} x_i \) and we can show that \( \E[\hat{\mu}_n] = \mu \) and \( \Var[\hat{\mu}_n] = \sigma^2/n \). Also, if the sample size \(n\) goes to infinity, we have the \emph{strong} and \emph{weak law of large numbers,} respectively:
+			\begin{align}
+				P\bigl( \lim\limits_{n \to \infty} \hat{\mu}_n = \mu \bigr) &= 1 &
+				\lim\limits_{n \to \infty} P\bigl( \lvert \hat{\mu}_n - \mu \rvert > \epsilon \bigr) &= 0
+			\end{align}
+			Also, we have the \emph{central limit theorem:} no matter the distribution of \(P\), its mean value converges to a normal distribution, \( \sqrt{n} (\hat{\mu}_n - \mu) \overset{D}{\to} \mathcal{N}(0, \sigma^2) \).
 		% end
 
-		\subsection{Monte-Carlo Estimation} % 3.38
-			\todo{Content}
+		\subsection{Bias-Variance Trade-Off}
+			When evaluating/training a \ac{ML} model, the error is due to two factors (illustrated in \autoref{fig:biasVariance}):
+			\begin{itemize}
+				\item \emph{bias,} i.e., the distance to the expected prediction
+				\item \emph{variance,} i.e., the variability of a prediction for a given data point
+			\end{itemize}
+			In general, we want to minimize both, but we can only minimize one of them! This is known as the \emph{bias-variance trade-off.}
+
+			\begin{figure}
+				\centering
+				\begin{subfigure}{0.3\linewidth}
+					\centering
+					\includegraphics[width=\linewidth]{figures/low-bias-low-variance}
+					\caption{Low Bias, Low Variance}
+				\end{subfigure}
+				~
+				\begin{subfigure}{0.3\linewidth}
+					\centering
+					\includegraphics[width=\linewidth]{figures/low-bias-high-variance}
+					\caption{Low Bias, High Variance}
+				\end{subfigure}
+				\\[5pt]
+				\begin{subfigure}{0.3\linewidth}
+					\centering
+					\includegraphics[width=\linewidth]{figures/high-bias-low-variance}
+					\caption{High Bias, Low Variance}
+				\end{subfigure}
+				~
+				\begin{subfigure}{0.3\linewidth}
+					\centering
+					\includegraphics[width=\linewidth]{figures/high-bias-high-variance}
+					\caption{High Bias, High Variance}
+				\end{subfigure}
+				\caption[Bias-Variance Trade-Off]{Bias-Variance Trade-Off; Source: Bernhard Thiery (CC BY-SA 3.0)}
+				\label{fig:biasVariance}
+			\end{figure}
 		% end
 
-		\subsection{Bias-Variance Trade-Off} % 3.64, 3.65
-			\todo{Content}
+		\subsection{Important Sampling}
+			If we want to estimate the expectation of some function \(f(x)\) for \( x \sim p(x) \), but cannot sample from \(p(x)\) (which is often the case for complicated models), we can instead use the following relation(s):
+			\begin{gather}
+				\E_{x \sim p}\bigl[ f(x) \bigr]
+					= \sum_x f(x) p(x)
+					= \sum_x f(x) \frac{p(x)}{q(x)} q(x)
+					= \E_{x \sim q} \biggl[ f(x) \frac{p(x)}{q(x)} \biggr] \\
+				\E_{x \sim p}\bigl[ f(x) \bigr]
+					= \int\! f(x) p(x) \dd{x}
+					= \int\! f(x) \frac{p(x)}{q(x)} p(x) \dd{x}
+					= \E_{x \sim q} \biggl[ f(x) \frac{p(x)}{q(x)} \biggr]
+			\end{gather}
+			and sample from a surrogate distribution \(q(x)\). This approach obviously has problems if \(q\) does not cover \(p\) sufficiently well along with other problems. See Bishop, 2006, Chapter 11 for details.
 		% end
 
-		\subsection{Important Sampling} % 4.36
-			\todo{Content}
-		% end
+		\subsection{Linear Function Approximation}
+			A basic approximator we will need often is the linear function approximator \( f(\vec{x}) = \vec{w}^\transposed \vec{\phi}(\vec{x}) \) with weights \(\vec{w}\) and features \(\vec{\phi}(\vec{x})\). As the weights are optimized and the features are designed, we have lots of variability here. Actually, constructing useful features is the influential step on the approximation quality. Most importantly, features are the only point where we can introduce interactions between different dimensions. A good representations therefore captures all dimensions and all (possibly complex) interaction.
 
-		\subsection{Linear Function Approximation} % 5.13
-			\todo{Content}
+			We will now go over some frequently used features.
 
-			\subsubsection{Feature Construction} % 5.20, 5.21
-				\todo{Content}
+			\paragraph{Polynomial Features}
+				\emph{Polynomial features} are particularly simple and capture the interaction between dimensions by multiplication. For instance, the first- and second-order polynomial features of a two-dimensional state \( \vec{x} = (x_1, x_2)^\transposed \) are:
+				\begin{align}
+					\vec{\phi}_\mathit{P1}(\vec{x}) &= (1, x_1, x_2, x_1 x_2)^\transposed &
+					\vec{\phi}_\mathit{P2}(\vec{x}) &= (1, x_1, x_2, x_1 x_2, x_1^2, x_2^2, x_1 x_2^2, x_1^2 x_2, x_1^2, x_2^2)
+				\end{align}
+				However, the number of features grows \emph{exponentially} with the dimension!
+			% end
 
-				\paragraph{Polynomial Features} % 5.22
-					\todo{Content}
-				% end
+			\paragraph{Fourier Basis}
+				Fourier series can be used to approximate periodic functions by adding sine and cosine waves with different frequencies and amplitudes. Similarly, we can use them for general function approximation of functions with bounded domain. As it is possible to approximate any even function with just cosine waves and we are only interested in bounded domains, we can set this domain to positive numbers only and can therefore approximate any function. For one dimension, the \(n\)-th order \emph{Fourier (cosine) basis} is
+				\begin{equation}
+					\phi_m(x) = \cos(\pi m \tilde{x}),\quad m = 0, 1, \dots, n.
+				\end{equation}
+				and \( \tilde{x} \) is a normalized version of \(x\), i.e., \( \tilde{x} = (x - x_\mathrm{max}) / (x_\mathrm{max} - x_\mathrm{min}) \).
+			% end
 
-				\paragraph{Fourier Basis} % 5.23, 5.24
-					\todo{Content}
-				% end
+			\paragraph{Coarse Coding}
+				\emph{Coarse coding} divides the space into \(M\) different regions and produced \(M\)-dimensional coding features for which the \(j\)-th entry is \num{1} iff the data point lies withing the respective region; all values the data point does not lie in are \num{0}. Features with this codomain are also called \emph{sparse.}
+			% end
 
-				\paragraph{Coarse Coding} % 5.25
-					\todo{Content}
-				% end
+			\paragraph{Tile Coding}
+				\emph{Tile coding} is a computationally efficient form of coarse coding which use square \emph{tilings} of space. It uses \(N\) tilings, each composed of \(M\) tiles. The features "vector" is then an \(N \times M\) matrix where a single value is \num{1} iff \(x\) lies inside the tile and \num{0} otherwise. \autoref{fig:tileCoding} shows an illustration of this coding.
 
-				\paragraph{Tile Coding} % 5.26, 5.27
-					\todo{Content}
-				% end
+				\begin{figure}
+					\centering
+					\includegraphics[width=0.9\linewidth]{figures/tile-coding}
+					\caption[Tile Coding]{Tile Coding; Source: {\small \url{https://towardsdatascience.com/reinforcement-learning-tile-coding-implementation-7974b600762b}}}
+					\label{fig:tileCoding}
+				\end{figure}
+			% end
 
-				\paragraph{Radial Basis Functions} % 5.28
-					\todo{Content}
-				% end
+			\paragraph{Radial Basis Functions}
+				\emph{Radial basis functions (\acsp{RBF}\acused{RBF})} are a generalization of coarse coding where the features are in the interval \((0, 1]\). A typical \ac{RBF} is the Gaussian
+				\begin{equation}
+					\phi_j(\vec{x}) = \exp\Biggl\{ -\frac{\lVert \vec{x} - \vec{c}_j \rVert_2^2}{2 \sigma_j^2} \Biggr\}
+				\end{equation}
+				with center \(\vec{c}_j\) and bandwidth \( \sigma_j^2 \).
+			% end
 
-				\paragraph{Neural Networks} % 5.29, 5.30
-					\todo{Content}
-				% end
+			\paragraph{Neural Networks}
+				A very powerful alternative to hand-crafting features are \emph{\aclp{NN} (\acsp{NN}\acused{NN}).} By stacking multiple layers of learned features, they are very powerful prediction machines.
 			% end
 		% end
 
-		\subsection{Fisher Information Matrix} % 6.33, 6.34
-			\todo{Content}
+		\subsection{Likelihood-Ratio Trick}
+			Suppose we need to differentiate the expectation of some function \( f(x) \) w.r.t. \(\theta\) where \( x \sim p_\theta(\cdot) \). However, we cannot directly calculate \( \E_{x \sim p_\theta}[f(x)] \) or "differentiate through sampling." Instead, we can use the identity
+			\begin{equation}
+				\dv{z} \log h(z) = \frac{h'(z)}{h(z)}
+				\qquad\implies\qquad
+				f'(z) = h(z) \, \dv{z} \log h(z)
+			\end{equation}
+			to reformulate the derivative of the expectation as
+			\begin{equation}
+				\pdv{\theta} \E_{x \sim p_\theta}[f(x)]
+					= \int\! f(x) \pdv{\theta} p_\theta(x) \dd{x}
+					= \int\! f(x) \biggl( \pdv{\theta} p_\theta(x) \biggr) p_\theta(x) \dd{x}
+					= \E_{x \sim p_\theta} \biggl[ f(x) \, \pdv{\theta} p_\theta(x) \biggr].
+			\end{equation}
+			While this is a very powerful approach, the gradient estimator exhibits high variance!
 		% end
 
-		\subsection{Entropy and Relative Entropy} % 8.2, 8.3, 8.4, 8.5
-			\todo{Content}
-		% end
-
-		\subsection{Reparametrization Trick} % 8.41, 8.42
-			\todo{Content}
+		\subsection{Reparametrization Trick}
+			Suppose we need to differentiate the expectation of some function \( f(x) \) w.r.t. \(\theta\) where \( x \sim p_\theta(\cdot) \). However, we cannot directly calculate \( \E_{x \sim p_\theta}[f(x)] \) or "differentiate through sampling." Instead, we reformulate the expectation with a function \( x = g_\theta(\varepsilon) \) that separates the random components \(\varepsilon\) from the deterministic ones \(\theta\) such that we can reparameterize the expectation as
+			\begin{equation}
+				\E_{x \sim p_\theta}[f(x)] = \E_\varepsilon\bigl[ f\bigl( g_\theta(\varepsilon) \bigr) \bigr].
+			\end{equation}
+			For instance, if \( p_\theta(x) = \mathcal{N}(\mu_\theta, \sigma_\theta^2) \) is a Gaussian, \( g_\theta(\varepsilon) = \mu_\theta + \sigma_\theta \varepsilon \) with \( \varepsilon \sim \mathcal{N}(0, 1) \). We can now simply use the chain rule to take the derivative w.r.t. \(\theta\). Compared to the likelihood-ratio trick, this estimator has less variance!
 		% end
 	% end
 
-	\section{Miscellaneous} % N/A
-		\todo{Content}
+	\section{Miscellaneous}
+		Finally, this section contains all the stuff that does not fit into the categories before.
 
-		\subsection{Useful Integrals} % 6.55, 6.56
-			\todo{Content}
-		% end
-
-		\subsection{Conjugate Gradient} % 8.24, 8.25, 8.26, 8.27
-			\todo{Content}
+		\subsection{Useful Integrals}
+			The following hold for a distribution \( p_\theta(x) \):
+			\begin{align}
+				\int\! \pdv{\theta} p_\theta(x) \dd{x} &= 0 &
+				\int\! \pdv{\theta} \log p_\theta(x) \dd{x} &= \int\! \frac{\pdv{\theta} p_\theta(x)}{p_\theta(x)} \dd{x} = 0
+			\end{align}
+			The first identity can be shown by swapping the integral and derivative and using the normalization condition of probability densities. For the second we use integration by parts with \( f' = \pdv{\theta} p_\theta(x) \), for which \(f = 0\) due to the first integral. Hence, the second follows.
 		% end
 	% end
 % end
@@ -711,6 +809,10 @@
 			\todo{Content}
 
 			\subsubsection{Practical Implementation} % 8.22, 8.23
+				\todo{Content}
+			% end
+
+			\subsubsection{Conjugate Gradient} % 8.24, 8.25, 8.26, 8.27
 				\todo{Content}
 			% end
 		% end

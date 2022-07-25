@@ -291,34 +291,155 @@
 	% end
 % end
 
-\chapter{Markov Decision Processes and Policies} % 2.1
-	\todo{Content}
+\chapter{Markov Decision Processes and Policies}
+	In this chapter we will develop the groundwork for all upcoming chapters and define some important mathematical concepts.
 
-	\section{Markov Decision Processes} % 2.2, 2.3, 2.4, 2.7, 2.8, 2.9, 2.10, 2.14
-		\todo{Content}
+	\section{Markov Decision Processes}
+		A \emph{\ac{MDP}} describes the environment for \ac{RL} \emph{formally} for the case where we can fully observe the environment, i.e., we directly "see" the state. Also, the current state fully characterized the system and future states are independent from the past \emph{(Markov property).} This mathematical framework allows precision and rigorous reasoning on, for instance, optimal solutions and convergence (note, however, that we will only touch the tip of the iceberg in theoretical analysis and we will be less rigorous than some mathematician may wish). The nice this of \acp{MDP} is there wide applicability: we can frame almost all \ac{RL} problems as \acp{MDP}. Most of the remaining chapter here focuses on fully observable and finite \acp{MDP}, i.e., the number of states and actions is finite. \autoref{tab:markovModels} shows an overview over different Markov models.
 
-		\subsection{Continuous State-Action-Space} % 5.3, 5.4
-			\todo{Content}
-		% end
+		We now went over some mathematical definitions for building up the "Markovian framework."
+
+		\begin{table}
+			\centering
+			\begin{tabular}{c|cc}
+				\toprule
+				                  & \multicolumn{2}{c}{\textbf{All states observable?}} \\
+				\textbf{Actions?} &           Yes           &            No             \\ \midrule
+				       Yes        & Markov Decision Process & Partially Observable MDP  \\
+				       No         &      Markov Chain       &    Hidden Markov Model    \\ \bottomrule
+			\end{tabular}
+			\caption{Types of Markov Models}
+			\label{tab:markovModels}
+		\end{table}
+
+		\begin{definition}[Markov Property]
+			A stochastic process \(X_t\) is \emph{Markovian} or \emph{fulfills the Markov property} if \( P_t(S_{t + 1} = s' \given S_t = s, S_{t - 1} = k_{t - 1}, \dots, S_0 = k_0) = P_t(S_{t + 1} = s' \given S_t = s) \) for all \(t\).
+		\end{definition}
+
+		\begin{definition}[Stationary Transition Probabilities]
+			If \( P_t(S_{t + 1} = s' \given S_t = s) \) is time invariant, \( p_{ss'} \coloneqq P_t(S_{t + 1} = s' \given S_t = s) \) are the \emph{stationary transition probabilities.}
+		\end{definition}
+
+		\begin{definition}[State Transition Matrix]
+			With the transition probabilities \(p_{ss'}\), let \( \mat{P}_{ss'} \coloneqq p_{ss'} \) for all \(s\), \(s'\) be the \emph{transition matrix.}
+		\end{definition}
+
+		\begin{definition}[Markov Chain]
+			A \emph{Markov chain} is a tuple \( \langle \mathcal{S}, \mat{P}, \iota \rangle \) with the (finite) set of discrete-time states \(S_t \in \mathcal{S}\), \( n \coloneqq \lvert \mathcal{S} \rvert \), transition matrix \( \mat{P} \in [0, 1]^{n \times n} \), and the initial state distribution \( \iota_i = P(S_0 = i) \).
+		\end{definition}
+
+		\begin{definition}[Probability Row Vector]  \label{def:probRowVector}
+			The vector \( \vec{p}_t \coloneqq \sum_{i = 1}^{n} P(S_t = i) \vec{e}_i^\transposed \) with the \(i\)-th unit vector \(\vec{e}_i\) and includes the probability of being in the \(i\)-th state at time step \(t\).
+		\end{definition}
+
+		\begin{theorem}[Chapman-Kolmogorov for Finite Markov Chains]
+			The probability row vector \( \vec{p}_{t + k} \) at time step \(t + k\) starting from \(\vec{p}_t\) at time step \(t\) is given by \( \vec{p}_{t + k} = \vec{p}_t \mat{P}^k \).
+		\end{theorem}
+		\begin{proof}
+			Assume w.l.o.g. \( t = 0 \) We proof this by induction. For the base case, let \(k = 1\). Let \( \vec{p}_0 = (p_{0, 1}, p_{0, 2}, \dots, p_{0, n}) \) be an arbitrary probability row vector. By linearity, we have
+			\begin{align}
+				\vec{p}_0 \mat{P}_{ss'}
+					&= \sum_{i = 1}^{n} p_{0, 1} \vec{e}_i^\transposed \mat{P}
+					 = \sum_{i = 1}^{n} p_{0, 1} \mat{P}_i \\
+				\intertext{where \(\mat{P}_i\) is the \(i\)-th row of \(\mat{P}\). Rewriting this equation in terms of explicit transition probabilities, we have}
+					&= \sum_{i = 1}^{n} P(S_0 = i) \sum_{j = 1}^{n} \vec{e}_j^\transposed P(S_1 = j \given S_0 = i)
+					 = \sum_{j = 1}^{n} \vec{e}_j^\transposed \,\sum_{i = 1}^{n} P(S_0 = i) P(S_1 = j \given S_0 = i) \\
+					&= \sum_{j = 1}^{n} \vec{e}_j^\transposed \,\sum_{i = 1}^{n} P(S_1 = j, S_0 = i)
+					 = \sum_{j = 1}^{n} \vec{e}_j^\transposed P(S_1 = j)
+					 = \sum_{j = 1}^{n} p_{1, j} \vec{e}_j^\transposed
+					 = \vec{p}_1.
+			\end{align}
+			The first equality is due to the definition of \(\mat{P}_i\), the third is due to the definition of conditional probabilities, the fourth is due to marginalizing out \(S_0\), and the final is just another application of the definit ion of the probability row vector. For the induction step \( k \to k + 1 \), assume that \( \vec{p}_k = \vec{p}_t \mat{P}^k \) holds for some \(k\). We then have \( \vec{p}_{k + 1} = \vec{p}_k \mat{P} = \vec{p}_0 \mat{P}^k \mat{P} = \vec{p}_0 \mat{P}^{k + 1} \) where the first equality is due to the base case and the second is due to the induction hypothesis.
+		\end{proof}
+
+		\begin{definition}[Steady State]
+			A probability row vector \(\vec{p}\) is called a \emph{steady} state if an application of the transition matrix does not change it, i.e., \( \vec{p} = \vec{p} \mat{P} \).
+		\end{definition}
+		\begin{remark}
+			While the steady state is in general not independent of the initial state (consider, for instance, \( \mat{P} = \mat{I} \)), it gives insights in which states of the Markov chain are visited in the long run.
+		\end{remark}
+
+		\begin{definition}[Absorbing, Ergodic, and Regular Markov Processes]
+			A Markov process is called \dots
+			\begin{itemize}
+				\item \dots \emph{absorbing} if it has at least one \emph{absorbing state} (i.e., a state that can never be left) and if that state can be reached from every other state (not necessarily in one step).
+				\item \dots \emph{ergodic} if all states are \emph{recurrent} (i.e., visited an infinite number of times) and \emph{aperiodic} (i.e., visited without a systematic period).
+				\item \dots \emph{regular} if some power of the transition matrix has only positive (non-zero) elements.
+			\end{itemize}
+		\end{definition}
 
 		\subsection{Example} % 2.11, 2.12, 2.13
 			\todo{Content}
 		% end
 	% end
 
-	\section{Markov Reward Processes} % 2.15, 2.16
-		\todo{Content}
+	\section{Markov Reward Processes}
+		\begin{definition}{Markov Reward Process}  \label{def:mrp}
+			A \emph{Markov reward process} is a tuple \( \langle \mathcal{S}, \mat{P}, R, \gamma, \iota \rangle \) with the (finite) set of discrete-time states \(S_t \in \mathcal{S}\), \(n \coloneqq \lvert \mathcal{S} \rvert\), transition matrix \( \mat{P}_{ss'} = P(s' \given s) \), reward function \( R : \mathcal{S} \to \R : s \mapsto R(s) \), discount factor \( \gamma \in [0, 1] \), and the initial state distribution \( \iota_i = P(S_0 = i) \). We call \( r_t = R(s_t) \) the immediate reward at time step \(t\).
+		\end{definition}
 
-		\subsection{Return and Discount} % 2.18, 2.19, 2.20
-			\todo{Content}
+		\subsection{Time Horizon, Return, and Discount}
+			Note that in \autoref{def:mrp} we did not clearly specify how the reward is computed. Especially we did not define how much time steps the reward "looks" into the future. For this we generally have three options: finite, indefinite, and infinite. The first computes the reward for a fixed and finite number of steps, the second until some stopping criteria is met, and the third infinitely.
+
+			\begin{definition}[Cumulative Reward]
+				The \emph{cumulative reward} summarizes the reward signals of a \ac{MRP}. We define the following:
+				\begin{align}
+					J_t^\mathrm{total} &\coloneqq \sum_{k = 1}^{T} r_{t + k} &
+					J_t^\mathrm{average} &\coloneqq \frac{1}{T} \sum_{k = 1}^{T} r_{t + k} &
+					J_t \equiv J_t^\mathrm{discounted} &\coloneqq \sum_{k = t + 1}^{T} \gamma^{k - t - 1} r_k,
+				\end{align}
+				For an infinite horizon, we take the limit of these as \(T \to \infty\).
+			\end{definition}
+			\begin{theorem}
+				The cumulative discounted reward fulfills the recursive relation \( J_t = r_{t + 1} + \gamma J_{t + 1} \).
+			\end{theorem}
+			\begin{proof}
+				\(
+					J_t = \sum_{k = t + 1}^{T} \gamma^{k - t - 1} r_k
+						= r_{t + 1} + \sum_{k = t + 2}^{T} \gamma^{k - t - 1} r_k
+						= r_{t + 1} + \gamma \sum_{k = t + 2}^{T} \gamma^{k - t - 2} r_k
+						= r_{t + 1} + \gamma J_{t + 1}
+				\)
+			\end{proof}
+			\begin{definition}[Return]
+				The \emph{return} \(J(\tau)\) of a trajectory \( \tau = (s_t)_{t = 1}^{T} \) is the discounted reward \( J(\tau) \coloneqq J_0(\tau) \).
+			\end{definition}
+			\begin{remark}
+				The infinite horizon discounted cumulative reward for \(r_t = 1\) (for all \(t\)) is a geometric series and we have \( J_t = \lim_{T \to \infty} \sum_{k = t + 1}^{T} \gamma^{k - t - 1} r_k = \sum_{k = 0}^{\infty} \gamma^k = 1/(1 - \gamma) \) for \(\gamma < 1\). If the reward is lower/upper bounded by \(r_\mathrm{min}\)/\(r_\mathrm{max}\), we have \( J_t \in \bigl[ r_\mathrm{min}/(1 - \gamma), r_\mathrm{max}/(1 - \gamma) \bigr] \). Similarly, the return is lower/upper-bounded.
+			\end{remark}
+
+			We can interpret the discount factor \(\gamma\) as a "measure" how important future rewards are to the current state (how delayed vs. immediate the reward is). For instance, \(\gamma \approx 0\) yields myopic evaluation and \(\gamma \approx 1\) yields far-sighted evaluation. An alternative interpretation is that the discount factor is the probability that the process continues (such that the discounted return is the expected return w.r.t. the discount factor). Despite the obvious advantage that including a discount factor prevents the return from diverging, we also have a couple of other reasons why it makes sense to weigh future rewards less:
+			\begin{itemize}
+				\item we might be \emph{uncertain} about the future (e.g., with imperfect) models
+				\item if the reward is \emph{financial,} immediate rewards earn more interest than delayed rewards
+				\item \emph{animal and human behavior} also shows preference for immediate rewards---and why try to mimic biology in the end
+			\end{itemize}
+			However, sometimes we still use \emph{undiscounted} \acp{MRP} (i.e., \( \gamma = 1 \)), for instance if all sequences are guaranteed to terminate.
 		% end
 
-		\subsection{Value Function} % 2.21
-			\todo{Content}
-
-			\subsubsection{Bellman Equation} % 2.25, 2.27, 2.28
-				\todo{Content}
-			% end
+		\subsection{Value Function}
+			\begin{definition}[Value Function for MRP]
+				The \emph{state value function} for a \ac{MRP} is \( V(s) \coloneqq \E_{\mat{P}}[J_t \given s_t = s] \) for any \(t\).That is, the \emph{expected} return starting from state \(s\) where the expectation is w.r.t. the state dynamics.
+			\end{definition}
+			\begin{theorem}[Bellman Equation]
+				For all states \(s \in \mathcal{S}\), we have \( V(s) = R(s) + \gamma \E\bigl[ V(s_{t + 1}) \biggiven s_t = s \bigr] \).
+			\end{theorem}
+			\begin{proof}  % TODO: Revisit this proof, especially the last equality!
+				\(
+					V(s)
+						= \E\bigl[ J_t \biggiven s_t = s \bigr]
+						= R(s) + \gamma \E\bigl[ J_{t + 1} \biggiven s_t = s \bigr]
+						= R(s) + \gamma \E\bigl[ V(s_{t + 1}) \biggiven s_t = s \bigr]
+				\)
+			\end{proof}
+			The Bellman equation allows us to decompose the value of any state into its immediate reward and the value of the subsequent states (in expectation). As we only consider discrete \acp{MRP}, we can also express the Bellman equation in matrix form,
+			\begin{equation}
+				\vec{V} = \vec{R} + \gamma \mat{P} \vec{V}
+				\qquad\iff\qquad
+				\vec{V} = (\mat{I} - \gamma \mat{P})^{-1} \vec{R},
+				\label{eq:closedFormBellman}
+			\end{equation}
+			where \(\vec{V}\) and \(\vec{R}\) are columns vectors with the values and rewards, respectively, and \(\mat{P}\) is the transition matrix. We can therefore directly solve this linear equation and get the values of the states! However, for \(n\) states the complexity is \(\mathcal{O}(n^3)\) and hence this is only possible for small \acp{MRP}. For large \acp{MRP}, a variety of efficient iterative methods exist. In the following chapters, we will cover \emph{dynamic programming} (\autoref{c:dp}) \emph{Monte-Carlo evaluation} (\autoref{c:mc}) and \emph{temporal difference learning} (\autoref{c:td}).
 		% end
 
 		\subsection{Example} % 2.17, 2.22, 2.23, 2.24, 2.26
@@ -326,34 +447,136 @@
 		% end
 	% end
 
-	\section{Markov Decision Processes} % 2.29, 2.30, 2.31, 2.32
-		\todo{Content}
+	\section{Markov Decision Processes}
+		So far, we only considered processes \emph{without} actions, i.e., we were not able to interact with the process. The next natural extension is from \acp{MRP} to \acp{MDP}:
+		\begin{definition}[Markov Decision Process]
+			A \emph{Markov decision process} is a tuple \( \langle \mathcal{S}, \mathcal{A}, \mat{P}, R, \gamma, \iota \rangle \) with the (finite) set of discrete-time states \(S_t \in \mathcal{S}\), \(n \coloneqq \lvert \mathcal{S} \rvert\), (finite) set of actions \(A_t \in \mathcal{A}\), \( m \coloneqq \lvert \mathcal{A} \rvert \), transition matrix \( \mat{P}_{ss'}^{a} = P(s' \given s, a) \), reward function \( R : \mathcal{S} \times \mathcal{A} : (s, a) \mapsto R(s, a) \), discount factor \( \gamma \in [0, 1] \), and the initial state distribution \( \iota_i = P(S_0 = i) \). We call \( r_t = R(s_t) \) the immediate reward at time step \(t\).
+		\end{definition}
+		An interesting---yet philosophical---question is, whether a scalar reward is adequate to formulate a goal? The big hypothesis underlying its usage is the \emph{Sutton hypothesis} that wall we mean by goals can be formulated as the maximization of a sum of immediate rewards. While this hypothesis might be wrong, it turns out to be so simple and flexible that we just use it. Also, it forces us to simplify our goal and to actually formulate \emph{what} we want instead of \emph{why.} Hence, the goal must be outside of the agent's direct control, i.e., it must not be a component of the agent. However, the agent must be able to measure successes explicitly and frequently.
 
-		\subsection{Policies} % 2.33, 2.34
-			\todo{Content}
+		In order to reason about an agent and what it might do, we first have to introduce \emph{policies.}
 
-			\subsubsection{Value Functions} % 2.35
-				\todo{Content}
+		\subsection{Policies}
+			A \emph{policy} defines, at any point in time, what action an agent takes, i.e., it fully defines the \emph{behavior} if the agent. Policies are very flexible and can be Markovian or history-dependent, deterministic or stochastic, stationary or non-stationary, etc.
+			\begin{definition}[Policy]
+				A \emph{policy} \(\pi\) is a distribution over actions given the state \(s\), i.e., \( \pi(a \given s) = P(a \given s) \).
+			\end{definition}
+			Note that we can reduce a deterministic policy \( a = \pi(s) \) to a stochastic one using \( \pi(a \given s) = \mathbbm{1}\!\bigl[ a = \pi(s) \bigr] \) for discrete and \( \pi(a \given s) = \delta\bigl( a - \pi(s) \bigr) \) for continuous action spaces. Given an \ac{MDP} \( \mathcal{M} = \langle \mathcal{S}, \mathcal{A}, \mat{P}, R, \gamma, \iota \rangle \) and a policy \(\pi\), let \( \mathcal{M}^\pi = \langle \mathcal{S}, \mathcal{A}, \mat{P}^\pi, R^\pi, \gamma, \iota \rangle \) be the policy \(\pi\)'s \ac{MRP} with
+			\begin{align}
+				\mat{P}_{ss'}^\pi &= \E_{a \sim \pi(\cdot \given s)}\bigl[ \mat{P}_{ss'}^a \bigr] &
+				R^\pi(s) &= \E_{a \sim \pi(\cdot \given s)}\bigl[ R(s, a) \bigr].
+				\label{eq:mdpToMrp}
+			\end{align}
+			This allows us to apply theory of \acp{MRP} and Markov chains to \acp{MDP}. However, it is often useful to exploit the action distribution instead of reducing it to the state dynamics.
 
-				\paragraph{Bellman Expectation Equation} % 2.37, 2.38
-					\todo{Content}
-				% end
+			\subsubsection{Value Functions}
+				Like for \acp{MRP}, we define the value function for \acp{MDP}:
+				\begin{definition}[Value Function for MDP]
+					The \emph{state value function} of a \ac{MDP} is \( V^\pi(s) \coloneqq \E_{\mat{P}, \pi}[J_t \given s_t = s] \) for any \(t\). That is, the \emph{expected} return starting from state \(s\) where the expectation is w.r.t. the state dynamics and policy.
+				\end{definition}
+				However, as we seek to maximize the return and therefore want to steer towards the largest point of the value function, it is helpful to also define the \emph{action} value function:
+				\begin{definition}[Action Value Function]
+					The \emph{action value function} of a \ac{MDP} is \( Q^\pi(s, a) \coloneqq \E_{\mat{P}, \pi}[J_t \given s_t = s, a_t = a] \) for any \(t\). That is, the \emph{expected} return starting from state \(s\), taking action \(a\) in the first step and subsequently following policy \(\pi\) where the expectation is w.r.t. the state dynamics and policy.
+				\end{definition}
+				Hence, if we know the action value function for some policy \(\pi\), we can easily choose the action that steers the system to the largest return achievable following \(\pi\) by locally maximizing \(Q(s, a)\) over \(a\) for a given state \(s\): \( \pi(s) = \argmax_a Q(s, a) \).
 
-				\paragraph{Bellman Operator} % 2.39, 2.40, 2.50
-					\todo{Content}
-				% end
+				Similar to \acp{MRP}, we can also decompose the state and action value function according to a Bellman equation.
+
+				\begin{theorem}[Bellman Expectation Equation]
+					For all states \(s \in \mathcal{S}\), we have the following decompositions:
+					\begin{align}
+						V^\pi(s) &= \E_{\pi, \mat{P}}\bigl[ R(s, a) + \gamma V^\pi(s_{t + 1}) \biggiven s_t = s \bigr] = \E_{a \sim \pi}\bigl[ Q^\pi(s, a) \bigr] \\
+						Q^\pi(s, a) &= R(s, a) + \gamma \E_{\pi, \mat{P}} \bigl[ Q^\pi(s_{t + 1}, a_{t + 1}) \biggiven s_t = s, a_t = a \bigr]
+					\end{align}
+					Note that the \(Q\)-function decomposition is very similar to the \ac{MRP}-decomposition of the state value function.
+				\end{theorem}
+				\begin{proof}
+					Left as an exercise for the reader (hint: plug in the definitions of the individual components).
+				\end{proof}
+
+				Due to the reformulation \eqref{eq:mdpToMrp}, we can reformulate the Bellman equation analogous to \eqref{eq:closedFormBellman} as \( \vec{V}^\pi = \vec{R}^\pi + \gamma \mat{P}^\pi \vec{V}^\pi \) which we can solve in closed form. However, also analogous to the \ac{MRP}-case, this is inefficient for high-dimensional state spaces.
+
+				\begin{definition}[Bellman Operator]
+					The \emph{Bellman operator} for \(V\) and \(Q\) is an operator \(T^\pi\) mapping from state and action value functions to state and action value functions. It is defined as follows:
+					\begin{align}
+						(T^\pi V)(s) &= \E_{\pi, \mat{P}}\bigl[ R(s, a) + \gamma V(s_{t + 1}) \biggiven s_t = s \bigr] \\
+						(T^\pi Q)(s, a) &= R(s, a) + \gamma \E_{\pi, \mat{P}} \bigl[ Q(s_{t + 1}, a_{t + 1}) \biggiven s_t = s, a_t = a \bigr]
+					\end{align}
+				\end{definition}
+				\begin{theorem}
+					The Bellman operator is an \(\alpha\)-contraction mapping w.r.t. \( \lVert \cdot \rVert_\infty \) if \( \gamma \in (0, 1) \).
+				\end{theorem}
+				\begin{proof}
+					\todo{Proof: Bellman Contraction}
+				\end{proof}
+				\begin{remark}
+					With these operators, we can compactly write the Bellman equation(s) as \( T^\pi V^\pi = V^\pi \) and \( T^\pi Q^\pi = Q^\pi \) and the policy's state and action value functions are the \emph{unique} respective fixed points of \(T^\pi\).
+				\end{remark}
 			% end
 
-			\subsubsection{Optimality} % 2.41, 2.42, 2.44
-				\todo{Content}
+			\subsubsection{Optimality}
+				\begin{definition}[Optimality]  \label{def:optimalValueFunc}
+					The optimal state/action-value function is the maximum value over all policies:
+					\begin{align}
+						V^\ast(s) &\coloneqq \max_\pi V^\pi(s) &
+						Q^\ast(s, a) &\coloneqq \max_\pi Q^\pi(s, a).
+					\end{align}
+					The optimal value function then specifies the \emph{best} possible performance in the \ac{MDP} and we call an \ac{MDP} \emph{solved} when we know the optimal value function.
+				\end{definition}
+				\begin{definition}[Policy Ordering]
+					For two policies \(\pi\), \(\pi'\), we write \( \pi \geq \pi' \) iff \( V^\pi(s) \geq V^{\pi'}(s) \) for all \( s \in \mathcal{S} \).
+				\end{definition}
+				\begin{theorem}
+					For any \acl{MDP} there exists a optimal policy \(\pi^\ast\) with \( \forall \pi : \pi^\ast \geq \pi \) and all policies achieve the unique optimal state- and action-value functions (\autoref{def:optimalValueFunc}). There exists a deterministic optimal policy.
+				\end{theorem}
+				\begin{remark}
+					We can recover the optimal deterministic policy by maximizing \(Q^\ast(s, a)\) over \(a\):
+					\begin{equation}
+						\pi^\ast(s \given a) =
+							\begin{cases*}
+								1 & if \( a = \argmax_{a \in \mathcal{A}} Q^\ast(s, a) \) \\
+								0 & otherwise
+							\end{cases*}
+					\end{equation}
+				\end{remark}
 
-				\paragraph{Bellman Optimality Equation} % 2.46, 2.47, 2.51
-					\todo{Content}
-				% end
+				With these definitions at hand, we can take a look at Bellman's principle of optimality:
+				\begin{center}
+					"An optimal policy has the property that whatever the initial state and initial decision are, the remaining decisions must constitute an optimal policy with regard to the state resulting from the first decision." (Richard~Bellman,~1957)
+				\end{center}
+				This principle is formalized in the \emph{Bellman optimality equation.}
 
-				\paragraph{Bellman Optimality Operator} % 2.49, 2.50
-					\todo{Content}
-				% end
+				\begin{theorem}[Bellman Optimality Equation]
+					For all states \(s \in \mathcal{S}\), we have the following decompositions:
+					\begin{align}
+						V^\ast(s) &= \max_{a \in \mathcal{A}} Q^\ast(s, a)
+						           = \max_{a \in \mathcal{A}} \;\Bigl\{ R(s, a) + \gamma \E_{\mat{P}}\bigl[ V^\ast(s_{t + 1}) \biggiven s_t = s \bigr] \Bigr\} \\
+						Q^\ast(s, a) &= R(s, a) + \gamma \E_{\mat{P}}\bigl[ V^\ast(s_{t + 1}) \biggiven s_t = s \bigr]
+						              = R(s, a) + \gamma \E_{\mat{P}}\bigl[ \textstyle\max_{a' \in \mathcal{A}}\displaystyle Q^\ast(s_{t + 1}, a') \biggiven s_t = s \bigr]
+					\end{align}
+				\end{theorem}
+				\begin{proof}
+					Left as an exercise for the reader (hint: plug in the definitions of the individual components).
+				\end{proof}
+
+				\begin{definition}[Bellman Optimality Operator]
+					The \emph{Bellman optimality operator} for \(V\) and \(Q\) is an operator \(T^\ast\) mapping from state- and action-value functions to state- and action-value functions. It is defined as follows:
+					\begin{align}
+						(T^\ast V)(s) &= \max_{a \in \mathcal{A}} \;\Bigl\{ R(s, a) + \gamma \E_{\mat{P}}\bigl[ V(s_{t + 1}) \biggiven s_t = s \bigr] \Bigr\} \\
+						(T^\ast Q)(s, a) &= R(s, a) + \gamma \E_{\mat{P}}\bigl[ \textstyle\max_{a' \in \mathcal{A}}\displaystyle Q(s_{t + 1}, a') \biggiven s_t = s \bigr]
+					\end{align}
+				\end{definition}
+				\begin{theorem}
+					The Bellman optimality operator is an \(\alpha\)-contraction mapping w.r.t. \( \lVert \cdot \rVert_\infty \) if \( \gamma \in (0, 1) \).
+				\end{theorem}
+				\begin{proof}
+					\todo{Proof: Bellman Contraction}
+				\end{proof}
+				\begin{remark}
+					With these operators, we can compactly write the Bellman equation(s) as \( T^\ast V^\ast = V^\ast \) and \( T^\ast Q^\ast = Q^\ast \) and the optimal state- and action-value functions are the \emph{unique} fixed points of \(T^\ast\). Also, repeated application of \(T^\ast\) to any state- or action-value function converges to the optimal state- or action-value function.
+				\end{remark}
+
+				While we had closed-form solutions for the \ac{MRP} and policy value functions, it is not possible to solve the Bellman optimality equation in closed form as its a nonlinear equation system (due to the involved maximizations). In the following chapters we will look at a variety of methods for solving this problem iteratively, starting with \emph{dynamic programming.}
 			% end
 		% end
 
@@ -362,12 +585,21 @@
 		% end
 	% end
 
-	\section{Wrap-Up} % 2.52, 2.53, 2.54
-		\todo{Content}
+	\section{Wrap-Up}
+		\begin{itemize}
+			\item definition of \aclp{MRP} and \aclp{MDP}
+			\item definition of the two value functions and how to compute them
+			\item definition of an optimal policy
+			\item the Bellman equation
+			\item the Bellman expectation and optimality equations
+		\end{itemize}
+		% TODO: Reading Assignment: Sutton, Chapters 4, 5.{1,2}, and 6.{1,2,3}
 	% end
 % end
 
 \chapter{Dynamic Programming} % 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7
+	\label{c:dp}
+
 	\todo{Content}
 
 	\section{Finite Horizon DP} % 3.8, 3.9
@@ -420,6 +652,8 @@
 % end
 
 \chapter{Monte-Carlo Algorithms} % 3.33, 3.34, 3.35, 3.36, 3.37
+	\label{c:mc}
+
 	\todo{Content}
 
 	\section{Policy Evaluation} % 3.39, 3.40, 3.41
@@ -432,6 +666,8 @@
 % end
 
 \chapter{Temporal Difference Learning} % 3.58, 3.59, 3.60
+	\label{c:td}
+
 	\todo{Content}
 
 	\section{Temporal Differences vs. Monte-Carlo} % 3.63

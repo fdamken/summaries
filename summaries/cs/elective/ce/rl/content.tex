@@ -93,7 +93,7 @@
 			\item classification of \ac{RL} problems
 			\item core components of \ac{RL} algorithms
 		\end{itemize}
-		% TODO: Reading Assignment: Sutton, Chapter 1
+		% TODO: Sutton, Chapter 1
 	% end
 % end
 
@@ -485,8 +485,8 @@
 				\begin{theorem}[Bellman Expectation Equation]
 					For all states \(s \in \mathcal{S}\), we have the following decompositions:
 					\begin{align}
-						V^\pi(s) &= \E_{\pi, \mat{P}}\bigl[ R(s, a) + \gamma V^\pi(s_{t + 1}) \biggiven s_t = s \bigr] = \E_{a \sim \pi}\bigl[ Q^\pi(s, a) \bigr] \\
-						Q^\pi(s, a) &= R(s, a) + \gamma \E_{\pi, \mat{P}} \bigl[ Q^\pi(s_{t + 1}, a_{t + 1}) \biggiven s_t = s, a_t = a \bigr]
+						V^\pi(s) &= \E_{a, s'}\bigl[ R(s, a) + \gamma V^\pi(s') \biggiven s \bigr] = \E_{a}\bigl[ Q^\pi(s, a) \bigr] \\
+						Q^\pi(s, a) &= R(s, a) + \gamma \E_{s', a'} \bigl[ Q^\pi(s', a') \biggiven s, a \bigr] = R(s, a) + \gamma \E_{s'}\bigl[ V^\pi(s') \biggiven s, a \bigr]  \label{eq:bellmanExpEqQ}
 					\end{align}
 					Note that the \(Q\)-function decomposition is very similar to the \ac{MRP}-decomposition of the state value function.
 				\end{theorem}
@@ -496,21 +496,21 @@
 
 				Due to the reformulation \eqref{eq:mdpToMrp}, we can reformulate the Bellman equation analogous to \eqref{eq:closedFormBellman} as \( \vec{V}^\pi = \vec{R}^\pi + \gamma \mat{P}^\pi \vec{V}^\pi \) which we can solve in closed form. However, also analogous to the \ac{MRP}-case, this is inefficient for high-dimensional state spaces.
 
-				\begin{definition}[Bellman Operator]
+				\begin{definition}[Bellman Operator]  \label{def:bellmanOperator}
 					The \emph{Bellman operator} for \(V\) and \(Q\) is an operator \(T^\pi\) mapping from state and action value functions to state and action value functions. It is defined as follows:
 					\begin{align}
-						(T^\pi V)(s) &= \E_{\pi, \mat{P}}\bigl[ R(s, a) + \gamma V(s_{t + 1}) \biggiven s_t = s \bigr] \\
-						(T^\pi Q)(s, a) &= R(s, a) + \gamma \E_{\pi, \mat{P}} \bigl[ Q(s_{t + 1}, a_{t + 1}) \biggiven s_t = s, a_t = a \bigr]
+						(T^\pi V)(s) &= \E_{a, s'}\bigl[ R(s, a) + \gamma V(s') \biggiven s \bigr] \\
+						(T^\pi Q)(s, a) &= R(s, a) + \gamma \E_{s', a'} \bigl[ Q(s', a') \biggiven s, a \bigr]
 					\end{align}
 				\end{definition}
-				\begin{theorem}
+				\begin{theorem}  \label{th:bellmanOperatorContract}
 					The Bellman operator is an \(\alpha\)-contraction mapping w.r.t. \( \lVert \cdot \rVert_\infty \) if \( \gamma \in (0, 1) \).
 				\end{theorem}
 				\begin{proof}
 					\todo{Proof: Bellman Contraction}
 				\end{proof}
 				\begin{remark}
-					With these operators, we can compactly write the Bellman equation(s) as \( T^\pi V^\pi = V^\pi \) and \( T^\pi Q^\pi = Q^\pi \) and the policy's state and action value functions are the \emph{unique} respective fixed points of \(T^\pi\).
+					With these operators, we can compactly write the Bellman equation(s) as \( T^\pi V^\pi = V^\pi \) and \( T^\pi Q^\pi = Q^\pi \) and the policy's state and action value functions are the \emph{unique} respective fixed points of \(T^\pi\). With \autoref{th:bellmanOperatorContract}, repeated application of \(T^\pi\) to any vector converges towards this fixed point.
 				\end{remark}
 			% end
 
@@ -550,23 +550,23 @@
 					For all states \(s \in \mathcal{S}\), we have the following decompositions:
 					\begin{align}
 						V^\ast(s) &= \max_{a \in \mathcal{A}} Q^\ast(s, a)
-						           = \max_{a \in \mathcal{A}} \;\Bigl\{ R(s, a) + \gamma \E_{\mat{P}}\bigl[ V^\ast(s_{t + 1}) \biggiven s_t = s \bigr] \Bigr\} \\
-						Q^\ast(s, a) &= R(s, a) + \gamma \E_{\mat{P}}\bigl[ V^\ast(s_{t + 1}) \biggiven s_t = s \bigr]
-						              = R(s, a) + \gamma \E_{\mat{P}}\bigl[ \textstyle\max_{a' \in \mathcal{A}}\displaystyle Q^\ast(s_{t + 1}, a') \biggiven s_t = s \bigr]
+						           = \max_{a \in \mathcal{A}} \;\Bigl\{ R(s, a) + \gamma \E_{s'}\bigl[ V^\ast(s') \biggiven s \bigr] \Bigr\} \\
+						Q^\ast(s, a) &= R(s, a) + \gamma \E_{s'}\bigl[ V^\ast(s') \biggiven s \bigr]
+						              = R(s, a) + \gamma \E_{s'}\bigl[ \textstyle\max_{a' \in \mathcal{A}}\displaystyle Q^\ast(s', a') \biggiven s \bigr]  \label{eq:bellmanOptEqQ}
 					\end{align}
 				\end{theorem}
 				\begin{proof}
 					Left as an exercise for the reader (hint: plug in the definitions of the individual components).
 				\end{proof}
 
-				\begin{definition}[Bellman Optimality Operator]
+				\begin{definition}[Bellman Optimality Operator]  \label{def:bellmanOptimalityOperator}
 					The \emph{Bellman optimality operator} for \(V\) and \(Q\) is an operator \(T^\ast\) mapping from state- and action-value functions to state- and action-value functions. It is defined as follows:
 					\begin{align}
-						(T^\ast V)(s) &= \max_{a \in \mathcal{A}} \;\Bigl\{ R(s, a) + \gamma \E_{\mat{P}}\bigl[ V(s_{t + 1}) \biggiven s_t = s \bigr] \Bigr\} \\
-						(T^\ast Q)(s, a) &= R(s, a) + \gamma \E_{\mat{P}}\bigl[ \textstyle\max_{a' \in \mathcal{A}}\displaystyle Q(s_{t + 1}, a') \biggiven s_t = s \bigr]
+						(T^\ast V)(s) &= \max_{a \in \mathcal{A}} \;\Bigl\{ R(s, a) + \gamma \E_{s'}\bigl[ V(s') \biggiven s \bigr] \Bigr\} \\
+						(T^\ast Q)(s, a) &= R(s, a) + \gamma \E_{s'}\bigl[ \textstyle\max_{a' \in \mathcal{A}}\displaystyle Q(s', a') \biggiven s \bigr]
 					\end{align}
 				\end{definition}
-				\begin{theorem}
+				\begin{theorem}  \label{th:bellmanOptimalityOperatorContract}
 					The Bellman optimality operator is an \(\alpha\)-contraction mapping w.r.t. \( \lVert \cdot \rVert_\infty \) if \( \gamma \in (0, 1) \).
 				\end{theorem}
 				\begin{proof}
@@ -593,32 +593,97 @@
 			\item the Bellman equation
 			\item the Bellman expectation and optimality equations
 		\end{itemize}
-		% TODO: Reading Assignment: Sutton, Chapters 4, 5.{1,2}, and 6.{1,2,3}
+		% TODO: Sutton, Chapter 3
 	% end
 % end
 
-\chapter{Dynamic Programming} % 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7
+\chapter{Dynamic Programming}
 	\label{c:dp}
 
-	\todo{Content}
+	In this chapter we will look into a very general approach of solving problem, \emph{\ac{DP},} and will apply it to \acp{MDP}. All these methods have in common that we have a perfect model of the world (e.g., a given \ac{MDP}) and we want to find a policy that maximizes the \ac{MDP}'s reward. The general idea is to break the overall problem down into smaller sub-problems which we then solve optimally. By combining optimal sub-solutions, we get an optimal global solution, assuming that \emph{Bellman's principle of optimality} applies and that the decomposition is possible. An additional assumption is that the sub-problems \emph{overlap,} i.e., they may recur many times and we can cache and reuse their solutions.
 
-	\section{Finite Horizon DP} % 3.8, 3.9
-		\todo{Content}
-	% end
+	Both of these assumptions are fulfilled by \acp{MDP} where the Bellman equation gives recursive decompositions and the value function stores and reuses solutions. For finite-horizon \acp{MDP}, \ac{DP} is straightforward by starting from \(k = T - 1\) and iterating backwards, \(k = T - 1, T, \dots, 0\), reusing the sub-solutions. The value function and policy are then \(k\)-dependent and we get the optimal value function and policy for \(k = 0\) (when the information was able to "flow" through the \ac{MDP}). Compare to brute-force policy search, we get an exponential speedup! As \ac{DP} for finite-horizon problems is straightforward, we will now stick to infinite-horizon problems.
 
-	\section{Policy Iteration} % 3.19
-		\todo{Content}
+	Note that we have two central problems we can solve in an \ac{MDP}: \emph{prediction} and \emph{control.} In prediction, we just want to predict the \acp{MDP}'s behavior, i.e., measure its value function given a policy. In control, we want to find the optimal value function and policy. As these problems are closely related and we need the former for the latter, we will discuss them jointly.
 
-		\subsection{Policy Evaluation} % 3.10, 3.11, 3.12
-			\todo{Content}
+	\section{Policy Iteration}
+		\emph{\ac{PI}} is an algorithm for solving infinite-horizon \acp{MDP} by repeating the following steps:
+		\begin{enumerate}
+			\item Policy Evaluation: estimate \(V^\pi\)
+			\item Policy Improvement: find a \(\pi' \geq \pi\)
+		\end{enumerate}
+		The following sections describe these steps in detail and also discuss convergence.
+
+		\subsection{Policy Evaluation}
+			In \emph{policy evaluation,} we want to compute the value function \(V^\pi\) for a given policy \(\pi\) (i.e., perform prediction). For this we would either directly solve the Bellman expectation equation using \eqref{eq:closedFormBellman}, but this has complexity \(\mathcal{O}(n^3)\). Instead, we start with some approximation \( V_{k = 0} \) of the value function (which can be arbitrarily bad) and repeatedly apply the Bellman operator (\autoref{def:bellmanOperator}) until convergence:
+			\begin{equation}
+				V^{(k + 1)}(s)
+					\gets (T^\pi V^{(k)})(s)
+					= \sum_{a \in \mathcal{A}} \pi(s \given a) \Biggl( R(s, a) + \gamma \sum_{s' \in \mathcal{S}} P(s' \given s, a) V^{(k)}(s') \Biggr).
+			\end{equation}
+			The sequence \(\bigl(V^{(k)}\bigr)_{k = 0}^{\infty}\) converges, by Banach's fixed point theorem and \autoref{th:bellmanOperatorContract}, to the fixed point \(V^\pi\). In matrix form, we can also write this update as \( \vec{V}^{(k + 1)} = \vec{R}^\pi + \gamma \mat{P}^\pi \vec{V}^{(k)} \).
+
+			However, in subsequent steps we need the action-value function \(Q^\pi\). There are generally two options for this: either recover \(Q^\pi\) from \(V^\pi\) using \eqref{eq:bellmanExpEqQ} or directly estimate it by repeatedly applying its Bellman operator. As this is completely analogous, we will skip the explicit equations here.
 		% end
 
 		\subsection{Policy Improvement} % 3.16, 3.17, 3.18
-			\todo{Content}
+			In \emph{policy improvement,} we want to use find a better policy \(\pi' \geq \pi\) using \(Q^\pi\). We do this by acting greedily, i.e., \( \pi'(s) = \argmax_{a \in \mathcal{A}} Q^\pi(s, a) \). With this definition, we have the following inequality:
+			\begin{equation}
+				Q^\pi\bigl( s, \pi'(s) \bigr)
+					= \max_{a \in \mathcal{A}} Q^\pi(s, a)
+					\geq Q^\pi\bigl( s, \pi(s) \bigr)
+					= V^\pi(s).
+			\end{equation}
+			\begin{theorem}[Policy Improvement Theorem]
+				Let \(\pi\) and \(\pi'\) be policies with \( Q^\pi\bigl( s, \pi'(s) \bigr) \geq V^\pi(s) \). Then \( \pi' \geq \pi \).
+			\end{theorem}
+			\begin{proof}
+				By repeatedly applying the premise \((\ast)\), the Bellman expectation equation \((\dagger)\), and the definition of the value function \((\ddagger)\), we find the following inequality chain:
+				\begin{align}
+					V^\pi(s)
+						&\overset{\mathclap{(\ast)}}{=} Q^\pi\bigl( s, \pi'(a) \bigr)
+						 \overset{\mathclap{(\dagger)}}{=} \E_{\pi', \mat{P}}\bigl[ r_{t + 1} + \gamma V^\pi(s_{t + 1}) \biggiven s_t = s \bigr]
+						 \overset{\mathclap{(\ast)}}{=} \E_{\pi', \mat{P}}\bigl[ r_{t + 1} + \gamma Q^\pi\bigl( s_{t + 1}, \pi'(s_{t + 1}) \bigr) \biggiven s_t = s \bigr] \\
+						&\overset{\mathclap{(\ast\dagger)}}{=} \E_{\pi', \mat{P}}\bigl[ r_{t + 1} + \gamma r_{t + 2} + \gamma^2 Q^\pi\bigl( s_{t + 2}, \pi'(s_{t + 2}) \bigr) \biggiven s_t = s \bigr]
+						 \overset{\mathclap{(\ast\dagger)}}{=} \E_{\pi', \mat{P}}\bigl[ r_{t + 1} + \gamma r_{t + 2} + \dots \biggiven s_t = s \bigr]
+						 \overset{\mathclap{(\ddagger)}}{=} V^{\pi'}(s)
+				\end{align}
+			\end{proof}
+
+			With this theorem of which the premise is fulfilled when acting greedily, we see that the policy is either improved or, if improvement stops and \( V^{\pi'} = V^\pi \), we found the optimal policy through the Bellman optimality equation \( Q^\pi\bigl( s, \pi(s) \bigr) = V^\pi(s) \). Hence, \ac{PI} always converges to the optimal policy \(\pi^\ast\)!
 		% end
 
-		\subsection{Using the Action-Value Function} % 4.9
-			\todo{Content}
+		\subsection{Remarks}
+			As both policy evaluation and improvement converge to a unique fixed point, policy iteration overall converges to the optimal policy! The algorithm is summarized in \autoref{alg:pi}. Note that recovering \(Q^\pi\) from \(V^\pi\) requires a model of the \ac{MDP}. While this is not a problem for policy iteration as the policy evaluation step requires a model anyway, later on we will estimate the value differently and may not have a model. If so, it makes more sense to directly estimate the action-value function.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{Markov decision process \( \mathcal{M} = \langle \mathcal{S}, \mathcal{A}, \mat{P}, R, \gamma, \iota \rangle \)}
+				\KwOut{optimal \(V^\ast\), \(Q^\ast\), and \(\pi^\ast\)}
+				initialize \( \pi \) arbitrarily \;
+				\Repeat{until convergence}{
+					\tcp{Policy Evaluation}
+					\( k \gets 0 \) \;
+					initialize \( Q^{(k)} \) arbitrarily \;
+					\Repeat{until convergence}{
+						\( V^{(k + 1)}(s) \gets \sum_{a \in \mathcal{A}} \pi(s \given a) R(s, a) + \gamma \sum_{s' \in \mathcal{S}} P(s' \given s, a) Q^{(k)}(s', a) \) \;
+						\( k \gets k + 1 \) \;
+					}
+					\tcp{Recover the action-value function.}
+					\( Q^{(\infty)}(s, a) \gets R(s, a) + \gamma \sum_{s' \in \mathcal{S}} P(s' \given s, a) V^{(\infty)}(s') \) \;
+					\vspace{5pt}
+					\tcp{Policy Improvement}
+					\(
+						\pi(a \given s) \gets
+							\begin{cases}
+								1 & \text{if }a = \argmax_{a \in \mathcal{A}} Q^{(\infty)}(s, a) \\
+								0 & \text{otherwise}
+							\end{cases}
+					\) \;
+				}
+				\Return \( V^{(\infty)} \), \( Q^{(\infty)} \), \( \pi \)
+				\caption{Policy Iteration}
+				\label{alg:pi}
+			\end{algorithm}
 		% end
 
 		\subsection{Examples} % 3.13, 3.14, 3.15; 3.20, 3.10
@@ -626,28 +691,74 @@
 		% end
 	% end
 
-	\section{Value Iteration} % 3.24, 3.25, 3.27
-		\todo{Content}
+	\section{Value Iteration}
+		\emph{Value iteration (\acsu{VI})} follows a similar idea as \ac{PI}. However, we do not explicitly compute a policy \(\pi\) but instead only find the optimal value function \(V^\ast\) from which we can recover the optimal policy (using \eqref{eq:bellmanOptEqQ} and greedy updates). To find the optimal value function, we repeatedly apply the Bellman optimality operator (\autoref{def:bellmanOptimalityOperator})
+		\begin{equation}
+			V^{(k + 1)}(s) = \max_{a \in \mathcal{A}} \;\Bigl\{ R(s, a) + \gamma \E_{s'}\bigl[ V^{(k)}(s') \biggiven s \bigr] \Bigr\}.
+		\end{equation}
+		As this an \(\alpha\)-contraction due to \autoref{th:bellmanOptimalityOperatorContract}, multiple applications converge to the optimal state-value function \(V^\ast\) for an arbitrary initialization \(V^{(0)}\). This procedure is summarized in \autoref{alg:vi}. We also have the following theorem on the accuracy of the value function estimates.
 
-		\subsection{Principle of Optimality} % 3.22, 3.23, 3.26
-			\todo{Content}
-		% end
+		\begin{theorem}
+			Let \( \lVert V \rVert_\infty = \max_{s \in \mathcal{S}} V(s) \) be the maximum-norm of \(V\) and let \(\epsilon > 0\). If the following inequality holds two successive state-value functions \( V_{i + 1} \) and \( V_i \):
+			\begin{equation}
+				\lVert V_{i + 1} - V_i \rVert_\infty < \epsilon,
+			\end{equation}
+			then the error w.r.t. the maximum norm of \(V_{i + 1}\) is upper-bounded by
+			\begin{equation}
+				\lVert V_{i + 1} - V^\ast \rVert_\infty < \frac{2 \epsilon \gamma}{1 - \gamma}
+			\end{equation}
+			where \(\gamma\) is the discount factor.
+		\end{theorem}
 
-		\subsection{Convergence} % 3.30
-			\todo{Content}
-		% end
-
-		\subsection{Example} % 3.29
-			\todo{Content}
-		% end
+		\begin{algorithm}  \DontPrintSemicolon
+			\KwIn{Markov decision process \( \mathcal{M} = \langle \mathcal{S}, \mathcal{A}, \mat{P}, R, \gamma, \iota \rangle \)}
+			\KwOut{optimal \(V^\ast\) and \(\pi^\ast\)}
+			\tcp{Find optimal state-value function.}
+			\( k \gets 0 \) \;
+			initialize \( V^{(k)} \) arbitrarily \;
+			\Repeat{until convergence}{
+				\( V^{(k + 1)}(s) = \max_{a \in \mathcal{A}} \;\Bigl\{ R(s, a) + \gamma \sum_{s' \in \mathcal{S}} P(s' \given s, a) V^{(k)}(s') \Bigr\} \) \;
+				\( k \gets k + 1 \) \;
+			}
+			\tcp{Recover optimal policy.}
+			\(
+				\pi(a \given s) =
+					\begin{cases}
+						1 & \text{if }a = \argmax_{a \in \mathcal{A}} \;\Bigl\{ R(s, a) + \gamma \sum_{s' \in \mathcal{S}} P(s' \given s, a) V^{(k)}(s') \Bigr\} \\
+						0 & \text{otherwise}
+					\end{cases}
+			\) \;
+			\Return \( V^{(\infty)} \), \( \pi \)
+			\caption{Value Iteration}
+			\label{alg:vi}
+		\end{algorithm}
 	% end
 
-	\section{Policy vs. Value Iteration} % 3.28
-		\todo{Content}
+	\section{Remarks}
+		In \ac{VI}, we had to repeatedly apply max-operations which can be costly. In contrast, \ac{PI} does not require these redundant maximizations, but needs to carry around an explicit policy. However, both algorithms are in the same complexity class: for \(m\) actions and \(n\) states, the state-value based methods is in \( \mathcal{O}(m n^2) \) and the action-value based methods (where instead of recovering \(Q^\pi\) from \(V^\pi\) we estimate it directly) is in \( \mathcal{O}(m^2 n^2) \).
+
+		Note that this chapter only considered \emph{synchronous} \ac{DP} which is only applicable to problems with a relatively small\footnote{A few million, but for high-dimensional problems the state space increases exponentially (cure of dimensionality).} state space. \emph{Asynchronous} \ac{DP}, on the other hand, allows high parallelization and can be applied to larger problems.
+
+		\begin{table}
+			\centering
+			\begin{tabular}{ccc}
+				\toprule
+				\textbf{Problem} &           \textbf{Core Equation}            & \textbf{Algorithm} \\ \midrule
+				   Prediction    &              Bellman Exp. Eq.               & Policy Evaluation  \\
+				    Control      & Bellman Exp. Eq., Greedy Policy Improvement &  Policy Iteration  \\
+				    Control      &           Bellman Optimality Eq.            &  Value Iteration   \\ \bottomrule
+			\end{tabular}
+			\caption{Synchronous Dynamic Programming}
+			\label{fig:syncDp}
+		\end{table}
 	% end
 
-	\section{Efficiency} % 3.31, 3.32
-		\todo{Content}
+	\section{Wrap-Up}
+		\begin{itemize}
+			\item dynamic programming
+			\item computing optimal policies and value functions for environments with known dynamics
+		\end{itemize}
+		% TODO: Sutton, Chapter 4
 	% end
 % end
 

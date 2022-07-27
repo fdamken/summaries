@@ -778,39 +778,38 @@
 	% TODO: Monte-Carlo: Why is first-visit biased and every-visit only consistent?
 
 	\begin{algorithm}  \DontPrintSemicolon
-		\KwIn{Markov decision process \( \mathcal{M} = \langle \mathcal{S}, \mathcal{A}, \mat{P}, R, \gamma, \iota \rangle \) and policy \(\pi\)}
+		\KwIn{policy \(\pi\)}
 		\KwOut{approximate \(V^\pi\)}
-		\( k \gets 0 \) \;
 		initialize \(V^{(k)}\) arbitrarily \;
-		initialize \(\mathit{Returns}(s)\) as an empty list for all \(s \in \mathcal{s}\) \;
-		\Repeat{convergence \( V^{(\infty)} \)}{
+		initialize \(\mathit{Returns}(s)\) as an empty list for all \(s \in \mathcal{S}\) \;
+		\Repeat{convergence}{
 			\( (s_0; r_1, s_1; r_2, s_2; \dots; r_{T - 1}, s_{T - 1}, r_T) \gets \text{generate episode} \) \;
 			\ForEach{\( t = 0, 1, \dots, T \)}{
 				\If{\(s_t\) is visited for the first time}{
 					\( J_t \gets \sum_{k = t + 1}^{T} \gamma^{k - t - 1} r_k \)  \quad\tcp{cumulative discounted reward}
 					append \(J_t\) to \(\mathit{Returns}(s_t)\) \;
-					\( V^{(k)}(s_t) \gets \text{average}\bigl(\mathit{Returns}(s_t)\bigr) \)  \quad\tcp{update value estimate}
+					\( V(s_t) \gets \text{average}\bigl(\mathit{Returns}(s_t)\bigr) \)  \quad\tcp{update value estimate}
 				}
 			}
 		}
+		\Return \(V\) \;
 		\caption{First-Visit Monte-Carlo Policy Evaluation}
 		\label{alg:firstVisitMCPE}
 	\end{algorithm}
 	\begin{algorithm}  \DontPrintSemicolon
-		\KwIn{Markov decision process \( \mathcal{M} = \langle \mathcal{S}, \mathcal{A}, \mat{P}, R, \gamma, \iota \rangle \) and policy \(\pi\)}
+		\KwIn{policy \(\pi\)}
 		\KwOut{approximate \(V^\pi\)}
-		\( k \gets 0 \) \;
 		initialize \(V^{(k)}\) arbitrarily \;
-		initialize \(\mathit{Returns}(s)\) as an empty list for all \(s \in \mathcal{s}\) \;
-		\Repeat{convergence \( V^{(\infty)} \)}{
+		initialize \(\mathit{Returns}(s)\) as an empty list for all \(s \in \mathcal{S}\) \;
+		\Repeat{convergence}{
 			\( (s_0; r_1, s_1; r_2, s_2; \dots; r_{T - 1}, s_{T - 1}, r_T) \gets \text{generate episode} \) \;
 			\ForEach{\( t = 0, 1, \dots, T \)}{
 				\( J_t \gets \sum_{k = t + 1}^{T} \gamma^{k - t - 1} r_k \)  \quad\tcp{cumulative discounted reward}
 				append \(J_t\) to \(\mathit{Returns}(s_t)\) \;
-				\( V^{(k)}(s_t) \gets \text{average}\bigl(\mathit{Returns}(s_t)\bigr) \)  \quad\tcp{update value estimate}
+				\( V(s_t) \gets \text{average}\bigl(\mathit{Returns}(s_t)\bigr) \)  \quad\tcp{update value estimate}
 			}
 		}
-		\Return \(V^{(\infty)}\) \;
+		\Return \(V\) \;
 		\caption{Every-Visit Monte-Carlo Policy Evaluation}
 		\label{alg:everyVisitMCPE}
 	\end{algorithm}
@@ -822,50 +821,128 @@
 	\section{Wrap-Up}
 		\begin{itemize}
 			\item approximation of value functions when the dynamics are not available
-			\item difference of \ac{DP} and \ac{MC}
+			\item differences of \ac{DP} and \ac{MC}
 		\end{itemize}
 		% TODO: Sutton, Chapter 5
 	% end
 % end
 
-\chapter{Temporal Difference Learning} % 3.58, 3.59, 3.60
+\chapter{Temporal Difference Learning}
 	\label{c:td}
 
-	\todo{Content}
+	We will now turn to methods that feel more like "reinforcement learning" rather than \ac{DP} and control theory: \emph{\ac{TD} learning.} Like \ac{MC} methods, \ac{TD} learning learns directly from experience and is also \emph{model-free,} i.e., it has no knowledge of the \ac{MDP} dynamics. However, \ac{TD} methods can learn from incomplete episodes and therefore do not require episodic \acp{MDP}, making them readily applicable to all kinds of problems. The core idea is to update an estimate towards a \emph{better estimate.} Consider \emph{incremental} every-visit \ac{MC} policy evaluation,
+	\begin{equation}
+		V(s_t) \gets V(s_t) + \alpha \bigl( J_t - V(s_t) \bigr) = (1 - \alpha) V(s_t) + \alpha J_t,  \label{eq:mcUpdate}
+	\end{equation}
+	where \(J_t\) is the return following \(s_t\) and \(\alpha\) is a trade-off between the two estimates. Note that for \( \alpha = 1/(K + 1) \) where \(K\) is the number of samples collected before this sample, this update reduces to plain every-visit \ac{MC}. The idea of \ac{TD} learning is to replace the return \(J_t\) which requires all future samples with an estimate of the return using the immediate reward \(r_{t + 1}\) together with an estimate of the value function \(V_{t + 1}\). This process of using an estimate to update another estimate is called \emph{bootstrapping.} This yields the simplest \ac{TD} learning algorithm, TD(\(0\)), with the following update:
+	\begin{equation}
+		V(s_t) \gets V(s_t) + \alpha \bigl( r_{t + 1} + \gamma V(s_t) - V(s_t) \bigr) = V(s_t) + \alpha \delta_t.  \label{eq:tdUpdate}
+	\end{equation}
+	We call \( r_{t + 1} + \gamma V(s_t) \) the \emph{\ac{TD} target} and \( \delta_t \coloneqq r_{t + 1} + \gamma V(s_t) - V(s_t) \) the \emph{\ac{TD} error.} Again, \(\alpha\) is a trade-off between the two estimates where \(\alpha \approx 0\) just sticks to the previous estimate and \(\alpha \approx 1\) directly jumps to the new (bootstrapped) estimate.
 
-	\section{Temporal Differences vs. Monte-Carlo} % 3.63
-		\todo{Content}
+	\begin{algorithm}  \DontPrintSemicolon
+		\KwIn{environment}
+		\KwOut{value function}
+		\Repeat{convergence}{
+			initialize \(s\) \;
+			\While{\(s\) is not terminal}{
+				take action \( a \sim \pi(\cdot \given s) \), observe reward and next state \(s'\) \;
+				\( \delta \gets r + \gamma V(s') \) \;
+				\( V(s) \gets V(s) + \alpha \delta \) \;
+			}
+		}
+		\Return \(V\) \;
+		\caption{TD(\(0\))}
+		\label{alg:td0}
+	\end{algorithm}
 
-		\subsection{Bias-Variance Trade-Off} % 3.66, 3.67
-			\todo{Content}
-		% end
+	\section{Temporal Differences vs. Monte-Carlo (vs. Dynamic Programming)}
+		While both \ac{TD} and \ac{MC} methods are model-free, they still have some major differences. Firstly, \ac{TD} can learn before and even \emph{without} knowing the final outcome of an episode. This enables online learning (i.e., learning while running) whereas \ac{MC} has to wait for an episode to end and the final return is known before learning anything. This directly transfers to continuing (i.e., non-terminating) environments where \ac{TD} can be employed and \ac{MC} cannot.
 
-		\subsection{Markov Property} % 3.68
-			\todo{Content}
-		% end
+		As usual, we have a bias-variance trade-off between the methods, or more precisely between the two updates \eqref{eq:mcUpdate} and \eqref{eq:tdUpdate}. While the return \(J_t\) is an unbiased estimate of \(V^\pi(s_t)\) and therefore the (first-visit) \ac{MC} update is unbiased, the \ac{TD} target has much lower variance as it only depends on a single random action-transition-reward triple. However, the \ac{TD} target is biased unless \( V(s_{t + 1}) = V^\pi(s_t) \), i.e., the true value function, is found.
+
+		While \ac{TD} actively exploits the Markov property, \ac{MC} does not at all. Of course, this makes \ac{MC} more well-rounded and applicable to non-Markovian environments while \ac{TD}'s wrong assumptions can hurts its efficiency. However, for very complicated environments we might not be able to use tabular methods (\autoref{c:tabular}), but have to resort to function approximations (\autoref{c:funcApprox}) where \ac{MC} excels. Also, \ac{TD} is more efficient to the initial values as \ac{MC} which makes sense as \ac{MC} might not use them at all.
+
+		See \autoref{fig:comparisonDpMcTd} for a comparison of \ac{DP}, \ac{MC}, and \ac{TD} with regard to bootstrapping and sampling.
+
+		\begin{table}
+			\centering
+			\begin{tabular}{c|cc}
+				\toprule
+				  \textbf{Method}    & \textbf{Uses Bootstrapping} & \textbf{Uses Sampling} \\ \midrule
+				Dynamic Programming  &             Yes             &           No           \\
+				    Monte-Carlo      &             No              &          Yes           \\
+				Temporal Differences &             Yes             &          Yes           \\ \bottomrule
+			\end{tabular}
+			\caption{Dynamic Programming vs. Monte-Carlo vs. Temporal Difference}
+			\label{fig:comparisonDpMcTd}
+		\end{table}
 
 		\subsection{Backup} % 3.69, 3.70, 3.71
 			\todo{Content}
 		% end
 	% end
 
-	\section{Bootstrapping and Sampling} % 3.72
-		\todo{Content}
-	% end
+	\section{TD(\(\lambda\))} % 3.73
+		Looking at \eqref{eq:tdUpdate}, one might ask why we only look \emph{one} step into the future an not, for instance, three steps. In fact, this is possible and we can consider the \emph{\(n\)-step return}
+		\begin{equation}
+			J_t^{(n)} \coloneqq r_{t + 1} + \gamma r_{t + 2} + \dots + \gamma^{n - 1} r_{t + n} + \gamma^n V(s_{t + n})
+		\end{equation}
+		with \(n\)-step \ac{TD} learning,
+		\begin{equation}
+			V(s_t) \gets V(s_t) + \alpha \bigl( J_t^{(n)} - V(s_t) \bigr).
+		\end{equation}
+		Increasing \(n\) has the advantage of reducing the estimate's bias for the cost of increasing its variance (as with a larger \(n\), more random factors come into play). With \(n \to \infty\), this update approaches \eqref{eq:mcUpdate}, the \ac{MC} update.
 
-	\section{\( \text{TD}(\lambda) \)} % 3.73
-		\todo{Content}
-
-		\subsection{\(n\)-Step Return} % 3.74, 3.75, 3.76
-			\todo{Content}
+		\subsection{Forward-View}
+			The natural next idea is to average multiple \(n\)-step returns to combine information from different time steps. For instance, we could average the \(2\)- and \(4\)-step returns \( \tilde{J} = J^{(2)}/2 + J^{(4)}/2 \). But can we come up with a principled way of weighing different \(n\)-step returns? A fruitful idea is to use an exponential weighting, i.e., to weigh samples in the future exponentially less than close samples. This is the idea of the \emph{\(\lambda\)-return}
+			\begin{equation}
+				J_t^\lambda = (1 - \lambda) \sum_{n = 1}^{\infty} \lambda^{n - 1} J_t^{(n)}
+			\end{equation}
+			which uses the weighting function \( (1 - \lambda) \lambda^{n - 1} \), \( \lambda \in [0, 1) \) for the \(n\)-step return. The factor \((1 - \lambda)\) is necessary for the sum to be convex, i.e.,
+			\begin{equation}
+				(1 - \lambda) \sum_{n = 1}^{\infty} \lambda^{n - 1}
+					= (1 - \lambda) \sum_{n = 0}^{\infty} \lambda^n
+					= (1 - \lambda) \frac{1}{1 - \lambda}
+					= 1.
+			\end{equation}
+			We call the resulting update \( V(s_t) \gets V(s_t) + \alpha \bigl( J_t^\lambda - V(s_t) \bigr) \) \emph{forward-view TD(\(\lambda\)).} Of course now we are back to the initial problem we tried to avoid using \ac{TD} methods: the forward-view \ac{TD} target can only be computed for complete episodes!
 		% end
 
-		\subsection{\(\lambda\)-Return} % 3.77, 3.78, 3.79
-			\todo{Content}
-		% end
+		\subsection{Backward-View and Eligibility Traces}
+			We saw that forward-view TD(\(\lambda\)) provides a good approach to reduce the bias of the \ac{TD} target. However, it had the disadvantage of only working in episodic settings, i.e., only with complete episodes. An alternative is \emph{backward-view TD(\(\lambda\))} following a similar idea, but looking backward in time, allowing updates from incomplete episodes. However, now we have the \emph{credit assignment problem:} how to weigh past rewards and states? Two common heuristics are the \emph{frequency} and \emph{recency} heuristic, i.e., assigning credit to the most frequent or most recent states, respectively. Both of these ideas can be summarized into \emph{eligibility traces.} For every time step \(t\), we keep an eligibility value \( z_t(s) \) for every state \(s\) describing the weight of state \(s\) at time step \(t\). Starting with \( z_{-1}(s) = 0 \), we iteratively compute the next time step as
+			\begin{equation}
+				z_t(s) = \gamma \lambda z_{t - 1}(s) + \mathbbm{1}[s = s_t],
+			\end{equation}
+			where \(\gamma\) is the discount factor and \(\lambda\) is the exponential decay for the eligibility. The intuition of this update is as follows: Whenever we take a step in the environment, we decrease the weight by multiplying with \(\lambda\) (implementing the recency heuristic); by adding one whenever we see a state, we implement the frequency heuristic (by adding one often for frequent states) and "give the recency heuristic something to work with," i.e., some value it can actually decrease. The update (applied to all states and not just the current state) then is
+			\begin{equation}
+				V(s) \gets V(s) + \alpha \delta_t z_t(s)
+			\end{equation}
+			where \(\delta_t\) is the \ac{TD} error. Note that for \(\lambda = 0\), the update collapses exactly on the TD(\(0\)) update \eqref{eq:tdUpdate}, hence the name. The algorithm is summarized in \autoref{alg:backwardViewTdLambda}.
 
-		\subsection{Eligibility Traces} % 3.80, 3.81, 3.82, 3.83, 3.84, 3.85, 3.86
-			\todo{Content}
+			\todo{Backward-View TD(lambda): Equivalence of forward- and backward-view.}
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{environment}
+				\KwOut{value function}
+				\Repeat{converged}{
+					\( z(s) \gets 0 \) for all \( s \in \mathcal{S} \) \;
+					initialize \(s\) \;
+					\While{\(s\) is not terminal}{
+						take action \( a \sim \pi(\cdot \given s) \), observe reward \(r\) and next state \(s'\) \;
+						\( \delta \gets r + \gamma V(s') - V(s) \) \;
+						% TODO: Backward-View TD(lambda): Why update the eligibility traces like this and not like the equation states?
+						\( z(s) \gets z(s) + 1 \) \;
+						\ForEach{\( \tilde{s} \in \mathcal{S} \)}{
+							\( V(\tilde{s}) \gets V(\tilde{s}) + \alpha \delta z(\tilde{s}) \) \;
+							\( z(\tilde{s}) \gets \gamma \lambda z(\tilde{s}) \) \;
+						}
+					}
+				}
+				\Return \(V\) \;
+				\caption{Backward-View TD(\(\lambda\))}
+				\label{alg:backwardViewTdLambda}
+			\end{algorithm}
 		% end
 	% end
 
@@ -873,8 +950,13 @@
 		\todo{Content}
 	% end
 
-	\section{Wrap-Up} % 3.87, 3.88, 3.89
-		\todo{Content}
+	\section{Wrap-Up}
+		\begin{itemize}
+			\item differences of \ac{DP}, \ac{MC}, and \ac{TD}
+			\item definition of eligibility traces
+			\item computation of TD(\(\lambda\))
+		\end{itemize}
+		% TODO: Sutton, 6, 7, 12
 	% end
 % end
 
@@ -916,7 +998,7 @@
 				\todo{Content}
 			% end
 
-			\subsubsection{Eligibility Traces and \( \text{SARSA}(\lambda) \)} % 4.31, 4.32
+			\subsubsection{Eligibility Traces and SARSA(\(\lambda\))} % 4.31, 4.32
 				\todo{Content}
 			% end
 

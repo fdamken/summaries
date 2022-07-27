@@ -762,17 +762,69 @@
 	% end
 % end
 
-\chapter{Monte-Carlo Algorithms} % 3.33, 3.34, 3.35, 3.36, 3.37
+\chapter{Monte-Carlo Methods}
 	\label{c:mc}
 
-	\todo{Content}
+	While \ac{DP} requires a model of the world (in terms of a fully specified \ac{MDP}) and can perform planning inside an \ac{MDP}, \ac{MC} methods and algorithm are \emph{model-free.} They are mostly based on \ac{PI} which---when estimating the action-value functions directly---does not require a model of the world during policy improvement. To evaluate the policy, \ac{MC} methods use repeated random sampling and just produce an estimate. However, they still assume finite \acp{MDP}. We can again identify two tasks:
+	\begin{itemize}
+		\item \emph{Model-Free Prediction:} estimate the value function of an unknown \ac{MDP} given a policy
+		\item \emph{Model-Free Control:} find the optimal value function and policy of an unknown \ac{MDP}; achieved by combining policy improvement with \ac{MC} prediction
+	\end{itemize}
+	The core idea is to use the mean return of multiple episodes as an estimation for the value of a state. Hence, \ac{MC} methods can only be applied to episodic \acp{MDP}, i.e., ones which eventually terminate. Here we have two options:
+	\begin{itemize}
+		\item \emph{First-Visit \ac{MC}:} estimate the value of a state \(s\) by averaging the returns \emph{only for the first time} \(s\) is visited in an episode; yields an \emph{unbiased} estimator; see \autoref{alg:firstVisitMCPE}
+		\item \emph{Every-Visit \ac{MC}:} estimate the value of a state \(s\) by averaging the returns \emph{every time} \(s\) is visited in an episode; yields a \emph{biased} but still \emph{consistent} estimator; see \autoref{alg:everyVisitMCPE}
+	\end{itemize}
+	% TODO: Monte-Carlo: Why is first-visit biased and every-visit only consistent?
 
-	\section{Policy Evaluation} % 3.39, 3.40, 3.41
-		\todo{Content}
-	% end
+	\begin{algorithm}  \DontPrintSemicolon
+		\KwIn{Markov decision process \( \mathcal{M} = \langle \mathcal{S}, \mathcal{A}, \mat{P}, R, \gamma, \iota \rangle \) and policy \(\pi\)}
+		\KwOut{approximate \(V^\pi\)}
+		\( k \gets 0 \) \;
+		initialize \(V^{(k)}\) arbitrarily \;
+		initialize \(\mathit{Returns}(s)\) as an empty list for all \(s \in \mathcal{s}\) \;
+		\Repeat{convergence \( V^{(\infty)} \)}{
+			\( (s_0; r_1, s_1; r_2, s_2; \dots; r_{T - 1}, s_{T - 1}, r_T) \gets \text{generate episode} \) \;
+			\ForEach{\( t = 0, 1, \dots, T \)}{
+				\If{\(s_t\) is visited for the first time}{
+					\( J_t \gets \sum_{k = t + 1}^{T} \gamma^{k - t - 1} r_k \)  \quad\tcp{cumulative discounted reward}
+					append \(J_t\) to \(\mathit{Returns}(s_t)\) \;
+					\( V^{(k)}(s_t) \gets \text{average}\bigl(\mathit{Returns}(s_t)\bigr) \)  \quad\tcp{update value estimate}
+				}
+			}
+		}
+		\caption{First-Visit Monte-Carlo Policy Evaluation}
+		\label{alg:firstVisitMCPE}
+	\end{algorithm}
+	\begin{algorithm}  \DontPrintSemicolon
+		\KwIn{Markov decision process \( \mathcal{M} = \langle \mathcal{S}, \mathcal{A}, \mat{P}, R, \gamma, \iota \rangle \) and policy \(\pi\)}
+		\KwOut{approximate \(V^\pi\)}
+		\( k \gets 0 \) \;
+		initialize \(V^{(k)}\) arbitrarily \;
+		initialize \(\mathit{Returns}(s)\) as an empty list for all \(s \in \mathcal{s}\) \;
+		\Repeat{convergence \( V^{(\infty)} \)}{
+			\( (s_0; r_1, s_1; r_2, s_2; \dots; r_{T - 1}, s_{T - 1}, r_T) \gets \text{generate episode} \) \;
+			\ForEach{\( t = 0, 1, \dots, T \)}{
+				\( J_t \gets \sum_{k = t + 1}^{T} \gamma^{k - t - 1} r_k \)  \quad\tcp{cumulative discounted reward}
+				append \(J_t\) to \(\mathit{Returns}(s_t)\) \;
+				\( V^{(k)}(s_t) \gets \text{average}\bigl(\mathit{Returns}(s_t)\bigr) \)  \quad\tcp{update value estimate}
+			}
+		}
+		\Return \(V^{(\infty)}\) \;
+		\caption{Every-Visit Monte-Carlo Policy Evaluation}
+		\label{alg:everyVisitMCPE}
+	\end{algorithm}
 
 	\section{Example} % 3.42, 3.43, 3.44, 3.45, 3.46, 3.47, 3.48, 3.49, 3.50, 3.51, 3.52, 3.53, 3.54, 3.55, 3.56, 3.57
 		\todo{Content}
+	% end
+
+	\section{Wrap-Up}
+		\begin{itemize}
+			\item approximation of value functions when the dynamics are not available
+			\item difference of \ac{DP} and \ac{MC}
+		\end{itemize}
+		% TODO: Sutton, Chapter 5
 	% end
 % end
 

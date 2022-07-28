@@ -187,6 +187,8 @@
 		% end
 
 		\subsection{Important Sampling}
+			\label{subsec:importanceSampling}
+
 			If we want to estimate the expectation of some function \(f(x)\) for \( x \sim p(x) \), but cannot sample from \(p(x)\) (which is often the case for complicated models), we can instead use the following relation(s):
 			\begin{gather}
 				\E_{x \sim p}\bigl[ f(x) \bigr]
@@ -626,7 +628,7 @@
 			However, in subsequent steps we need the action-value function \(Q^\pi\). There are generally two options for this: either recover \(Q^\pi\) from \(V^\pi\) using \eqref{eq:bellmanExpEqQ} or directly estimate it by repeatedly applying its Bellman operator. As this is completely analogous, we will skip the explicit equations here.
 		% end
 
-		\subsection{Policy Improvement} % 3.16, 3.17, 3.18
+		\subsection{Policy Improvement}
 			In \emph{policy improvement,} we want to use find a better policy \(\pi' \geq \pi\) using \(Q^\pi\). We do this by acting greedily, i.e., \( \pi'(s) = \argmax_{a \in \mathcal{A}} Q^\pi(s, a) \). With this definition, we have the following inequality:
 			\begin{equation}
 				Q^\pi\bigl( s, \pi'(s) \bigr)
@@ -634,7 +636,7 @@
 					\geq Q^\pi\bigl( s, \pi(s) \bigr)
 					= V^\pi(s).
 			\end{equation}
-			\begin{theorem}[Policy Improvement Theorem]
+			\begin{theorem}[Policy Improvement Theorem]  \label{th:policyImprovement}
 				Let \(\pi\) and \(\pi'\) be policies with \( Q^\pi\bigl( s, \pi'(s) \bigr) \geq V^\pi(s) \). Then \( \pi' \geq \pi \).
 			\end{theorem}
 			\begin{proof}
@@ -836,7 +838,7 @@
 	\end{equation}
 	where \(J_t\) is the return following \(s_t\) and \(\alpha\) is a trade-off between the two estimates. Note that for \( \alpha = 1/(K + 1) \) where \(K\) is the number of samples collected before this sample, this update reduces to plain every-visit \ac{MC}. The idea of \ac{TD} learning is to replace the return \(J_t\) which requires all future samples with an estimate of the return using the immediate reward \(r_{t + 1}\) together with an estimate of the value function \(V_{t + 1}\). This process of using an estimate to update another estimate is called \emph{bootstrapping.} This yields the simplest \ac{TD} learning algorithm, TD(\(0\)), with the following update:
 	\begin{equation}
-		V(s_t) \gets V(s_t) + \alpha \bigl( r_{t + 1} + \gamma V(s_t) - V(s_t) \bigr) = V(s_t) + \alpha \delta_t.  \label{eq:tdUpdate}
+		V(s_t) \gets V(s_t) + \alpha \bigl( r_{t + 1} + \gamma V(s_{t + 1}) - V(s_t) \bigr) = V(s_t) + \alpha \delta_t.  \label{eq:tdUpdate}
 	\end{equation}
 	We call \( r_{t + 1} + \gamma V(s_t) \) the \emph{\ac{TD} target} and \( \delta_t \coloneqq r_{t + 1} + \gamma V(s_t) - V(s_t) \) the \emph{\ac{TD} error.} Again, \(\alpha\) is a trade-off between the two estimates where \(\alpha \approx 0\) just sticks to the previous estimate and \(\alpha \approx 1\) directly jumps to the new (bootstrapped) estimate.
 
@@ -846,9 +848,10 @@
 		\Repeat{convergence}{
 			initialize \(s\) \;
 			\While{\(s\) is not terminal}{
-				take action \( a \sim \pi(\cdot \given s) \), observe reward and next state \(s'\) \;
-				\( \delta \gets r + \gamma V(s') \) \;
+				take action \( a \sim \pi(\cdot \given s) \), observe reward \(r\) and next state \(s'\) \;
+				\( \delta \gets r + \gamma V(s') - V(s) \) \;
 				\( V(s) \gets V(s) + \alpha \delta \) \;
+				\( s \gets s' \) \;
 			}
 		}
 		\Return \(V\) \;
@@ -883,7 +886,9 @@
 		% end
 	% end
 
-	\section{TD(\(\lambda\))} % 3.73
+	\section{\acs{TD}(\(\lambda\))}
+		\label{sec:tdLambda}
+
 		Looking at \eqref{eq:tdUpdate}, one might ask why we only look \emph{one} step into the future an not, for instance, three steps. In fact, this is possible and we can consider the \emph{\(n\)-step return}
 		\begin{equation}
 			J_t^{(n)} \coloneqq r_{t + 1} + \gamma r_{t + 2} + \dots + \gamma^{n - 1} r_{t + n} + \gamma^n V(s_{t + n})
@@ -937,6 +942,7 @@
 							\( V(\tilde{s}) \gets V(\tilde{s}) + \alpha \delta z(\tilde{s}) \) \;
 							\( z(\tilde{s}) \gets \gamma \lambda z(\tilde{s}) \) \;
 						}
+						\( s \gets s' \) \;
 					}
 				}
 				\Return \(V\) \;
@@ -956,50 +962,155 @@
 			\item definition of eligibility traces
 			\item computation of TD(\(\lambda\))
 		\end{itemize}
-		% TODO: Sutton, 6, 7, 12
+		% TODO: Sutton, Chapters 6, 7, and 12
 	% end
 % end
 
-\chapter{Tabular Reinforcement Learning} % 4.1, 4.2, 4.3, 4.4
-	\todo{Content}
+\chapter{Tabular Reinforcement Learning}
+	In this chapter we cover methods from \emph{tabular} \ac{RL} where the state-action-space is small enough such that we can represent the action-value function as a table. We distinguish two categories of methods: on- and off-policy learning. In the former the algorithm learns "on the job," i.e., the experience is sampled from the policy that is being trained. In the latter the algorithms learns "by looking over someone's shoulder," i.e., the experience is samples from a different policy \(q\) that the one that is being trained.
 
-		\subsection{Monte-Carlo Methods} % 4.5
-			\todo{Content}
+	\section{On-Policy Methods}
+		In this section we discuss tabular on-policy methods.
 
-			\subsubsection{Generalized Policy Iteration} % 4.6, 4.7, 4.8, 4.10
-				\todo{Content}
+		\subsection{Monte-Carlo Methods and Exploration vs. Exploitation}
+			In \emph{generalized} \ac{PI}, we do not evaluate the state-value function (for which a greedy policy improvement needs the transition dynamics), but instead evaluate the action-value. However, just using the deterministic policy found during policy improvement for \ac{MC} policy evaluation means that we do not have exploration (no "new" actions are tried)! This brings us to the \emph{exploration vs. exploitation dilemma.}
+
+			During decision-making, we have two options: \emph{exploit} the current knowledge to make the best known decision or \emph{explore} and gather more information. In other words, the best long-term options (which we want to find) might involve short-term sacrifices. This dilemma is a fundamental problem in \ac{RL} and we do not have a satisfying solution yet. Two common approaches are \emph{\(\epsilon\)-greedy},
+			\begin{align}
+				a =
+					\begin{cases*}
+						a^\ast & with probability \(1 - \epsilon\) \\
+						\text{random action} & with probability \(\epsilon\)
+					\end{cases*},
+			\end{align}
+			and \emph{softmax.} A softmax policy biases the action selection towards exploitation. The most common softmax is the Boltzmann distribution
+			\begin{equation}
+				\pi(a \given s) = \frac{\exp\bigl\{ Q(s, a) / \tau \bigr\}}{\exp\bigl\{ \sum_{a' \in \mathcal{A}} Q(s, a') / \tau \bigr\}}
+			\end{equation}
+			with a \emph{temperature} \(\tau\) defining how uniform the distribution is. For \(\tau \to \infty\), the distribution approaches a uniform distribution of \(a\) and for \(\tau = 0\) it acts greedy.
+
+			\subsubsection{\(\epsilon\)-Greedy Exploration and Policy Improvement}
+				The simplest exploration strategy, \(\epsilon\)-greedy, can also be formulated as a distribution:
+				\begin{equation}
+					\pi(a \given s) =
+						\begin{cases*}
+							\epsilon/m + 1 - \epsilon & if \( a = \argmax_{a \in \mathcal{A}} Q(s, a) \) \\
+							\epsilon/m                & otherwise
+						\end{cases*}
+				\end{equation}
+				Interestingly, the \(\epsilon\)-greedy policy still causes monotonic improvements as for any \(\epsilon\)-greedy policy \(\pi\), the \(\epsilon\)-greedy policy w.r.t. \(Q^\pi\) fulfills the premise of the policy improvement theorem (\autoref{th:policyImprovement}):
+				\begin{align}
+					Q^\pi\bigl( s, \pi'(s) \bigr)
+						&= \sum_{a \in \mathcal{A}} \pi'(a \given s) Q^\pi(s, a)
+					 = \sum_{a \in \mathcal{A}} Q^\pi(s, a)
+							\begin{cases*}
+								\epsilon/m + 1 - \epsilon & if \( a = \argmax_{a \in \mathcal{A}} Q^\pi(s, a) \) \\
+								\epsilon/m                & otherwise
+							\end{cases*} \\
+						&\overset{\mathclap{(\ast)}}{=} \frac{\epsilon}{m} \sum_{a \in \mathcal{A}} Q^\pi(s, a) + (1 - \epsilon) \max_{a \in \mathcal{A}} Q^\pi(s, a) \\
+						&\overset{\mathclap{(\dagger)}}{\geq} \frac{\epsilon}{m} \sum_{a \in \mathcal{A}} Q^\pi(s, a) + (1 - \epsilon) \sum_{a \in \mathcal{A}} \frac{\pi(a \given s) - \epsilon/m}{1 - \epsilon} Q^\pi(s, a)
+					 \overset{\mathclap{(\ddagger)}}{=} \sum_{a \in \mathcal{A}} \pi(a \given s) Q^\pi(s, a)
+					 = V^\pi(s)
+				\end{align}
+				In step \((\ast)\) we explicitly plugged in the policy \(\pi'\) using that its first case is applied exactly once for the maximum of \(Q^\pi(s, a)\). Hence, we can pull it out of the sum. In step \((\dagger)\), we "inverse plugged in" an \(\epsilon\)-greedy policy using the relations
+				\begin{align}
+					\frac{\pi(a \given s) - \epsilon/m}{1 - \epsilon} &= \frac{\epsilon/m - \epsilon/m}{1 - \epsilon} = 0 &
+					\frac{\pi(a \given s) - \epsilon/m}{1 - \epsilon} &= \frac{\epsilon/m + 1 - \epsilon - \epsilon/m}{1 - \epsilon} = 1
+				\end{align}
+				for the "maximum" \(a\) and all others, respectively. Note that this maximum is \emph{not} w.r.t. \( Q^\pi(s, a) \) and hence the sum over all actions must be less than or equal to the maximum value of \(Q^\pi(s, a)\). Finally, in step \((\ddagger)\), we used the definition of \(\pi\) and that \(Q^\pi(s, a)\) is its action-value function.
+
+				Using \(\epsilon\)-greedy exploration therefore gives monotonic improvement while not shutting canceling exploration during policy evaluation!
 			% end
 
-			\subsubsection{Greediness and Exploration vs. Exploitation} % 4.11, 4.12, 4.13, 4.14
-				\todo{Content}
+			\subsubsection{\acs{GLIE} Monte-Carlo}
+				\begin{definition}[Greedy in the Limit of Infinite Exploration (\acs{GLIE})]
+					A policy \(\pi\) is \emph{\acl{GLIE} (\acsu{GLIE})} if all state-action pairs are explore infinitely many times,
+					\begin{equation}
+						\lim\limits_{k \to \infty} N^{(k)}(s, a) \to \infty,
+					\end{equation}
+					and the policy converges to a greedy policy,
+					\begin{equation}
+						\lim\limits_{k \to \infty} \pi_k(a \given s) = \mathbbm{1}\bigl[ a = \argmax_{a' \in \mathcal{A}} Q^{(k)}(s, a') \bigr].
+					\end{equation}
+					Here \(k\) is the policy iteration index.
+				\end{definition}
 
-				\paragraph{\(\epsilon\)-Greedy Exploration and Policy Improvement} % 4.15, 4.16
-					\todo{Content}
-				% end
+				\ac{GLIE} \ac{MC} achieves this by choosing \( \epsilon_k = 1/k \) and \( \pi = \epsilon\text{-greedy} \). We then also have the following theorem.
 
-				\paragraph{Monte-Carlo Policy Iteration and Control} % 4.17, 4.18
-					\todo{Content}
-				% end
-			% end
-
-			\subsubsection{GLIE Monte-Carlo Control} % 4.19, 4.20
-				\todo{Content}
+				\begin{theorem}[Convergence of \acs{GLIE} Monte-Carlo]
+					\ac{GLIE} \ac{MC} converges to the \emph{optimal} action-value function.
+				\end{theorem}
 			% end
 		% end
 
-		\subsection{TD-Learning: SARSA} % 4.22, 4.23, 4.24, 4.25, 4.26
-			\todo{Content}
+		\subsection{\acs{TD}-Learning: \acs{SARSA}}
+			We already saw in \autoref{c:td} that \ac{TD} learning has several advantages over \ac{MC}, namely lower variance, online capabilities, and learning from incomplete sequences. So a natural idea is to replace \ac{MC} with \ac{TD} in the control loop, i.e., applying \ac{TD} to the action-value function using \(\epsilon\)-greedy policy improvement. In \acsu{SARSA} (for "\acl{SARSA}"), we use the policy's proposed action during the \ac{TD} update, i.e.,
+			\begin{equation}
+				Q(s_t, a_t) \gets Q(s_t, a_t) + \alpha \bigl( r_{t + 1} + \gamma Q(s_{t + 1}, a_{t + 1}) - Q(s_t, a_t) \bigr),
+			\end{equation}
+			where \( a_{t + 1} \sim \pi^Q(\cdot \given s_{t + 1}) \) is sampled from a policy derived from \(Q\) (indicated by the superscript). Hence, \ac{SARSA} is an on-policy algorithm. The pseudocode is depicted in \autoref{alg:sarsa}. If we choose the step sizes \(\alpha\) wisely, we also have convergence guarantees!
 
-			\subsubsection{Convergence} % 4.27
-				\todo{Content}
-			% end
+			\begin{theorem}[Convergence of \acs{SARSA}]
+				If the policies \( \pi_t(s, a) \) constitute a \ac{GLIE} sequence and the step sizes \(\alpha_t\) constitute a Robbins-Monro sequence, i.e., \( \sum_{t = 1}^{\infty} \alpha_t = \infty \) and \( \sum_{t = 1}^{\infty} \alpha_t^2 < \infty \), \ac{SARSA} converges to the optimal action-value function.
+			\end{theorem}
 
-			\subsubsection{\(n\)-Step} % 4.30
-				\todo{Content}
-			% end
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{environment}
+				\KwOut{(optimal) action-value function}
+				initialize \(Q\) arbitrarily except \(Q(\mathrm{terminal}, \cdot) = 0\) \;
+				\Repeat{converged}{
+					initialize \(s\) \;
+					choose \( a \sim \pi^Q(\cdot \given s) \) \;
+					\While{\(s\) is not terminal}{
+						take action \(a\), observe reward \(r\) and next state \(s'\) \;
+						choose \( a' \sim \pi^Q(\cdot \given s') \) \;
+						\( \delta \gets r + \gamma Q(s', a') - Q(s, a) \) \;
+						\( Q(s, a) \gets Q(s, a) + \alpha \delta \) \;
+						\( s \gets s' \) \;
+						\( a \gets a' \) \;
+					}
+				}
+				\Return \(Q\) \;
+				\caption{\acs{SARSA}}
+				\label{alg:sarsa}
+			\end{algorithm}
 
-			\subsubsection{Eligibility Traces and SARSA(\(\lambda\))} % 4.31, 4.32
-				\todo{Content}
+			\subsubsection{Eligibility Traces and \acs{SARSA}(\(\lambda\))} % 4.31, 4.32
+				Similar to \acs{TD}(\(\lambda\)) (\autoref{sec:tdLambda}), could use the \(n\)-step return \(J_t^{(n)}\) in the \ac{SARSA} update,
+				\begin{equation}
+					Q(s_t, a_t) \gets Q(s_t, a_t) + \alpha \bigl( J_t^{(n)} - Q(s_t, a_t) \bigr).
+				\end{equation}
+				We can again generalize this to the \(\lambda\)-return \(J_t^\lambda\) with exponential decay. However, we have the same disadvantage with this \emph{forward-view} as before: now we need complete sequences to calculate the TD target! Hence, we instead use the equivalent \emph{backward-view} and eligibility traces for state-action pairs,
+				\begin{equation}
+					z_t(s, a) = \gamma \lambda z_{t - 1}(s, a) + \mathbbm{1}[s = s_t, a = a_t],
+				\end{equation}
+				kicking the recursion off with \( z_{-1}(s, a) = 0 \).
+
+				\begin{algorithm}  \DontPrintSemicolon
+					\KwIn{environment}
+					\KwOut{(optimal) action-value function}
+					initialize \(Q\) arbitrarily except \(Q(\mathrm{terminal}, \cdot) = 0\) \;
+					\Repeat{converged}{
+						\( z(s, a) \gets 0 \) for all \(s \in \mathcal{S}\) and \(a \in \mathcal{A}\) \;
+						initialize \(s\) \;
+						choose \( a \sim \pi^Q(\cdot \given s) \) \;
+						\While{\(s\) is not terminal}{
+							take action \(a\), observe reward \(r\) and next state \(s'\) \;
+							choose \( a' \sim \pi^Q(\cdot \given s') \) \;
+							\( \delta \gets r + \gamma Q(s', a') - Q(s, a) \) \;
+							\( z(s, a) \gets z(s, a) + 1 \) \;
+							\ForEach{\( \tilde{s} \in \mathcal{S} \)}{
+								\( Q(s, a) \gets Q(s, a) + \alpha \delta z(s, a) \) \;
+								\( z(s, a) \gets \gamma \lambda z(s, a) \) \;
+							}
+							\( s \gets s' \) \;
+							\( a \gets a' \) \;
+						}
+					}
+					\Return \(Q\) \;
+					\caption{\acs{SARSA}(\(\lambda\))}
+					\label{alg:sarsaLambda}
+				\end{algorithm}
 			% end
 
 			\subsubsection{Example} % 4.28, 4.29, 4.33
@@ -1008,112 +1119,314 @@
 		% end
 	% end
 
-	\section{Off-Policy Methods} % 4.34, 4.35
-		\todo{Content}
+	\section{Off-Policy Methods}
+		While on-policy methods are great and often exhibit convergence guarantees, they have a major flaw: exploration has to be built into the policy, for instance using \(\epsilon\)-greed. \emph{Off-policy} methods, on the other hand, learn about a target policy \(\pi(a \given s)\) while following a behavioral policy \(q(a \given s)\). We can directly transfer this approach to a variety of tasks such as learning directly from a human or other agents, re-use experience of old policies, explore while learning an optimal policy, or learning multiple policies while following a single.
 
-		\subsection{Monte-Carlo} % 3.37, 3.38
-			\todo{Content}
+		\subsection{Monte-Carlo}
+			The core concept for off-policy \ac{MC} is \emph{importance sampling} (\autoref{subsec:importanceSampling}). Hence, we update the return \(J_t\) sampled from a behavioral policy \(q\) by the importance sampling corrections,
+			\begin{equation}
+				J_t^{\pi/q} = \frac{\pi(a_t \given s_t)}{q(a_t \given s_t)} \frac{\pi(a_{t + 1} \given s_{t + 1})}{q(a_t \given s_t)} \cdots \frac{\pi(a_T \given s_T)}{q(a_T \given s_T)} J_t.
+			\end{equation}
+			Note that we only need to correct using the policy distributions even though the return distribution contains factors of the state dynamics. However, these are the same for both policies so they cancel in the importance sampling weights. We then update the action-value towards this corrected return:
+			\begin{equation}
+				Q(s_t, a_t) \gets Q(s_t, a_t) + \alpha \bigl( J_t^{\pi/q} - Q(s_t, a_t) \bigr).
+			\end{equation}
+			While this allows off-policy \ac{MC}, importance sampling can dramatically increase the variance even further! Also, it is not possible to sample actions for which \(q\) is zero but \(\pi\) is non-zero.
 		% end
 
-		\subsection{TD-Learning} % N/A
-			\todo{Content}
+		\subsection{\acs{TD} and Q-Learning}
+			Similar to off-policy \ac{MC}, we can also use importance sampling in \ac{TD} learning by weighing the \ac{TD} error accordingly:
+			\begin{align}
+				\rho_t &= \frac{\pi(a_t \given s_t)}{q(s_t \given a_t)} &
+				V(s_t) &\gets V(s_t) + \alpha \rho_t \delta_t.
+			\end{align}
+			Compared to \ac{MC}, the \ac{TD} has much lower variance and the policies only need to be similar over a single step, hence the risk of \(q \approx 0\) is reduced. But we can do better and mitigate the use of importance sampling at all!
 
-			\subsubsection{Importance Sampling} % 3.39
+			In \emph{Q-learning,} we update the action-value towards the value of an alternative action,
+			\begin{equation}
+				Q(s_t, a_t) \gets Q(s_t, a_t) + \alpha \bigl( r_{t + 1} + \gamma Q(s_t, a') - Q(s_t, a_t) \bigr),  \label{eq:qLearningUpdatePre}
+			\end{equation}
+			where \( a_t \sim q(\cdot \given s_t) \) is sampled from the behavioral policy and \( a' \sim \pi(\cdot \given s_{t + 1}) \) is sampled from another policy. With a greedy \(\pi\) and, for instance, an \(\epsilon\)-greedy \(q\), the Q-learning target simplifies to
+			\begin{equation}
+				r_{t + 1} + \gamma Q(s_{t + 1}, a')
+					= r_{t + 1} + \gamma Q\bigl( s_{t + 1}, \textstyle\argmax_{a' \in \mathcal{A}}\displaystyle Q(s_{t + 1}, a') \bigr)
+					= r_{t + 1} + \gamma \textstyle\max_{a' \in \mathcal{A}}\displaystyle Q(s_{t + 1}, a')
+			\end{equation}
+			which we can directly plug into \eqref{eq:qLearningUpdatePre} yielding the following update rule:
+			\begin{equation}
+				Q(s, a) \gets Q(s, t) + \alpha \bigl( r_{t + 1} + \gamma \textstyle\max_{a' \in \mathcal{A}}\displaystyle Q(s_{t + 1}, a') - Q(s_t, a_t) \bigr)
+			\end{equation}
+			The algorithm is summarized in \autoref{alg:qLearning}. For convergence, we have again a nice guarantee:
+			\begin{theorem}[Convergence of Q-Learning]
+				Q-learning converges to the optimal action value function.
+			\end{theorem}
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{environment}
+				\KwOut{(optimal) action-value function}
+				initialize \(Q\) arbitrarily except \(Q(\mathrm{terminal}, \cdot) = 0\) \;
+				\Repeat{converged}{
+					initialize \(s\) \;
+					\While{\(s\) is not terminal}{
+						take action \( a \sim q^Q(\cdot \given s) \), observe reward \(r\) and next state \(s'\) \;
+						\( \delta \gets r + \gamma \max_{a' \in \mathcal{A}} Q(s', a') - Q(s, a) \) \;
+						\( Q(s, a) \gets Q(s, a) + \alpha \delta \) \;
+						\( s \gets s' \) \;
+					}
+				}
+				\Return \(Q\) \;
+				\caption{Q-Learning}
+				\label{alg:qLearning}
+			\end{algorithm}
+
+			\paragraph{Example} % 3.44
 				\todo{Content}
-			% end
-
-			\subsubsection{Q-Learning} % 3.40, 3.41, 3.43
-				\todo{Content}
-
-				\paragraph{Convergence} % 3.42
-					\todo{Content}
-				% end
-
-				\paragraph{Example} % 3.44
-					\todo{Content}
-				% end
 			% end
 		% end
 	% end
 
-	\section{Remarks} % 3.45, 3.46
-		\todo{Content}
+	\section{Remarks}
+		Both \ac{SARSA} and Q-learning are great algorithms on their own, but of course have some differences. While \ac{SARSA} is an on-policy \ac{TD} algorithm, Q-learning is off-policy. Also, if \(\epsilon \neq 0\), \ac{SARSA} performs better online, but for \(\epsilon \to 0\), both converge to the optimal solution. Note that for a true online application, constant exploration (and therefore \(\epsilon \neq 0\)) can be necessary! \autoref{fig:dpTdRelationship} shows the relationship between \ac{DP} and \ac{TD}.
+
+		\begin{table}
+			\centering
+			\begin{tabular}{c|c}
+				\toprule
+				                               \textbf{Full Backup (Dynamic Programming)}                                 &                              \textbf{Sample Backup (Temporal Differences)}                              \\ \midrule
+				                                       Iterative Policy Evaluation                                        &                                            \acs{TD} Learning                                            \\
+				               \( V(s) \gets \E_{a, s'}\bigl[ R(s, a) + \gamma V(s') \biggiven s \bigr] \)                &                  \( V(s_t) \overset{\alpha}{\gets} r_{t + 1} + \gamma V(s_{t + 1}) \)                   \\
+				                                                                                                          &                                                                                                         \\
+				                                           Q-Policy Iteration                                             &                                               \acs{SARSA}                                               \\
+				         \( Q(s, a) \gets R(s, a) + \gamma \E_{s', a'}\bigl[ Q(s', a') \biggiven s, a \bigr] \)           &          \( Q(s_t, a_t) \overset{\alpha}{\gets} r_{t + 1} + \gamma Q(s_{t + 1}, a_{t + 1}) \)           \\
+				                                                                                                          &                                                                                                         \\
+				                                            Q-Value Iteration                                             &                                               Q-Learning                                                \\
+				\( Q(s, a) \gets R(s, a) + \gamma \E_{s'}\bigl[ \max_{a' \in \mathcal{A}} Q(s', a') \biggiven s \bigr] \) & \( Q(s_t, a_t) \overset{\alpha}{\gets} r_{t + 1} + \gamma \max_{a' \in \mathcal{A}} Q(s_{t + 1}, a') \) \\ \bottomrule
+			\end{tabular}
+			\caption{Relationship Between Dynamic Programming and Temporal Difference Learning}
+			\label{fig:dpTdRelationship}
+		\end{table}
 	% end
 
 	\section{Wrap-Up} % 3.47, 3.48
-		\todo{Content}
+		\begin{itemize}
+			\item differences of on- and off-policy learning
+			\item relationship between model-free control and generalized \ac{PI}
+			\item sufficient conditions for an effective exploration strategy
+			\item how to use \(\epsilon\)-greedy for exploration
+			\item \ac{SARSA} and its application in on-policy control
+			\item incorporation of \(\lambda\)-returns in \ac{TD} control
+			\item off-policy learning with importance sampling
+			\item off-policy control with Q-learning without importance sampling
+			\item relationship of the Bellman equations and the \ac{TD} target
+		\end{itemize}
+		% TODO: Sutton, Chapters 5, 6, 7, and 12
 	% end
 % end
 
-\chapter{Function Approximation} % 5.1
-	\todo{Content}
+\chapter{Function Approximation}
+	So far, we considered only discrete (and finite) \acp{MDP} for which we were able to represent the value functions as tables. However, most \ac{RL} problems are not discrete and the state-action-space is continuous and infinite! To handle these kinds of environments, we need to use \emph{function approximation} for the value functions (and also policies). As before, we split this chapter into on- and off-policy methods.
 
 	\section{On-Policy Methods} % 5.5, 5.6, 5.7, 5.13
-		\todo{Content}
+		For large state-spaces, it is infeasible to store or update \(V(s)\) and \(Q(s, a)\) in a table. Hence, we use function approximations
+		\begin{align}
+			\hat{V}(s; \vec{w}) &\approx V(s) &
+			\hat{Q}(s, a; \vec{w}) &\approx Q(s, a)
+		\end{align}
+		with weights \(\vec{w} \in \R^d\). Common choices are linear regression, neural networks, regression trees, and Gaussian processes. As the weights are far fewer than the states (otherwise the approximation would not make sense), changing a weight affects the approximation of the value \emph{for all states} and may even decrease the accuracy of some. We measure the accuracy using the \emph{\ac{MSVE}}
+		\begin{equation}
+			\MSVE(s; \vec{w}) \coloneqq \sum_{s \in \mathcal{S}} \mu(s) \bigl[ V(s) - \hat{V}(s; \vec{w}) \bigr]^2
+		\end{equation}
+		where \( \mu(s) \geq 0 \), \( \sum_{s \in \mathcal{S}} \mu(s) = 1 \) weighs the importance of the states. For on-policy methods, \(\mu(s)\) is the "fraction of time" spent in state \(s\) following \(\pi\), i.e.,
+		\begin{equation}
+			\mu(s) = \frac{1}{T + 1} \sum_{t = 0}^{T} \mathbbm{1}[s_t = s].
+		\end{equation}
 
-		\subsection{Stochastic Gradient Descent} % 5.8
-			\todo{Content}
+		\subsection{Stochastic Gradient Descent}
+			Assuming the real value function \(V(s)\) is known, we can find suitable parameters \(\vec{w}\) for a differentiable \(V(s; \vec{w})\) by \ac{SGD}. For each time step \(t = 0, 1, \dots\), we can then locally update the weights using the update rule
+			\begin{equation}
+				\vec{w}_{t + 1}
+					\gets \vec{w}_t - \frac{1}{2} \alpha \grad_{\vec{w}} \bigl[ V(s_t) - \hat{V}(s; \vec{w}) \bigr]^2 \Bigr\rvert_{\vec{w} = \vec{w}_t}
+					= \vec{w}_t + \alpha \bigl[ V(s_t) - \hat{V}(s; \vec{w}_t) \bigr] \grad_{\vec{w}} \hat{V}(s_t; \vec{w}) \bigr\rvert_{\vec{w} = \vec{w}_t}
+					\label{eq:sgdFuncApprox}
+			\end{equation}
+			where \(\alpha > 0\) is the \emph{learning rate.} Note that we update the value function for each step in the trajectory, hence we use a "time" index here. For a proper decay of the learning rate, this is guaranteed to converge to a local optimum. However, we usually do not have access to the real value function---this is why we ultimately need learning!
 		% end
 
-		\subsection{Gradient Monte-Carlo} % 5.9, 5.10
-			\todo{Content}
+		\subsection{Gradient Monte-Carlo}
+			As we usually do not have access to the real value function, we replace its appearance in \eqref{eq:sgdFuncApprox} with an arbitrary value estimate \(U_t\):
+			\begin{equation}
+				\vec{w}_{t + 1} \gets \vec{w}_t + \alpha \bigl[ U_t - \hat{V}(s; \vec{w}_t) \bigr] \grad_{\vec{w}} \hat{V}(s_t; \vec{w}) \bigr\rvert_{\vec{w} = \vec{w}_t}
+			\end{equation}
+			If \(U_t\) is an unbiased estimate of \(V(s_t)\), i.e., \( \E[U_t] = V(s_t) \), then convergence is guaranteed for a proper \(\alpha\)-decay. One suitable estimate is the \ac{MC} estimate \( J_t = \sum_{k = t + 1}^{T} \gamma^{k - t - 1} r_k \) for which \( \E[J_t] = V(s_t) \) holds by definition of \(V(s_t)\)\footnote{Note that this expectation holds for a specific \(t\), but \( \E[J_t] = V(s) \) does \emph{not} hold, hence every-visit \ac{MC} prediction is biased but gradient \ac{MC} is not.}. This approach is summarized in \autoref{alg:gradientMonteCarlo}. When using a linear function approximator \( \hat{V}(s, \vec{w}) = \vec{w}^\transposed \vec{\phi}(s) \) with features \(\vec{\phi}(s)\), the gradient becomes especially simple: \( \grad_{\vec{w}} \hat{V}(s_t; \vec{w}) = \vec{\phi}(s) \).
 
-			\subsubsection{\dots with Linear Function Approximation} % 5.14
-				\todo{Content}
-			% end
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{policy \(\pi\), differentiable approximator \(\hat{V}\) with parameters \(\vec{w}\)}
+				\KwOut{estimated parameters \(\vec{w}\)}
+				initialize \(\vec{w}\) arbitrarily \;
+				\Repeat{convergence}{
+					\( (s_0; r_1, s_1; r_2, s_2; \dots; r_{T - 1}, s_{T - 1}; r_T) \gets \) generate episode \;
+					\ForEach{\( t = 0, 1, \dots, T \)}{
+						\( J_t \gets \sum_{k = t + 1}^{T} \gamma^{k - t - 1} r_k \) \;
+						\( \vec{w} \gets \vec{w} + \alpha \bigl[ V(s_t) - \hat{V}(s; \vec{w}) \bigr] \grad_{\vec{w}} \hat{V}(s_t; \vec{w}) \bigr\rvert_{\vec{w} = \vec{w}} \) \;
+					}
+				}
+				\Return \(\vec{w}\) \;
+				\caption{Gradient Monte-Carlo}
+				\label{alg:gradientMonteCarlo}
+			\end{algorithm}
 		% end
 
-		\subsection{Semi-Gradient Methods} % 5.11, 5.12
-			\todo{Content}
+		\subsection{Semi-Gradient Methods}
+			In chapter \autoref{c:td}, we saw that \ac{MC} methods are not the only way for estimating \(V\) and indeed, we could also use \ac{DP} or bootstrapped \ac{TD} targets, allowing step-based updates and learning from incomplete episodes. The \ac{DP} and \(n\)-step \ac{TD} targets are:
+			\begin{align}
+				U_t &= \E_{a_{t + 1}, s_{t + 1}}\bigl[ R(s_t, a) + \gamma \hat{V}(s_{t + 1}; \vec{w}) \bigr] &
+				U_t &= \sum_{k = t + 1}^{t + n} \gamma^{k - t - 1} r_k + \gamma^n \hat{V}(s_{t + n}; \vec{w}).
+			\end{align}
+			Note, however, that the targets themselves depend on \(\vec{w}\)! As we just ignore this dependence, the result algorithms are called \emph{semi-gradient} \ac{TD} methods. Using a linear approximator \( \hat{V}(s, \vec{w}) = \vec{w}^\transposed \vec{\phi}(s) \) with features \(\vec{\phi}(s)\), the update rule of semi-gradient TD(\(0\)) becomes
+			\begin{align}
+				\vec{w}_{t + 1}
+					&\eqmakebox[sgm][r]{\(\;\gets\;\)} \vec{w}_t + \alpha \Bigl[ r_{t + 1} + \gamma \hat{V}(s_{t + 1}; \vec{w}_t) - \hat{V}(s_t; \vec{w}_t) \Bigr] \grad_{\vec{w}} \hat{V}(s; \vec{w}) \bigr\rvert_{\vec{w} = \vec{w}_t} \\
+					&\eqmakebox[sgm][r]{\(\;=\;\)} \vec{w}_t + \alpha \Bigl[ r_{t + 1} + \gamma \vec{w}_t^\transposed \vec{\phi}(s_{t + 1}) - \vec{w}_t^\transposed \vec{\phi}(s_t) \Bigr] \vec{\phi}(s_t) \\
+					&\eqmakebox[sgm][r]{\(\;=\;\)} \vec{w}_t + \alpha \Bigl[ r_{t + 1} \vec{\phi}(s_t) + \gamma \vec{w}_t^\transposed \vec{\phi}(s_{t + 1}) \vec{\phi}(s_t) - \vec{w}_t^\transposed \vec{\phi}(s_t) \vec{\phi}(s_t) \Bigr] \\
+					&\eqmakebox[sgm][r]{\(\;\overset{\mathclap{(\ast)}}{=}\;\)} \vec{w}_t + \alpha \Bigl[ r_{t + 1} \vec{\phi}(s_t) + \gamma \vec{\phi}(s_t) \vec{\phi}^\transposed(s_{t + 1}) \vec{w}_t - \vec{\phi}(s_t) \vec{\phi}^\transposed(s_t) \vec{w}_t \Bigr] \\
+					&\eqmakebox[sgm][r]{\(\;=\;\)} \vec{w}_t + \alpha \Bigl[ r_{t + 1} \vec{\phi}(s_t) + \vec{\phi}(s_t) \bigl( \gamma \vec{\phi}(s_{t + 1}) - \vec{\phi}(s_t) \bigr)^\transposed \vec{w}_t \Bigr] \\
+					&\eqmakebox[sgm][r]{\(\;=\;\)} \vec{w}_t + \alpha \Bigl[ r_{t + 1} \vec{\phi}(s_t) - \vec{\phi}(s_t) \bigl( \vec{\phi}(s_t) - \gamma \vec{\phi}(s_{t + 1}) \bigr)^\transposed \vec{w}_t \Bigr]
+			\end{align}
+			where \((\ast)\) is due to \( \underbrace{\vec{v}_1^\transposed \vec{v}_2}_\text{scalar} \vec{v}_3 = \vec{v}_3 \vec{v}_1^\transposed \vec{v}_2 \).
 
-			\subsubsection{\dots with Linear Function Approximation} % 5.15
-				\todo{Content}
-			% end
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{policy \(\pi\), differentiable approximator \(\hat{V}\) with parameters \(\vec{w}\)}
+				\KwOut{estimated parameters \(\vec{w}\)}
+				initialize \(\vec{w}\) arbitrarily \;
+				\Repeat{convergence}{
+					initialize \(s\) \;
+					\While{\(s\) is not terminal}{
+						take action \( a \sim \pi(\cdot \given s) \), observe reward \(r\) and next state \(s'\) \;
+						\( \delta \gets r + \gamma \hat{V}(s'; \vec{w}) - \hat{V}(s; \vec{w}) \) \;
+						\( \vec{w} \gets \vec{w} + \alpha \delta \grad_{\vec{w}} \hat{V}(s; \vec{w}) \bigr\rvert_{\vec{w} = \vec{w}} \) \;
+						\( s \gets s' \) \;
+					}
+				}
+				\Return \(w\) \;
+				\caption{Semi-Gradient \acs{TD}(\(0\))}
+				\label{alg:semiGradientTd}
+			\end{algorithm}
 		% end
 
-		\subsection{Least-Squares TD} % 5.16
-			\todo{Content}
+		\subsection{Semi-Gradient \acs{SARSA}}
+			Similar to semi-gradient \acs{TD}(\(0\)), we can also approximate the action-value function instead of the state-value function using \ac{SARSA}. The one-step \ac{SARSA} update is then
+			\begin{equation}
+				\vec{w}_{t + 1} \gets \vec{w}_t + \alpha \bigl[ r_{t + 1} + \gamma \hat{Q}(s_{t + 1}, a_t; \vec{w}_t) - \hat{Q}(s_t, a_t; \vec{w}_t) \bigr] \grad_{\vec{w}} \hat{Q}(s_t, a_t; \vec{w}) \bigr\rvert_{\vec{w} = \vec{w}_t}.
+			\end{equation}
+			The complete algorithm is summarized in \autoref{alg:semiGradientSarsa}
 
-			\subsubsection{Semi-Gradient SARSA} % 5.17, 5.18
-				\todo{Content}
-			% end
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{policy \(\pi\), differentiable approximator \(\hat{Q}\) with parameters \(\vec{w}\)}
+				\KwOut{estimated parameters \(\vec{w}\)}
+				initialize \(\vec{w}\) arbitrarily \;
+				\Repeat{convergence}{
+					initialize \(s\) \;
+					choose \( a \sim \pi^Q(\cdot \given s) \) \;
+					\While{\textbf{true}}{
+						take action \( a \sim \pi(\cdot \given s) \), observe reward \(r\) and next state \(s'\) \;
+						\If{\(s'\) is terminal}{
+							\textbf{break} \;
+						}
+						choose \( a' \sim \pi^Q(\cdot \given s') \)
+						\( \delta \gets r + \gamma \hat{Q}(s', a'; \vec{w}) - \hat{Q}(s, a; \vec{w}) \) \;
+						\( \vec{w} \gets \vec{w} + \alpha \delta \grad_{\vec{w}} \hat{Q}(s_t, a_t; \vec{w}) \bigr\rvert_{\vec{w} = \vec{w}_t} \) \;
+						\( s \gets s' \) \;
+						\( a \gets a' \)
+					}
+				}
+				\Return \(w\) \;
+				\caption{Semi-Gradient \acs{SARSA}}
+				\label{alg:semiGradientSarsa}
+			\end{algorithm}
 		% end
 	% end
 
-	\section{Off-Policy Methods} % 5.31
-		\todo{Content}
+	\section{Off-Policy Methods}
+		Of course, we can apply function approximation not only in on-, but also in off-policy methods. For instance, we can apply importance sampling to get off-policy \acs{TD}(\(0\)):
+		\begin{align}
+			\rho_t &= \frac{\phi(a_t \given s_t)}{q(a_t \given s_t)} &
+			\vec{w}_{t + 1} &\gets \vec{w}_t + \alpha \rho_t \delta_t \grad_{\vec{w}} \hat{Q}(s_t, a_t; \vec{w}) \bigr\rvert_{\vec{w} = \vec{w}_t}
+		\end{align}
+		with, for instance, \( \delta_t = r_{t + 1} + \gamma \hat{V}(s_{t + 1}; \vec{w}) - \hat{V}(s_t; \vec{w}_t) \).
 
-		\subsection{Semi-Gradient TD} % 5.32
-			\todo{Content}
+		While off-policy methods might allow better exploration, they have a major flaw: updating the value function \emph{on-policy} is important for convergence. Hence, off-policy methods with approximations can \emph{diverge!}
+
+		\paragraph{Example} % 5.34+, 5.35, 5.36
+	% end
+
+	\section{The Deadly Triad}
+		In fact, we have a lot of instability in methods that are based on the following elements: function approximation, bootstrapping, and off-policy training. However, we need everyone of these! Function approximation to scale, bootstrapping for data efficiency, and off-policy training for heterogeneous experience.
+	% end
+
+	\section{Offline Methods}
+		So far, we only looked at \emph{online} methods, i.e., methods that only use the current transitions and which can be applied "on the job." \emph{Offline} or \emph{batch} methods, on the other hand, can use data (transitions and trajectories) that was collected previously.
+
+		\subsection{Least-Squares \acs{TD} and Least-Squares \acs{PI}}
+			When using linear function approximation, semi-gradient methods are guaranteed to converge to a point near a local optimum. Let \(\tilde{\vec{w}}\) be that solution, then it satisfies the fixed point equation
+			\begin{equation}
+				\tilde{\vec{w}} = \tilde{\vec{w}} + \alpha (\vec{b} - \mat{A} \tilde{\vec{w}})  \label{eq:lstd}
+			\end{equation}
+			with \( \vec{b} \coloneqq r_{t + 1} \vec{\phi}(s_t) \) and \( \mat{A} \coloneqq \vec{\phi}(s_t) \bigl( \vec{\phi}(s_t) - \gamma \vec{\phi}(s_{t + 1}) \bigr)^\transposed \). Hence, the fixed point is \( \tilde{\vec{w}} = \mat{A}^{-1} \vec{b} \) and the \ac{MSVE} at the fixed point is bounded by
+			\begin{equation}
+				\MSVE(s, \tilde{\vec{w}}) \leq \frac{1}{1 - \gamma} \min_{\vec{w}} \MSVE(s, \vec{w}).
+			\end{equation}
+			If we directly finds the fixed point by solving \eqref{eq:lstd}, we arrive at \emph{\ac{LSTD}}, an \emph{offline} variant of semi-gradient \acs{TD}(\(0\)). Given a set of transitions, \ac{LSTD} first compute the weight matrix and vector,
+			\begin{align}
+				\hat{\mat{A}}_t &= \sum_{k = 0}^{t - 1} \vec{\phi}(s_k) \bigl( \vec{\phi}(s_k) - \gamma \vec{\phi}(s_{k + 1}) \bigr)^\transposed &
+				\hat{\vec{b}}_t &= \sum_{k = 0}^{t - 1} r_{k + 1} \vec{\phi}(s_k),
+			\end{align}
+			and then solves then computes the fixed point using \( \vec{w}_t = \bigl( \hat{\mat{A}}_t + \varepsilon \mat{I} \bigr)^{-1} \hat{b}_t \) where \( \epsilon \) is a small regularization constant.
+
+			\emph{Least-squares policy iteration (\acsu{LSPI})} extends the idea of \ac{LSTD} to learning the action-value function, forming \ac{LSTDQ} and combines it with greedy policy improvement. A sketch is shown in \autoref{alg:lspi}.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{transition data set \( \mathcal{D} = \langle s_i, a_i, r_i, s_i' \rangle_{i = 1}^{N} \)}
+				\KwOut{action-value function \(Q\) and policy \(\pi\)}
+				initialize \(\pi\) arbitrarily \\
+				\Repeat{convergence}{
+					\( Q \gets \mathrm{\acs{LSTDQ}}(\mathcal{D}, \pi) \) \;
+					\( \pi(s) \gets \argmax_{a \in \mathcal{A}} Q(s, a) \) for all \( s \in \mathcal{S} \) \;
+				}
+				\Return \(Q\), \(\pi\)
+				\caption{Least-Squares Policy Iteration}
+				\label{alg:lspi}
+			\end{algorithm}
 		% end
 
-		\subsection{Divergence} % 5.33, 5.34+, 5.35, 5.36
-			\todo{Content}
+		\subsection{Fitted Q-Iteration}
+			Another approach to offline \ac{RL} is \emph{fitted Q-iteration.} Given a data set of transitions, it solves a sequence of regression problems to find the action-value function. For regression trees and kernel averaging, there are also some stability guarantees. A sketch of the algorithm is given in \autoref{alg:fittedQIteration}.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{transition data set \( \mathcal{D} = \langle s_i, a_i, r_i, s_i' \rangle_{i = 1}^{N} \), regressor \(\hat{Q}\)}
+				\KwOut{action-value function \(Q\)}
+				initialize \(\hat{Q}^{(0)}\) arbitrarily \;
+				\( k \gets 0 \) \;
+				\Repeat{convergence}{
+					\( \mathcal{T} \gets \bigl\langle s_i,\; a_i,\; r_i + \gamma \max_{a \in \mathcal{A}} \hat{Q}^{(k)}(s_i', a) \bigr\rangle_{i = 1}^{N} \)  \quad\tcp{build training dataset}
+					\( Q^{(k + 1)} \gets \) freshly trained regressor using \(\mathcal{T}\) \;
+					\( k \gets k + 1 \) \;
+				}
+				\Return \(Q^{(\infty)}\) \;
+				\caption{Fitted Q-Iteration}
+				\label{alg:fittedQIteration}
+			\end{algorithm}
 		% end
 	% end
 
-	\section{The Deadly Triad} % 5.37
-		\todo{Content}
-	% end
-
-	\section{Offline Methods} % N/A
-		\todo{Content}
-
-		\subsection{Batch Reinforcement Learning} % 5.38
-			\todo{Content}
-		% end
-
-		\subsection{Least-Squares Policy Iteration} % 5.39
-			\todo{Content}
-		% end
-
-		\subsection{Fitted Q-Iteration} % 5.40
-			\todo{Content}
-		% end
-	% end
-
-	\section{Wrap-Up} % 5.41, 5.42, 5.43
-		\todo{Content}
+	\section{Wrap-Up}
+		\begin{itemize}
+			\item continuous problems in \ac{RL}
+			\item the need for function approximation
+			\item usage of function approximation in \ac{RL}
+			\item consequences of function approximation
+			\item challenged of off-policy training with function approximation
+		\end{itemize}
+		% TODO: Sutton, Chapters 9, 10, and 11
 	% end
 % end
 
@@ -1192,7 +1505,7 @@
 \chapter{Deep Reinforcement Learning} % 7.1, 7.2, 7.3, 7.4, 7.5
 	\todo{Content}
 
-	\section{Deep Q-Learning: DQN} % 7.6, 7.7, 7.8, 7.13
+	\section{Deep Q-Learning: \acs{DQN}} % 7.6, 7.7, 7.8, 7.13
 		\todo{Content}
 
 		\subsection{Replay Buffer} % 7.9
@@ -1216,7 +1529,7 @@
 		% end
 	% end
 
-	\section{DQN Enhancements} % 7.19
+	\section{\acs{DQN} Enhancements} % 7.19
 		\todo{Content}
 
 		\subsection{Overestimation and Double Deep Q-Learning} % 7.20, 7.21, 7.22, 7.23
@@ -1226,15 +1539,15 @@
 			\todo{Content}
 		% end
 
-		\subsection{Dueling DQN} % 7.27
+		\subsection{Dueling \acs{DQN}} % 7.27
 			\todo{Content}
 		% end
 
-		\subsection{Noisy DQN} % 7.28, 7.29
+		\subsection{Noisy \acs{DQN}} % 7.28, 7.29
 			\todo{Content}
 		% end
 
-		\subsection{Distributional DQN} % 7.30, 7.31, 7.32, 7.33, 7.34, 7.35
+		\subsection{Distributional \acs{DQN}} % 7.30, 7.31, 7.32, 7.33, 7.34, 7.35
 			\todo{Content}
 		% end
 
@@ -1243,7 +1556,7 @@
 		% end
 	% end
 
-	\section{Other DQN-Bases Methods} % 7.38
+	\section{Other \acs{DQN}-Bases Methods} % 7.38
 		\todo{Content}
 
 		\subsection{Count-Based Exploration} % 7.39, 7.40, 7.41, 7.42
@@ -1279,14 +1592,14 @@
 		% end
 	% end
 
-	\section{Advantage Actor-Critic (A2C)} % 8.16, 8.17, 8.18
+	\section{Advantage Actor-Critic (\acs{A2C})} % 8.16, 8.17, 8.18
 		\todo{Content}
 	% end
 
 	\section{On-Policy Methods} % 8.19
 		\todo{Content}
 
-		\subsection{Trust-Region Policy Optimization (TRPO)} % 8.20, 8.21, 8.28
+		\subsection{Trust-Region Policy Optimization (\acs{TRPO})} % 8.20, 8.21, 8.28
 			\todo{Content}
 
 			\subsubsection{Practical Implementation} % 8.22, 8.23
@@ -1298,7 +1611,7 @@
 			% end
 		% end
 
-		\subsection{Proximal Policy Optimization (PPO)} % 8.29, 8.30
+		\subsection{Proximal Policy Optimization (\acs{PPO})} % 8.29, 8.30
 			\todo{Content}
 		% end
 	% end
@@ -1306,15 +1619,15 @@
 	\section{Off-Policy Methods} % 8.31
 		\todo{Content}
 
-		\subsection{Deep Deterministic Policy Gradient (DDPG)} % 8.32, 8.33, 8.34, 8.35
+		\subsection{Deep Deterministic Policy Gradient (\acs{DDPG})} % 8.32, 8.33, 8.34, 8.35
 			\todo{Content}
 		% end
 
-		\subsection{Twin Delayed DDPG (TD3)} % 8.36, 8.37
+		\subsection{Twin Delayed DDPG (\acs{TD3})} % 8.36, 8.37
 			\todo{Content}
 		% end
 
-		\subsection{Soft Actor-Critic (SAC)} % 8.38, 8.39, 8.40, 8.43, 8.44, 8.45
+		\subsection{Soft Actor-Critic (\acs{SAC})} % 8.38, 8.39, 8.40, 8.43, 8.44, 8.45
 			\todo{Content}
 		% end
 	% end

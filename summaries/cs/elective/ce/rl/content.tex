@@ -254,6 +254,8 @@
 		% end
 
 		\subsection{Likelihood-Ratio Trick}
+			\label{subsec:likelihoodRatio}
+
 			Suppose we need to differentiate the expectation of some function \( f(x) \) w.r.t. \(\theta\) where \( x \sim p_\theta(\cdot) \). However, we cannot directly calculate \( \E_{x \sim p_\theta}[f(x)] \) or "differentiate through sampling." Instead, we can use the identity
 			\begin{equation}
 				\dv{z} \log h(z) = \frac{h'(z)}{h(z)}
@@ -287,6 +289,7 @@
 			\begin{align}
 				\int\! \pdv{\theta} p_\theta(x) \dd{x} &= 0 &
 				\int\! \pdv{\theta} \log p_\theta(x) \dd{x} &= \int\! \frac{\pdv{\theta} p_\theta(x)}{p_\theta(x)} \dd{x} = 0
+				\label{eq:usefulIntegrals}
 			\end{align}
 			The first identity can be shown by swapping the integral and derivative and using the normalization condition of probability densities. For the second we use integration by parts with \( f' = \pdv{\theta} p_\theta(x) \), for which \(f = 0\) due to the first integral. Hence, the second follows.
 		% end
@@ -973,6 +976,8 @@
 		In this section we discuss tabular on-policy methods.
 
 		\subsection{Monte-Carlo Methods and Exploration vs. Exploitation}
+			\label{subsec:mcExploration}
+
 			In \emph{generalized} \ac{PI}, we do not evaluate the state-value function (for which a greedy policy improvement needs the transition dynamics), but instead evaluate the action-value. However, just using the deterministic policy found during policy improvement for \ac{MC} policy evaluation means that we do not have exploration (no "new" actions are tried)! This brings us to the \emph{exploration vs. exploitation dilemma.}
 
 			During decision-making, we have two options: \emph{exploit} the current knowledge to make the best known decision or \emph{explore} and gather more information. In other words, the best long-term options (which we want to find) might involve short-term sacrifices. This dilemma is a fundamental problem in \ac{RL} and we do not have a satisfying solution yet. Two common approaches are \emph{\(\epsilon\)-greedy},
@@ -1430,75 +1435,554 @@
 	% end
 % end
 
-\chapter{Policy Search} % 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8
-	\todo{Content}
+\chapter{Policy Search}
+	So far, we always learned/estimated a value function and extracted a policy from it. However, why bother to learn a value function and not directly learn a policy which is what we are actually interested in? This is the idea of \emph{policy search.} Given a \ac{MDP}, policy search can be formalized as an explicit optimization problem over the expected reward,
+	\begin{equation}
+		\pi^\ast
+			= \argmax_\pi \; \underbrace{\E_{\tau \sim \pi}[J(\tau)]}_{\mathcal{J}(\pi) \coloneqq}
+			= \argmax_\pi \, \mathcal{J}_\pi,
+		\label{eq:policySearchOptPart}
+	\end{equation}
+	where \(J(\tau)\) is the cumulative discounted reward for a trajectory \(\tau\) and the expectation is w.r.t. the initial state distribution, state dynamics, and policy. Policy search has some major advantages:
+	\begin{itemize}
+		\item obviously, no need to learn a value function which might be difficult
+		\item we can encode domain knowledge into the policy
+		\item the policy may be initialized with other methods (e.g., with a (suboptimal) result from imitation learning)
+		\item we do not have to solve a maximization problem when executing the policy (i.e., there is no need to maximize the value function)
+	\end{itemize}
+	Of course, we also have some downsides such as no guarantees of convergence to the optimum (but instead to a local optima) and that it is pretty inefficient as policy search depends on \ac{MC} rollouts in the environment. Hence, the methods usually exhibit high variance in the resulting policies.
 
-	\section{Policy Gradient} % 6.9, 6.10, 6.11
-		\todo{Content}
+	As policy search can be applied to both discrete and continuous control actions, we will confine ourselves to the discussion of a discrete set of continuous control variables, i.e., a vector\footnote{Note that even though \(a\) is a vector now, we will stick to the lightface notation for consistency.} \( a = (a_1, a_2, \dots, a_M) \). Like before, \emph{exploration is crucial!} For continuous variables, the most common option is to use a Gaussian action distribution \( \pi_{\vec{\theta}}(a \given s) = \mathcal{N}\bigl( a \biggiven \mu_{\vec{\theta}}(s), \Sigma_{\vec{\theta}}(s) \bigr) \) where the mean and covariance matrix are given by a (usually learnable) state-dependent function approximator with parameters \(\vec{\theta}\). This can, for instance, be a \ac{NN}. For discrete actions, choosing an exploration strategy like a Boltzmann policy (see \autoref{subsec:mcExploration}) is usually a good choice. In fact, we will also confine ourselves to \emph{parametric} policies, i.e., policies \(\pi_{\vec{\theta}}\) with parameters \(\vec{\theta}\) that govern our search space. We can then re-frame the optimization problem \eqref{eq:policySearchOptPart} as
+	\begin{equation}
+		\pi^\ast
+			= \argmax_{\pi \in \{ \pi_{\vec{\theta}_i} \}} \, \mathcal{J}(\pi_{\vec{\theta}})
+			= \argmax_{\vec{\theta}} \, \mathcal{J}(\vec{\theta})
+	\end{equation}
+	That is, we optimize our objective just w.r.t. the policy's parameters \(\vec{\theta}\). We will now go over to a general discussion of \emph{\acl{PG}} methods which we will focus on in this chapter.
 
-		\subsection{Computing the Gradient} % N/A
-			\todo{Content}
+	\begin{figure}
+		\centering
+		\begin{subfigure}[t]{0.3\linewidth}
+			\centering
+			\begin{tikzpicture}[->, block/.style = { draw, rectangle, rounded corners, minimum width = 1cm, minimum height = 0.75cm }]
+				\node [block] (a) {\(Q\)};
+				\node [block, below = 1 of a] (b) {\(\mathcal{M}\)};
+				\path (a) to coordinate(c) (b);
+				\coordinate [left = 2 of b] (e);
+				\coordinate [right = 0.5 of a] (f);
+				\coordinate [right = 0.5 of b] (g);
 
-			\subsubsection{Finite Differences} % 6.12
-				\todo{Content}
+				\draw (b) -- node[below]{\(s\)} (e) |- (a);
+				\draw (a) -- (f) -- node[right]{\(a\)} (g) -- (b);
+				\draw (b) -- node[right]{\(r\)} (a);
+			\end{tikzpicture}
+			\captionsetup{singlelinecheck=off}
+			\caption[Value-Based (Critic-Only)]{
+				Value-Based (Critic-Only)
+				\begin{itemize}
+					\item explicit value function
+					\item implicit policy
+				\end{itemize}
+			}
+		\end{subfigure}
+		~
+		\begin{subfigure}[t]{0.3\linewidth}
+			\centering
+			\begin{tikzpicture}[->, block/.style = { draw, rectangle, rounded corners, minimum width = 1cm, minimum height = 0.75cm }]
+				\node [block] (a) {\(\pi\)};
+				\node [block, below = 1 of a] (b) {\(\mathcal{M}\)};
+				\path (a) to coordinate(c) (b);
+				\coordinate [left = 2 of b] (e);
+				\coordinate [right = 0.5 of a] (f);
+				\coordinate [right = 0.5 of b] (g);
+
+				\draw (b) -- node[below]{\(s\)} (e) |- (a);
+				\draw (a) -- (f) -- node[right]{\(a\)} (g) -- (b);
+				\draw (b) -- node[right]{\(r\)} (a);
+			\end{tikzpicture}
+			\captionsetup{singlelinecheck=off}
+			\caption[Policy Search (Actor-Only)]{
+				Policy Search (Actor-Only)
+				\begin{itemize}
+					\item no value function
+					\item explicit policy
+				\end{itemize}
+			}
+		\end{subfigure}
+		~
+		\begin{subfigure}[t]{0.3\linewidth}
+			\centering
+			\begin{tikzpicture}[->, block/.style = { draw, rectangle, rounded corners, minimum width = 1cm, minimum height = 0.75cm }]
+				\node [block] (a) {\(\pi\)};
+				\node [block, below = 1 of a] (b) {\(\mathcal{M}\)};
+				\path (a) to coordinate(c) (b);
+				\node [block, left = 1 of c] (d) {\(Q\)};
+				\coordinate [left = 2 of b] (e);
+				\coordinate [right = 0.5 of a] (f);
+				\coordinate [right = 0.5 of b] (g);
+				\coordinate [above = 0.15 of d.east] (h);
+				\coordinate [below = 0.15 of d.east] (i);
+
+				\draw (b) -- node[below]{\(s\)} (e) |- (a);
+				\draw (a) -- (f) -- node[right]{\(a\)} (g) -- (b);
+				\draw (b) |- node[right, pos = 0.25]{\(r\)} (i);
+				\draw (h) -| (a);
+				\draw (b) -- (e) |- (d.west);
+			\end{tikzpicture}
+			\captionsetup{singlelinecheck=off}
+			\caption[Actor-Critic]{
+				Actor-Critic
+				\begin{itemize}
+					\item explicit value function
+					\item explicit policy
+				\end{itemize}
+			}
+		\end{subfigure}
+		\caption{Value-Based vs. Policy Search vs. Actor-Critic}
+	\end{figure}
+
+	\section{Policy Gradient}
+		In \emph{\ac{PG}} methods, we maximize the objective \(\mathcal{J}(\vec{\theta})\) directly by taking its gradient w.r.t. the policy parameters \(\vec{\theta}\), the so-called \emph{\acl{PG}} \( \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \). \autoref{alg:pg} shows a (very rough) prescription on how this works.
+
+		\begin{algorithm}  \DontPrintSemicolon
+			\KwIn{environment, differential policy \(\pi_{\vec{\theta}}\) with parameters \(\vec{\theta}\)}
+			\KwOut{optimized policy \(\pi\)}
+			initialize \(\vec{\theta}\) arbitrarily \;
+			\Repeat{convergence}{
+				\tcp{Collect data and perform gradient update.}
+				\( \mathcal{D} \gets \) generate rollouts using \(\pi_{\vec{\theta}}\) \;
+				\( \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \gets \) compute gradient using \(\mathcal{D}\) \;
+				\( \vec{\theta} \gets \vec{\theta} + \alpha \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \) \;
+			}
+			\Return \(\pi_{\vec{\theta}^{(\infty)}}\) \;
+			\caption{Policy Search using Policy Gradient}
+			\label{alg:pg}
+		\end{algorithm}
+
+		\subsection{Computing the Gradient}
+			The most pressing question of \ac{PG} methods is how we actually compute the gradient as it goes through an expectation. The naive approach are \emph{finite differences,} i.e., approximating the derivative w.r.t. the \(i\)-th component by
+			\begin{equation}
+				\pdv{\theta_i} \mathcal{J}(\vec{\theta}) \approx \frac{1}{\epsilon} \bigl( \mathcal{J}(\vec{\theta} + \vec{e}_i \epsilon) - \mathcal{J}(\vec{\theta}) \bigr)
+			\end{equation}
+			with the \(i\)-th unit vector \(\vec{e}_i\) and a sufficiently small \(\epsilon\). However, this black-box approach has an extremely high variance, is computationally inefficient, and scaled bad in the number of parameters. Also, exploration is performed on a parameter level rather than on policy level (as we vary parameters).
+
+			\subsubsection{Least-Squares-Based Finite Differences}
+				A more practical approach to using the finite difference gradient is \emph{\ac{LSFD}.} Instead of component-wise estimation, we evaluate the policy \(N\) times for small but arbitrary perturbations \( \{ \vec{\delta\theta}^{[i]} \}_{i = 1}^{N} \) and once for the unperturbed \(\vec{\theta}\). With
+				\begin{equation}
+					{\delta J}^{[i]} \coloneqq J(\vec{\theta} + \vec{\delta\theta}^{[i]}) - J(\vec{\theta}),
+				\end{equation}
+				we can find a gradient estimate by solving
+				\begin{equation}
+					\grad_{\vec{\theta}}^\mathrm{FD} \mathcal{J}(\vec{\theta}) = \bigl( \mat{\delta\Theta}^\transposed \mat{\delta\Theta} \bigr)^{-1} \mat{\delta\Theta}^\transposed \vec{\delta J}  \label{eq:lsfd}
+				\end{equation}
+				where \( \mat{\delta\Theta} \coloneqq \bigl( \vec{\delta\theta}^{[1]}, \vec{\delta\theta}^{[2]}, \dots, \vec{\delta\theta}^{[N]} \bigr)^\transposed \) and \( \vec{\delta J} \coloneqq \bigl( {\delta J}^{[1]}, {\delta J}^{[2]}, \dots, {\delta J}^{[N]} \bigr)^\transposed \) collect the perturbations in the parameters and the return.
+
+				\begin{proof}
+					For a differentiable \(\mathcal{J}(\vec{\theta})\), we have its Taylor expansion
+					\begin{equation}
+						\mathcal{J}(\vec{\theta}) = \mathcal{J}(\vec{\theta}_0) + \bigl( \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \bigr)^\transposed \vec{\delta\theta} + \mathcal{O}\bigl( \vec{\delta\theta}^2 \bigr)
+					\end{equation}
+					around \(\vec{\theta}_0\). With \( \delta\mathcal{J}(\vec{\theta}) \coloneqq \mathcal{J}(\vec{\theta}) - \mathcal{J}(\vec{\theta}_0) \) and by dropping the higher terms, we get an estimate of the gradient by solving
+					\begin{equation}
+						\delta\mathcal{J}(\vec{\theta}) = \bigl( \grad_{\vec{\theta}}\mathcal{J}(\vec{\theta}) \bigr)^{\!\transposed\,} \vec{\delta\theta}.
+					\end{equation}
+					However, as we can not compute the left-hand-side directly, we replace it with its \ac{MC} estimate \( {\delta J}^{[i]} \):
+					\begin{equation}
+						{\delta J}(\vec{\theta})^{[i]} = \bigl( \grad_{\vec{\theta}}\mathcal{J}(\vec{\theta}) \bigr)^{\!\transposed\,} \vec{\delta\theta}^{[i]}.
+					\end{equation}
+					Stacking up the equations for all \( i = 1, 2, \dots, N \), we arrive at the over-determined system of linear equations,
+					\begin{equation}
+						\vec{\delta J} = \bigl( \grad_{\vec{\theta}}\mathcal{J}(\vec{\theta}) \bigr)^{\!\transposed\,} \mat{\delta\Theta}.
+					\end{equation}
+					Solving this system by least squares yields \eqref{eq:lsfd}.
+				\end{proof}
 			% end
 
-			\subsubsection{Least-Squares-Based Finite Differences} % 6.13, 6.14
-				\todo{Content}
-			% end
+			\subsubsection{Likelihood-Ratio Trick}
+				As the \ac{LSFD} gradient still has high variance and is inexact. But we can do better: using the likelihood-ratio trick (\autoref{subsec:likelihoodRatio}), we can compute the gradient of a \ac{MC} estimate of \(\mathcal{J}(\theta)\) exactly!
 
-			\subsubsection{Likelihood-Ratio Trick} % 6.15, 6.16, 6.17
-				\todo{Content}
+				By the Markov property, the probability \(p(\tau \given \vec{\theta})\) of a trajectory \(\tau\) can be decomposed into
+				\begin{equation}
+					p(\tau \given \vec{\theta}) = \iota(s_0) \prod_{t = 0}^{T - 1} P(s_{t + 1} \given s_t, a_t) \, \pi_{\vec{\theta}}(a_t \given s_t)
+					\label{eq:markovProperty}
+				\end{equation}
+				where \(\iota(s_0)\) is the initial state distribution. With this distribution, we can rewrite \( \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \) as
+				\begin{equation}
+					\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta})
+						= \grad_{\vec{\theta}} \int\! J(\tau) \, p(\tau \given \theta) \dd{\tau}
+						= \int\! J(\tau) \, \grad_{\vec{\theta}} \, p(\tau \given \theta) \dd{\tau}
+					\label{eq:policyGradient}
+				\end{equation}
+				where we can swap the limits under some mild conditions. By the log-ratio trick, we have \( \grad_{\vec{\theta}} p(\tau \given \vec{\theta}) = p(\tau \given \vec{\theta}) \grad_{\vec{\theta}} \log p(\tau \given \vec{\theta}) \) and \eqref{eq:policyGradient} simplifies to an expectation over the gradient of the log-likelihood,
+				\begin{equation}
+					\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta})
+						= \int\! J(\tau) \, \grad_{\vec{\theta}} \, p(\tau \given \theta) \dd{\tau}
+						= \int\! p(\tau \given \vec{\theta}) \, J(\tau) \, \grad_{\vec{\theta}} \log p(\tau \given \vec{\theta}) \dd{\tau}
+						= \E_\tau\bigl[ J(\tau) \, \grad_{\vec{\theta}} \log p(\tau \given \vec{\theta}) \bigr].
+					\label{eq:policyGradientExp}
+				\end{equation}
+				And this expectation can be estimated by sampling! Hence, we just have to compute \( \grad_{\vec{\theta}} \log p(\tau \given \vec{\theta}) \). With the decomposition \eqref{eq:markovProperty}, we can apply logarithm rules
+				\begin{align}
+					\log( \iota(s_0) \prod_{t = 0}^{T - 1} P(s_{t + 1} \given s_t, a_t) \, \pi_{\vec{\theta}}(a_t \given s_t) )
+						&= \log \iota(s_0) + \sum_{t = 0}^{T - 1} \log P(s_{t + 1} \given s_t, a_t) + \log \pi_{\vec{\theta}}(a_t \given s_t) \\
+						&= \sum_{t = 0}^{T - 1} \log \pi_{\vec{\theta}}(a_t \given s_t) + \const_{\vec{\theta}}
+				\end{align}
+				and everything except for the log-policy (which we model explicitly) is constant w.r.t. \(\vec{\theta}\)! Hence, we can compute the gradient in closed form if we choose \(\pi\) wisely and have
+				\begin{equation}
+					\grad_{\vec{\theta}} \log p(\tau \given \vec{\theta}) = \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t).
+					\label{eq:policyGradientSimple}
+				\end{equation}
+				This is the simplest likelihood-ratio estimator we can imagine.
 			% end
 		% end
 
-		\subsection{REINFORCE} % 6.18, 6.19
-			\todo{Content}
+		\subsection{REINFORCE and Baselines}
+			We already saw the simple policy gradient \eqref{eq:policyGradientSimple}. If we combine this with the \ac{MC} estimate of \eqref{eq:policyGradientExp}, we arrive at the \emph{REINFORCE} gradient estimator:
+			\begin{equation}
+				\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})
+					= \frac{1}{N} \sum_{i = 1}^{N} \Biggl[ \Biggl(\, \sum_{t = 0}^{T_i - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}\bigl( a_t^{[i]} \biggiven s_t^{[i]} \bigr) \!\Biggr)\, J\bigl( \tau^{[i]} \bigr) \Biggr].
+			\end{equation}
+			While this estimator is nice, simple, and \emph{unbiased,} but it has very high variance! In fact, a specific estimate is pretty useless and causes divergence pretty quickly. However, we can introduce a \emph{baseline} to reduce the variance. Let \(\vec{b}\) be the baseline with as many entries as the gradient (i.e., the vectors are of same length). Then we have the \emph{REINFORCE} policy gradient with baseline,
+			\begin{equation}
+				\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})
+					= \frac{1}{N} \sum_{i = 1}^{N} \Biggl[ \Biggl(\, \sum_{t = 0}^{T_i - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \!\Biggr) \odot \Bigl( J(\tau) \vec{1} - \vec{b} \Bigr) \Biggr],
+				\label{eq:reinforceArbitraryBaseline}
+			\end{equation}
+			where the \(\odot\) denotes element-wise multiplication and \(\vec{1}\) is the one-vector. While this baseline does not affect the bias as its expectation vanishes,
+			\begin{equation}
+				\E_\tau\bigl[ \vec{b} \odot \grad_{\vec{\theta}} \log p(\tau \given \vec{\theta}) \bigr]
+					= \int\! p(\tau \given \vec{\theta}) \vec{b} \odot \grad_{\vec{\theta}} \log p(\tau \given \vec{\theta}) \dd{\tau}
+					= \vec{b} \odot \int\! p(\tau \given \vec{\theta}) \grad_{\vec{\theta}} \log p(\tau \given \vec{\theta}) \dd{\tau}
+					= \vec{b} \odot \vec{0}
+					= \vec{0},
+			\end{equation}
+			it still reduces the variance. In each iteration, we can also find an optimal baseline.
 
-			\subsubsection{Gradient Variance and Baselines} % 6.20, 6.21, 6.22+, 6.23
-				\todo{Content}
-			% end
+			\begin{theorem}[REINFORCE Optimal Baseline]
+				The optimal baseline for the REINFORCE gradient \eqref{eq:reinforceArbitraryBaseline} is
+				\begin{equation}
+					\vec{b}^\mathrm{RF}
+						= \argmin_{\vec{b}} \Var_\tau\Bigl[ \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr]
+						= \frac{\E_\tau\bigl[ \vec{v}_\tau^2 J(\tau) \bigr]}{\E_\tau\bigl[ \vec{v}_\tau^2 \bigr]}
+					\label{eq:reinforceOptimalBaseline}
+				\end{equation}
+				with \( \vec{v}_\tau \coloneqq  \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \) where division and exponentiation are element-wise and \( \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \) refers to the "\ac{MC} target" of \eqref{eq:reinforceArbitraryBaseline}.
+			\end{theorem}
+			\begin{proof}
+				The variance of the estimator decomposes as
+				\begin{equation}
+					\Var_\tau\Bigl[  \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr]
+						= \E_\tau\biggl[ \Bigl( \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr)^2 \biggr] - \Bigl( \E_\tau\biggl[ \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr] \biggr)^2
+				\end{equation}
+				where the second term is invariant w.r.t. \(\vec{b}\) by design (the baseline does not effect the expectation of the estimator and therefore it is unbiased for every baseline). Hence, the gradient w.r.t. \(\vec{b}\) reduces to
+				\begin{equation}
+					\grad_{\vec{b}} \Var_\tau\Bigl[ \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr]
+						= \E_\tau\biggl[ \grad_{\vec{b}} \Bigl( \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr)^2 \biggr]
+						\propto \E_\tau\Bigl[ \Bigl( \grad_{\vec{b}} \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr) \odot \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr]
+					\label{eq:reinforceOptBaselinePart}
+				\end{equation}
+				where we swapped the limits\footnote{Take a course on measure theory if you want mathematical rigor!} and used the chain rule. We can now take the derivative of \( \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \) w.r.t. \(\vec{b}\):
+				\begin{equation}
+					\grad_{\vec{b}} \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})}
+						= \grad_{\vec{b}} \Biggl[ \Biggl(\, \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \!\Biggr) \odot \Bigl( J(\tau) \vec{1} - \vec{b} \Bigr) \Biggr]
+						= \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t).
+				\end{equation}
+				Plugging this result back into \eqref{eq:reinforceOptBaselinePart} yields
+				\begin{align}
+					\grad_{\vec{b}} \Var_\tau\bigl[ \grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta}) \bigr]
+						&\propto \E_\tau\Bigl[ \bigl( \grad_{\vec{b}} \grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta}) \bigr) \grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta}) \Bigr]
+						 = \E_\tau\Biggl[ \Biggl(\, \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \Biggr) \odot \grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta}) \Biggr] \\
+						&= \E_\tau\Biggl[ \Biggl(\, \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \Biggr) \odot \Biggl(\, \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \!\Biggr) \odot \Bigl( J(\tau) \vec{1} - \vec{b} \Bigr) \Biggr] \\
+						&= \E_\tau\Biggl[ \Biggl(\, \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \Biggr)^{\!2} J(\tau) \Biggr] - \E_\tau\Biggl[ \Biggl(\, \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \!\Biggr)^{\!2} \odot \vec{b} \Biggr]
+						 \overset{!}{=} \vec{0}
+				\end{align}
+				using the linearity of the expectation. Rearranging the terms then yields \eqref{eq:reinforceOptimalBaseline} as the optimal baseline.
+			\end{proof}
+
+			The whole process for calculating the gradient is summarized in \autoref{alg:reinforce} including the \ac{MC} estimation of the optimal baseline.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{transition dataset \(\mathcal{D}\), differential policy \(\pi_{\vec{\theta}}\) with parameters \(\vec{\theta}\)}
+				\KwOut{policy gradient \( \grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta}) \)}
+				\(\displaystyle \vec{v}^{[i]} \gets \sum_{t = 0}^{T_i - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}\bigl( a_t^{[i]} \biggiven s_t^{[i]} \bigr) \) \;
+				\(\displaystyle \vec{b} \gets \frac{\sum_{i = 1}^{N} \bigl(\vec{v}^{[i]}\bigr)^2 J^{[i]}}{\sum_{i = 1}^{N} \bigl(\vec{v}^{[i]}\bigr)^2} \)  \quad\tcp{compute the optimal baseline}
+				\(\displaystyle \grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta}) \gets \frac{1}{N} \sum_{i = 1}^{N} \vec{v}^{[i]} \odot \bigl( J\bigl(\tau^{[i]}\bigr) \vec{1} - \vec{b} \bigr) \)  \quad\tcp{estimate the policy gradient}
+				\Return \( \grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta}) \) \;
+				\caption{REINFORCE Gradient Estimation with Optimal Baseline}
+				\label{alg:reinforce}
+			\end{algorithm}
 
 			\subsubsection{Example} % 6.24, 6.25, 6.26, 6.27, 6.28
 				\todo{Content}
 			% end
 		% end
 
-		\subsection{GPOMDP} % 6.29, 6.30, 6.31
-			\todo{Content}
+		\subsection{\acs{GPOMDP}}
+		 \label{subsec:gpomdp}
+
+			Even though a baseline reduces the variance of the REINFORCE gradient estimate, it still has fairly high variance as the returns are extremely noisy (remember from the \ac{MC} methods that they are composed of a lot of random variables). We can further reduce the variance by not considering the total return \( J(\tau) = \sum_{t = 0}^{T - 1} \gamma^t r_{t + 1} \) but instead observing that \emph{returns from the past do not depend on actions in the future,} i.e.,
+			\begin{equation}
+				\E\bigl[ \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) r_{k + 1} \bigr] = 0 \quad\forall k \leq t.
+			\end{equation}
+			Plugging this result into \eqref{eq:reinforceArbitraryBaseline} with a time-dependent baseline yields the \emph{\ac{GPOMDP}\footnote{"\acs{GPOMDP}" stands for "\acl{GPOMDP}" as this approach was first applied for \acp{POMDP}.} gradient}
+			\begin{equation}
+				\grad_{\vec{\theta}}^\mathrm{GP} \mathcal{J}(\vec{\theta})
+					= \E_\tau\Biggl[\, \sum_{k = 0}^{T - 1} \sum_{t = 0}^{k} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \odot ( \gamma^k r_{k + 1} \vec{1} - \vec{b}_k ) \Biggr]
+			\end{equation}
+			with its optimal baseline
+			\begin{align}
+				\vec{b}_k &= \frac{\E_\tau\bigl[ \vec{v}_{\tau, k}^2 \gamma^k r_{k + 1} \bigr]}{\E_\tau\bigl[ \vec{v}_{\tau, k}^2 \bigr]} &
+				\vec{v}_{\tau, k} &= \sum_{t = 0}^{k} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t).
+			\end{align}
+			The derivation of this baseline is analogous to the REINFORCE case. The approach is summarized in \autoref{alg:gpomdp}.
+
+			% TODO: rework GPOMDP!
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{transition dataset \(\mathcal{D}\), differential policy \(\pi_{\vec{\theta}}\) with parameters \(\vec{\theta}\)}
+				\KwOut{policy gradient \( \grad_{\vec{\theta}}^\mathrm{GP} \mathcal{J}(\vec{\theta}) \)}
+				\(\displaystyle \vec{v}_k^{[i]} \gets \sum_{t = 0}^{k} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}\bigl( a_t^{[i]} \given s_t^{[i]} \bigr) \) \;
+				\(\displaystyle \vec{b}_k^{[i]} \gets \frac{\sum_{i = 1}^{N} \bigl(\vec{v}_k^{[i]}\bigr)^2 \gamma^k r_{k + 1}^{[i]}}{\sum_{i = 1}^{N} \bigl(\vec{v}_k^{[i]}\bigr)^2} \)  \quad\tcp{compute the optimal baseline}
+				\(\displaystyle \grad_{\vec{\theta}}^\mathrm{GP} \mathcal{J}(\vec{\theta}) \gets \frac{1}{N} \sum_{i = 1}^{N} \sum_{k = 0}^{T - 1} \vec{v}_k^{[i]} \odot \bigl( \gamma^k r_{k + 1}^{[i]} \vec{1} - \vec{b}_k \bigr) \)  \quad\tcp{estimate the policy gradient}
+				\Return \( \grad_{\vec{\theta}}^\mathrm{GP} \mathcal{J}(\vec{\theta}) \) \;
+				\caption{\acs{GPOMDP}}
+				\label{alg:gpomdp}
+			\end{algorithm}
 		% end
 	% end
 
-	\section{Natural Policy Gradient} % 6.32, 6.35, 6.36; 6.57, 6.58+, 6.59
-		\todo{Content}
+	\section{Natural Policy Gradient}
+		So far, the gradient methods assumes that the optimization space is Euclidean. However, as we only modify the parameters of a probability distribution, distances between two parameter vectors are not preserved! That is, measuring the distance between parameters gives us close to no information about the distribution's distance. One idea is to use the \ac{KL} divergence of two distributions, but the \ac{KL} is not symmetric and thus not a metric and therefore difficult to use in optimization problems (also, it is hard to compute). Instead we can use the \emph{\ac{FIM}}
+		\begin{equation}
+			\mat{F}_{\vec{\theta}}
+				\doteq \Var_\tau\bigl[ \grad_{\vec{\theta}} \log p_{\vec{\theta}}(\tau) \bigr]
+				= \Var_\tau\Biggl[ \sum_{t = 0}^{T} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \Biggr]
+		\end{equation}
+		as a second-order approximation of the \ac{KL} divergence for small perturbations \(\vec{\delta\theta}\) of the parameters, i.e.,
+		\begin{equation}
+			\KL\bigl( p_{\vec{\theta} + \vec{\delta\theta}}(\tau) \,\big\Vert\, p_{\vec{\theta}}(\tau) \bigr) \approx \vec{\delta\theta}^\transposed \mat{F}_{\vec{\theta}} \vec{\delta\theta}.
+		\end{equation}
+		The core idea of the \emph{natural} \ac{PG} is to update the policy under a \ac{KL} constraint \(\varepsilon\). For a given "vanilla" update \( \vec{\delta\theta}^\mathrm{VG} \), we find the natural gradient update \( \vec{\delta\theta}^\mathrm{NG} \) by solving the following optimization problem:
+		\begin{equation}
+			\begin{aligned}
+				\vec{\delta\theta}^\mathrm{NG} &= \argmax_{\vec{\delta\theta}} \; \vec{\delta\theta}^\transposed \vec{\delta\theta}^\mathrm{VG} \\
+				\text{s.t.}\qquad&
+				\begin{aligned}[t]
+					\vec{\delta\theta}^\transposed \mat{F}_{\vec{\theta}} \vec{\delta\theta} &\leq \varepsilon
+				\end{aligned}
+			\end{aligned}
+			\label{eq:ngOptProblem}
+		\end{equation}
+		Using Lagrangian multipliers, we find the solution of this optimization problem to be
+		\begin{equation}
+			\vec{\delta\theta}^\mathrm{NG} \propto \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}
+		\end{equation}
+		with the optimal learning rate \( \alpha(\varepsilon) = \sqrt{\varepsilon / \bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}} \).
+		\begin{proof}
+			We first reformulate the inequality constraint as \( \epsilon - \vec{\delta\theta}^\transposed \mat{F}_{\vec{\theta}} \vec{\delta\theta} \geq 0 \). Then the Lagrangian of \eqref{eq:ngOptProblem} is
+			\begin{equation}
+				\mathcal{L} = -\vec{\delta\theta}^\transposed \vec{\delta\theta}^\mathrm{VG} - \mu \bigl( \varepsilon - \vec{\delta\theta}^\transposed \mat{F}_{\vec{\theta}} \vec{\delta\theta} \bigr)
+				\label{eq:ngLagrangian}
+			\end{equation}
+			with the Lagrangian multiplier \(\mu\) and a flipped sign in the objective to apply the \ac{KKT} conditions for a minimization problem. Setting the gradient w.r.t. \( \vec{\delta\theta} \) to zero then yields the optimal search direction:
+			\begin{equation}
+				\grad_{\vec{\delta\theta}} \mathcal{L} = -\vec{\delta\theta}^\mathrm{VG} + 2 \mu \mat{F}_{\vec{\theta}} \vec{\delta\theta} \overset{!}{=} 0
+				\quad\implies\quad
+				\vec{\delta\theta} = \frac{1}{2 \mu} \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}.
+				\label{eq:ngPrimal}
+			\end{equation}
+			By plugging this result back into \eqref{eq:ngLagrangian}, we get the dual
+			\begin{align}
+				\mathcal{G}
+					&= -\frac{1}{2 \mu} \bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG} - \mu \varepsilon + \frac{1}{4 \mu} \bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \mat{F}_{\vec{\theta}} \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG} \\
+					&= -\frac{1}{2 \mu} \bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG} - \mu \varepsilon + \frac{1}{4 \mu} \bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG} \\
+					&= -\mu \varepsilon - \frac{1}{4 \mu} \bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}.
+			\end{align}
+			Now compute the derivative of the dual w.r.t. the Lagrangian multiplier and set it to zero:
+			\begin{equation}
+				\pdv{\mathcal{G}}{\mu} = -\varepsilon + \frac{1}{4 \mu^2} \bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG} \overset{!}{=} 0
+				\quad\implies\quad
+				\mu = \sqrt{\frac{\bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}}{4 \varepsilon}}.
+			\end{equation}
+			Plugging this result back into \eqref{eq:ngPrimal}, we get the new search direction,
+			\begin{equation}
+				\vec{\delta\theta}
+					= \frac{\mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}}{2 \sqrt{\frac{(\vec{\delta\theta}^\mathrm{VG})^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}}{4 \varepsilon}}}
+					= \underbrace{\sqrt{\frac{\varepsilon}{\bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}}}}_{\alpha(\varepsilon)} \underbrace{\mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}}_{\grad_{\vec{\theta}}^\mathrm{NG} \mathcal{J}(\vec{\theta})},
+			\end{equation}
+			where \(\alpha(\varepsilon)\) is the learning rate and \( \grad_{\vec{\theta}}^\mathrm{NG} \mathcal{J}(\vec{\theta}) \) is the natural \ac{PG}.
+		\end{proof}
+		With this approach, we find policy updates that are \emph{independent} of the policy's parametrization and we actually take steps in the policy space rather than parameter space. Note, however, that the approximation using the \ac{FIM} is only valid for small perturbations! Also note that the \ac{NG} is not a completely new approach, but rather an extension that can be used to improve the previous methods.
 	% end
 
-	\section{The Policy Gradient Theorem} % 6.37, 6.38, 6.39, 6.40; 6.60, 6.61+
-		\todo{Content}
+	\section{The Policy Gradient Theorem}
+		\begin{definition}[Occupancy Measure]
+			Let \( \rho^\pi(s) \) be the \emph{occupancy measure} under policy \(\pi\),
+			\begin{equation}
+				\rho^\pi(s) \coloneqq \sum_{t = 0}^{\infty} \gamma^t P(s_t = s \given \pi),
+			\end{equation}
+			where the discount factor \(\gamma\) can be viewed as the \emph{termination probability.}
+		\end{definition}
+		\begin{remark}
+			The occupancy measure is not a proper probability distribution as it is not normalized:
+			\begin{equation}
+				\int_\mathcal{S} \rho^\pi(s) \dd{s}
+					= \int_\mathcal{S} \sum_{t = 0}^{\infty} \gamma^t P(s_t = s \given \pi) \dd{s}
+					\oversetfootnotemark{=} \sum_{t = 0}^{\infty} \gamma^t \int_\mathcal{S} P(s_t = s \given \pi) \dd{s}
+					= \sum_{t = 0}^{\infty} \gamma^t
+					= \frac{1}{1 - \gamma}
+					\neq 1
+			\end{equation}
+			Rather, it can be seen as the (expected) number of visits of a state \(s\) within a trajectory.
+			\footnotetext{Again, rigor is for measure theory.}
+		\end{remark}
+		\begin{definition}[Discounted State Distribution]
+			The \emph{discounted state distribution}
+			\begin{equation}
+				d^\pi(s) \coloneqq (1 - \gamma) \rho^\pi(s)
+			\end{equation}
+			is the normalized occupancy measure and thus a proper probability distribution.
+		\end{definition}
+		\begin{theorem}[Policy Gradient Theorem]
+			For any \ac{MDP} we can compute the \ac{PG} as
+			\begin{equation}
+				\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) = \int_\mathcal{S} \rho^{\pi_{\vec{\theta}}}(s) \int_\mathcal{A} Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a \given s) \dd{a} \dd{s}
+			\end{equation}
+			using the occupancy measure and action-value function.
+		\end{theorem}
+		\begin{proof}
+			\todo{Proof: Policy Gradient Theorem; 6.60, 6.61+}
+		\end{proof}
+		\begin{remark}
+			Using the discounted state distribution \( d^{\pi_{\vec{\theta}}}(s) \) and the log-ratio trick, we can rewrite the \ac{PG} as
+			\begin{align}
+				\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta})
+					&= \frac{1}{1 - \gamma} \int_\mathcal{S} d^{\pi_{\vec{\theta}}}(s) \int_\mathcal{A} Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a \given s) \dd{a} \dd{s} \\
+					&= \frac{1}{1 - \gamma} \int_\mathcal{S} d^{\pi_{\vec{\theta}}}(s) \int_\mathcal{A} \pi_{\vec{\theta}}(a \given s) \, Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \dd{a} \dd{s} \\
+					&= \frac{1}{1 - \gamma} \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr]
+					&\propto \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr]  \label{eq:pgt}
+			\end{align}
+			and we can readily apply \ac{MC}-based techniques if we know the true action-value function.
+		\end{remark}
 
-		\subsection{Actor-Critic} % 6.41
-			\todo{Content}
+		Note how nicely the \ac{PG} theorem connects policy search and gradient estimation with value functions. However, we need the action-value function to compute the gradient. If we estimate it using \ac{MC} methods, the calculation is equivalent to \ac{GPOMDP} (\autoref{subsec:gpomdp}). If we estimate the value function using \ac{TD} learning (which is much more robust than \ac{MC}), we finally arrive at \emph{actor-critic} methods which are the current \ac{SOTA} in \ac{RL}.
+
+		\subsection{Compatible Function Approximation}
+			While using the value function reduces the variance of the \ac{PG} estimate, now the gradient is biased! A solution is to only use \emph{compatible} approximators.
+			\begin{definition}[Compatible Function Approximation]
+				A value function approximation \( \hat{Q}_{\vec{\omega}}(s, a) \) is \emph{compatible} to the policy \(\pi_{\vec{\theta}}\) if \( \grad_{\vec{\omega}} \hat{Q}_{\vec{\omega}}(s, a) = \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \) for all \(s \in \mathcal{S}\) and \(a \in \mathcal{A}\).
+			\end{definition}
+			\begin{theorem}[Compatible Function Approximation Theorem]
+				If \(\hat{Q}_{\vec{\omega}}\) is a compatible to \(\pi_{\vec{\theta}}\) and the value function parameters \(\vec{\omega}\) minimize the \ac{MSE}
+				\begin{equation}
+					\vec{\omega} = \argmin_{\vec{\omega}} \; \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\Bigl[ \bigl( Q^{\pi_{\vec{\theta}}}(s, a) - \hat{Q}_{\vec{\omega}}(s, a) \bigr)^2 \Bigr],
+				\end{equation}
+				then the policy gradient estimate using \(\hat{Q}_{\vec{\omega}}\) is unbiased.
+			\end{theorem}
+			\begin{proof}
+				Let \(\epsilon\) be the \ac{MSE}
+				\begin{equation}
+					\epsilon \coloneqq \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\Bigl[ \bigl( Q^{\pi_{\vec{\theta}}}(s, a) - \hat{Q}_{\vec{\omega}}(s, a) \bigr)^2 \Bigr]
+				\end{equation}
+				then its gradient w.r.t. \(\vec{\omega}\) is
+				\begin{align}
+					\grad_{\vec{\omega}} \epsilon
+						&= 2 \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ \bigl( Q^{\pi_{\vec{\theta}}}(s, a) - \hat{Q}_{\vec{\omega}}(s, a) \bigr) \grad_{\vec{\omega}} \bigl( Q^{\pi_{\vec{\theta}}}(s, a) - \hat{Q}_{\vec{\omega}}(s, a) \bigr) \bigr] \\
+						&= 2 \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ \bigl( Q^{\pi_{\vec{\theta}}}(s, a) - \hat{Q}_{\vec{\omega}}(s, a) \bigr) \grad_{\vec{\omega}} \hat{Q}_{\vec{\omega}}(s, a) \bigr] \\
+						&= 2 \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ \bigl( Q^{\pi_{\vec{\theta}}}(s, a) - \hat{Q}_{\vec{\omega}}(s, a) \bigr) \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr]
+				\end{align}
+				where the last equality is due to the assumption of \(\hat{Q}_{\vec{\omega}}\) being compatible to \(\pi_{\vec{\theta}}\). As \(\vec{\omega}\) minimizes \(\epsilon\), \( \grad_{\vec{\omega}} \epsilon = \vec{0} \) holds. Hence,
+				\begin{equation}
+					\E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ Q^{\pi_{\vec{\theta}}}(s, a) \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr] = \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ \hat{Q}_{\vec{\omega}}(s, a) \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr],
+				\end{equation}
+				and the gradient estimate is unbiased.
+			\end{proof}
+
+			We can write the \ac{CFA} as a linear combination of the policy log-gradient,
+			\begin{equation}
+				\hat{Q}_{\vec{\omega}}(s, a) = \bigl( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr)^{\transposed\,} \vec{\omega}.
+			\end{equation}
+			Plugging the \ac{CFA} into \eqref{eq:pgt} yields
+			\begin{align}
+				\grad_{\vec{\theta}}^\mathrm{CFA} \mathcal{J}(\vec{\theta})
+					&= \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr] \\
+					&= \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ \bigl( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr)^{\transposed\,} \vec{\omega} \, \bigl( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr) \bigr] \\
+					&= \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\Bigl[ \bigl( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr) \bigl( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr)^{\transposed\,} \Bigr] \, \vec{\omega}
+					 = \mat{F}_{\vec{\theta}} \vec{\omega}
+			\end{align}
+			where the expectation is equal to the \ac{FIM} as the second component of the variance, the expectation-square, vanishes as the expectation over \( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \) is zero (see \eqref{eq:usefulIntegrals}).
+			% TODO: CFA: Is the linear CFA the only CFA? It should be, right?
 		% end
 
-		\subsection{Compatible Function Approximation} % 6.42, 6.43, 6.44+
-			\todo{Content}
+		\subsection{Episodic Natural Actor-Critic}
+			\begin{definition}[Advantage Function]
+				We advantage function for a policy \(\pi\) is
+				\begin{equation}
+					A^\pi(s, a) \coloneqq Q^\pi(s, a) - V^\pi(s)
+				\end{equation}
+				and measures how good an action \(a\) is compared to the policy's behavior.
+			\end{definition}
+			Obviously, the advantage function has zero mean w.r.t. to the policy \(\pi\):
+			\begin{equation}
+				\E_{a \sim \pi}\bigl[ A^\pi(s, a) \bigr]
+					= \E_{a \sim \pi}\bigl[ Q^\pi(s, a) - V^\pi(s) \bigr]
+					= \E_{a \sim \pi}\bigl[ Q^\pi(s, a) \bigr] - V^\pi(s)
+					= V^\pi(s) - V^\pi(s)
+					= 0
+			\end{equation}
 
-			\subsubsection{Example} % 6.45
-				\todo{Content}
-			% end
-		% end
+			\emph{Episodic natural actor-critic (\acsu{eNAC})} combines the idea of \ac{CFA} with \ac{NG} but estimates the advantage function rather than the action-value function\footnote{Note that this is still a \ac{CFA} its expectation vanishes.},
+			\begin{equation}
+				\hat{A}(s, a) = \bigl( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given a) \bigr)^{\transposed\,} \vec{\omega},
+			\end{equation}
+			as it usually has lower variance. As the \ac{CFA} and \ac{NG} gradient are given by
+			\begin{align}
+				\grad_{\vec{\theta}}^\mathrm{CFA} \mathcal{J}_{\vec{\theta}} &= \mat{F}_{\vec{\theta}} \vec{\omega} &
+				\grad_{\vec{\theta}}^\mathrm{NG} \mathcal{J}_{\vec{\theta}} &= \mat{F}_{\vec{\theta}}^{-1} \grad_{\vec{\theta}} \mathcal{J}_{\vec{\theta}}.
+			\end{align}
+			Hence, the \ac{eNAC} gradient is simply
+			\begin{equation}
+				\grad_{\vec{\theta}}^\mathrm{eNAC} \mathcal{J}_{\vec{\theta}}
+					= \mat{F}_{\vec{\theta}}^{-1} \mat{F}_{\vec{\theta}} \vec{\omega}
+					= \vec{\omega}.
+			\end{equation}
+			However, we still have to compute \(\vec{\omega}\)! For this, we also need an approximation of the value function for the initial state. If the initial state does not change, this is just a constant and if it does, we choose a linear approximation \( \hat{V}_{\vec{v}}(s) = \vec{\phi}^\transposed(s) \vec{v} \) using some features \(\vec{\phi}(s)\) of the state \(s\). Now we can write
+			\begin{equation}
+				J(\tau) = \hat{V}_{\vec{v}}(s_0) + \sum_{t = 0}^{T - 1} \gamma^t \hat{A}_{\vec{\omega}}(s_t, a_t)  \label{eq:enacEq}
+			\end{equation}
+			which is a linear equation in terms of \(\vec{v}\) and \(\vec{\omega}\) as we know \(J(\tau)\) from sampling. For a set of trajectories \( \bigl\{ \tau^{[i]} \bigr\}_{i = 1}^{N} \), we can formulate \eqref{eq:enacEq} as a matrix-vector linear equation
+			\begin{equation}
+				\vec{J} = \mat{\Psi} \begin{bmatrix} \vec{\omega} \\ \vec{v} \end{bmatrix}
+			\end{equation}
+			with
+			\begin{align}
+				\vec{J} &= \begin{bmatrix} J\bigl( \tau^{[1]} \bigr) \\ J\bigl( \tau^{[2]} \bigr) \\ \vdots \\ J\bigl( \tau^{[N]} \bigr) \end{bmatrix} &
+				\mat{\Psi} &= \begin{bmatrix} \bigl(\vec{\psi}^{[1]}\bigr)^\transposed \\ \bigl(\vec{\psi}^{[2]}\bigr)^\transposed \\ \vdots \\ \bigl(\vec{\psi}^{[N]}\bigr)^\transposed \end{bmatrix} &
+				\vec{\psi}^{[i]} &= \begin{bmatrix} \sum_{t = 0}^{T_i - 1} \gamma^t \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}\bigl( a_t^{[i]} \biggiven s_t^{[i]} \bigr) \\ \vec{\phi}\bigl(s_0^{[i]}\bigr) \end{bmatrix}.
+			\end{align}
+			As this system is linear and overdetermined, we can evaluate \(\vec{\omega}\) and \(\vec{v}\) using least squares. Note that this is an \emph{episodic} algorithm as the calculation of \(J(\tau)\) requires a complete episode.
+			% TODO: eNAC: write out the equation system explicitly to get the hang of it
 
-		\subsection{Advantage Function} % 6.46
-			\todo{Content}
-		% end
-
-		\subsection{Episodic Actor-Critic} % 6.47, 6.48, 6.49, 6.50
-			\todo{Content}
+			\todo{eNAC: create pseudocode; 6.50}
 		% end
 	% end
 
-	\section{Wrap-Up} % 6.51, 6.52, 6.53
-		\todo{Content}
+	\section{Wrap-Up}
+		\begin{itemize}
+			\item difference between value-based, policy search, and actor-critic methods
+			\item importance of exploration in policy search
+			\item Gaussian policies for continuous control
+			\item approaches for \acl{PG}
+				\begin{itemize}
+					\item finite difference gradient (black-box \ac{RL})
+					\item REINFORCE and the importance of the baseline
+					\item \ac{GPOMDP} and the fact that rewards from the past do not depend on actions in the future
+				\end{itemize}
+			\item Fisher information matrix and \acl{NG}
+			\item policy gradient theorem and connection between value-based, policy search, and actor-critic
+			\item \acl{CFA}
+			\item how \ac{eNAC} combines \ac{CFA} and \ac{NG}
+		\end{itemize}
+		% TODO: Sutton, Chapter 13
 	% end
 % end
 

@@ -1159,7 +1159,7 @@
 			\end{equation}
 			which we can directly plug into \eqref{eq:qLearningUpdatePre} yielding the following update rule:
 			\begin{equation}
-				Q(s, a) \gets Q(s, t) + \alpha \bigl( r_{t + 1} + \gamma \textstyle\max_{a' \in \mathcal{A}}\displaystyle Q(s_{t + 1}, a') - Q(s_t, a_t) \bigr)
+				Q(s, a) \gets Q(s, t) + \alpha \bigl( r_{t + 1} + \gamma \textstyle\max_{a' \in \mathcal{A}}\displaystyle Q(s_{t + 1}, a') - Q(s_t, a_t) \bigr)  \label{eq:tabularQLearning}
 			\end{equation}
 			The algorithm is summarized in \autoref{alg:qLearning}. For convergence, we have again a nice guarantee:
 			\begin{theorem}[Convergence of Q-Learning]
@@ -1365,6 +1365,8 @@
 	% end
 
 	\section{The Deadly Triad}
+		\label{sec:deadlyTriad}
+
 		In fact, we have a lot of instability in methods that are based on the following elements: function approximation, bootstrapping, and off-policy training. However, we need everyone of these! Function approximation to scale, bootstrapping for data efficiency, and off-policy training for heterogeneous experience.
 	% end
 
@@ -2115,26 +2117,77 @@
 	% end
 % end
 
-\chapter{Deep Reinforcement Learning} % 7.1, 7.2, 7.3, 7.4, 7.5
-	\todo{Content}
+\chapter{Deep Value-Function Methods}
+	So far, we only discussed \ac{RL} methods relying on classical non-deep \ac{ML}, even though it is theoretically possible to plug in a \ac{NN} function approximator into, for instance, \ac{SARSA}. However, as we will see in this chapter, employing \acp{NN} requires a bunch of tricks and hacks to make them working. While this might be annoying, it allows us to bring \ac{RL} to high-dimensional problems and even learning from images! In this chapter we focus on value-based deep \ac{RL} and the next chapter (\autoref{c:deepAC}) covers actor-critic methods.
 
-	\section{Deep Q-Learning: \acs{DQN}} % 7.6, 7.7, 7.8, 7.13
-		\todo{Content}
+	\section{Deep Q-Learning: \acs{DQN}}
+		In deep Q-learning, we approximate the action-value function using a \ac{NN}, i.e., \( \hat{Q}_{\vec{\omega}}(s, a) \approx Q^\pi(s, a) \). Hence, this methods is also called the \emph{\acl{DQN} (\acsu{DQN}).} In \emph{tabular} Q-learning \eqref{eq:tabularQLearning}, we just set the new action-value to a new estimate. Of course, this is not possible when the action-value function is a \ac{NN} and we therefore instead minimize the expected squared \ac{TD} error,
+		\begin{equation}
+			\mathcal{L}(\vec{\omega}) = \E_{(s, a, r, s') \sim \mathcal{D}}\Bigl[ \bigl( r + \gamma \max_{a' \in \mathcal{A}} \hat{Q}_{\vec{\omega}}(s', a') - \hat{Q}_{\vec{\omega}}(s, a) \bigr)^2 \Bigr],
+		\end{equation}
+		where the expectation is over a dataset \(\mathcal{D}\) of trajectories. With this approach, we have a variety of problems:
+		\begin{enumerate}
+			\item loss contains bootstrapping, is off-policy, and of course works with function approximation; this is the \emph{deadly triad} (\autoref{sec:deadlyTriad})
+			\item offline dataset \(\mathcal{D}\) is assumed to be \emph{unavailable} due to the problem's complexity; we can therefore not use offline algorithms, e.g., fitted Q-iteration
+			\item data has to be collected online, but training \acp{NN} is online \ac{RL} can lead to \emph{catastrophic forgetting}
+		\end{enumerate}
+		We now go over some established methods for tackling these problems and making \ac{DQN} work in the first place. The complete deep Q-learning with all tricks employed is summarized in \autoref{alg:deepQLearning}. While \ac{DQN} is extremely powerful, it comes at high cost! Learning requires many samples, the algorithm is highly sensitive to hyperparameter tuning (e.g., the learning rate), and computation times are enormous.
 
-		\subsection{Replay Buffer} % 7.9
-			\todo{Content}
+		% TODO: DQN tricks: summarize into a table
+
+		\begin{algorithm}  \DontPrintSemicolon
+			\KwIn{environment; differential approximator \(\hat{Q}\) with parameters \(\vec{\omega}\)}
+			\KwOut{estimated parameters \(\vec{\omega}\)}
+			initialize replay buffer \(\mathcal{D}\) to capacity \(N\) \;
+			initialize parameters \(\vec{\omega}\) appropriately \;
+			initialize target parameters \( \vec{\omega}' \gets \vec{\omega} \) \;
+			\Repeat{convergence}{
+				initialize \(s\) \;
+				\While{\(s\) is not terminal}{
+					\tcp{Execute the policy.}
+					take action \( a \sim \epsilon\text{-greedy}\bigl( \hat{Q}_{\vec{\omega}} \bigr) \), observe reward \(r\) and next state \(s'\) \;
+					store transition \( \langle s, a, r, s' \rangle \) in \(\mathcal{D}\) \;
+					\tcp{Sample a minibatch of transitions from the replay buffer.}
+					\(\displaystyle \langle s_i, a_i, r_i, s_i' \rangle_{i = 1}^{M} \sim \mathcal{D} \) \;
+					\tcp{Compute \acs{TD} targets.}
+					\(\displaystyle y_i \gets
+						\begin{cases}
+							r_i & \text{if }s_i'\text{ is terminal} \\
+							r_i + \gamma \max_{a' \in \mathcal{A}} \hat{Q}_{\vec{\omega}'}(s_i', a') & \text{otherwise}
+						\end{cases}
+					\) \;
+					\tcp{Perform the optimization.}
+					perform gradient descent step on \( \bigl( y_i - \hat{Q}_{\vec{\omega}}(s_i, a_i) \bigr)^2 \) w.r.t. \(\vec{\omega}\) \;
+					every \(C\) steps, update target \( \vec{\omega}' \gets \vec{\omega} \) \;
+				}
+			}
+			\Return \(\vec{\omega}\)
+			\caption{Deep Q-Learning using Deep Q-Network}
+			\label{alg:deepQLearning}
+		\end{algorithm}
+
+		\subsection{Replay Buffer}
+			Instead of using just the current data, we collect individual transitions in a \emph{replay buffer} (with finite capacity). Due to off-policy updates, we can re-use transitions from the buffer. This reduces the negative impacts of the \emph{distribution shift,} i.e., the change of the data distribution as our policy changes.
 		% end
 
-		\subsection{Target Network} % 7.10
-			\todo{Content}
+		\subsection{Target Network}
+			Instead of directly updating the policy's \ac{NN} in every step, we keep a copy \(\vec{\omega}'\) of the policy network \(\vec{\omega}\), the \emph{target network,} for computing the \ac{TD} error:
+			\begin{equation}
+				\mathcal{L}(\vec{\omega}) = \E_{(s, a, r, s') \sim \mathcal{D}}\Bigl[ \bigl( r + \gamma \max_{a' \in \mathcal{A}} \hat{Q}_{\vec{\omega}'}(s', a') - \hat{Q}_{\vec{\omega}}(s, a) \bigr)^2 \Bigr].
+			\end{equation}
+			Periodically (e.g., every \(C\) steps), we copy the parameters \(\vec{\omega} \to \vec{\omega}'\) to the target network. This avoids some instability induced by the function approximation as the \ac{TD} target does not change as frequent as before.
 		% end
 
-		\subsection{Minibatch Updates} % 7.11
-			\todo{Content}
+		\subsection{Minibatch Updates}
+			Instead of using all transitions stored in the replay buffer, we only use a subset (a \emph{minibatch}) for compute the loss. This improves efficiency compared to training on all transitions. Also, random samples are closer to fulfilling the i.i.d.-property assumed by \ac{SGD} compared to the temporally correlated trajectories.
 		% end
 
-		\subsection{Reward- and Target-Clipping} % 7.12
-			\todo{Content}
+		\subsection{Reward- and Target-Clipping}
+			Instead of using the "real" reward, we clip the values between \( [-1, 1] \). This also clips the \ac{TD} error,
+			\begin{equation}
+				r + \gamma \max_{a' \in \mathcal{A}} \hat{Q}_{\vec{\omega}}(s', a') - \hat{Q}(s, a) \in [-1, 1],
+			\end{equation}
+			at it turns out to be sufficient to use the \emph{Huber loss} instead of the quadratic loss. This improves the stability of the optimization as values stay reasonably small.
 		% end
 
 		\subsection{Examples} % 7.14, 7.15, 7.16, 7.17, 7.18
@@ -2142,34 +2195,106 @@
 		% end
 	% end
 
-	\section{\acs{DQN} Enhancements} % 7.19
-		\todo{Content}
+	\section{\acs{DQN} Enhancements}
+		Even though \ac{DQN} is already powerful as is, it still has some flaws we want to and are able to overcome. In this section we discuss some of these flaws and approaches to fixing them.
 
-		\subsection{Overestimation and Double Deep Q-Learning} % 7.20, 7.21, 7.22, 7.23
-			\todo{Content}
+		% TODO: DQN Enhancements: summarize into a table
 
-		\subsection{Prioritized Replay Buffer} % 7.24, 7.25, 7.26
-			\todo{Content}
+		\subsection{Overestimation and Double Deep Q-Learning}
+			In \ac{DQN}, we have the following loss:
+			\begin{equation}
+				\mathcal{L}(\vec{\theta}) = \E_{(s, a, r, s') \sim \mathcal{D}}\Bigl[ \bigl( r + \gamma \max_{a' \in \mathcal{A}} \hat{Q}_{\vec{\omega}'}(s', a') - \hat{Q}_{\vec{\omega}}(s, a) \bigr)^2 \Bigr].
+			\end{equation}
+			However, it is known that the use of the maximum operator leads to overestimation of the action-value. This is not necessarily bad (as at least all state-action-pairs get overestimated), but can cause suboptimal performance in highly stochastic environments. We can fight this problem using the idea of \emph{double Q-learning.} Instead of maximizing over \( \hat{Q}_{\vec{\omega}'}(s', a') \), we find the action that maximizes the online policy \( \hat{Q}_{\vec{\omega}}(s', a') \) and evaluate it using the target value function:
+			\begin{equation}
+				\mathcal{L}(\vec{\theta}) = \E_{(s, a, r, s') \sim \mathcal{D}}\Bigl[ \bigl( r + \gamma \hat{Q}_{\vec{\omega}'}\bigl( s', \argmax_{a' \in \mathcal{A}} Q_{\vec{\omega}}(s', a') \bigr) - \hat{Q}_{\vec{\omega}}(s, a) \bigr)^2 \Bigr].
+			\end{equation}
+			Notice that the parameters of the action-value functions being used for maximization are different! We call this approach \emph{\ac{DDQN}}.
 		% end
 
-		\subsection{Dueling \acs{DQN}} % 7.27
-			\todo{Content}
+		\subsection{Prioritized Replay Buffer}
+			The replay buffer might become extremely big, but it is not reasonable to assume that every transition conveys equal amounts of information! Instead, transitions resulting in a high \ac{TD} error are more informative. An approach to tackle this is to weigh the samples using the \ac{TD} error such that the probability of the \(i\)-th sample is
+			\begin{equation}
+				P(i) = \frac{p_i^\alpha}{\sum_k p_k^\alpha}
+			\end{equation}
+			where \( p_i = \lvert \delta \rvert + \epsilon \) with a small \(\epsilon\) to avoid degenerate cases and a regularization \(\alpha\) of the prioritization (where \(\alpha = 0\) equals uniform sampling). However, altering the sampling like this introduces a bias in the loss estimate. Hence, we have to correct the bias using important sampling weights
+			\begin{equation}
+				w_i = \biggl( \frac{1}{N P(i)} \biggr)^\beta
+			\end{equation}
+			where \(N\) is the total number of data points and \(\beta\) regulates the strength of the importance sampling (where \(\beta = 1\) fully compensates the bias). For stability reasons, the weights are also normalized by \( 1/\max_i w_i \). In practice, the coefficient is usually annealed from \(\beta_0 < 1\) to \(1\).
 		% end
 
-		\subsection{Noisy \acs{DQN}} % 7.28, 7.29
-			\todo{Content}
+		\subsection{Dueling \acs{DQN}}
+			It may be helpful from time to time to recover the state-value and advantage from the action-value function. However, given a \(Q = V + A\), we cannot recover the latter. The idea of \emph{dueling \ac{DQN}} is to split the output of the Q-network into two streams, \(\hat{V}_{\vec{\omega}, \vec{\beta}}\) and \(\hat{A}_{\vec{\omega}, \vec{\alpha}}\), i.e., a network with two regression heads parameterized by \(\vec{\beta}\) and \(\vec{\alpha}\), respectively. However, instead of just adding up the two outputs to get the action-value, dueling \ac{DQN} uses
+			\begin{equation}
+				\hat{Q}_{\vec{\omega}, \vec{\alpha}, \vec{\beta}}(a, s) = V_{\vec{\omega}, \vec{\beta}}(s) + \bigl( \hat{A}_{\vec{\omega}, \vec{\alpha}}(s, a) - \max_{a' \in \mathcal{A}} \hat{A}_{\vec{\omega}, \vec{\alpha}}(s, a') \bigr)
+			\end{equation}
+			forcing \( \max_{a \in \mathcal{A}} \hat{Q}_{\vec{\omega}, \vec{\alpha}, \vec{\beta}}(s, a) = V_{\vec{\omega}, \vec{\beta}}(s) \).
+			\todo{DQN: Why "dueling"?}
 		% end
 
-		\subsection{Distributional \acs{DQN}} % 7.30, 7.31, 7.32, 7.33, 7.34, 7.35
-			\todo{Content}
+		\subsection{Noisy \acs{DQN}}
+			Usually, exploration is performed directly on policy level using a \(\varepsilon\)-greedy policy. That is, we perturb the action given an action-value function. However, we can also achieve exploration by perturbing the action-value function directly by adding noise variables \(\varepsilon\) to the \ac{NN}'s layers. Optimization of the parameters is then w.r.t. the expected loss over the noise \(\varepsilon\).
+
+			For instance, we can make a linear layer \( \vec{y} = \mat{W} \vec{x} + \vec{b} \) with \( \vec{x} \in \R^p \), \( \vec{y}, \vec{b} \in \R^q \), and \( \mat{W} \in \R^{y \times p} \) noisy using
+			\begin{equation}
+				\tilde{\vec{y}} = \bigl( \mat{M}_W + \mat{\sigma}_W \odot \mat{\varepsilon}_W \bigr) \vec{x} + (\vec{\mu}_b + \vec{\sigma}_b \odot \vec{\varepsilon}_b)
+			\end{equation}
+			where \( \mat{M}_W \in \R^{q \times p} \), \( \mat{\sigma}_W \in \R^{q \times p} \), \( \vec{\mu}_b \in \R^q \), and \( \mat{\Sigma}_b \in \R^q \) are learnable parameters and \( \mat{\varepsilon}_W \sim \mathcal{N}(\mat{O}, \mat{I}) \in \R^{q \times p} \) and \( \vec{\varepsilon}_b \sim \mathcal{N}(\vec{0}, \mat{I}) \in \R^q \) are noise variables. In practice, we only make the last layer noisy.
 		% end
 
-		\subsection{Rainbow} % 7.36, 7.37
-			\todo{Content}
+		\subsection{Distributional/Categorical \acs{DQN}}
+			So far, we have always estimated the action-value function directly. That is, we estimate the expected return starting from \(s\) with \(a\):
+			\begin{equation}
+				Q^\pi(s, a) = \E[J_t \given s_t = s, a_t = a].
+			\end{equation}
+			The idea of \emph{distributional \ac{DQN}} is to not find a point estimate, but to model the whole return distribution directly\footnote{Note that we do not model the epistemic uncertainty of our model, but the intrinsic aleatoric uncertainty of the environment!}. For this, let \(Z^\pi(s, a)\) be the \emph{distributional} value function. To this end, we also consider the reward \(R(s, a)\) to be a distribution over rewards. To reason about how the distributional value transitions, let \( P^\pi \) be the transition operator such that
+			\begin{equation}
+				(P^\pi Z^\pi)(s, a) \overset{D}{=} Z^\pi(s', a')
+			\end{equation}
+			with \( s' \sim P(\cdot \given s, a) \) and \( a' \sim \pi(\cdot \given s') \). Also, we define the \emph{distributional Bellman operator} \( T \) such that
+			\begin{equation}
+				(T^\pi Z^\pi)(s, a) \overset{D}{=} R(s, a) + \gamma P^\pi Z^\pi(s, a).  \label{eq:distDqnBellman}
+			\end{equation}
+			Notice that we have three sources of randomness here: the reward, the transition, and the next state-value distribution.
+
+			In practice, we approximate the distributional value function by discretizing the return space into \(K\) so-called \emph{atoms}. These atoms \( z_i \coloneqq V_\mathrm{min} + i {\Delta z} \) with \( {\Delta z} = (V_\mathrm{max} - V_\mathrm{min}) / (N - 1) \) are equidistant across the return space. For each atom \(z_i\), its probability is given by
+			\begin{equation}
+				p_i(s, a) = \frac{\exp f_{\vec{\omega}, i}(s, a)}{\sum_{j = 1}^{K} \exp f_{\vec{\omega}, j}(s, a)}
+			\end{equation}
+			where \( f_{\vec{\omega}, i}(s, a) \) is the \(i\)-th entry of a function approximator \( \vec{f}_{\vec{\omega}} \) which we want to learn. Hence, we can now write the categorical value distribution approximation \( \hat{Z}_{\vec{\omega}}(s, a) \approx Z^\pi(s, a) \) as
+			\begin{equation}
+				\hat{Z}_{\vec{\omega}}(s, a) = \begin{bmatrix} p_1(s, a) & p_2(s, a) & \cdots & p_K(s, a) \end{bmatrix}^\transposed.
+			\end{equation}
+			While we can now explicitly compute the update \eqref{eq:distDqnBellman}, we have a problem: the update shifts the support of our distribution such that \( T^\pi \hat{Z}_{\vec{\omega}} \) and \( \hat{Z}_{\vec{\omega}} \) have close to disjoint support. Hence, we apply a projection \(\Phi\) to project the distribution back to the original support. The projection has the following effect (on the \(i\)-th component),
+			\begin{equation}
+				\bigl( \Phi T^\pi \hat{Z}_{\vec{\omega}}(s, a) \bigr)_i = \sum_{j = 1}^{K} \clip_1^1\Biggl( 1 - \frac{\bigl\lvert \clip_{V_\mathrm{min}}^{V_\mathrm{max}}(T z_j) -  z_i \bigr\vert}{{\Delta z}} \Biggr) p_j\bigl(s', \pi(s')\bigr),
+			\end{equation}
+			where we define the effect of the Bellman operator to an atom as \( T z = r + \gamma z \). Here, \(\pi\) is greedy w.r.t. \( \E[\hat{Z}_{\vec{\omega}}] \) and \(\langle s, a, r, s' \rangle\) are from a sampled transition. We also define the clipping operation
+			\begin{equation}
+				\clip_a^b : \R \to [a, b] : x \mapsto \max\bigl\{ a,\, \min\{ b, x \} \bigr\}
+			\end{equation}
+			to clip any value to \([a, b]\). To find new parameters \( \vec{\omega}_\mathrm{new} \), we now minimize the \ac{KL} divergence between the next and current value function distribution:
+			\begin{equation}
+				\vec{\omega}_\mathrm{new} = \argmin_{\vec{\omega}'} \; \KL\bigl( \Phi T Z_{\vec{\omega}'}(s, a) \,\big\vert\, Z_{\vec{\omega}}(s, a) \bigr).
+			\end{equation}
+			Again, this is w.r.t. a sampled transition \(\langle s, a, r, s' \rangle\). As we used a categorical approximation, this algorithm is also called \emph{categorical \ac{DQN}.} For more details on it, see the original paper "A Distributional Perspective on Reinforcement Learning" (Bellemare et al., 2017), especially sections 3.3 and 4.
+		% end
+
+		\subsection{Rainbow}
+			\emph{Rainbow \ac{DQN}} just throws every of the previous methods,
+			\begin{itemize}
+				\item double and dueling \ac{DQN} for fighting the estimation bias,
+				\item prioritized replay buffer for sample-efficiency,
+				\item noise \ac{DQN} for exploration, and
+				\item and distributional \ac{DQN} for dealing with uncertain returns,
+			\end{itemize}
+			into one algorithm and uses them all. This is possible as luckily, all these methods are compatible. With a correct implementation, rainbow is extremely powerful, although hard to implement. Additionally, rainbow uses the \(n\)-step return to estimate the action-value function.
+			\todo{Rainbow DQN: How does rainbow use the n-step return / the estimated Q-values?}
 		% end
 	% end
 
-	\section{Other \acs{DQN}-Bases Methods} % 7.38
+	\section{Other \acs{DQN}-Based Methods} % 7.38
 		\todo{Content}
 
 		\subsection{Count-Based Exploration} % 7.39, 7.40, 7.41, 7.42
@@ -2191,6 +2316,8 @@
 % end
 
 \chapter{Deep Actor-Critic} % 8.1, 8.6, 8.7, 8.8, 8.9; 8.15
+	\label{c:deepAC}
+
 	\todo{Content}
 
 	\section{Surrogate Loss} % 8.10, 8.11, 8.12

@@ -1736,7 +1736,6 @@
 			\end{align}
 			The derivation of this baseline is analogous to the REINFORCE case. The approach is summarized in \autoref{alg:gpomdp}.
 
-			% TODO: rework GPOMDP!
 			\begin{algorithm}  \DontPrintSemicolon
 				\KwIn{transition dataset \(\mathcal{D}\), differential policy \(\pi_{\vec{\theta}}\) with parameters \(\vec{\theta}\)}
 				\KwOut{policy gradient \( \grad_{\vec{\theta}}^\mathrm{GP} \mathcal{J}(\vec{\theta}) \)}
@@ -1845,12 +1844,130 @@
 		\begin{theorem}[Policy Gradient Theorem]
 			For any \ac{MDP} we can compute the \ac{PG} as
 			\begin{equation}
-				\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) = \int_\mathcal{S} \rho^{\pi_{\vec{\theta}}}(s) \int_\mathcal{A} Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a \given s) \dd{a} \dd{s}
+				\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) = \int_\mathcal{S} \rho^{\pi_{\vec{\theta}}}(s) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a \given s) \bigr) Q^{\pi_{\vec{\theta}}}(s, a) \dd{a} \dd{s}
 			\end{equation}
 			using the occupancy measure and action-value function.
 		\end{theorem}
 		\begin{proof}
-			\todo{Proof: Policy Gradient Theorem; 6.60, 6.61+}
+			We first write the objective \(\mathcal{J}(\vec{\theta})\) in terms of the action-value function,
+			\begin{equation}
+				\mathcal{J}(\vec{\theta})
+					= \E_{\tau}\bigl[ J(\tau) \bigr]
+					= \E_{s_0 \sim \iota}\bigl[ V^{\pi_{\vec{\theta}}}(s_0) \bigr]
+					= \E_{s_0 \sim \iota, a_0 \sim \pi_{\vec{\theta}}(\cdot \given s_0)}\bigl[ Q^{\pi_{\vec{\theta}}}(s_0, a_0) \bigr],
+				\label{eq:pgtDecomp}
+			\end{equation}
+			and can therefore compute the gradient as
+			\begin{align}
+				\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta})
+					&= \grad_{\vec{\theta}} \E_{s_0 \sim \iota, a_0 \sim \pi_{\vec{\theta}}(\cdot \given s_0)}\bigl[ Q^{\pi_{\vec{\theta}}}(s_0, a_0) \bigr]  \label{eq:pgtDecomp2} \\
+					&= \grad_{\vec{\theta}} \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \pi(a_0 \given s_0) \, Q^{\pi_{\vec{\theta}}}(s_0, a_0) \dd{a_0} \dd{s_0} \\
+					&\overset{\mathclap{(\ast)}}{=} \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \grad_{\vec{\theta}} \bigl[ \pi(a_0 \given s_0) \, Q^{\pi_{\vec{\theta}}}(s_0, a_0) \bigr] \dd{a_0} \dd{s_0} \\
+					&= \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \bigl[ \bigl( \grad_{\vec{\theta}} \pi(a_0 \given s_0) \bigr) Q^{\pi_{\vec{\theta}}}(s_0, a_0) + \pi(a_0 \given s_0) \bigl( \grad_{\vec{\theta}} Q^{\pi_{\vec{\theta}}}(s_0, a_0) \bigr) \bigr] \dd{a_0} \dd{s_0} \\
+					&= \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \bigl( \grad_{\vec{\theta}} \pi(a_0 \given s_0) \bigr) Q^{\pi_{\vec{\theta}}}(s_0, a_0) \dd{a_0} \dd{s_0} + \underbrace{\int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \pi(a_0 \given s_0) \bigl( \grad_{\vec{\theta}} Q^{\pi_{\vec{\theta}}}(s_0, a_0) \bigr) \dd{a_0} \dd{s_0}}_{(\#)}
+			\end{align}
+			where we can exchange the limits in \((\ast)\) due to an application of some theorem from measure theory and in the last step we used the linearity of integration. We will now focus in the derivative of the action-value function w.r.t. the policy parameters. Using the Bellman expectation equation \eqref{eq:bellmanExpEqQ}, we can write \(\grad_{\vec{\theta}} Q^{\pi_{\vec{\theta}}}\) in terms of the value function \(V^{\pi_{\vec{\theta}}}\) gradient:
+			\begin{align}
+				\grad_{\vec{\theta}} Q^{\pi_{\vec{\theta}}}(s_0, a_0)
+					&= \grad_{\vec{\theta}} \biggl[ R(s_0, a_0) + \gamma \E_{s_1}\bigl[ V^{\pi_{\vec{\theta}}}(s_1) \biggiven s_0, a_0 \bigr] \biggr] \\
+					&= \grad_{\vec{\theta}} \biggl[ R(s_0, a_0) + \gamma \int_\mathcal{S} P(s_1 \given s_0, a_0) V^{\pi_{\vec{\theta}}}(s_1) \dd{s_1} \biggr] \\
+					&= \gamma \int_\mathcal{S} P(s_1 \given s_0, a_0) \, \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1) \dd{s_1}.
+				\label{eq:pgtQDecomp}
+			\end{align}
+			Analogous to \eqref{eq:pgtDecomp} and \eqref{eq:pgtDecomp2}, we can decompose the state-value function:
+			\begin{align}
+				\grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1)
+					&\overset{\mathclap{(\ast)}}{=} \grad_{\vec{\theta}} \int_\mathcal{A} \pi_{\vec{\theta}}(a_1 \given s_1) \, Q^{\pi_{\vec{\theta}}}(s_1, a_1) \dd{a_1} \\
+					&\overset{\mathclap{(\dagger)}}{=} \int_\mathcal{A} \bigl[ \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_1 \given s_1) \bigr) Q^{\pi_{\vec{\theta}}}(s_1, a_1) + \pi_{\vec{\theta}}(a_1 \given s_1) \bigl( \grad_{\vec{\theta}} Q^{\pi_{\vec{\theta}}}(s_1, a_1) \bigr) \bigr] \dd{a_1} \\
+					&\overset{\mathclap{(\ddagger)}}{=} \int_\mathcal{A} \biggl[ \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_1 \given s_1) \bigr) Q^{\pi_{\vec{\theta}}}(s_1, a_1) + \gamma \int_\mathcal{S} \pi_{\vec{\theta}}(a_1 \given s_1) P(s_2 \given s_1, a_1) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_2) \bigr) \dd{s_2} \biggr] \dd{a_1} \\
+					&= \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_1 \given s_1) \bigr) Q^{\pi_{\vec{\theta}}}(s_1, a_1) \dd{a_1} + \gamma \int_\mathcal{A} \int_\mathcal{S} \pi_{\vec{\theta}}(a_1 \given s_1) P(s_2 \given s_1, a_1) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_2) \bigr) \dd{s_2} \dd{a_1},
+			\end{align}
+			where in step \((\ast)\) we rewrote the action-value function, in step \((\dagger)\) we pushed the gradient into the integral, and in step \((\ddagger)\) we applied the Bellman expectation equation \eqref{eq:bellmanExpEqQ} analogous to \eqref{eq:pgtQDecomp}. We can now plug these results into \((\#)\):
+			\begin{align}
+				(\#)
+					&= \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \pi(a_0 \given s_0) \bigl( \grad_{\vec{\theta}} Q^{\pi_{\vec{\theta}}}(s_0, a_0) \bigr) \dd{a_0} \dd{s_0} \\
+					&= \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \pi(a_0 \given s_0) \Biggl( \gamma \int_\mathcal{S} P(s_1 \given s_0, a_0) \, \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1) \dd{s_1} \Biggr) \dd{a_0} \dd{s_0} \\
+					&= \gamma \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} \iota(s_0) \pi(a_0 \given s_0) P(s_1 \given s_0, a_0) \, \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1) \dd{s_1} \dd{a_0} \dd{s_0}  \label{eq:pgtStep} \\
+					&= \gamma \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} \iota(s_0) \pi(a_0 \given s_0) P(s_1 \given s_0, a_0) \Biggl( \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_1 \given s_1) \bigr) Q^{\pi_{\vec{\theta}}}(s_1, a_1) \dd{a_1} \\&\qquad\qquad
+						+ \gamma \int_\mathcal{A} \int_\mathcal{S} \pi_{\vec{\theta}}(a_1 \given s_1) P(s_2 \given s_1, a_1) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_2) \bigr) \dd{s_2} \dd{a_1} \Biggr) \dd{s_1} \dd{a_0} \dd{s_0} \\
+					&= \gamma \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} \iota(s_0) \pi(a_0 \given s_0) P(s_1 \given s_0, a_0) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_1 \given s_1) \bigr) Q^{\pi_{\vec{\theta}}}(s_1, a_1) \dd{a_1} \dd{s_1} \dd{a_0} \dd{s_0} \\&\qquad\qquad
+						+ \gamma^2 \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} \iota(s_0) \pi(a_0 \given s_0) P(s_1 \given s_0, a_0) \pi_{\vec{\theta}}(a_1 \given s_1) \\&\qquad\qquad\qquad\qquad
+						  P(s_2 \given s_1, a_1) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_2) \bigr) \dd{s_2} \dd{a_1} \dd{s_1} \dd{a_0} \dd{s_0}.
+			\end{align}
+			We can now continue inserting \( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}} \) an infinite number of times and with the abbreviation
+			\begin{align}
+				P(s = s_0 \given \pi_{\vec{\theta}}) &= \iota(s_0) \\
+				P(s = s_1 \given \pi_{\vec{\theta}}) &= \int_\mathcal{A} \int_\mathcal{S} \iota(s_0) \pi_{\vec{\theta}}(a_0 \given s_0) P(s_1 \given s_0, a_0) \dd{s_0} \dd{a_0} \\
+				&\;\;\vdots \\
+				P(s = s_t \given \pi_{\vec{\theta}}) &= \int_{\mathcal{A}^t} \int_{\mathcal{S}^t} \iota(s_0) \prod_{k = 0}^{t - 1} \pi_{\vec{\theta}}(a_k \given s_k) P(s_{k + 1} \given s_k, a_k) \dd{s_k} \dd{a_k}  \label{eq:pgtDef}
+			\end{align}
+			where \(\mathcal{A}^t\) and \(\mathcal{S}^t\) are the \(t\)-times Cartesian product, we can write the policy gradient as
+			\begin{align}
+				\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta})
+					&= \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \bigl( \grad_{\vec{\theta}} \pi(a_0 \given s_0) \bigr) Q^{\pi_{\vec{\theta}}}(s_0, a_0) \dd{a_0} \dd{s_0} + (\#) \\
+					&= \int_\mathcal{S} P(s = s_0 \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi(a_0 \given s_0) \bigr) Q^{\pi_{\vec{\theta}}}(s_0, a_0) \dd{a_0} \dd{s_0} \\&\qquad\qquad
+						+ \gamma \int_\mathcal{S} P(s = s_1 \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi(a_1 \given s_1) \bigr) Q^{\pi_{\vec{\theta}}}(s_1, a_1) \dd{a_1} \dd{s_1} \\&\qquad\qquad
+						+ \gamma^2 \int_\mathcal{S} P(s = s_2 \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi(a_2 \given s_2) \bigr) Q^{\pi_{\vec{\theta}}}(s_2, a_2) \dd{a_2} \dd{s_2} \\&\qquad\qquad
+						+ \gamma^3 \int_\mathcal{S} P(s = s_3 \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi(a_3 \given s_3) \bigr) Q^{\pi_{\vec{\theta}}}(s_3, a_3) \dd{a_3} \dd{s_3} \\&\qquad\qquad
+						+ \cdots \\
+					&= \sum_{t = 0}^{\infty} \gamma^t \int_{\mathcal{S}} P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t}.
+			\end{align}
+
+			Note that we have to show this equivalence. First, let
+			\begin{align}
+				\bigl\{ \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \bigr\}_n
+					&\coloneqq \sum_{t = 0}^{n} \gamma^t \int_{\mathcal{S}} P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t} \\&\qquad\qquad
+						+ \underbrace{\gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 1}) \bigr) \dd{s_{n + 1}}}_{(\%)}  \label{eq:pgtProofSum}
+			\end{align}
+			be the policy gradient we get after when terminating after \(n\) expansion. We want to show that \( \bigl\{ \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \bigr\}_n = \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \) for all \( n \in \N_0 \). We show the equivalence by induction. For \(n = 0\), we have
+			\begin{align}
+				\bigl\{ \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \bigr\}_0
+					&= \sum_{t = 0}^{0} \gamma^t \int_{\mathcal{S}} P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t} \\&\qquad\qquad
+						+ \gamma \int_\mathcal{S} P(s = s_1 \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1) \bigr) \dd{s_1} \\
+					&= \int_{\mathcal{S}} P(s = s_0 \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_0) \bigr) Q^{\pi_{\vec{\theta}}}(s_0, a_0) \dd{a_0} \dd{s_0} \\&\qquad\qquad
+						+ \gamma \int_\mathcal{S} P(s = s_1 \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1) \bigr) \dd{s_1} \\
+					&= \int_{\mathcal{S}} \iota(s_0) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_0) \bigr) Q^{\pi_{\vec{\theta}}}(s_0, a_0) \dd{a_0} \dd{s_0} \\&\qquad\qquad
+						+ \gamma \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} \iota(s_0) \pi_{\vec{\theta}}(a_0 \given s_0) P(s_1 \given s_0, a_0) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1) \bigr) \dd{s_0} \dd{a_0} \dd{s_1}
+			\end{align}
+			which exactly equals \eqref{eq:pgtStep} combined with \eqref{eq:pgtDecomp2}. This finishes the induction base. We now have to prove the induction step \( n \to n + 1 \). Assume that the equivalence holds for some \(n\). We can then explicitly expand the last term of the sum, \((\%)\) in \eqref{eq:pgtProofSum}, obtaining
+			\begin{align}
+				(\%)
+					&= \gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 1}) \bigr) \dd{s_{n + 1}} \\
+					&= \gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \Biggl( \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_{n + 1} \given s_{n + 1}) \bigr) Q^{\pi_{\vec{\theta}}}(s_{n + 1}, a_{n + 1}) \dd{a_{n + 1}} \\&\qquad\qquad
+						+ \gamma \int_\mathcal{A} \int_\mathcal{S} \pi_{\vec{\theta}}(a_{n + 1} \given s_{n + 1}) P(s_{n + 2} \given s_{n + 1}, a_{n + 1}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 2}) \bigr) \dd{s_{n + 2}} \dd{a_{n + 1}} \Biggr) \dd{s_{n + 1}} \\
+					&= \gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_{n + 1} \given s_{n + 1}) \bigr) Q^{\pi_{\vec{\theta}}}(s_{n + 1}, a_{n + 1}) \dd{a_{n + 1}} \dd{s_{n + 1}} \\&\qquad\qquad
+						+ \gamma^{n + 2} \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \, \pi_{\vec{\theta}}(a_{n + 1} \given s_{n + 1}) \\&\qquad\qquad\qquad\qquad
+						  P(s_{n + 2} \given s_{n + 1}, a_{n + 1}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 2}) \bigr) \dd{s_{n + 2}} \dd{a_{n + 1}} \dd{s_{n + 1}} \\
+					&= \gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_{n + 1} \given s_{n + 1}) \bigr) Q^{\pi_{\vec{\theta}}}(s_{n + 1}, a_{n + 1}) \dd{a_{n + 1}} \dd{s_{n + 1}} \\&\qquad\qquad
+						+ \gamma^{n + 2} \int_\mathcal{S} P(s = s_{n + 2} \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 2}) \bigr) \dd{s_{n + 2}}
+			\end{align}
+			where we split the integral by linearity and then applied \eqref{eq:pgtDef}. Plugging this result back into \eqref{eq:pgtProofSum}, we obtain the induction step
+			\begin{align}
+				\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta})
+					&= \bigl\{ \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \bigr\}_n \\
+					&= \sum_{t = 0}^{n} \gamma^t \int_{\mathcal{S}} P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t} \\&\qquad\qquad
+						+ \gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 1}) \bigr) \dd{s_{n + 1}} \\
+					&= \sum_{t = 0}^{n} \gamma^t \int_{\mathcal{S}} P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t} \\&\qquad\qquad
+						+ \gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_{n + 1} \given s_{n + 1}) \bigr) Q^{\pi_{\vec{\theta}}}(s_{n + 1}, a_{n + 1}) \dd{a_{n + 1}} \dd{s_{n + 1}} \\&\qquad\qquad
+						+ \gamma^{n + 2} \int_\mathcal{S} P(s = s_{n + 2} \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 2}) \bigr) \dd{s_{n + 2}} \\
+					&= \sum_{t = 0}^{n + 1} \gamma^t \int_{\mathcal{S}} P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t} \\&\qquad\qquad
+						+ \gamma^{(n + 1) + 1} \int_\mathcal{S} P(s = s_{(n + 1) + 1} \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{(n + 1) + 1}) \bigr) \dd{s_{(n + 1) + 1}} \\
+					&= \bigl\{ \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \bigr\}_{n + 1}.
+			\end{align}
+			Hence, \( \bigl\{ \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \bigr\}_n = \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \) holds for all \(n \in \N_0\).
+
+			In the limit \(n \to \infty\), we can therefore drop the correction term \((\%)\) and obtain
+			\begin{equation}
+				\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) = \sum_{t = 0}^{\infty} \gamma^t \int_{\mathcal{S}} P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t}.
+			\end{equation}
+			By swapping limits, plugging in the occupancy measure and relabeling \(s_t \mapsto s\) and \(a_t \mapsto a\), we obtain
+			\begin{align}
+				\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta})
+					&= \int_{\mathcal{S}} \sum_{t = 0}^{\infty} \gamma^t P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t} \\
+					&= \int_{\mathcal{S}} \rho^{\pi_{\vec{\theta}}}(s_t) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t} \\
+					&= \int_{\mathcal{S}} \rho^{\pi_{\vec{\theta}}}(s) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a \given s) \bigr) Q^{\pi_{\vec{\theta}}}(s, a) \dd{a} \dd{s}.
+			\end{align}
+			This is exactly the result of the policy gradient theorem.
 		\end{proof}
 		\begin{remark}
 			Using the discounted state distribution \( d^{\pi_{\vec{\theta}}}(s) \) and the log-ratio trick, we can rewrite the \ac{PG} as
@@ -1858,7 +1975,7 @@
 				\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta})
 					&= \frac{1}{1 - \gamma} \int_\mathcal{S} d^{\pi_{\vec{\theta}}}(s) \int_\mathcal{A} Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a \given s) \dd{a} \dd{s} \\
 					&= \frac{1}{1 - \gamma} \int_\mathcal{S} d^{\pi_{\vec{\theta}}}(s) \int_\mathcal{A} \pi_{\vec{\theta}}(a \given s) \, Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \dd{a} \dd{s} \\
-					&= \frac{1}{1 - \gamma} \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr]
+					&= \frac{1}{1 - \gamma} \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr] \\
 					&\propto \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr]  \label{eq:pgt}
 			\end{align}
 			and we can readily apply \ac{MC}-based techniques if we know the true action-value function.
@@ -1959,10 +2076,22 @@
 				\mat{\Psi} &= \begin{bmatrix} \bigl(\vec{\psi}^{[1]}\bigr)^\transposed \\ \bigl(\vec{\psi}^{[2]}\bigr)^\transposed \\ \vdots \\ \bigl(\vec{\psi}^{[N]}\bigr)^\transposed \end{bmatrix} &
 				\vec{\psi}^{[i]} &= \begin{bmatrix} \sum_{t = 0}^{T_i - 1} \gamma^t \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}\bigl( a_t^{[i]} \biggiven s_t^{[i]} \bigr) \\ \vec{\phi}\bigl(s_0^{[i]}\bigr) \end{bmatrix}.
 			\end{align}
-			As this system is linear and overdetermined, we can evaluate \(\vec{\omega}\) and \(\vec{v}\) using least squares. Note that this is an \emph{episodic} algorithm as the calculation of \(J(\tau)\) requires a complete episode.
+			As this system is linear and overdetermined, we can evaluate \(\vec{\omega}\) and \(\vec{v}\) using least squares. Note that this is an \emph{episodic} algorithm as the calculation of \(J(\tau)\) requires a complete episode. \autoref{alg:enac} summarizes this approach.
 			% TODO: eNAC: write out the equation system explicitly to get the hang of it
 
-			\todo{eNAC: create pseudocode; 6.50}
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{transition dataset \(\mathcal{D}\), differential policy \(\pi_{\vec{\theta}}\) with parameters \(\vec{\theta}\)}
+				\KwOut{policy gradient \( \grad_{\vec{\theta}}^\mathrm{eNAC} \mathcal{J}(\vec{\theta}) \)}
+				\tcp{Compute the state features for the value function.}
+				\(\displaystyle \vec{\psi}^{[i]} \gets \begin{bmatrix} \sum_{t = 0}^{T_i - 1} \gamma^t \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}\bigl( a_t^{[i]} \biggiven s_t^{[i]} \bigr) \\ \vec{\phi}\bigl(s_0^{[i]}\bigr) \end{bmatrix} \) \;
+				\tcp{Fit the advantage and value function (for the initial state).}
+				\(\displaystyle \vec{J} \gets \begin{bmatrix} J\bigl( \tau^{[1]} \bigr) & J\bigl( \tau^{[2]} \bigr) & \cdots & J\bigl( \tau^{[N]} \bigr) \end{bmatrix}^\transposed \) \;
+				\(\displaystyle \mat{\Psi} \gets \begin{bmatrix} \bigl(\vec{\psi}^{[1]}\bigr) & \bigl(\vec{\psi}^{[2]}\bigr) & \cdots & \bigl(\vec{\psi}^{[N]}\bigr) \end{bmatrix}^\transposed \) \;
+				\(\displaystyle \begin{bmatrix} \vec{\omega} \\ \vec{v} \end{bmatrix} \gets \bigl( \mat{\Psi}^\transposed \mat{\Psi} \bigr)^{-1} \mat{\Psi} \vec{J} \) \;
+				\Return \( \vec{\omega} \) \;
+				\caption{Episodic Natural Actor-Critic}
+				\label{alg:enac}
+			\end{algorithm}
 		% end
 	% end
 

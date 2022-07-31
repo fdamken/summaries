@@ -92,8 +92,11 @@
 			\item background and characteristics of \ac{RL}
 			\item classification of \ac{RL} problems
 			\item core components of \ac{RL} algorithms
+			\item Additional reading material:
+				\begin{itemize}
+					\item Book: "Introduction to Reinforcement Learning" (Sutton and Barto, 2018), Chapter 1
+				\end{itemize}
 		\end{itemize}
-		% TODO: Sutton, Chapter 1
 	% end
 % end
 
@@ -597,8 +600,12 @@
 			\item definition of an optimal policy
 			\item the Bellman equation
 			\item the Bellman expectation and optimality equations
+			\item Additional reading material:
+				\begin{itemize}
+					\item Book: "Introduction to Reinforcement Learning" (Sutton and Barto, 2018), Chapter 3  % TODO: Read
+					\item Book: "Markov Decision Processes" (Puterman, 2005), Chapter 2
+				\end{itemize}
 		\end{itemize}
-		% TODO: Sutton, Chapter 3
 	% end
 % end
 
@@ -762,8 +769,11 @@
 		\begin{itemize}
 			\item dynamic programming
 			\item computing optimal policies and value functions for environments with known dynamics
+			\item Additional reading material:
+				\begin{itemize}
+					\item Book: "Introduction to Reinforcement Learning" (Sutton and Barto, 2018), Chapter 4
+				\end{itemize}
 		\end{itemize}
-		% TODO: Sutton, Chapter 4
 	% end
 % end
 
@@ -827,8 +837,12 @@
 		\begin{itemize}
 			\item approximation of value functions when the dynamics are not available
 			\item differences of \ac{DP} and \ac{MC}
+			\item Additional reading material:
+				\begin{itemize}
+					\item Book: "Introduction to Reinforcement Learning" (Sutton and Barto, 2018), Chapter 5  % TODO: Read
+					\item Book: "Monte-Carlo Simulation-Based Statistical Modeling" (Chen and Chen, 2017)
+				\end{itemize}
 		\end{itemize}
-		% TODO: Sutton, Chapter 5
 	% end
 % end
 
@@ -964,8 +978,11 @@
 			\item differences of \ac{DP}, \ac{MC}, and \ac{TD}
 			\item definition of eligibility traces
 			\item computation of TD(\(\lambda\))
+			\item Additional reading material:
+				\begin{itemize}
+					\item Book: "Introduction to Reinforcement Learning" (Sutton and Barto, 2018), Chapters 6, 7, and 12  % TODO: Read
+				\end{itemize}
 		\end{itemize}
-		% TODO: Sutton, Chapters 6, 7, and 12
 	% end
 % end
 
@@ -1212,7 +1229,7 @@
 		\end{table}
 	% end
 
-	\section{Wrap-Up} % 3.47, 3.48
+	\section{Wrap-Up}
 		\begin{itemize}
 			\item differences of on- and off-policy learning
 			\item relationship between model-free control and generalized \ac{PI}
@@ -1223,8 +1240,11 @@
 			\item off-policy learning with importance sampling
 			\item off-policy control with Q-learning without importance sampling
 			\item relationship of the Bellman equations and the \ac{TD} target
+			\item Additional reading material:
+				\begin{itemize}
+					\item Book: "Introduction to Reinforcement Learning" (Sutton and Barto, 2018), Chapters 5, 6, 7, and 12  % TODO: Read
+				\end{itemize}
 		\end{itemize}
-		% TODO: Sutton, Chapters 5, 6, 7, and 12
 	% end
 % end
 
@@ -1432,8 +1452,11 @@
 			\item usage of function approximation in \ac{RL}
 			\item consequences of function approximation
 			\item challenged of off-policy training with function approximation
+			\item Additional reading material:
+				\begin{itemize}
+					\item Book: "Introduction to Reinforcement Learning" (Sutton and Barto, 2018), Chapters 9, 10, and 11  % TODO: Read
+				\end{itemize}
 		\end{itemize}
-		% TODO: Sutton, Chapters 9, 10, and 11
 	% end
 % end
 
@@ -2112,13 +2135,36 @@
 			\item policy gradient theorem and connection between value-based, policy search, and actor-critic
 			\item \acl{CFA}
 			\item how \ac{eNAC} combines \ac{CFA} and \ac{NG}
+			\item Additional reading material:
+				\begin{itemize}
+					\item Book: "Introduction to Reinforcement Learning" (Sutton and Barto, 2018), Chapters 13  % TODO: Read
+					\item Paper: "A Survey on Policy Search for Robotics" (Deisenroth, Neumann, and Peters, 2013), Chapters 1 to 2.4.1  % TODO: Read!
+				\end{itemize}
 		\end{itemize}
-		% TODO: Sutton, Chapter 13
 	% end
 % end
 
 \chapter{Deep Value-Function Methods}
 	So far, we only discussed \ac{RL} methods relying on classical non-deep \ac{ML}, even though it is theoretically possible to plug in a \ac{NN} function approximator into, for instance, \ac{SARSA}. However, as we will see in this chapter, employing \acp{NN} requires a bunch of tricks and hacks to make them working. While this might be annoying, it allows us to bring \ac{RL} to high-dimensional problems and even learning from images! In this chapter we focus on value-based deep \ac{RL} and the next chapter (\autoref{c:deepAC}) covers actor-critic methods.
+
+	\begin{table}
+		\centering
+		\begin{tabular}{c|lll}
+			\toprule
+			                   \textbf{Type}                     & \textbf{Name}             & \textbf{Tackled Issue}     & \textbf{Approach}                                        \\ \midrule
+			\multirowcell{4}{\rotatebox{90}{\textbf{Essential}}} & Replay Buffer             & distribution shift         & reuse old transitions                                    \\
+			                                                     & Target Network            & instability                & use a target network for the \acs{TD} error              \\
+			                                                     & Minibatch Updates         & inefficiency               & sample small minibatch                                   \\
+			                                                     & Reward-Clipping           & unstable optimization      & clip the reward                                          \\ \midrule
+			\multirowcell{5}{\rotatebox{90}{\textbf{Enhance.}}}  & Double \acs{DQN}          & overestimation             & max. over target, evaluate with current                  \\
+			                                                     & Prioritized Replay Buffer & sample inefficiency        & bias sampling towards large \acs{TD} error               \\
+			                                                     & Dueling \acs{DQN}         & recovering \(V\) and \(A\) & explicitly split \acs{NN} output into \(V\) and \(A\)    \\
+			                                                     & Noisy \acs{DQN}           & exploration                & add noisy linear layers                                  \\
+			                                                     & Distributional \acs{DQN}  & stochastic rewards         & model return \emph{distribution,} not \emph{expectation} \\ \bottomrule
+		\end{tabular}
+		\caption{Essential Tricks and Enhancements for \acs{DQN}}
+		\label{tab:dqnHacks}
+	\end{table}
 
 	\section{Deep Q-Learning: \acs{DQN}}
 		In deep Q-learning, we approximate the action-value function using a \ac{NN}, i.e., \( \hat{Q}_{\vec{\omega}}(s, a) \approx Q^\pi(s, a) \). Hence, this methods is also called the \emph{\acl{DQN} (\acsu{DQN}).} In \emph{tabular} Q-learning \eqref{eq:tabularQLearning}, we just set the new action-value to a new estimate. Of course, this is not possible when the action-value function is a \ac{NN} and we therefore instead minimize the expected squared \ac{TD} error,
@@ -2131,9 +2177,7 @@
 			\item offline dataset \(\mathcal{D}\) is assumed to be \emph{unavailable} due to the problem's complexity; we can therefore not use offline algorithms, e.g., fitted Q-iteration
 			\item data has to be collected online, but training \acp{NN} is online \ac{RL} can lead to \emph{catastrophic forgetting}
 		\end{enumerate}
-		We now go over some established methods for tackling these problems and making \ac{DQN} work in the first place. The complete deep Q-learning with all tricks employed is summarized in \autoref{alg:deepQLearning}. While \ac{DQN} is extremely powerful, it comes at high cost! Learning requires many samples, the algorithm is highly sensitive to hyperparameter tuning (e.g., the learning rate), and computation times are enormous.
-
-		% TODO: DQN tricks: summarize into a table
+		We now go over some established methods for tackling these problems and making \ac{DQN} work in the first place. The complete deep Q-learning with all essential tricks (\autoref{tab:dqnHacks}) employed is summarized in \autoref{alg:deepQLearning}. While \ac{DQN} is extremely powerful, it comes at high cost! Learning requires many samples, the algorithm is highly sensitive to hyperparameter tuning (e.g., the learning rate), and computation times are enormous.
 
 		\begin{algorithm}  \DontPrintSemicolon
 			\KwIn{environment; differential approximator \(\hat{Q}\) with parameters \(\vec{\omega}\)}
@@ -2196,9 +2240,7 @@
 	% end
 
 	\section{\acs{DQN} Enhancements}
-		Even though \ac{DQN} is already powerful as is, it still has some flaws we want to and are able to overcome. In this section we discuss some of these flaws and approaches to fixing them.
-
-		% TODO: DQN Enhancements: summarize into a table
+		Even though \ac{DQN} is already powerful as is, it still has some flaws we want to and are able to overcome. In this section we discuss some of these flaws and approaches to fixing them. All enhancements are also summarized in \autoref{tab:dqnHacks}.
 
 		\subsection{Overestimation and Double Deep Q-Learning}
 			In \ac{DQN}, we have the following loss:
@@ -2260,15 +2302,15 @@
 
 			In practice, we approximate the distributional value function by discretizing the return space into \(K\) so-called \emph{atoms}. These atoms \( z_i \coloneqq V_\mathrm{min} + i {\Delta z} \) with \( {\Delta z} = (V_\mathrm{max} - V_\mathrm{min}) / (N - 1) \) are equidistant across the return space. For each atom \(z_i\), its probability is given by
 			\begin{equation}
-				p_i(s, a) = \frac{\exp f_{\vec{\omega}, i}(s, a)}{\sum_{j = 1}^{K} \exp f_{\vec{\omega}, j}(s, a)}
+				\rho_i(s, a) = \frac{\exp f_{\vec{\omega}, i}(s, a)}{\sum_{j = 1}^{K} \exp f_{\vec{\omega}, j}(s, a)}
 			\end{equation}
 			where \( f_{\vec{\omega}, i}(s, a) \) is the \(i\)-th entry of a function approximator \( \vec{f}_{\vec{\omega}} \) which we want to learn. Hence, we can now write the categorical value distribution approximation \( \hat{Z}_{\vec{\omega}}(s, a) \approx Z^\pi(s, a) \) as
 			\begin{equation}
-				\hat{Z}_{\vec{\omega}}(s, a) = \begin{bmatrix} p_1(s, a) & p_2(s, a) & \cdots & p_K(s, a) \end{bmatrix}^\transposed.
+				\hat{Z}_{\vec{\omega}}(s, a) = \begin{bmatrix} \rho_1(s, a) & \rho_2(s, a) & \cdots & \rho_K(s, a) \end{bmatrix}^\transposed.
 			\end{equation}
 			While we can now explicitly compute the update \eqref{eq:distDqnBellman}, we have a problem: the update shifts the support of our distribution such that \( T^\pi \hat{Z}_{\vec{\omega}} \) and \( \hat{Z}_{\vec{\omega}} \) have close to disjoint support. Hence, we apply a projection \(\Phi\) to project the distribution back to the original support. The projection has the following effect (on the \(i\)-th component),
 			\begin{equation}
-				\bigl( \Phi T^\pi \hat{Z}_{\vec{\omega}}(s, a) \bigr)_i = \sum_{j = 1}^{K} \clip_1^1\Biggl( 1 - \frac{\bigl\lvert \clip_{V_\mathrm{min}}^{V_\mathrm{max}}(T z_j) -  z_i \bigr\vert}{{\Delta z}} \Biggr) p_j\bigl(s', \pi(s')\bigr),
+				\bigl( \Phi T^\pi \hat{Z}_{\vec{\omega}}(s, a) \bigr)_i = \sum_{j = 1}^{K} \clip_1^1\Biggl( 1 - \frac{\bigl\lvert \clip_{V_\mathrm{min}}^{V_\mathrm{max}}(T z_j) -  z_i \bigr\vert}{{\Delta z}} \Biggr) \rho_j\bigl(s', \pi(s')\bigr),
 			\end{equation}
 			where we define the effect of the Bellman operator to an atom as \( T z = r + \gamma z \). Here, \(\pi\) is greedy w.r.t. \( \E[\hat{Z}_{\vec{\omega}}] \) and \(\langle s, a, r, s' \rangle\) are from a sampled transition. We also define the clipping operation
 			\begin{equation}
@@ -2289,29 +2331,62 @@
 				\item noise \ac{DQN} for exploration, and
 				\item and distributional \ac{DQN} for dealing with uncertain returns,
 			\end{itemize}
-			into one algorithm and uses them all. This is possible as luckily, all these methods are compatible. With a correct implementation, rainbow is extremely powerful, although hard to implement. Additionally, rainbow uses the \(n\)-step return to estimate the action-value function.
+			into one algorithm and uses them all. This is possible as luckily, all these methods are compatible. With a correct implementation, rainbow is extremely powerful, although hard to implement. Additionally, rainbow uses the \(n\)-step return to estimate the action-value function. See \autoref{fig:rainbowPerformance} for a comparison of rainbow to each method alone.
 			\todo{Rainbow DQN: How does rainbow use the n-step return / the estimated Q-values?}
+
+			\begin{figure}
+				\centering
+				\includegraphics[width=0.5\linewidth]{figures/rainbow-dqn.pdf}
+				\caption[Performance of Rainbow \acs{DQN}]{Median performance of Rainbow \acs{DQN} across 57 Atari games; Taken from "Rainbow: Combining Improvements in Deep Reinforcement Learning" (Hessel et al., 2018).}
+				\label{fig:rainbowPerformance}
+			\end{figure}
 		% end
 	% end
 
-	\section{Other \acs{DQN}-Based Methods} % 7.38
-		\todo{Content}
+	\section{Other \acs{DQN}-Based Exploration Techniques}
+		In this section we explore some other techniques based on \ac{DQN}, mainly to improve exploration.
 
-		\subsection{Count-Based Exploration} % 7.39, 7.40, 7.41, 7.42
-			\todo{Content}
+		\subsection{Count-Based Exploration}
+			Some environment such as jump-n-run games are simply too difficult to be solved. Some reasons for this are sparse rewards (i.e., you only rarely get any reward such as at the end of the episode), complex dynamics, and a high probability of failures (such that it is hard to success by chance). One approach for tackling this problem is to alter the extrinsic (environmental) rewards \(R_\mathrm{ext}(s, a)\) by adding an \emph{intrinsic} rewards \(R_\mathrm{int}(s, a)\):
+			\begin{equation}
+				R_\mathrm{tot}(s, a) = R_\mathrm{ext}(s, a) + R_\mathrm{int}(s, a).
+			\end{equation}
+			In order to guide the agent towards exploration, we increase the intrinsic reward in places the agent has visited only a few times,
+			\begin{equation}
+				R_\mathrm{int}(s, a) = \beta \bigl( N(s) + 0.01 \bigr)^{-1/2},
+			\end{equation}
+			where \(N(s)\) is the number of times \(s\) was visited and \(\beta\) is a hyper-parameter. We call the idea of exploring where we are uncertain \emph{optimism in the face of uncertainty} and the concrete approach \emph{count-based exploration.} While this approach is straightforward for discrete state-spaces, we cannot just count occurrences in continuous spaces. Instead, we have to define some notion of \emph{similarity} (usually found using unsupervised learning like clustering, \ac{KDE}, auto-encoders, etc.) and count similar states. These counts are then \emph{pseudo-counts.}
 		% end
 
-		\subsection{Curiosity-Driven Exploration} % 7.43, 7.44
-			\todo{Content}
+		\subsection{Curiosity-Driven Exploration}
+			In \emph{curiosity-driven exploration}, we also add an intrinsic reward \(R_\mathrm{int}(s, a)\), but we use a notion of \emph{curiosity} and want to explore where the knowledge of our model is bad. We hypothesize that states are more interesting if the distance of the predicted next state to the actual next state is large. Hence, we use the intrinsic reward
+			\begin{equation}
+				R_\mathrm{int}(s, a) = \frac{\eta}{2} \bigl\lVert \vec{\phi}(\tilde{s}') - \vec{\phi}(s') \bigr\lVert_2^2
+			\end{equation}
+			where \(\tilde{s}'\) is the predicted and \(s'\) is the actual next state and \(\eta\) is a hyper-parameter.
 		% end
 
-		\subsection{Ensemble-Driven Exploration} % 7.45, 7.46, 7.47
-			\todo{Content}
+		\subsection{Ensemble-Driven Exploration}
+			Instead of learning a single action-value function, in \emph{ensemble-driven exploration} we train multiple value functions as an ensemble. The ensemble itself is usually implemented by as single \ac{NN} with \(\kappa\) regression heads. During training, each head is trained with different samples where the samples are chosen according to some masking distribution and the value function for acting in the environment is chosen once per trajectory. The corresponding algorithm is called \emph{bootstrapped \ac{DQN}.}
 		% end
 	% end
 
-	\section{Wrap-Up} % 7.48, 7.49, 7.50
-		\todo{Content}
+	\section{Wrap-Up}
+		\begin{itemize}
+			\item curse of dimensionality and its effect in \ac{RL}
+			\item deep learning in \ac{RL} for handling high-dimensional problems
+			\item problems of deep \ac{RL} and some techniques addressing them
+			\item the \ac{DQN} algorithm and how to set up experiments with it
+			\item enhancing \ac{DQN} by improving function approximation and sample usage
+			\item improving key problems of \ac{RL}, e.g., exploration, by combining deep learning techniques and \ac{DQN}
+			\item Additional reading material:
+				\begin{itemize}
+					\item Paper: "Playing Atari with Deep Reinforcement Learning" (Mnih et al., 2013)  % TODO: Read!
+					\item Paper: "Deep Reinforcement Learning with Double Q-Learning" (Hasselt et al., 2016)  % TODO: Read!
+					\item Paper: "A Distributional Perspective on Reinforcement Learning" (Bellemare et al., 2017)  % TODO: Read!
+					\item Paper: "Curiosity-Driven Exploration by Self-Supervised Prediction" (Pathak et al., 2017)  % TODO: Read!
+				\end{itemize}
+		\end{itemize}
 	% end
 % end
 

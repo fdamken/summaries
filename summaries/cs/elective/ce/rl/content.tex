@@ -1477,7 +1477,7 @@
 		\item the policy may be initialized with other methods (e.g., with a (suboptimal) result from imitation learning)
 		\item we do not have to solve a maximization problem when executing the policy (i.e., there is no need to maximize the value function)
 	\end{itemize}
-	Of course, we also have some downsides such as no guarantees of convergence to the optimum (but instead to a local optima) and that it is pretty inefficient as policy search depends on \ac{MC} rollouts in the environment. Hence, the methods usually exhibit high variance in the resulting policies.
+	Of course, we also have some downsides such as no guarantees of convergence to the optimum (but instead to a local optima) and that it is pretty inefficient as policy search depends on \ac{MC} rollouts in the environment. Hence, the methods usually exhibit high variance in the resulting policies. \autoref{fig:valuePolicySearchActorCritic} shows a comparison of value-based methods vs. policy search vs. actor-critic.
 
 	As policy search can be applied to both discrete and continuous control actions, we will confine ourselves to the discussion of a discrete set of continuous control variables, i.e., a vector\footnote{Note that even though \(a\) is a vector now, we will stick to the lightface notation for consistency.} \( a = (a_1, a_2, \dots, a_M) \). Like before, \emph{exploration is crucial!} For continuous variables, the most common option is to use a Gaussian action distribution \( \pi_{\vec{\theta}}(a \given s) = \mathcal{N}\bigl( a \biggiven \mu_{\vec{\theta}}(s), \Sigma_{\vec{\theta}}(s) \bigr) \) where the mean and covariance matrix are given by a (usually learnable) state-dependent function approximator with parameters \(\vec{\theta}\). This can, for instance, be a \ac{NN}. For discrete actions, choosing an exploration strategy like a Boltzmann policy (see \autoref{subsec:mcExploration}) is usually a good choice. In fact, we will also confine ourselves to \emph{parametric} policies, i.e., policies \(\pi_{\vec{\theta}}\) with parameters \(\vec{\theta}\) that govern our search space. We can then re-frame the optimization problem \eqref{eq:policySearchOptPart} as
 	\begin{equation}
@@ -1566,6 +1566,7 @@
 			}
 		\end{subfigure}
 		\caption{Value-Based vs. Policy Search vs. Actor-Critic}
+		\label{fig:valuePolicySearchActorCritic}
 	\end{figure}
 
 	\section{Policy Gradient}
@@ -1729,7 +1730,7 @@
 			The whole process for calculating the gradient is summarized in \autoref{alg:reinforce} including the \ac{MC} estimation of the optimal baseline.
 
 			\begin{algorithm}  \DontPrintSemicolon
-				\KwIn{transition dataset \(\mathcal{D}\), differential policy \(\pi_{\vec{\theta}}\) with parameters \(\vec{\theta}\)}
+				\KwIn{transition dataset \(\mathcal{D}\), differentiable policy \(\pi_{\vec{\theta}}\) with parameters \(\vec{\theta}\)}
 				\KwOut{policy gradient \( \grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta}) \)}
 				\(\displaystyle \vec{v}^{[i]} \gets \sum_{t = 0}^{T_i - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}\bigl( a_t^{[i]} \biggiven s_t^{[i]} \bigr) \) \;
 				\(\displaystyle \vec{b} \gets \frac{\sum_{i = 1}^{N} \bigl(\vec{v}^{[i]}\bigr)^2 J^{[i]}}{\sum_{i = 1}^{N} \bigl(\vec{v}^{[i]}\bigr)^2} \)  \quad\tcp{compute the optimal baseline}
@@ -1861,14 +1862,14 @@
 			Rather, it can be seen as the (expected) number of visits of a state \(s\) within a trajectory.
 			\footnotetext{Again, rigor is for measure theory.}
 		\end{remark}
-		\begin{definition}[Discounted State Distribution]
+		\begin{definition}[Discounted State Distribution]  \label{def:discountedStateDistrib}
 			The \emph{discounted state distribution}
 			\begin{equation}
 				d^\pi(s) \coloneqq (1 - \gamma) \rho^\pi(s)
 			\end{equation}
 			is the normalized occupancy measure and thus a proper probability distribution.
 		\end{definition}
-		\begin{theorem}[Policy Gradient Theorem]
+		\begin{theorem}[Policy Gradient Theorem]  \label{th:pgt}
 			For any \ac{MDP} we can compute the \ac{PG} as
 			\begin{equation}
 				\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) = \int_\mathcal{S} \rho^{\pi_{\vec{\theta}}}(s) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a \given s) \bigr) Q^{\pi_{\vec{\theta}}}(s, a) \dd{a} \dd{s}
@@ -2059,7 +2060,7 @@
 
 		\subsection{Episodic Natural Actor-Critic}
 			\begin{definition}[Advantage Function]
-				We advantage function for a policy \(\pi\) is
+				The \emph{advantage function} for a policy \(\pi\) is
 				\begin{equation}
 					A^\pi(s, a) \coloneqq Q^\pi(s, a) - V^\pi(s)
 				\end{equation}
@@ -2224,7 +2225,7 @@
 		% end
 
 		\subsection{Minibatch Updates}
-			Instead of using all transitions stored in the replay buffer, we only use a subset (a \emph{minibatch}) for compute the loss. This improves efficiency compared to training on all transitions. Also, random samples are closer to fulfilling the i.i.d.-property assumed by \ac{SGD} compared to the temporally correlated trajectories.
+			Instead of using all transitions stored in the replay buffer, we only use a subset (a \emph{minibatch}) for computing the loss. This improves efficiency compared to training on all transitions. Also, random samples are closer to fulfilling the i.i.d.-property assumed by \ac{SGD} compared to the temporally correlated trajectories.
 		% end
 
 		\subsection{Reward- and Target-Clipping}
@@ -2391,49 +2392,173 @@
 	% end
 % end
 
-\chapter{Deep Actor-Critic} % 8.1, 8.6, 8.7, 8.8, 8.9; 8.15
+\chapter{Deep Actor-Critic}
 	\label{c:deepAC}
 
-	\todo{Content}
+	In this chapter we move from "just" value-function methods to the \ac{SOTA} of deep \ac{RL}: deep actor-critic methods. These methods explicitly model both a policy (the "actor") and the value function (the "critic"), cf. \autoref{fig:valuePolicySearchActorCritic}. Of course, our models are only approximate, so the policy gradient estimate will be biased and we will replace the true objective \(\mathcal{J}(\vec{\theta})\) with a surrogate object8ive \(\mathcal{L}(\vec{\theta})\) that is easier to compute. As this surrogate objective is a central concept, we will start our discussion of actor-critic methods with it.
 
-	\section{Surrogate Loss} % 8.10, 8.11, 8.12
-		\todo{Content}
+	Before, we have to clarify some nomenclature: while in \ac{TD} learning the difference between on- and off-policy algorithms is whether the samples come from the actual policy or a behavioral policy, respectively, in deep actor-critic methods we use these terms differently. \emph{On-policy} methods updates the policy only with samples from the previous policy while \emph{off-policy} methods use a replay buffer (note that as long as the policy does not change "much," we still reuse old samples in on-policy methods). We broaden this distinction as with the \ac{TD} definition, almost all deep actor-critic methods would be "on-policy."
 
-		\subsection{Kakade-Langford-Lemma} % 8.13+
-			\todo{Content}
+	\section{Surrogate Loss/Objective}
+		We start our discussion of deep actor-critic methods with the important \emph{surrogate objective.} First, why do we need the surrogate objective in the first place? According to the \ac{PGT} (\autoref{th:pgt}), the \ac{PG} is an expectation under the \emph{discounted} state distribution (\autoref{def:discountedStateDistrib}) induced by the policy \(\pi\). The \emph{discounted} state distributions implies that we have a probability \(1 - \gamma\) of terminating a sequence at every transition; hence, we waste a lot of samples! An alternative is to use the \emph{undiscounted} distribution and discount the gradient, but this just causes later gradients to be very small. Also, this approach is very difficult to implement in off-policy settings (where we sample from a replay buffer). In deep actor-critic, we trade off the mathematical rigor of optimizing the "correct" objective for performance and instead use a surrogate objective.
+
+		\begin{theorem}[Kakade-Langford-Lemma]  \label{th:kll}
+			Let \(\pi\) and \(q\) be arbitrary policies, then \(\mathcal{J}(\pi)\) can be expressed as
+			\begin{equation}
+				\mathcal{J}(\pi) = \mathcal{J}(q) + \E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^t A^q(s_t, a_t) \Biggr]  \label{eq:kll}
+			\end{equation}
+			where \( A^q \) is the advantage function w.r.t. \(q\) and \(d^\pi\) is the discounted state distribution w.r.t. \(\pi\).
+		\end{theorem}
+		\begin{proof}
+			By the definition of the advantage and action-value function, we can write
+			\begin{equation}
+				A^q(s_t, a_t)
+					\doteq Q^q(s_t, a_t) - V^q(s_t, a_t)
+					\doteq \E_{s_{t + 1}}\bigl[ R(s_t, a_t) + \gamma V^q(s_{t + 1}) - V^q(s_t) \bigr].
+			\end{equation}
+			hence, we can rewrite the expectation in \eqref{eq:kll} as follows:
+			\begin{align}
+				\E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^t A^q(s_t, a_t) \Biggr]
+					&= \E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^t \bigl( R(s_t, a_t) + \gamma V^q(s_{t + 1}) - V^q(s_t) \bigr) \Biggr] \\
+					&= \E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^t R(s_t, a_t) \Biggr] + \E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^t \bigl( \gamma V^q(s_{t + 1}) - V^q(s_t) \bigr) \Biggr] \\
+					&= \E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^t R(s_t, a_t) \Biggr] + \E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^{t + 1} V^q(s_{t + 1}) - \gamma^t V^q(s_t) \Biggr].
+			\end{align}
+			By definition, the left expectation equals \( \mathcal{J}(\pi) \). Comparing with \eqref{eq:kll}, what remains to be shown is that the right expectation equals \( -\mathcal{J}(q) \):
+			\begin{equation}
+				\E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^{t + 1} V^q(s_{t + 1}) - \gamma^t V^q(s_t) \Biggr]
+					= \E_{\tau \sim \pi}\Biggl[ \sum_{t = 1}^{\infty} \gamma^t V^q(s_t) - \sum_{t = 0}^{\infty} \gamma^t V^q(s_t) \Biggr]
+					= \E_{s_0 \sim \iota}\bigl[ V^q(s_0) \bigr]
+					= -\mathcal{J}(q).
+			\end{equation}
+			With this result and by plugging everything back in, we get the Kakade-Langford-lemma.
+		\end{proof}
+
+		Let \(\pi_{\vec{\theta}}\) and \(q\) be arbitrary policies, then we can apply the Kakade-Langford-lemma (\autoref{th:kll}) and write the objective as
+		\begin{equation}
+			\mathcal{J}(\pi_{\vec{\theta}})
+				= \mathcal{J}(q) + \E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^t A^q(s_t, a_t) \Biggr]
+				= \mathcal{J}(q) + \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \given s)}\bigl[ A^q(s, a) \bigr]
+		\end{equation}
+		where we swapped the limits of expectation and sum. Note that this is still equivalent to the original objective, but with a baseline policy \(q\). As already discussed, it is difficult of computing the gradient of this objective as it contains \(d^{\pi_{\vec{\theta}}}\). Instead, we replace \(d^{\pi_{\vec{\theta}}}\) with the discounted state distribution w.r.t. \(q\), \(d^q\). This yields the surrogate objective:
+		\begin{equation}
+			\mathcal{L}_q(\pi_{\vec{\theta}}) \coloneqq \mathcal{J}(q) + \E_{s \sim d^q(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \given s)}\bigl[ A^q(s, a) \bigr].
+		\end{equation}
+		Notice that this objective is consistent in the sense that if \(q = \pi_{\vec{\theta}}\), the surrogate objective and true objective are equivalent and so are their gradients. As \(\mathcal{J}(q)\) is constant w.r.t. \(\vec{\theta}\), we often use the following surrogate objective:
+		\begin{equation}
+			\mathcal{L}(\pi_{\vec{\theta}}) = \E_{s \sim d^q(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \given s)}\bigl[ A^q(s, a) \bigr].
+		\end{equation}
+		Also, we approximate the advantage function \( \hat{A}(s, a) \approx A(s, a) \). We select \(q\) to be the previous policy \(\pi_{\vec{\theta}_k}\) and \(\pi_{\vec{\theta}}\) to be the policy we are currently optimizing, i.e., taking the gradient w.r.t. its parameter \(\vec{\theta}\). Additionally, most of the algorithms we discuss introduce another approximation by not using the discounted state distribution \(d^q\) but using the undiscounted one, \(u^q\).
+	% end
+
+	\section{Advantage Actor-Critic (\acs{A2C})}
+		\emph{Advantage actor-critic (\acsu{A2C})} is the simplest deep actor-critic methods and just uses \ac{MC} estimates of the value and advantage function. Subsequently, it just follows the gradient of the surrogate loss,
+		\begin{equation}
+			\grad_{\vec{\theta}} \mathcal{L}(\vec{\theta})
+				= \E_{s \sim d^q, a \sim \pi_{\vec{\theta}}(\cdot \given s)}\bigl[ \bigl( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr) \hat{A}(s, a) \bigr],
+		\end{equation}
+		where we use the log-ratio trick again. By replacing the \(d^q\) with \(u^q\) and just computing the expectation by sampling transitions, we arrive at the \ac{A2C} objective
+		\begin{equation}
+			\grad_{\vec{\theta}} \mathcal{L}_\mathcal{D}(\vec{\theta}) = \frac{1}{N} \sum_{i = 1}^{N} \Bigl( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}\bigl(a^{[i]} \given s^{[i]}\bigr) \Bigr) \hat{A}\bigl(s^{[i]}, a^{[i]}\bigr).
+		\end{equation}
+		This estimator is similar to the \ac{PGT} estimate \eqref{eq:pgt}, but are sampling from the \emph{undiscounted} state distribution. \ac{A2C} is summarized in \autoref{alg:a2c}.
+
+		\begin{algorithm}  \DontPrintSemicolon
+			\KwIn{transition dataset \(\mathcal{D}\); differentiable approximators \(\pi_{\vec{\theta}}\) and \(\hat{V}_{\vec{\omega}}\) with parameters \(\vec{\theta}\) and \(\vec{\omega}\)} \;
+			\KwOut{updated parameters \(\vec{\omega}\), policy gradient \( \grad_{\vec{\theta}}^\mathrm{A2C} \)}
+			\tcp{Compute Monte-Carlo advantage.}
+			\ForEach{\( i = 1, 2, \dots, \lvert \mathcal{D} \rvert \)}{
+				\todo{A2C: Pseudocode; 8.18}
+			}
+			\caption{Advantage Actor-Critic (\acs{A2C})}
+			\label{alg:a2c}
+		\end{algorithm}
+	% end
+
+	\section{On-Policy Methods}
+		In this section we discuss a variety of on-policy methods which, in the deep actor-critic sense, are on-policy as they do not use a replay buffer.
+
+		\subsection{Trust-Region Policy Optimization (\acs{TRPO})}
+			In \emph{\ac{TRPO},} we essentially use the \ac{NG} but optimize the policy only in a "trust region" around the old policy where we are sure to have enough information. This idea is formalized in the following optimization problem:
+			\begin{equation}
+				\begin{aligned}
+					\vec{\theta}^\ast &= \argmax_{\vec{\theta}} \, \mathcal{L}(\vec{\theta}) \\
+					\text{s.t.}\qquad&
+						\begin{aligned}
+							\E_{s \sim u^q}\bigl[ \KL\bigl( q(a \given s) \,\big\Vert \pi_{\vec{\theta}}(a \given s) \bigr) \bigr] &\leq \varepsilon
+						\end{aligned}
+				\end{aligned}
+			\end{equation}
+			where we use the importance sampling surrogate objective
+			\begin{equation}
+				\mathcal{L}(\vec{\theta}) = \E_{s, a \sim q}\biggl[ \frac{\pi_{\vec{\theta}}(a \given s)}{q(a \given s)} \hat{A}(s, a) \biggr].
+			\end{equation}
+			Remember that \(q\) is the policy of the previous iteration and \(\pi_{\vec{\theta}}\) is the policy we are currently optimizing. With this approach, we get an \emph{off-policy objective,} but \emph{on-policy data.} The advantage is estimated using \emph{\ac{GAE}}
+			\begin{equation}
+				\hat{A}^{\mathrm{GAE}(\lambda)}(s_t, a_t) = \sum_{\ell = 0}^{\infty} (\gamma \lambda)^\ell \delta_{t + \ell}^V
+			\end{equation}
+			with the \ac{TD} error \( \delta_t^V = r_t + \gamma V(s_{t + 1}) - V(s_t) \).
+
+			To implement \ac{TRPO}, we perform a few simplifications to make the problem tractable, assuming \( \pi_{\vec{\theta}^\ast} \approx q \):
+			\begin{enumerate}
+				\item approximate the \ac{KL} divergence with the \ac{FIM}
+				\item compute the \ac{NG} \( \grad_{\vec{\theta}}^\mathrm{NG} = \mat{F}_{\vec{\theta}}^{-1} \grad_{\vec{\theta}} \mathcal{L}_{\vec{\theta}} \)
+				\item use line search to find the optimal step size along the \ac{NG} direction
+			\end{enumerate}
+			However, as the \ac{FIM} is high-dimensional and inverting it is not tractable for large \acp{NN} with millions of parameters, we reformulate the calculation of the \ac{NG} as a linear system \( \mat{F}_{\vec{\theta}} \grad_{\vec{\theta}}^\mathrm{NG} = \grad_{\vec{\theta}} \mathcal{L}_{\vec{\theta}} \). Subsequently, we can use \ac{CG} to solve this system efficiently.
+
+			Nevertheless, computing the \ac{FIM} explicitly is still costly. Instead, we can use automatic differentiation to efficiently compute Fisher-vector products \( \mat{F}_{\vec{\theta}} \vec{x} \) directly without computing the \ac{FIM}. We do this using the definition of the \ac{FIM} and "push in" the multiplication with \(\vec{x}\):
+			\begin{equation}
+				\mat{F}_{\vec{\theta}} \vec{x}
+					= \bigl( \grad_{\vec{\theta}} \grad_{\vec{\theta}} \KL(\pi_{\vec{\theta}'} \,\Vert\, \pi_{\vec{\theta}}) \bigr) \vec{x}
+					= \grad_{\vec{\theta}} \grad_{\vec{\theta}} \bigl( \KL(\pi_{\vec{\theta}'} \,\Vert\, \pi_{\vec{\theta}}) \vec{x} \bigr).
+			\end{equation}
+			With automatic differentiation, this yields an efficient way of calculating \( \mat{F}_{\vec{\theta}} \vec{x} \).
+
+			The whole algorithm is summarized in \autoref{alg:trpo}.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{sufficiently on-policy transition dataset \( \mathcal{D} = \langle s_i, a_i, r_i, s_i' \rangle_{i = 1}^{N} \), policy approximator \(\pi_{\vec{\theta}}\), value approximator \(V_{\vec{\omega}}\), previous policy \(q\)}
+				\KwOut{optimized parameters \(\vec{\theta}\) and \(\vec{\omega}\)}
+				\(\displaystyle V', A \gets \) compute using \acs{GAE} of \(\mathcal{D}\) using \(V_{\vec{\omega}}\) \;
+				\(\displaystyle \mathcal{L}(\vec{\theta}) \gets \frac{1}{N} \sum_{(s, a, \cdot, \cdot) \in \mathcal{D}} \frac{\pi_{\vec{\theta}}(a \given s)}{q(a \given s)} A(s, a) \)  \quad\quad\tcp{compute surrogate objective}
+				\(\displaystyle \vec{b} \gets \grad_{\vec{\theta}}^\mathrm{VG} \mathcal{L}(\vec{\theta}) \)  \quad\tcp{compute vanilla gradient}
+				\(\displaystyle \vec{d} \gets \mat{F}_{\vec{\theta}}^{-1} \vec{b} \)  \quad\tcp{compute with \acs{CG} and Fisher-vector product}
+				\(\displaystyle \vec{\theta} \gets \) line search in direction \(\vec{d}\) w.r.t. objective \( \mathcal{L}(\vec{\theta}) \) and constraint \( \KL(q \,\Vert\, \pi_{\vec{\theta}}) \) \;
+				\(\displaystyle \vec{\omega} \gets \) fit value function using \(\mathcal{D}\) and \(V'\) \;
+				\Return \(\vec{\theta}\), \(\vec{\omega}\)
+				\caption{Trust-Region Policy Optimization}
+				\label{alg:trpo}
+			\end{algorithm}
 		% end
 
-		\subsection{Practical Surrogate Loss} % 8.14
-			\todo{Content}
+		\subsection{Proximal Policy Optimization (\acs{PPO})}
+			Another trust-region-based approach is \emph{\ac{PPO}.} In \ac{PPO}, we include the constraint present in \ac{TRPO} into the objective by clipping the importance sampling weight:
+			\begin{equation}
+				\mathcal{L}(\vec{\theta}) = \E_{s, a \sim q}\Biggl[ \clip_{-\varepsilon}^{+\varepsilon}\biggl( \frac{\pi_{\vec{\theta}}(a \given s)}{q(a \given s)} \biggr) \hat{A}(s, a) \Biggr].
+			\end{equation}
+			This clipping prevents policy updates that deviate too much from the sampling (previous) distribution \(q\) and is therefore an \emph{implicit} formulation of the \ac{KL} constraint. This approach is summarized in \autoref{alg:ppo}.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{sufficiently on-policy transition dataset \( \mathcal{D} = \langle s_i, a_i, r_i, s_i' \rangle_{i = 1}^{N} \), policy approximator \(\pi_{\vec{\theta}}\), value approximator \(V_{\vec{\omega}}\), previous policy \(q\)}
+				\KwOut{optimized parameters \(\vec{\theta}\) and \(\vec{\omega}\)}
+				\(\displaystyle V', A \gets \) compute using \acs{GAE} of \(\mathcal{D}\) using \(V_{\vec{\omega}}\) \;
+				\(\displaystyle \vec{\omega} \gets \) fit value function using \(\mathcal{D}\) and \(V'\) \;
+				\For{\( N \gets 1, 2, \dots, N \)}{
+					split \(\mathcal{D}\) into \(M\) minibatches \( \{ \mathcal{B}_m \}_{m = 1}^{M} \) of size \(N\) \;
+					\For{\( m \gets 1, 2, \dots, M \)}{
+						\(\displaystyle \mathcal{L}(\vec{\theta}) \gets \frac{1}{N} \sum_{(s, a, \cdot, \cdot) \in \mathcal{B}_m} \clip_{-\varepsilon}^{+\varepsilon}\biggl( \frac{\pi_{\vec{\theta}}(a \given s)}{q(a \given s)} \biggr) \hat{A}(s, a) \)  \quad\tcp{compute surrogate objective}
+						\(\displaystyle \vec{\theta} \gets \) maximize \(\mathcal{L}(\vec{\theta})\) w.r.t. \(\vec{\theta}\) over \(\mathcal{B}_m\), e.g., using Adam \;
+					}
+				}
+				\Return \(\vec{\theta}\), \(\vec{\omega}\) \;
+				\caption{Proximal Policy Optimization}
+				\label{alg:ppo}
+			\end{algorithm}
 		% end
 	% end
 
-	\section{Advantage Actor-Critic (\acs{A2C})} % 8.16, 8.17, 8.18
-		\todo{Content}
-	% end
-
-	\section{On-Policy Methods} % 8.19
-		\todo{Content}
-
-		\subsection{Trust-Region Policy Optimization (\acs{TRPO})} % 8.20, 8.21, 8.28
-			\todo{Content}
-
-			\subsubsection{Practical Implementation} % 8.22, 8.23
-				\todo{Content}
-			% end
-
-			\subsubsection{Conjugate Gradient} % 8.24, 8.25, 8.26, 8.27
-				\todo{Content}
-			% end
-		% end
-
-		\subsection{Proximal Policy Optimization (\acs{PPO})} % 8.29, 8.30
-			\todo{Content}
-		% end
-	% end
-
-	\section{Off-Policy Methods} % 8.31
-		\todo{Content}
+	\section{Off-Policy Methods}
+		In this section we discuss a variety of off-policy methods which, in the deep actor-critic sense, are off-policy as they use a replay buffer.
 
 		\subsection{Deep Deterministic Policy Gradient (\acs{DDPG})} % 8.32, 8.33, 8.34, 8.35
 			\todo{Content}

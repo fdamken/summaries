@@ -2348,6 +2348,8 @@
 	% end
 
 	\section{Other \acs{DQN}-Based Exploration Techniques}
+		\label{sec:otherApproaches}
+
 		In this section we explore some other techniques based on \ac{DQN}, mainly to improve exploration.
 
 		\subsection{Count-Based Exploration}
@@ -2368,6 +2370,10 @@
 				R_\mathrm{int}(s, a) = \frac{\eta}{2} \bigl\lVert \vec{\phi}(\tilde{s}') - \vec{\phi}(s') \bigr\lVert_2^2
 			\end{equation}
 			where \(\tilde{s}'\) is the predicted and \(s'\) is the actual next state and \(\eta\) is a hyper-parameter.
+		% end
+
+		\subsection{Empowerment-Driven Exploration}
+			\emph{Empowerment-driven exploration} is also an intrinsic reward approach depending on how much power we have on the environment in some state, i.e., how much effect the actions have
 		% end
 
 		\subsection{Ensemble-Driven Exploration}
@@ -2776,38 +2782,170 @@
 	% end
 % end
 
-\chapter{Frontiers} % 9.1
-	\todo{Content}
+\chapter{Frontiers}
+	In this chapter we go over some frontier, limits, and unsolved problems of \ac{RL}. These are a great place to start research!
 
-	\section{Partial Observability} % 9.2, 9.3, 9.4, 9.5, 9.6, 9.7
-		\todo{Content}
+	\section{Partial Observability}
+		So far, all problems worked with \emph{full observable} \acp{MDP}. That is, the state \(s\) of an environment was visible to the agent at all times. In \acp{POMDP}, this is not the case and they are thus extremely hard! Instead, we can only observe observable \(z \in \mathcal{Z}\) that depend on the actual state. The formal definition is:
+		\begin{definition}[Partially Observable Markov Decision Process]
+			A \emph{partially observable Markov decision process} is a tuple \( \langle \mathcal{S}, \mathcal{A}, \mathcal{Z}, \mat{P}, \Omega, R, \gamma, \iota \rangle \) with the (finite) set of discrete-time states \(S_t \in \mathcal{S}\), \(n \coloneqq \lvert \mathcal{S} \rvert\), (finite) set of actions \(A_t \in \mathcal{A}\), (finite) set of observations \(Z_t \in \mathcal{Z}\), transition matrix \( \mat{P}_{ss'}^{a} = P(s' \given s, a) \), observation probabilities \( \Omega_{zs}^{a} P(z \given s, a) \), reward function \( R : \mathcal{S} \times \mathcal{A} : (s, a) \mapsto R(s, a) \), discount factor \( \gamma \in [0, 1] \), and the initial state distribution \( \iota_i = P(S_0 = i) \). We call \( r_t = R(s_t) \) the immediate reward at time step \(t\).
+		\end{definition}
+		\begin{remark}
+			A \ac{MDP} is a \ac{POMDP} with \(\mathcal{Z} = \mathcal{S}\) and \( P(z = s \given s, a) = 1 \).
+		\end{remark}
+		To handle \acp{POMDP}, a common approach are \emph{beliefs.} For each state \(s\), the agent computes and maintains a belief \(b(s)\) which is the probability of being in state \(s\). This belief is usually updated as
+		\begin{equation}
+			b(s') \gets \eta P(z \given s', a) \sum_{s \in \mathcal{S}} P(s' \given s, a) b(s)
+		\end{equation}
+		with
+		\begin{align}
+			\eta &\coloneqq \frac{1}{P(z \given b, a)} &
+			P(z \given b, a) &= \sum_{s' \in \mathcal{S}} P(z \given s', a) \sum_{s \in \mathcal{S}} P(s' \given s, a) b(s).
+		\end{align}
+		Using \emph{belief states,} we can transform a \ac{POMDP} into a \ac{MDP} and, for instance, solve it with the well-known methods for \acp{MDP}.
+
+		In practice, \acp{POMDP} are solved in a variety of ways:
+		\begin{itemize}
+			\item Using observers to recover the state and solve the \ac{MDP}
+			\item Bayesian \ac{RL} \\
+				"Bayesian Reinforcement Learning in Continuous \acp{POMDP} with Application to Robot Navigation" (Ross et al., 2008)
+			\item \ac{MC} tree search, the \emph{\ac{POMCP}} approach \\
+				"Monte-Carlo Planning in Large \acp{POMDP}" (Silver and Veness, 2010)
+			\item Recurrent \acp{NN} \\
+				"Deep Recurrent Q-Learning for Partially Observable \acp{MDP}" (Hausknecht and Stone, 2015)
+		\end{itemize}
+		For further reading on this topic, see "Planning and Acting in Partially Observable Stochastic Domains" (Kaelbling et al., 1998).
 	% end
 
-	\section{Hierarchical Control} % 9.8, 9.9, 9.10, 9.17
-		\todo{Content}
+	\section{Hierarchical Control}
+		In a \emph{\ac{SMDP},} the actions are temporally extended, i.e., taking an action \(a\) may effect a (random) number of time steps rather than just the next. We model this in the \ac{MDP} framework by extending the transition probability to \( P(s', N \given s, a) \) which is the probability of reaching state \(s'\) in \(N\) steps after taking action \(a\) in state \(s\) and by extending the reward function to \( R(s, a, N) \) where \(N\) is the number of time steps that occurred in the transition.
 
-		\subsection{The Options Framework} % 9.11, 9.12, 9.13, 9.14, 9.15, 9.16
-			\todo{Content}
-		% end
+		In \emph{hierarchical control} we use an upper-level policy to select a coarse action and a lower-level policy to execute it. This topic is extremely relevant in robotics where we often have real-time constraints. Some frameworks for hierarchical control are:
+		\begin{itemize}
+			\item \emph{Max-Q}
+				\begin{itemize}
+					\item decomposes the original task into a task graph
+					\item root node is the original task
+					\item each node of the graph is a sub-task
+					\item sink nodes are atomic actions
+					\item each sub-task is defined by a sub-task policy
+					\item each sub-task defines a pseudo-reward function
+				\end{itemize}
+			\item \emph{Hierarchy of Abstract Machines (\acsu{HAM})}
+				\begin{itemize}
+					\item defines a set of stochastic finite state machines
+					\item each state machine evolves using its internal state and the \ac{MDP} state
+					\item each machine can invoke other actions, take an atomic action, or make a stochastic choice
+					\item combining \ac{HAM} and \ac{MDP} induces an \ac{SMDP} where the actions are the choice nodes
+				\end{itemize}
+			\item \emph{Options}
+				\begin{itemize}
+					\item extend the \ac{MDP} with temporally extended actions
+					\item agent may choose between an option or an atomic action
+					\item options taken induce an \ac{SMDP} on the original \ac{MDP}
+					\item opposed to Max-Q and \ac{HAM}, this approach still yields optimal policies in the \ac{MDP}
+				\end{itemize}
+		\end{itemize}
+		From all these approaches, the \emph{options framework} is the widely used one. Its simplest version is using Markovian options:
+		\begin{definition}[Markovian Option]
+			A \emph{Markovian option} is a tuple \( \langle I, \pi, \beta \rangle \) where \( I \subseteq \mathcal{S} \) is input set, i.e., the set of states where the option can be activated, \( \pi : \mathcal{S} \times \mathcal{A} \to \R^+ \) is a probabilistic policy over atomic actions, and \( \beta : \mathcal{S} \to [0, 1] \) is the termination probability in each state.
+		\end{definition}
+		We often assume that \( \{ s \in \mathcal{S} : \beta(s) < 1 \} \subseteq I \), i.e., we can start an option in all states where it can continue. Options therefore only need to be defined on the input set. Primitive (atomic) actions \(a\) can also be modeled as options with \(I = \mathcal{S}\), \( \beta(s) = 1 \) for all \(s \in \mathcal{S}\), and \(\pi(s) = \) for all \(s \in \mathcal{S}\). We can therefore define policies about options that also include primitive actions. We can also define non-Markovian options where the termination probability does not depend on the current state only!
+
+		For options, we can develop similar algorithms as for classical \acp{MDP}. Let \(T_o\) be the termination time step of the option \(o\), we have the option reward and option transition function
+		\begin{align}
+			R(s_t, o) &= \E_{T_o}\Biggl[ \sum_{t = 0}^{T_o - 1} \gamma^t R(s_{t + k}, a_{t + k}) \Biggr] &
+			P(s' \given s, o) &= \sum_{T_o = 1}^{\infty} \gamma^{T_o} P(s', T_o),
+		\end{align}
+		where \(P(s', T_o)\) is the probability of reaching \(s'\) in \(T_o\) time steps following \(o\). Similarly, we have the Bellman optimality equations
+		\begin{align}
+			V_{\mathcal{O}}^\ast(s) &= \max_{o \in \mathcal{O}_s} \;\Bigl\{ R(s, o) + \gamma \E_{s'}\bigl[ V_\mathcal{O}^\ast(s') \biggiven s \bigr] \Bigr\} \\
+			Q_\mathcal{O}^\ast(s, a) &= R(s, o) + \gamma \E_{s'}\bigl[ \textstyle\max_{a' \in \mathcal{O}_s}\displaystyle Q_\mathcal{O}^\ast(s', o') \biggiven s \bigr]
+		\end{align}
+		where \( \mathcal{O}_s \coloneqq \{ o : s \in I_o \} \) are the available options in state \(s\). Using these equations, we can derive similar algorithms to \ac{SARSA} and Q-learning for options, but these algorithms will only update the option value functions in the end and will not exploit intermediate information. With \emph{intra-option learning,} we can update the values for multiple options at every time step; see "Intra-Option Learning about Temporally Abstract Actions" (Sutton et al., 1998).
+
+		For further reading on this topic, see:
+		\begin{itemize}
+			\item "Hierarchical Reinforcement Learning with the Max-Q Value Function Decomposition" (Dietterich, 2000)
+			\item "Reinforcement Learning with Hierarchies of Machines" (Parr and Russel, 1997)
+			\item "Between \acp{MDP} and Semi-\acp{MDP}: A Framework for Temporal Abstract in Reinforcement Learning" (Sutton et al., 1999).
+		\end{itemize}
 	% end
 
-	\section{Markov Decision Processed Without Reward} % 9.18, 9.19
-		\todo{Content}
+	\section{Markov Decision Processed Without Reward}
+		In \acp{MDP} \emph{without rewards}, no reward signal is provided to the agent and the agent cannot "simply" optimize an objective function. Instead, the objective has to be defined differently. One option is to use an \emph{intrinsic} reward, of which we have seen some examples in \autoref{sec:otherApproaches}.
 
-		\subsection{Intrinsic Motivation} % 9.20, 9.21, 9.22
-			\todo{Content}
-		% end
+		In \emph{inverse \ac{RL},} we assume that the environment has a reward, but it is unknown. The task of the agent is therefore to recover the original reward function from demonstrations. These demonstrations are assumed to be optimal w.r.t. the original reward function, whatever it might be. Most approaches assume that the agent has limited access to demo-trajectories, but may interact freely with the environment. However, inverse \ac{RL} is inherently \emph{ill-posed!} A policy can be optimal for infinite distinct reward functions! In general, two reward functions \(R\) and \(R'\) are equivalent if \( R'(s, a, s') = R(s, a, s') + \gamma \phi(s') - \phi(s) \) for any \(\phi\). Some solutions are to use just linear approximations of \(R\) or to use the maximum-entropy framework where the optimal policy is always proportional to \( \exp Q(s, a) \). Hence, fixing the ambiguity can be done by introducing an "indirect" relationship between the reward and the policy.
 
-		\subsection{Inverse Reinforcement Learning} % 9.23, 9.24, 9.25, 9.26, 9.27
-			\todo{Content}
-		% end
+		For further reading on these topics, see:
+		\begin{itemize}
+			\item Intrinsic Reward
+				\begin{itemize}
+					\item "Developmental Robotics, Optimal Artificial Curiosity, Creativity, Music, and the Fine Arts" (Schmidhuber, 2006)
+					\item "Empowerment: An Introduction" (Salge et al., 2014)
+					\item "Unifying Count-Based Exploration and Intrinsic Motivation" (Bellemare et al., 2016)
+				\end{itemize}
+			\item Inverse \ac{RL}
+				\begin{itemize}
+					\item "Apprenticeship Learning via Inverse Reinforcement Learning" (Abbeel and Ng, 2004)
+					\item "Maximum Entropy Inverse Reinforcement Learning" (Ziebart et al., 2008)
+				\end{itemize}
+		\end{itemize}
 	% end
 
-	\section{Model-Based Reinforcement Learning} % 9.28, 9.29, 9.30, 9.31, 9.32, 9.33, 9.34
-		\todo{Content}
+	\section{Model-Based Reinforcement Learning}
+		All of this course covered \emph{model-free} \ac{RL} (except for \ac{DP} which uses a known model). In \emph{\ac{MBRL}}, we learn a model of the environment and its transitions. We can then use this model to efficiently solve the task. Two (policy search) approaches for this are \ac{PILCO} and \ac{GPS}.
+
+		In order to apply planning methods, we still have to learn the model. Common approaches are:
+		\begin{itemize}
+			\item Maximum Likelihood Estimation
+			\item Bayesian
+				\begin{itemize}
+					\item "Deep Reinforcement Learning in a Handful of Trials using Probabilistic Dynamics Models" (Chua et al., 2018)
+					\item "When to Trust Your Model: Model-Based Policy Optimization" (Janner, 2019)
+				\end{itemize}
+			\item Decision-Aware Model Learning
+				\begin{itemize}
+					\item "Value-Aware Model Learning for Reinforcement Learning" (Fahramand et al., 2017)
+					\item "The Predictron: End-to-End Learning and Planning" (Silver et al., 2017)
+					\item "Value Prediction Network" (Oh et al., 2017)
+					\item "Reinforcement Learning with Misspecified Model Classes" (Joseph et al., 2013)
+				\end{itemize}
+			\item Distribution Mismatch
+				\begin{itemize}
+					\item "Self-Correcting Models for Model-Based Reinforcement Learning" (Talvitie, 2017)
+					\item "Model Regularization for Stable Sample Rollouts" (Talvitie, 2014)
+					\item "Improving Multi-Step Prediction of Learning Time Series Models" (Venkatraman et al, 2015)
+				\end{itemize}
+		\end{itemize}
 	% end
 
-	\section{Wrap-Up} % 9.35, 9.36
-		\todo{Content}
+	\section{Wrap-Up}
+		\begin{itemize}
+			\item partial observability
+				\begin{itemize}
+					\item definition of \acp{POMDP} and belief states
+					\item updating belief states
+				\end{itemize}
+			\item hierarchical \ac{RL}
+				\begin{itemize}
+					\item \acp{SMDP}
+					\item the three hierarchical \ac{RL} framework: MAX-Q, \ac{HAM}, and options framework
+					\item extension of (optimal) value functions to the options framework
+				\end{itemize}
+			\item learning without reward
+				\begin{itemize}
+					\item definition of an \ac{MDP} without reward
+					\item intrinsic motivation and usefulness combined with standard \ac{RL}
+					\item inverse \ac{RL} and its basic scheme
+					\item why inverse \ac{RL} is ill-posed
+				\end{itemize}
+			\item \ac{MBRL}
+				\begin{itemize}
+					\item how \ac{MBRL} uses the model
+					\item types of planners that can be used
+					\item key issues of \ac{MBRL}
+				\end{itemize}
+		\end{itemize}
 	% end
 % end

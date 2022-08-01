@@ -276,6 +276,8 @@
 		% end
 
 		\subsection{Reparametrization Trick}
+			\label{subsec:reparam}
+
 			Suppose we need to differentiate the expectation of some function \( f(x) \) w.r.t. \(\theta\) where \( x \sim p_\theta(\cdot) \). However, we cannot directly calculate \( \E_{x \sim p_\theta}[f(x)] \) or "differentiate through sampling." Instead, we reformulate the expectation with a function \( x = g_\theta(\varepsilon) \) that separates the random components \(\varepsilon\) from the deterministic ones \(\theta\) such that we can reparameterize the expectation as
 			\begin{equation}
 				\E_{x \sim p_\theta}[f(x)] = \E_\varepsilon\bigl[ f\bigl( g_\theta(\varepsilon) \bigr) \bigr].
@@ -2463,12 +2465,25 @@
 		This estimator is similar to the \ac{PGT} estimate \eqref{eq:pgt}, but are sampling from the \emph{undiscounted} state distribution. \ac{A2C} is summarized in \autoref{alg:a2c}.
 
 		\begin{algorithm}  \DontPrintSemicolon
-			\KwIn{transition dataset \(\mathcal{D}\); differentiable approximators \(\pi_{\vec{\theta}}\) and \(\hat{V}_{\vec{\omega}}\) with parameters \(\vec{\theta}\) and \(\vec{\omega}\)} \;
-			\KwOut{updated parameters \(\vec{\omega}\), policy gradient \( \grad_{\vec{\theta}}^\mathrm{A2C} \)}
+			\KwIn{ordered transition dataset \( \mathcal{D} = \langle s_i, a_i, r_i, s_i' \rangle_{i = 1}^{N} \); differentiable approximators \(\pi_{\vec{\theta}}\) and \(\hat{V}_{\vec{\omega}}\) with parameters \(\vec{\theta}\) and \(\vec{\omega}\)} \;
+			\KwOut{optimized parameters \(\vec{\theta}\) and \(\vec{\omega}\)}
 			\tcp{Compute Monte-Carlo advantage.}
-			\ForEach{\( i = 1, 2, \dots, \lvert \mathcal{D} \rvert \)}{
-				\todo{A2C: Pseudocode; 8.18}
+			\( q_\mathrm{next} \gets V(s_N) \) \;
+			\ForEach{\( i = N, N - 1, \dots, 1 \)}{
+				\If{\( s_i \) is terminal}{
+					\( q_\mathrm{next} \gets r_i \) \;
+				}
+				\Else{
+					\( q_\mathrm{next} \gets r_i + \gamma q_\mathrm{next} \) \;
+				}
+				\( V'(s_i) \gets q_\mathrm{next} \) \;
+				\( A(s_i, a_i) \gets V'(s_i) - V_{\vec{\omega}}(s_i) \) \;
 			}
+			\( \vec{\omega} \gets \) fit value function \(V_{\vec{\omega}}\) using \(\mathcal{D}\) and \(V'\) \;
+			\tcp{Optimize surrogate objective.}
+			\( \mathcal{L}(\vec{\theta}) = \frac{1}{N} \sum_{(s, a, \cdot, \cdot) \in \mathcal{D}} \log \pi_{\vec{\theta}}(a \given s) A(s, a) \) \;
+			\( \vec{\theta} \gets \) maximize \(\mathcal{L}(\vec{\theta})\) w.r.t. \(\vec{\theta}\) \;
+			\Return \(\vec{\theta}\), \(\vec{\omega}\) \;
 			\caption{Advantage Actor-Critic (\acs{A2C})}
 			\label{alg:a2c}
 		\end{algorithm}
@@ -2541,13 +2556,14 @@
 			\begin{algorithm}  \DontPrintSemicolon
 				\KwIn{sufficiently on-policy transition dataset \( \mathcal{D} = \langle s_i, a_i, r_i, s_i' \rangle_{i = 1}^{N} \), policy approximator \(\pi_{\vec{\theta}}\), value approximator \(V_{\vec{\omega}}\), previous policy \(q\)}
 				\KwOut{optimized parameters \(\vec{\theta}\) and \(\vec{\omega}\)}
-				\(\displaystyle V', A \gets \) compute using \acs{GAE} of \(\mathcal{D}\) using \(V_{\vec{\omega}}\) \;
-				\(\displaystyle \vec{\omega} \gets \) fit value function using \(\mathcal{D}\) and \(V'\) \;
+				\( V', A \gets \) compute using \acs{GAE} of \(\mathcal{D}\) using \(V_{\vec{\omega}}\) \;
+				\( \vec{\omega} \gets \) fit value function using \(\mathcal{D}\) and \(V'\) \;
 				\For{\( N \gets 1, 2, \dots, N \)}{
 					split \(\mathcal{D}\) into \(M\) minibatches \( \{ \mathcal{B}_m \}_{m = 1}^{M} \) of size \(N\) \;
 					\For{\( m \gets 1, 2, \dots, M \)}{
-						\(\displaystyle \mathcal{L}(\vec{\theta}) \gets \frac{1}{N} \sum_{(s, a, \cdot, \cdot) \in \mathcal{B}_m} \clip_{-\varepsilon}^{+\varepsilon}\biggl( \frac{\pi_{\vec{\theta}}(a \given s)}{q(a \given s)} \biggr) \hat{A}(s, a) \)  \quad\tcp{compute surrogate objective}
-						\(\displaystyle \vec{\theta} \gets \) maximize \(\mathcal{L}(\vec{\theta})\) w.r.t. \(\vec{\theta}\) over \(\mathcal{B}_m\), e.g., using Adam \;
+						\tcp{Maximize surrogate objective.}
+						\( \mathcal{L}(\vec{\theta}) \gets \frac{1}{N} \sum_{(s, a, \cdot, \cdot) \in \mathcal{B}_m} \clip_{-\varepsilon}^{+\varepsilon}\Bigl( \frac{\pi_{\vec{\theta}}(a \given s)}{q(a \given s)} \Bigr) \hat{A}(s, a) \) \;
+						\( \vec{\theta} \gets \) maximize \(\mathcal{L}(\vec{\theta})\) w.r.t. \(\vec{\theta}\), e.g., using Adam \;
 					}
 				}
 				\Return \(\vec{\theta}\), \(\vec{\omega}\) \;
@@ -2560,21 +2576,203 @@
 	\section{Off-Policy Methods}
 		In this section we discuss a variety of off-policy methods which, in the deep actor-critic sense, are off-policy as they use a replay buffer.
 
-		\subsection{Deep Deterministic Policy Gradient (\acs{DDPG})} % 8.32, 8.33, 8.34, 8.35
-			\todo{Content}
+		\subsection{Deep Deterministic Policy Gradient (\acs{DDPG})}
+			The \emph{\ac{DDPG}} is based on the \emph{deterministic} \ac{PGT}:
+			\begin{theorem}[Deterministic Policy Gradient Theorem]
+				Let \( \mu_{\vec{\theta}} : \mathcal{S} \to \mathcal{A} \) be a deterministic policy. Then the policy gradient can be computed as
+				\begin{equation}
+					\grad_{\vec{\theta}} \mathcal{J}_{\vec{\theta}} \propto \E_{s \sim d^{\mu_{\vec{\theta}}}}\Bigl[ \bigl( \grad_{\vec{\theta}} \mu_{\vec{\theta}}(s) \bigr) \grad_a Q^{\mu_\theta}(s, a)  \bigr\rvert_{a = \mu_{\vec{\theta}}(s)} \Bigr]
+				\end{equation}
+				where \(d^{\mu_{\vec{\theta}}}\) is the discounted state distribution w.r.t. \(\mu_{\vec{\theta}}\).
+			\end{theorem}
+			For Gaussian policies, the deterministic \ac{PGT} is a limit case of the \ac{PGT} as \(\sigma^2 \to 0\). Similar results can be found for other classes of policies.
+
+			However, the deterministic \ac{PGT} assumes knowledge of the true action-value function which we do not have. Hence, to develop a practical algorithm, we include the following tricks:
+			\begin{itemize}
+				\item use a noisy policy to estimate \(Q^\pi\)
+					\begin{itemize}
+						\item Gaussian noise
+						\item truncated Gaussian noise to respect action limits
+						\item Ornstein-Uhlenbeck process for correlated exploration
+						\item \dots
+					\end{itemize}
+				\item then update the deterministic policy parameters using the deterministic \ac{PGT}
+				\item use replay memory and target networks (for both actor and critic) to improve stability
+			\end{itemize}
+			The whole approach, including these tricks, is summarized in \autoref{alg:ddpg}.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{transition dataset \( \mathcal{D} = \langle s_i, a_i, r_i, s_i' \rangle_{i = 1}^{N} \), policy approximator \(\pi_{\hat{\vec{\theta}}}\), action-value function \(Q_{\hat{\vec{\omega}}}\)}
+				\KwOut{optimized target parameters \(\hat{\vec{\theta}}\), \(\hat{\vec{\omega}}\)}
+				sample a minibatch \(\mathcal{B}\) from \(\mathcal{D}\) \;
+				\tcp{Compute action-value estimate from \(\mathcal{B}\).}
+				\ForEach{\( (s, a, r, s') \in \mathcal{B} \)}{
+					\If{\( s' \) is terminal}{
+						\( q_\mathrm{next} \gets 0 \)
+					}
+					\Else{
+						\( q_\mathrm{next} \gets Q_{\hat{\vec{\omega}}}\bigl( s', \mu_{\hat{\vec{\theta}}}(s') \bigr) \) \;
+					}
+					\( Q'(s, a) \gets r + \gamma q_\mathrm{next} \) \;
+				}
+				\( \vec{\omega} \gets \) fit action-value function \(Q_{\vec{\omega}}\) using \(\mathcal{D}\) and \(Q'\) \;
+				\tcp{Maximize the surrogate objective.}
+				\( \mathcal{L}(\vec{\theta}) \gets \frac{1}{\lvert \mathcal{B} \rvert} \sum_{(s, \cdot, \cdot, \cdot) \in \mathcal{B}} Q_{\vec{\omega}}\bigl( s, \mu_{\vec{\theta}}(s) \bigr) \) \;
+				\( \vec{\theta} \gets \) maximize \(\mathcal{L}(\vec{\theta})\) w.r.t. \(\vec{\theta}\), e.g., using Adam \;
+				\tcp{Mix target and current parameters.}
+				\( \hat{\vec{\theta}} \gets \tau \vec{\theta} + (1 - \tau) \hat{\vec{\theta}} \) \;
+				\( \hat{\vec{\omega}} \gets \tau \vec{\omega} + (1 - \tau) \hat{\vec{\omega}} \) \;
+				\Return \(\hat{\vec{\theta}}\), \(\hat{\vec{\omega}}\) \;
+				\caption{Deep Deterministic Policy Gradient (\acs{DDPG})}
+				\label{alg:ddpg}
+			\end{algorithm}
 		% end
 
-		\subsection{Twin Delayed DDPG (\acs{TD3})} % 8.36, 8.37
-			\todo{Content}
+		\subsection{Twin Delayed \acs{DDPG} (\acs{TD3})}
+			Despite all tricks, the \ac{DDPG} still has three major issues:
+			\begin{enumerate}
+				\item the action-value function is often overestimated which may lead to divergence
+				\item the gradient estimate might have high variance as the current value estimate might not have converged to \(Q^{\pi_{\vec{\theta}}}\)
+				\item deterministic policies tend to overfit to peaks in the value function which are often due to poor estimates rather than the environment
+			\end{enumerate}
+			All of these issue arise from the action-value function being an estimate and not the true value function! \emph{Twin Delayed \ac{DDPG} (\acsu{TD3})} tackles these issues by adding some minor modifications to \ac{DDPG}, namely:
+			\begin{enumerate}
+				\item train two value functions and using their minimum (twin); tackles the overestimation
+				\item delay policy updates and only update after a fixed amount of steps (delayed); tackles gradient variance
+				\item add noise to compute the next value; tackles overfitting
+			\end{enumerate}
+			The whole approach is summarized in \autoref{alg:td3}.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{transition dataset \( \mathcal{D} = \langle s_i, a_i, r_i, s_i' \rangle_{i = 1}^{N} \), policy approximator \(\pi_{\hat{\vec{\theta}}}\), action-value functions \(Q_{\hat{\vec{\omega}}_i}\), \( i \in \{ 0, 1 \} \)}
+				\KwOut{optimized target parameters \(\hat{\vec{\theta}}\), \(\hat{\vec{\omega}}\)}
+				sample a minibatch \(\mathcal{B}\) from \(\mathcal{D}\) \;
+				\tcp{Compute action-value estimate from \(\mathcal{B}\).}
+				\ForEach{\( (s, a, r, s') \in \mathcal{B} \)}{
+					\If{\( s' \) is terminal}{
+						\( q_\mathrm{next} \gets 0 \)
+					}\Else{
+						\tcp{Add noise and clip to match action bounds.}
+						\( a_\mathrm{next} \gets \mu_{\hat{\vec{\theta}}}(s') \) \;
+						\( \epsilon \sim \mathcal{N}(0, \sigma^2_\epsilon) \) \;
+						\( \epsilon_\mathrm{clip} \gets \clip_{-\delta_\epsilon}^{+\delta_\epsilon}(\epsilon) \) \;
+						\( a_\mathrm{noisy} \gets a + \epsilon_\mathrm{clip} \) \;
+						\( a_\mathrm{clip} \gets \clip_{a_\mathrm{min}}^{a_\mathrm{max}}(a_\mathrm{noisy}) \) \;
+						\( q_\mathrm{next} \gets \min_i Q_{\hat{\vec{\omega}}_i}\bigl( s', a_\mathrm{clip} \bigr) \) \;
+					}
+					\( Q'(s, a) \gets r + \gamma q_\mathrm{next} \) \;
+				}
+				\( \vec{\omega} \gets \) fit action-value functions \(Q_{\vec{\omega}_i}\), \( i \in \{ 0, 1 \} \) using \(\mathcal{D}\) and \(Q'\) \;
+				\If{policy update should take place}{
+					\tcp{Maximize the surrogate objective.}
+					\( \mathcal{L}(\vec{\theta}) \gets \frac{1}{\lvert \mathcal{B} \rvert} \sum_{(s, \cdot, \cdot, \cdot) \in \mathcal{B}} Q_{\vec{\omega}_0}\bigl( s, \mu_{\vec{\theta}}(s) \bigr) \) \;
+					\( \vec{\theta} \gets \) maximize \(\mathcal{L}(\vec{\theta})\) w.r.t. \(\vec{\theta}\), e.g., using Adam \;
+				}
+				\Else{
+					\tcp{Do not change the policy parameters.}
+					\( \vec{\theta} \gets \hat{\vec{\theta}} \) \;
+				}
+				\tcp{Mix target and current parameters.}
+				\( \hat{\vec{\theta}} \gets \tau \vec{\theta} + (1 - \tau) \hat{\vec{\theta}} \) \;
+				\( \hat{\vec{\omega}}_i \gets \tau \vec{\omega}_i + (1 - \tau) \hat{\vec{\omega}}_i \) for \( i \in \{ 0, 1 \} \) \;
+				\Return \(\hat{\vec{\theta}}\), \(\hat{\vec{\omega}}_i\), \( i \in \{ 0, 1 \} \) \;
+				\caption{Twin Delayed \acs{DDPG} (\acs{TD3})}
+				\label{alg:td3}
+			\end{algorithm}
 		% end
 
-		\subsection{Soft Actor-Critic (\acs{SAC})} % 8.38, 8.39, 8.40, 8.43, 8.44, 8.45
-			\todo{Content}
+		\subsection{Soft Actor-Critic (\acs{SAC})}
+			Opposed to \ac{DDPG} (and \ac{TD3}), \emph{\ac{SAC}} uses a stochastic policy \(\pi_{\vec{\theta}}(a \given s)\) with the following objective:
+			\begin{equation}
+				\mathcal{J}^\alpha(\vec{\theta}) = \mathcal{J}(\vec{\theta}) + \alpha \H[\pi_{\vec{\theta}}],
+			\end{equation}
+			where \( \H[\pi_{\vec{\theta}}] = -\E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \given s)}\bigl[ \log \pi_{\vec{\theta}}(a \given s) \bigr] \) is the policy's (expected) entropy and \(\alpha\) is a hyper-parameter. As this objective is very difficult to optimize, \ac{SAC} uses the surrogate objective
+			\begin{equation}
+				\mathcal{L}^\alpha(\vec{\theta}) = \E_{s \sim u^q, a \sim \pi_{\vec{\theta}}(\cdot \given s)}\bigl[ Q^{\pi_{\vec{\theta}}}(s, a) - \alpha \log \pi_{\vec{\theta}}(a \given s) \bigr].  \label{eq:sacSurrogateObj}
+			\end{equation}
+			This objective equals the expectation of the \emph{soft value function}
+			\begin{equation}
+				V^{\pi_{\vec{\theta}}}_\alpha(s) \coloneqq \E_{a \sim \pi(\cdot \given s)}\bigl[ Q^{\pi_{\vec{\theta}}}(s, a) - \alpha \log \pi_{\vec{\theta}}(a \given s) \bigr]
+			\end{equation}
+			under the undiscounted state distribution \(u^q\). But this surrogate objective is still an expectation w.r.t. the actions (opposed to \ac{DDPG} and \ac{TD3} where the action was deterministic and just "plugged in")! Hence, its gradient is hard to compute. Instead of using the usual log-ratio trick, \ac{SAC} used the reparametrization trick (see \autoref{subsec:reparam}) which exhibits less variance. Let \( g_{\vec{\theta}}(s; \varepsilon) \) be the reparameterized policy, i.e., \( a = g_{\vec{\theta}}(s; \varepsilon) \), with \( \varepsilon \sim p(\cdot) \) being the noise. We can then rewrite the objective \eqref{eq:sacSurrogateObj} as
+			\begin{equation}
+				\mathcal{L}^\alpha(\vec{\theta})
+					= \E_{s \sim u^q, a \sim \pi_{\vec{\theta}}(\cdot \given s)}\bigl[ Q^{\pi_{\vec{\theta}}}(s, a) - \alpha \log \pi_{\vec{\theta}}(a \given s) \bigr]
+					= \E_{s \sim u^q, \varepsilon \sim p}\bigl[ Q^{\pi_{\vec{\theta}}}\bigl(s, g_{\vec{\theta}}(s; \varepsilon)\bigr) - \alpha \log \pi_{\vec{\theta}}\bigl( g_{\vec{\theta}}(s; \varepsilon) \given s \bigr) \bigr]
+				\label{eq:sacObj}
+			\end{equation}
+			and we can readily compute its gradient by applying the chain rule. So far, the objective \eqref{eq:sacObj} depends on the hyper-parameter \(\alpha\) which is very difficult to optimize. Instead, it would be easier to specify a target entropy \(\bar{\H}\) and selecting \(\alpha\) accordingly. Hence, \ac{SAC} automatically tunes \(\alpha\) by solving
+			\begin{equation}
+				\alpha^\ast = \argmin_\alpha \, \mathcal{L}(\alpha) = \E_{s \sim u^q, a \sim \pi_{\vec{\theta}}(\cdot \given s)}\bigl[ -\alpha \log \pi_{\vec{\theta}}(a \given s) - \alpha \bar{\H} \bigr].
+			\end{equation}
+			Also, \ac{SAC} used squashed Gaussian policies, i.e., the actions are pushed through a tanh after sampling to ensure they lie in \([-1, +1]\). The mean and covariance of the Gaussian itself are the policy and are therefore state-dependent.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{transition dataset \( \mathcal{D} = \langle s_i, a_i, r_i, s_i' \rangle_{i = 1}^{N} \), policy approximator \(\pi_{\hat{\vec{\theta}}}\), action-value function \(Q_{\hat{\vec{\omega}}_i}\), \( i \in \{ 0, 1 \} \)}
+				\KwOut{optimized target parameters \(\hat{\vec{\theta}}\), \(\hat{\vec{\omega}}_i\), \( i \in \{ 0, 1 \} \)}
+				sample a minibatch \(\mathcal{B}\) from \(\mathcal{D}\) \;
+				\tcp{Minimize the entropy objective.}
+				\( \mathcal{L}(\alpha) = \frac{1}{N} \sum_{(s, a, r, s') \in \mathcal{B}} - \alpha \log \pi_{\hat{\vec{\theta}}}(a \given s) - \alpha \bar{\H} \) \;
+				\( \alpha \gets \) minimize \(\mathcal{L}(\alpha)\) w.r.t. \(\alpha\) \;
+				\tcp{Compute soft action-value estimate from \(\mathcal{B}\).}
+				\ForEach{\( (s, a, r, s') \in \mathcal{B} \)}{
+					\If{\( s' \) is terminal}{
+						\( q_\mathrm{next} \gets 0 \)
+					}
+					\Else{
+						\( a' \sim \pi_{\vec{\theta}}(\cdot \given s') \) \;
+						\( q_\mathrm{next} \gets \min_i Q_{\hat{\vec{\omega}}_i}(s', a') - \log \pi_{\vec{\theta}}(a' \given s') \) \;
+					}
+					\( Q'(s, a) \gets r + \gamma q_\mathrm{next} \) \;
+				}
+				\( \vec{\omega}_i \gets \) fit action-value functions \(Q_{\vec{\omega}_i}\), \( i \in \{ 0, 1 \} \) using \(\mathcal{D}\) and \(Q'\) \;
+				\tcp{Maximize the surrogate objective.}
+				\( \mathcal{L}(\vec{\theta}) \gets 0 \) \;
+				\ForEach{\( (s, a, r, s') \in \mathcal{B} \)}{
+					\tcp{Use the reparametrization trick.}
+					\( \varepsilon \sim p(\cdot) \) \;
+					\( a' \gets g_{\vec{\theta}}(s; \varepsilon) \) \;
+					\( \mathcal{L}(\vec{\theta}) \gets \mathcal{L}(\vec{\theta}) + \frac{1}{\lvert \mathcal{B} \rvert} \bigl( Q_{\vec{\omega}_0}(s, a') - \alpha \log \pi_{\vec{\theta}}(a' \given s) \bigr) \) \;
+				}
+				\( \vec{\theta} \gets \) maximize \(\mathcal{L}(\vec{\theta})\) w.r.t. \(\vec{\theta}\) \;
+				\tcp{Mix target and current parameters.}
+				\( \hat{\vec{\theta}} \gets \tau \vec{\theta} + (1 - \tau) \hat{\vec{\theta}} \) \;
+				\( \hat{\vec{\omega}}_i \gets \tau \vec{\omega}_i + (1 - \tau) \hat{\vec{\omega}}_i \), \( i \in \{ 0, 1 \} \) \;
+				\Return \(\hat{\vec{\theta}}\), \(\hat{\vec{\omega}}_i\), \( i \in \{ 0, 1 \} \) \;
+				\caption{Soft Actor-Critic (\acs{SAC})}
+				\label{alg:sac}
+			\end{algorithm}
 		% end
 	% end
 
-	\section{Wrap-Up} % 8.46, 8.47, 8.48
-		\todo{Content}
+	\section{Wrap-Up}
+		\begin{itemize}
+			\item difficulties of the \ac{PGT} in practice
+			\item simplification in deep \ac{RL} using surrogate objectives
+			\item on-policy methods using samples from the current policy
+				\begin{itemize}
+					\item \ac{A2C}, the simplest extension
+					\item \ac{TRPO}, optimizing the policy inside a trust-region
+					\item \ac{PPO}, a simpler way to the trust-region approach
+				\end{itemize}
+			\item using \ac{CG} for computing the \ac{NG} in large \acp{NN}
+			\item off-policy methods using a replay memory
+				\begin{itemize}
+					\item \ac{DDPG}, using the deterministic \ac{PGT}
+					\item \ac{TD3}, ensuring more robust gradient estimates by avoiding overfitting and overestimation
+					\item \ac{SAC}, extending the deterministic approach to stochastic policies using reparametrization
+				\end{itemize}
+			\item Additional reading material:
+				\begin{itemize}
+					\item Paper: "Approximately Optimal Approximate Reinforcement Learning" (Kakade and Langford, 2002), Lemma 6.1
+					\item Paper: "Asynchronous Methods for Deep Reinforcement Learning" (Mnih et al., 2016)
+					\item Paper: "Trust Region Policy Optimization" (Schulman et al., 2015)
+					\item Paper: "Proximal Policy Optimization Algorithms" (Schulman et al., 2017)
+					\item Paper: "Continuous Control with Deep Reinforcement Learning" (Lillicrap et al., 2015)
+					\item Paper: "Addressing Function Approximation Error in Actor-Critic Methods" (Fujimoto et al., 2018)
+					\item Paper: "Soft Actor-Critic Algorithms and Applications" (Haarnoja et al., 2018)
+				\end{itemize}
+		\end{itemize}
 	% end
 % end
 

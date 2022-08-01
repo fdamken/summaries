@@ -655,11 +655,11 @@
 				By repeatedly applying the premise \((\ast)\), the Bellman expectation equation \((\dagger)\), and the definition of the value function \((\ddagger)\), we find the following inequality chain:
 				\begin{align}
 					V^\pi(s)
-						&\overset{\mathclap{(\ast)}}{=} Q^\pi\bigl( s, \pi'(a) \bigr)
+						&\overset{\mathclap{(\ast)}}{\leq} Q^\pi\bigl( s, \pi'(a) \bigr)
 						 \overset{\mathclap{(\dagger)}}{=} \E_{\pi', \mat{P}}\bigl[ r_{t + 1} + \gamma V^\pi(s_{t + 1}) \biggiven s_t = s \bigr]
-						 \overset{\mathclap{(\ast)}}{=} \E_{\pi', \mat{P}}\bigl[ r_{t + 1} + \gamma Q^\pi\bigl( s_{t + 1}, \pi'(s_{t + 1}) \bigr) \biggiven s_t = s \bigr] \\
-						&\overset{\mathclap{(\ast\dagger)}}{=} \E_{\pi', \mat{P}}\bigl[ r_{t + 1} + \gamma r_{t + 2} + \gamma^2 Q^\pi\bigl( s_{t + 2}, \pi'(s_{t + 2}) \bigr) \biggiven s_t = s \bigr]
-						 \overset{\mathclap{(\ast\dagger)}}{=} \E_{\pi', \mat{P}}\bigl[ r_{t + 1} + \gamma r_{t + 2} + \dots \biggiven s_t = s \bigr]
+						 \overset{\mathclap{(\ast)}}{\leq} \E_{\pi', \mat{P}}\bigl[ r_{t + 1} + \gamma Q^\pi\bigl( s_{t + 1}, \pi'(s_{t + 1}) \bigr) \biggiven s_t = s \bigr] \\
+						&\overset{\mathclap{(\ast\dagger)}}{\leq} \E_{\pi', \mat{P}}\bigl[ r_{t + 1} + \gamma r_{t + 2} + \gamma^2 Q^\pi\bigl( s_{t + 2}, \pi'(s_{t + 2}) \bigr) \biggiven s_t = s \bigr]
+						 \overset{\mathclap{(\ast\dagger)}}{\leq} \E_{\pi', \mat{P}}\bigl[ r_{t + 1} + \gamma r_{t + 2} + \dots \biggiven s_t = s \bigr]
 						 \overset{\mathclap{(\ddagger)}}{=} V^{\pi'}(s)
 				\end{align}
 			\end{proof}
@@ -713,7 +713,33 @@
 		As this an \(\alpha\)-contraction due to \autoref{th:bellmanOptimalityOperatorContract}, multiple applications converge to the optimal state-value function \(V^\ast\) for an arbitrary initialization \(V^{(0)}\). This procedure is summarized in \autoref{alg:vi}. We also have the following theorem on the accuracy of the value function estimates.
 
 		\begin{theorem}
-			Let \( \lVert V \rVert_\infty = \max_{s \in \mathcal{S}} V(s) \) be the maximum-norm of \(V\) and let \(\epsilon > 0\). If the following inequality holds two successive state-value functions \( V_{i + 1} \) and \( V_i \):
+			\ac{VI} converges to the optimal state-value function \( \lim_{k \to \infty} V_k = V^\ast \).
+		\end{theorem}
+		\begin{proof}
+			First, we show that an application of the Bellman optimality operator to \(V - V^\ast\) is a contraction,
+			\begin{align}
+				\lVert T^\ast V - T^\ast V^\ast \rVert_\infty
+					&= \biggl\lVert \max_{a \in \mathcal{A}} \Bigl\{ R(s, a) + \gamma \E_{s' \sim P(\cdot \given s, a)}\bigl[ V(s') \bigr] \Bigr\} - \max_{a \in \mathcal{A}} \Bigl\{ R(s, a) + \gamma \E_{s' \sim P(\cdot \given s, a)}\bigl[ V^\ast(s') \bigr] \Bigr\} \biggr\rVert_\infty \\
+					&\leq \biggl\lVert \max_{a \in \mathcal{A}} \Bigl\{ R(s, a) + \gamma \E_{s' \sim P(\cdot \given s, a)}\bigl[ V(s') \bigr] - R(s, a) - \gamma \E_{s' \sim P(\cdot \given s, a)}\bigl[ V^\ast(s') \bigr] \Bigr\} \biggr\rVert_\infty \\
+					&= \biggl\lVert \max_{a \in \mathcal{A}} \Bigl\{ \gamma \E_{s' \sim P(\cdot \given s, a)}\bigl[ V(s') \bigr] - \gamma \E_{s' \sim P(\cdot \given s, a)}\bigl[ V^\ast(s') \bigr] \Bigr\} \biggr\rVert_\infty \\
+					&= \gamma \biggl\lVert \max_{a \in \mathcal{A}} \Bigl\{ \E_{s' \sim P(\cdot \given s, a)}\bigl[ V(s') - V^\ast(s') \bigr] \Bigr\} \biggr\rVert_\infty
+					 = \gamma \biggl\lVert \max_{a \in \mathcal{A}} \sum_{s' \in \mathcal{S}} P(s' \given s, a) \bigl( V(s') - V^\ast(s') \bigr) \biggr\rVert_\infty \\
+					&\leq \gamma \biggl\lVert \max_{a \in \mathcal{A}} \max_{s' \in \mathcal{S}} P(s' \given s, a) \bigl( V(s') - V^\ast(s') \bigr) \biggr\rVert_\infty
+					 \leq \gamma \biggl\lVert \max_{a \in \mathcal{A}} \max_{s' \in \mathcal{S}} \, \bigl( V(s') - V^\ast(s') \bigr) \biggr\rVert_\infty \\
+					&= \gamma \max_{s \in \mathcal{S}} \; \biggl\lvert \max_{a \in \mathcal{A}} \max_{s' \in \mathcal{S}} \, \bigl( V(s') - V^\ast(s') \bigr) \biggr\rvert
+					 \leq \gamma \max_{s \in \mathcal{S}} \max_{a \in \mathcal{A}} \max_{s' \in \mathcal{S}} \; \biggl\lvert \bigl( V(s') - V^\ast(s') \bigr) \biggr\rvert \\
+					&= \gamma \max_{s' \in \mathcal{S}} \; \bigl\lvert V(s') - V^\ast(s') \bigr\rvert
+					 = \gamma \bigl\lVert V - V^\ast \bigr\rVert.
+			\end{align}
+			Let \(k\) be the iteration and \(V_k\) the corresponding value function. We can then easily see that
+			\begin{equation}
+				\lVert V_k - V^\ast \rVert_\infty \leq \gamma^k \lVert V_0 - V^\ast \rVert_\infty.
+			\end{equation}
+			Hence, as \(k \to \infty\), the difference converges to zero and \ac{VI} converges to the unique fixed point.
+		\end{proof}
+
+		\begin{theorem}
+			Let \( \lVert V \rVert_\infty = \max_{s \in \mathcal{S}} \, \lvert V(s) \rvert \) be the maximum-norm of \(V\) and let \(\epsilon > 0\). If the following inequality holds two successive state-value functions \( V_{i + 1} \) and \( V_i \):
 			\begin{equation}
 				\lVert V_{i + 1} - V_i \rVert_\infty < \epsilon,
 			\end{equation}

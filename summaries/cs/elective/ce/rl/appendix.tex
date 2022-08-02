@@ -21,17 +21,6 @@
 				\item What is the Bellman optimality equation?
 				\item RoLe: What is an \ac{MDP}, a policy, a value function, a state-action value function?
 				\item RoLe: What is the Bellman equation?
-				\item Sutton (3.2): Is the \ac{MDP} framework adequate to usefully represent \emph{all} goal-directed learning tasks? Can you think of any clear exceptions?
-				\item Sutton (3.6): Suppose you treated pole-balancing as an episodic task but also used discounting, with all rewards zero except \(-1\) upon failure. What then would the return be at each time? How does this return differ from that in the discounted, continuing formulation of this task?
-				\item Sutton (3.7): Image that you are designing a robot to run a maze. You decide to give it a reward of \(+1\) for escaping from the maze and a reward of zero at all other times. The task seems to break down naturally into episodes---the successive runs through the maze---so you decide to treat it as an episodic task, where the goal is to maximize expected total reward. After running the learning agent for a while, you find that it is showing no improvement in escaping from the maze. What is going wrong? Have you effectively communicated to the agent what you want it to achieve?
-				\item Sutton (3.8): Suppose \(\gamma = 0.5\) and the following sequence of rewards is received: \( r_1 = -1 \), \( r_2 = 2 \), \( r_3 = 6 \), \( r_4 = 3 \), and \( r_5 = 2 \), with \( T = 5 \). What are \( J_0 \) to \( J_5 \)? Hint: Work backwards.
-				\item Sutton (3.9): Suppose \(\gamma = 0.9\) and the reward sequence is \(r_1 = 2\) followed by an infinite sequence of \(7\)s. What are \(J_1\) and \(J_0\)?
-				\item Sutton (3.12): Give an equation for \(V^\pi\) in terms of \(Q^\pi\).
-				\item Sutton (3.13): Give an equation for \(Q^\pi\) in terms of \(V^\pi\).
-				\item Sutton (3.25): Give an equation for \(V^\ast\) in terms of \(Q^\ast\).
-				\item Sutton (3.26): Give an equation for \(Q^\ast\) in terms of \(V^\ast\).
-				\item Sutton (3.27): Give an equation for \(\pi^\ast\) in terms of \(Q^\ast\).
-				\item Sutton (3.28): Give an equation for \(\pi^\ast\) in terms of \(V^\ast\).
 			\end{enumerate}
 		% end
 
@@ -43,7 +32,6 @@
 				\item What are the differences, advantages, and disadvantages of \ac{DP} methods compared to \ac{MC} and \ac{TD} methods?
 				\item RoLe: What is policy evaluation, policy improvement, \ac{PI}, and \ac{VI}?
 				\item RoLe: What are the main difference between \ac{PI} vs. \ac{VI}?
-				\item RoLe: What are the differences of finite and infinite horizon objectives? Give an example in both settings.
 			\end{enumerate}
 		% end
 
@@ -59,7 +47,6 @@
 				\item What are eligibility traces?
 				\item How to compute \acs{TD}(\(\lambda\))?
 				\item What are the differences, advantages, and disadvantages of \ac{TD} methods compared to \ac{DP} and \ac{MC} methods?
-				\item RoLe: What are \(Q\) and \(V\) functions?
 				\item RoLe: What is \ac{TD} learning? How to derive it?
 				\item RoLe: What does on- and off-policy mean?
 				\item Sutton (6.11): Why is Q-learning considered an \emph{off-policy} control method?
@@ -150,6 +137,148 @@
 				\item What is a model and how does \ac{MBRL} exploit it?
 				\item What type of planner can we select in \ac{MBRL}?
 				\item What are the key issues of \ac{MBRL}?
+			\end{enumerate}
+		% end
+	% end
+
+	\section{Answers}
+		\subsection{Introduction}
+			\begin{enumerate}
+				\item We can frame (almost) all \ac{ML} and \ac{AI} problems in the \ac{RL} framework. Also, as \ac{RL} models how humans actually learn, it is essential for creating human-like robots and intelligence.
+				\item Because they need supervision and are only capable of describing/predicting data and not to perform actions before something happens.  % TODO: STQ: Check!
+				\item No supervision, only a reward; no immediate feedback, only delayed rewards; no i.i.d.-assumptions as the data is temporally correlated; the agent's actions effect future data
+				\item If our actions have no effect on the world's state and we have no model, we are talking about \emph{bandits.} If we have a model, we are in the realm of \emph{decision theory.} If our actions can change the state and we have no model, we have \emph{\ac{RL}} and if we have one, \emph{optimal control} or \emph{planning.}
+				\item model learning, optimal control and planning, and performance evaluation
+			\end{enumerate}
+		% end
+
+		\subsection{Markov Decision Processes}
+			\begin{enumerate}
+				\item A stochastic process fulfilling the Markov property where every transition yields a reward.
+				\item A \ac{MRP} where the transitions can be affected by taking actions.
+				\item The value function \(V(s)\) of an \ac{MRP} is the expected return \( V(s) = \E[J_t] \) and we can compute it by solving the Bellman equation.
+				\item The optimal policy of an \ac{MDP} is the policy \(\pi^\ast\) whose value function \(V^\pi\) equals the optimal value function \(V^\ast\).
+				\item The Bellman equation for an \ac{MRP} decomposes the value function as \( V(s) = R(s) + \gamma \E[V(s') \given s] \) with the matrix-vector-form \( \vec{V} = \vec{R} + \gamma \mat{P} \vec{V} \). This is a linear equation we can directly use to compute the value function of an \ac{MRP}.
+				\item The Bellman expectation equation decomposes the state/action value function for an \ac{MDP} as \( V^\pi(s) = \E_\pi\bigl[ R(s, a) + \gamma V^\pi(s') \biggiven s \bigr] \) and \( Q^\pi(s, a) = R(s, a) + \gamma \E_\pi\bigl[ Q^\pi(s', a') \biggiven s, a \bigr] \).
+				\item The Bellman optimality equation decomposes the optimal state/action value function for an \ac{MDP} as \( V^\ast(s) = \max_a Q^\ast(s, a) = \max_a R(s, a) + \gamma \E_{s'}\bigl[ V^\ast(s') \biggiven s, a \bigr] \) and \( Q^\ast(s, a) = R(s, a) + \gamma \E_{s'}\bigl[ V^\ast(s') \biggiven s, a \bigr] = R(s, a) + \gamma \E_{s'}\bigl[ \max_{a'} Q^\ast(s', a') \biggiven s, a \bigr] \)
+				\item An \ac{MDP} is an abstract model for decisions based on a stochastic process fulfilling the Markov chain. A policy is a prescription for the actions to take based on the current state. The state-value function describes how "good" a given state is under a given policy and the action-value function describes how "good" a given state-action-pair is under a given policy. "Good" is defined in terms of the expected return.
+				\item The Bellman equation decomposes the value functions in a recursive manner.
+			\end{enumerate}
+		% end
+
+		\subsection{Dynamic Programming}
+			\begin{enumerate}
+				\item \ac{DP} is based on the Bellman principle of optimality that a sequence of actions is optimal if for any action taken, the remaining sequence constitutes an optimal sequence. With this principle, we can start solving problems from the end and work backwards to the "beginning of time."
+				\item Using either \ac{VI} or \ac{PI}.
+				\item We can use \ac{MC} methods or \ac{TD} learning, where \ac{MC} is the simplest approach.
+				\item \ac{DP} methods are guaranteed to converge to the optimal solution, but they need a transition model to work. Both \ac{MC} and \ac{TD} methods do not require such a model and are therefore more suitable for real-world tasks. However, they are less efficient.
+				\item \emph{Policy evaluation} estimate the value function of an \ac{MDP} given a policy and \emph{policy improvement} finds a better policy given an \ac{MDP} and a value function; \ac{PI} executed these iteratively and finds the optimal policy and optimal value function while \ac{VI} combines them into a single step and just finds the optimal value function.
+				\item \ac{PI} is more efficient but slightly harder to implement than \ac{VI}, and \ac{VI} performs a lot of redundant max-operations.
+			\end{enumerate}
+		% end
+
+		\subsection{Monte-Carlo Methods}
+			\begin{enumerate}
+				\item By computing explicit rollouts and computing the total return, we can estimate the value function.
+				\item \ac{MC} is able to estimate the value function of an environment with unknown dynamics opposed to \ac{DP}. Compared to \ac{TD}, \ac{MC} methods are only capable of learning from complete sequences, making them unsuitable for continuing problems. Also, their estimates have large variance but are unbiased!
+			\end{enumerate}
+		% end
+
+		\subsection{Temporal Difference Learning}
+			\begin{enumerate}
+				\item Eligibility traces provide a tractable approach for using multiple \(n\)-step returns by weighing the importance of states. For this, they combine recency and frequency heuristics.
+				\item In every time step, update the eligibility traces and subsequently the value function for every states, weighing the \ac{TD} error according to the credit assigned by the eligibility trace.
+				\item \ac{TD} methods can learn from incomplete sequences (opposed to \ac{MC}) methods with unknown transition dynamics (opposed to \ac{DP}). While the \ac{TD} target has less variance than the \ac{MC} target, it is biased due to bootstrapping.
+				\item \ac{TD} learning uses bootstrapping (i.e., the current estimate of the value function to get a better estimate) for computing the \ac{TD} target. We can derive it from "smoothed" \ac{MC} estimates \( V(s_t) \gets V(s_t) + \alpha \bigl( J_t - V(s_t) \bigr) \) and plug in the estimation \( J_t \approx r_{t + 1} + V(s_{t + 1}) \).
+				\item on-policy: optimize the current policy while following from the same; off-policy: follow a behavioral policy and optimize a different one
+				\item The data is sampled from a behavioral policy while the action for computing the \ac{TD} target is sampled from the current (greedy) policy.
+				\item Yes. If both the behavioral and the actual policy are greedy, Q-learning is equivalent to \ac{SARSA}.
+			\end{enumerate}
+		% end
+
+		\subsection{Tabular Reinforcement Learning}
+			\begin{enumerate}
+				\item on-policy learning learns "on the job," following the current policy; off-policy learning learns "by looking over someone's shoulder," following a behavioral policy
+				\item By splitting up policy evaluation and policy improvement, we can plug in an arbitrary value function estimation strategy into \ac{PI}, yielding generalized \ac{PI}.
+				\item All states must be visited an infinite number of times (in the limit) and the policies have to converge to a greedy one. This is a so-called \emph{\ac{GLIE}} sequence.
+				\item With probability \(\varepsilon\), choose a random policy and with probability \(1 - \varepsilon\), choose the greedy one. With a decaying \(\varepsilon\), e.g., \( \varepsilon_k = 1/k \), \ac{MC} is \ac{GLIE}.
+				\item \ac{SARSA} uses \ac{TD} learning with action-value functions and uses the next action for computing the \ac{TD} target.
+				\item In \ac{MC}, we can just use a behavioral policy for calculating the rollouts and then use importance sampling; we can do the same in \ac{TD}, but have less variance as we only have one random transition.
+				\item Sample the data using a behavioral policy and use a greedy policy for choosing the "query action."
+				\item (iterative) policy evaluation corresponds to "vanilla" \ac{TD} learning; policy iteration with the action-value function corresponds to \ac{SARSA}; value iteration with the action-value function corresponds to Q-learning
+				\item Q-learning is an off-policy method, \ac{SARSA} is on-policy
+				\item When the state-action space is not too large and can be filled sufficiently well with samples.
+				\item W.l.o.g., let \(a_1\) be the greedy action and \(a_2\) the other. We then have \( P(a_1 \given \text{greedy}) = 1 \) and \( P(a_2 \given \text{uniform}) = \sfrac{1}{2} \). Hence, \( P(a_1) = P(a_1 \given \text{greedy}) P(\text{greedy}) + P(a_1 \given \text{uniform}) P(\text{uniform}) = 1 \cdot \sfrac{1}{2} + \sfrac{1}{2} \cdot \sfrac{1}{2} = \sfrac{3}{4} \)
+			\end{enumerate}
+		% end
+
+		\subsection{Function Approximation}
+			\begin{enumerate}
+				\item pole balancing, future pendulum, ball-in-cap, \dots
+				\item For continuous or high-dimensional discrete problems, storing values in tables is intractable.
+				\item We can approximate the value functions or the policies. Of course, we could also learn a dynamics model but this is out of scope.
+				\item It is much harder to formulate convergence guarantees and we may even have divergence. This is especially true when using the \emph{deadly triad.}
+				\item When using off-policy training combined with bootstrapping, our method is prone to be unstable. This (function approximation, bootstrapping, and off-policy) is known as the \emph{deadly triad} of \ac{RL}.
+				\item We cannot compute everything and even though \ac{DP} is polynomial in the number of states and actions, the number of states and actions is exponential in their dimensionality.
+				\item Yes, for instance with semi-gradient methods.
+				\item collect a bunch of data and optimize in one run
+				\item use linear function approximation in \ac{TD} learning, plug them in, compute the gradient, formulate the fixed-point equation, and solve using linear least squares
+				\item Because the state-action space cannot be filled up sufficiently.
+			\end{enumerate}
+		% end
+
+		\subsection{Policy Search}
+			\begin{enumerate}
+				\item Value-based methods recover the policy from a value function, policy search directly learns the policy, and actor-critic methods combine the two.
+				\item We need to see where we can do something good. Gaussian policies are a nice way of introducing randomness by just learning the mean and covariance. The policy is then able to control exploration theirself.
+				\item finite differences (just use the finite differences, duh), \acl{LSFD} (use random perturbations and a second-order Taylor approximation to build a linear system of equation we can solve using linear least squares), and log-ratio (use a fancy log-identity to get an expectation of the gradient of the log-policy)
+				\item Approximate the \ac{KL} divergence using the \ac{FIM} and solve the resulting system using Lagrangian multipliers.
+				\item The \ac{PGT} connects policy gradients and value function methods by showing that the policy can be written in terms of an expectation over the action-value function w.r.t. the discounted state distribution. Actor-critic methods use this objective in a simplified way to combine the power of value function methods with policy search methods.
+				\item Combine the \ac{CFA} and \ac{NG} while using the advantage function as the \ac{CFA}. This yields a linear system of equations of which the solution is the \ac{eNAC} gradient.
+				\item Perturb the parameters one by one and use finite differences for each parameter. This has brutally high variance!
+				\item They use the log-ratio trick \( \dv{x} f(x) = f(x) \dv{x} \log f(x) \) to compute the gradient as an expectation of the gradient of the log-policy. The logarithm also simplifies the trajectory distribution a lot as almost all factors are constant w.r.t. the policy parameters.
+				\item Because they are control variates for the gradient estimate.  % TODO: STQ: Get a feel for control variates.
+				\item The \ac{FIM} is the second-order approximation of the \ac{KL} and makes the policy invariant to its parametrization.
+				\item Using the \ac{KL}/\ac{FIM}, the \ac{NG} takes steps in the policy space rather than parameter space and is therefore invariant to reparametrization.
+				\item The \ac{CFA} are the functions we can use to approximate the action-value function in the \ac{PGT}. It is the "forward" projection using the \ac{FIM}.
+			\end{enumerate}
+		% end
+
+		\subsection{Deep Value-Function Methods}
+			\begin{enumerate}
+				\item Due to the curse of dimensionality, we need exponentially many samples to fill the state-space as the number of states grows exponentially. It affects \ac{RL} as we are often concerned with high-dimensional states (e.g., images).
+				\item To approximate the policy or value functions (cf. function approximation).
+				\item distribution shift might lead to catastrophic forgetting \(\to\) use a replay memory; instability due to function approximation \(\to\) use a target network and copy the weights from time to time; inefficiency due to too many samples \(\to\) use minibatches; unstable optimization \(\to\) use reward clipping
+				\item A deep version of Q-learning which uses a deep \ac{NN} for the action-value function.
+				\item overestimation of values \(\to\) double Q-learning, uses the current network for selecting the action and the target for evaluating it; inefficient use of replay memory \(\to\) prioritized replay memory, biases sampling towards transitions with a large \ac{TD} error; impossible to recover \(V\) and \(A\) \(\to\) dueling \ac{DQN}, splits the output of the network into a \(V\) and \(A\) part; exploration \(\to\) noisy \ac{DQN}, adds noise to the linear layers of the network; return might be extremely stochastic \(\to\) distributional/categorical \ac{DQN}, models the return distribution explicitly
+				\item using noisy \ac{DQN} or intrinsic rewards (e.g., count-based, curiosity-based, and ensemble-based exploration)
+			\end{enumerate}
+		% end
+
+		\subsection{Deep Actor-Critic}
+			\begin{enumerate}
+				\item Hard to optimize as its an expectation w.r.t. the discounted state distribution.
+				\item Use the undiscounted state distribution w.r.t. another behavioral policy \(q\) instead of \(\pi\).
+				\item \ac{A2C}, the simplest actor-critic methods using the surrogate objective without major modifications; \ac{TRPO}, extends \ac{A2C} by constraining the updates into a trust-region around the current policy; and \ac{PPO}, simplifies \ac{TRPO} by implicitly including the constraint into the objective by clipping an importance-sampling weight
+				\item using \ac{CG} and the efficient \ac{FIM}-vector product
+				\item \ac{DDPG}, uses the deterministic \ac{PGT} with an estimate of the action-value function; \ac{TD3}, extends \ac{DDPG} by solving its three major problems (overestimation of values \(\to\) keep two value networks and use the min ("twin"), unstable policy updates \(\to\) only update from time to time ("delay"), and overfitting to action-value spikes \(\to\) add regularization noise); and \ac{SAC}, extends \ac{TD3} to stochastic policies and adds an entropy constraint
+			\end{enumerate}
+		% end
+
+		\subsection{Frontiers}
+			\begin{enumerate}
+				\item An \ac{MDP} where we cannot observe the full state.
+				\item A belief state is the probability of being in some state.  % TODO: STQ: Belief state update.
+				\item An \ac{SMDP} is a process where an action can affect multiple time steps.
+				\item MAX-Q, \ac{HAM}, and Options  % TODO: SQT: HRL: Core features.
+				\item Replace the actions with options, everything else stays roughly the same.
+				\item An \ac{MDP} which might have a reward, but we have no access to it.
+				\item Intrinsic motivation is a reward that comes from the agent itself and is not extrinsic. It can be helpful to improve exploration, e.g., count- or curiosity-based exploration.
+				\item In inverse \ac{RL}, we want to learn the reward function given demonstrations that are optimal w.r.t. this reward.
+				\item Inverse \ac{RL} is ill-posed as there is an infinite number of reward functions a trajectory can be optimal to.
+				\item A model mimics the transition dynamics of the environment; \ac{MBRL} exploits it by predicting what effects actions might have.
+				\item e.g., \ac{PILCO} or \ac{GPS}
+				\item overfitting to the model, complexity of the model, \dots  % TODO: STQ: MBRL: Key issues.
 			\end{enumerate}
 		% end
 	% end

@@ -587,7 +587,7 @@
 			\item Kosinus:
 		\end{itemize}
 		\begin{equation}
-			\frac{\lvert \vec{x} \cap \vec{y} \rvert}{\sqrt{\lvert \vec{x} \rvert} \, \sqrt{\lvert \vec{x} \rvert}}
+			\frac{\lvert \vec{x} \cap \vec{y} \rvert}{\sqrt{\lvert \vec{x} \rvert} \, \sqrt{\lvert \vec{y} \rvert}}
 		\end{equation}
 		Dabei beschreibt \( \cap \) eine komponentenweise Und-Aggregation und \( \cup \) eine Oder-Aggregation:
 		\begin{align}
@@ -853,7 +853,7 @@
 		\subsection{Approximation der Modell-Likelihood und Bayes'sches Informationskriterium}
 			Hat das Modell \( \mathcal{M}_m \) die Parameter \( \theta_m \) mit dem Maximum Likelihood Ergebnis \( \hat{\theta}_m \), so kann die Log-Likelihood des Modells durch
 			\begin{equation}
-				\log P(\mathcal{T} \given \mathcal{M}_m) = \underbracket{\log P(\mathcal{T} \given \mathcal{M}_m, \hat{\theta}_m)} - \frac{d_m}{2} \log N + \mathcal{O}(q)  \label{eq:bayesModelSeletcionApproxLikelihood}
+				\log P(\mathcal{T} \given \mathcal{M}_m) = \underbracket{\log P(\mathcal{T} \given \mathcal{M}_m, \hat{\theta}_m)} - \frac{d_m}{2} \log N + \mathcal{O}(1)  \label{eq:bayesModelSeletcionApproxLikelihood}
 			\end{equation}
 			angenähert werden. Dabei beschreibt \( d_m \) die Anzahl Parameter in dem Modell \(\mathcal{M}_m\) und \(N\) ist die Anzahl der Trainingsbeispiele. Die unterklammerte Wahrscheinlichkeit ist dabei die Log-Likelihood, die durch die Parameter \(\hat{\theta}_m\) bei gegebenem Modell maximiert wurde.
 
@@ -891,7 +891,7 @@
 				\begin{tabular}{c|c|c|c}
 					            &    Klassifiziert als Positiv     &    Klassifiziert als Negativ    &      \(\sum\)      \\ \hline
 					Ist Positiv &      Korrekt-Positive (TP)       &      Falsch-Negative (FN)       & Alle Positiven (P) \\ \hline
-					Ist Negativ &       Falsch-Positive (FP)       &      Korrekt-Negative (TP)      & Alle Negativen (N) \\ \hline
+					Ist Negativ &       Falsch-Positive (FP)       &      Korrekt-Negative (TN)      & Alle Negativen (N) \\ \hline
 					 \(\sum\)   & Alle als Positiv klassifizierten & Alle als Negativ klassifizierte &  Anzahl Bespiele
 				\end{tabular}
 			\end{center}
@@ -1227,7 +1227,7 @@
 
 		In jeder des Boosting werden die Trainingsbeispiele neu gewichtet, je nach, "wie falsch" es im vorherigen Schritt klassifiziert wurde. Der nächste Lerner wird dann auf den gewichteten Beispielen trainiert und es wird ein Mitspracherecht auf Basis des Fehlers berechnet. Kann der Lerner nicht mit gewichteten Beispielen umgehen, so können die (auf Eins normierten) Gewichte als Wahrscheinlichkeiten betrachtet werden, sodass zum trainieren jedes Lerners nur eine Stichprobe der eigentlichen Daten verwendet wird. Das funktioniert allerdings nur dann, wenn der schwache Lerner mit einer unterschiedlichen Anzahl an Trainingsdaten umgehen kann.
 
-		Boosting ist also im allgemeinen sehr mächtig und funktioniert bei vielen Problemen, unter einigen technischen Voraussetzungen gibt es bei einigen Algorithmen sogar Konvergenzgarantien. So konvergiert \bspw AdaBoost zu einem Fehler von Null, wenn die Anzahl an Iterationen steigt.
+		Boosting ist also im allgemeinen sehr mächtig und funktioniert bei vielen Problemen, unter einigen technischen Voraussetzungen gibt es bei einigen Algorithmen sogar Konvergenzgarantien. So konvergiert \bspw AdaBoost zu einem Fehler von Null, wenn die Anzahl an Iterationen steigt und die entsprechenden Voraussetzungen erfüllt sind.
 
 		\subsection{AdaBoost}
 			In diesem Abschnitt wird \emph{AdaBoost}, ein Boosting-Algorithmus beschrieben und Teile des Algorithmus hergeleitet. Die Grundform zur Klassifikation von Daten in die zwei Klassen \( -1 \) und \( +1 \) ist in \autoref{alg:adaBoost} gezeigt. Die Auswahl von \(M\), der maximalen Anzahl AdaBoost-Iterationen, geschieht empirische wie die Wahl sämtlicher anderer Hyperparameter im maschinellen Lernen auch (\zB auf Basis eines Testdatensatzes).
@@ -1741,11 +1741,11 @@
 	In den folgenden Abschnitten werden nun konkrete Verfahren sowie Darstellungsweisen zur Cluster-Analyse vorgestellt. Dabei ist der Erfolg eines Verfahrens hängt sehr stark mit der Auswahl eines guten Distanzmaßes zusammen.
 
 	\section{Dendrogramme und Hierarchische Cluster-Analyse}
-		In einem \emph{Dendrogramm} wird eine vorliegende hierarchische Aufteilung in Cluster als Baum dargestellt. Dabei beschreiben die Blätter einzelne Datenpunkte und die Verzweigungen können als Cluster angesehen werden. Ein einfaches Dendrogramm ist in \autoref{fig:dendrogramm} gezeigt. Für ein Dendrogramm mit \(N\) Blättern, \dh für \(N\) Trainingsbeispiele, gibt es
+		In einem \emph{Dendrogramm} wird eine vorliegende hierarchische Aufteilung in Cluster als Baum dargestellt. Dabei beschreiben die Blätter einzelne Datenpunkte und die Verzweigungen können als Cluster angesehen werden. Ein einfaches Dendrogramm ist in \autoref{fig:dendrogramm} gezeigt. Für ein Dendrogramm mit \(n\) Blättern, \dh für \(n\) Trainingsbeispiele, gibt es
 		\begin{equation}
 			\frac{(2n - 3)!}{2^{n - 2} (n - 2)!}
 		\end{equation}
-		unterschiedliche Möglichkeiten zur Aufteilung. Da dies viel zu viele sind, um sämtliche Aufteilungen zu testen, müssen Heuristiken verwendet werden. Dazu gibt zwei wesentliche Ansätze:
+		unterschiedliche Möglichkeiten zur Aufteilung. Da dies viel zu viele sind, um sämtliche Aufteilungen zu testen, müssen Heuristiken verwendet werden. Dazu gibt es zwei wesentliche Ansätze:
 		\begin{description}[leftmargin = 2.5cm]
 			\item[Bottom-Up] Zu Beginn befindet sicher jeder Datenpunkt in einem eigenen Cluster. Anschließend werden die beiden ähnlichsten Cluster gesucht und vereinigt, was eine Verzweigung im Dendrogramm darstellt. Dies wird so lange wiederholt, bis es nur noch einen Cluster -- den gesamten Datensatz -- gibt. Diese Ansätze werden auch \emph{agglomerativ} genannt.
 			\item[Top-Down] Zu Beginn befinden sich alle Datenpunkte im gleichen Cluster. Anschließend wird die bestmögliche Trennung gesucht und die Datenpunkte in mehrere Cluster aufgeteilt, \dh es wird eine Verzweigung im Dendrogramm eingeführt. Dies wird so lange wiederholt, bis sich jeder Datenpunkt in einem eigenen Cluster befindet, \dh ein Blatt im Dendrogramm bildet. Diese Ansätze werden auch \emph{aufteilend} genannt.

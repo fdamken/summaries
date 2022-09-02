@@ -86,8 +86,8 @@
     \RequirePackage[T1]{fontenc}
     \RequirePackage[utf8]{inputenc}
 \fi
-\fdsummary@ifde{\RequirePackage[main = ngerman, english]{babel}}
-\fdsummary@ifen{\RequirePackage[main = english, ngerman]{babel}}
+\fdsummary@ifde{\RequirePackage[main = ngerman, USenglish]{babel}}
+\fdsummary@ifen{\RequirePackage[main = USenglish, ngerman]{babel}}
 % Other Packages.
 \RequirePackage[ruled, vlined, linesnumbered]{algorithm2e}
 \RequirePackage[normalem]{ulem}
@@ -128,6 +128,7 @@
 \RequirePackage{tikzpeople}
 \RequirePackage{tikz}
 \RequirePackage{xspace}
+\RequirePackage{xstring}
 \RequirePackage[\fdsummary@todoopts]{todonotes}
 \pgfplotsset{compat = newest}
 % Load TikZ libraries.

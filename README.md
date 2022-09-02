@@ -1,8 +1,8 @@
 # Summaries
 
-These are the TeX files of my summaries published [here](https://www.dmken.com/cs).
+These are the TeX files of my summaries published [here](https://fabian.damken.net/summaries).
 
-If you found any issues, having suggestions, etc. [create an issue](https://github.com/fdamken/summaries/issues/new) ar write in down in [this pad](https://md.frisp.org/cs-errors).
+If you found any issues, having suggestions, etc., please [create an issue](https://github.com/fdamken/summaries/issues/new).
 
 ## How to Build
 Add the pkg content to yout TeX-Path (see [pkg](pkg/README.md))

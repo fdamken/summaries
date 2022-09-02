@@ -1,0 +1,2290 @@
+\chapter{Preliminaries}
+	In this chapter we discuss the groundwork for the upcoming topics. Along with these subjects, basic knowledge from linear algebra is required.
+
+	\section{Complex Numbers}
+		One of the underlying principles of \ac{QM} and therefore \ac{QC}, too, are complex numbers. This section summarizes some results for them \emph{very briefly.}
+
+		Let \( z = a + ib \in \C \) be a complex number with the real and imaginary components \( \Re(z) = a, \Im(z) = b \in \R \). Its magnitude is
+		\begin{equation}
+			\lvert z \rvert \coloneqq \sqrt{a^2 + b^2} = \sqrt{z z^\ast}
+		\end{equation}
+		with the \emph{complex conjugate} \( z^\ast = a - ib \). The complex conjugate is distributive over addition and multiplication\footnote{For other useful properties, see \url{https://en.wikipedia.org/wiki/Complex_conjugate\#Properties}.}, i.e., \( (z_1 + z_2)^\ast = z_1^\ast + z_2^\ast \) and \( (z_1 z_2)^\ast = z_1^\ast z_2^\ast \) holds for two complex numbers \( z_1, z_2 \in \C \). Any complex number can also be written in polar form \( z = r e^{i \varphi} \) with magnitude
+		\begin{equation}
+			\lvert z \rvert = \sqrt{z z^\ast} = \sqrt{r e^{i \varphi} r e^{-i \varphi}} = \sqrt{r^2 e^{i \varphi - i \varphi}} = \sqrt{r^2} = \lvert r \rvert.
+		\end{equation}
+		\begin{definition}[\(n\)-th Root of Unity]
+			We call the special complex number \( \omega_n = e^{2 \pi i / n} \) the \emph{\(n\)-th root of unity.}
+		\end{definition}
+		\begin{theorem}  \label{th:rootsOfUnity}
+			Let \( \omega_n \) be the \(n\)-th root of unity with \( n > 1 \). Then \( \sum_{k = 0}^{n - 1} \omega_n^{ak} = 0 \) holds for every constant \(a \in \Z\).
+		\end{theorem}
+		\begin{proof}
+			\begin{equation}
+				\sum_{k = 0}^{n - 1} \omega_n^{ak}
+					= \sum_{k = 0}^{n - 1} (\omega_n^a)^k
+					= \frac{1 - (\omega_n^a)^n}{1 - \omega_n^a}
+					= \frac{1 - e^{2 i a \pi}}{1 - \omega_n^a}
+					= \frac{1 - 1}{1 - \omega_n^a}
+					= \frac{0}{1 - \omega_n^a}
+					= 0
+			\end{equation}
+		\end{proof}
+	% end
+
+	\section{Continued Fraction Expansion}
+		Let \( x \in (0, 1) \) be a real number\footnote{Note that the restriction on the interval \( (0, 1) \) is purely for convenience as we only have \(x\)'s between zero and one down the line. It is also possible to extend \aclp{CFE} to \(\R\).}. Then we can express this number as its \emph{\ac{CFE}}
+		\begin{equation}
+			x = \frac{1}{a_0 + \frac{1}{a_1 + \frac{1}{a_2 + \cdots}}}
+		\end{equation}
+		where \( a_0, a_1, \dots \in \N^+ \). The \ac{CFE} of \(x\) is finite iff \(x\) is rational. The sums
+		\begin{align}
+			\frac{1}{a_0} &&
+			\frac{1}{a_0 + \frac{1}{a_1}} &&
+			\frac{1}{a_0 + \frac{1}{a_1 + \frac{1}{a_2}}} &&
+			\cdots
+		\end{align}
+		are called \emph{partial sums.} For calculating \( a_0, a_1, \dots \), let
+		\begin{align}
+			x_0 &\coloneqq \frac{1}{a_0 + \frac{1}{a_1 + \frac{1}{a_2 + \cdots}}} &
+			x_1 &\coloneqq \frac{1}{a_1 + \frac{1}{a_2 + \cdots}} &
+			x_2 &\coloneqq \frac{1}{a_2 + \cdots} &
+			\cdots
+		\end{align}
+		then the coefficients are \( a_i = [1 / x_i] \), where the brackets indicate the integral part, i.e., the part in front of the decimal. If for any \(j\), \(x_j = 0\), the \ac{CFE} terminates and the number is exactly represented.
+
+		\begin{example}
+			Let \( x = \num{11490} / 2^{14} \approx 0.701294 \). Then the \ac{CFE} is calculated as follows:
+			\begin{center}
+				\begin{tabular}{c|ccc}
+					\toprule
+					 \(i\)  &	\(x_i\)	 &  \(1 / x_i\)  & \(a_i\)  \\ \midrule
+					\num{0} & \num{0.701294} & \num{1.42594} & \num{1}  \\ \bottomrule
+					\num{1} & \num{0.42594}  & \num{2.34777} & \num{2}  \\ \bottomrule
+					\num{2} & \num{0.34777}  & \num{2.87544} & \num{2}  \\ \bottomrule
+					\num{3} & \num{0.87544}  & \num{1.14228} & \num{1}  \\ \bottomrule
+					\num{4} & \num{0.14228}  & \num{7.02830} & \num{7}  \\ \bottomrule
+					\num{5} & \num{0.02830}  & \num{35.3333} & \num{35} \\ \bottomrule
+					\num{6} & \num{0.33333}  &	\num{3}	& \num{3}  \\ \bottomrule
+					\num{7} &	\num{0}	 &			   &		  \\ \bottomrule
+				\end{tabular}
+			\end{center}
+			The final \ac{CFE} is therefore
+			\begin{equation}
+				x = \frac{1}{1 + \frac{1}{2 + \frac{1}{2 + \frac{1}{1 + \frac{1}{7 + \frac{1}{35 + \frac{1}{3}}}}}}}
+			\end{equation}
+			with the coefficients \( (a_0, a_1, a_2, a_3, a_4, a_5, a_6) = (1, 2, 2, 1, 7, 35, 3) \).
+		\end{example}
+	% end
+% end
+
+\chapter{Postulates of Quantum Mechanics}
+	In this chapter we discuss the postulates of \ac{QM} and some important protocols and results in \ac{QC} such as the \emph{no-cloning theorem.} This theorem states that it is impossible to copy a quantum state!
+
+	\section{States}
+		In classical computing, a bit is either \num{0} or \num{1}. A quantum bit, a \emph{qubit,} however, is more general and has the basis states \(\ket{0}\) and \(\ket{1}\). The states are formed by basis vectors \( \ket{0} = (1, 0)^\dagger \) and \( \ket{1} = (0, 1)^\dagger \). More generally, an arbitrary quantum state \(\ket{\psi}\) can be a combination of the basis states, \( \ket{\psi} = c_0 \ket{0} + c_1 \ket{1} \), a \emph{superposition} (with complex coefficients \( c_0, c_1 \in \C \)). However, the state has to be normalized, i.e., \( \lvert \braket{\psi}{\psi} \rvert^2 = 1 \). The left part of this inner product is called a \emph{bra} vector representing the conjugate transpose of the right side, the \emph{ket} vector.
+
+		The following postulate digests this idea more formally.
+
+		\begin{postulate}[Quantum State]
+			Any closed physical system can be associated with a Hilbert space \(\mathcal{H}\). The state of the system is completely described by a state vector \( \ket{\psi} = \sum_{i = 0}^{d - 1} c_i \ket{i} \) with \( \sum_{i = 0}^{d - 1} \lvert c_i \rvert^2 = 1 \) where \( \{ \ket{i} \}_{i = 0}^{d - 1} \) forms a basis of \( \mathcal{H}^d \).
+		\end{postulate}
+		\begin{remark}
+			The basis is not confined to the \emph{computational basis} \( \{ \ket{0}, \ket{1} \} \), although this basis is often used. It may be any other orthonormal basis of \(\mathcal{H}\), see \autoref{subsec:hadamardGate}. For basis of Hilbert spaces with \(d > 2\), see \autoref{sec:composite}.
+		\end{remark}
+
+		Instead of writing out the complex coefficients \(c_0\) and \(c_1\), we can also parameterize an arbitrary superposition with angles \( \gamma, \varphi, \theta \in \R \):
+		\begin{equation}
+			\ket{\psi}
+				= c_0 \ket{0} + c_1 \ket{1}
+				= e^{i \gamma} \biggl( \cos\frac{\theta}{2} \ket{0} + e^{i \varphi} \sin\frac{\theta}{2} \ket{1} \biggr).
+		\end{equation}
+		However, as we will see in \autoref{sec:measurement}, a global phase such as \(e^{i \gamma}\) vanishes in all important calculations as \( e^{i \gamma} e^{-i \gamma} = 1 \). Hence, we can also parameterize any state with just two angles \( \varphi \in (0, 2\pi] \) and \( \theta \in (0, \pi] \):
+		\begin{equation}
+			\ket{\psi} = \cos\frac{\theta}{2} \ket{0} + e^{i \varphi} \sin\frac{\theta}{2} \ket{1}.
+		\end{equation}
+		Checking that this state is actually normalized is straightforward:
+		\begin{align}
+			\braket{\psi}{\psi}
+				&= \biggl( \cos\frac{\theta}{2} \bra{0} + e^{-i \varphi} \sin\frac{\theta}{2} \bra{1} \biggr) \biggl( \cos\frac{\theta}{2} \ket{0} + e^{i \varphi} \sin\frac{\theta}{2} \ket{1} \biggr) \\
+				&= \cos\frac{\theta}{2} \bra{0} + e^{-i \varphi} \sin\frac{\theta}{2} \bra{1} \biggr) \biggl( \cos\frac{\theta}{2} \ket{0} + e^{i \varphi} \sin\frac{\theta}{2} \ket{1} \biggr) \\
+				&= \cos^2\frac{\theta}{2} \underbrace{\braket{0}{0}}_{= 1}
+					+ e^{i \varphi} \cos\frac{\theta}{2} \sin\frac{\theta}{2} \underbrace{\braket{0}{1}}_{= 0}
+					+ e^{-i \varphi} \cos\frac{\theta}{2} \sin\frac{\theta}{2} \underbrace{\braket{1}{0}}_{= 0}
+					+ e^{i \varphi} e^{-i \varphi} \sin\frac{\theta}{2} \sin\frac{\theta}{2} \underbrace{\braket{1}{1}}_{= 1} \\
+				&= \cos^2\frac{\theta}{2} + \sin^2\frac{\theta}{2}
+			 = 1.
+		\end{align}
+		Note that in this case \( \braket{\psi}{\psi} = 1 \), so \( \lvert \braket{\psi}{\psi} \rvert^2 = 1 \) holds, too, and we can drop the absolute-square. In most of the following discussions where we need explicit parametrization, we confine ourselves to real coefficients, i.e., \(\varphi = 0\). This simplifies the discussion as now there is only one parameter \(\theta\).
+	% end
+
+	\section{Evolution}
+		The evolution of quantum states, i.e., how they pass between states, is described by linear transformations \(U\), also called \emph{gates.} These gates transform a quantum state \(\ket{\psi}\) into another quantum state \(\ket{\psi'}\). In quantum circuits, we denote an application of \(U_1\) and then \(U_2\) to a state \(\ket{\psi}\), i.e., \( U_2 U_1 \ket{\psi} \), as:
+		\begin{equation}
+			\Qcircuit @C=1em @R=1em {
+				\lstick{\ket{\psi}} & \gate{U_1} & \gate{U_2} & \rstick{U_2 U_1 \ket{\psi}} \qw
+			}
+		\end{equation}
+
+		\begin{postulate}[State Evolution]
+			The evolution \( \ket{\psi(t_0)} \overset{U}{\longto} \ket{\psi(t)} \) of a closed physical system is described by a unitary transformation \( U U^\dagger = \ID \).
+		\end{postulate}
+
+		\begin{theorem}[Unitarity of Quantum Gates]
+			A linear quantum gate \(U\) is unitary, i.e., \( U U^\dagger = \ID \).
+		\end{theorem}
+		\begin{proof}
+			\todo{Proof: Unitarity of Quantum Gates}
+%			Let \( U = \begin{bmatrix} u_{00} & u_{01} \\ u_{10} & u_{11} \end{bmatrix} \) be an arbitrary gate. Then application of this gate to \(\ket{0}\), \(\ket{1}\), \(\bra{0}\), and \(\bra{1}\) must produce a \emph{normalized} quantum state:
+%			\begin{align}
+%				\lVert U \ket{0} \rVert_2^2 &= \lvert u_{00} \rvert^2 + \lvert u_{10} \rvert^2 \overset{!}{=} 1 &
+%				\lVert U \ket{1} \rVert_2^2 &= \lvert u_{01} \rvert^2 + \lvert u_{11} \rvert^2 \overset{!}{=} 1 \\
+%				\lVert \bra{0} U \rVert_2^2 &= \lvert u_{00} \rvert^2 + \lvert u_{01} \rvert^2 \overset{!}{=} 1 &
+%				\lVert \bra{1} U \rVert_2^2 &= \lvert u_{10} \rvert^2 + \lvert u_{11} \rvert^2 \overset{!}{=} 1
+%			\end{align}
+%			From these four constraints it follows that the columns and rows of \(U\) must be normalized. It remains to be shown that they are orthogonal. The application of \(U\) to \( \ket{+} = (\ket{0} + \ket{1}) / \sqrt{2} \) and \( \ket{+_y} = (\ket{0} + i \ket{1}) / \sqrt{2} \) must produce normalized states, too:
+%			\begin{align}
+%				\lVert U \ket{+} \rVert_2^2
+%					&= \frac{1}{2} \bigl( \lvert u_{00} + u_{01} \rvert^2 + \lvert u_{10} + u_{11} \rvert^2 \bigr) \\
+%					&= \frac{1}{2} \bigl( (u_{00} + u_{01}) (u_{00} + u_{01})^\ast + (u_{10} + u_{11}) (u_{10} + u_{11})^\ast \bigr) \\
+%					&= \frac{1}{2} \bigl( (u_{00} + u_{01}) (u_{00}^\ast + u_{01}^\ast) + (u_{10} + u_{11}) (u_{10}^\ast + u_{11}^\ast) \bigr) \\
+%					&= \frac{1}{2} \bigl( u_{00} (u_{00}^\ast + u_{01}^\ast) + u_{01} (u_{00}^\ast + u_{01}^\ast) + u_{10} (u_{10}^\ast + u_{11}^\ast) + u_{11} (u_{10}^\ast + u_{11}^\ast) \bigr) \\
+%					&= \frac{1}{2} \bigl( u_{00} u_{00}^\ast + u_{00} u_{01}^\ast + u_{01} u_{00}^\ast + u_{01} u_{01}^\ast + u_{10} u_{10}^\ast + u_{10} u_{11}^\ast + u_{11} u_{10}^\ast + u_{11} u_{11}^\ast \bigr) \\
+%					&= \frac{1}{2} \bigl( \underbrace{\lvert u_{00} \rvert^2 + \lvert u_{01} \rvert^2}_{= 1} + \underbrace{\lvert u_{10} \rvert^2 + \lvert u_{11} \rvert^2}_{= 1} + u_{00} u_{01}^\ast + u_{01} u_{00}^\ast + u_{10} u_{11}^\ast + u_{11} u_{10}^\ast \bigr) \\
+%					&= 1 + \frac{1}{2} \bigl( u_{00} u_{01}^\ast + u_{01} u_{00}^\ast + u_{10} u_{11}^\ast + u_{11} u_{10}^\ast \bigr) \overset{!}{=} 1 \\
+%				\lVert U \ket{+_y} \rVert_2^2
+%					&= \frac{1}{2} \bigl( \lvert u_{00} + i u_{01} \rvert^2 + \lvert u_{10} + i u_{11} \rvert^2 \bigr) \\
+%					&= \frac{1}{2} \bigl( (u_{00} + i u_{01}) (u_{00} + i u_{01})^\ast + (u_{10} + i u_{11}) (u_{10} + i u_{11})^\ast \bigr) \\
+%					&= \frac{1}{2} \bigl( (u_{00} + i u_{01}) (u_{00}^\ast - i u_{01}^\ast) + (u_{10} + i u_{11}) (u_{10}^\ast - i u_{11}^\ast) \bigr) \\
+%					&= \frac{1}{2} \bigl( u_{00} (u_{00}^\ast - i u_{01}^\ast) + i u_{01} (u_{00}^\ast - i u_{01}^\ast) + u_{10} (u_{10}^\ast - i u_{11}^\ast) + i u_{11} (u_{10}^\ast - i u_{11}^\ast) \bigr) \\
+%					&= \frac{1}{2} \bigl( u_{00} u_{00}^\ast - i u_{00} u_{01}^\ast + i u_{01} u_{00}^\ast + u_{01} u_{01}^\ast + u_{10} u_{10}^\ast - i u_{10} u_{11}^\ast + i u_{11} u_{10}^\ast + u_{11} u_{11}^\ast \bigr) \\
+%					&= \frac{1}{2} \bigl( \underbrace{\lvert u_{00} \rvert^2 + \lvert u_{01} \rvert^2}_{= 1} + \underbrace{\lvert u_{10} \rvert^2 + \lvert u_{11} \rvert^2}_{= 1} - i u_{00} u_{01}^\ast + i u_{01} u_{00}^\ast - i u_{10} u_{11}^\ast + i u_{11} u_{10}^\ast \bigr) \\
+%					&= 1 + \frac{1}{2} \bigl( - i u_{00} u_{01}^\ast + i u_{01} u_{00}^\ast - i u_{10} u_{11}^\ast + i u_{11} u_{10}^\ast \bigr) \overset{!}{=} 1
+%			\end{align}
+		\end{proof}
+
+		\subsection{Gates}
+			% TODO: Interpretation of unitaries as rotations in the Bloch sphere.
+			In this section we collect the most important single-qubit gates. They are summarized in \autoref{tab:gates} and their semantics are given in the caption.
+
+			\begin{theorem}[Decomposition of Two-By-Two Unitary Matrices]  \label{th:twoByTwoDecomposition}
+				Every unitary matrix \( U \in \C^{2 \times 2} \) can be decomposed into three rotations as \( U = e^{i \alpha} R_z(\beta) R_y(\gamma) R_z(\delta) \).
+			\end{theorem}
+
+			From this theorem, one might think that it is necessary to implement every rotation in the lab for a universal quantum computer. Fortunately, this is not the case! As we will see in \autoref{c:universality}, only three gates are necessary to implement arbitrary rotations.
+
+			\begin{table}
+				\centering
+				\begin{tabular}{l|ll|ll}
+					\toprule
+						  \(U\)
+						& \(U \ket{0}\)
+						& \(U \ket{1}\)
+						& \(U \ket{+}\)
+						& \(U \ket{-}\)
+						\\ \midrule
+						  \( X = \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix} = H Z H \)
+						& \(  \ket{1} \)
+						& \(  \ket{0} \)
+						& \(  \ket{+} \)
+						& \( -\ket{-} \)
+						\\
+						  \( Y = \begin{bmatrix} 0 & -i \\ i & 0 \end{bmatrix} \equiv X Z \)
+						& \(  i \ket{1} \)
+						& \( -i \ket{0} \)
+						& \( -i \ket{-} \)
+						& \(  i \ket{+} \)
+						\\
+						  \( Z = \begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix} \)
+						& \(  \ket{0} \)
+						& \( -\ket{1} \)
+						& \(  \ket{-} \)
+						& \(  \ket{+} \)
+						\\
+						  \( H = \frac{1}{\sqrt{2}} \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix} \)
+						& \( \ket{+} \)
+						& \( \ket{-} \)
+						& \( \ket{0} \)
+						& \( \ket{1} \)
+						\\
+						  \( R_y(\gamma) = \begin{bmatrix} c_\gamma & -s_\gamma \\ s_\gamma & c_\gamma \end{bmatrix} \)
+						& \(  c_\gamma \ket{0} + s_\gamma \ket{1} \)
+						& \( -s_\gamma \ket{0} + c_\gamma \ket{1} \)
+						& \(  c_\gamma \ket{+} - s_\gamma \ket{-} \)
+						& \(  s_\gamma \ket{+} + c_\gamma \ket{-} \)
+						\\
+						  \( R_z(\beta) = \begin{bmatrix} e^{i \beta / 2} & 0 \\ 0 & e^{-i \beta / 2} \end{bmatrix} \)
+						& \( e^{ i \beta / 2} \ket{0} \)
+						& \( e^{-i \beta / 2} \ket{1} \)
+						& \( e^{ i \beta / 2} \ket{0} + e^{-i \beta / 2} \ket{1} \)
+						& \( e^{ i \beta / 2} \ket{0} - e^{-i \beta / 2} \ket{1} \)
+						\\
+					\bottomrule
+				\end{tabular}
+				\caption[Common Single-Qubit Gates]{Common qubit gates and their effect on the computational and Hadamard basis. For brevity, let \( c_\gamma \coloneqq \cos(\gamma / 2) \) and \( s_\gamma \coloneqq \sin(\gamma / 2) \). The gates have the following effects in the computational basis: \(X\) implements a logical not, \(Y\) combines a phase-flip and logical not, \(Z\) implements a phase-flip, \(H\) creates an equal superposition, \(R_y(\gamma)\) rotates around an arbitrary angle \(\gamma\), and \(R_z(\beta)\) adds a phase. In Hadamard basis, the gates have the following effects: \(X\) implement a phase-flip, \(Y\) combined a phase-flip and logical not, \(Z\) implements a logical not, \(H\) creates an equal superposition, \(R_y(\gamma)\) rotates around an arbitrary angle \(\gamma\), and \(R_z(\beta)\) adds a phase.}
+				\label{tab:gates}
+			\end{table}
+
+			\subsubsection{The Hadamard Gate}
+				\label{subsec:hadamardGate}
+
+				A special gate we regularly use is the Hadamard gate \(H\). As shown in \autoref{tab:gates} transforms it the computational basis states into an equal superposition of themselves:
+				\begin{align}
+					H \ket{0} &= \frac{1}{\sqrt{2}} (\ket{0} + \ket{1}) \eqqcolon \ket{+} &
+					H \ket{1} &= \frac{1}{\sqrt{2}} (\ket{0} - \ket{1}) \eqqcolon \ket{-}
+					\label{eq:hadamardBasis}
+				\end{align}
+				As these states are extremely important, we often denote them as \(\ket{+}\) and \(\ket{-}\) which are again basis states of the Hilbert space as the following hold:
+				\begin{align}
+					\ip{+}{+} &= 1 &
+					\ip{+}{-} &= 0 &
+					\ip{-}{+} &= 0 &
+					\ip{-}{-} &= 1
+				\end{align}
+				As these vectors are the Eigenvectors of \(X\), we often call this basis the X-basis while the computational basis is also often called Z-basis.
+
+				Of course, we might also want to apply the Hadamard gate to a composite state (see \autoref{sec:composite} for an introduction to composite states). As the application and transformation into the computational basis "by hand" is quite tedious,
+				\begin{equation}
+					H^{\otimes 2} \ket{01}
+						= \ket{+-}
+						= \frac{1}{2} (\ket{0} + \ket{1}) \otimes (\ket{0} - \ket{1})
+						= \frac{1}{2} (\ket{00} - \ket{01} + \ket{10} - \ket{11}),
+				\end{equation}
+				we often make use of the following result.
+				\begin{theorem}[Hadamard Gate on Basis States]  \label{th:hadamardGate}
+					Let \(\ket{x}\) be any basis state with \(n\) qubits identified by the bit string \( x \in \{ 0, 1 \}^n \). Then applying Hadamard gates on the individual qubits yields
+					\begin{equation}
+						H^{\otimes n} \ket{x} = \frac{1}{\sqrt{2^n}} \sum_{y \in \{ 0, 1 \}^n} (-1)^{x \dotproduct y} \ket{y},
+					\end{equation}
+					where \(z\) sums over all possible \(n\)-bit strings, i.e., the basis states, and \( x \dotproduct y \) is the bit-wise dot-product of \(x\) and \(y\) modulo \(2\).
+				\end{theorem}
+				\begin{proof}
+					We proof this by induction. For \(n = 1\), we have
+					\begin{equation}
+						H \ket{x}
+							= \frac{1}{\sqrt{2}} \bigl( (-1)^{x \cdot 0} \ket{0} + (-1)^{x \cdot 1} \ket{1} \bigr)
+							= \frac{1}{\sqrt{2}} \bigl( \ket{0} + (-1)^x \ket{1} \bigr)
+					\end{equation}
+					matching \eqref{eq:hadamardBasis}. Assume now that the statement holds for some \(n\) and let \( x \eqqcolon x_1 x_: \) be a splitting of the \((n + 1)\)-bit string such that \( x_1 \in \{ 0, 1 \} \) and \( x_: \in \{ 0, 1 \}^n \) and analogous for \( y \eqqcolon y_1 y_: \). We show that the statement also holds for \(n + 1\):
+					\begin{align}
+						H^{\otimes (n + 1)} \ket{x}
+							&= H^{\otimes (n + 1)} \ket{x_1}\ket{x_:}
+							 = H \ket{x_1} \otimes H^{\otimes n} \ket{x_:} \\
+							&\overset{\mathclap{(\dagger)}}{=} \frac{1}{\sqrt{2}} \bigl( \ket{0} + (-1)^{x_1} \ket{1} \bigr) \otimes \frac{1}{\sqrt{2^n}} \sum_{y_: \in \{ 0, 1 \}^n} (-1)^{x_: \dotproduct y_:} \ket{y_:} \\
+							&= \frac{1}{\sqrt{2}} \bigl( (-1)^{x_1 \cdot 0} \ket{0} + (-1)^{x_1 \cdot 1} \ket{1} \bigr) \otimes \frac{1}{\sqrt{2^n}} \sum_{y_: \in \{ 0, 1 \}^n} (-1)^{x_: \dotproduct y_:} \ket{y_:} \\
+							&= \frac{1}{\sqrt{2}} \sum_{y_1 \in \{ 0, 1 \}} (-1)^{x_1 \cdot y_1} \ket{y_1} \otimes \frac{1}{\sqrt{2^n}} \sum_{y_: \in \{ 0, 1 \}^n} (-1)^{x_: \dotproduct y_:} \ket{y_:} \\
+							&= \frac{1}{\sqrt{2^{n + 1}}} \sum_{\substack{y_1 \in \{ 0, 1 \} \\ y_: \in \{ 0, 1 \}^n}} (-1)^{x_1 \cdot y_1} \ket{y_1} \otimes (-1)^{x_: \dotproduct y_:} \ket{y_:} \\
+							&= \frac{1}{\sqrt{2^{n + 1}}} \sum_{\substack{y_1 \in \{ 0, 1 \} \\ y_: \in \{ 0, 1 \}^n}} (-1)^{x_1 \cdot y_1 \oplus x_: \dotproduct y_:} \ket{y_1}\ket{y_:}
+							 = \frac{1}{\sqrt{2^{n + 1}}} \sum_{y \in \{ 0, 1 \}^{n + 1}} (-1)^{x \cdot y} \ket{y}
+					\end{align}
+					We used the induction hypothesis in step \((\dagger)\). This completes the proof and shows that the formulation of the Hadamard gates holds for all \(n\).
+				\end{proof}
+			% end
+		% end
+	% end
+
+	\section{Measurement}
+		\label{sec:measurement}
+
+		We will now discuss the last postulate of \ac{QM} which is concerned with \emph{measurements.} The central result is that measuring a quantum system is inherently \emph{probabilistic,} i.e., the outcome of a measurement is not deterministic and truly random. For any quantum state \( \ket{\psi} \), the probability of measuring an outcome \(v_i\) is given by the absolute-square of the inner product between the "measurement state" \(\ket{v_i}\) and the state \(\ket{\psi}\):
+		\begin{equation}
+			P(i) = \lvert \ip{v_i}{\psi} \rvert^2.
+		\end{equation}
+		The value of this inner product (without the absolute-square) is called the \emph{probability amplitude} and can be negative or even complex. Immediately after a measurement, the state \(\ket{\psi}\) collapses into a post-measurement state \(\ket{\psi'}\). This post-measurement state is
+		\begin{equation}
+			\ket{\psi'} = \frac{M_i \ket{\psi}}{N_i}
+		\end{equation}
+		where \( M_i = \op{v_i}{v_i} \) and \( N_i = \sqrt{P(i)} \) are the \emph{measurement operator} and \emph{normalization constant,} respectively. These results are digested in the following postulate.
+
+		\begin{postulate}[Quantum Measurement]
+			Quantum measurements are described by a collection of measurement operators \( \{ M_i \} \) where \(i\) indicated the outcome of the experiment. Let \(\ket{\psi}\) be the state before the measurement, then the state immediately after the measurement is \( \ket{\psi'} = M_i \ket{\psi} / N_i \) where \( N = \sqrt{P(i)} \) is for normalization.
+		\end{postulate}
+
+		\begin{theorem}[Measurement of Pure Quantum States]
+			For \emph{pure} states \(\ket{\psi}\), the post-measurement state \(\ket{\psi'}\) after a measurement of \(\ket{v_i}\) is \(\ket{\psi'} = \ket{v_i}\).
+		\end{theorem}
+		\begin{proof}
+			\begin{equation}
+				\frac{M_i \ket{\psi}}{N_i}
+					= \frac{\op{v_i}{v_i} \ket{\psi}}{\sqrt{P(i)}}
+					= \frac{\op{v_i}{v_i} \ket{\psi}}{\sqrt{\lvert \ip{v_i}{\psi} \rvert^2}}
+					= \frac{\ket{v_i} \ip{v_i}{\psi}}{\lvert \ip{v_i}{\psi} \rvert}
+					= \ket{v_i} \frac{\ip{v_i}{\psi}}{\lvert \ip{v_i}{\psi} \rvert}
+					\equiv \ket{v_i}
+			\end{equation}
+		\end{proof}
+	% end
+
+	\section{Composite Systems and Tensor Products}
+		\label{sec:composite}
+
+		As in classical computing where we are concerned with more than one bit, \ac{QC} also works with more than one qubit. The formalism for this are \emph{tensor products} \( \mathcal{H}^2 \otimes \mathcal{H}^2 \) between the Hilbert spaces of the individual qubits. Its basis vectors are also constructed using tensor products:
+		\begin{align}
+			\ket{0} \otimes \ket{0} &= \begin{bmatrix} 1 \\ 0 \\ 0 \\ 0 \end{bmatrix} &
+			\ket{0} \otimes \ket{1} &= \begin{bmatrix} 0 \\ 1 \\ 0 \\ 0 \end{bmatrix} &
+			\ket{1} \otimes \ket{0} &= \begin{bmatrix} 0 \\ 0 \\ 1 \\ 0 \end{bmatrix} &
+			\ket{1} \otimes \ket{1} &= \begin{bmatrix} 0 \\ 0 \\ 0 \\ 1 \end{bmatrix}
+		\end{align}
+		For two single-qubit operators \( A = \begin{bmatrix} a_{00} & a_{01} \\ a_{10} & a_{11} \end{bmatrix} \) and \( B = \begin{bmatrix} b_{00} & b_{01} \\ b_{10} & b_{11} \end{bmatrix} \), the tensor product is carried out as
+		\begin{equation}
+			A \otimes B
+				= \begin{bmatrix} a_{00} & a_{01} \\ a_{10} & a_{11} \end{bmatrix} \otimes \begin{bmatrix} b_{00} & b_{01} \\ b_{10} & b_{11} \end{bmatrix}
+				= \begin{bmatrix} a_{00} \begin{bmatrix} b_{00} & b_{01} \\ b_{10} & b_{11} \end{bmatrix} & a_{01} \begin{bmatrix} b_{00} & b_{01} \\ b_{10} & b_{11} \end{bmatrix} \\ a_{10} \begin{bmatrix} b_{00} & b_{01} \\ b_{10} & b_{11} \end{bmatrix} & a_{11} \begin{bmatrix} b_{00} & b_{01} \\ b_{10} & b_{11} \end{bmatrix} \end{bmatrix}
+				=
+					\begin{bmatrix}
+						a_{00} b_{00} & a_{00} b_{01} & a_{01} b_{00} & a_{01} b_{01} \\
+						a_{00} b_{10} & a_{00} b_{11} & a_{01} b_{10} & a_{01} b_{11} \\
+						a_{10} b_{00} & a_{10} b_{01} & a_{11} b_{00} & a_{11} b_{01} \\
+						a_{10} b_{10} & a_{10} b_{11} & a_{11} b_{10} & a_{11} b_{11}
+					\end{bmatrix}
+		\end{equation}
+		with some abuse of notation. This definition has the effect of applying unitary \(A\) to the first and unitary \(B\) to the second qubit in a tensor-multiplied Hilbert space, i.e.,
+		\begin{equation}
+			(A \otimes B) (\ket{\psi}_1 \otimes \ket{\psi}_2) = (A \ket{\psi}_1) \otimes (B \ket{\psi}_2)
+		\end{equation}
+		For brevity, we often write product state as \( \ket{0} \otimes \ket{1} \doteq \ket{0} \ket{1} \doteq \ket{01} \) and the application of product operators as \( (A \otimes B) (\ket{0} \otimes \ket{1}) \doteq A \otimes B \ket{0} \otimes \ket{1} = A_1 B_2 \ket{01} \). As long as it is clear which unitary is applied to which qubit, a variety of notations may be used. For brevity, we also often write \( \ket{\psi}^{\otimes N} \doteq \underbrace{\ket{\psi} \otimes \dots \otimes \ket{\psi}}_{N\text{ times}} \) and the same for gates.
+
+		\subsection{Entanglement}
+			A \emph{composite} or \emph{product} state is a state \(\ket{\psi_{12}}\) that can be written as the product of two individual states \( \ket{\psi_1} = \alpha_1 \ket{0} + \beta_1 \ket{1} \) and \( \ket{\psi_2} = \alpha_2 \ket{0} + \beta_2 \ket{1} \):
+			\begin{equation}
+				\ket{\psi_{12}}
+					= \ket{\psi_1} \otimes \ket{\psi_2}
+					= (\alpha_1 \ket{0} + \beta_1 \ket{1}) \otimes (\alpha_2 \ket{0} + \beta_2 \ket{1})
+					= \alpha_1 \alpha_2 \ket{00} + \alpha_1 \beta_2 \ket{01} + \beta_1 \alpha_2 \ket{10} + \beta_1 \beta_2 \ket{11}
+			\end{equation}
+			However, there are states that cannot be written like this!
+
+			\begin{definition}[Entangled State]
+				A quantum state \( \ket{\psi_{12}} \in \mathcal{H}_1 \otimes \mathcal{H}_2 \) is called \emph{entangled} if there are no states \( \ket{\psi_1} \in \mathcal{H}_1 \) and \( \ket{\psi_2} \in \mathcal{H}_2 \) such that \( \ket{\psi_{12}} = \ket{\psi_1} \otimes \ket{\psi_2} \).
+			\end{definition}
+
+			\begin{theorem}[Simple Entangled States]
+				All states \( \ket{\psi_\theta} = \cos\frac{\theta}{2} \ket{00} + \sin\frac{\theta}{2} \ket{11} \), \( \theta \in (0, \pi/2] \) are entangled.
+			\end{theorem}
+			\begin{proof}
+				Let \( \ket{\psi_1} \coloneqq \alpha_1 \ket{0} + \beta_1 \ket{1} \) and \( \ket{\psi_2} \coloneqq \alpha_2 \ket{0} + \beta_2 \ket{1} \) with coefficients \( \alpha_1, \alpha_2, \beta_1, \beta_2 \in \C \). Assume that \( \ket{\psi_\theta} = \ket{\psi_1} \otimes \ket{\psi_2} \). Hence,
+				\begin{equation}
+					\ket{\psi_\theta}
+						= \alpha_1 \alpha_2 \ket{00} + \alpha_1 \beta_2 \ket{01} + \beta_1 \alpha_2 \ket{10} + \beta_1 \beta_2 \ket{11}
+						\overset{!}{=} \cos\frac{\theta}{2} \ket{00} + \sin\frac{\theta}{2} \ket{11}
+				\end{equation}
+				By comparing coefficients, all of the following must hold: \( \alpha_1 \alpha_2 = \neq 0 \), \( \beta_1 \beta_2 = \neq 0 \), and \( \alpha_1 \beta_2 = \beta_1 \alpha_2 = 0 \). From the first two constraints it follows that all coefficients must be non-zero which contradicts the last constraint. Hence, the state is entangled.
+			\end{proof}
+
+			One important special case of this result is the \emph{Bell state} \(\ket{\Phi^+} \coloneqq \frac{1}{\sqrt{2}} (\ket{00} + \ket{11})\) which we will study further in \autoref{c:nonlocality}.
+
+			\subsubsection{Multipartite}
+				So far, we only studied entanglement of two parties \(\mathcal{H}_1\) and \(\mathcal{H}_2\). However, it is also possible to describe entanglement between three or more parties. For three parties \(\mathcal{H}_1\), \(\mathcal{H}_2\), and \(\mathcal{H}_3\), there can be a variety of different entanglements:
+				\begin{align}
+					\ket{\psi_{123}} &= \ket{\psi_{12}} \otimes \ket{\psi_3} &
+					\ket{\psi_{123}} &= \ket{\psi_1} \otimes \ket{\psi_{23}} &
+					\ket{\psi_{123}} &= \ket{\psi_2} \otimes \ket{\psi_{13}}
+				\end{align}
+				For more than two parties, a state \(\ket{\psi}_{123}\) that cannot be expressed as a product of its components is called \emph{\ac{GME}.} To check whether some state is \ac{GME} can be done explicitly analogous to the above proof of two-party entanglement by checking all the above cases along with
+				\begin{equation}
+					\ket{\psi{123}} = \ket{\psi_1} \otimes \ket{\psi_2} \otimes \ket{\psi_3}.
+				\end{equation}
+				However, for \(N\) qubits the (potentially) entangled state has \(2^N\) coefficients! The complexity of this checking is therefore \(\mathcal{O}(\text{scary})\). There are, however, less straightforward, but easier-to-check procedures for validating whether a state is \ac{GME}, but these are out of scope of this course.
+			% end
+
+			\subsubsection{Graph States}
+				Although general methods for checking \ac{GME} is out of scope, we will still look at the most famous example: \emph{graph states.} Graph states a multi-qubit states corresponding to the mathematical structure of a graph. Let \( G = (V, E) \) be a graph with vertices \(V\) and edges \(E\). Then the corresponding multi-qubit state is
+				\begin{equation}
+					\ket{G} = \prod_{e \in E} \CZ_e \ket{+}^{\otimes \lvert V \rvert}
+				\end{equation}
+				where \( \CZ_e = \diag(1, 1, 1, -1) \) is a controlled-Z-gate (see \autoref{subsec:multiQubitGates}) acting on the qubits of the edge. These graph states allowed for a new language to reason about quantum states. For instance, when measuring the first qubit of the following graph state in Z-basis,
+				\begin{center}
+					\begin{tikzpicture}
+						\node [draw, circle, fill = black, label = above:1] (a) at (1, 1.5) {};
+						\node [draw, circle, fill = black, label = below:2] (b) at (0, 0  ) {};
+						\node [draw, circle, fill = black, label = below:3] (c) at (2, 0  ) {};
+						\draw (a) to (b);
+						\draw (a) to (c);
+						\draw (b) to (c);
+					\end{tikzpicture}
+				\end{center}
+				it just disappears, dropping the connections to the second and third qubit:
+				\begin{center}
+					\begin{tikzpicture}
+						\node [draw, circle, fill = black, label = below:2] (b) at (0, 0  ) {};
+						\node [draw, circle, fill = black, label = below:3] (c) at (2, 0  ) {};
+						\draw (b) to (c);
+					\end{tikzpicture}
+				\end{center}
+				Similar rules exist for other measurements, but these are again out of scope for this course.
+			% end
+		% end
+
+		\subsection{Multi-Qubit Gates}
+			\label{subsec:multiQubitGates}
+
+			So far, we only discussed local gates acting on a single qubit (remember, gates combined with tensor products are applied on each gate individually). While this already allows some calculations, it does not allow interplay of multiple qubits or generation of entangled states which are very important for various protocols (see \autoref{sec:protocols}). Hence, we need \emph{multi-qubit gates} \(U\) that cannot be written as the product of local gates, i.e., \( U \neq U_1 \otimes \dots \otimes U_N \).
+
+			\paragraph{CNOT-Gate}
+				The simplest is the CNOT-gate:
+				\begin{align}
+					\begin{aligned}
+						\Qcircuit @C=1em @R=1em {
+							\lstick{\ket{x}} & \ctrl{1} & \rstick{\ket{x}}          \qw \\
+							\lstick{\ket{y}} & \targ    & \rstick{\ket{x \oplus y}} \qw
+						}
+					\end{aligned}
+					&&
+					\CNOT_{12} =
+						\begin{bmatrix}
+							1 & 0 & 0 & 0 \\
+							0 & 1 & 0 & 0 \\
+							0 & 0 & 0 & 1 \\
+							0 & 0 & 1 & 0
+						\end{bmatrix}
+					&&
+					\begin{tabular}{c|c}
+						\textbf{Input} & \textbf{Output} \\ \midrule
+						 \(\ket{00}\)  &  \(\ket{00}\)   \\
+						 \(\ket{01}\)  &  \(\ket{01}\)   \\
+						 \(\ket{10}\)  &  \(\ket{11}\)   \\
+						 \(\ket{11}\)  &  \(\ket{10}\)
+					\end{tabular}
+				\end{align}
+				This gate is a \emph{controlled} gate and applied the X-gate to the second qubit iff the first qubit is \(1\). The indices \(\CNOT_{ij}\) indicate that the gate is acting on the \(j\)-th qubit (the \emph{target}) and controlled by the \(i\)-th qubit. This gate can be extended to more than two qubits (with \(n - 1\) control qubits and a single target). For \(n = 3\), it is called the \emph{Toffoli gate} which can be used to represent classical logical operations like logical not, and, or, and not-and.
+			% end
+
+			\paragraph{SWAP-Gate}
+				Another important two-qubit gate is the SWAP-gate
+				\begin{align}
+					\begin{aligned}
+						\Qcircuit @C=1em @R=1.5em {
+							\lstick{\ket{a}} & \qswap      & \rstick{\ket{b}} \qw \\
+							\lstick{\ket{b}} & \qswap \qwx & \rstick{\ket{a}} \qw
+						}
+					\end{aligned}
+					&&
+					\begin{aligned}
+						\Qcircuit @C=1em @R=1em {
+							\lstick{\ket{a}} & \ctrl{1} & \targ     & \ctrl{1} & \rstick{\ket{b}} \qw \\
+							\lstick{\ket{b}} & \targ    & \ctrl{-1} & \targ    & \rstick{\ket{b}} \qw \\
+						}
+					\end{aligned}
+				\end{align}
+				which simply switches the state of two qubits. The circuit on the right is the implementation of the SWAP-gate. Showing their equivalence is straightforward:
+				\begin{align}
+					\ket{00}
+						\overset{\CNOT_{12}}{\longto} \ket{00}
+						\overset{\CNOT_{21}}{\longto} \ket{00}
+						\overset{\CNOT_{12}}{\longto} \ket{00}
+					&&
+					\ket{01}
+						\overset{\CNOT_{12}}{\longto} \ket{01}
+						\overset{\CNOT_{21}}{\longto} \ket{11}
+						\overset{\CNOT_{12}}{\longto} \ket{10}
+					\\
+					\ket{10}
+						\overset{\CNOT_{12}}{\longto} \ket{11}
+						\overset{\CNOT_{21}}{\longto} \ket{01}
+						\overset{\CNOT_{12}}{\longto} \ket{01}
+					&&
+					\ket{11}
+						\overset{\CNOT_{12}}{\longto} \ket{10}
+						\overset{\CNOT_{21}}{\longto} \ket{10}
+						\overset{\CNOT_{12}}{\longto} \ket{11}
+				\end{align}
+				As unitary transformations are linear, we almost always only have to show the equivalence for the basis states as every state can be expressed as a superposition of them. This simplifies a lot of derivations! As the above circuit implements swapping for the basis states, it is a valid implementation of the SWAP-gate.
+			% end
+
+			\paragraph{Controlled-U-Gate}
+				Note that any gate \(U\) can be used in a controlled fashion:
+				\begin{align}
+					\begin{aligned}
+						\Qcircuit @C=1em @R=1em {
+							\lstick{\ket{x}} & \ctrl{1} & \rstick{\ket{x}}     \qw \\
+							\lstick{\ket{y}} & \gate{U} & \rstick{U^x \ket{y}} \qw
+						}
+					\end{aligned}
+					&&
+					\mathit{CU}_{12} =
+						\begin{bmatrix}
+							\ID & 0 \\
+							0   & U
+						\end{bmatrix}
+				\end{align}
+				To implement this gate in practice, it can be decomposed into CNOT-gates and single-qubit gates (see \autoref{subsubsec:controlledUnitaries}).
+			% end
+
+			\paragraph{Preparing the Bell State}
+				Equipped with these tools, we can prepare the Bell state \(\ket{\Phi^+}\) with the following circuit:
+				\begin{align}
+					\begin{aligned}
+						\Qcircuit @C=1em @R=1em {
+							\lstick{\ket{0}}_1 & \gate{H} & \ctrl{1} & \qw \\
+							\lstick{\ket{0}}_2 & \qw      & \targ    & \qw
+						}
+					\end{aligned}
+					&&
+					\ket{00}
+						\overset{H_1}{\longto} \frac{1}{\sqrt{2}} (\ket{0} + \ket{1}) \ket{0}
+						\overset{\CNOT_{12}}{\longto} \frac{1}{\sqrt{2}} (\ket{00} + \ket{11}) = \ket{\Phi^+}
+				\end{align}
+				For brevity, we will write
+				\begin{equation}
+					\Qcircuit @C=1em @R=1em {
+						\lstick{\ket{0}} & \multigate{1}{\Phi^+} & \qw \\
+						\lstick{\ket{0}} & \ghost{\Psi^+}        & \qw
+					}
+				\end{equation}
+				from now on whenever a Bell state is prepared between two qubits. Also, we will leave out the explicit derivation of the Bell state will from derivations.
+			% end
+		% end
+	% end
+
+	\section{Protocols}
+		\label{sec:protocols}
+
+		In this section we discuss some essential protocols in \ac{QC} and the no-cloning theorem. These protocols are not complete algorithms (which are discussed in \autoref{c:algorithms}), but illustrate essential ideas supporting some of the algorithms.
+
+		\subsection{No-Cloning}
+			While the no-cloning theorem is not really a protocol, it is an extremely important result for \ac{QC} and thus also covered here.
+
+			\begin{theorem}[No-Cloning]
+				Let \(\ket{\psi}\) be some state. Then there exists no \(U\) such that \( U \ket{\psi} \ket{0} = \ket{\psi}\ket{\psi} \). That is, no circuit exists that copies an arbitrary quantum state.
+			\end{theorem}
+			\begin{proof}
+				Assume that \(U\) is a cloning circuit and let \(\ket{\psi}\) and \(\ket{\phi}\) be arbitrary states. Then we can compute
+				\begin{equation}
+					(\bra{\phi}\bra{\phi}) (\ket{\psi}\ket{\psi})
+						= \ip{\phi}{\psi} \ip{\psi}{\phi}
+						= (\ip{\phi}{\psi})^2.
+				\end{equation}
+				However, we can also express the composite states as \( \ket{\phi}\ket{\phi} = U \ket{\phi}\ket{0} \) and \( \ket{\psi}\ket{\psi} = U \ket{\psi}\ket{0} \) using the definition of the cloning circuit \(U\). Hence,
+				\begin{equation}
+					\bra{0}\bra{\phi} \underbrace{U^\dagger U}_{= \ID} \ket{\psi}\ket{0}
+						= \bra{0}\bra{\phi} \ket{\psi}\ket{0}
+						= \ip{0}{0} \ip{\phi}{\psi}
+						= \ip{\phi}{\psi}.
+				\end{equation}
+				Therefore, \( (\ip{\phi}{\psi})^2 = \ip{\phi}{\psi} \) holds. The states \(\ket{\phi}\) and \(\ket{\psi}\) are therefore orthogonal, \( \ip{\phi}{\psi} = 0 \), or equal, \( \ip{\phi}{\psi} = 1 \). This corresponds to classical data (either \num{0} or \num{1}) and no arbitrary quantum states. Hence, there exists no such \(U\).
+			\end{proof}
+
+			This theorem is a fundamental result of \ac{QC} and hinders some algorithms down the line. But it is not new! In fact, the no-cloning theorem is \emph{equivalent} to Heisenberg's uncertainty principles stating that for any quantum system there exist two properties which cannot both be measured with certainty. Proofing this equivalence would go as follows (proofing both directions using contraposition):
+			\begin{itemize}
+				\item From no-cloning to Heisenberg: if Heisenberg's uncertainty principle would be false, we could measure everything with certainty and thus prepare a second state simply by transferring the measured data, violating the no-cloning theorem.
+				\item From Heisenberg to no-cloning: if the no-cloning theorem would be false, we could copy an arbitrary quantum state an arbitrary number of times and thus measure the state with arbitrary precision, violating Heisenberg's uncertainty principle.
+			\end{itemize}
+		% end
+
+		\subsection{Quantum Teleportation}
+			With \emph{quantum teleportation,} it is possible to teleport an arbitrary quantum state from one position to another (e.g., from Alice's to Bob's lab) using entanglement. Both parties (Alice and Bob) previously shared a Bell state \(\ket{\Phi^+}\) and now Alice wants to transmit her state \(\ket{\psi}\) over to Bob, but they cannot meet and have no secure communication channel. However, Alice can publicly announce two classical bits of information that Bob will read.
+
+			Consider the following circuit:
+			\begin{equation}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{\psi}} & \ustick{A'} \qw & \qw                   & \ctrl{1} & \gate{H} & \meter & \ustick{m_2} \cw         & \cw \cwx[2]    &                         \\
+					\lstick{\ket{0}}    & \ustick{A}  \qw & \multigate{1}{\Phi^+} & \targ    & \qw      & \meter & \ustick{m_1} \cw \cwx[1] &                &                         \\
+					\lstick{\ket{0}}    & \ustick{B}  \qw & \ghost{\Phi^+}        & \qw      & \qw      & \qw    & \gate{X^{m_1}}           & \gate{Z^{m_2}} & \rstick{\ket{\psi}} \qw
+				}  \label{eq:teleportation}
+			\end{equation}
+			Note how the state \(\ket{\psi}\) is teleported from qubit \(A\) to qubit \(B\). Also note that the state is not cloned as Alice's measurement destroys her copy. To see that the above circuit actually copies the state, we can simply calculate what it does to the circuit. Let \( \ket{\psi} = c_0 \ket{0} + c_1 \ket{1} \) be the qubit to be copied. Right before the measurements, the system has the following state:
+			\begin{align}
+					&\quad (c_0 \ket{0} + c_1 \ket{1})_{A'} \ket{00}_{AB} \\
+				\prescript{\Phi^+_{AB}}{}{\longto}
+					&\quad \frac{1}{\sqrt{2}} (c_0 \ket{0} + c_1 \ket{1})_{A'} (\ket{00} + \ket{11})_{AB} \\
+				\prescript{\CNOT_{A' A}}{}{\longto}
+					&\quad \frac{1}{\sqrt{2}} \bigl( c_0 \ket{0}_{A'} (\ket{00} + \ket{11})_{AB} + c_1 \ket{1}_{A'} (\ket{10} + \ket{01})_{AB} \bigr) \\
+				\prescript{H_{A'}}{}{\longto}
+					&\quad \frac{1}{\sqrt{2}} \bigl( c_0 \ket{+}_{A'} (\ket{00} + \ket{11})_{AB} + c_1 \ket{-}_{A'} (\ket{10} + \ket{01})_{AB} \bigr) \\
+				   =&\quad \frac{1}{2} \bigl( c_0 (\ket{0} + \ket{1})_{A'} (\ket{00} + \ket{11})_{AB} + c_1 (\ket{0} - \ket{1})_{A'} (\ket{10} + \ket{01})_{AB} \bigr) \\
+				   =&\quad \frac{1}{2} \bigl(
+							  \ket{00}_{A' A} (c_0 \ket{0} + c_1 \ket{1})_B
+							+ \ket{01}_{A' A} (c_0 \ket{1} + c_1 \ket{0})_B \\&\quad\qquad\qquad
+							+ \ket{10}_{A' A} (c_0 \ket{0} - c_1 \ket{1})
+							+ \ket{11}_{A' A} (c_0 \ket{1} - c_1 \ket{0})_B
+						\bigr)
+			\end{align}
+			When now measuring the first two qubits, the following outcomes and post-measurement states are present, and the corresponding corrections have to be applied to recover \(\ket{\psi}\):
+			\begin{center}
+				\centering
+				\begin{tabular}{cc|c|c}
+					\(m_1\) & \(m_2\) &        \(\ket{\psi'}_B\)        & Correction \\ \midrule
+					 \(0\)  &  \(0\)  & \( c_0 \ket{0} + c_1 \ket{1} \) &  \(\ID\)   \\
+					 \(0\)  &  \(1\)  & \( c_0 \ket{1} + c_1 \ket{0} \) &   \(X\)    \\
+					 \(1\)  &  \(0\)  & \( c_0 \ket{0} - c_1 \ket{1} \) &   \(Z\)    \\
+					 \(1\)  &  \(1\)  & \( c_0 \ket{1} - c_1 \ket{0} \) &   \(ZX\)
+				\end{tabular}
+			\end{center}
+			With \( U^1 = U \) and \( U^0 = \ID \), the corrections can be summarized into \( Z^{m_2} X^{m_1} \) which are the last two gates of circuit \eqref{eq:teleportation}.
+
+			We therefore teleported a qubit from A to B! Note that this does \emph{not} allow transmission of information faster-than-light as the two classical bits have to be transmitted. Without them, the qubit is worthless as Bob cannot interpret it correctly\footnote{One might argue that Bob might get lucky and read out the correct information. But this kind of "faster-than-light transportation" is also possible classically: you can just guess what the information is---but does not actually transmit information!}. It also does not violate the no-cloning theorem as Alice's copy is destroyed during the measurement.
+
+			\subsubsection{Concatenated Teleportation}
+				\todo{Concatenated Teleportation; ???}
+			% end
+		% end
+
+		\subsection{Dense-Coding}
+			We are now concerned with the "opposite" problem of qubit teleportation: instead of teleporting a qubit's state, we physically transport it to another location but encode two classical bits of information in it. That is, we transmit two bits of classical information by only transmitting a single qubit. Consider the following circuit:
+			\begin{equation}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{0}} & \ustick{A} \qw & \multigate{1}{\Phi^+} & \gate{U} & \ctrl{1} & \gate{H} & \meter & \rstick{m_1} \cw \\
+					\lstick{\ket{0}} & \ustick{B} \qw & \ghost{\Phi^+}        & \qw      & \targ    & \qw      & \meter & \rstick{m_2} \cw
+				}
+			\end{equation}
+			After creating the Bell state, Alice applies a unitary \( U \in \{ \ID, X, Z, ZX \} \) and subsequently transmits the qubit to Bob. He, now in possession of both qubits \(A\) and \(B\), now applies the rest of the gates to read out what unitary Alice applied. The measurement results are as follows:
+			\begin{center}
+				\begin{tabular}{c|cc}
+					 \(U\)  & \(m_1\) & \(m_2\) \\ \midrule
+					\(\ID\) &  \(0\)  &  \(0\)  \\
+					 \(X\)  &  \(0\)  &  \(1\)  \\
+					 \(Z\)  &  \(1\)  &  \(0\)  \\
+					\(ZX\)  &  \(1\)  &  \(1\)
+				\end{tabular}
+			\end{center}
+			Validating this is analogous to the teleportation and left as an exercise to the reader.
+
+			Again, this protocol does not allow faster-than-light communication as the qubit has to be physically transmitted. A combination with the teleportation protocol is possible, but this in turns requires the classical transmission of two bits, so still no faster-than-light transmission is possible.
+		% end
+	% end
+
+	\section{Why these postulates?}
+		One might ask \emph{why} the postulates are as is (e.g., Why probabilities in the first place? Why amplitudes and not real positive numbers? Why the Euclidean norm and not an arbitrary \(p\)-norm? Why linearity?). The hard way to understand this is:
+		\begin{enumerate}
+			\item learn classical physics
+			\item learn why classical physics is not sufficient
+			\item learn quantum physics
+			\item maybe hear about why amplitudes and not probabilities
+		\end{enumerate}
+		However, this course is not the place to squeeze in at least one year worth of lectures just to understand the postulates. Instead, we will take a more pragmatic approach, starting from why we use the Euclidean norm.
+
+		\paragraph{Why the Euclidean Norm?}
+			Consider \( \vec{v} = (v_1, v_2, \dots, v_N) \) describing the probabilities of an event with \(N\) possible outcomes. We impose a condition \( \lVert \vec{v} \rvert_p = 1 \) to ensure normalization. The most natural choice would be \( p = 1 \), i.e., requiring that the sum of the magnitudes is unity. However, remember that we want to apply transformations \(\mat{A}\) to the vector and still keep the normalization condition: \( \lVert \vec{v} \rVert_p = \lVert \mat{A} \vec{v} \rVert_p = 1 \). For any \(p\), this condition only allows permutations \( v_i \mapsto v_j \) and sign flips \( v_i \mapsto -v_i \). None of these are capable of encoding everything interesting! However, for \( p \in \{ 1, 2 \} \), these matrices can encode more things. For \( p = 1 \), stochastic matrices are allows and for \( p = 2 \), we can use unitary matrices! For higher \(p\), no interesting behavior can be encoded. A very practical argument why we use \(p = 2\) is therefore that otherwise \ac{QM} would be very boring.
+		% end
+
+		\paragraph{Why Complex Numbers?}
+			Again, we can bring up a very practical argument: only complex number are algebraically closed. Consider, for instance, a unitary gate \(U\). Applying this gate takes \(t\) time. If we want to apply it for only \(t/2\) time, we need to take its square-root \( U = VV = V^2 \). With being closed under this operation, it might be that there is no such gate! But as we are able to apply it for only \(t/2\) time, there must be some form of square-root-\(U\) in the universe. Hence, we have to use complex numbers. Take, for instance, the gate \( U = Z = \diag(1, -1) = \bigl(\diag(1, i)\bigr)^2 \).
+		% end
+
+		\paragraph{Why Linearity?}
+			We always have the assumption that gates progress our state linearly. If it would not, i.e., if it would progress nonlinearly, we could solve NP-complete problems! But this is unrealistic, so we confine ourselves to linear evolution\dots
+		% end
+
+		\paragraph{What is Quantum Mechanics About?}
+			Quantum mechanics is not about matter, energy, waves, nor particles. Instead, its solely about information, probabilities, and observables and how these relate to each other! Whenever seeing two linear operators in \ac{QM}, the sole answer to whether they commute conveys large amounts of information.
+		% end
+	% end
+% end
+
+\chapter{Computational Complexity}
+	In this chapter we cover the basic ideas of complexity theory. As the core motivation behind \ac{QC} is to speed up certain tasks, we first have to lay the ground for discussing what "speed up" actually means. In computer science, the \emph{complex} of an algorithm describes the resources required to run it. This resource is often \emph{space} or \emph{time.} That is, how much memory or time it takes to run a specific algorithm. To assign a complexity to a problem instead of a specific algorithm, we assign say that the problem has the complexity of the best algorithm solving it.
+
+	The most common complexity classes are depicted in \autoref{fig:complexityZoo}. These are:
+	\begin{itemize}
+		\item P: problems that are solvable in polynomial time (graph connectivity, testing if a number is prime, matchmaking, sorting, linear search, \dots)
+		\item \ac{BQP}: problems solvable on a quantum computer with bounded error probability (e.g., \( P(\text{error}) \leq 2/3 \)) (factoring, discrete logarithm, \dots?)
+		\item NP: problems believed to not be solvable in polynomial time (graph isomorphism, \dots)
+		\item NP-complete: hard problems that can be reduced on each other and for which the solution can be checked in polynomial time (box packing, map coloring, traveling salesman, \(n \times n\) Sudoku, \dots)
+		\item PSPACE: problems which need polynomial amount of memory (\(n \times n\) chess, \(n \times n\) Go, \dots)
+	\end{itemize}
+	These complexity classes are defined such that \(\text{P} \subseteq \text{BQP} \subseteq \text{NP} \subseteq \text{PSPACE}\). A big open problem of computer science is whether \( \text{P} \neq \text{NP} \), i.e., whether we can solve all problems "fast." A similar question comes up for \ac{QC}: is \( \text{P} \neq \text{BQP} \), i.e., are there problems that can actually be solved faster on a quantum computer?
+
+	To assess the complexity of a quantum algorithm, we count the gates required to implement the circuit. We will see in the next chapter (\autoref{c:universality}) how this scales with the problem size.
+
+	\begin{figure}
+		\centering
+		\begin{tikzpicture}[class/.style = { minimum height = 0.75cm }]
+			\def\dist{0.25cm};
+
+			\node [class, draw, circle, inner sep = \dist] (p) {P};
+			\node [class, right = 1 of p] (bqp) {BQP};
+			\node [class, right = 1 of bqp] (np) {NP};
+			\node [class, right = 1 of np, draw, circle, inner sep = \dist] (npComplete) {NP-Complete};
+			\node [class, right = 1 of npComplete] (pspace) {PSPACE};
+
+			\path (p.west) to coordinate(b) (bqp.east);
+			\path (p.west) to coordinate(c) (np.east);
+			\draw let \p1 = ($(p.west) - (b)$), \n1 = {veclen(\x1, \y1)} in (b) node[draw, circle, minimum width = 2*(\n1+1*\dist)](b){};
+			\draw let \p1 = ($(p.west) - (c)$), \n1 = {veclen(\x1, \y1)} in (c) node[draw, circle, minimum width = 2*(\n1+2*\dist)](c){};
+			\path let \p1 = (c.west),      \p2 = (c.north) in coordinate[xshift = -\dist, yshift =  \dist](A) at (\x1, \y2);
+			\path let \p1 = (pspace.east), \p2 = (c.north) in coordinate[xshift = +\dist, yshift =  \dist](B) at (\x1, \y2);
+			\path let \p1 = (pspace.east), \p2 = (c.south) in coordinate[xshift = +\dist, yshift = -\dist](C) at (\x1, \y2);
+			\path let \p1 = (c.west),      \p2 = (c.south) in coordinate[xshift = -\dist, yshift = -\dist](D) at (\x1, \y2);
+			\draw (A) to (B) to (C) to (D) to cycle;
+		\end{tikzpicture}
+		\caption{The Computational Complexity Zoo}
+		\label{fig:complexityZoo}
+	\end{figure}
+% end
+
+\chapter{Universal Computation}
+	\label{c:universality}
+
+	In general, a quantum circuit is just a unitary \(U\) and measurements,
+	\begin{equation}
+		\Qcircuit @C=1em @R=1em {
+			\lstick{\ket{x_1}}     & \multigate{3}{U} & \meter \\
+			\lstick{\ket{x_2}}     & \ghost{U}        & \meter \\
+			\raisebox{5pt}{\vdots} &                  & \raisebox{5pt}{\vdots} \\
+			\lstick{\ket{x_n}}     & \ghost{U}        & \meter
+		}
+	\end{equation}
+	with an initialization \( \ket{x_1 x_2 \dots x_n} \). However, this circuit has to be constructed somehow from gates we have available in the lab. this raises the natural question of what gates we have to implement to build every unitary---and whether there are actually a set of gates fulfilling this.
+
+	\begin{definition}[Universal Set of Gates]
+		A set of gates \(\mathcal{G}\) is called \emph{universal} if any unitary can be approximated with arbitrary accuracy using only gates from this set. With a gate \(U\) and its approximation \(V\), let
+		\begin{equation}
+			E(U, V) = \max_{\ket{\psi}}\; \lVert (U - V) \ket{\psi} \rVert
+		\end{equation}
+		be the \emph{error} between \(U\) and \(V\). Note that this error is an upper bound on the probability error \( \lvert P_U - P_V \rvert \leq 2 E(U, V) \) quantifying the difference in the probability distributions induced by applying \(U\) or \(V\) to a state.
+	\end{definition}
+
+	Note that is analogous to classical computing. There we could also decompose every algorithm into a set of universal logical gates. For instance, the sets \( \{\, \text{AND}, \text{OR}, \text{NOT} \,\} \) and \( \{\, \text{NAND} \,\} \) are both universal and can represent every possible classical circuit. We formulate this into a theorem:
+
+	\begin{theorem}[Classical Set of Universal Gates]  \label{th:classicalUniversal}
+		The sets \( \{\, \text{AND}, \text{OR}, \text{NOT} \,\} \) and \( \{\, \text{NAND} \,\} \) and universal for all classical logic gates.
+	\end{theorem}
+	\begin{proof}
+		By induction.
+	\end{proof}
+
+	\begin{theorem}[Embedding of Classical Circuits]
+		Every classical circuit can be embedded in a quantum circuit performing the equivalent operation, but reversibly.
+	\end{theorem}
+	\begin{proof}
+		To proof this, we use that \( \{\, \text{AND}, \text{NOT}, \text{OR} \,\} \) is universal for all classical gates (\autoref{th:classicalUniversal}). We therefore only have to show that these gates can be resembled using quantum circuits. For this, we use the X-, CNOT-, and Toffoli-gate:
+		\begin{align}
+			\begin{aligned}
+				\Qcircuit{
+					\lstick{\ket{x}} & \ctrl{2} & \rstick{\ket{x}} \qw \\
+					\lstick{\ket{y}} & \ctrl{1} & \rstick{\ket{y}} \qw \\
+					\lstick{\ket{0}} & \targ    & \rstick{\ket{x \land y}} \qw
+				}
+			\end{aligned}
+			&&
+			\begin{aligned}
+				\Qcircuit{
+					\lstick{\ket{x}} & \ctrl{1} & \rstick{\ket{y}} \qw \\
+					\lstick{\ket{1}} & \targ    & \rstick{\ket{\lnot x}} \qw
+				}
+			\end{aligned}
+			&&
+			\begin{aligned}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{x}} & \gate{X} & \ctrl{1} & \gate{X} & \rstick{\ket{x}} \qw \\
+					\lstick{\ket{y}} & \gate{X} & \ctrl{1} & \gate{X} & \rstick{\ket{y}} \qw \\
+					\lstick{\ket{1}} & \qw      & \targ    & \qw      & \rstick{\ket{x \lor y}} \qw
+				}
+			\end{aligned}
+		\end{align}
+		Showing the equivalence is trivial. Note that in the logical or, the Toffoli-gate functions as a not-and due to the target qubit being set to \(\ket{1}\).
+	\end{proof}
+
+	\section{Universal Quantum Gates}
+		In this section we will go over the proof of universality. Some common groups of quantum gates that are discussed are, for instance, the \emph{Pauli group} \( \mathcal{P} = \langle X, Z \rangle \) from which all the Pauli-gates can be constructed:
+		\begin{equation}
+			\langle X, Z \rangle
+				\longto \{ X^2 = Z^2 = \ID, X, XZ = iY, ZX = -iY, Z \}
+				\equiv \{ \ID, X, Y, Z \}.
+		\end{equation}
+		Another important group is the \emph{Clifford group} \( \mathcal{C} = \langle H, S, \CNOT \rangle \) with
+		\begin{equation}
+			\langle H, S, \CNOT \rangle
+				\longto \{ H^2 = \ID, S^2 = Z, \dots \}.
+		\end{equation}
+		However, we have the following result:
+		\begin{theorem}[Gottesman-Knill Theorem]
+			Circuits build using solely gates from the Clifford group can be efficiently simulated on a classical computer.
+		\end{theorem}
+		Hence, the Clifford group is not enough as we will never see a speedup when just using its gates! However, if we add the T-gate \( T = \diag(1, e^{i \pi / 4}) \), we get a universal set of gates:
+		\begin{theorem}[Universal Set of Quantum Gates]
+			The following set of quantum gates is universal: \( \langle H, S, \CNOT, T \rangle \).
+		\end{theorem}
+		\begin{proof}[Proof Sketch]
+			The proof of this theorem has three parts:
+			\begin{enumerate}
+				\item every unitary matrix can be decomposed into the product of two-level\footnote{A two-level unitary matrix is a matrix that only acts non-trivially on at most two vector components.} unitary matrices
+				\item every two-level unitary matrix can be decomposed into CNOT- and single-qubit gates
+				\item every single-qubit gate can be approximated with arbitrary accuracy by \( \langle H, T \rangle \)
+			\end{enumerate}
+			which we will cover in greater detail.
+
+			\emph{Part 1/3:}  \todo{Universality Proof: Part 1/3; 4.16}
+			For an \(n\)-qubit gate \(U\), at most \( 2^{n - 1} (2^n - 1) \in \mathcal{O}(4^n) \) two-level unitary matrices are needed.
+
+			\emph{Part 2/3:}
+			Let \(\tilde{U} \in \C^{2{n + 1} \times 2^{n + 1}}\) be a two-level unitary matrix acting on \(n + 1\) qubits. Assume w.l.o.g. that \(\tilde{U}\) is a block diagonal matrix \( \tilde{U} = \diag(\ID, U) \), where \( U \in \C^{2 \times 2} \) contains the four non-trivial entries of \(\tilde{U}\). Hence, \(\tilde{U}\) is a the \(n\)-controlled version of \(U\), i.e., \(U\) is only applied to the \((n + 1)\)-th qubit iff the first \(n\) qubits are \num{1}. To show that this gate can be constructed using just single-qubit gates and CNOT-gates, we first construct a controlled-U-gate, then a controlled-controlled-U-gate, and subsequently expand this to an \(n\)-controlled-U-gate.
+
+			Let \( U \eqqcolon e^{i \alpha} A X B X C \) be a decomposition of \(U\) such that \( A B C = \ID \) (note that this is always possible due to \autoref{th:twoByTwoDecomposition}). The following circuit implements a controlled-U-gate:
+			\begin{equation}
+				\Qcircuit @C=1em @R=1em {
+					& \qw      & \ctrl{1} & \qw      & \ctrl{1} & \gate{E} & \qw \\
+					& \gate{C} & \targ    & \gate{B} & \targ    & \gate{A} & \qw
+				}
+			\end{equation}
+			with \( E \coloneqq \diag(1, e^{i \alpha}) \). For \(\ket{0x}\), both \(E\) and the CNOT-gates have no effect and therefore due to \(A B C = \ID\), the state is left as is. For \(\ket{1x}\), both \(E\) and the CNOT-gates are applied and therefore the unitary \(C X B X A\) acts on the second qubit together with the global phase \(e^{i \alpha}\), which is equivalent to applying \(U\). Similarly,
+			\begin{equation}
+				\Qcircuit @C=1em @R=1em {
+					& \qw              & \ctrl{1} & \qw              & \ctrl{1} & \gate{E^\dagger} & \qw \\
+					& \gate{A^\dagger} & \targ    & \gate{B^\dagger} & \targ    & \gate{C^\dagger} & \qw
+				}
+			\end{equation}
+			implements the controlled-\(U^\dagger\)-gate necessary for the next step (the proof is analogous).
+
+			The controlled-controlled-U-gate is realized by
+			\begin{equation}
+				\Qcircuit @C=1em @R=1em {
+					& \qw      & \ctrl{1} & \qw              & \ctrl{1} & \ctrl{2} & \qw \\
+					& \ctrl{1} & \targ    & \ctrl{1}         & \targ    & \qw      & \qw \\
+					& \gate{V} & \qw      & \gate{V^\dagger} & \qw      & \gate{V} & \qw
+				}  \label{eq:ccu}
+			\end{equation}
+			with \(V\) being the half-U-gate, i.e., \( V^2 = U \). For \(\ket{00x}\), no gate is ever applied. For \(\ket{01x}\), \(V\) and \(V^\dagger\) are applied, canceling each other out. For \(\ket{10x}\), \(V^\dagger\) and \(V\) are applied, canceling each other out. For \(\ket{11x}\), however, both \(V\) but not \(V^\dagger\) are applied (due to the CNOT-gates canceling the activation on the second qubit), resulting in \(VV = V^2 = U\) being applied to the this qubit. Hence, this circuit realizes the controlled-controlled-U-gate. By some clever arrangement, this circuit needs eight single-qubit gates and six CNOT-gates.
+
+			To build the \(n\)-controlled-U-gate, we add the new control bits to the front and expand the control lines of \eqref{eq:ccu} to these qubits, using an \((n - 1)\)-controlled-gate. Finally, we end up using \( \mathcal{O}(n^2) \) CNOT- and single-qubit gates.
+			\todo{Universality Proof: Part 2/3: Why don't we need exponentially many gates here, too?}
+
+			\emph{Part 3/3:}  \todo{Universality Proof: Part 3/3; 4.21}
+%			By the triangle inequality, error of multiple gates accumulate linearly, i.e.,
+%			\begin{equation}
+%				E(U_n \dots U_2 U_1, V_n \dots U_2 U_1) \leq \sum_{i = 1}^{n} E(U_i, V_i).
+%			\end{equation}
+%			With the decomposition \( U = R_{\hat{n}}(\delta) R_{\hat{m}}(\gamma) R_{\hat{n}}(\beta) \)
+			By the \emph{Solovay-Kitaev theorem,} approximating a circuit with \(m\) CNOT- and single-qubit up to an accuracy \(\epsilon\) requires \( \mathcal{O}\bigl( m \log^2(m / \epsilon) \bigr) \) gates from \( \langle H, T \rangle \).
+
+			This concludes the proof sketch and we end up with
+			\begin{equation}
+				\mathcal{O}\Biggl( 4^n 2^n \log^2\biggl( \frac{4^n 2^n}{\epsilon} \biggr) \Biggr)
+			\end{equation}
+			gates to approximate an arbitrary \(n\)-qubit quantum circuit.
+		\end{proof}
+
+		From this discussion and the final gate count that scales exponentially with the number of qubit, it does not appear clear why anyone should think that \( \text{BQP} \neq \text{P} \). Even classical circuits need an exponential amount of time on a quantum computer! This is the reason why algorithms that are efficient on a quantum computer are rare and require a large amount of creativity. The next chapter covers nearly all quantum algorithms that we know so far, which only reinforces the argument how much creativity is necessary to invent new ones.
+	% end
+% end
+
+\chapter{Algorithms}
+	\label{c:algorithms}
+
+	After discussing basic protocols and results in \autoref{sec:protocols}, we will now go over actual algorithms. After a discussion of the main idea underlying all algorithms, \emph{quantum parallelism,} in \autoref{sec:parallelism}, we will cover the following algorithms:
+	\begin{itemize}
+		\item Deutsch-Josza Algorithm (\autoref{sec:deutschJosza}) \\
+			Finds out whether a function is constant or balanced. Main purpose is to show quantum speedup compared to deterministic classical computing. Exponential speedup, but efficiently solvable on a probabilistic classical computer.
+		\item Bernstein-Vazirani Algorithm (\autoref{sec:bernsteinVazirani}) \\
+			Finds a binary string hidden in a special function. Main purpose is to show quantum speedup compared to probabilistic classical computing. Linear speedup.
+		\item Simon's Algorithm (\autoref{sec:simons}) \\
+			Finds the periodicity of a 2-to-1-function. Exponential speedup!
+		\item Quantum Fourier Transform (\autoref{sec:qft}) \\
+			Finds the periods hidden in data; quantum version of the famous Fourier transform. Exponential speedup!
+		\item Shor's Algorithm (\autoref{sec:shors}) \\
+			Factors two large numbers; can be used to break RSA encryption. Almost exponential speedup.
+		\item Grover's Algorithm (\autoref{sec:grovers}) \\
+			Finds a value in an unstructured\footnote{Here, \emph{unstructured} refers to the search space which has no special structure, e.g., being sorted which would allow efficient classical algorithms such as binary search.} pool of values. Square-root speedup.
+	\end{itemize}
+	A brief overview over the most important aspects of each algorithm is given in \autoref{tab:algorithms}, but I recommend to first work through this chapter and then take a look at the table.
+
+	\begin{table}
+		\centering
+		\begin{tabular}{ll|ll}
+			\toprule
+			\textbf{Name}                & \textbf{Tackled Problem} & \textbf{Classical Complexity} & \textbf{Quantum Complexity}             \\ \midrule
+			Deutsch-Josza Algorithm      & Deutsch's Problem        & \(\mathcal{O}(2^n)\)          & \(\mathcal{O}(1)\)                      \\
+			Bernstein-Vazirani Algorithm & Hidden String            & \(\mathcal{O}(n)\)            & \(\mathcal{O}(1)\)                      \\
+			Simon's Algorithm            & Simon's Problem          & \(\mathcal{O}(2^n)\)          & \(\mathcal{O}(n)\)                      \\
+			Quantum Fourier Transform    & Fourier Transform        & \(\mathcal{O}(2^n)\)          & \(\mathcal{O}(n^2)\)                    \\
+			Shor's Algorithm             & Factoring                & \(\mathcal{O}(e^{\log N})\)   & \(\mathcal{O}\bigl( (\log N)^3 \bigr)\) \\
+			Grover's Algorithm           & Unstructured Search      & \(\mathcal{O}(N - M)\)        & \(\mathcal{O}(\sqrt{N / M})\)           \\ \bottomrule
+		\end{tabular}
+		\caption{Quantum Algorithms}
+		\label{tab:algorithms}
+	\end{table}
+
+	\section{Quantum Parallelism}
+		\label{sec:parallelism}
+
+		In \autoref{c:universality}, we saw that it is possible to implement arbitrary circuits on a quantum computer. However, exponentially many gates where necessary! So what is the reason why we think that \ac{QC} accelerates computation? Classically, we can evaluate some function only one input at a time. In \ac{QC}, however, we can make use of the linear evolution. We can therefore prepare a superposition, apply the query unitary, and therefore evaluate it on all \(2^n\) inputs simultaneously. For brevity, we denote quantum wires containing more than one qubit as
+		\begin{equation}
+			\Qcircuit @C=1em @R=1em {
+				\lstick{\ket{0}^n} & /\qw & \gate{H} & /\qw & \gate{U} & /\qw & \qw
+			}
+		\end{equation}
+		or will simply keep the multi-qubit wire implicit. However, we can not use the calculation of this circuit as we do not know which input produced which output! We therefore have to come up with a better approach based on \emph{interference.}
+
+		\subsection{Interference and Deutsch's Approach}
+			Consider a function \( f : \{ 0, 1 \}^n \to \{ 0, 1 \} : x \mapsto f(x) \) with the unitary \( U_f : \ket{x}\ket{y} \mapsto \ket{x}\ket{y \oplus f(x)} \) (we will proof that this is in fact a unitary transformation in \autoref{subsec:queryUnitary}). In circuit notation, we write:
+			\begin{equation}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{x}^n} & \multigate{1}{U_f} & \rstick{\ket{x}^n} \qw \\
+					\lstick{\ket{y}}   & \ghost{U_f}        & \rstick{\ket{y \oplus f(x)}} \qw
+				}
+			\end{equation}
+			This circuit keeps the inputs and the outputs together! We can now make use of superposition,
+			\begin{equation}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{0}^n} & /\qw & \gate{H} & /\qw & \multigate{1}{U_f} & /\qw & \qw \\
+					\lstick{\ket{0}}   &  \qw & \qw      &  \qw & \ghost{U_f}        &  \qw & \qw
+				}
+			\end{equation}
+			which produces the following output:
+			\begin{equation}
+				\ket{0}^n\ket{0}
+					\overset{H_{1:n}}{\longto} \frac{1}{\sqrt{2^n}} (\ket{0} + \ket{1})^{\otimes n} \otimes \ket{0}
+					\overset{U_f}{\longto} \frac{1}{\sqrt{2^n}} \sum_{x \in \{ 0, 1 \}^n} \ket{x} \ket{f(x)}
+			\end{equation}
+			We have now evaluated \(f\) with just one call for all possible inputs! However, we cannot read all the results as a measurement would collapse the superposition onto just one evaluation and we could have just called the classical implementation. Hence, we need a slightly different approach to quantum parallelism.
+
+			Assume \(n = 1\), i.e., a single input qubit. Then \emph{Deutsch's approach} is to also use a superposition as the "input" for the target qubit and to apply a second Hadamard gate after the unitary on the input qubit:
+			\begin{equation}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{0}} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \qw \\
+					\lstick{\ket{1}} & \gate{H} & \ghost{U_f}        & \qw      & \qw
+				}  \label{eq:deutschsApproachPartially}
+			\end{equation}
+			The core idea is now how \(U_f\) acts an the product state of a basis state \(\ket{x}\) and \(\ket{-}\):
+			\begin{align}
+				U_f \biggl( \ket{x} \otimes \frac{1}{\sqrt{2}} (\ket{0} - \ket{1}) \biggr)
+					&= \ket{x} \otimes \frac{1}{\sqrt{2}} (\ket{0 \oplus f(x)} - \ket{1 \oplus f(x)}) \\
+					&= \ket{x} \otimes \frac{1}{\sqrt{2}}
+						\begin{cases*}
+							\ket{0} - \ket{1} & if \( f(x) = 0 \) \\
+							\ket{1} - \ket{0} & if \( f(x) = 1 \)
+						\end{cases*} \\
+					&= (-1)^{f(x)} \ket{x} \otimes \frac{1}{\sqrt{2}} (\ket{0} - \ket{1})
+			\end{align}
+			This shows that we can pull the result of \(f(x)\) from the second qubit and put it to a global phase! We can now continue the evaluation of \eqref{eq:deutschsApproachPartially}:
+			\begin{align}
+				(H \otimes \ID) U_f (H \otimes H) \ket{0}\ket{1}
+					&= (H \otimes \ID) U_f \biggl[ \frac{1}{\sqrt{2}} (\ket{0} + \ket{1}) \otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}} \biggr] \\
+					&= (H \otimes \ID) \frac{1}{\sqrt{2}} U_f \biggl[ \ket{0} \otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}} + \ket{1} \otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}} \biggr] \\
+					&= (H \otimes \ID) \frac{1}{\sqrt{2}} \biggl[ (-1)^{f(0)} \ket{0} \otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}} + (-1)^{f(1)} \ket{1} \otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}} \biggr] \\
+					&= (H \otimes \ID) \frac{1}{\sqrt{2}} \biggl[ (-1)^{f(0)} \ket{0} + (-1)^{f(1)} \ket{1} \biggr] \otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}} \\
+					&= (H \otimes \ID) \frac{1}{\sqrt{2}}
+						\begin{cases*}
+							\pm (\ket{0} + \ket{1}) & if \( f(0) = f(1) \) \\
+							\pm (\ket{0} - \ket{1}) & if \( f(0) \neq f(1) \)
+						\end{cases*}
+						\otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}} \\
+					&=
+						\begin{cases*}
+							\pm \ket{0} & if \( f(0) = f(1) \) \\
+							\pm \ket{1} & if \( f(0) \neq f(1) \)
+						\end{cases*}
+						\otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}} \\
+					&= \pm \ket{f(0) \oplus f(1)} \otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}} \\
+					&\equiv \ket{f(0) \oplus f(1)} \otimes \frac{(\ket{0} - \ket{1})}{\sqrt{2}}
+			\end{align}
+			Finally, we can measure the first qubit. But we did still not read out evaluations of \(f\)! It turns out that in \ac{QC}, we can often not read out individual results, but global properties of functions. In this case, a measurement \num{0} means that our function is constant and \num{1} that it is not. Also, we did not use the target qubit in the end---it was only useful for transferring function results into the global phase. In fact, we usually apply a Hadamard gate to it in the end to restore the original state. Hence, the entire "algorithm" of Deutsch's approach is:
+			\begin{equation}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{0}} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \rstick{\ket{f(0) \oplus f(1)}} \qw \\
+					\lstick{\ket{1}} & \gate{H} & \ghost{U_f}        & \gate{H} & \rstick{\ket{1}} \qw
+				}  \label{eq:deutschsApproach}
+			\end{equation}
+			This approach uses quantum parallelism and interference to learn a global property of \(f\). All subsequent algorithms will rely on this or a similar technique for their speedup along with massive classical post-processing in some cases.
+		% end
+
+		\subsection{The Query Unitary}
+			\label{subsec:queryUnitary}
+
+			So far, we have just assumed that \( U_f : \ket{x}\ket{y} \mapsto \ket{x}\ket{y \oplus f(x)} \) is a unitary transformation for any function \(f\). In this section we will see that this is actually the case and how \(U_f\) looks.
+
+			\begin{theorem}[Query Unitary]
+				Let \( f : \{ 0, 1 \}^n \to \{ 0, 1 \} : x \mapsto f(x) \) be some function. Then the mapping \( U_f : \ket{x}\ket{y} \mapsto \ket{x}\ket{y \oplus f(x)} \) is unitary.
+			\end{theorem}
+			\begin{proof}
+				We proof this by constructing \(U_f\). Let \( i, k \in \{ 0, 1 \}^n \) and \( j, \ell \in \{ 0, 1 \} \), then the \( (ij, k\ell) \)-th matrix element of \(U_f\) is
+				\begin{equation}
+					\bra{j}\!\!\mel{i}{U_f}{k}\!\ket{\ell}
+						= \bra{j} \bra{i} \bigl( U_f \ket{k} \ket{\ell} \bigr)
+						= \bra{j} \bra{i} \bigl( \ket{k} \ket{\ell \oplus f(k)} \bigr)
+						= \braket{i}{k} \braket{j}{\ell \oplus f(k)}
+						= \delta_{i, k} \delta_{j, \ell \oplus f(k)}.
+				\end{equation}
+				From this we see that the matrix \(U_f\) is block-diagonal w.r.t. the first \(n\) qubits. The \(ik\)-th block (which we can also call the \(i\)-th or \(k\)-th block as the matrix is diagonal) is then
+				\begin{equation}
+					(U_f)_{ik}
+					=
+					\begin{bmatrix}
+						\delta_{0, 0 \oplus f(k)} & \delta_{0, 1 \oplus f(k)} \\
+						\delta_{1, 0 \oplus f(k)} & \delta_{1, 1 \oplus f(k)}
+					\end{bmatrix}
+					=
+					\begin{bmatrix}
+						\delta_{0, f(k)} & \delta_{0, 1 \oplus f(k)} \\
+						\delta_{1, f(k)} & \delta_{1, 1 \oplus f(k)}
+					\end{bmatrix}
+					=
+					\begin{bmatrix}
+						\delta_{0, f(k)} & \delta_{1, f(k)} \\
+						\delta_{1, f(k)} & \delta_{0, f(k)}
+					\end{bmatrix}
+					\doteq
+					\begin{bmatrix}
+						m_k & 1 \oplus m_k \\
+						1 \oplus m_k & m_k
+					\end{bmatrix}
+				\end{equation}
+				with \( m_k \coloneqq \delta_{0, f(k)} \). As \(m_k\) is constant within the \(k\)-th block, it is either \(\ID\) or \(X\) for \(f(k) = 0\) or \(f(k) = 1\), respectively. As a block-diagonal matrix of unitary matrices is still unitary, \(U_f\) is unitary for every \(f\).
+			\end{proof}
+		% end
+	% end
+
+	\section{Deutsch-Josza Algorithm}
+		\label{sec:deutschJosza}
+
+		In this section we explore the \emph{Deutsch-Josza algorithm} used to solve \emph{Deutsch's problem.} We first describe the problem, then the classical solution, and finally the quantum approach. Alongside we discuss complexity arguments and run-time.
+
+		\subsection{Problem}
+			Assume a function \( f : \{ 0, 1 \}^n \to \{ 0, 1 \} \) that is either \emph{constant} or \emph{balanced,} i.e., \( f(x) = a \) for all \(x\) or \( f(x) = 0 \) for half \(x\) and \( f(x) = 1 \) for the other half. We want to find out which of these cases \(f\) falls into, i.e., whether \(f\) is constant or balanced. This problem is also called \emph{Deutsch's problem.}
+		% end
+
+		\subsection{Classical Approach}
+			To determine with certainty whether a given function (of \(n\) bits) is constant or balanced, we need to evaluate it for one more than half the inputs. That is, \( 2^{n - 1} + 1 \) times. The classical algorithm is therefore in \( \mathcal{O}(2^n) \).
+		% end
+
+		\subsection{Quantum Approach}
+			For solving Deutsch's problem in a quantum way, we directly apply Deutsch's approach \eqref{eq:deutschsApproach} with a unitary \(U_f\) implementing \(f\). This yields the following state (while dropping the last qubit as its state does not convey information) before the final Hadamard-layer:
+			\begin{equation}
+				\frac{1}{\sqrt{2^n}} H^{\otimes n} \sum_x (-1)^{f(x)} \ket{x}  \label{eq:deutschJosza1}
+			\end{equation}
+			We now have two cases: either \(f\) is constant or \(f\) is balanced. We first consider the first (constant) case. Then the above state reduces to
+			\begin{equation}
+				\frac{1}{\sqrt{2^n}} H^{\otimes n} \sum_x (-1)^{f(x)} \ket{x}
+					= \pm \frac{1}{\sqrt{2^n}} H^{\otimes n} \sum_x \ket{x}
+					= \pm H^{\otimes n} \ket{+}^{\otimes n}
+					= \pm \ket{0}^{\otimes n}
+					\equiv \ket{0}^{\otimes n}.
+			\end{equation}
+			We now turn to the second case, a balanced \(f\). For this, we separate the \(x\)'s into \(x'\) and \(x''\) which are the values for which \(f(x') = 0\) and \(f(x'') = 1\), respectively. Using \eqref{th:hadamardGate}, we can write the state \eqref{eq:deutschJosza1} as
+			\begin{align}
+				\frac{1}{\sqrt{2^n}} H^{\otimes n} \sum_x (-1)^{f(x)} \ket{x}
+					&= \frac{1}{\sqrt{2^n}} H^{\otimes n} \biggl[ \sum_{x'} \ket{x'} - \sum_{x''} \ket{x''} \biggr] \\
+					&= \frac{1}{2^n} \biggl[ \sum_{x'} \sum_y (-1)^{x' \dotproduct y} \ket{y} - \sum_{x''} \sum_y (-1)^{x'' \dotproduct y} \ket{y} \biggr] \\
+					&= \frac{1}{2^n} \sum_y \biggl[ \sum_{x'} (-1)^{x' \dotproduct y} - \sum_{x''} (-1)^{x'' \dotproduct y} \biggr] \ket{y} \\
+					&= \frac{1}{2^n} \Biggl( \biggl[ \sum_{x'} (-1)^{0} \ket{y} - \sum_{x''} (-1)^{0} \ket{y} \biggr] + \sum_{y \neq 0} \biggl[ \sum_{x'} (-1)^{x' \dotproduct y} - \sum_{x''} (-1)^{x'' \dotproduct y} \biggr] \ket{y} \Biggr) \\
+					&= \frac{1}{2^n} \Biggl( \biggl[ \sum_{x'} \ket{y} - \sum_{x''} \ket{y} \biggr] + \sum_{y \neq 0} \biggl[ \sum_{x'} (-1)^{x' \dotproduct y} - \sum_{x''} (-1)^{x'' \dotproduct y} \biggr] \ket{y} \Biggr) \\
+					&= \frac{1}{2^n} \sum_{y \neq 0} \biggl[ \sum_{x'} (-1)^{x' \dotproduct y} - \sum_{x''} (-1)^{x'' \dotproduct y} \biggr] \ket{y}
+			\end{align}
+			and remove \(\ket{0}^{\otimes n}\)! Hence, it is impossible to measure all zeros for a balanced function and we can therefore deduce the following rules:
+			\begin{itemize}
+				\item if all measurement outcomes are zero, \(f\) is constant
+				\item if any measurement outcome is one, \(f\) is balanced
+			\end{itemize}
+			Opposed to the classical algorithm which needed \( 2^{n - 1} + 1 \) calls of \(f\), the Deutsch-Josza algorithm only needed a single call and is therefore in \( \mathcal{O}(1) \).
+		% end
+
+		\subsection{Remarks}
+			We saw that the Deutsch-Josza algorithm provides an exponential speedup over the classical solution. This gives a good start for \ac{QC} and shows that we may actually be faster than classical computing given that we come up with a clever algorithm. However, it turns out that Deutsch's problem as absolutely no real applications and that probabilistic classical computers can also do a pretty good job at solving it.
+
+			The algorithm is summarized in \autoref{alg:deutschJosza}.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{constant or balanced function \( f : \{0, 1\}^n \to \{ 0, 1 \} \)}
+				\KwOut{whether the function is constant or balanced}
+				\tcp{Run quantum circuit.}
+				\( \displaystyle\qquad\qquad
+					\Qcircuit @C=1em @R=1em {
+						\lstick{\ket{0}^{\otimes n}} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \meter & \rstick{x} \cw \\
+						\lstick{\ket{1}}             & \gate{H} & \ghost{U_f}        & \gate{H} & \qw    & \qw
+					}
+				\) \;
+				\If{all \(x\) are zero}{
+					\Return "constant" \;
+				}
+				\Return "balanced" \;
+				\caption{Deutsch-Josza Algorithm}
+				\label{alg:deutschJosza}
+			\end{algorithm}
+		% end
+
+		\subsection{Modified Deutsch-Josza Algorithm} % E6.2, E6.3
+			\todo{Modified Deutsch-Josza Algorithm}
+		% end
+	% end
+
+	\section{Bernstein-Vazirani Algorithm} % 5.15, 5.16, 5.17, 5.22, 5.23, 5.24, 5.25, 5.18, 6.8
+		\label{sec:bernsteinVazirani}
+
+		In this section we explore the \emph{Bernstein-Vazirani algorithm} used to extract a hidden string from a function. We first describe the problem, then the classical solution, and finally the quantum approach. Alongside we discuss complexity arguments and run-time.
+
+		\subsection{Problem}
+			Assume a function \( f : \{ 0, 1 \}^n \to \{ 0, 1 \} \) that is either \emph{constant} or \emph{balanced,} i.e., \( f(x) = a \) for all \(x\) or \( f(x) = 0 \) for half \(x\) and \( f(x) = 1 \) for the other half. We want to find out which of these cases \(f\) falls into, i.e., whether \(f\) is constant or balanced. This problem is also called \emph{Deutsch's problem.}
+
+			Assume a function \( f : \{ 0, 1 \}^n \to \{ 0, 1 \} \) that hides a bit string \( s \in \{ 0, 1 \}^n \) as follows:
+			\begin{equation}
+				f(x) = x \dotproduct s = x_1 s_1 \oplus x_2 s_2 \oplus \dots \oplus x_n s_n.
+			\end{equation}
+			The goal of the problem is to find \(s\) with as few calls of \(f\) as possible.
+		% end
+
+		\subsection{Classical Approach}
+			Classically, we would need \(n\) evaluations of \(f\) on the basis vectors, i.e., \( f(e_j) = s_j \) and the classical solution is therefore \(\mathcal{O}(n)\).
+		% end
+
+		\subsection{Quantum Approach}
+			For the quantum approach, we again directly apply Deutsch's approach \(\eqref{eq:deutschsApproach}\) with a unitary \(U_f\) implementing \(f\). Before the final Hadamard-layer, we now have the following state (dropping the last qubit as it does not convey any information):
+			\begin{equation}
+				\frac{1}{\sqrt{2^n}} \sum_x (-1)^{f(x)} \ket{x}  \label{eq:bernsteinVazirani1}
+			\end{equation}
+			As before, it boils down to cleverly manipulating the state to find an interpretation of the measurement outcomes. We now plug in the definition of \(f\) (and replace the module-two-sum with an actual sum as we are only using the result in an exponent of \(-1\)). By cleverly using power rules and rearranging sum and tensor product, we find that the state is:
+			\begin{align}
+				\frac{1}{\sqrt{2^n}} \sum_x (-1)^{f(x)} \ket{x}
+					&= \frac{1}{\sqrt{2^n}} \sum_x (-1)^{\sum_{i = 1}^{n} x_i s_i} \ket{x}
+					 = \frac{1}{\sqrt{2^n}} \sum_x \bigotimes_{i = 1}^{n} (-1)^{x_i s_i} \ket{x_i}_i \\
+					&= \frac{1}{\sqrt{2^n}} \bigotimes_{i = 1}^{n} \sum_{x_i} (-1)^{x_i s_i} \ket{x_i}_i
+					 = \frac{1}{\sqrt{2^n}} \bigotimes_{i = 1}^{n} \ket{0}_i + (-1)^{s_i} \ket{1}_i
+					 = \bigotimes_{i = 1}^{n} \begin{cases*} \ket{+}_i & if \( s_i = 0 \) \\ \ket{-}_i & if \( s_i = 1 \) \end{cases*}
+			\end{align}
+			And if we apply the Hadamard-gate again, we simply get the state \(\ket{s}\)! Measuring therefore reveals \(s\) with certainty. Much like in the Deutsch-Josza algorithm, we only need a single invocation of \(U_f\) and therefore this algorithm is also in \(\mathcal{O}(1)\).
+		% end
+
+		\subsection{Remarks}
+			We saw that the Bernstein-Vazirani algorithm provides a linear speedup over the classical solution. While the applications of this algorithm are still fairly limited, it gives rise to some ideas that will become useful later on. Also, the hidden string problem is not efficiently solvable on classical computers, also probabilistic classical computers!
+
+			The algorithm is summarized in \autoref{alg:bernsteinVazirani}.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{function \( f : \{0, 1\}^n \to \{ 0, 1 \} : x \mapsto x \dotproduct s \) with a hidden string \( s \in \{ 0, 1 \}^n \)}
+				\KwOut{the hidden string \(s\)}
+				\tcp{Run quantum circuit.}
+				\( \displaystyle\qquad\qquad
+					\Qcircuit @C=1em @R=1em {
+						\lstick{\ket{0}^{\otimes n}} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \meter & \rstick{s} \cw \\
+						\lstick{\ket{1}}             & \gate{H} & \ghost{U_f}        & \gate{H} & \qw    & \qw
+					}
+				\) \;
+				\Return \(s\) \;
+				\caption{Bernstein-Vazirani Algorithm}
+				\label{alg:bernsteinVazirani}
+			\end{algorithm}
+		% end
+	% end
+
+	\section{Simon's Algorithm}
+		\label{sec:simons}
+
+		From this section on, the algorithms become more involved. Most notable, we will need classical post-processing to make sense of the measurements. The first algorithm of this kind is Simon's algorithm which solves Simon's problem (which, as usual, will be introduced before looking at any approaches). Also, it is the first algorithm that gives us the solution only up to some probability.
+
+		\subsection{Problem}
+			In \emph{Simon's problem} we again try to find a string \( a \in \{ 0, 1 \}^n \) hidden in a function \( f : \{ 0, 1 \}^n \to \{ 0, 1 \}^n \). However, we assume that \(f\) is a two-to-one-function such that \( f(x) = f(y) \) iff \( x = y \oplus a \) where \( \oplus \) denotes bit-wise addition. We are therefore trying to find a period \(a\) of a function \(f\) under bit-wise addition such that \( f(x \oplus a) = f(x) \).
+		% end
+
+		\subsection{Classical Approach}
+			Classically, we evaluate \(f\) at various different inputs and compare the result to the previous results. If we find a match, we can directly compute the period \(a\). If we do not find a match on the \(j\)-th evaluation, we have eliminated
+			\begin{equation}
+				1 + 2 + \dots + (j - 1) = j (j - 1) / 2
+			\end{equation}
+			possible values of \(a\). This is due to our choice of the inputs: we always choose different values and compare the output to all lower. In the first iteration, we cannot compare to anything. In the second, we eliminate one \(a\). In the third, we eliminate two others, and so on. As there are \( 2^n - 1 \) possible choices of \(a\), we do not have an acceptable probability of finding \(a\) as long as \( j (j - 1) / 2 \ll 2^n \). Hence, we need around \( j = \sqrt{2^n} \) iterations! Therefore, the classical approach is in \( \mathcal{O}(\sqrt{2^n}) \).
+
+			% TODO: Simon's Algorithm: Classical: Why are the differences of inputs all different?
+		% end
+
+		\subsection{Quantum Approach}
+			As mentioned already is the quantum approach to Simon's problem---Simon's algorithm---more complicated than both Deutsch-Josza and Bernstein-Vazirani and requires classical post-processing. We therefore split up this section into the quantum circuit and the classical post-processing.
+
+			\subsubsection{Circuit}
+				Opposed to the previous two algorithms, we do not directly apply Deutsch's approach. Instead, we only put the first \(n\) qubits into a superposition and use zero-qubits for the targets:
+				\begin{equation}
+					\Qcircuit @C=1em @R=1em {
+						\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \qw & \meter & \rstick{y} \cw \\
+						\lstick{\ket{0}^n} & \qw      & \ghost{U_f}        & \meter   &     &        &
+					}
+				\end{equation}
+				After the \(U_f\)-gate, we have the state
+				\begin{equation}
+						\ket{0}^n\ket{0}^n
+					\overset{H^{\otimes n}}{\longto}
+						\ket{+}^n\ket{0}^n
+							= \frac{1}{\sqrt{2^n}} \sum_x \ket{x}\ket{0}^n
+					\overset{U_f}{\longto}
+						\frac{1}{\sqrt{2^n}} \sum_x \ket{x}\ket{f(x)}
+							= \frac{1}{\sqrt{2^n}} \sum_{x_i} \frac{\ket{x_i} + \ket{x_i \oplus a}}{2} \ket{f(x_i)}
+				\end{equation}
+				where the sums over \(x\) are over all \(n\)-bit binary strings and the last sum (over \(x_i\)) is over the individual values producing distinct values \(f(x_i)\). As \(f\) is a two-to-one function where \(f(x) = f(x \oplus a)\) for a constant a, we can pull in this second value explicitly by adding \(a\). By now measuring the target qubits (the ones storing the result of \(f\)), we collapse the first \(n\) qubits onto a state containing only one \(x_i\) and its "periodic equivalent":
+				\begin{equation}
+					\frac{1}{\sqrt{2}} (\ket{x_i} + \ket{x_i \oplus a}).
+				\end{equation}
+				Note that while this seems great at a first glance, we cannot directly extract \(a\) from this state as we can only measure once, giving us either \(x_i\) or \(x_i \oplus a\), and we cannot guarantee to end up in this state again by just repeating this experiment (as we might collapse onto a different \(f(x)\)). By no-cloning, we can also not just copy the state and just repeating until we get the same outcome again would reduce the quantum approach to the classical approach, but with the overhead of buying a quantum computer.
+
+				We therefore have to do some more work. Using the idea of Deutsch's approach again (interference) and applying \(H\) with \autoref{th:hadamardGate}, we can pull the computation results into a phase (we drop the index \(\cdot_i\) here for brevity) and remove \(x\) from the parts "that matter":
+				\begin{align}
+					\frac{1}{\sqrt{2}} H^{\otimes n} (\ket{x_i} + \ket{x_i \oplus a})
+						&= \frac{1}{\sqrt{2^{n + 1}}} \sum_y \bigl[ (-1)^{x \dotproduct y} + (-1)^{(x \oplus a) \dotproduct y} \bigr] \ket{y} \\
+						&= \frac{1}{\sqrt{2^{n + 1}}} \sum_y \bigl[ (-1)^{x \dotproduct y} + (-1)^{x \dotproduct y} (-1)^{a \dotproduct y} \bigr] \ket{y} \\
+						&= \frac{1}{\sqrt{2^{n + 1}}} \sum_y (-1)^{x \dotproduct y} \bigl[ 1 + (-1)^{a \dotproduct y} \bigr] \ket{y} \\
+						&= \frac{1}{\sqrt{2^{n + 1}}} \sum_y (-1)^{x \dotproduct y} \delta_{a \dotproduct y, 0} \ket{y}
+						 = \frac{1}{\sqrt{2^{n - 1}}} \sum_{y,\, a \dotproduct y = 0} (-1)^{x \dotproduct y} \ket{y}
+				\end{align}
+				After applying the Hadamard gate, we are only left with an equal superposition of \(y\)'s that have the property of \( a \dotproduct y = 0 \) which there are \(2^{n - 1}\) many. We quickly want to give an argument why thus number is correct. Assume w.l.o.g.\footnote{As \(a \neq 0\), at least one bit must be one and we can just reorder our bits.} that the last bit of \(a\) is one, i.e., \(a\) has the form \( a = a_1 a_2 \dots a_{n - 1} 1 \) with arbitrary \( a_1, a_2, \dots, a_{n - 1} \). Then the first \(n - 1\) bits of \( y = y_1 y_2 \dots y_{n - 1} y_n \) can be freely chosen from \( \{ 0, 1 \} \) and the last bit has to be \( y_n = a_1 y_1 \oplus a_2 y_2 \oplus \dots \oplus a_{n - 1} y_{n - 1} \). Therefore, we have \(2^{n - 1}\) possible \(y\)'s.
+
+				Measuring the first \(n\) qubits at this point yields us one \(y\) that fulfills the constraint \( a \dotproduct y = 0 \). By repeating this procedure \(m\) times, we get \(m\) constraint on \(a\) and what remains is some classical post-processing to determine \(a\).
+			% end
+
+			\subsubsection{Post-Processing}
+				As we saw in the previous section, after the quantum part we end up with \(m\) constraints
+				\begin{align}
+					a \dotproduct y_1 &= 0 &
+					a \dotproduct y_2 &= 0 &
+					&\cdots&
+					a \dotproduct y_m &= 0
+				\end{align}
+				on the period \(a\). However, if \(y_i\) is zero, we do not learn anything about \(a\) and if \(y_i = y_j\) for \(i \neq j\), we also do not learn anything new. But as there are exponentially many \(y\)', we have\footnote{Note that with a similar probability we might get two measurement outcomes during the first measurement that equal each other and with a \SI{50}{\percent} chance we get the second value of \(y\) and can instantly deduce \(a\). But this probability is \emph{very} low.}
+				\begin{equation}
+					P(y_i = 0 \lor y_i = y_j) = \frac{1}{2^{n - 1}} \approx 0.
+				\end{equation}
+				Hence, we have a high chance of learning something about \(a\) with each measurement and every time we learn something, we \emph{half} the number of possible \(a\)'s (cf. classically where we only get a linear reduction) and we need \(n\) distinct non-zero values to uniquely determine \(a\). Overall, we have the following theorem:
+
+				\begin{theorem}[Simon's Algorithm]
+					The probability \(p\) of acquiring enough information to uniquely determine \(a\) with \(n + m\) invocations satisfies
+					\begin{equation}
+						p > 1 - \frac{1}{2^{m + 1}}.
+					\end{equation}
+				\end{theorem}
+				\begin{proof}
+					See Mermin, 2016, Appendix G.
+				\end{proof}
+
+				Hence, with \(m = 20\), the odds of finding \(a\) are one to more than a million. Hence, Simon's algorithm is in \( \mathcal{O}(n) \).
+			% end
+		% end
+
+		\subsection{Remarks}
+			We saw that Simon's algorithm provides an exponential speedup over the classical solution. And while applications of Simon's problem are rare, its main contribution to \ac{QC} was motivating the ideas behind \emph{Shor's algorithm} which has very practical applications and which we will discuss in \autoref{sec:shors} after covering \ac{QFT} in \autoref{sec:qft}.
+
+			The algorithm is summarized in \autoref{alg:simons}.
+
+			\begin{algorithm}  \DontPrintSemicolon  % TODO: Only run until Y contains n linearly independent samples?
+				\KwIn{two-to-one function \( f : \{ 0, 1 \}^n \to \{ 0, 1 \}^n \) with the property \( f(x) = f(x \oplus a) \) for a constant period \( a \in \{ 0, 1 \}^n \); number of additional calls \( m \)}
+				\KwOut{the period \(a\)}
+				\( \mathcal{Y} \gets \{ \} \)  \quad\tcp{Prepare the sample set.}
+				\ForEach{\( i = 1, 2, \dots, n + m \)}{
+					\tcp{Run quantum circuit.}
+					\( \displaystyle\qquad\qquad
+						\Qcircuit @C=1em @R=1em {
+							\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \qw & \meter & \rstick{y_i} \cw \\
+							\lstick{\ket{0}^n} & \qw      & \ghost{U_f}        & \meter   &     &        &
+						}
+					\) \;
+					\tcp{Rule out uninforming zeros and duplicates.}
+					\If{\( y_i \neq 0 \) and \( y_i \not\in \mathcal{Y} \)}{
+						\( \mathcal{Y} \gets \mathcal{Y} \cup \{ y_i \} \)  \quad\tcp{Add "meaningful" sample to the sample set.}
+					}
+				}
+				\( a^\ast \gets \mathrm{solve}_a \bigl\{ a \dotproduct y_i \bigforwhich i = 1, 2, \dots, n + m \bigr\} \)  \quad\tcp{Gauss-Jordan Elimination}
+				\Return \( a^\ast \) \;
+				\caption{Simon's Algorithm}
+				\label{alg:simons}
+			\end{algorithm}
+		% end
+	% end
+
+	\section{Quantum Fourier Transform}
+		\label{sec:qft}
+
+		For Shor's algorithm (\autoref{sec:shors}), we will need a quantum version of the famous Fourier transform, \emph{\acf{QFT}.} in this section we will see how we can implement this transform and what it complexity is compared to the classical Fourier transform. We define the \ac{QFT} as follows:
+		\begin{definition}[Quantum Fourier Transform]  \label{def:qft}
+			The \emph{quantum Fourier transform} of an arbitrary state \(\ket{j}\) of an orthonormal basis \( \ket{0}, \ket{1}, \dots, \ket{2^n - 1} \) is a linear transformation such that
+			\begin{equation}
+				\ket{j} \overset{U_\mathrm{FT}}{\longto} \frac{1}{\sqrt{2^n}} \sum_{k = 0}^{2^n - 1} e^{2 \pi i j k / 2^n} \ket{k}  \label{eq:qft}
+			\end{equation}
+			where \(j\) and \(k\) are the decimal representations of their binary counterpart, i.e., "actual" numbers. On an arbitrary state \(\ket{x}\), the action is
+			\begin{equation}
+				\sum_{j = 0}^{2^n - 1} x_j \ket{j} \overset{U_\mathrm{FT}}{\longto} \sum_{k = 0}^{2^n - 1} y_k \ket{k}
+				\quad\text{with}\quad
+				y_k = \frac{1}{\sqrt{2^n}} \sum_{j = 0}^{2^n - 1} x_j e^{2 \pi i j k / 2^n}.
+			\end{equation}
+		\end{definition}
+		Before implementing a circuit implementing \ac{QFT}, we first want to show that the operator is actually unitary:
+		\begin{theorem}
+			The \acl{QFT} as defined in \autoref{def:qft} is a unitary transformation.
+		\end{theorem}
+		\begin{proof}
+			Let \( \ket{\alpha} \) and \( \ket{\beta} \) be arbitrary basis states (of the same basis). To show that \(U_\mathrm{FT}\) is a unitary transformation, it is enough to show that the transformed basis states are still orthonormal. This is due to
+			\begin{equation}
+				\bra{\alpha} U_\mathrm{FT}^\dagger U_\mathrm{FT} \ket{\beta}
+					= \bra{\alpha} \underbrace{U_\mathrm{FT}^\dagger U_\mathrm{FT}}_{= \ID} \ket{\beta}
+					= \bra{\alpha} \ket{\beta}
+					= \delta_{\alpha \beta}
+			\end{equation}
+			and \( U_\mathrm{FT}^\dagger U_\mathrm{FT} = \ID \) holding if and only if \(U_\mathrm{FT}\) is unitary. We proceed by calculating the first inner product (and applying \(U_\mathrm{FT}\) according to its definition):
+			\begin{align}
+				\bra{\alpha} U_\mathrm{FT}^\dagger U_\mathrm{FT} \ket{\beta}
+					&= \frac{1}{2^n} \Biggl( \sum_{k_1 = 0}^{2^n - 1} e^{-2 \pi i \alpha k_1 / 2^n} \bra{k_1} \Biggr) \Biggl( \sum_{k_2 = 0}^{2^n - 1} e^{2 \pi i \beta k_2 / 2^n} \ket{k_2} \Biggr) \\
+					&= \frac{1}{2^n} \sum_{k_1 = 0}^{2^n - 1} \sum_{k_2 = 0}^{2^n - 1} e^{-2 \pi i \alpha k_1 / 2^n} e^{2 \pi i \beta k_2 / 2^n} \ip{k_1}{k_2}
+					 = \frac{1}{2^n} \sum_{k_1 = 0}^{2^n - 1} \sum_{k_2 = 0}^{2^n - 1} e^{-2 \pi i \alpha k_1 / 2^n} e^{2 \pi i \beta k_2 / 2^n} \delta_{k_1 k_2} \\
+					&= \frac{1}{2^n} \sum_{k = 0}^{2^n - 1} e^{-2 \pi i \alpha k / 2^n} e^{2 \pi i \beta k / 2^n}
+					 = \frac{1}{2^n} \sum_{k = 0}^{2^n - 1} e^{2 \pi i (\alpha - \beta) k / 2^n}
+			\end{align}
+			We now have to continue the proof piecewise. For \(\alpha = \beta\), the inner product is obviously \num{1}. For \(\alpha \neq \beta\), the sum is a special case of \autoref{th:rootsOfUnity} with \( a \triangleq \alpha - \beta \) and \( n \triangleq 2^n \) and therefore it is equal to zero. Hence, the basis states keep their orthonormality and \(U_\mathrm{FT}\) is indeed a unitary transformation.
+		\end{proof}
+		We now continue with building the circuit implementing \ac{QFT}.
+
+		Note that this "algorithm" is different from the previous ones in that we do not go over the classical discrete Fourier transform. We will just use the result of the \ac{QFT} during the discussion of Shor's algorithm.
+
+		\subsection{Binary Fraction Expansion}
+			To build the \ac{QFT} circuit, we first rewrite \eqref{eq:qft} a bit using the notation \( \ket{j} = \ket{j_1 j_2 \dots j_n} \) with \( j = \sum_{i = 1}^{n} j_i 2^{n - i} \) and the recursively defined \emph{binary fraction}
+			\begin{align}
+				0.j &\coloneqq \frac{j}{2} &
+				0.j_1 j_2 j_3 \dots j_n &\coloneqq \frac{j_1}{2} + \frac{1}{2} 0.j_2 j_3 \dots j_n
+				\label{eq:binaryFraction}
+			\end{align}
+			which can also be written as
+			\begin{equation}
+				0.j_1 j_2 \dots j_n = \sum_{i = 1}^{n} \frac{j_i}{2^i}.
+			\end{equation}
+			The that it is the \emph{order} and not the \emph{indices} of the arguments that matter here! This is why the recursive definition is clearer. With these notations at hand, we have the following result:
+			\begin{theorem}[Binary Fraction Expansion of QFT]
+				The \ac{QFT} result (\autoref{def:qft}) can be expressed as follows:
+				\begin{equation}
+					\ket{j_1 j_2 \dots j_n}
+					\overset{U_\mathrm{FT}}{\longto}
+					\frac{1}{\sqrt{2^n}} \Bigl( \bigl( \ket{0} + e^{2 \pi i 0.j_n} \ket{1} \bigr) \otimes \bigl( \ket{0} + e^{2 \pi i 0.j_{n - 1} j_n} \ket{1} \bigr) \otimes \dots \otimes \bigl( \ket{0} + e^{2 \pi i 0.j_1 j_2 \dots j_n} \ket{1} \bigr) \Bigr)
+				\end{equation}
+				using binary fractions \eqref{eq:binaryFraction}.
+			\end{theorem}
+			\begin{proof}
+				As usual, we show this equivalence by clever manipulation of the state. For brevity, we drop the normalization constant as it stays the same anyway. By rearranging and using the definition of exponents, we have
+				\begin{align}
+					\sum_{k = 0}^{2^n - 1} e^{2 \pi i j k / 2^n} \ket{k}
+						&= \sum_{k_1} \sum_{k_2} \dots \sum_{k_n} e^{2 \pi i j \sum_{\ell = 1}^{n} k_\ell 2^{n - \ell} / 2^n} \ket{k_1 k_2 \dots k_n} \\
+						&= \sum_{k_1} \sum_{k_2} \dots \sum_{k_n} e^{2 \pi i j \sum_{\ell = 1}^{n} k_\ell 2^{-\ell}} \ket{k_1 k_2 \dots k_n}
+						 = \sum_{k_1} \sum_{k_2} \dots \sum_{k_n} \bigotimes_{\ell = 1}^{n} e^{2 \pi i j k_\ell 2^{-\ell}} \ket{k_\ell} \eqqcolon (\ast).
+				\end{align}
+				We now pull the sums into the tensor product one by one and add them explicitly:
+				\begin{align}
+					(\ast)
+						&= \sum_{k_1} \sum_{k_2} \dots \sum_{k_{n - 1}} \bigotimes_{\ell = 1}^{n} e^{2 \pi i j k_\ell 2^{-\ell}} \ket{k_\ell} \otimes \Biggl[ \sum_{k_n} e^{2 \pi i j k_n / 2^n} \ket{k_n} \Biggr] \\
+						&= \sum_{k_1} \sum_{k_2} \dots \sum_{k_{n - 1}} \bigotimes_{\ell = 1}^{n} e^{2 \pi i j k_\ell 2^{-\ell}} \ket{k_\ell} \otimes \Bigl[ e^{2 \pi i j \cdot 0 / 2^n} \ket{0} + e^{2 \pi i j \cdot 1 / 2^n} \ket{1} \Bigr] \\
+						&= \sum_{k_1} \sum_{k_2} \dots \sum_{k_{n - 1}} \bigotimes_{\ell = 1}^{n} e^{2 \pi i j k_\ell 2^{-\ell}} \ket{k_\ell} \otimes \Bigl[ \ket{0} + e^{2 \pi i j / 2^n} \ket{1} \Bigr] \\
+						&= \sum_{k_1} \sum_{k_2} \dots \sum_{k_{n - 2}} \bigotimes_{\ell = 1}^{n} e^{2 \pi i j k_\ell 2^{-\ell}} \ket{k_\ell} \otimes \Bigl[ \ket{0} + e^{2 \pi i j / 2^{n - 1}} \ket{1} \Bigr] \otimes \Bigl[ \ket{0} + e^{2 \pi i j / 2^n} \ket{1} \Bigr] \\
+						&= \cdots \\
+						&= \bigoplus_{\ell = 1}^{n} \Bigl[ \ket{0} + \underbrace{e^{2 \pi i j 2^{-\ell}}}_{\alpha_\ell \coloneqq} \ket{1} \Bigr]
+				\end{align}
+				But this is till not the form we desire! We have to rearrange phases of the \(\ket{1}\)'s more:
+				\begin{equation}
+					\alpha_\ell
+						= e^{2 \pi i j 2^{-\ell}}
+						= e^{2 \pi i \sum_{m = 1}^{n} j_m 2^{n - m} 2^{-\ell}}
+						= e^{2 \pi i \sum_{m = 1}^{n} j_m 2^{n - m - \ell}}
+						= \prod_{m = 1}^{n} e^{2 \pi i j_m 2^{n - \ell - m}}
+				\end{equation}
+				In this product, however, all terms with \( m \leq n - \ell \) are \(1\) as \( 2^{n - \ell - m} \in \N_0 \) for \( m \leq n - \ell \) and therefore they disappear from the product:
+				\begin{equation}
+					\prod_{m = 1}^{n} e^{2 \pi i j_m 2^{n - \ell - m}}
+						= \prod_{m = n - \ell + 1}^{n} e^{2 \pi i j_m 2^{n - \ell - m}}
+						 = e^{2 \pi i \sum_{m = n - \ell + 1}^{n} j_m 2^{n - \ell - m}}
+						 \doteq e^{2 \pi i 0.j_{n - \ell + 1} j_{n - \ell + 2} \dots j_{n}}
+				\end{equation}
+				As the last equivalence is a bit hard to see, consider \(\ell = 1\), \(\ell = 2\), and \(\ell = n\) explicitly:
+				\begin{itemize}
+					\item \( \sum_{m = n - 1 + 1}^{n} j_m 2^{n - 1 - m} = \sum_{m = n}^{n} j_m 2^{n - 1 - m} = j_n / 2 = 0.j_n \)
+					\item \( \sum_{m = n - 2 + 1}^{n} j_m 2^{n - 2 - m} = \sum_{m = n - 1}^{n} j_m 2^{n - 2 - m} = j_{n - 1} / 2 + j_n / 4 \)
+					\item \( \sum_{m = n - n + 1}^{n} j_m 2^{n - n - m} = \sum_{m = 1}^{n} j_m 2^{-m} = j_1 / 2 + j_2 / 4 + \dots + j_n / 2^n \)
+				\end{itemize}
+				Plugging everything together, we have the result that we wanted to show.
+			\end{proof}
+		% end
+
+		\subsection{Quantum Circuit}
+			As the \ac{QFT} is not simply an application of a unitary (or at least we do not want to use a bruteforce approach to generate it), we need to consider the qubits individually. First, we show that
+			\begin{equation}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{j_1}}       & \gate{H} & \gate{R_2} & \qw & \cdots & & \gate{R_{n - 1}} & \gate{R_n} & \qw      & \qw & \cdots & & \qw              & \qw              & \qw      & \qw        & \qw      & \rstick{\ket{J_1}} \qw \\
+					\lstick{\ket{j_2}}       & \qw      & \ctrl{-1}  & \qw & \cdots & & \qw              & \qw        & \gate{H} & \qw & \cdots & & \gate{R_{n - 2}} & \gate{R_{n - 1}} & \qw      & \qw        & \qw      & \rstick{\ket{J_2}} \qw \\
+					\lstick{\ket{j_{n - 1}}} & \qw      & \qw        & \qw & \cdots & & \ctrl{-2}        & \qw        & \qw      & \qw & \cdots & & \ctrl{-1}        & \qw              & \gate{H} & \gate{R_2} & \qw      & \rstick{\ket{J_{n - 1}}} \qw \\
+					\lstick{\ket{j_n}}       & \qw      & \qw        & \qw & \cdots & & \qw              & \ctrl{-3}  & \qw      & \qw & \cdots & & \qw              & \ctrl{-2}        & \qw      & \ctrl{-1}  & \gate{H} & \rstick{\ket{J_n}} \qw
+				}
+				\label{eq:qftCircuitPart}
+			\end{equation}
+			produces the following states (with \( R_k \coloneqq \diag(1, e^{2 \pi i / 2^k}) \)):
+			\begin{equation}
+				\begin{aligned}
+					\ket{J_1} &= \frac{1}{\sqrt{2}} \bigl( \ket{0} + e^{2 \pi i 0.j_1 j_2 \dots j_{n - 1} j_n} \ket{1} \bigr) &
+					\ket{J_2} &= \frac{1}{\sqrt{2}} \bigl( \ket{0} + e^{2 \pi i 0.j_2 \dots j_{n - 1} j_n} \ket{1} \bigr) \\
+					\ket{J_{n - 1}} &= \frac{1}{\sqrt{2}} \bigl( \ket{0} + e^{2 \pi i 0.j_{n - 1} j_n} \ket{1} \bigr) &
+					\ket{J_n} &= \frac{1}{\sqrt{2}} \bigl( \ket{0} + e^{2 \pi i 0.j_n} \ket{1} \bigr)
+				\end{aligned}
+				\label{eq:qftCircuitStates}
+			\end{equation}
+			For the first qubit, we have
+			\begin{align}
+				\ket{j_1 j_2 \dots j_{n - 1} j_n}
+					&\overset{H_1}{\longto}
+						\frac{1}{\sqrt{2}} \bigl( \ket{0} + \underbrace{(-1)^{j_1}}_{\mathclap{= e^{\pi i j_1} = e^{2 \pi i j_1 / 2}}} \ket{1} \bigr) \ket{j_2 \dots j_{n - 1} j_n}
+							= \frac{1}{\sqrt{2}} \bigl( \ket{0} + e^{2 \pi i 0.j_1} \ket{1}) \ket{j_2 \dots j_{n - 1} j_n} \\
+					&\overset{\mathit{CR}_2}{\longto}
+						\frac{1}{\sqrt{2}} \bigl( \ket{0} + e^{2 \pi i 0.j_1} e^{2 \pi i j_2 / 4} \ket{1} \bigr) \ket{j_2 \dots j_{n - 1} j_n}
+							= \frac{1}{\sqrt{2}} \bigl( \ket{0} + e^{2 \pi i 0.j_1 j_2} \ket{1} \bigr) \ket{j_2 \dots j_{n - 1} j_n} \\
+					&\longto \cdots \\
+					&\overset{\mathit{CR}_n}{\longto}
+							\frac{1}{\sqrt{2}} \bigl( \ket{0} + e^{2 \pi i 0.j_1 j_2 \dots j_n} \ket{1} \bigr) \ket{j_2 \dots j_{n - 1} j_n}.
+			\end{align}
+			As the result of the second qubit is independent of the first qubit and so on (i.e., the \(i\)-th qubit does not effect the \(j\)-th qubit for \(j > i\)), we can repeat this procedure for the rest of the qubits. Hence, the circuit \eqref{eq:qftCircuitPart} indeed produces the states \eqref{eq:qftCircuitStates}. However, compared to the definition of the \ac{QFT}, \autoref{def:qft}, the phases of the qubits are flipped. We therefore have to apply SWAP-gates between qubit \(1\) and \(n\), \(2\) and \(n - 1\), and so on.
+
+			This concludes the derivation/proof of the quantum circuit for \ac{QFT}.
+		% end
+
+		\subsection{Remarks}
+			For implementing the \ac{QFT} we needed \(n\) Hadamard gates, \( (n - 1) + \cdots + 2 + 1 = n (n - 1) / 2 \) controlled-\(R_k\)-gates and \( \lfloor n/2 \rfloor \) SWAP-gates. As a swap gates needs \(3\) CNOT-gates and an arbitrary controlled gates needs \(2\) CNOT-gates and \(3\) single-qubit gates, we need a total of
+			\begin{equation}
+				n + \frac{n (n - 1)}{2} \cdot 5 + \biggl\lfloor \frac{n}{2} \biggr\rfloor \cdot 3 \in \mathcal{O}(n^2)
+			\end{equation}
+			gates to implement the \acl{QFT}. Compared to the classical discrete Fourier transform which has complexity \( \mathcal{O}(n 2^n) \), this is an exponential speedup! However, as usual, we cannot read out the result and need to find clever ways of applying the \ac{QFT} to use its power.
+
+			The algorithm is summarized in \autoref{alg:qft}.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{state \(\ket{j_1 j_2 \dots j_{n - 1} j_n}\)}
+				\KwOut{its Fourier-transformed state}
+				\tcp{Run quantum circuit.}
+				\( \displaystyle\qquad\quad
+					\Qcircuit @C=1em @R=1em {
+						\lstick{\ket{j_1}}       & \gate{H} & \gate{R_2} & \qw & \cdots & & \gate{R_{n - 1}} & \gate{R_n} & \qw      & \qw & \cdots & & \qw              & \qw              & \qw      & \qw        & \qw      & \qswap      & \qw         & \rstick{\ket{k_1}} \qw \\
+						\lstick{\ket{j_2}}       & \qw      & \ctrl{-1}  & \qw & \cdots & & \qw              & \qw        & \gate{H} & \qw & \cdots & & \gate{R_{n - 2}} & \gate{R_{n - 1}} & \qw      & \qw        & \qw      & \qw \qwx    & \qswap      & \rstick{\ket{k_2}} \qw \\
+						\lstick{\ket{j_{n - 1}}} & \qw      & \qw        & \qw & \cdots & & \ctrl{-2}        & \qw        & \qw      & \qw & \cdots & & \ctrl{-1}        & \qw              & \gate{H} & \gate{R_2} & \qw      & \qw \qwx    & \qswap \qwx & \rstick{\ket{k_{n - 1}}} \qw \\
+						\lstick{\ket{j_n}}       & \qw      & \qw        & \qw & \cdots & & \qw              & \ctrl{-3}  & \qw      & \qw & \cdots & & \qw              & \ctrl{-2}        & \qw      & \ctrl{-1}  & \gate{H} & \qswap \qwx & \qw         & \rstick{\ket{k_n}} \qw
+					}
+				\) \;
+				\Return \( \ket{k_1 k_2 \dots k_{n - 1} k_n} \) \;
+				\caption{Quantum Fourier Transform}
+				\label{alg:qft}
+			\end{algorithm}
+		% end
+	% end
+
+	\section{Shor's Algorithm}
+		\label{sec:shors}
+
+		In this section we will finally explore the most well-known quantum algorithm, \emph{Shor's algorithm.} It solves the problem of finding the factors of a large number \(N\) \emph{efficiently} and polynomial in \(N\). The difficulty of factoring is crucial for modern-day cryptography as RSA (a very common public-key crypto-system) solely relies on the fact that factoring is \emph{hard.} As factoring is closely related to finding the period of a function, we split this section into two parts: the first is concerned with finding the period of a special function (similar to Simon's algorithm) and the second takes the steps from period finding to factoring which is purely classical.
+
+		\subsection{Period Finding}
+			The first step in Shor's algorithm and the most ingenious ideas are in finding the period \(r\) of some function \(f\) under \emph{ordinary addition} (cf. Simon's algorithm which considered modulo-two addition). The best classical algorithms solving this problem scale exponentially with the number of bits of \(r\). With \ac{QC}, we can find an algorithm that scales slightly faster than cubic.
+
+			We want to find the period \(r\) of the function \( f : \{ 0, 1 \}^n \to \{ 0, 1 \}^{n_0} : x \mapsto b^x \,\mathbf{mod}\, N \) such that \( f(x) = f(x + r) \). We denote the number of bits of \(N\) as \(n_0\) and let \( n \coloneqq n_0 \). We also have \( 2^{n_0} > N > r \).
+
+			\subsubsection{Quantum Circuit}
+				Like in Simon's algorithm, we prepare the state \( \ket{0}^{\otimes n} \ket{0}^{\otimes n_0} \), apply \(H^{\otimes n}\) to the first \(n\) gates, apply \( U_f : \ket{x}\ket{y} \mapsto \ket{x}\ket{y \oplus f(x)} \), and measure the last \(n_0\) qubits. This collapses our state as follows:
+				\begin{equation}
+					\frac{1}{\sqrt{2^n}} \sum_{x = 0}^{2^n - 1} \ket{x}\ket{f(x)}
+					\quad\overset{\text{measure}}{\longto}\quad
+					\ket{\psi_n} = \frac{1}{\sqrt{m}} \sum_{k = 0}^{m - 1} \ket{x_0 + kr}.
+				\end{equation}
+				We now have a superposition of inputs to \(f\) that all yield the same value when applying \(f\) where \( 0 \leq x_0 < r \) and \( m \approx \lfloor 2^n / r \rfloor \). Like with Simon's algorithm, we now have the problem that a measurement destroys the superposition and we are not guaranteed to end up in the same one again and we cannot clone the state due to the no-cloning theorem. As always, we therefore need to find a clever way of learning \(r\). The main problem is the "base" \(x_0\) which is the changing variable (as \(r\) is constant by assumption). We only want to extract the frequency of the values---which is exactly what \ac{QFT} does.
+			% end
+
+			\subsubsection{Using Quantum Fourier Transform}
+				We saw in the previous section that we end up with the post-measurement state \( \ket{\psi_n} = \frac{1}{\sqrt{m}} \sum_{k = 0}^{m - 1} \ket{x_0 + kr} \) of which we want to extract the frequency \(r\) (i.e., we want to put it into a phase such that we are able to read it out). We now apply \ac{QFT} according to \autoref{def:qft}:
+				\begin{align}
+					U_\mathrm{FT} \ket{\psi_n}
+						&= \frac{1}{\sqrt{m 2^n}} \sum_{k = 0}^{m - 1} U_\mathrm{FT} \ket{x_0 + kr}
+						 = \frac{1}{\sqrt{m 2^n}} \sum_{k = 0}^{m - 1} \sum_{y = 0}^{2^n - 1} e^{2 \pi i (x_0 + kr) y / 2^n} \ket{y} \\
+						&= \frac{1}{\sqrt{m 2^n}} \sum_{y = 0}^{2^n - 1} \sum_{k = 0}^{m - 1} e^{2 \pi i (x_0 + kr) y / 2^n} \ket{y}
+						 = \sum_{y = 0}^{2^n - 1} \underbrace{e^{2 \pi i x_0 y / 2^n}}_{(\dagger)} \Biggl[ \frac{1}{\sqrt{m 2^n}} \sum_{k = 0}^{m - 1} e^{2 \pi i k r y / 2^n} \Biggr] \ket{y}
+				\end{align}
+				As \(x_0\) only appears in the relative phase \((\dagger)\) which has no effect on the measurement (as its magnitude is \num{1} and the states \(\ket{y}\) are orthonormal), we have successfully eliminated \(x_0\) from our calculations! The probability of some measurement \(y_0\) is therefore
+				\begin{equation}
+					P(y_0) = \frac{1}{m 2^n} \Biggl\lvert \sum_{k = 0}^{m - 1} e^{2 \pi i k r y / 2^n} \Biggr\rvert^2.  \label{eq:shorProb}
+				\end{equation}
+				This concludes the intermediate goal of eliminating \(x_0\) from our mathematical framework. Next, we have to interpret our measurement outcomes by analyzing the probability \eqref{eq:shorProb} deeper.
+			% end
+
+			\subsubsection{Post-Processing}
+				We are now at the point where we start the classical post-processing which is where the ingenious ideas that make Shor's algorithm work come into play. The result from the above quantum computations is that we measure \(y\) with probability \( P(y) = \frac{1}{m 2^n} \bigl\lvert \sum_{k = 0}^{m - 1} e^{2 \pi i k r y / 2^n} \bigr\rvert^2 \). Note that we dropped the index \(\cdot_0\) for brevity.
+
+				\paragraph{Calculating the Probability of "Success"}
+					First, we show that there is a reasonable probability to get a \(y\) "close" to an integer multiple of \(2^n/r\). We say that \(y\) is close to \( j 2^n/r \) (the \(j\)-th multiple) if there exists an \( \lvert \delta_j \rvert \leq 1/2 \) such that
+					\begin{equation}
+						y = j \frac{2^n}{r} + \delta_j \eqqcolon y_j.
+					\end{equation}
+					We do this by inserting \(y_j\) into \eqref{eq:shorProb} and lower-bounding the probability:
+					\begin{align}
+						P(y_j)
+							&= \frac{1}{m 2^n} \Biggl\lvert \sum_{k = 0}^{m - 1} e^{2 \pi i k r y_j / 2^n} \Biggr\rvert^2
+							 = \frac{1}{m 2^n} \Biggl\lvert \sum_{k = 0}^{m - 1} e^{2 \pi i k r (j 2^n/r + \delta_j) / 2^n} \Biggr\rvert^2
+							 = \frac{1}{m 2^n} \Biggl\lvert \sum_{k = 0}^{m - 1} \underbrace{e^{2 \pi i k j}}_{= (e^{2 \pi i})^{jk} = 1} e^{2 \pi i k r \delta_j / 2^n} \Biggr\rvert^2 \\
+							&= \frac{1}{m 2^n} \Biggl\lvert \sum_{k = 0}^{m - 1} e^{2 \pi i k r \delta_j / 2^n} \Biggr\rvert^2
+							 = \frac{1}{m 2^n} \Biggl\lvert \sum_{k = 0}^{m - 1} \bigl( e^{2 \pi i r \delta_j / 2^n} \bigr)^k \Biggr\rvert^2
+							 \overset{\mathclap{(\dagger)}}{=} \frac{1}{m 2^n} \Biggl\lvert \frac{1 - e^{2 \pi i m r \delta_j / 2^n}}{1 - e^{2 \pi i r \delta_j / 2^n}} \Biggr\rvert^2 \\
+							&\overset{\mathclap{(\ddagger)}}{=} \frac{1}{m 2^n} \Biggl\lvert \frac{1 - \cos(2 \pi i m r \delta_j / 2^n) - i \sin(2 \pi i m r \delta_j / 2^n)}{1 - \cos(2 \pi i r \delta_j / 2^n) - i \sin(2 \pi i r \delta_j / 2^n)} \Biggr\rvert^2
+							 \overset{\mathclap{(\ast)}}{=} \frac{1}{m 2^n} \frac{\sin^2(\pi m r \delta_j / 2^n)}{\sin^2(\pi r \delta_j / 2^n)}
+					\end{align}
+					In the marked steps, we used the following: \((\dagger)\) Geometric series, \((\ddagger)\) Euler's formula, \((\ast)\) the following relation:
+					\begin{align}
+						\bigl\lvert 1 - \cos(2 \varphi) - i \sin(2 \varphi) \bigr\rvert^2
+							&= \bigl( 1 - \cos(2 \varphi) \bigr)^2 + \sin^2(2 \varphi)
+							 = 1 - 2 \cos(2 \varphi) + \cos^2(2 \varphi) + \sin^2(2 \varphi) \\
+							&= 1 - 2 \cos(2 \varphi) + 1
+							 = 2 \bigl( 1 - \cos(2 \varphi) \bigr)
+							 = 4 \sin^2(\varphi)
+					\end{align}
+					With the two approximations \( m \approx 2^n/r \) and \( \sin x \approx x \) for small \(x\), we arrive at
+					\begin{equation}
+						\frac{1}{m 2^n} \frac{\sin^2(\pi i m r \delta_j / 2^n)}{\sin^2(\pi i r \delta_j / 2^n)}
+							\approx \frac{r}{(2^n)^2} \frac{\sin^2(\pi \delta_j)}{(\pi r \delta_j / 2^n)^2}
+							= \frac{1}{r} \Biggl( \frac{\sin(\pi \delta_j)}{\pi \delta_j} \Biggr)^2.  \label{eq:shorsApprox}
+					\end{equation}
+					Let \( x \coloneqq \pi \delta_j \). As we can lower-bound \( \sin x \) by \(x/(\pi/2)\) in the interval \( x \in [-\pi/2, \pi/2] \), see \autoref{fig:sinX}, we can lower-bound \eqref{eq:shorsApprox} as follows:
+					\begin{equation}
+						\frac{1}{r} \Biggl( \frac{\sin(\pi \delta_j)}{\pi \delta_j} \Biggr)^2
+							\geq \frac{1}{r} \Biggl( \frac{2 \pi \delta_j}{\pi^2 \delta_j} \Biggr)^2
+							= \frac{1}{r} \Biggl( \frac{2}{\pi} \Biggr)^2
+							= \frac{2}{\pi^2 r}
+							\approx \frac{\num{0.405}}{r}
+					\end{equation}
+					As there are \(r - 1\) different\footnote{As \( y_j \in \{ 1, 2, \dots, 2^n - 1 \} \) and also \( y_j = j 2^n/r + \delta_j \), we can see that \( j \) has to be one of \( \{ 1, 2, \dots, r - 1 \} \). For \( j = r \), we have \( y_r = r 2^n / r + \delta_r = 2^n + \delta_r \geq 2^n - 1/2 > 2^n - 1 \) as \( \lvert \delta_j \rvert \leq 1/2 \). For \( j = 0 \), we have \( y_0 = 0 \cdot 2^n / r + \delta_0 = \delta_0 \) and therefore \(y_0 = 0\) as \(y_0\) can only take integral values. However, we do not learn anything about \(r\) with \(y = 0\) and we therefore discard it from the probability discussion. Hence, we end up with \(r - 1\) "useful" values of \(j\).} \(j\) and the above probability is for a specific \(j\), out final probability of getting a measurement in vicinity of an integer multiple of \(2^n/r\) is greater than \SI{40}{\percent}! What remains is to recover the period from collecting multiple samples (cf. Simon's algorithm).
+
+					\begin{figure}
+						\centering
+						% Plot[{(Sin[x])^2, (2 x/\[Pi])^2}, {x, -\[Pi]/2, \[Pi]/2}, PlotLegends -> "Expressions", ImageSize -> Large]
+						\includegraphics[width=0.5\linewidth]{sin-x.pdf}
+						\caption[Lower Bound of Sine]{Lower bound of \(\sin x\) in the interval \( x \in [-\pi/2, \pi/2] \) by \(x/(\pi/2)\).}
+						\label{fig:sinX}
+					\end{figure}
+				% end
+
+				\paragraph{Recovering the Period}
+					We saw that after running the quantum circuit and measuring, we end up with \(\ell\) samples \( y_1, y_2, \dots, y_\ell \). Suppose that these are exact, i.e., \( \delta_j = 0 \) for all \(j\). We could then recover the period by calculating
+					\begin{equation}
+						\gcd\biggl( j_1 \frac{2^n}{r},\, j_2 \frac{2^n}{r},\, \dots,\, j_\ell \frac{2^n}{r} \biggr) = \frac{2^n}{r}.  \label{eq:shorGcd}
+					\end{equation}
+					However, we do not have the exact values and the \(y\)'s are just in a vicinity around integer multiples of \(2^n/r\)! By reformulating the "closeness" of \(y_j\) as follows and choosing a relaxed upper bound,
+					\begin{equation}
+						y_j = j \frac{2^n}{r} + \delta_j
+						\quad\iff\quad
+						\biggl\lvert y_j - 2^n \frac{j}{r} \biggr\rvert \leq \frac{1}{2}
+						\quad\implies\quad
+						\biggl\lvert \frac{y_j}{2^n} - \frac{j}{r} \biggr\rvert = \biggl\lvert \frac{j}{r} - \frac{y_j}{2^n} \biggr\rvert \leq \frac{1}{2 \cdot 2^n} = \frac{1}{2 \cdot (2^{n_0})^2} \leq \frac{1}{2 r^2},
+						\label{eq:shorRelaxed}
+					\end{equation}
+					we can apply the following theorem from number theory using \acl{CFE}:
+					\begin{theorem}  \label{th:numberTheory}
+						If \( \lvert \sfrac{p}{q} - x \rvert \leq \flatfrac{1}(\!2 q^2) \) with real \(x\) and \(\sfrac{p}{q}\), then \(\sfrac{p}{q}\) will appear in the \ac{CFE} of \(x\) as a partial sum.
+					\end{theorem}
+					\begin{proof}
+						See Nielsen and Chuang, Appendix A4.4.
+					\end{proof}
+
+					With this theorem, we can recover the exact multiples \( j \flatfrac{2^n} r \) with \( p \triangleq j \), \( q \triangleq r \), and \( x \triangleq \sfrac{y_j}{2^n} \). Subsequently, we apply \eqref{eq:shorGcd}. We have now successfully recovered the period \(r\) with overwhelming probability! By relaxing the upper bound on the error in \eqref{eq:shorRelaxed}, the \(y\)'s are not required to be \emph{closest} to integral multiples, but they can also be the second, third, fourth, etc. closest. This upper bound ramps up the probability of measuring a useful \(y\) to \SI{95}{\percent}!
+
+					At this point we finished the period finding which was the hard part of Shor's algorithm. Next, we will look at how to go from period finding to factoring and will finally summarize the algorithm. The real clever part of Shor's algorithm lies in using \eqref{eq:shorRelaxed} to recover the exact integral multiples.
+
+					\todo{Period Finding via CFE: Example! (from the Exercise)}
+				% end
+			% end
+		% end
+
+		\subsection{From Period Finding to Factoring}
+			After the first step (period finding), we found an \(r\) such that \( f(x) = f(x + r) \) for \( f(x) = b^x \,\mathbf{mod}\, N \). We now use this result for finding the factors of \(N\). We do this recursively. First, find a factor \(p\) of \(N\). Than we know \(N = p q\). Now, find the factors of \(p\) and \(q\) until all of them are prime. As \(N\) has at most \(\log_2 N\) factors and finding a factor has polynomial complexity, we can solve the whole problem in polynomial time. We focus on finding \emph{large} factors of a single number \(N\) as we can easily identify small factors such as \( 2, 3, 5, \dots \) and get rid of them. With the following procedure (where all congruencies are modulo \(N\)),
+			\begin{enumerate}
+				\item Pick a random \(a\). If \(a\) is not co-prime\footnote{\emph{Co-prime} means that \( \gcd(a, N) = 1 \) which is easy to check using Euclid's algorithm.} to \(N\), we found a factor and terminate.
+				\item Find the smallest \(r\) such that \( a^{x + r} \equiv a^x \). From this we know that\footnote{Due to \( a^{x + r} \equiv a^x \,\iff\, a^x a^r \equiv a^x \,\iff\, a^r \equiv 1 \).} \( a^r \equiv 1 \).
+				\item If \(r\) is odd, abort and go to first step. Otherwise, let \( x \coloneqq a^{r/2} \,\mathbf{mod}\, N \). From this we know that\footnote{Due to \( a^r \equiv 1 \,\iff\, a^r - 1 \equiv 0 \,\iff\, x^2 - 1 \equiv 0 \).} \( x^2 - 1 = (x - 1) (x + 1) \equiv 0 \).
+				\item We know that\footnote{Due to \( x - 1 \equiv 0 \,\iff\, x \equiv 1 \,\iff\, a^{r/2} \equiv 1 \).} \( x - 1 \not\equiv 0 \), contradicting the assumption that \(r\) is the smallest period (as \(\sfrac{r}{2}\) would be one, too).
+				\item If \( x + 1 \not\equiv 0 \), abort and go to the first step.
+				\item We now know that \( p \coloneqq \gcd(x - 1, N) > 1 \) and \( q \coloneqq \gcd(x + 1, N) > 1 \) due to \( (x - 1) (x + 1) \equiv 0 \). If \(p\) and \(q\) are prime, we also have \( N = p q \). If they are not, we can still find factors by division.
+			\end{enumerate}
+			we managed to factor \(N\) efficiently! However, at two steps (3 and 5), we have to be lucky that our assumptions hold. With some number theory, one can show that the probability of this is greater than \SI{50}{\percent} which is not bad (see Mermin, 2007, Appendix M for details).
+		% end
+
+		\subsection{Remarks}
+			We saw that Shor's algorithm provides an exponential speedup over the classical solution. And compared to the algorithms before, we can apply this problem to break RSA and public-key crypto! However, as we will see in \autoref{sec:downer}, modern-day quantum computer are far from being able to apply this algorithm to real-world problems as we have far too few qubits available (around a thousand while we need thousands of millions).
+
+			The algorithm is summarized in \autoref{alg:shors} using the period finding in \autoref{alg:period}, the actual quantum part.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{composite number \(N\)}
+				\KwOut{non-trivial factor of \(N\)}
+				get rid of small factors \;
+				sample \( a \in (0, N) \). \;
+				\If{\( \gcd(a, N) > 1 \)}{
+					\tcp{The GCD already is a factor of \(N\).}
+					\Return \( \gcd(a, N) \) \;
+				}
+				find minimum \(r\) such that \( a^r \equiv 1  \mod N \) using \autoref{alg:period}  \quad\tcp{Quantum Part.}
+				\If{\(r\) is odd}{
+					\textbf{abort} and sample new \(a\) \;
+				}
+				\If{\( a^{r/2} + 1 \equiv 0 \mod N \)}{
+					\textbf{abort} and sample new \(a\) \;
+				}
+				\( p, q \gets \gcd(a^{r/2} \pm 1, N) \) \;
+				\tcp{Return only non-trivial factors.}
+				\If{\( p > 1 \)}{
+					\Return \(p\) \;
+				}
+				\If{\( q > 1 \)}{
+					\Return \(q\) \;
+				}
+				\Return "FAILED" \;
+				\caption{Shor's Algorithm}
+				\label{alg:shors}
+			\end{algorithm}
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{function \( f : \{ 0, 1 \}^n \to \{ 0, 1 \}^{n_0} = a^x \,\mathbf{mod}\, N \) with the property \( f(x) = f(x + r) \) for a constant period \( r \in \{ 0, 1 \}^n \) with \( n = 2n_0 \); tries \(m\)}
+				\KwOut{the period \(r\)}
+				\( \mathcal{R} \gets \{ \} \)  \quad\tcp{Prepare period candidate set.}
+				\ForEach{\( k = 1, 2, \dots, m \)}{
+					\tcp{Run quantum circuit.}
+					\( \displaystyle\qquad\qquad
+						\Qcircuit @C=1em @R=1em {
+							\lstick{\ket{0}^n}     & \gate{H} & \multigate{1}{U_f} & \qw    & \gate{U_\mathrm{FT}} & \meter & \rstick{y_k} \cw \\
+							\lstick{\ket{0}^{n_0}} & \qw      & \ghost{U_f}        & \meter &                      &        &
+						}
+					\) \;
+					\If{\( y_k = 0 \)}{
+						\tcp{A zero \(y\) does not convey any information.}
+						\textbf{continue} \;
+					}
+					\tcp{Recover period candidates.}
+					\( p_{k, i}/q_{k, i} \gets \) irreducible numerator/denominator of \(i\)-th partial sum of \( y_k/2^n \) \;
+					\ForEach{\( i = 0, 1, \dots \)}{
+						\If{\( q_{k, i + 1} > N \)}{
+							\tcp{Add period candidate to the candiate set.}
+							\( r_k \gets q_{k, i} \) \;
+							\( \mathcal{R} \gets \mathcal{R} \cup \{ r_k \} \) \;
+						}
+					}
+				}
+				\( r^\ast \gets \mathrm{lcm}(\mathcal{R}) \)  \quad\tcp{least common multiple}
+				\Return \( r^\ast \) \;
+				\caption{Period Finding Algorithm}
+				\label{alg:period}
+			\end{algorithm}
+		% end
+	% end
+
+	\section{Grover's Algorithm}
+		\label{sec:grovers}
+
+		We will now look at \emph{Grover's algorithm,} a very \emph{different} quantum algorithm implementing unstructured search. Opposed to Shor's algorithm, however, it is much simpler and does not involve and post-processing. As before, we first go over the problem description, then the classical approach, followed by the quantum, and finally we finish up with some remarks.
+
+		\subsection{Problem}
+			The problem solved by Grover's algorithm is very general: suppose a list (or puzzle or whatever) with \( N = 2^n \) possibilities. There are \(K < N\) correct options and we want to find one of them. Let \( f : \{ 0, 1 \}^n \to \{ 0, 1 \} : x \mapsto f(x) \) be a function that is \num{1} iff \(x\) was a solution.
+		% end
+
+		\subsection{Classical Approach}
+			Classically, we need \(N - K\) queries of \(f\) to get a solution with certainty (if we queries the first \(N - K\) options, the last \(K\) options must be solutions, hence \(N - K\)).
+		% end
+
+		\subsection{Quantum Approach}
+			We can again directly apply Deutsch's approach \eqref{eq:deutschsApproach}. As usual, we will neglect the final qubit and write the state (before the final Hadamard-layer!) as
+			\begin{equation}
+				\frac{1}{\sqrt{2^n}} \sum_x (-1)^{f(x)} \ket{x}.
+			\end{equation}
+			Note that the only \(\ket{x}\) with a bit flip are the solutions \(x^\ast\) we are looking for. However, as usual, we cannot simply measure the state but have to find clever ways of reading out the information. Instead, we introduce a new unitary transformation \(\tilde{U}\) followed by Hadamard layers:
+			\begin{equation}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \gate{\tilde{U}} & \gate{H} & \qw \\
+					\lstick{\ket{0}}   & \gate{H} & \ghost{U_f}        & \qw      & \qw              & \qw      & \qw
+				}
+			\end{equation}
+			This unitary transformation is defined as
+			\begin{equation}
+				\tilde{U}
+					\coloneqq 2 \ket{0}^n\prescript{n}{}{\bra{0}} - \ID
+					= \diag(1, -1, -1, \dots, -1).
+			\end{equation}
+			For brevity, we write \( U_R \coloneqq H^{\otimes n} \tilde{U} H^{\otimes n} \) and \( G \coloneqq U_R U_f \) which we call \emph{Grover's unitary.} We claim (and show) now that applying \(G\) for \(\sqrt{N}\) times,
+			\begin{equation}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{G} & \multigate{1}{G} & \qw & \cdots & & \multigate{1}{G} & \meter & \rstick{x^\ast} \cw \\
+					                   &          & \ghost{G}        & \ghost{G}        & \qw & \cdots & & \ghost{G}        & \qw    & \qw
+				}
+			\end{equation}
+			yields a correct result \( f(x^\ast) = 1 \) when measuring with almost unit probability. We will now first look an at algebraic derivation why this is the case and then look at a graphical illustration.
+
+			\subsubsection{Algebraic Derivation}
+				First, we derive what \(U_R\) actually does. Let \( \ket{\psi} = \frac{1}{\sqrt{N}} \sum_x \ket{x} \) be the equal superposition of all basis states (note that this is also the input to the first Grover-unitary). Then we can write \(U_R\) as
+				\begin{equation}
+					H^{\otimes n} \tilde{U} H^{\otimes n}
+						= H^{\otimes n} \bigl( 2 \ket{0}^n\prescript{n}{}{\bra{0}} - \ID \bigr) H^{\otimes n}
+						= 2 \bigl( H^{\otimes n} \ket{0}^n \bigr) \bigl( \prescript{n}{}{\bra{0}} H^{\otimes n} \bigr) - \ID
+						= 2 \ketbra{\psi}{\psi} - \ID.
+				\end{equation}
+				For further derivations, let
+				\begin{align}
+					\ket{\alpha} &\coloneqq \frac{1}{\sqrt{N - K}} \sum_{x,\, f(x) = 0} \ket{x} &
+					\ket{\beta} &\coloneqq \frac{1}{\sqrt{K}} \sum_{x,\, f(x) = 1} \ket{x}
+				\end{align}
+				be states in superposition of all the non-solutions and solutions, respectively. We can then reformulate \(\ket{\psi}\) as
+				\begin{equation}
+					\ket{\psi}
+						= \sqrt{\frac{N - K}{N}} \ket{\alpha} + \sqrt{\frac{K}{N}} \ket{\beta}
+						\doteq \cos\frac{\theta}{2} \ket{\alpha} + \sin\frac{\theta}{2} \ket{\beta}
+				\end{equation}
+				with an appropriate \(\theta\). By applying \( G = U_r U_f \), we have
+				\begin{align}
+					U_R U_f \ket{\psi}
+						&= U_R \biggl[ \cos\frac{\theta}{2} \ket{\alpha} - \sin\frac{\theta}{2} \ket{\beta} \biggr]
+						 = U_R \biggl[ \cos\frac{\theta}{2} \ket{\alpha} + \sin\frac{\theta}{2} \ket{\beta} - 2 \sin\frac{\theta}{2} \ket{\beta} \biggr]
+						 = U_R \biggl[ \ket{\psi} - 2 \sin\frac{\theta}{2} \ket{\beta} \biggr] \\
+						&= \bigl( 2 \ketbra{\psi}{\psi} - \ID \bigr) \biggl[ \ket{\psi} - 2 \sin\frac{\theta}{2} \ket{\beta} \biggr]
+						 = 2 \ket{\psi} \underbrace{\ip{\psi}{\psi}}_{\mathclap{= 1}} - 4 \sin\frac{\theta}{2} \ket{\psi} \underbrace{\ip{\psi}{\beta}}_{\mathclap{= \sin(\theta/2)}} - \ket{\psi} + 2 \sin\frac{\theta}{2} \ket{\beta} \\
+						&= 2 \ket{\psi} - 4 \sin^2\frac{\theta}{2} \ket{\psi} - \ket{\psi} + 2 \sin\frac{\theta}{2} \ket{\beta}
+						 = \ket{\psi} - 4 \sin^2\frac{\theta}{2} \ket{\psi} + 2 \sin\frac{\theta}{2} \ket{\beta} \\
+						&= \cos\frac{\theta}{2} \ket{\alpha} + 3 \sin\frac{\theta}{2} \ket{\beta} - 4 \sin^2\frac{\theta}{2} \biggl( \cos\frac{\theta}{2} \ket{\alpha} + \sin\frac{\theta}{2} \ket{\beta} \biggr) \\
+						&= \cos\frac{\theta}{2} \ket{\alpha} + \sin\frac{\theta}{2} \ket{\beta} - 4 \sin^2\frac{\theta}{2} \cos\frac{\theta}{2} \ket{\alpha} - 4 \sin^2\frac{\theta}{2}\sin\frac{\theta}{2} \ket{\beta} + 2 \sin\frac{\theta}{2} \ket{\beta} \\
+						&= \biggl( 1 - 4 \sin^2\frac{\theta}{2} \biggr) \cos\frac{\theta}{2} \ket{\alpha} + \biggl( 3 - 4 \sin^2\frac{\theta}{2} \biggr) \sin\frac{\theta}{2} \ket{\beta}
+						 = \cos\frac{3 \theta}{2} \ket{\alpha} + \sin\frac{3 \theta}{2} \ket{\beta}
+				\end{align} % TODO: Grover's Algorithm: Fill trig. gaps!
+				where we uses some trigonometric identities in the last step. Furthermore, we can show (by induction) that after \(k\) steps, we have the state
+				\begin{equation}
+					G^k \ket{\psi} = \cos(\frac{2k + 1}{2} \theta) \ket{\alpha} + \sin(\frac{2k + 1}{2} \theta) \ket{\beta}.
+				\end{equation}
+				That is, with every \(k\), we rotate around the non-solutions \(\ket{\alpha}\) and the solutions \(\ket{\beta}\). So how many iterations \(k\) do we need to get a success probability close to one? If we approximate \(\ket{\beta}\)'s amplitude with one, we can derive what \(k\) should be:
+				\begin{equation}
+					\sin(\frac{2k + 1}{2} \theta) \approx 1
+					\quad\implies\quad
+					\frac{2k + 1}{2} \theta \approx \frac{\pi}{2}
+					\quad\implies\quad
+					k \approx \frac{\pi}{2 \theta} - \frac{1}{2} \approx \frac{\pi}{2 \theta}
+					\label{eq:groversApprox}
+				\end{equation}
+				Note that the last approximation is valid as \(k\) is an integer anyway and we can always use the ceiling. If we assume that the initial probability is small, i.e., \(\theta\) is small, we can approximate it:
+				\begin{equation}
+					\sin\frac{\theta}{2} \approx \frac{\theta}{2} \overset{!}{=} \sqrt{\frac{K}{N}}
+					\quad\implies\quad
+					\theta \approx 2 \sqrt{\frac{K}{N}}
+				\end{equation}
+				Plugging this result back into \eqref{eq:groversApprox} yields
+				\begin{equation}
+					k
+						\approx \frac{\pi}{2 \theta}
+						\approx \frac{\pi}{2 \cdot 2 \sqrt{\frac{K}{N}}}
+						= \frac{\pi}{4} \sqrt{\frac{N}{K}}
+				\end{equation}
+				Grover's algorithm is therefore in \( \mathcal{O}(\sqrt{N / K}) \). As \(\theta\) gets scales with \(K\), fewer iterations are necessary to find a solution in a pool of multiple solutions. Also, the probability oscillates with a higher frequency. Interestingly, applying \(G\) too often reduces the probability of getting a correct readout again! But on a large scale, this is not a problem as we can always check a solution by invoking \(f\) for the measurement outcome.
+			% end
+
+			\subsubsection{Illustration}
+				\todo{Grover's Algorithm: Illustration; 9.12, 9.15, 9.16, 9.17, 9.18, 9.19, 9.20}
+			% end
+		% end
+
+		\subsection{Remarks}
+			We saw that Grover's algorithm provides a square-root speedup over the classical solution and an even greater speedup if there are multiple solutions. Compared to Shor's algorithm, no post-processing is necessary and not so many qubits are necessary. Also, Grover's algorithm is a general-purpose search algorithm as long as we can implement the query unitary. However, to determine the number of \(G\)-applications, we must know how many solutions exist. If we do not know this, we have to guess and possibly run the algorithm over and over again. We also have the following theorem:
+			\begin{theorem}[BBBV Theorem]
+				Grover's algorithm is optimal for black-box unstructured search problems.
+			\end{theorem}
+			If there would exist a more efficient algorithm, we could solve all problems in NP.
+
+			The algorithm is summarized in \autoref{alg:grovers}.
+
+			\begin{algorithm}  \DontPrintSemicolon
+				\KwIn{function \( f : \{0, 1\}^n \to \{ 0, 1 \} : x \mapsto f(x) \) which is \num{1} for a solution; optional: number of solutions \(K\) or number of iterations \(k\)}
+				\KwOut{a solution \(x^\ast\) with almost unit probability if \(K\) is given}
+				\If{\(K\) is given}{
+					\( k = \lceil \frac{\pi}{4} \cdot \sqrt{\frac{N}{K}} \rceil \)  \quad\tcp{Calculate number of iterations.}
+				}
+				\tcp{Run quantum circuit.}
+				\( \displaystyle\qquad\qquad
+					\Qcircuit @C=1em @R=1em {
+						\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{G^k} & \meter & \rstick{x^\ast} \cw \\
+						\lstick{\ket{0}}   & \gate{H} & \ghost{G^k}        & \qw    & \qw
+					}
+				\) \;
+				\Return \(x^\ast\) \;
+				\caption{Grover's Algorithm}
+				\label{alg:grovers}
+			\end{algorithm}
+		% end
+
+		\subsection{Modified Grover's Algorithm}
+			\todo{Grover's Algorithm: Modification; 9.24}
+		% end
+	% end
+% end
+
+\chapter{Quantum Error Correction}
+	So far, we assumed that applying gates works perfectly, i.e., that the state transform exactly as our mathematical model predicts. However, in the real world, (quantum) computers are noisy and by no means perfect. In classical computing, the errors that might occur when sending a message (e.g., through the internet or through time by saving it to disk) are confined to bit-flips. In order to make a computer resilient towards bit-flips, the most simplistic approach is to just copy the data and define \emph{logical bits}
+	\begin{align}
+		0 &\mapsto 000 \eqqcolon 0_L &
+		1 &\mapsto 111 \eqqcolon 1_L.
+	\end{align}
+	This is called \emph{encoding} and the protocol is called the \emph{code} (in this case, \emph{repetition} code). Decoding the message works by a majority vote, i.e.:
+	\begin{align}
+		000 &\mapsto 0 &
+		001 &\mapsto 0 &
+		010 &\mapsto 0 &
+		011 &\mapsto 1 \\
+		100 &\mapsto 0 &
+		101 &\mapsto 1 &
+		110 &\mapsto 1 &
+		111 &\mapsto 1
+	\end{align}
+	This means that a decoding error happens only if more than one bit is flipped. In other words: the encoding is resilient w.r.t. to one bit-flip. Assume that a bit-flip happens with probability \(p\) (see \autoref{fig:bitFlipChannelClassical}). Then the error probability is
+	\begin{equation}
+		p_e^{(1)} \coloneqq P(\text{two or more flipped})
+			= 3 P(\text{exactly two flipped}) + P(\text{all flipped})
+			= 3 p^2 (1 - p) + p^3
+			< 3p^2,
+	\end{equation}
+	where \( 3p^2 \) is an upper bound. If we re-apply the encoding (and therefore encode a logical bit into nine physical bits), the new error probability is \( p_e^{(2)} = 3 (3p^2)^2 \). In general, after \(k\) applications of the encoding, the error probability is proportional to \( (3p)^{2^k} \). Hence, \( (3p)^{2^k} \to_{k \to \infty} 0 \) for \(p < 1/3\) and we can achieve an arbitrarily good encoding for finite \(k\).
+
+	But can we directly transfer this principle to \ac{QEC}? No, because:
+	\begin{itemize}
+		\item We cannot copy data due to the no-cloning theorem---but would it even help as measurements destroy everything anyway?
+		\item We do not have discrete error but a continuum---do we need infinite precision to locate the error?
+		\item Measuring destroys the message---how to do decode?
+	\end{itemize}
+	Fortunately though, all of these problems can be circumvented and \ac{QEC} is possible. We will now cover two kinds of errors: bit-flips and phase-flips and will subsequently see that correcting these suffices to correct all possible errors, effectively reducing the continuum of errors to a finite set.
+
+	\begin{figure}
+		\centering
+		\begin{subfigure}[b]{0.3\linewidth}
+			\centering
+			\begin{tikzpicture}[->]
+				\node (a) {\(0\)};
+				\node [below = 1 of a] (b) {\(1\)};
+				\node [right = 3 of a] (c) {\(0\)};
+				\path let \p1 = (c), \p2 = (b) in node (d) at (\x1, \y2) {\(1\)};
+				\draw (a) to node[above]{\( 1 - p \)} (c);
+				\draw (a) to node[above, pos = 0.4]{\( p \)} (d);
+				\draw (b) to node[below, pos = 0.4]{\( p \)} (c);
+				\draw (b) to node[below]{\( 1 - p \)} (d);
+			\end{tikzpicture}
+			\caption{Classical Bit-Flip}
+			\label{fig:bitFlipChannelClassical}
+		\end{subfigure}
+		~
+		\begin{subfigure}[b]{0.3\linewidth}
+			\centering
+			\begin{tikzpicture}[->]
+				\node (a) {\(\ket{\psi}\)};
+				\node [below = 1 of a] (b) {};
+				\node [right = 3 of a] (c) {\(\ket{\psi}\)};
+				\path let \p1 = (c), \p2 = (b) in node (d) at (\x1, \y2) {\(X \ket{\psi}\)};
+				\draw (a) to node[above]{\( 1 - p \)} (c);
+				\draw (a) to node[above, pos = 0.4]{\( p \)} (d);
+			\end{tikzpicture}
+			\caption{Quantum Phase-Flip}
+			\label{fig:bitFlipChannelQuantum}
+		\end{subfigure}
+		~
+		\begin{subfigure}[b]{0.3\linewidth}
+			\centering
+			\begin{tikzpicture}[->]
+				\node (a) {\(\ket{\psi}\)};
+				\node [below = 1 of a] (b) {};
+				\node [right = 3 of a] (c) {\(\ket{\psi}\)};
+				\path let \p1 = (c), \p2 = (b) in node (d) at (\x1, \y2) {\(Z \ket{\psi}\)};
+				\draw (a) to node[above]{\( 1 - p \)} (c);
+				\draw (a) to node[above, pos = 0.4]{\( p \)} (d);
+			\end{tikzpicture}
+			\caption{Quantum Bit-Flip}
+			\label{fig:phaseFlipChannelQuantum}
+		\end{subfigure}
+		\caption[Bit/Phase-Flip Channels]{State diagram for classical/quantum bit/phase-flip channels while sending a message. A bit/phase-flip happens with probability \(p\) and the message is left untouched with probability \(1 - p\).}
+		\label{fig:flipChannel}
+	\end{figure}
+
+	\section{Tackling Bit-Flips}
+		We start by fixing bit-flips. To encode the message, we copy the coefficients of an arbitrary state \( \ket{\psi} = \alpha \ket{0} + \beta \ket{1} \) to two encoding qubits:
+		\begin{equation}
+			\begin{aligned}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{\psi}} & \ctrl{1} & \ctrl{2} & \qw \\
+					\lstick{\ket{0}}    & \targ    & \qw      & \qw \\
+					\lstick{\ket{0}}    & \qw      & \targ    & \qw
+				}
+			\end{aligned}
+			= \alpha \ket{000} + \beta \ket{000}
+			\eqqcolon \alpha \ket{0}_L + \beta \ket{1}_L
+		\end{equation}
+		Note that we did not actually copy the state, but only the \emph{coefficients} which does not violate the no-cloning theorem! We now assume that an error only happens on exactly one qubit (because otherwise we are not able to recover anyway). We encode this as follows:
+		\begin{align}
+			\begin{aligned}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{\psi}} & \ctrl{1} & \ctrl{2} & \gate{X^i} & \qw \\
+					\lstick{\ket{0}}    & \targ    & \qw      & \gate{X^j} & \qw \\
+					\lstick{\ket{0}}    & \qw      & \targ    & \gate{X^k} & \qw
+				}
+			\end{aligned}
+			&&
+			\begin{tabular}{ccc|c}
+				\(i\) & \(j\) & \(k\) & State                                    \\ \midrule
+				\(0\) & \(0\) & \(0\) & \( \alpha \ket{000} + \beta \ket{111} \) \\
+				\(1\) & \(0\) & \(0\) & \( \alpha \ket{100} + \beta \ket{011} \) \\
+				\(0\) & \(1\) & \(0\) & \( \alpha \ket{010} + \beta \ket{101} \) \\
+				\(0\) & \(0\) & \(1\) & \( \alpha \ket{001} + \beta \ket{110} \)
+			\end{tabular}
+		\end{align}
+		Fortunately, all possible result states are orthogonal! Hence, we can uniquely identify my measuring even though they are all in superposition. However, if we would simply measure, we would destroy the state. We therefore copy the state again into two \emph{helper qubits} which we can then measure:
+		\begin{align}
+			\begin{aligned}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{\psi}} & \ctrl{1} & \ctrl{2} & \gate{X^i} & \ctrl{3} & \qw      & \qw      & \qw      & \qw    & \multigate{2}{C}     & \qw \\
+					\lstick{\ket{0}}    & \targ    & \qw      & \gate{X^j} & \qw      & \ctrl{2} & \ctrl{3} & \qw      & \qw    & \ghost{C}            & \qw \\
+					\lstick{\ket{0}}    & \qw      & \targ    & \gate{X^k} & \qw      & \qw      & \qw      & \ctrl{2} & \qw    & \ghost{C}            & \qw \\
+					                    &          &    & \lstick{\ket{0}} & \targ    & \targ    & \qw      & \qw      & \meter & \rstick{x} \cw \cwx  & \\
+					                    &          &    & \lstick{\ket{0}} & \qw      & \qw      & \targ    & \targ    & \meter & \rstick{y} \cw \cwx  &
+				}
+			\end{aligned}
+			&&
+			\begin{tabular}{cc|c}
+				\(x\) & \(y\) & Correction \(C\) \\ \midrule
+				\(0\) & \(0\) &     \(\ID\)      \\
+				\(0\) & \(1\) &     \(X_3\)      \\
+				\(1\) & \(0\) &     \(X_1\)      \\
+				\(1\) & \(1\) &     \(X_2\)
+			\end{tabular}
+		\end{align}
+		The interpretation of this is as follows: for \(x = 1\), we conclude that the first and second qubit have different values. Similarly, \(y = 1\) encodes that the second and third qubit have different values. If they have the same value, the CNOT-gates would either be not applied or cancel each other out. Note again that the sole reason why this works is that the state are orthogonal! From this discussion, we can deduce the above corrections.
+
+		This approach is also called a \emph{parity check} of \(Z_1 Z_2\) and \(Z_2 Z_3\), i.e., a parity check in Z-basis.
+	% end
+
+	\section{Tackling Phase-Flips}
+		Correcting phase-flips (see \autoref{fig:phaseFlipChannelQuantum}) is analogous to correcting bit-flips, but in Hadamard basis. The encoding circuit including the error model along with the resulting states therefore is:
+		\begin{align}
+			\begin{aligned}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{\psi}} & \ctrl{1} & \ctrl{2} & \gate{H} & \gate{Z^i} & \qw \\
+					\lstick{\ket{0}}    & \targ    & \qw      & \gate{H} & \gate{Z^j} & \qw \\
+					\lstick{\ket{0}}    & \qw      & \targ    & \gate{H} & \gate{Z^k} & \qw
+				}
+			\end{aligned}
+			&&
+			\begin{tabular}{ccc|c}
+				\(i\) & \(j\) & \(k\) & State                                    \\ \midrule
+				\(0\) & \(0\) & \(0\) & \( \alpha \ket{+++} + \beta \ket{---} \) \\
+				\(1\) & \(0\) & \(0\) & \( \alpha \ket{-++} + \beta \ket{+--} \) \\
+				\(0\) & \(1\) & \(0\) & \( \alpha \ket{+-+} + \beta \ket{-+-} \) \\
+				\(0\) & \(0\) & \(1\) & \( \alpha \ket{++-} + \beta \ket{--+} \)
+			\end{tabular}
+		\end{align}
+		By applying Hadamard again in the decoding circuit:
+		\begin{align}
+			\begin{aligned}
+				\Qcircuit @C=1em @R=1em {
+					\lstick{\ket{\psi}} & \ctrl{1} & \ctrl{2} & \gate{H} & \gate{Z^i} & \gate{H} & \ctrl{3} & \qw      & \qw      & \qw      & \qw    & \multigate{2}{H}     & \multigate{2}{C}     & \qw \\
+					\lstick{\ket{0}}    & \targ    & \qw      & \gate{H} & \gate{Z^j} & \gate{H} & \qw      & \ctrl{2} & \ctrl{3} & \qw      & \qw    & \ghost{H}            & \ghost{C}            & \qw \\
+					\lstick{\ket{0}}    & \qw      & \targ    & \gate{H} & \gate{Z^k} & \gate{H} & \qw      & \qw      & \qw      & \ctrl{2} & \qw    & \ghost{H}            & \ghost{C}            & \qw \\
+					                    &          &          &          &    & \lstick{\ket{0}} & \targ    & \targ    & \qw      & \qw      & \meter & \cw                  & \rstick{x} \cw \cwx  & \\
+					                    &          &          &          &    & \lstick{\ket{0}} & \qw      & \qw      & \targ    & \targ    & \meter & \cw                  & \rstick{y} \cw \cwx  &
+				}
+			\end{aligned}
+			&&
+			\begin{tabular}{cc|c}
+				\(x\) & \(y\) & Correction \(C\) \\ \midrule
+				\(0\) & \(0\) &     \(\ID\)      \\
+				\(0\) & \(1\) &     \(Z_3\)      \\
+				\(1\) & \(0\) &     \(Z_1\)      \\
+				\(1\) & \(1\) &     \(Z_2\)
+			\end{tabular}
+		\end{align}
+		This approach is a parity check of \(X_1 X_2\) and \(X_2 X_3\), i.e., a parity check in X-basis.
+	% end
+
+	\section{Shor's Code}
+		The idea of \emph{Shor's code} is to concatenate the circuits discussed before, using the bit-flip correction three times for each physical qubit of the phase-flip parity check. The whole circuit is shown in \autoref{fig:shorsCode}. One can easily verify that Shor's code used the following mapping for logical qubits:
+		\begin{equation}
+			\begin{aligned}
+				\ket{0} &\mapsto \frac{\ket{000} + \ket{111}}{\sqrt{2}} \otimes \frac{\ket{000} + \ket{111}}{\sqrt{2}} \otimes \frac{\ket{000} + \ket{111}}{\sqrt{2}} \eqqcolon \ket{0}_L \\
+				\ket{1} &\mapsto \frac{\ket{000} - \ket{111}}{\sqrt{2}} \otimes \frac{\ket{000} - \ket{111}}{\sqrt{2}} \otimes \frac{\ket{000} - \ket{111}}{\sqrt{2}} \eqqcolon \ket{1}_L
+			\end{aligned}
+			\label{eq:shorCode}
+		\end{equation}
+		An important feature of Shor's code is that it is not only capable of correcting \(X\) or \(Z\) errors, but also \(XZ\) errors, i.e., simultaneous bit- and phase-flips. With this feature, it is possible to correct any possible error (see \autoref{subsec:universalQEC}). However, Shor's code is not optimal as it uses so many qubits. It is also possible to use only seven or even five qubits, see \autoref{subsec:otherCodes}.
+
+\begin{figure}
+	\centering
+\begin{equation}
+\resizebox{0.9\linewidth}{!}{
+\Qcircuit @C=1em @R=1em {
+\lstick{\ket{\psi}_1} & \ctrl{5} & \ctrl{10} & \gate{H} &        \qw         & \ctrl{1} & \ctrl{2} & \gate{X^{i_1}} & \gate{Z^{\ell_1}} & \ctrl{3} &   \qw    &   \qw    &   \qw    &  \qw   & \multigate{2}{C_1}    & \gate{H} & \ctrl{15} &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &   \multigate{12}{C}  & \qw \\
+&          &           &          & \lstick{\ket{0}_2} &  \targ   &   \qw    & \gate{X^{j_1}} & \gate{Z^{m_1}}    &   \qw    & \ctrl{2} & \ctrl{3} &   \qw    &  \qw   & \ghost{C_1}           & \gate{H} &    \qw    & \ctrl{14} &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+&          &           &          & \lstick{\ket{0}_3} &   \qw    &  \targ   & \gate{X^{k_1}} & \gate{Z^{n_1}}    &   \qw    &   \qw    &   \qw    & \ctrl{2} &  \qw   & \ghost{C_1}           & \gate{H} &    \qw    &    \qw    & \ctrl{13} &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &  \targ   &  \targ   &   \qw    &  \qw     & \meter & \rstick{x_1} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &                      &     \\
+&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &  \targ   &  \targ   & \meter & \rstick{y_1} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &                      &     \\
+\lstick{\ket{0}_4}   &  \targ   &    \qw    & \gate{H} &        \qw         & \ctrl{1} & \ctrl{2} & \gate{X^{i_2}} & \gate{Z^{\ell_2}} & \ctrl{3} &   \qw    &   \qw    &   \qw    &  \qw   & \multigate{2}{C_2}    & \gate{H} &    \qw    &    \qw    &    \qw    & \ctrl{10} &   \qw    &   \qw    & \ctrl{11} &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+&          &           &          & \lstick{\ket{0}_5} &  \targ   &   \qw    & \gate{X^{j_2}} & \gate{Z^{m_2}}    &   \qw    & \ctrl{2} & \ctrl{3} &   \qw    &  \qw   & \ghost{C_2}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    & \ctrl{9} &   \qw    &    \qw    & \ctrl{10} &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+&          &           &          & \lstick{\ket{0}_6} &   \qw    &  \targ   & \gate{X^{k_2}} & \gate{Z^{n_2}}    &   \qw    &   \qw    &   \qw    & \ctrl{2} &  \qw   & \ghost{C_2}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    & \ctrl{8} &    \qw    &    \qw    & \ctrl{9} &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &  \targ   &  \targ   &   \qw    &   \qw    & \meter & \rstick{x_2} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &                      &     \\
+&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &  \targ   &  \targ   & \meter & \rstick{y_2} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &                      &     \\
+\lstick{\ket{0}_7}   &   \qw    &   \targ   & \gate{H} &        \qw         & \ctrl{1} & \ctrl{2} & \gate{X^{i_3}} & \gate{Z^{\ell_3}} & \ctrl{3} &   \qw    &   \qw    &   \qw    &  \qw   & \multigate{2}{C_3}    & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    & \ctrl{6} &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+&          &           &          & \lstick{\ket{0}_8} &  \targ   &   \qw    & \gate{X^{j_3}} & \gate{Z^{m_3}}    &   \qw    & \ctrl{2} & \ctrl{3} &   \qw    &  \qw   & \ghost{C_3}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    & \ctrl{5} &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+&          &           &          & \lstick{\ket{0}_9} &   \qw    &  \targ   & \gate{X^{k_3}} & \gate{Z^{n_3}}    &   \qw    &   \qw    &   \qw    & \ctrl{2} &  \qw   & \ghost{C_3}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    & \ctrl{4} & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &  \targ   &  \targ   &   \qw    &   \qw    & \meter & \rstick{x_3} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &         \cwx         &     \\
+&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &  \targ   &  \targ   & \meter & \rstick{y_3} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &         \cwx         &     \\
+&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &   \qw    &   \qw    &  \qw   & \qw                   &   \qw    &   \targ   &   \targ   &   \targ   &   \targ   &  \targ   &  \targ   &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw & \meter & \cw      &  \rstick{x} \cw \cwx &     \\
+&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &   \qw    &   \qw    &  \qw   & \qw                   &   \qw    &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \targ   &   \targ   &  \targ   &  \targ   &  \targ   &  \targ   & \qw & \meter & \cw      &  \rstick{y} \cw \cwx &
+}
+}
+		\end{equation}
+		\caption[Shor's Code]{Quantum circuit for encoding in Shor's code (the left part until the error gates \(X\) and \(Z\)) and for decoding (everything to the right of the error gates). The matrices \(C_1\), \(C_2\), \(C_3\), and \(C\) denote the corresponding correction matrices for the bit flip ("inner" code) and the phase flip ("outer" code). The "error indices" are mutually exclusive per index or all zero, i.e., \( (i_a, j_a, k_a), (\ell_b, m_b, n_b) \in \bigl\{ (0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1) \bigr\} \) for \( a, b \in \{ 1, 2, 3 \} \).}
+		\label{fig:shorsCode}
+\end{figure}
+
+		\subsection{Universal Error Correction}
+			\label{subsec:universalQEC}
+
+			As already discussed is the Shor code capable of correcting \(XZ\)-type errors acting on a single qubit. From this we can conclude that the Shor code is in fact capable of correcting arbitrary errors, even non-unitary ones, as long as they act on a single qubit and are valid quantum operations.
+
+			\begin{theorem}[Universal Error Correct]
+				The Shor code is capable of correcting arbitrary errors.
+			\end{theorem}
+			\begin{proof}
+				W.l.o.g, assume that the error happens on the first qubit and is described by \( E_1 \in \C^{2 \times 2} \). We can express this matrix using the three Pauli matrices:
+				\begin{equation}
+					E = \alpha_0 \ID_1 + \alpha_1 X_1 + \alpha_2 Z_1 + \alpha_3 X_1 Z_1
+				\end{equation}
+				This is easy to verify by calculating the right-hand-side, equating it to \(E_1\), and explicitly solving the resulting linear system of equations:
+				\begin{equation}
+					\begin{bmatrix}
+						e_{11} & e_{21} \\
+						e_{21} & e_{22}
+					\end{bmatrix}
+					=
+					\begin{bmatrix}
+						\alpha_0 + \alpha_2 & \alpha_1 - \alpha_3 \\
+						\alpha_1 + \alpha_3 & \alpha_0 - \alpha_2
+					\end{bmatrix}
+					\qquad\implies\qquad
+					\begin{bmatrix}
+						\alpha_0 \\
+						\alpha_1 \\
+						\alpha_2 \\
+						\alpha_3
+					\end{bmatrix}
+					=
+					\frac{1}{2}
+					\begin{bmatrix}
+						e_{11} + e_{22} \\
+						e_{12} + e_{21} \\
+						e_{11} - e_{22} \\
+						e_{21} - e_{12}
+					\end{bmatrix}
+				\end{equation}
+				Let \( \ket{\psi}_L = \alpha \ket{0}_L + \beta \ket{1}_L \) be a logical qubit encoded with Shor's code (see \eqref{eq:shorCode} for the logical basis states). Then, by linearity, an application of the error operator \(E_1\) yields
+				\begin{equation}
+					E_1 \ket{\psi}_L = \alpha_0 \ket{\psi}_L + \alpha_1 X_1 \ket{\psi}_L + \alpha_2 Z_1 \ket{\psi}_L + \alpha_3 X_1 Z_1 \ket{\psi}_L.
+				\end{equation}
+				By dropping the last six qubits from the basis states (as the error only acts on the first qubit), each individual error has the following effect on \( \ket{\psi}_K \):
+				\begin{align}
+					  \ID_1 \ket{\psi}_L &= \frac{\alpha}{\sqrt{2}} (\ket{000} + \ket{111}) \otimes \ket{\cdots} + \frac{\beta}{\sqrt{2}} (\ket{000} - \ket{111}) \otimes \ket{\cdots} \\
+					    X_1 \ket{\psi}_L &= \frac{\alpha}{\sqrt{2}} (\ket{100} + \ket{011}) \otimes \ket{\cdots} + \frac{\beta}{\sqrt{2}} (\ket{100} - \ket{011}) \otimes \ket{\cdots} \\
+					    Z_1 \ket{\psi}_L &= \frac{\alpha}{\sqrt{2}} (\ket{000} - \ket{111}) \otimes \ket{\cdots} + \frac{\beta}{\sqrt{2}} (\ket{000} + \ket{111}) \otimes \ket{\cdots} \\
+					X_1 Z_1 \ket{\psi}_L &= \frac{\alpha}{\sqrt{2}} (\ket{100} - \ket{011}) \otimes \ket{\cdots} + \frac{\beta}{\sqrt{2}} (\ket{100} + \ket{011}) \otimes \ket{\cdots}
+				\end{align}
+				As these states are mutually orthogonal, measuring the parity qubits uniquely identifies one of the four errors and the state collapses onto either one of them. Subsequently, Shor's code can be used to correct the individual errors. Hence, Shor's code can be used to correct arbitrary errors.
+			\end{proof}
+		% end
+	% end
+
+	\section{Other Codes}
+		\label{subsec:otherCodes}
+
+		As already mentioned, the Shor code is not \emph{optimal} in the sense of saving qubits. There exist several smaller ones, for instance the \emph{Steane code}
+		\begin{align}
+			\ket{0}_L &= \frac{1}{\sqrt{8}} (\ket{0000000} + \ket{1010101} + \ket{0110011} + \ket{1100110} + \ket{0001111} + \ket{1011010} + \ket{0111100} + \ket{1101001}) \\
+			\ket{1}_L &= \frac{1}{\sqrt{8}} (\ket{1111111} + \ket{0101010} + \ket{1001100} + \ket{0011001} + \ket{1110000} + \ket{0100101} + \ket{1000011} + \ket{0010110})
+		\end{align}
+		or five-qubit codes. However, the Steane code has some nice properties which we will discuss in the next section.
+	% end
+
+	\section{Fault-Tolerance and Transversality} % 10.18, 10.19, 10.20, 10.21, 10.22, 10.23, E10.3
+		\label{subsec:faultTolerance}
+
+		In fault-tolerant \ac{QC}, the idea is to perform all operations in encoded states (i.e., logical qubits), without ever decoding. One code supporting this is the Steane code we saw in the previous section. It allows us to execute certain gates \emph{transversely.} That is, we can design a gate that has the same effect on the individual physical qubits as on the logical qubits. For the Steane code, the basic gates are simply tensor-products of single-qubit gates:
+		\begin{align}
+			X_L &= X_1 \otimes X_2 \otimes \dots \otimes X_7 &
+			Z_L &= Z_1 \otimes Z_2 \otimes \dots \otimes Z_7 &
+			H_L &= H_1 \otimes H_2 \otimes \dots \otimes H_7
+		\end{align}
+		While they acting on the individual qubits is trivial, one can also show that:
+		\begin{align}
+			X_L \ket{0}_L &=  \ket{1}_L &
+			X_L \ket{1}_L &=  \ket{0}_L \\
+			Z_L \ket{0}_L &=  \ket{0}_L &
+			Z_L \ket{1}_L &= -\ket{1}_L \\
+			H_L \ket{0}_L &= \frac{1}{\sqrt{2}} (\ket{0}_L + \ket{1}_L) = \ket{+}_L &
+			H_L \ket{1}_L &= \frac{1}{\sqrt{2}} (\ket{0}_L - \ket{1}_K) = \ket{-}_L
+		\end{align}
+		An important property to consider in fault-tolerant \ac{QC} is how errors propagate. For the X-gate, for instance, an error does not propagate to other physical qubits as the gate is local and can be corrected with the Steane code. Application of a CNOT-gate withing a Steane block, however, may propagate an error onto a second qubit which can not be corrected! Instead, a logical CNOT-gate
+		\begin{equation}
+			\CNOT_L \ket{x}_L \ket{y}_L \mapsto \ket{x}_L \ket{x \oplus y}_L = \CNOT_{1, 8} \otimes \CNOT_{2, 9} \otimes \dots \otimes \CNOT_{7, 14}
+		\end{equation}
+		has to be used that only works across two blocks (see \autoref{fig:logicalCnot} for the circuit). The T-gate, however, cannot be implemented transversely. Its fault-tolerant implementation is more complicated and out of scope for this course.
+		\todo{Fault-Tolerance: Proof that T-gate cannot be implemented transversely.}
+
+		The general scheme of performing fault-tolerant \ac{QC} is:
+		\begin{enumerate}
+			\item prepare quantum state in logical qubit
+			\item apply fault-tolerant gate
+			\item correct errors
+			\item go to second step until the algorithm is finished
+		\end{enumerate}
+		As we already saw, the second step is the fundamental challenge as it is hard to come up with fault-tolerant gates, which we define as follows:
+		\begin{definition}[Fault-Tolerance]
+			A procedure is called \emph{fault-tolerant} if the failure of one component causes at most one error in each encoded block at the output step.
+		\end{definition}
+
+		\begin{figure}
+			\centering
+			\begin{equation}
+				\Qcircuit @C=2em @R=0.25em @!R {
+					& \ctrl{8} & \qw & \qw & \qw & \qw & \qw & \qw & \qw \\
+					& \qw & \ctrl{8} & \qw & \qw & \qw & \qw & \qw & \qw \\
+					& \qw & \qw & \ctrl{8} & \qw & \qw & \qw & \qw & \qw \\
+					& \qw & \qw & \qw & \ctrl{8} & \qw & \qw & \qw & \qw \\
+					& \qw & \qw & \qw & \qw & \ctrl{8} & \qw & \qw & \qw \\
+					& \qw & \qw & \qw & \qw & \qw & \ctrl{8} & \qw & \qw \\
+					& \qw & \qw & \qw & \qw & \qw & \qw & \ctrl{8} & \qw \\
+					&&&&&&&& \\
+					& \targ & \qw & \qw & \qw & \qw & \qw & \qw & \qw \\
+					& \qw & \targ & \qw & \qw & \qw & \qw & \qw & \qw \\
+					& \qw & \qw & \targ & \qw & \qw & \qw & \qw & \qw \\
+					& \qw & \qw & \qw & \targ & \qw & \qw & \qw & \qw \\
+					& \qw & \qw & \qw & \qw & \targ & \qw & \qw & \qw \\
+					& \qw & \qw & \qw & \qw & \qw & \targ & \qw & \qw \\
+					& \qw & \qw & \qw & \qw & \qw & \qw & \targ & \qw \\
+				}
+			\end{equation}
+			\caption{Fault-Tolerant CNOT-Gate}
+			\label{fig:logicalCnot}
+		\end{figure}
+	% end
+
+	\section{Threshold Theorem}
+		\label{sec:downer}
+
+		So far, we assumed that the \ac{QEC} itself works perfectly. But what if the error correction itself causes errors again? Like for classical repetition codes, we can simply re-encode the bits, building up a layered coding architecture. Let \(m\) be the number of places where an error can occur, then the probability of an error using a single coding layer is upper-bounded by \( p_e^{(1)} = (mp)^2 \). For \(k\) layers, the error probability is \( p_e^{(k)} = (mp)^{2^k} \) which, analogous to classical error correction, converges to zero for \(k \to \infty\) if \(p < 1/m\). Hence, we can achieve any error probability \(\epsilon\) with a large enough \(k\).
+
+		This brings us to the \emph{threshold theorem:}
+		\begin{theorem}[Threshold Theorem]
+			A quantum circuit with \(p(n)\) gates on \(n\) qubits may be simulated with an error probability of at most \(\epsilon > 0\) using\footnote{Note that in the lecture, this bound is written as \( \mathcal{O}\bigl( p(n) \, \mathrm{poly}( \log(p(n)/\epsilon) ) \bigr) \).}
+			\begin{equation}
+				\mathcal{O}\Biggl( p(n) \, \log^c \frac{p(n)}{\epsilon} \Biggr)
+			\end{equation}
+			gates (for some constant \(c\) when the gates fail with probability of at most \(p\) given that \(p < p_\mathrm{th}\) for some code-dependent constant threshold \(p_\mathrm{th}\).
+		\end{theorem}
+		For the Steane code, \( p_\mathrm{th} \approx 10^{-5} \). Hence, to factor numbers with around \num{2000}, we would needs millions of millions of qubits! This is the sole reason why we do not have quantum computing at the moment!
+		% TODO: Look again at the theshold theorem.
+	% end
+% end
+
+\chapter{Quantum Nonlocality}
+	\label{c:nonlocality}
+
+	This chapter is a bit different from the previous as we will discuss a general phenomenon of \ac{QM} and not only \ac{QC}: \emph{quantum nonlocality.} We will see that \ac{QM} is inherently different from classical physics in that it is not composed of \emph{elements of reality.}
+
+	Of course, \ac{QM} is real in the sense that it exists. Hence, what do we mean by \emph{elements of reality?}
+	\begin{definition}[Elements of Reality]  \label{def:real}
+		If there is a physical quantity which we can predict with certainty (i.e., what the outcome will be when measuring it), it is \emph{real,} whether we perform an experiment or not.
+	\end{definition}
+	In \ac{QM}, consider the Bell state \( \ket{\Phi^+} = \frac{1}{\sqrt{2}} (\ket{00} + \ket{11}) \) where the first qubit belongs to Alice and the second belongs to Bob which are extremely far away from each other in separate labs. If Alice measures "\(+\)" on her side, the measurement "\(+\)" becomes an element of reality for Bob. So when did it become real? We have two options:
+	\begin{enumerate}
+		\item It has been real ever since.
+		\item It became real once Alice made her measurement.
+	\end{enumerate}
+	We call these two assumptions "local realism" and "locality," respectively. As we assume the Alice's and Bob's lab where far apart from each other, locality would contradict special relativity.
+
+	\section{CHSH Inequality}
+		Assume that Alice and Bob have both two options for altering their measurement, \(A_1\) and \(A_2\), and \(B_1\) and \(B_2\), respectively. Either measurement yields either "\(+\)" or "\(-\)". They repeat their experiment multiple times and record their measurements in a table
+		\begin{center}
+			\begin{tabular}{c|cc|cc}
+				  \(\#\)   &  \(A_1\)   &  \(A_2\)   &  \(B_1\)   &  \(B_2\)   \\ \midrule
+				  \(0\)    &   \(+\)    &            &            &   \(-\)    \\
+				  \(1\)    &   \(+\)    &            &            &   \(+\)    \\
+				  \(2\)    &            &   \(+\)    &            &   \(+\)    \\
+				  \(3\)    &            &   \(-\)    &   \(+\)    &            \\
+				\(\vdots\) & \(\vdots\) & \(\vdots\) & \(\vdots\) & \(\vdots\)
+			\end{tabular}
+		\end{center}
+		Suppose that we want to fill in the blanks in the table (and we cannot just repeat the same experiment again and take a different measurement). This is only possible, if our measured physical quantity is real and we have the famous \emph{CHSH inequality.}
+
+		\begin{theorem}[CHSH Inequality]
+			Assume that the experiment log can be filled in, i.e., that the physical quantities are real. Then the following inequality holds:
+			\begin{equation}
+				\beta \coloneqq \E[A_1, B_1] + \E[A_1, B_2] + \E[A_2, B_1] - \E[A_2, B_2] \leq 2.
+			\end{equation}
+			Where \( \E[X, Y] = \sum_{x, y} x y P(x, y \given X, Y) \) is the expectation of \(X\) and \(Y\).
+		\end{theorem}
+		\begin{proof}
+			We can easily proof this by enumerating all assignments of \( A_1, A_2, B_1, B_2 \in \{ +1, -1 \} \):
+			\begin{align}
+				A_1 B_1 + A_1 B_2 + A_2 B_1 - A_2 B_2
+					&= A_1 (B_1 + B_2) + A_2 (B_1 - B_2)
+					 \leq \bigl\lvert A_1 (B_1 + B_2) \bigr\rvert + \bigl\lvert A_2 (B_1 - B_2) \bigr\rvert \\
+					&= \bigl\lvert B_1 + B_2 \bigr\rvert + \bigl\lvert B_1 - B_2 \bigr\rvert
+					 \leq 2
+			\end{align}
+			Note that we did not \emph{explicitly} enumerate all values, but this is effectively an enumeration.
+		\end{proof}
+		But what happens if Alice and Bob share a Bell state?
+	% end
+
+	\section{Quantum Violation of the CHSH Inequality}
+		Assume that the different measurements Alice and Bob can take are characterized by the following operators,
+		\begin{align}
+			A_1 &= Z_1 &
+			A_2 &= X_1 &
+			B_1 &= \frac{Z_2 + X_2}{\sqrt{2}} &
+			B_2 &= \frac{Z_2 - X_2}{\sqrt{2}}.
+		\end{align}
+		We can now explicitly calculate \(\beta\) (and drop the explicit \(\otimes\) for brevity, it should be clear where to insert one from the indices):
+		\begin{align}
+			\beta
+				&= \E[A_1, B_1] + \E[A_1, B_2] + \E[A_2, B_1] - \E[A_2, B_2] \\
+				&= \mel{\Phi^+}{A_1 B_1}{\Phi^+} + \mel{\Phi^+}{A_1 B_2}{\Phi^+} + \mel{\Phi^+}{A_2 B_1}{\Phi^+} - \mel{\Phi^+}{A_2 B_2}{\Phi^+} \\
+				&= \bra{\Phi^+} \bigl( A_1 B_1 + A_1 B_2 + A_2 B_1 - A_2 B_2 \bigr) \ket{\Phi^+} \\
+				&= \bra{\Phi^+} \biggl( Z_1 \frac{Z_2 + X_2}{\sqrt{2}} + Z_1 \frac{Z_2 - X_2}{\sqrt{2}} + X_1 \frac{Z_2 + X_2}{\sqrt{2}} - X_1 \frac{Z_2 - X_2}{\sqrt{2}} \biggr) \ket{\Phi^+} \\
+				&= \frac{1}{\sqrt{2}} \bra{\Phi^+} \bigl( Z_1 (Z_2 + X_2) + Z_1 (Z_2 - X_2) + X_1 (Z_2 + X_2) - X_1 (Z_2 - X_2) \bigr) \ket{\Phi^+} \\
+				&= \frac{1}{\sqrt{2}} \bra{\Phi^+} \bigl( Z_1 Z_2 + Z_1 X_2 + Z_1 Z_2 - Z_1 X_2 + X_1 Z_2 + X_1 X_2 - X_1 Z_2 + X_1 X_2 \bigr) \ket{\Phi^+} \\
+				&= \frac{2}{\sqrt{2}} \bra{\Phi^+} \bigl( Z_1 Z_2 + X_1 X_2 \bigr) \ket{\Phi^+}
+				 = \sqrt{2} \Bigl(\! \mel{\Phi^+}{Z_1 Z_2}{\Phi^+} + \mel{\Phi^+}{X_1 X_2}{\Phi^+} \Bigr) \\
+				&\overset{\mathclap{(\ast)}}{=} \sqrt{2} \Bigl( \ip{\Phi^+}{\Phi^+} + \ip{\Phi^+}{\Phi^+} \Bigr)
+				 = 2 \sqrt{2}
+		\end{align}
+		In \((\ast)\) we used the fact that neither \(Z_1 Z_2\) nor \(X_1 X_2\) alter the Bell state. But this quantity is greater than \(2\) and therefore violates the CHSH inequality! As we ruled out locality by putting Alice and Bob so far away that neither one is in the light cone of the other, nature is not \emph{real} in the sense of \autoref{def:real}. Also, quantum correlations are extremely important and stronger than anything we will ever see in "classical" physics.
+	% end
+
+	\section{Tsirelson's Bound}
+		We saw that in classical physics, the correlation \(\beta\) of two random variables is bounded by \(\beta \leq 2\). In quantum mechanics, however, we can achieve \( \beta_q = 2 \sqrt{2} \). In fact, we have the following theorem:
+		\begin{theorem}[Tsirelson's Bounds]
+			The maximum possible correlation in quantum mechanics is \(\beta_Q = 2 \sqrt{2}\) which is achieved only by the Bell state.
+		\end{theorem}
+		From this we can conclude also, that if an experiment exhibits a correlation of \(\beta_Q \approx 2 \sqrt{2}\), the shared state was a Bell state!
+	% end
+
+	\section{Quantum Key Distribution}
+		Tsirelson's Bound also allows \emph{\ac{QKD},} i.e., a protocol in which two parties (Alice and Bob) agree on a secret key (cf. Diffie-Hellman). Compared to the setting before, Bob now also has a third measurement \(B_3\). \ac{QKD} now takes the following steps.
+		\begin{enumerate}
+			\item Alice and Bob share a qubit through a trusted channel.
+			\item Alice makes measurements \(A_1\) and \(A_2\) at random.
+			\item Bob makes measurements \(B_1\), \(B_2\), and sometimes (with lower probability) \(B_3 = Z_2\) at random.
+			\item Repeat from first step a certain number of rounds.
+			\item Alice announces a random set of rounds.
+			\item Alice and Bob announce their measurement result in the announced set of rounds.
+			\item Both compute \(\beta_Q\) and if \(\beta_Q \ll 2 \sqrt{2}\), they abort as they do not share a Bell state.
+			\item Bob announces the subset of rounds he measured in basis \( Z_2 \).
+			\item Alice announces the subset if rounds she measured in basis \( Z_1 \).
+			\item They are now guaranteed to have measured the same bits due to quantum correlation.
+		\end{enumerate}
+		Interestingly, this protocol is secure under any attack as "not even the universe" know the key. This protocol is known as \emph{device-independent \ac{QKD}.} However, it requires sharing a qubit through a trusted channel which is nearly impossible to achieve.
+	% end
+% end
+
+\chapter{Measurement-Based Quantum Computing} % 12.1, 12.9, 12.10, 12.11, 12.12, 12.25
+	\todo{Content}
+
+	\section{Identity} % 12.13, 12.14
+		\todo{Content}
+	% end
+
+	\section{Arbitrary Rotations} % 12.15, 12.16, 12.17
+		\todo{Content}
+	% end
+
+	\section{CNOT} % 12.18
+		\todo{Content}
+	% end
+
+	\section{Cluster States} % 12.19, 12.20
+		\todo{Content}
+	% end
+
+	\section{Handling Errors} % 12.20, 12.21, 12.22, 12.23, 12.24
+		\todo{Content}
+	% end
+
+	\section{Important Gates} % ???, E3.2, E3.3
+		\todo{Content}
+	% end
+% end

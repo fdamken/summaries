@@ -1,0 +1,202 @@
+# RoLe Summary Planung
+
+## Slides
+
+Done/Structured/Total: 0/473/473; 0%/100%/100%
+
+- [x] Chapter 1: Introduction (38)
+- [x] Chapter 2: Markov Decision Processes (60)
+- [x] Chapter 3: Dynamic Programming and Model-Free Prediction (89)
+- [x] Chapter 4: Tabular RL (48)
+- [x] Chapter 5: RL with Function Approximation (43)
+- [x] Chapter 6: Policy Search (61)
+- [x] Chapter 7: Deep RL (50)
+- [x] Chapter 8: Deep Actor-Critic (48)
+- [x] Chapter 9: Frontiers of RL (36)
+
+
+## Structure
+
+- Introduction {1.1, 1.2, 1.3, 1.4, 1.5}
+    - Recent and Not-So-Recent Successes {1.6, 1.7, 1.8, 1.9}
+    - "Artificial Intelligence" {1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18}
+    - Reinforcement Learning Formulation {1.19, 1.20, 1.21, 1.22, 1.23, 1.24, 1.25}
+        - Flavors {1.26, 1.31}
+            - placeholder
+                - Full {1.27}
+                - Partially Observable Markov Decision Problem {1.28}
+                - Markov Decision Problem {1.29}
+                - Further Simplifications {1.30}
+        - Components {1.33, 1.34, 1.35}
+    - Wrap-Up {1.36, 1.37, 1.38}
+- Preliminaries {N/A}
+    - Functional Analysis {2.56}
+        - Normed Vector Spaces {2.57}
+        - Contractions {2.58}
+        - Fixed Point (Theorem) {2.59, 2.60}
+    - Statistics {N/A}
+        - Stochastic Processes {2.5, 2.6}
+        - Monte-Carlo Estimation {3.38}
+        - Bias-Variance Trade-Off {3.64, 3.65}
+        - Important Sampling {4.36}
+        - Linear Function Approximation {5.13}
+            - Feature Construction {5.20, 5.21}
+                - Polynomial Features {5.22}
+                - Fourier Basis {5.23, 5.24}
+                - Coarse Coding {5.25}
+                - Tile Coding {5.26, 5.27}
+                - Radial Basis Functions {5.28}
+                - Neural Networks {5.29, 5.30}
+        - Fisher Information Matrix {6.33, 6.34}
+        - Entropy and Relative Entropy {8.2, 8.3, 8.4, 8.5}
+        - Reparametrization Trick {8.41, 8.42}
+    - Miscellaneous {N/A}
+        - Useful Integrals {6.55, 6.56}
+        - Conjugate Gradient {8.24, 8.25, 8.26, 8.27}
+- Markov Decision Processes and Policies {2.1}
+    - Markov Decision Processes {2.2, 2.3, 2.4, 2.7, 2.8, 2.9, 2.10, 2.14}
+        - Continuous State-Action-Space {5.3, 5.4}
+        - Example {2.11, 2.12, 2.13}
+    - Markov Reward Processes {2.15, 2.16}
+        - Return and Discount {2.18, 2.19, 2.20}
+        - Value Function {2.21}
+            - Bellman Equation {2.25, 2.27, 2.28}
+        - Example {2.17, 2.22, 2.23, 2.24, 2.26}
+    - Markov Decision Processes {2.29, 2.30, 2.31, 2.32}
+        - Policies {2.33, 2.34}
+            - Value Functions {2.35}
+                - Bellman Expectation Equation {2.37, 2.38}
+                - Bellman Operator {2.39, 2.40, 2.50}
+            - Optimality {2.41, 2.42, 2.44}
+                - Bellman Optimality Equation {2.46, 2.47, 2.51}
+                - Bellman Optimality Operator {2.49, 2.50}
+        - Example {2.31, 2.36, 2.43, 2.45, 2.48}
+    - Wrap-Up {2.52, 2.53, 2.54}
+- Dynamic Programming {3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7}
+    - Finite Horizon DP {3.8, 3.9}
+    - Policy Iteration {3.19}
+        - Policy Evaluation {3.10, 3.11, 3.12}
+        - Policy Improvement {3.16, 3.17, 3.18}
+        - Using the Action-Value Function {4.9}
+        - Examples {3.13, 3.14, 3.15; 3.20, 3.10}
+    - Value Iteration {3.24, 3.25, 3.27}
+        - Principle of Optimality {3.22, 3.23, 3.26}
+        - Convergence {3.30}
+        - Example {3.29}
+    - Policy vs. Value Iteration {3.28}
+    - Efficiency {3.31, 3.32}
+- Monte-Carlo Algorithms {3.33, 3.34, 3.35, 3.36, 3.37}
+    - Policy Evaluation {3.39, 3.40, 3.41}
+    - Example {3.42, 3.43, 3.44, 3.45, 3.46, 3.47, 3.48, 3.49, 3.50, 3.51, 3.52, 3.53, 3.54, 3.55, 3.56, 3.57}
+- Temporal Difference Learning {3.58, 3.59, 3.60}
+    - Temporal Differences vs. Monte-Carlo {3.63}
+        - Bias-Variance Trade-Off {3.66, 3.67}
+        - Markov Property {3.68}
+        - Backup {3.69, 3.70, 3.71}
+    - Bootstrapping and Sampling {3.72}
+    - \( \text{TD}(\lambda) \) {3.73}
+        - \(n\)-Step Return {3.74, 3.75, 3.76}
+        - \(\lambda\)-Return {3.77, 3.78, 3.79}
+        - Eligibility Traces {3.80, 3.81, 3.82, 3.83, 3.84, 3.85, 3.86}
+    - Example {3.61, 3.62}
+    - Wrap-Up {3.87, 3.88, 3.89}
+- Tabular Reinforcement Learning {4.1, 4.2, 4.3, 4.4}
+    - On-Policy Methods
+        - Monte-Carlo Methods {4.5}
+            - Generalized Policy Iteration {4.6, 4.7, 4.8, 4.10}
+            - Greediness and Exploration vs. Exploitation {4.11, 4.12, 4.13, 4.14}
+                - \(\epsilon\)-Greedy Exploration and Policy Improvement {4.15, 4.16}
+                - Monte-Carlo Policy Iteration and Control {4.17, 4.18}
+            - GLIE Monte-Carlo Control {4.19, 4.20}
+        - TD-Learning: SARSA {4.22, 4.23, 4.24, 4.25, 4.26}
+            - Convergence {4.27}
+            - \(n\)-Step {4.30}
+            - Eligibility Traces and \( \text{SARSA}(\lambda) \) {4.31, 4.32}
+            - Example {4.28, 4.29, 4.33}
+    - Off-Policy Methods {4.34, 4.35}
+        - Monte-Carlo {3.37, 3.38}
+        - TD-Learning {N/A}
+            - Importance Sampling {3.39}
+            - Q-Learning {3.40, 3.41, 3.43}
+                - Convergence {3.42}
+                - Example {3.44}
+    - Remarks {3.45, 3.46}
+    - Wrap-Up {3.47, 3.48}
+- Function Approximation {5.1}
+    - On-Policy Methods {5.5, 5.6, 5.7, 5.13}
+        - Stochastic Gradient Descent {5.8}
+        - Gradient Monte-Carlo {5.9, 5.10}
+            - \dots with Linear Function Approximation {5.14}
+        - Semi-Gradient Methods {5.11, 5.12}
+            - \dots with Linear Function Approximation {5.15}
+        - Least-Squares TD {5.16}
+            - Semi-Gradient SARSA {5.17, 5.18}
+    - Off-Policy Methods {5.31}
+        - Semi-Gradient TD {5.32}
+        - Divergence {5.33, 5.34+, 5.35, 5.36}
+    - The Deadly Triad {5.37}
+    - Offline Methods {N/A}
+        - Batch Reinforcement Learning {5.38}
+        - Least-Squares Policy Iteration {5.39}
+        - Fitted Q-Iteration {5.40}
+    - Wrap-Up {5.41, 5.42, 5.43}
+- Policy Search {6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8}
+    - Policy Gradient {6.9, 6.10, 6.11}
+        - Computing the Gradient {N/A}
+            - Finite Differences {6.12}
+            - Least-Squares-Based Finite Differences {6.13, 6.14}
+            - Likelihood-Ratio Trick {6.15, 6.16, 6.17}
+        - REINFORCE {6.18, 6.19}
+            - Gradient Variance and Baselines {6.20, 6.21, 6.22+, 6.23}
+            - Example {6.24, 6.25, 6.26, 6.27, 6.28}
+        - GPOMDP {6.29, 6.30, 6.31}
+    - Natural Policy Gradient {6.32, 6.35, 6.36; 6.57, 6.58+, 6.59}
+    - The Policy Gradient Theorem {6.37, 6.38, 6.39, 6.40; 6.60, 6.61+}
+        - Actor-Critic {6.41}
+        - Compatible Function Approximation {6.42, 6.43, 6.44+}
+            - Example {6.45}
+        - Advantage Function {6.46}
+        - Episodic Actor-Critic {6.47, 6.48, 6.49, 6.50}
+    - Wrap-Up {6.51, 6.52, 6.53}
+- Deep Reinforcement Learning {7.1, 7.2, 7.3, 7.4, 7.5}
+    - Deep Q-Learning: DQN {7.6, 7.7, 7.8, 7.13}
+        - Replay Buffer {7.9}
+        - Target Network {7.10}
+        - Minibatch Updates {7.11}
+        - Reward- and Target-Clipping {7.12}
+        - Examples {7.14, 7.15, 7.16, 7.17, 7.18}
+    - DQN Enhancements {7.19}
+        - Overestimation and Double Deep Q-Learning {7.20, 7.21, 7.22, 7.23}
+        - Prioritized Replay Buffer {7.24, 7.25, 7.26}
+        - Dueling DQN {7.27}
+        - Noisy DQN {7.28, 7.29}
+        - Distributional DQN {7.30, 7.31, 7.32, 7.33, 7.34, 7.35}
+        - Rainbow {7.36, 7.37}
+    - Other DQN-Bases Methods {7.38}
+        - Count-Based Exploration {7.39, 7.40, 7.41, 7.42}
+        - Curiosity-Driven Exploration {7.43, 7.44}
+        - Ensemble-Driven Exploration {7.45, 7.46, 7.47}
+    - Wrap-Up {7.48, 7.49, 7.50}
+- Deep Actor-Critic {8.1, 8.6, 8.7, 8.8, 8.9; 8.15}
+    - Surrogate Loss {8.10, 8.11, 8.12}
+        - Kakade-Langford-Lemma {8.13+}
+        - Practical Surrogate Loss {8.14}
+    - Advantage Actor-Critic (A2C) {8.16, 8.17, 8.18}
+    - On-Policy Methods {8.19}
+        - Trust-Region Policy Optimization (TRPO) {8.20, 8.21, 8.28}
+            - Practical Implementation {8.22, 8.23}
+        - Proximal Policy Optimization (PPO) {8.29, 8.30}
+    - Off-Policy Methods {8.31}
+        - Deep Deterministic Policy Gradient (DDPG) {8.32, 8.33, 8.34, 8.35}
+        - Twin Delayed DDPG (TD3) {8.36, 8.37}
+        - Soft Actor-Critic (SAC) {8.38, 8.39, 8.40, 8.43, 8.44, 8.45}
+    - Wrap-Up {8.46, 8.47, 8.48}
+- Frontiers {9.1}
+    - Partial Observability {9.2, 9.3, 9.4, 9.5, 9.6, 9.7}
+    - Hierarchical Control {9.8, 9.9, 9.10, 9.17}
+        - The Options Framework {9.11, 9.12, 9.13, 9.14, 9.15, 9.16}
+    - Markov Decision Processed Without Reward {9.18, 9.19}
+        - Intrinsic Motivation {9.20, 9.21, 9.22}
+        - Inverse Reinforcement Learning {9.23, 9.24, 9.25, 9.26, 9.27}
+    - Model-Based Reinforcement Learning {9.28, 9.29, 9.30, 9.31, 9.32, 9.33, 9.34}
+    - Wrap-Up {9.35, 9.36}

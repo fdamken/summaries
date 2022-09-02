@@ -49,6 +49,7 @@
 #include:tikzpeople
 #include:tikz
 #include:xspace
+#include:xstring
 #include:todonotes
 
 

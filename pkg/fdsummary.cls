@@ -16,30 +16,7 @@
 
 % dark Mode
 \ExplSyntaxOn
-\RequirePackage{xcolor, pagecolor, graphicx} % Used for dark Mode
-\bool_gset_false:N \g_dark_mode_bool % Disable by default
-\newcommand{\enableDarkMode}{ %Command to enable Dark Mode (Color Model has to be selected before LoadClass)
-    \definecolor{fdsummary@anthrazitgrau}{HTML}{293133}
-    \pagecolor{fdsummary@anthrazitgrau}
-	\color{white}
-	\selectcolormodel{RGB}
-	\bool_gset_true:N \g_dark_mode_bool
-    % Prefer inverted Logo with dark Mode
-	\IfFileExists{tuda_logo_inverted.pdf}{
-        \PassOptionsToClass{logofile = tuda_logo_inverted}{tudapub}
-    }{} 
-}
-
-% dark Mode Makros
-\prg_new_conditional:Nnn \__ptxcd_if_dark_mode: {T,F,TF} { % Conditional to check if dark Mode is active
-	\bool_if:NTF \g_dark_mode_bool
-	{\prg_return_true:}
-	{\prg_return_false:}
-}
-
-\cs_set_eq:NN\IfDarkModeT \__ptxcd_if_dark_mode:T % Easy dark Mode check for use in document
-\cs_set_eq:NN\IfDarkModeF \__ptxcd_if_dark_mode:F
-\cs_set_eq:NN\IfDarkModeTF \__ptxcd_if_dark_mode:TF
+\RequirePackage{darkmode, graphicx} % Used for dark Mode
 
 \newcommand{\includeinvertablegraphics}[2][]{% Grafik wird beim Dark Mode automatisch Invertiert (rgb)
 	\IfDarkModeTF{\includegraphics[decodearray={1.0~0.0~1.0~0.0~1.0~0.0},#1]{#2}}{\includegraphics[#1]{#2}}
@@ -51,7 +28,7 @@
 % DARK_MODE environment check (enable if DARK_MODE=1)
 \sys_get_shell:nnN { kpsewhich ~ --var-value ~ DARK_MODE } { } \l_dark_mode_env_var_tl
 \tl_trim_spaces:N \l_dark_mode_env_var_tl
-\tl_if_eq:NnT \l_dark_mode_env_var_tl {1} {\enableDarkMode{}}
+\tl_if_eq:NnT \l_dark_mode_env_var_tl {1} {\enabledarkmode{}}
 \ExplSyntaxOff
 
 % Packages and commands required for class definition.

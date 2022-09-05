@@ -126,15 +126,15 @@
 % ~ Styling. ~
 
 % Colors.
-\colorlet{ambiguityorange}{TUDa-8b}
+\colorlet{ambiguityorange}{TUDa-8\IfDarkModeTF{a}{b}}
 \colorlet{changedpurple}{TUDa-11a}
-\colorlet{colorDensity}{TUDa-1b}
-\colorlet{irl}{TUDa-0b}
-\colorlet{lerrorred}{TUDa-9b}
-\colorlet{lstcomments}{TUDa-4c}
-\colorlet{lstkeywords}{TUDa-9d}
-\colorlet{lstlinenumbers}{TUDa-0c}
-\colorlet{lststrings}{TUDa-2c}
+\colorlet{colorDensity}{TUDa-1\IfDarkModeTF{a}{b}}
+\colorlet{irl}{TUDa-0\IfDarkModeTF{a}{a}}
+\colorlet{lerrorred}{TUDa-9\IfDarkModeTF{a}{b}}
+\colorlet{lstcomments}{TUDa-4\IfDarkModeTF{a}{c}}
+\colorlet{lstkeywords}{TUDa-9\IfDarkModeTF{a}{d}}
+\colorlet{lstlinenumbers}{TUDa-0\IfDarkModeTF{b}{c}}
+\colorlet{lststrings}{TUDa-2\IfDarkModeTF{a}{c}}
 \colorlet{fgcolor}{.} % If we need the default Font Color but . is currently overwritten
 
 % Description-list styling.

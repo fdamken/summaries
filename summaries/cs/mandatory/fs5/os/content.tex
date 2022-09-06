@@ -54,10 +54,10 @@
 		            \begin{figure}[H]
 		            	\centering
 		            	\begin{tikzpicture}
-			            	\draw [line width = 2pt, fill = TUDa-4a] (0, 0) circle (4);
-			            	\draw [line width = 2pt, fill = TUDa-6a] (0, 0) circle (3);
-			            	\draw [line width = 2pt, fill = TUDa-8a] (0, 0) circle (2);
-			            	\draw [line width = 2pt, fill = TUDa-9a] (0, 0) circle (1);
+			            	\draw [line width = 2pt, fill = TUDa-4\IfDarkModeTF{c}{a}] (0, 0) circle (4);
+			            	\draw [line width = 2pt, fill = TUDa-6\IfDarkModeTF{c}{a}] (0, 0) circle (3);
+			            	\draw [line width = 2pt, fill = TUDa-8\IfDarkModeTF{c}{a}] (0, 0) circle (2);
+			            	\draw [line width = 2pt, fill = TUDa-9\IfDarkModeTF{c}{a}] (0, 0) circle (1);
 			            	
 			            	\node at (0, 0.4) {Ring 0};
 			            	\node at (0, 1.4) {Ring 1};
@@ -1059,14 +1059,14 @@ int main() {
 		            	
 		            	\draw [step = 1] (0, 0) grid (7, 8);
 		            	
-		            	\draw [fill = black] (p) circle (0.1);
-		            	\draw [fill = black] (q) circle (0.1);
-		            	\draw [fill = black] (r) circle (0.1);
-		            	\draw [fill = black] (s) circle (0.1);
-		            	\draw [fill = black] (t) circle (0.1);
-		            	\draw [fill = black] (u) circle (0.1);
-		            	\draw [fill = black] (v) circle (0.1);
-		            	\draw [fill = black] (w) circle (0.1);
+		            	\draw [fill = fgcolor] (p) circle (0.1);
+		            	\draw [fill = fgcolor] (q) circle (0.1);
+		            	\draw [fill = fgcolor] (r) circle (0.1);
+		            	\draw [fill = fgcolor] (s) circle (0.1);
+		            	\draw [fill = fgcolor] (t) circle (0.1);
+		            	\draw [fill = fgcolor] (u) circle (0.1);
+		            	\draw [fill = fgcolor] (v) circle (0.1);
+		            	\draw [fill = fgcolor] (w) circle (0.1);
 		            	
 		            	\draw (p) -- (B);
 		            	\draw (p) -- (A);
@@ -1082,7 +1082,7 @@ int main() {
 		            	\draw [line width = 2pt, color = TUDa-7a] (3, 3) rectangle (5, 5);
 		            	\draw [step = 0.2, color = TUDa-7a] (3, 3) grid (5, 5);
 		            	
-		            	\draw [line width = 2pt, color = TUDa-9b] (2, 3) rectangle (3, 4);
+		            	\draw [line width = 2pt, color = TUDa-9\IfDarkModeTF{a}{b}] (2, 3) rectangle (3, 4);
 		            	
 		            	\draw [->, line width = 3pt, > = { Latex[length = 10pt] }] (p) -- (q) -- (r) -- (s) -- (t) -- (u) -- (v) -- (w);
 	            	\end{tikzpicture}
@@ -1091,7 +1091,7 @@ int main() {
             
 	            \begin{itemize}
 	            	\item This diagram shows the execution trajectory through two processes where either one uses both the printer and the plotter.
-	            	\item The trajectory itself (the black line) is monotonically increasing and represents the execution process in process A (horizontally) and B (vertically).
+	            	\item The trajectory itself (the \IfDarkModeTF{white}{black} line) is monotonically increasing and represents the execution process in process A (horizontally) and B (vertically).
 	            	\item It cannot enter either one of the hatched fields, because this would require both processes to access the printer (green) or the plotter (orange), which is denied by the mutual exclusivity (ME). Entering these regions would cause a deadlock.
 	            	\item The red marked region is an unsafe state as it is only possible for the trajectory to move onto a deadlock.
 	            \end{itemize}
@@ -1478,10 +1478,10 @@ int main() {
             	\coordinate (left) at (-1.5, 0);
             	\coordinate (right) at (1.5, 0);
         	
-            	\draw [color = transparent, fill = TUDa-0c, opacity = 0.5] (left) circle (2);
-            	\draw [color = transparent, fill = TUDa-0c, opacity = 0.5] (right) circle (2);
-            	\draw [line width = 2pt, color = TUDa-0d] (left) circle (2);
-            	\draw [line width = 2pt, color = TUDa-0d] (right) circle (2);
+            	\draw [color = transparent, fill = TUDa-0\IfDarkModeTF{a}{c}, opacity = 0.5] (left) circle (2);
+            	\draw [color = transparent, fill = TUDa-0\IfDarkModeTF{a}{c}, opacity = 0.5] (right) circle (2);
+            	\draw [line width = 2pt, color = TUDa-0\IfDarkModeTF{b}{d}] (left) circle (2);
+            	\draw [line width = 2pt, color = TUDa-0\IfDarkModeTF{b}{d}] (right) circle (2);
             	
             	\node [left = 2 of left, anchor = east] (spec) {Specification};
             	\node [right = 2 of right, anchor = west] {Implementation};
@@ -2913,12 +2913,12 @@ $ exec 3>&-                       # Close the file descriptor.
 				        	}
 			        	
 				        	\coordinate [below = 1 of c53] (n53);
-				        	\draw [fill = black] (n53) circle (1);
+				        	\draw [fill = fgcolor] (n53) circle (1);
 				        	\foreach \c [count = \i, remember = \c as \previous (initially 53)] in { 98, 183, 37, 122, 14, 124, 65, 67 } {
 				        		\coordinate (c\c) at (\c, 0);
 				        		\coordinate [below = \i+1 of c\c] (n\c);
 				        		\draw [->, > = { Latex[length = 10pt] }] (n\previous) -- (n\c);
-				        		\draw [fill = black] (n\c) circle (1);
+				        		\draw [fill = fgcolor] (n\c) circle (1);
 				        	}
 			        	
 				        	\draw (c0) -- (c199);
@@ -2954,12 +2954,12 @@ $ exec 3>&-                       # Close the file descriptor.
 							}
 							
 							\coordinate [below = 1 of c53] (n53);
-							\draw [fill = black] (n53) circle (1);
+							\draw [fill = fgcolor] (n53) circle (1);
 							\foreach \c [count = \i, remember = \c as \previous (initially 53)] in { 65, 67, 37, 14, 98, 122, 124, 183 } {
 								\coordinate (c\c) at (\c, 0);
 								\coordinate [below = \i+1 of c\c] (n\c);
 								\draw [->, > = { Latex[length = 10pt] }] (n\previous) -- (n\c);
-								\draw [fill = black] (n\c) circle (1);
+								\draw [fill = fgcolor] (n\c) circle (1);
 							}
 							
 							\draw (c0) -- (c199);
@@ -2995,12 +2995,12 @@ $ exec 3>&-                       # Close the file descriptor.
 				        	}
 				        	
 				        	\coordinate [below = 1 of c53] (n53);
-				        	\draw [fill = black] (n53) circle (1);
+				        	\draw [fill = fgcolor] (n53) circle (1);
 				        	\foreach \c [count = \i, remember = \c as \previous (initially 53)] in { 37, 14, 0, 65, 67, 98, 122, 124, 183 } {
 				        		\coordinate (c\c) at (\c, 0);
 				        		\coordinate [below = \i+1 of c\c] (n\c);
 				        		\draw [->, > = { Latex[length = 10pt] }] (n\previous) -- (n\c);
-				        		\draw [fill = black] (n\c) circle (1);
+				        		\draw [fill = fgcolor] (n\c) circle (1);
 				        	}
 				        	
 				        	\draw (c0) -- (c199);
@@ -3036,12 +3036,12 @@ $ exec 3>&-                       # Close the file descriptor.
 				        	}
 				        	
 				        	\coordinate [below = 1 of c53] (n53);
-				        	\draw [fill = black] (n53) circle (1);
+				        	\draw [fill = fgcolor] (n53) circle (1);
 				        	\foreach \c [count = \i, remember = \c as \previous (initially 53)] in { 65, 67, 98, 122, 124, 183, 199, 0, 14, 37 } {
 				        		\coordinate (c\c) at (\c, 0);
 				        		\coordinate [below = \i+1 of c\c] (n\c);
 				        		\draw [->, > = { Latex[length = 10pt] }] (n\previous) -- (n\c);
-				        		\draw [fill = black] (n\c) circle (1);
+				        		\draw [fill = fgcolor] (n\c) circle (1);
 				        	}
 				        	
 				        	\draw (c0) -- (c199);
@@ -3077,12 +3077,12 @@ $ exec 3>&-                       # Close the file descriptor.
 				        	}
 				        	
 				        	\coordinate [below = 1 of c53] (n53);
-				        	\draw [fill = black] (n53) circle (1);
+				        	\draw [fill = fgcolor] (n53) circle (1);
 				        	\foreach \c [count = \i, remember = \c as \previous (initially 53)] in { 37, 14, 65, 67, 98, 122, 124, 183 } {
 				        		\coordinate (c\c) at (\c, 0);
 				        		\coordinate [below = \i+1 of c\c] (n\c);
 				        		\draw [->, > = { Latex[length = 10pt] }] (n\previous) -- (n\c);
-				        		\draw [fill = black] (n\c) circle (1);
+				        		\draw [fill = fgcolor] (n\c) circle (1);
 				        	}
 				        	
 				        	\draw (c0) -- (c199);
@@ -3114,12 +3114,12 @@ $ exec 3>&-                       # Close the file descriptor.
 				        	}
 				        	
 				        	\coordinate [below = 1 of c53] (n53);
-				        	\draw [fill = black] (n53) circle (1);
+				        	\draw [fill = fgcolor] (n53) circle (1);
 				        	\foreach \c [count = \i, remember = \c as \previous (initially 53)] in { 65, 67, 98, 122, 124, 183, 14, 37 } {
 				        		\coordinate (c\c) at (\c, 0);
 				        		\coordinate [below = \i+1 of c\c] (n\c);
 				        		\draw [->, > = { Latex[length = 10pt] }] (n\previous) -- (n\c);
-				        		\draw [fill = black] (n\c) circle (1);
+				        		\draw [fill = fgcolor] (n\c) circle (1);
 				        	}
 				        	
 				        	\draw (c0) -- (c199);
@@ -3348,10 +3348,10 @@ $ exec 3>&-                       # Close the file descriptor.
 	    	\coordinate (left) at (-1.5, 0);
 	    	\coordinate (right) at (1.5, 0);
 	    	
-	    	\draw [color = transparent, fill = TUDa-0c, opacity = 0.5] (left) circle (2);
-	    	\draw [color = transparent, fill = TUDa-0c, opacity = 0.5] (right) circle (2);
-	    	\draw [line width = 2pt, color = TUDa-0d] (left) circle (2);
-	    	\draw [line width = 2pt, color = TUDa-0d] (right) circle (2);
+	    	\draw [color = transparent, fill = TUDa-0\IfDarkModeTF{a}{c}, opacity = 0.5] (left) circle (2);
+	    	\draw [color = transparent, fill = TUDa-0\IfDarkModeTF{a}{c}, opacity = 0.5] (right) circle (2);
+	    	\draw [line width = 2pt, color = TUDa-0\IfDarkModeTF{b}{d}] (left) circle (2);
+	    	\draw [line width = 2pt, color = TUDa-0\IfDarkModeTF{b}{d}] (right) circle (2);
 	    	
 	    	\node [left = 2 of left, anchor = east] (spec) {Specification};
 	    	\node [right = 2 of right, anchor = west] {Implementation};

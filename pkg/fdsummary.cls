@@ -193,6 +193,8 @@
     showstringspaces = false,
     stringstyle = \color{lststrings},
     tabsize = 4,
+    rulecolor=\color{\thepagecolor},
+    emphstyle=\color{fgcolor},
     style = base
 }
 

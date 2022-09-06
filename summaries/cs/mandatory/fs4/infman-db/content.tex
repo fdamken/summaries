@@ -601,7 +601,7 @@
                 			\item \texttt{1:N}, Ein E1 hat beliebig viele E2; Ein E2 hat genau ein E1.
                 			\item \texttt{N:M}, Ein E1 hat beliebig viele E2; Ein E2 hat beliebig viele E1.
                 		\end{itemize}
-                	\item In den folgenden Abbildung wird der Unterschied zwischen \textcolor{TUDa-4c}{Min-Max-Notation} und \textcolor{TUDa-1b}{Chen-Notation} ersichtlich.
+                	\item In den folgenden Abbildung wird der Unterschied zwischen \textcolor{TUDa-4\IfDarkModeTF{a}{c}}{Min-Max-Notation} und \textcolor{TUDa-1\IfDarkModeTF{a}{b}}{Chen-Notation} ersichtlich.
                 \end{itemize}
             
             	\begin{figure}[H]
@@ -611,8 +611,8 @@
                 		\node [relationship, right = of left] (rel) {abgeschlossen};
                 		\node [entity, right = of rel] (right) {Master-Thesis};
                 		
-                		\draw (left) -- node[above]{\textcolor{TUDa-4c}{[1, 1]}} node[below]{\textcolor{TUDa-1b}{1}} (rel);
-                		\draw (rel) -- node[above]{\textcolor{TUDa-4c}{[1, 1]}} node[below]{\textcolor{TUDa-1b}{1}} (right);
+                		\draw (left) -- node[above]{\textcolor{TUDa-4\IfDarkModeTF{a}{c}}{[1, 1]}} node[below]{\textcolor{TUDa-1\IfDarkModeTF{a}{b}}{1}} (rel);
+                		\draw (rel) -- node[above]{\textcolor{TUDa-4\IfDarkModeTF{a}{c}}{[1, 1]}} node[below]{\textcolor{TUDa-1\IfDarkModeTF{a}{b}}{1}} (right);
             		\end{tikzpicture}
             		\caption{\texttt{1:1} Beziehung}
           		\end{figure}
@@ -623,8 +623,8 @@
             			\node [relationship, right = of left] (rel) {betreut};
             			\node [entity, right = of rel] (right) {Master-Thesis};
             			
-            			\draw (left) -- node[above]{\textcolor{TUDa-4c}{[1, *]}} node[below]{\textcolor{TUDa-1b}{1}} (rel);
-            			\draw (rel) -- node[above]{\textcolor{TUDa-4c}{[1, 1]}} node[below]{\textcolor{TUDa-1b}{N}} (right);
+            			\draw (left) -- node[above]{\textcolor{TUDa-4\IfDarkModeTF{a}{c}}{[1, *]}} node[below]{\textcolor{TUDa-1\IfDarkModeTF{a}{b}}{1}} (rel);
+            			\draw (rel) -- node[above]{\textcolor{TUDa-4\IfDarkModeTF{a}{c}}{[1, 1]}} node[below]{\textcolor{TUDa-1\IfDarkModeTF{a}{b}}{N}} (right);
            			\end{tikzpicture}
            			\caption{\texttt{1:N} Beziehung}
            		\end{figure}
@@ -635,8 +635,8 @@
             			\node [relationship, right = of left] (rel) {zitiert-in};
             			\node [entity, right = of rel] (right) {Master-Thesis};
             			
-            			\draw (left) -- node[above]{\textcolor{TUDa-4c}{[0, *]}} node[below]{\textcolor{TUDa-1b}{N}} (rel);
-            			\draw (rel) -- node[above]{\textcolor{TUDa-4c}{[1, *]}} node[below]{\textcolor{TUDa-1b}{N}} (right);
+            			\draw (left) -- node[above]{\textcolor{TUDa-4\IfDarkModeTF{a}{c}}{[0, *]}} node[below]{\textcolor{TUDa-1\IfDarkModeTF{a}{b}}{N}} (rel);
+            			\draw (rel) -- node[above]{\textcolor{TUDa-4\IfDarkModeTF{a}{c}}{[1, *]}} node[below]{\textcolor{TUDa-1\IfDarkModeTF{a}{b}}{N}} (right);
            			\end{tikzpicture}
            			\caption{\texttt{N:M} Beziehung}
            		\end{figure}
@@ -2363,15 +2363,15 @@ SELECT hash FROM users WHERE username = 'Fabian'; DROP DATABASE library;'
             	\begin{figure}[H]
             		\centering
             		\begin{tikzpicture}
-                		\node [red] (tx2) {TX2};
+                		\node [TUDa-9\IfDarkModeTF{a}{c}] (tx2) {TX2};
                 		\node [below right = of tx2] (tx4) {TX4};
-                		\node [red, below left = of tx2] (tx1) {TX1};
-                		\node [red, below right = of tx1] (tx3) {TX3};
+                		\node [TUDa-9\IfDarkModeTF{a}{c}, below left = of tx2] (tx1) {TX1};
+                		\node [TUDa-9\IfDarkModeTF{a}{c}, below right = of tx1] (tx3) {TX3};
                 		
-                		\draw [->, red] (tx1) -- (tx2);
+                		\draw [->, TUDa-9\IfDarkModeTF{a}{c}] (tx1) -- (tx2);
                 		\draw [->] (tx2) -- (tx4);
-                		\draw [->, red] (tx2) -- (tx3);
-                		\draw [->, red] (tx3) -- (tx1);
+                		\draw [->, TUDa-9\IfDarkModeTF{a}{c}] (tx2) -- (tx3);
+                		\draw [->, TUDa-9\IfDarkModeTF{a}{c}] (tx3) -- (tx1);
                 		\draw [->] (tx3) -- (tx4);
             		\end{tikzpicture}
             		\caption{Beispiel: Wait-For-Graph mit Zyklen}

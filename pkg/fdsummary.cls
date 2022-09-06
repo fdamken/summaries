@@ -202,6 +202,21 @@
 % Align captions right or, if they are to small, center them.
 \captionsetup{justification=RaggedRight, singlelinecheck=true}
 
+% mdframed settings.
+\mdfsetup{%
+    backgroundcolor=\thepagecolor,%
+    fontcolor=.,%
+    linecolor=fgcolor,%
+    frametitlefontcolor=fgcolor,%
+    shadowcolor==fgcolor!50!\thepagecolor,%
+    subtitlebackgroundcolor=\thepagecolor,%
+    subsubtitlebackgroundcolor=\thepagecolor,%
+    subtitleabovelinecolor=fgcolor,%
+    subtitlebelowlinecolor=fgcolor,%
+    subsubtitleabovelinecolor=fgcolor,%
+    subsubtitlebelowlinecolor=fgcolor,%
+}%
+
 
 
 % ~ Commands. ~

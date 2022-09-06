@@ -260,14 +260,14 @@
 }
 
 % Network.
-\newcommand{\ciscoInternet}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/cloud}}}
-\newcommand{\ciscoModem}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/cable_modem}}}
-\newcommand{\ciscoRouter}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/router}}}
-\newcommand{\ciscoSwitch}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/workgroup_switch}}}
-\newcommand{\ciscoClient}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/pc}}}
-\newcommand{\ciscoFirewall}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/firewall}}}
-\newcommand{\ciscoServer}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/file_server}}}
-\newcommand{\ciscoIdP}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/key}}}
+\newcommand{\ciscoInternet}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/cloud\IfDarkModeT{-inverted}}}}
+\newcommand{\ciscoModem}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/cable_modem\IfDarkModeT{-inverted}}}}
+\newcommand{\ciscoRouter}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/router\IfDarkModeT{-inverted}}}}
+\newcommand{\ciscoSwitch}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/workgroup_switch\IfDarkModeT{-inverted}}}}
+\newcommand{\ciscoClient}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/pc\IfDarkModeT{-inverted}}}}
+\newcommand{\ciscoFirewall}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/firewall\IfDarkModeT{-inverted}}}}
+\newcommand{\ciscoServer}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/file_server\IfDarkModeT{-inverted}}}}
+\newcommand{\ciscoIdP}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/key\IfDarkModeT{-inverted}}}}
 \newcommand{\tikzTimeDiagram}[3][1]{\foreach \x in { 1, ..., #2 } { \draw [->] (\x*5*#1, 0) to (\x*5*#1, -#3-1); }}
 
 % Other.

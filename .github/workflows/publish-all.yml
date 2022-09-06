@@ -16,13 +16,10 @@ jobs:
         run: sudo apt install graphviz spin
       - name: Install TeXLive
         run: sudo apt install texlive-base texlive-fonts-extra texlive-humanities texlive-lang-cyrillic texlive-lang-english texlive-lang-german texlive-latex-extra texlive-latex-recommended texlive-latex-recommended texlive-luatex texlive-pictures texlive-plain-generic texlive-publishers texlive-science
-      - name: Prepare install of additional latex-packages
-        uses: actions/checkout@v3
-        with:
-          name: Rdeisenroth/darkmode-latex-package
-          path: setup/latex/darkmode-latex-package
       - name: install additional latex-packages
         run: |
+          mkdir -p setup/latex/darkmode-latex-package
+          git clone https://github.com/Rdeisenroth/darkmode-latex-package.git setup/latex/darkmode-latex-package
           cd setup/latex/darkmode-latex-package
           l3build install
       - name: Setup Python

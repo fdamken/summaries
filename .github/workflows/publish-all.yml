@@ -9,17 +9,23 @@ jobs:
         working-directory: .
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Install Graphviz and Spin
         run: sudo apt install graphviz spin
       - name: Install TeXLive
         run: sudo apt install texlive-base texlive-fonts-extra texlive-humanities texlive-lang-cyrillic texlive-lang-english texlive-lang-german texlive-latex-extra texlive-latex-recommended texlive-latex-recommended texlive-luatex texlive-pictures texlive-plain-generic texlive-publishers texlive-science
-      - name: Install additional latex-packages
+      - name: Prepare install of additional latex-packages
+        uses: actions/checkout@v3
+        with:
+          name: Rdeisenroth/darkmode-latex-package
+          ref: refs/heads/release
+          path: setup/latex/darkmode-latex-package
+      - name: install additional latex-packages
         run: |
-          sudo tlmgr init-usertree
-          sudo tlmgr --verify-repo=none install darkmode
+          cd setup/latex/darkmode-latex-package
+          l3build install
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -29,6 +35,7 @@ jobs:
       - name: Build Documents
         run: ".github/build-documents.sh all"
       - name: Publish Documents
+        if: github.repository == 'fdamken/summaries'
         run: ".github/publish-documents.sh"
         env:
           gh_user: ${{ secrets.PUBLISH_GH_USER }}

@@ -103,8 +103,8 @@
 	            		\item Die Daten werden nur einmal gespeichert \(\rightarrow\) Auflösung der Datenredundanz.
 	            		\item Abfragesprachen und automatische Optimierung \(\rightarrow\) effizienter Zugriff.
 	            		\item Transaktionen und einheitliche Schnittstellen \(\rightarrow\) gemeinsame Datennutzung und paralleler Zugriff.
-	            		\item Benutzerverwaltung und Zugriffskontrolle \(\rightarrow\) Schutz von ungewolltem Zugriff.
-	            		\item Datensicherheit (z.B. Backups) \(\rightarrow\) Schutz von ungewolltem Verlust.
+	            		\item Benutzerverwaltung und Zugriffskontrolle \(\rightarrow\) Schutz vor ungewolltem Zugriff.
+	            		\item Datensicherheit (z.B. Backups) \(\rightarrow\) Schutz vor ungewolltem Verlust.
 	            	\end{itemize}
 	            \item[Datenunabhängigkeit] Die Anwendungssoftware ist von der (technischen) Implementierung der Datenbank entkoppelt.
 		            \begin{itemize}
@@ -116,7 +116,7 @@
 
         \subsection{Abgrenzung: Datenbank vs. Datenbankmanagementsystem vs. Datenbanksystem} % 2.9
             \paragraph{Datenbank (DB)}
-                Einheitlich beschriebene Darstellung mittels diskreter Daten auf persistenten Speichermedian (z.B. Festplatte, SSD, Hauptspeicher).
+                Einheitlich beschriebene Darstellung mittels diskreter Daten auf persistenten Speichermedium (z.B. Festplatte, SSD, Hauptspeicher).
             % end
             
             \paragraph{Datenbankmanagementsystem (DBMS)}
@@ -129,7 +129,7 @@
         % end
 
         \subsection{DBMS} % 2.10, 2.13
-            Ermöglichung der einheitlichen Beschreibung (Datenmodellierung) und sicheren Bearbeitungen der Daten.
+            Ermöglichung der einheitlichen Beschreibung (Datenmodellierung) und sicheren Bearbeitung der Daten. \\
             
             Typische Anforderungen:
             \begin{itemize}
@@ -165,7 +165,7 @@
             \subsubsection{Aufgaben eines DBMS nach Codd} % 2.12
                 \begin{enumerate}
                 	\item \textit{Integration:} einheitliche, nicht redundante Verwaltung der Daten
-                	\item \textit{Operationen} zum Speicher, Suchen, Ändern
+                	\item \textit{Operationen} zum Speichern, Suchen, Ändern
                 	\item \textit{Katalog} zur Datenspeicherung
                 	\item \textit{Benutzersichten:} Abbildung des Gesamtbestandes auf die für den Nutzer relevanten Daten
                 	\item \textit{Konsistenzüberwachung:} Korrektheit, Integritätssicherung
@@ -775,7 +775,7 @@
             \begin{itemize}
             	\item Eine \textit{Relation} \( R \subseteq D _ 1 \times \cdots D _ n \) ist eine Menge von \(n\)-Tupeln, deren Elemente bestimmte Eigenschaften erfüllen.
             	\item \( n = \deg(R) \) heißt \textit{Stelligkeit} oder \textit{Grad} von \(R\).
-            	\item Relationen lassen sich auch als Tabellen darstellen, bspw. die Relation \( < _ \text{bis4} \subseteq \{ 1, 2, 3, 4 \} ^ 2 = \{ (1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4) \} \) mit \( (a, b) \in < _ \text{bis4} \):
+            	\item Relationen lassen sich auch als Tabellen darstellen, bspw. die Relation \\ \( < _ \text{bis4} \subseteq \{ 1, 2, 3, 4 \} ^ 2 = \{ (1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4) \} \) mit \( (a, b) \in < _ \text{bis4} \):
             		\begin{table}[H]
             			\centering
             			\begin{tabular}{c | c}
@@ -1033,7 +1033,7 @@
             \subsubsection{Erste Normalform} % 4.61, 4.62, 4.63
             	\textbf{Eine Relation ist in 1NF, wenn \textit{alle Attributwerte atomar} sind.}
             	
-            	\info{Flapsig: Attribute sind automar, alles hängt vom Schlüssel ab.}
+            	\info{Flapsig: Attribute sind atomar, alles hängt vom Schlüssel ab.}
             % end
 
             \subsubsection{Zweite Normalform} % 4.65, 4.66, 4.67
@@ -1061,6 +1061,40 @@
                 \end{equation*}
                 
                 \info{Flapsig: Attribute hängen nur vom Schlüssel ab, keine transitiven FDs.}
+			%end
+
+			\subsubsection{Vierte Normalform} % 4.74, 4.75
+                \textbf{Eine Relation ist in 4NF, wenn sie in BCNF ist und \textit{jede Mehrwertige Abhängigkeit (MVD)} entweder \textit{trivial} oder \(\alpha\) \textit{Superschlüssel} der Relation ist.}
+                \begin{equation*}
+                    R \text{ in 2NF} \land \forall A \in \Schema(R) : \forall K \in \KEYS(R) : \lnot(K \rightarrow \rightarrow A \text{ ist MVD})
+                \end{equation*}
+
+				\paragraph{Mehrwertige Abhängigkeit}
+				\(R\) genügt der \textbf{mehrwertigen Abhängigkeit} \( \alpha \rightarrow \rightarrow \beta\) genau dann, wenn
+                \begin{itemize}
+					\item es zwei Tupel t1 und t2 mit gleichen \(\alpha\)-Werten gibt
+					\item dann muss es auch zwei Tupel t3 und t4 geben mit
+						\begin{itemize}
+							\item \(t1.\alpha = t2.\alpha = t3.\alpha = t4.\alpha\)
+							\item \(t3.\beta = t1.\beta\) und \(t4.\beta = t2.\beta\)
+							\item \(t3.\gamma = t2.\gamma\) und \(t4.\gamma = t1.\gamma\)
+						\end{itemize}
+					\item \textbf{Triviale MVD:} \(\alpha \rightarrow \rightarrow \beta\) ist \textbf{trivial}, wenn \(\beta \subseteq \alpha\) bzw. \(\alpha \cup \beta =\) Schema(\(R\))
+						\begin{table}[H]
+							\centering
+							\begin{tabular}{c | c | c}
+								\(\alpha\) 	& \(\beta\)		& \(\gamma\)		  	\\ \hline
+								Alice      	& Algorithmen	& Fallschirmspringen 	\\
+								Alice   	& Algorithmen	& Briefmarkensammeln	\\
+								Alice   	& InfMan     	& Fallschirmspringen	\\
+								Alice   	& InfMan     	& Fallschirmspringen	\\
+								Bob   		& Algorithmen   & Briefmarkensammeln  	\\
+								Bob   		& InfMan		& Fallschirmspringen
+							\end{tabular}
+						\end{table}
+					\item \textbf{MVDs:} \(\alpha \rightarrow \rightarrow \beta\), \(\alpha \rightarrow \rightarrow \gamma\)
+				\end{itemize}
+                \info{Flapsig: Attribute hängen nur vom Schlüssel ab und keine Redundanz durch Auflistungen.}
             % end
         % end
 
@@ -1073,12 +1107,20 @@
         		\begin{enumerate}
         			\item Linksreduktion. \\ Entfernung überflüssiger Attribute aus der linken Seite der FDs.
         			\item Rechtsreduktion. \\ Entfernung überflüssiger FDs.
-        			\item FDs mit identischer linker Seite gruppieren.
-        			\item Gruppen mit äquivalenter linker Seite zusammenfassen. \\ Äquivalente linke Seite heißt hier, dass die Hülle gleich ist.
+        			\item FDs mit identischer linken Seite gruppieren.
+        			\item Gruppen mit äquivalenter linken Seite zusammenfassen. \\ Äquivalente linke Seite heißt hier, dass die Hülle gleich ist.
         			\item Relationen bilden. \\ Jede Gruppe bildet eine Relation, jede linke Seite einer Gruppe bildet einen Schlüsselkandidaten der Relation.
         		\end{enumerate}
         \end{itemize}
     % end
+
+	\section{Normalformen und Performanz} % 4.86
+	 	\begin{itemize}
+			\item 5NF: Vermeiden von Join-Abhängigkeiten
+			\item Höhere Normalform bedeutet Vermeidung von Anomalien, aber auch mehr Aufwand
+			\item In der Praxis werden meist nur die behandelten Normalformen verwendet
+		\end{itemize}
+	% end	
 % end
 
 \chapter{Logische Abfragemodelle} % 5, 5.3, 5.4
@@ -1213,7 +1255,7 @@
                 % end
 
                 \paragraph{Equijoin} % 5.18
-                    Gilt \( \Theta = = \), so wird dies \textit{Equijoin} genannt.
+                    Gilt \( \Theta \in \{=\} \), so wird dies \textit{Equijoin} genannt.
                     
                     \textbf{Notation}
                     \begin{equation*}
@@ -1257,7 +1299,7 @@
     % end
 
     \section{Relationenkalküle} % 5.27, 5.28
-        Im folgenden wird das Relationentupelkalkül (RTK) und das Relationenwertebereichkalkül (RWK) betrachtet, welche Kalküle darstellen zur formalen Bau von Abfragen. Kalküle, also formale logische Sprachen, bestehen aus:
+        Im folgenden wird das Relationentupelkalkül (RTK) und das Relationenwertebereichkalkül (RWK) betrachtet, welche Kalküle zum formalen Bau von Abfragen darstellen. Kalküle, also formale logische Sprachen, bestehen aus:
         \begin{itemize}
         	\item \textbf{Bausteinen} (z.B. \(\lor\), \(\lnot\), \(\leq\), \dots), welche zu
         	\item \textbf{wohlgeformten Ausdrücken} zusammengesetzt werden.
@@ -1329,7 +1371,7 @@
         % end
     % end
 
-    \section{Änderungsoperationne} % 5.44, 5.45
+    \section{Änderungsoperationen} % 5.44, 5.45
         \begin{itemize}
         	\item Zustandsfolge der Datenbank \( \sigma = (\DB_0, \cdots, \DB_\tau, \cdots) \)
         	\item Eine \textit{Änderungsoperation} überführt die Datenbank vom Zustand \( \DB_\tau \) in einen Zustand \( \DB_{\tau + 1} \).
@@ -1410,7 +1452,9 @@
             		\lstinline|DATE| & Datum \\
             		\lstinline|TIME| & Uhrzeit \\
             		\lstinline|TIMESTAMP| & Zeitstempel (Datum und Uhrzeit) \\
-            		\lstinline|INTERVAL| & Zeitintervall
+            		\lstinline|INTERVAL| & Zeitintervall \\
+            		\lstinline|BLOB| & Sehr große binäre Daten (z.B. Bilder) \\
+            		\lstinline|CLOB| & Sehr große String-Attribute (z.B. große Texte)
             	\end{tabular}
             	\caption{Vordefinierte Datentypen in SQL}
             \end{table}
@@ -2147,7 +2191,7 @@ SELECT hash FROM users WHERE username = 'Fabian'; DROP DATABASE library;'
             	\item Abnormale/Vorzeitige Terminierung: Abort
             		\begin{itemize}
             			\item Der Zustand der Datenbank wird zu dem Zustand vor BOT zurück gerollt.
-            			\item Ist SQL ist dies in der Regel als \lstinline|ROLLBACK| definiert.
+            			\item In SQL ist dies in der Regel als \lstinline|ROLLBACK| definiert.
             		\end{itemize}
             	\item Ein Abort kann unterschiedlich eingeleitet werden, bspw. durch:
             		\begin{itemize}
@@ -2332,7 +2376,7 @@ SELECT hash FROM users WHERE username = 'Fabian'; DROP DATABASE library;'
         	\begin{itemize}
         		\item Die Transaktionen müssen länger warten, bevor diese ausgeführt werden \(\rightarrow\) längere Ausführungszeiten.
         		\item \textbf{Verklemmung} (Deadlock): Mehrere Transaktionen hindern sich gegenseitig an der Ausführung \(\rightarrow\) sie warten ewig wechselseitig aufeinander.
-        		\item Somit sollte nur gesperrt werden, wenn die wirklich nötig ist.
+        		\item Somit sollte nur gesperrt werden, wenn es wirklich nötig ist.
         	\end{itemize}
         % end
 
@@ -2390,7 +2434,7 @@ SELECT hash FROM users WHERE username = 'Fabian'; DROP DATABASE library;'
         \subsection{Zwei-Phasen Sperrprotokoll (2PL)} % 8.30, 8.31
             \begin{description}
             	\item[Phase 1] Es werden nur gesperrte Daten gelesen, eingefügt, gelöscht oder verändert.
-            	\item[Phase 2] Nach einer Fragegabe einer Sperre kann keine neue Sperre mehr erstellt werden.
+            	\item[Phase 2] Nach einer Freigabe einer Sperre kann keine neue Sperre mehr erstellt werden.
             \end{description}
             \begin{itemize}
             	\item Aus Phase 2 folgt somit, dass es \textit{Sperrphasen} und \textit{Freigabephasen} geben muss.
@@ -2464,7 +2508,7 @@ SET TRANSACTION ISOLATION LEVEL
             \begin{itemize}
             	\item \textit{Eigene Schreibsperren} werden angefordert und bis EOT gehalten.
             	\item \textit{Eigene Lesesperren} werden angefordert und \textit{sofort freigegeben}.
-            	\item \textit{Fremde Schreibsperren} werden beachtet (es werden nur Daten gelesen, die commited wurde).
+            	\item \textit{Fremde Schreibsperren} werden beachtet (es werden nur Daten gelesen, die commited wurden).
             	\item Reduzierte Wartezeit beim Lesen.
             	\item Es kann zu inkonsistentem Lesen kommen.
             \end{itemize}
@@ -2674,7 +2718,7 @@ DROP INDEX *@\textit{indexname}@*;
             		  & \pi _ { \text{Hersteller}, \text{Modell} } (\sigma _ { \text{Land} = \text{\enquote{BRD}} } (\text{PKW} \bowtie \text{Standort})) \\
             		= & \pi _ { \text{Hersteller}, \text{Modell} } (\text{PKW} \bowtie \sigma _ { \text{Land} = \text{\enquote{BRD}} } (\text{Standort}))
         		\end{align*}
-        		Es könnte z.B. einen Index über das Land im Standort geben, dann ist die zweite Anfrage deutlich schneller.
+        		Es könnte z.B. einen Index über das Land im Standort geben, welcher die zweite Anfrage deutlich schneller macht.
         	\item Der \textit{Ausführungsplan} legt fest, wie die einzelnen Schritte der Abfrage ausgeführt werden.
         	\item In SQL kann der Ausführungsplan mit \enquote{\lstinline|EXPLAIN| \textit{anfrage}} angezeigt werden.
         \end{itemize}
@@ -2888,7 +2932,7 @@ DROP INDEX *@\textit{indexname}@*;
         \begin{itemize}
         	\item NoSQL (\enquote{Not only SQL} oder \enquote{no SQL}) ist ein Sammelbegriff für nicht-relationale Datenbanken.
         	\item Optimiert für große Datenmengen und verteilte Systeme.
-        	\item Gut skalierbar und zum Teil noch verfügbar.
+        	\item Gut skalierbar und zum Teil hoch verfügbar.
         	\item Meistens wird auf ein umfangreiches Transaktionssystem und komplexe Integritätsbedingungen verzichtet.
         	\item Wesentliche Konzepte:
         		\begin{itemize}

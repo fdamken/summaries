@@ -521,7 +521,7 @@ Select [1-2]: 2
 					\item Listing~\ref{lst:promelaDStep} shows the general syntax.
 				\end{itemize}
 			
-				\begin{lstlisting}[caption = { Deterministic Sequence in PROMELA }, label = ls:promelaDStep, language = PROMELA]
+				\begin{lstlisting}[caption = { Deterministic Sequence in PROMELA }, label = lst:promelaDStep, language = PROMELA]
 d_step {
 	stmt1;  /* Guard */
 	stmt2;
@@ -632,7 +632,7 @@ active proctype Q() {
 				\paragraph{First Attempt}
 					Simple idea: Use boolean flags to control access to critical section, see listing~\ref{lst:promelaME1}. But this does not yet solve guarantee mutual exclusion!
 					
-					\begin{lstlisting}[caption = { ME in PROMELA: First Attempt }, label = lst:promelaME1 language = PROMELA]
+					\begin{lstlisting}[caption = { ME in PROMELA: First Attempt }, label = lst:promelaME1, language = PROMELA]
 bool enterCriticalP = false;
 bool enterCriticalQ = false;
 
@@ -659,7 +659,7 @@ active proctype Q() { /* analogous */ }
 						\item This is wasteful on resources.
 					\end{itemize}
 					
-					\begin{lstlisting}[caption = { ME in PROMELA: Busy Waiting }, label = lst:promelaME2 language = PROMELA]
+					\begin{lstlisting}[caption = { ME in PROMELA: Busy Waiting }, label = lst:promelaME2, language = PROMELA]
 bool enterCriticalP = false;
 bool enterCriticalQ = false;
 
@@ -683,7 +683,7 @@ active proctype Q() { /* analogous */ }
 				\paragraph{Third Attempt: Blocking}
 					Blocking: Use the exclusion property to release control if its not fulfilled and continue only when the exclusion properties are fulfilled. For this behavior, no assignment is used by the expression statement \inlinePromela{!enterCriticalQ} which blocks when the expression evaluates to \inlinePromela{false}. See listing~\ref{lst:promelaME3} for an example implementation. This ensures ME, but is insufficient for proofing it using SPIN (see section \ref{sec:proofME} for more details).
 					
-					\begin{lstlisting}[caption = { ME in PROMELA: Busy Waiting }, label = lst:promelaME2 language = PROMELA]
+					\begin{lstlisting}[caption = { ME in PROMELA: Busy Waiting }, label = lst:promelaME3, language = PROMELA]
 bool enterCriticalP = false;
 bool enterCriticalQ = false;
 
@@ -1137,7 +1137,7 @@ assert(clientID == _pid)
 			\begin{equation*}
 				\begin{array}{lcl}
 					\sigma \models p               & \iff & \mathcal{I}_0(p) = \lt                                                           \\
-					\sigma \models \lnot \phi      & \iff & \textrm{not } \sigma \models \phi \textrm{ (write \( \sigma \not\models \phi \)} \\
+					\sigma \models \lnot \phi      & \iff & \textrm{not } \sigma \models \phi \textrm{ (write \( \sigma \not\models \phi \))} \\
 					\sigma \models \phi \land \psi & \iff & \sigma \models \phi \textrm{ and } \sigma \models \psi                           \\
 					\sigma \models \phi \lor \psi  & \iff & \sigma \models \phi \textrm{ or } \sigma \models \psi                            \\
 					\sigma \models \phi \to \psi   & \iff & \sigma \not\models \psi \textrm{ or } \sigma \models \psi \\
@@ -1166,7 +1166,7 @@ assert(clientID == _pid)
 				\end{itemize}
 			}
 		
-			\definition{Run of Transition System}{A \textit{run} of \(\mathcal{T}\) is a sequence of states \( \sigma = s_0 s_1 \cdots \) so that \( s_0 \in \textrm{Ini} \) and \( (s_i, s_{i + 1} \in \delta \) for all \(i\).}
+			\definition{Run of Transition System}{A \textit{run} of \(\mathcal{T}\) is a sequence of states \( \sigma = s_0 s_1 \cdots \) so that \( s_0 \in \textrm{Ini} \) and \( s_i, s_{i + 1} \in \delta \) for all \(i\).}
 			
 			\definition{Validity Relation}{Given a transition system \(\mathcal{T}\), a temporal formula \(\phi\) is \textit{valid} \(\mathcal{T}\) (write \( \mathcal{T} \models \phi \)) iff \( \sigma \models \phi \) for all runs \(\sigma\) of \(\mathcal{T}\).}
 		% end
@@ -1198,7 +1198,7 @@ assert(clientID == _pid)
 			\begin{equation*}
 				\sometimes \always \phi
 			\end{equation*}
-			Once in time, a property \(\phi\) becomes true forever (but not necessarily is at the start).
+			Once in time, a property \(\phi\) becomes true forever (but is not necessarily at the start).
 		% end
 	% end
 
@@ -1255,7 +1255,9 @@ assert(clientID == _pid)
 	\section{Decidability, Closure Properties}
 		Many properties for regular finite automata also hold for Büchi automata while the latter being strictly more expressive (deterministic automata cannot accept all \(\omega\)-regular expressions).
 		
-		\theorem{Decidability}{It is decidable whether the accepted Language \( \mathcal{L}^\omega(\mathcal{B}) \) of a Büchi automaton is empty.}
+		\theorem{Decidability}{
+			It is decidable whether the accepted Language \( \mathcal{L}^\omega(\mathcal{B}) \) of a Büchi automaton is empty.
+		}
 
 		\theorem{Closure Properties}{
 			The set of \(\omega\)-regular languages is closed w.r.t. intersection, union and complement:
@@ -1299,7 +1301,7 @@ assert(clientID == _pid)
 				\item \textit{richness}, a model must be rich enough to encompass defects the real system could have and
 				\item \textit{simplicity}, a model must be simple enough to be checkable, both theoretically and in practice.
 			\end{itemize}
-		\item Verify the property the system should have, not a property the system already has!
+		\item Verify the properties the system should have, not the properties the system already has!
 	\end{itemize}
 
 	\paragraph{The general usage scenario for PROMELA}
@@ -1475,7 +1477,7 @@ assert(clientID == _pid)
 					\item No separation of concerns (model vs. correctness property, the model is mixed with the validation).
 					\item Changing assertions is prone to cause errors, especially if they were copied to lots of locations.
 					\item It is easy to forget assertions, some correctness properties might be violated at unexpected locations.
-					\item At the biggest drawback: Many properties are not expressible via assertions!
+					\item And the biggest drawback: Many properties are not expressible via assertions!
 				\end{itemize}
 			% end
 
@@ -1548,12 +1550,12 @@ assert(clientID == _pid)
 						\end{enumerate}
 					\item Never claims are translated into special a PROMELA process with accept labels.
 						\begin{itemize}
-							\item Of one of those is reached infinitely often, the claim is disproved.
+							\item If one of those is reached infinitely often, the claim is disproved.
 							\item Can be viewed as a game between SPIN and the user:
 								\begin{itemize}
 									\item SPIN makes a forward move in the never claim process with accept labels.
 									\item The user makes a forward move in the PROMELA program under verification.
-									\item If an accept label is reached infinitely many often, the user lost and verification fails.
+									\item If an accept label is reached infinitely often, the user lost and verification fails.
 								\end{itemize}
 							\item Finiteness is guaranteed by cyclicity check.
 						\end{itemize}
@@ -1576,7 +1578,7 @@ never {  /* !(<>q) */
 						\item If \(q\) never becomes true, SPIN loops infinitely often over the accept label resulting in an acceptance cycle.
 					\end{itemize}
 				
-					PROMELA has a specific construct only for never claim process. Some never claims are not expressible in temporal logic!
+					PROMELA has a specific construct only for never claim processes. Some never claims are not expressible in temporal logic!
 				% end
 			% end
 
@@ -1929,7 +1931,9 @@ never {  /* !(<>q) */
 			
 			\definition{Completeness of Sequent Calculus}{A sequent calculus is \textit{complete} iff for any valid formula \(\phi\) a closed proof with root sequent \( \implies \phi \) exists.}
 			
-			\theorem{Soundness, Completeness}{The \textit{sequent calculus} introduced above is sound and complete.}
+			\theorem{Soundness, Completeness}{
+				The \textit{sequent calculus} introduced above is sound and complete.
+			}
 	% end
 % end
 

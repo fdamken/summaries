@@ -14,6 +14,22 @@
 
 \let\fdsummary@author=\@author
 
+% dark Mode
+\ExplSyntaxOn
+\RequirePackage{darkmode, graphicx} % Used for dark Mode
+
+\newcommand{\includeinvertablegraphics}[2][]{% Grafik wird beim Dark Mode automatisch Invertiert (rgb)
+	\IfDarkModeTF{\includegraphics[decodearray={1.0~0.0~1.0~0.0~1.0~0.0},#1]{#2}}{\includegraphics[#1]{#2}}
+}
+\newcommand{\includeinvertablegrayscalegraphics}[2][]{% Grafik wird beim Dark Mode automatisch Invertiert (grayscale)
+	\IfDarkModeTF{\includegraphics[decodearray={1.0~0.0},#1]{#2}}{\includegraphics[#1]{#2}}
+}
+
+% DARK_MODE environment check (enable if DARK_MODE=1)
+\sys_get_shell:nnN { kpsewhich ~ --var-value ~ DARK_MODE } { } \l_dark_mode_env_var_tl
+\tl_trim_spaces:N \l_dark_mode_env_var_tl
+\tl_if_eq:NnT \l_dark_mode_env_var_tl {1} {\enabledarkmode{}}
+\ExplSyntaxOff
 
 % Packages and commands required for class definition.
 \newread\fdsummary@metadata
@@ -41,8 +57,12 @@
 
 
 % Core Packages.
-\RequirePackage[T1]{fontenc}
-\RequirePackage[utf8]{inputenc}
+\ifLuaTeX
+    \RequirePackage[utf8]{luainputenc}
+\else
+    \RequirePackage[T1]{fontenc}
+    \RequirePackage[utf8]{inputenc}
+\fi
 \fdsummary@ifde{\RequirePackage[main = ngerman, USenglish]{babel}}
 \fdsummary@ifen{\RequirePackage[main = USenglish, ngerman]{babel}}
 % Other Packages.
@@ -106,25 +126,26 @@
 % ~ Styling. ~
 
 % Colors.
-\colorlet{ambiguityorange}{TUDa-8b}
+\colorlet{ambiguityorange}{TUDa-8\IfDarkModeTF{a}{b}}
 \colorlet{changedpurple}{TUDa-11a}
-\colorlet{colorDensity}{TUDa-1b}
-\colorlet{irl}{TUDa-0b}
-\colorlet{lerrorred}{TUDa-9b}
-\colorlet{lstcomments}{TUDa-4c}
-\colorlet{lstkeywords}{TUDa-9d}
-\colorlet{lstlinenumbers}{TUDa-0c}
-\colorlet{lststrings}{TUDa-2c}
+\colorlet{colorDensity}{TUDa-1\IfDarkModeTF{a}{b}}
+\colorlet{irl}{TUDa-0\IfDarkModeTF{a}{a}}
+\colorlet{lerrorred}{TUDa-9\IfDarkModeTF{a}{b}}
+\colorlet{lstcomments}{TUDa-4\IfDarkModeTF{a}{c}}
+\colorlet{lstkeywords}{TUDa-9\IfDarkModeTF{a}{d}}
+\colorlet{lstlinenumbers}{TUDa-0\IfDarkModeTF{b}{c}}
+\colorlet{lststrings}{TUDa-2\IfDarkModeTF{a}{c}}
+\colorlet{fgcolor}{.} % If we need the default Font Color but . is currently overwritten
 
 % Description-list styling.
 \SetLabelAlign{parright}{\parbox[t]{\labelwidth}{\raggedleft#1}}
 \setlist[description]{style = multiline, leftmargin = 4cm, align = parright}
 
 % Some stuff for statistics and neural networks.
-\tikzstyle{neuron}        = [circle,fill=black!25,minimum size=17pt,inner sep=0pt]
-\tikzstyle{input neuron}  = [neuron, fill=green!50]
-\tikzstyle{output neuron} = [neuron, fill=red!50]
-\tikzstyle{hidden neuron} = [neuron, fill=blue!50]
+\tikzstyle{neuron}        = [circle,fill=.!25!\thepagecolor,minimum size=17pt,inner sep=0pt]
+\tikzstyle{input neuron}  = [neuron, fill=green!50!\thepagecolor]
+\tikzstyle{output neuron} = [neuron, fill=red!50!\thepagecolor]
+\tikzstyle{hidden neuron} = [neuron, fill=blue!50!\thepagecolor]
 \tikzstyle{annot}         = [text width=4em, text centered]
 \tikzstyle{density}       = [colorDensity, line width = 2pt]
 \tikzset{declare function = { gaussian(\x,\m,\S) = 1/sqrt(2*pi*\S) * e^(-1/(2*\S) * (\x-\m)^2); }}
@@ -159,8 +180,8 @@
     moredelim = **[is][\color{changedpurple}]{@@?}{@@@}
 }
 \lstset{
-    backgroundcolor = \color{white},
-    basicstyle = \ttfamily\scriptsize\color{black},
+    backgroundcolor = \color{\thepagecolor},
+    basicstyle = \ttfamily\scriptsize\color{.},
     breakatwhitespace = true,
     breaklines = true,
     breakautoindent = true,
@@ -172,6 +193,8 @@
     showstringspaces = false,
     stringstyle = \color{lststrings},
     tabsize = 4,
+    rulecolor=\color{\thepagecolor},
+    emphstyle=\color{fgcolor},
     style = base
 }
 
@@ -180,6 +203,21 @@
 
 % Align captions right or, if they are to small, center them.
 \captionsetup{justification=RaggedRight, singlelinecheck=true}
+
+% mdframed settings.
+\mdfsetup{%
+    backgroundcolor=\thepagecolor,%
+    fontcolor=.,%
+    linecolor=fgcolor,%
+    frametitlefontcolor=fgcolor,%
+    shadowcolor==fgcolor!50!\thepagecolor,%
+    subtitlebackgroundcolor=\thepagecolor,%
+    subsubtitlebackgroundcolor=\thepagecolor,%
+    subtitleabovelinecolor=fgcolor,%
+    subtitlebelowlinecolor=fgcolor,%
+    subsubtitleabovelinecolor=fgcolor,%
+    subsubtitlebelowlinecolor=fgcolor,%
+}%
 
 
 
@@ -224,14 +262,14 @@
 }
 
 % Network.
-\newcommand{\ciscoInternet}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/cloud}}}
-\newcommand{\ciscoModem}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/cable_modem}}}
-\newcommand{\ciscoRouter}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/router}}}
-\newcommand{\ciscoSwitch}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/workgroup_switch}}}
-\newcommand{\ciscoClient}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/pc}}}
-\newcommand{\ciscoFirewall}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/firewall}}}
-\newcommand{\ciscoServer}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/file_server}}}
-\newcommand{\ciscoIdP}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/key}}}
+\newcommand{\ciscoInternet}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/cloud\IfDarkModeT{-inverted}}}}
+\newcommand{\ciscoModem}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/cable_modem\IfDarkModeT{-inverted}}}}
+\newcommand{\ciscoRouter}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/router\IfDarkModeT{-inverted}}}}
+\newcommand{\ciscoSwitch}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/workgroup_switch\IfDarkModeT{-inverted}}}}
+\newcommand{\ciscoClient}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/pc\IfDarkModeT{-inverted}}}}
+\newcommand{\ciscoFirewall}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/firewall\IfDarkModeT{-inverted}}}}
+\newcommand{\ciscoServer}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/file_server\IfDarkModeT{-inverted}}}}
+\newcommand{\ciscoIdP}[3]{\node[label = #3, #2](#1){\includegraphics{cisco/key\IfDarkModeT{-inverted}}}}
 \newcommand{\tikzTimeDiagram}[3][1]{\foreach \x in { 1, ..., #2 } { \draw [->] (\x*5*#1, 0) to (\x*5*#1, -#3-1); }}
 
 % Other.
@@ -326,6 +364,7 @@
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\Q}{\mathbb{Q}}
 \newcommand{\R}{\mathbb{R}}
+\providecommand{\C}{} % Make Sure \C exists
 \renewcommand{\C}{\mathbb{C}}
 % Expectation.
 \newcommand{\E}{\mathbb{E}}

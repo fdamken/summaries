@@ -19,6 +19,7 @@ code: code_clean
 	./spin.sh code/promela/jumps.pml
 	./spin.sh code/promela/multiple-processes.pml
 	./spin.sh code/promela/client-server.pml
+	./darkmodeify-pdfs.sh
 
 code_clean:
 	rm -f pan*

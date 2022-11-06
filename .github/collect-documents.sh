@@ -18,18 +18,15 @@ if [[ "$scope" == "changed" ]]; then
             | .[0].head_commit.id
             | if . == null then \"$first_commit\" else . end
     ")"
-    echo "Collecting documents changed since commit $latest_successful_commit." >&2
     set +o errexit
     files="$(git diff --name-only "$latest_successful_commit")"
     exit_code="$?"
     set -o errexit
     if [[ $exit_code -ne 0 ]]; then
-        echo "Collecting changed documents failed; falling back to collecting everything." >&2
         scope="all"
     fi
 fi
 if [[ "$scope" == "all" ]]; then
-    echo "Collecting everything." >&2
     files="$(find . -type f | sed 's@^./@@g')"
 fi
 

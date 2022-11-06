@@ -30,9 +30,7 @@ jobs:
           fetch-depth: 0
       - name: Collect Documents
         id: documents
-        run: .github/collect-documents.sh ${{ needs.scope.outputs.scope }}
-    outputs:
-      documents: ${{ steps.documents.outputs.value }}
+        run: .github/collect-documents.sh ${{ needs.scope.outputs.scope }} >>$GITHUB_OUTPUTS
   build:
     name: Build Document
     runs-on: ubuntu-22.04
@@ -41,7 +39,7 @@ jobs:
       run:
         working-directory: .
     strategy:
-      matrix: ${{ fromJSON(needs.documents.outputs.documentfalsepath) }}
+      matrix: ${{ fromJSON(needs.documents.outputs.documents) }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3

@@ -31,7 +31,7 @@ jobs:
       - name: Collect Documents
         id: documents
         #run: .github/collect-documents.sh ${{ needs.scope.outputs.scope }} >>$GITHUB_OUTPUT
-        run: 'echo "documents=[\"fop\"]" >>$GITHUB_OUTPUT'
+        run: 'echo "name=documents::[\"fop\"]" >>$GITHUB_OUTPUT'
   build:
     name: Build Document
     runs-on: ubuntu-22.04
@@ -41,7 +41,7 @@ jobs:
         working-directory: .
     strategy:
       matrix:
-        document: ${{ needs.documents.outputs.documents }}
+        document: ${{ fromJSON(needs.documents.outputs.documents) }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3

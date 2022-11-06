@@ -23,7 +23,7 @@ echo "Copied $(echo "$index_files" | wc -l) index files."
 echo "Copying document files."
 mkdir -p "$publish_repo_dir/static/summaries-docs"
 cd "$root"
-documents="$(find summaries -name '*-summary.pdf' -print -exec cp --parents {} "$publish_repo_dir/static" \; | sed -nr 's@^summaries/([^/]+)/([^/]+)/([^/]+)/([^/]+)/.+$@\1 \2 \3 \4@g p')"
+documents="$(find summaries \( -name '*-summary.pdf' -o -name '*-summary-dark.pdf' \) -print -exec cp --parents {} "$publish_repo_dir/static" \; | sed -nr 's@^summaries/([^/]+)/([^/]+)/([^/]+)/([^/]+)/.+summary\.pdf$@\1 \2 \3 \4@g p')"
 cd - >/dev/null
 echo "Copied $(echo "$documents" | wc -l) documents."
 

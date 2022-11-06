@@ -75,7 +75,9 @@ git diff
 git add -A
 git config user.name "Summary Auto-Publishing Action"
 git config user.email "actions@github"
-git commit -m "Automated summary publishing."
+if git status | grep "nothing to commit" &>/dev/null; then
+    echo "Nothing to commit; skipping commit."
+else
+    git commit -m "Automated summary publishing."
+fi
 git push
-git push
-cd -

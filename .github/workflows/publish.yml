@@ -30,7 +30,8 @@ jobs:
           fetch-depth: 0
       - name: Collect Documents
         id: documents
-        run: .github/collect-documents.sh ${{ needs.scope.outputs.scope }} >>$GITHUB_OUTPUT
+        #run: .github/collect-documents.sh ${{ needs.scope.outputs.scope }}
+        run: echo "documents=[\"cs elective ce gdr\"]" >>$GITHUB_OUTPUT
     outputs:
       documents: ${{ steps.documents.outputs.documents }}
   build:
@@ -67,17 +68,32 @@ jobs:
           cd setup/latex/darkmode-latex-package
           l3build install
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.8
+          cache: pip
       - name: Install Python Dependencies
         run: "pip install -f https://download.pytorch.org/whl/torch_stable.html -r sys/requirements.txt"
       - name: Build Document
+        id: build
         run: .github/build-document.sh ${{ matrix.document }}
-#  publish:
-#    name: Publish Documents
-#    runs-on: ubuntu-22.04
-#    steps:
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.document }}
+          path: ${{ steps.build.outputs.artifact_path }}
+  publish:
+    name: Publish Documents
+    runs-on: ubuntu-22.04
+    needs: build
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+      - run: ls -laR
 #      - name: Publish Documents
 #        run: ".github/publish-documents.sh"
 #        env:

@@ -1,23 +1,55 @@
-name: Publish Changed
+name: Publish
 on:
   workflow_dispatch:
-  push:
+  #push:
 jobs:
-  publish:
+  scope:
+    name: Define Scope
     runs-on: ubuntu-22.04
+    permissions: { }
+    steps:
+      - uses: haya14busa/action-cond@v1
+        id: scope
+        with:
+          cond: ${{ github.event_name == 'workflow_dispatch' }}
+          if_true: all
+          if_false: changed
+    outputs:
+      scope: ${{ steps.scope.outputs.value }}
+  documents:
+    name: Collect Documents
+    runs-on: ubuntu-22.04
+    needs: scope
     defaults:
       run:
         working-directory: .
+    steps:
+      - name: Collect Documents
+        id: documents
+        run: .github/collect-documents.sh ${{ needs.scope.outputs.scope }}
+    outputs:
+      documents: ${{ steps.documents.outputs.value }}
+  build:
+    name: Build Document
+    runs-on: ubuntu-22.04
+    needs: documents
+    defaults:
+      run:
+        working-directory: .
+    strategy:
+      matrix: ${{ fromJSON(needs.documents.outputs.documents) }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Install Graphviz, Imagamagick and Spin
-        run: sudo apt update && sudo apt install -y graphviz spin imagemagick ghostscript
+        run: |
+          sudo apt update
+          sudo apt install -y graphviz spin imagemagick ghostscript
       - name: Change ImageMagick security policy
         run: |
-          DQT='"' 
+          DQT='"'
           SRC="rights=${DQT}none${DQT} pattern=${DQT}PDF${DQT}"
           RPL="rights=${DQT}read\|write${DQT} pattern=${DQT}PDF${DQT}"
           sudo sed -i "s/$SRC/$RPL/" /etc/ImageMagick-6/policy.xml
@@ -35,11 +67,14 @@ jobs:
           python-version: 3.8
       - name: Install Python Dependencies
         run: "pip install -f https://download.pytorch.org/whl/torch_stable.html -r sys/requirements.txt"
-      - name: Build Documents
-        run: ".github/build-documents.sh changed"
-      - name: Publish Documents
-        if: github.repository == 'fdamken/summaries'
-        run: ".github/publish-documents.sh"
-        env:
-          gh_user: ${{ secrets.PUBLISH_GH_USER }}
-          gh_token: ${{ secrets.PUBLISH_GH_TOKEN }}
+      - name: Build Document
+        run: .github/build-document.sh ${{ matrix.document }}
+#  publish:
+#    name: Publish Documents
+#    runs-on: ubuntu-22.04
+#    steps:
+#      - name: Publish Documents
+#        run: ".github/publish-documents.sh"
+#        env:
+#          gh_user: ${{ secrets.PUBLISH_GH_USER }}
+#          gh_token: ${{ secrets.PUBLISH_GH_TOKEN }}

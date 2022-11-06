@@ -84,7 +84,7 @@
 								},
 								milestone/.style = {
 									rounded corners = 0.2cm,
-									fill = TUDa-0b
+									fill = TUDa-0\IfDarkModeTF{c}{b}
 								}
 							]
 						\node [start] (start) {Start};
@@ -136,7 +136,7 @@
 								},
 								milestone/.style = {
 									rounded corners = 0.2cm,
-									fill = TUDa-0b
+									fill = TUDa-0\IfDarkModeTF{c}{b}
 								}
 							]
 						\node [start] (start) {Start};
@@ -151,17 +151,17 @@
 						\node [release, right = of T5] (release) {Release};
 
 						\draw (start) -- (T1);
-						\draw [red] (start) -- (T2);
+						\draw [TUDa-9\IfDarkModeTF{a}{c}] (start) -- (T2);
 						\draw (start) -- (T3);
 						\draw (T1) -- (M1);
-						\draw [red] (T2) -- (M1);
+						\draw [TUDa-9\IfDarkModeTF{a}{c}] (T2) -- (M1);
 						\draw (T3) -- (M2);
-						\draw [red] (M1) -- (T4);
-						\draw [red] (T4) -- (M2);
+						\draw [TUDa-9\IfDarkModeTF{a}{c}] (M1) -- (T4);
+						\draw [TUDa-9\IfDarkModeTF{a}{c}] (T4) -- (M2);
 						\draw (M2) -- (T5);
-						\draw [red] (M2) -- (T6);
+						\draw [TUDa-9\IfDarkModeTF{a}{c}] (M2) -- (T6);
 						\draw (T5) -- (release);
-						\draw [red] (T6) -- (release);
+						\draw [TUDa-9\IfDarkModeTF{a}{c}] (T6) -- (release);
 					\end{tikzpicture}
 					\caption{Aktivitätsdiagramm: Beispiel mit markiertem kritischen Pfad (rot)}
 					\label{fig:activitycritical}
@@ -187,7 +187,12 @@
 			\paragraph{Beispiel}
 				\begin{figure}[ht]
 					\centering
-					\begin{ganttchart}[vgrid]{1}{21}
+					\begin{ganttchart}[
+						title/.append style={fill=\thepagecolor},
+						bar/.append style={fill=\thepagecolor},
+						canvas/.append style={fill=\thepagecolor},
+						vgrid,
+						]{1}{21}
 						\gantttitle{M1}{10}
 						\gantttitle{M2}{6}
 						\gantttitle{Release}{5}
@@ -476,7 +481,7 @@
 							minimum height = 1.5cm
 						},
 						activity/.style = {
-							fill = TUDa-6a
+							fill = TUDa-6\IfDarkModeTF{c}{a},
 						}
 					]
 				\node [activity] (feasibility) {Machbarkeitsstudie};

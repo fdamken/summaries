@@ -517,11 +517,11 @@
 								xlabel = \(x\),
 								width = 12cm,
 								height = 7cm,
-								legend style = { xshift = -0.5cm, yshift = -0.5cm },
+								legend style = { xshift = -0.5cm, yshift = -0.5cm, fill=\thepagecolor, draw=fgcolor },
 								xticklabels = {,,}
 							]
-						\addplot [density, TUDa-9b, smooth] { gaussian(x, 5, 2) }; \addlegendentry{\( p(x \given a) \)};
-						\addplot [density, TUDa-1b, smooth] { gaussian(x, 11, 2) }; \addlegendentry{\( p(x \given b) \)};
+						\addplot [density, TUDa-9\IfDarkModeTF{a}{b}, smooth] { gaussian(x, 5, 2) }; \addlegendentry{\( p(x \given a) \)};
+						\addplot [density, TUDa-1\IfDarkModeTF{a}{b}, smooth] { gaussian(x, 11, 2) }; \addlegendentry{\( p(x \given b) \)};
 					\end{axis}
 					\begin{axis}[
 								name = likelihoodPrior,
@@ -537,11 +537,11 @@
 								anchor = north,
 								xshift = -5.23cm,
 								yshift = -0.5cm,
-								legend style = { xshift = -0.5cm, yshift = -0.5cm },
+								legend style = { xshift = -0.5cm, yshift = -0.5cm, fill=\thepagecolor, draw=fgcolor },
 								xticklabels = {,,}
 							]
-						\addplot [density, TUDa-9b, smooth] { gaussian(x, 5, 2) * 0.8 }; \addlegendentry{\( p(x \given a) p(a) \)};
-						\addplot [density, TUDa-1b, smooth] { gaussian(x, 11, 2) * 0.2 }; \addlegendentry{\( p(x \given b) p(b) \)};
+						\addplot [density, TUDa-9\IfDarkModeTF{a}{b}, smooth] { gaussian(x, 5, 2) * 0.8 }; \addlegendentry{\( p(x \given a) p(a) \)};
+						\addplot [density, TUDa-1\IfDarkModeTF{a}{b}, smooth] { gaussian(x, 11, 2) * 0.2 }; \addlegendentry{\( p(x \given b) p(b) \)};
 					\end{axis}
 					\begin{axis}[
 								name = posterior,
@@ -557,10 +557,10 @@
 								anchor = north,
 								xshift = -5.23cm,
 								yshift = -0.5cm,
-								legend style = { xshift = -0.5cm, yshift = -0.5cm }
+								legend style = { xshift = -0.5cm, yshift = -0.5cm, fill=\thepagecolor, draw=fgcolor },
 							]
-						\addplot [density, TUDa-9b, smooth] { (gaussian(x, 5, 2) * 0.8) / (gaussian(x, 5, 2) * 0.8 + gaussian(x, 11, 2) * 0.2) }; \addlegendentry{\( p(a \given x) \)};
-						\addplot [density, TUDa-1b, smooth] { (gaussian(x, 11, 2) * 0.2) / (gaussian(x, 5, 2) * 0.8 + gaussian(x, 11, 2) * 0.2) }; \addlegendentry{\( p(b \given x) \)};
+						\addplot [density, TUDa-9\IfDarkModeTF{a}{b}, smooth] { (gaussian(x, 5, 2) * 0.8) / (gaussian(x, 5, 2) * 0.8 + gaussian(x, 11, 2) * 0.2) }; \addlegendentry{\( p(a \given x) \)};
+						\addplot [density, TUDa-1\IfDarkModeTF{a}{b}, smooth] { (gaussian(x, 11, 2) * 0.2) / (gaussian(x, 5, 2) * 0.8 + gaussian(x, 11, 2) * 0.2) }; \addlegendentry{\( p(b \given x) \)};
 					\end{axis}
 				\end{tikzpicture}
 				\caption{Likelihood, \( \text{Likelihood} \times \text{Prior} \) und Posterior.}
@@ -2446,7 +2446,7 @@
 			
 			\begin{figure}
 				\centering
-				\begin{tikzpicture}[xscale = 1/2, yscale = 1/2, set/.style = { draw, circle, fill = black }, reset/.style = { draw, circle }, alt/.style = { dashed }]
+				\begin{tikzpicture}[xscale = 1/2, yscale = 1/2, set/.style = { draw, circle, fill = fgcolor }, reset/.style = { draw, circle }, alt/.style = { dashed }]
 					\node [reset] (ref) {};
 					\node [reset, right = 0.5 of ref] (b) {};
 					\node [reset, below = 0.5 of b] (c) {};

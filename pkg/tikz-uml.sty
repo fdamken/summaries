@@ -69,15 +69,15 @@
 \xdef\pgfsetlayersArg{\pgfsetlayersArg,lifelines,activity,connections,main}%
 \pgfsetlayers{\pgfsetlayersArg}%
 %
-\pgfkeys{/tikzuml/.cd, text/.initial=black, draw/.initial=black, font/.initial=\small,%
+\pgfkeys{/tikzuml/.cd, text/.initial=fgcolor, draw/.initial=fgcolor, font/.initial=\small,%
                        x/.initial=0, y/.initial=0,%
-                       package type/.initial=tikzumlEmpty, fill package/.initial=blue!20,%
-                       class width/.initial=10ex, simple interface width/.initial=4ex, class type/.initial=class, fill class/.initial=yellow!20, fill template/.initial=yellow!2,%
+                       package type/.initial=tikzumlEmpty, fill package/.initial=TUDa-1\IfDarkModeTF{c}{a!50},%
+                       class width/.initial=10ex, simple interface width/.initial=4ex, class type/.initial=class, fill class/.initial=TUDa-\IfDarkModeTF{6d}{6a!50}, fill template/.initial=yellow!2,%
                        narynode width/.initial=6ex,%
                        relation geometry/.initial=--, relation angle1/.initial=-30, relation angle2/.initial=30, relation loopsize/.initial=3em, relation weight/.initial=0.5, relation pos1/.initial=0.2, relation pos2/.initial=0.8, relation pos stereo/.initial=0.5,%
-                       note width/.initial=3cm, fill note/.initial=green!20,%
-                       fill system/.initial=white,%
-                       fill usecase/.initial=blue!20,%
+                       note width/.initial=3cm, fill note/.initial=TUDa-3\IfDarkModeTF{c}{a!50},%
+                       fill system/.initial=\thepagecolor,%
+                       fill usecase/.initial=TUDa-1\IfDarkModeTF{c}{a!50},%
                        actor below/.initial=0.5cm,%
                        state join width/.initial=3ex,%
                        state decision width/.initial=3ex,%
@@ -88,16 +88,16 @@
                        state end width/.initial=5ex,%
                        state history width/.initial=5ex,%
                        state deep history width/.initial=5ex,%
-                       state width/.initial=8ex, fill state/.initial=yellow!20,%
-                       object stereo/.initial=object, fill object/.initial=yellow!20,%
-                       call dt/.initial=tikzumlEmpty, call padding/.initial=2, call type/.initial=synchron, fill call/.initial=white,%
+                       state width/.initial=8ex, fill state/.initial=TUDa-\IfDarkModeTF{6d}{6a!50},%
+                       object stereo/.initial=object, fill object/.initial=TUDa-\IfDarkModeTF{6d}{6a!50},%
+                       call dt/.initial=tikzumlEmpty, call padding/.initial=2, call type/.initial=synchron, fill call/.initial=\thepagecolor,%
                        fragment type/.initial=opt, fragment inner xsep/.initial=1, fragment inner ysep/.initial=1, fill fragment/.initial= none,%
                        create call dt/.initial=4,%
-                       component width/.initial=8ex, fill component/.initial= yellow!20,%
+                       component width/.initial=8ex, fill component/.initial= TUDa-\IfDarkModeTF{6d}{6a!50},%
                        required interface distance/.initial=2.5cm, required interface width/.initial=1em, required interface padding/.initial=1cm,%
                        provided interface distance/.initial=3cm, provided interface width/.initial=1em, provided interface padding/.initial=1cm,%
-                       port width/.initial=1ex, fill port/.initial= yellow!20,%
-                       fill assembly connector/.initial= white,%
+                       port width/.initial=1ex, fill port/.initial= TUDa-\IfDarkModeTF{6d}{6a!50},%
+                       fill assembly connector/.initial= \thepagecolor,%
                        .unknown/.code={%
                          \let\keyname=\pgfkeyscurrentname%
                          \let\keyvalue=\pgfkeyscurrentvalue%
@@ -204,7 +204,7 @@
 \tikzstyle{tikzuml class style}=[rectangle split, rectangle split parts=3, rectangle split part align={center, left, left}, minimum height=2em, node distance=2em]%
 \tikzstyle{tikzuml narynode style}=[diamond]%
 \tikzstyle{tikzuml template style}=[dashed, inner ysep=0.5em, inner xsep=1ex]%
-\tikzstyle{tikzuml control nodes style}=[fill=black, inner sep=1.5pt, circle]%
+\tikzstyle{tikzuml control nodes style}=[fill=fgcolor, inner sep=1.5pt, circle]%
 %
 \tikzstyle{tikzuml association style}=[color=\tikzumlDefaultDrawColor, -]%
 \tikzstyle{tikzuml bidirectional association style}=[color=\tikzumlDefaultDrawColor, angle45-angle45]%
@@ -2782,9 +2782,9 @@
   \def\tikzumlActorPos{\tikzumlActorX,\tikzumlActorY}%
   %
   \iftikzumlactorWithoutCoords%
-    \node[tikzuml actor style, text=\tikzumlActorTextColor, font=\tikzumlDefaultFont, /tikzuml/actor/style] (\tikzumlActorNodeName) {\picturedactor{scale=\tikzumlActorScale, fill=white, draw=\tikzumlActorDrawColor, thick}};%
+    \node[tikzuml actor style, text=\tikzumlActorTextColor, font=\tikzumlDefaultFont, /tikzuml/actor/style] (\tikzumlActorNodeName) {\picturedactor{scale=\tikzumlActorScale, fill=\thepagecolor, draw=\tikzumlActorDrawColor, thick}};%
   \else%
-    \node[tikzuml actor style, text=\tikzumlActorTextColor, font=\tikzumlDefaultFont, /tikzuml/actor/style] (\tikzumlActorNodeName) at (\tikzumlActorPos) {\picturedactor{scale=\tikzumlActorScale, fill=white, draw=\tikzumlActorDrawColor, thick}};%
+    \node[tikzuml actor style, text=\tikzumlActorTextColor, font=\tikzumlDefaultFont, /tikzuml/actor/style] (\tikzumlActorNodeName) at (\tikzumlActorPos) {\picturedactor{scale=\tikzumlActorScale, fill=\thepagecolor, draw=\tikzumlActorDrawColor, thick}};%
   \fi%
   \node[text=\tikzumlActorTextColor, font=\tikzumlDefaultFont, below=\tikzumlActorScale*\tikzumlActorBelow] at (\tikzumlActorNodeName) {\tikzumlActorName};%
   %

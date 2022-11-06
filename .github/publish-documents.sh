@@ -43,6 +43,12 @@ while IFS= read -r line; do
         meta_lang="$(cat "$document_meta" | head -n 3 | tail -n 1 | sed 's/german/deutsch/')"
         meta_by="$(echo "$meta_lang" | sed -e 's/deutsch/von/' -e 's/english/by/')"
 
+        if [[ -f "$document_dir/$subject-summary-dark.pdf" ]]; then
+            text_dark="[![Download (Dark Mode)](/download-dark.png)]($subject-summary-dark.pdf)"
+        else
+            text_dark=""
+        fi
+
         echo "Publishing $document_id."
         cat >"$publish_repo_dir/content/summaries/$document_id.md" <<EOF
 ---
@@ -50,7 +56,8 @@ title: "$meta_title $meta_by $meta_author ($meta_lang)"
 draft: false
 ---
 
-[![Download](/download.png)]($subject-summary.pdf)
+[![Download (Light Mode)](/download.png)]($subject-summary.pdf)
+$text_dark
 
 [![Buy Me a Coffee](/kofi.png)](https://ko-fi.com/fdamken)
 

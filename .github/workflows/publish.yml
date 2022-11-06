@@ -20,7 +20,6 @@ jobs:
       - name: Collect Documents
         id: documents
         run: .github/collect-documents.sh ${{ steps.scope.outputs.scope }}
-        #run: echo "documents=[\"cs elective ce gdr\",\"cs elective ce rl\"]" >>$GITHUB_OUTPUT
     outputs:
       documents: ${{ steps.documents.outputs.documents }}
   build:
@@ -63,14 +62,24 @@ jobs:
           cache: pip
       - name: Install Python Dependencies
         run: "pip install -f https://download.pytorch.org/whl/torch_stable.html -r sys/requirements.txt"
-      - name: Build Document
-        id: build
+      - name: Build Document (Light Mode)
+        id: build-light
         run: .github/build-document.sh ${{ matrix.document }}
-      - name: Upload Artifact
+      - name: Upload Artifact (Light Mode)
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.document }}
-          path: ${{ steps.build.outputs.artifact_path }}
+          path: ${{ steps.build-light.outputs.artifact_path }}
+      - name: Build Document (Dark Mode)
+        id: build-dark
+        run: .github/build-document.sh ${{ matrix.document }}
+        env:
+          DARK_MODE: 1
+      - name: Upload Artifact (Dark Mode)
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.document }} dark
+          path: ${{ steps.build-dark.outputs.artifact_path }}
   publish:
     name: Publish Documents
     runs-on: ubuntu-22.04

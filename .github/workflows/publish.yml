@@ -3,19 +3,6 @@ on:
   workflow_dispatch:
   #push:
 jobs:
-  scope:
-    name: Define Scope
-    runs-on: ubuntu-22.04
-    permissions: { }
-    steps:
-      - uses: haya14busa/action-cond@v1
-        id: scope
-        with:
-          cond: ${{ github.event_name == 'workflow_dispatch' }}
-          if_true: all
-          if_false: changed
-    outputs:
-      scope: ${{ steps.scope.outputs.value }}
   documents:
     name: Collect Documents
     runs-on: ubuntu-22.04
@@ -28,10 +15,13 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Determine Scope
+        id: scope
+        run: "[[ '${{ github.event_name }}' == 'workflow_dispatch' ]] && echo 'scope=all' || echo 'scope=all' >>$GITHUB_OUTPUT"
       - name: Collect Documents
         id: documents
-        #run: .github/collect-documents.sh ${{ needs.scope.outputs.scope }}
-        run: echo "documents=[\"cs elective ce gdr\",\"cs elective ce rl\"]" >>$GITHUB_OUTPUT
+        run: .github/collect-documents.sh ${{ steps.scope.outputs.scope }}
+        #run: echo "documents=[\"cs elective ce gdr\",\"cs elective ce rl\"]" >>$GITHUB_OUTPUT
     outputs:
       documents: ${{ steps.documents.outputs.documents }}
   build:

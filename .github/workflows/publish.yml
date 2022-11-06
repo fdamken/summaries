@@ -31,7 +31,7 @@ jobs:
       - name: Collect Documents
         id: documents
         #run: .github/collect-documents.sh ${{ needs.scope.outputs.scope }}
-        run: echo "documents=[\"cs elective ce gdr\"]" >>$GITHUB_OUTPUT
+        run: echo "documents=[\"cs elective ce gdr\",\"cs elective ce rl\"]" >>$GITHUB_OUTPUT
     outputs:
       documents: ${{ steps.documents.outputs.documents }}
   build:
@@ -93,9 +93,11 @@ jobs:
           fetch-depth: 0
       - name: Download Artifacts
         uses: actions/download-artifact@v3
+      - name: Fix Document Paths
+        run: ".github/move-documents.sh '${{ needs.documents.outputs.documents }}'"
       - run: ls -laR
-#      - name: Publish Documents
-#        run: ".github/publish-documents.sh"
-#        env:
-#          gh_user: ${{ secrets.PUBLISH_GH_USER }}
-#          gh_token: ${{ secrets.PUBLISH_GH_TOKEN }}
+      - name: Publish Documents
+        run: ".github/publish-documents.sh"
+        env:
+          gh_user: ${{ secrets.PUBLISH_GH_USER }}
+          gh_token: ${{ secrets.PUBLISH_GH_TOKEN }}

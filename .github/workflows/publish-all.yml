@@ -1,12 +1,43 @@
-name: Publish All
+name: Publish
 on:
   workflow_dispatch:
+  #push:
 jobs:
-  publish:
+  scope:
+    name: Define Scope
     runs-on: ubuntu-latest
+    permissions: { }
+    steps:
+      - uses: haya14busa/action-cond@v1
+        id: scope
+        with:
+          cond: ${{ github.event_name == 'workflow_dispatch' }}
+          if_true: all
+          if_false: changed
+    outputs:
+      scope: ${{ steps.scope.outputs.value }}
+  documents:
+    name: Collect Documents
+    runs-on: ubuntu-latest
+    needs: scope
     defaults:
       run:
         working-directory: .
+    steps:
+      - name: Collect Documents
+        id: documents
+        run: .github/collect-documents.sh ${{ needs.scope.outputs.scope }}
+    outputs:
+      documents: ${{ steps.documents.outputs.value }}
+  build:
+    name: Build Document
+    runs-on: ubuntu-latest
+    needs: documents
+    defaults:
+      run:
+        working-directory: .
+    strategy:
+      matrix: ${{ fromJSON(needs.documents.outputs.documents) }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -22,10 +53,14 @@ jobs:
           python-version: 3.8
       - name: Install Python Dependencies
         run: "pip install -f https://download.pytorch.org/whl/torch_stable.html -r sys/requirements.txt"
-      - name: Build Documents
-        run: ".github/build-documents.sh all"
-      - name: Publish Documents
-        run: ".github/publish-documents.sh"
-        env:
-          gh_user: ${{ secrets.PUBLISH_GH_USER }}
-          gh_token: ${{ secrets.PUBLISH_GH_TOKEN }}
+      - name: Build Document
+        run: .github/build-document.sh ${{ matrix.document }}
+#  publish:
+#    name: Publish Documents
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Publish Documents
+#        run: ".github/publish-documents.sh"
+#        env:
+#          gh_user: ${{ secrets.PUBLISH_GH_USER }}
+#          gh_token: ${{ secrets.PUBLISH_GH_TOKEN }}

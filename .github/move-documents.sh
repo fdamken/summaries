@@ -14,7 +14,7 @@ set -o nounset
 root="$(dirname $(dirname $(readlink -f $0)))"
 
 
-IFS="\n"
+IFS="\r"
 for line in $(echo "$documents" | jq -r '.[]'); do
     echo "Processing '$line'."
 

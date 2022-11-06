@@ -26,7 +26,7 @@ for line in $(echo "$documents" | jq -r '.[]' | paste -sd ','); do
     artifact_dir="$department $type $category $subject"
     artifact_dark_dir="$artifact_dir dark"
     artifact_pdf="$artifact_dir/$subject-summary.pdf"
-    artifact_dark_pdf="$artifact_dir/$subject-summary.pdf"
+    artifact_dark_pdf="$artifact_dark_dir/$subject-summary.pdf"
     document_id="$department/$type/$category/$subject"
     document_dir="$root/summaries/$document_id"
     document_pdf="$document_dir/$subject-summary.pdf"
@@ -36,12 +36,13 @@ for line in $(echo "$documents" | jq -r '.[]' | paste -sd ','); do
         echo "E: Cannot find artifact file for $document_id. Something failed while downloading the artifacts!" >&2
         exit 128
     fi
+    mv -v "$artifact_pdf" "$document_pdf"
+    rm -rf "$artifact_dir"
+
     if [[ ! -f "$artifact_dark_pdf" ]]; then
         echo "E: Cannot find dark artifact file for $document_id. Something failed while downloading the artifacts!" >&2
         exit 128
     fi
-
-    mv -v "$artifact_pdf" "$document_pdf"
     mv -v "$artifact_dark_pdf" "$document_dark_pdf"
-    rm -rf "$artifact_dir"
+    rm -rf "$artifact_dark_dir"
 done

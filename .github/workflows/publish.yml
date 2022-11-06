@@ -19,7 +19,8 @@ jobs:
         run: "[[ '${{ github.event_name }}' == 'workflow_dispatch' ]] && echo 'scope=all' >>$GITHUB_OUTPUT || echo 'scope=changed' >>$GITHUB_OUTPUT"
       - name: Collect Documents
         id: documents
-        run: .github/collect-documents.sh ${{ steps.scope.outputs.scope }}
+        #run: .github/collect-documents.sh ${{ steps.scope.outputs.scope }}
+        run: "documents=[\"cs mandatory fs2 apl\"]" >>$GITHUB_OUTPUT
     outputs:
       documents: ${{ steps.documents.outputs.documents }}
   build:

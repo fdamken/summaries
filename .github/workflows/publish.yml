@@ -24,6 +24,10 @@ jobs:
       run:
         working-directory: .
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Collect Documents
         id: documents
         run: .github/collect-documents.sh ${{ needs.scope.outputs.scope }}

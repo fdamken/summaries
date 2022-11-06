@@ -14,8 +14,8 @@ set -o nounset
 root="$(dirname $(dirname $(readlink -f $0)))"
 
 
-IFS="\r"
-for line in $(echo "$documents" | jq -r '.[]'); do
+IFS=","
+for line in $(echo "$documents" | jq -r '.[]' | paste -sd ','); do
     echo "Processing '$line'."
 
     department="$(echo "$line" | awk '{ print $1 }')"

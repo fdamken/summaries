@@ -1,7 +1,8 @@
 name: Publish
 on:
   workflow_dispatch:
-  #push:
+  push:
+    branches: [ main ]
 jobs:
   documents:
     name: Collect Documents
@@ -95,7 +96,6 @@ jobs:
         uses: actions/download-artifact@v3
       - name: Fix Document Paths
         run: ".github/move-documents.sh '${{ needs.documents.outputs.documents }}'"
-      - run: ls -laR
       - name: Publish Documents
         run: ".github/publish-documents.sh"
         env:

@@ -36,20 +36,20 @@
 \openin\fdsummary@metadata=metadata.txt
 \read\fdsummary@metadata to \filelinea
 \if\relax\filelinea\relax\else
-\def\fdsummary@author{\filelinea}
+	\def\fdsummary@author{\filelinea}
 \fi
 \read\fdsummary@metadata to \filelinet
 \if\relax\filelinet\relax\else
-\def\fdsummary@title{\filelinet}
+	\def\fdsummary@title{\filelinet}
 \fi
 \closein\fdsummary@metadata
 
 \RequirePackage{ifthen}
 \ifthenelse{\equal{\fdsummary@language}{none}}
-    {\PackageError{fdsummary}{No language given.}{Provide either option 'german' or 'english'.}}
-    {\ifthenelse{\equal{\fdsummary@language}{ngerman}}
-        {\newcommand{\fdsummary@ifde}[1]{#1} \newcommand{\fdsummary@ifen}[1]{}}
-        {\newcommand{\fdsummary@ifen}[1]{#1} \newcommand{\fdsummary@ifde}[1]{}}}
+{\PackageError{fdsummary}{No language given.}{Provide either option 'german' or 'english'.}}
+{\ifthenelse{\equal{\fdsummary@language}{ngerman}}
+	{\newcommand{\fdsummary@ifde}[1]{#1} \newcommand{\fdsummary@ifen}[1]{}}
+	{\newcommand{\fdsummary@ifen}[1]{#1} \newcommand{\fdsummary@ifde}[1]{}}}
 
 
 % Load the parent class.
@@ -58,10 +58,10 @@
 
 % Core Packages.
 \ifLuaTeX
-    \RequirePackage[utf8]{luainputenc}
+	\RequirePackage[utf8]{luainputenc}
 \else
-    \RequirePackage[T1]{fontenc}
-    \RequirePackage[utf8]{inputenc}
+	\RequirePackage[T1]{fontenc}
+	\RequirePackage[utf8]{inputenc}
 \fi
 \fdsummary@ifde{\RequirePackage[main = ngerman, USenglish]{babel}}
 \fdsummary@ifen{\RequirePackage[main = USenglish, ngerman]{babel}}
@@ -165,9 +165,9 @@
 
 % Make it possible to use vertical lines in a matrix. See https://tex.stackexchange.com/a/333383
 \renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
-    \hskip -\arraycolsep
-    \let\@ifnextchar\new@ifnextchar
-    \array{#1}
+	\hskip -\arraycolsep
+	\let\@ifnextchar\new@ifnextchar
+	\array{#1}
 }
 
 % Vector and matrix notation.
@@ -176,26 +176,26 @@
 
 % Listings settings (use TUDa colors for highlighting).
 \lstdefinestyle{base}{
-    moredelim = **[is][\color{errorred}]{@@!}{@@@},
-    moredelim = **[is][\color{changedpurple}]{@@?}{@@@}
+	moredelim = **[is][\color{errorred}]{@@!}{@@@},
+	moredelim = **[is][\color{changedpurple}]{@@?}{@@@}
 }
 \lstset{
-    backgroundcolor = \color{\thepagecolor},
-    basicstyle = \ttfamily\scriptsize\color{.},
-    breakatwhitespace = true,
-    breaklines = true,
-    breakautoindent = true,
-    commentstyle = \color{lstcomments},
-    escapeinside = {{*@}{@*}},
-    keywordstyle = \color{lstkeywords},
-    numbers = left,
-    numberstyle = \tiny\color{lstlinenumbers},
-    showstringspaces = false,
-    stringstyle = \color{lststrings},
-    tabsize = 4,
-    rulecolor=\color{\thepagecolor},
-    emphstyle=\color{fgcolor},
-    style = base
+	backgroundcolor = \color{\thepagecolor},
+	basicstyle = \ttfamily\scriptsize\color{.},
+	breakatwhitespace = true,
+	breaklines = true,
+	breakautoindent = true,
+	commentstyle = \color{lstcomments},
+	escapeinside = {{*@}{@*}},
+	keywordstyle = \color{lstkeywords},
+	numbers = left,
+	numberstyle = \tiny\color{lstlinenumbers},
+	showstringspaces = false,
+	stringstyle = \color{lststrings},
+	tabsize = 4,
+	rulecolor=\color{\thepagecolor},
+	emphstyle=\color{fgcolor},
+	style = base
 }
 
 % Make it possible to include matplotlib plots with negative numbers.
@@ -206,17 +206,17 @@
 
 % mdframed settings.
 \mdfsetup{%
-    backgroundcolor=\thepagecolor,%
-    fontcolor=.,%
-    linecolor=fgcolor,%
-    frametitlefontcolor=fgcolor,%
-    shadowcolor==fgcolor!50!\thepagecolor,%
-    subtitlebackgroundcolor=\thepagecolor,%
-    subsubtitlebackgroundcolor=\thepagecolor,%
-    subtitleabovelinecolor=fgcolor,%
-    subtitlebelowlinecolor=fgcolor,%
-    subsubtitleabovelinecolor=fgcolor,%
-    subsubtitlebelowlinecolor=fgcolor,%
+	backgroundcolor=\thepagecolor,%
+	fontcolor=.,%
+	linecolor=fgcolor,%
+	frametitlefontcolor=fgcolor,%
+	shadowcolor==fgcolor!50!\thepagecolor,%
+	subtitlebackgroundcolor=\thepagecolor,%
+	subsubtitlebackgroundcolor=\thepagecolor,%
+	subtitleabovelinecolor=fgcolor,%
+	subtitlebelowlinecolor=fgcolor,%
+	subsubtitleabovelinecolor=fgcolor,%
+	subsubtitlebelowlinecolor=fgcolor,%
 }%
 
 
@@ -249,16 +249,16 @@
 
 % Boxes surrounded by borders for information and warnings.
 \newcommand{\info}[1]{
-    \begin{figure}[H]
-        \centering
-        \fbox{\parbox[c]{0.5\textwidth}{#1}}
-    \end{figure}
+	\begin{figure}[H]
+		\centering
+		\fbox{\parbox[c]{0.5\textwidth}{#1}}
+	\end{figure}
 }
 \newcommand{\warning}[1]{
-    \begin{figure}[H]
-        \centering
-        \fbox{\parbox[c]{0.5\textwidth}{\textbf{Warning:} #1}}
-    \end{figure}
+	\begin{figure}[H]
+		\centering
+		\fbox{\parbox[c]{0.5\textwidth}{\textbf{Warning:} #1}}
+	\end{figure}
 }
 
 % Network.
@@ -279,17 +279,17 @@
 
 % Abbreviations.
 \fdsummary@ifde{
-    \newcommand{\bspw}{bspw.\xspace}
-    \newcommand{\bzgl}{bzgl.\xspace}
-    \newcommand{\bzw}{bzw.\xspace}
-    \newcommand{\ca}{ca.\xspace}
-    \newcommand{\gdw}{gdw.\xspace}
-    \newcommand{\ggf}{ggf.\xspace}
-    \newcommand{\iA}{i.\,A.\xspace}
-    \newcommand{\mglw}{mglw.\xspace}
-    \newcommand{\vs}{vs.\xspace}
-    \newcommand{\zB}{z.\,B.\xspace}
-    \renewcommand{\dh}{d.\,h.\xspace}
+	\newcommand{\bspw}{bspw.\xspace}
+	\newcommand{\bzgl}{bzgl.\xspace}
+	\newcommand{\bzw}{bzw.\xspace}
+	\newcommand{\ca}{ca.\xspace}
+	\newcommand{\gdw}{gdw.\xspace}
+	\newcommand{\ggf}{ggf.\xspace}
+	\newcommand{\iA}{i.\,A.\xspace}
+	\newcommand{\mglw}{mglw.\xspace}
+	\newcommand{\vs}{vs.\xspace}
+	\newcommand{\zB}{z.\,B.\xspace}
+	\renewcommand{\dh}{d.\,h.\xspace}
 }
 % Robotics.
 \newcommand{\DIRKIN}{DIR\,KIN\xspace}
@@ -419,19 +419,19 @@
 
 % Quadtree.
 \newcommand{\grayBox}{%
-    \begin{tikzpicture}
-    \draw [fill = gray] (0, 0) -- (0, 0.5) -- (0.5, 0.5) -- (0.5, 0) -- cycle;
-    \end{tikzpicture}
+	\begin{tikzpicture}
+		\draw [fill = gray] (0, 0) -- (0, 0.5) -- (0.5, 0.5) -- (0.5, 0) -- cycle;
+	\end{tikzpicture}
 }
 \newcommand{\whiteBox}{%
-    \begin{tikzpicture}
-    \draw [fill = white] (0, 0) -- (0, 0.5) -- (0.5, 0.5) -- (0.5, 0) -- cycle;
-    \end{tikzpicture}
+	\begin{tikzpicture}
+		\draw [fill = white] (0, 0) -- (0, 0.5) -- (0.5, 0.5) -- (0.5, 0) -- cycle;
+	\end{tikzpicture}
 }
 \newcommand{\blackBox}{%
-    \begin{tikzpicture}
-    \draw [fill = black] (0, 0) -- (0, 0.5) -- (0.5, 0.5) -- (0.5, 0) -- cycle;
-    \end{tikzpicture}
+	\begin{tikzpicture}
+		\draw [fill = black] (0, 0) -- (0, 0.5) -- (0.5, 0.5) -- (0.5, 0) -- cycle;
+	\end{tikzpicture}
 }
 
 

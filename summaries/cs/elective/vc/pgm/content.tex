@@ -1,18 +1,18 @@
 \tikzstyle{rv} = [
-	draw,
-	circle,
-	inner sep = 0,
-	minimum width = 0.75cm,
-	minimum height = 0.75cm
+draw,
+circle,
+inner sep = 0,
+minimum width = 0.75cm,
+minimum height = 0.75cm
 ]
 \tikzstyle{sep} = [
-	draw,
-	rectangle
+draw,
+rectangle
 ]
 \tikzstyle{fam} = [
-	draw,
-	rectangle,
-	rounded corners = 5pt
+draw,
+rectangle,
+rounded corners = 5pt
 ]
 
 \chapter{Introduction}
@@ -25,7 +25,7 @@
 		\item \eqmakebox[l][intro]{Learning:}       How to learn the model from data? What model fits to the data? What are right/good parameters? How to obtain the structure of a model?
 	\end{itemize}
 	This summary starts off, after some foundations, by introducing Bayesian networks and how to perform inference (in discrete domains). Later, undirected graphical models (Markov random fields), continuous random variables, and approximate inference is covered.
-% end
+	% end
 
 \chapter{Foundations}
 	This chapter covers fundamental concepts of probability theory and machine learning that are required for the later chapters. Note that not all relevant concepts of probability theory are covered.
@@ -35,7 +35,7 @@
 
 		One note on notation: whenever a sum represents a marginalization over some random variable \(X\), it is written as
 		\begin{equation}
-		P(Y) = \sum_{X}^{\marg} P(X, Y) \coloneqq \sum_{x \in \val(X)} P(X = x, Y)
+			P(Y) = \sum_{X}^{\marg} P(X, Y) \coloneqq \sum_{x \in \val(X)} P(X = x, Y)
 		\end{equation}
 		for brevity.
 
@@ -68,8 +68,8 @@
 
 			\subsubsection{Monty Hall Problem}
 				\todo{Monty Hall Problem; 1.61, 1.62, 1.63, 1.64, 1.65, 1.66, 1.67}
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{Inference}
 			Statistical \emph{inference} is concerned with computing all kinds of statistical properties given a model, e.g., the probability of an event. This section covers same fundamental concepts needed to understand the later chapters.
@@ -78,15 +78,15 @@
 				Information theory is trying to quantify how much information is encoded in some distribution \(P(X)\). The central measure is \emph{entropy}:
 				\begin{equation}
 					H_P(X)
-						= \E\bigl[ \log(1/P(X)) \bigr]
-						= \sum_{x \in \val(X)} P(X) \,\log \frac{1}{\log P(X)}
-						= -\sum_{x \in \val(X)} P(X) \,\log P(X)
+					= \E\bigl[ \log(1/P(X)) \bigr]
+					= \sum_{x \in \val(X)} P(X) \,\log \frac{1}{\log P(X)}
+					= -\sum_{x \in \val(X)} P(X) \,\log P(X)
 				\end{equation}
 				If the logarithm is of base two, the entropy encodes how much bits are required \emph{on average} to encode \(X\) when \(X\) follows the distribution \(P(X)\). Similarly, \emph{conditional entropy} can be defined as
 				\begin{equation}
 					H_P(X \given Y)
-						= \E\bigl[ \log(1/P(X \given Y)) \bigr]
-						= H_P(X, Y) - H_P(X)
+					= \E\bigl[ \log(1/P(X \given Y)) \bigr]
+					= H_P(X, Y) - H_P(X)
 				\end{equation}
 				where \( H_P(X, Y) \) is the joint entropy over \(X\) and \(Y\). Like for probabilities, a \emph{chain rule of entropies} is derivable:
 				\begin{equation}
@@ -97,8 +97,8 @@
 					I_P(X; Y) = H_P(X) - H_P(X \given Y)
 				\end{equation}
 				can be used. This quantity is symmetric and is zero if and only if \(X\) and \(Y\) are independent.
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{Potentials}
 			A \emph{potential} is an alternative way of representing (conditional) probabilities aside from conditional probability tables (CPTs). A potential \(\phi_{X, Y, Z}\) is is a function that maps each configuration \( (x, y, z) \in \val(X) \times \val(Y) \times \val(Z) \) to a non-negative real number. The set of random variables targeted by a potential is its \emph{domain}, i.e., \( \dom f_{X, Y, Z} = \{ X, Y, Z \} \). Note that a (conditional) probability distribution is a special case of potentials where the potential is normalized. Vice versa, a potential can always be normalized into a CPT. This is illustrated in \autoref{fig:potetial}.
@@ -111,34 +111,34 @@
 				\begin{tikzpicture}
 					\node (cpt) {
 						\begin{tabular}{c|cc}
-								\( P(X = x \given Y = y, Z = z) \)	  & \( x = \mathfrak{f} \) & \( x = \mathfrak{t} \) \\ \midrule
-							\( (Y, Z) = (\mathfrak{t}, \mathfrak{t}) \) &		\(0.8\)		 &		\(0.2\)		 \\
-							\( (Y, Z) = (\mathfrak{t}, \mathfrak{f}) \) &		\(0.5\)		 &		\(0.5\)		 \\
-							\( (Y, Z) = (\mathfrak{t}, \mathfrak{t}) \) &		\(0.2\)		 &		\(0.8\)		 \\
-							\( (Y, Z) = (\mathfrak{t}, \mathfrak{f}) \) &		\(0.7\)		 &		\(0.3\)
+							\( P(X = x \given Y = y, Z = z) \)          & \( x = \mathfrak{f} \) & \( x = \mathfrak{t} \) \\ \midrule
+							\( (Y, Z) = (\mathfrak{t}, \mathfrak{t}) \) & \(0.8\)                & \(0.2\)                \\
+							\( (Y, Z) = (\mathfrak{t}, \mathfrak{f}) \) & \(0.5\)                & \(0.5\)                \\
+							\( (Y, Z) = (\mathfrak{t}, \mathfrak{t}) \) & \(0.2\)                & \(0.8\)                \\
+							\( (Y, Z) = (\mathfrak{t}, \mathfrak{f}) \) & \(0.7\)                & \(0.3\)
 						\end{tabular}
 					};
 					\node [right = 2 of cpt] (transfer) {\( \longleftrightarrow \)};
 					\node [right = 2 of transfer] (potential) {
 						\begin{tabular}{ccc|c|c}
-								 \(X\)	   &	  \(Y\)	   &	  \(Z\)	   & \(\phi_{X, Y, Z}\) & \(\tilde{\phi}_{X, Y, Z}\) \\ \midrule
-							\(\mathfrak{t}\) & \(\mathfrak{t}\) & \(\mathfrak{t}\) &	  \(0.8\)	   &		   \(8\)			\\
-							\(\mathfrak{t}\) & \(\mathfrak{t}\) & \(\mathfrak{f}\) &	  \(0.2\)	   &		   \(2\)			\\
-							\(\mathfrak{t}\) & \(\mathfrak{f}\) & \(\mathfrak{t}\) &	  \(0.5\)	   &		   \(5\)			\\
-							\(\mathfrak{t}\) & \(\mathfrak{f}\) & \(\mathfrak{f}\) &	  \(0.5\)	   &		   \(5\)			\\
-							\(\mathfrak{f}\) & \(\mathfrak{t}\) & \(\mathfrak{t}\) &	  \(0.2\)	   &		   \(2\)			\\
-							\(\mathfrak{f}\) & \(\mathfrak{t}\) & \(\mathfrak{f}\) &	  \(0.8\)	   &		   \(8\)			\\
-							\(\mathfrak{f}\) & \(\mathfrak{f}\) & \(\mathfrak{t}\) &	  \(0.7\)	   &		   \(7\)			\\
-							\(\mathfrak{f}\) & \(\mathfrak{f}\) & \(\mathfrak{f}\) &	  \(0.3\)	   &		   \(3\)
+							\(X\)            & \(Y\)            & \(Z\)            & \(\phi_{X, Y, Z}\) & \(\tilde{\phi}_{X, Y, Z}\) \\ \midrule
+							\(\mathfrak{t}\) & \(\mathfrak{t}\) & \(\mathfrak{t}\) & \(0.8\)            & \(8\)                      \\
+							\(\mathfrak{t}\) & \(\mathfrak{t}\) & \(\mathfrak{f}\) & \(0.2\)            & \(2\)                      \\
+							\(\mathfrak{t}\) & \(\mathfrak{f}\) & \(\mathfrak{t}\) & \(0.5\)            & \(5\)                      \\
+							\(\mathfrak{t}\) & \(\mathfrak{f}\) & \(\mathfrak{f}\) & \(0.5\)            & \(5\)                      \\
+							\(\mathfrak{f}\) & \(\mathfrak{t}\) & \(\mathfrak{t}\) & \(0.2\)            & \(2\)                      \\
+							\(\mathfrak{f}\) & \(\mathfrak{t}\) & \(\mathfrak{f}\) & \(0.8\)            & \(8\)                      \\
+							\(\mathfrak{f}\) & \(\mathfrak{f}\) & \(\mathfrak{t}\) & \(0.7\)            & \(7\)                      \\
+							\(\mathfrak{f}\) & \(\mathfrak{f}\) & \(\mathfrak{f}\) & \(0.3\)            & \(3\)
 						\end{tabular}
 					};
 				\end{tikzpicture}
 				\caption[Comparison of CPT and Potential]{Comparison of a CPT (left) and the corresponding potential (right). The rightmost column in the potential \( \tilde{\phi} \) is equivalent to \( \phi \) as it can be normalized accordingly.}
 				\label{fig:potetial}
 			\end{figure}
-		% end
-	% end
-% end
+			% end
+			% end
+			% end
 
 \chapter{Bayesian Networks}
 	\emph{Bayesian networks} provide a compact representation for exponentially-large distribution by exploiting conditional independencies. When representing a joint distribution \( P(X_1, X_2, \dots, X_n) \) with \( \lvert \val(X_i) \rvert = k \) for simplicity, the CPT has \(k^n - 1\) entries\footnote{The \(-1\) comes from the requirement of the probability being normalized, hence the probability of the "last" configuration is implicit.}! But lots of information is redundant in the joint if some of the variables exhibit independencies. Assume, for instance, that all subsets \( \mathcal{X}, \mathcal{Y} \subseteq \{ X_1, X_2, \dots, X_n \} \) are independent (\( \mathcal{X} \perp \mathcal{Y} \)). Then the joint can be written as
@@ -159,10 +159,10 @@
 		To classify a new instance \(\vec{x}\) (a vector composed of the individual instances of \(X_1, X_2, \dots, X_n\)), the class \(c \in \val(C)\) with the highest posterior probability is selected:
 		\begin{equation}
 			c_\mathrm{MAP}
-				= \argmax_{c \in \val(C)} \; P(c \given \vec{x})
-				= \argmax_{c \in \val(C)} \; \frac{P(\vec{x} \given c) \, P(c)}{P(\vec{x})}
-				= \argmax_{c \in \val(C)} \; P(\vec{x} \given c) \, P(c)
-				= \argmax_{c \in \val(C)} \; P(X) \prod_{i = 1}^{n} P(X_i).
+			= \argmax_{c \in \val(C)} \; P(c \given \vec{x})
+			= \argmax_{c \in \val(C)} \; \frac{P(\vec{x} \given c) \, P(c)}{P(\vec{x})}
+			= \argmax_{c \in \val(C)} \; P(\vec{x} \given c) \, P(c)
+			= \argmax_{c \in \val(C)} \; P(X) \prod_{i = 1}^{n} P(X_i).
 		\end{equation}
 
 		\begin{figure}
@@ -188,13 +188,13 @@
 		\subsection{Maximum Likelihood Parameter Estimation}
 			To learn the probabilities required to perform classification using the naive Bayes model, the straightforward approach is to use maximum likelihood estimates, i.e., the frequencies in the data:
 			\begin{align}
-				\hat{P}(C = c_j) &= \frac{N(C = c_j)}{N} &
-				\hat{P}(X_i = x_{ik} \given c_j) &= \frac{N(X_i = x_{ik}, C = C_j)}{N(C = c_j)}.
+				\hat{P}(C = c_j)                 & = \frac{N(C = c_j)}{N}                         &
+				\hat{P}(X_i = x_{ik} \given c_j) & = \frac{N(X_i = x_{ik}, C = C_j)}{N(C = c_j)}.
 			\end{align}
 			here, \( N(C = c_j) \) is the number of data points where the class is \(c_j\) and \( N(X_i = x_{ik}, C = C_j) \) is the number of data points with class \( c_j \) and value \(x_{ik}\) in the \(i\)-th feature. Using the identity function \(\mathbbm{1}[\psi]\) that is one iff \(\psi\) is true and zero otherwise, these quantities can be expressed as
 			\begin{align}
-				N(C = c_j) &= \sum_{((x_1, x_2, \dots, x_n), c) \in \mathcal{D}} \mathbbm{1}[c = c_j] &
-				N(X_i = x_{ik}, C = C_j) &= \sum_{(x_1, x_2, \dots, x_n, c) \in \mathcal{D}} \mathbbm{1}[x_i = x_{ik}, c = c_j]
+				N(C = c_j)               & = \sum_{((x_1, x_2, \dots, x_n), c) \in \mathcal{D}} \mathbbm{1}[c = c_j]             &
+				N(X_i = x_{ik}, C = C_j) & = \sum_{(x_1, x_2, \dots, x_n, c) \in \mathcal{D}} \mathbbm{1}[x_i = x_{ik}, c = c_j]
 			\end{align}
 			where \( \mathcal{D} \subseteq \val(X_1) \times \val(X_2) \times \dots \times \val(X_n) \times \val(C) \) is the data set. Note that the formality of the data set and values is quite rigorous in this section. From now on, the notation will be abused from time to time for brevity.
 
@@ -203,14 +203,14 @@
 				\hat{P}(X_i = x_{ik} \given c_j) = \frac{N(X_i = x_{ik}, C = C_j) + m \bigl( N(X_i = x_{ik}) / N \bigr)}{N(C = c_j) + m},
 			\end{equation}
 			where \(m\) controls the extend of smoothing and is a hyper-parameter.
-		% end
+			% end
 
 		\subsection{Application}
 			Even though the assumption of all features being conditionally independent is often false, the naive Bayes classifier turns out to be quite effective in practice. While not being the best classification method, is usually serves as a good and dependable baseline. \emph{If} the assumption holds, the Bayes classifier is optimal (and can be tuned for different misclassification costs, for example).
 
 			Also, it is very fast: learning is done in a single pass over the data (by counting) and testing is linear in the number of attributes and data size. For the same reason (small CPTs), it requires very little storage, making it suitable for on-device classification.
-		% end
-	% end
+			% end
+			% end
 
 	\section{Definition and Independence Assumptions}
 		After some introductory treatment of the naive Bayes classifier and its associated Bayesian network, this section now focuses on a more rigorous treatment of the independencies that are actually encoded in a Bayesian network and a formal definition of what a Bayesian network is.
@@ -231,8 +231,8 @@
 		\end{equation}
 		Let \( \Ch(X_i) \) be the children of \(X_i\), then \(X_i\)'s non-descendants are all random variables that are not in \( \Des(X_i) \), \(X_i\)'s descendants:
 		\begin{align}
-			\ND(X_i) &= \{ X_1, X_2, \dots, X_n \} \setminus \Des(X_i), &
-			\Des(X_i) &= \Ch(X_i) \cup \bigcup_{X_j \in \Ch(X_i)} \Des(X_j).
+			\ND(X_i)  & = \{ X_1, X_2, \dots, X_n \} \setminus \Des(X_i),     &
+			\Des(X_i) & = \Ch(X_i) \cup \bigcup_{X_j \in \Ch(X_i)} \Des(X_j).
 		\end{align}
 		This is a recursive definition for which \( \Des(X_i) = \emptyset \) holds iff \( X_i \) does not have children.
 
@@ -254,7 +254,7 @@
 			\begin{equation}
 				P(X = x \given Z = z, Y = y) \leq P(X = x \given Z = z).
 			\end{equation}
-		% end
+			% end
 
 		\subsection{Representation Theorem}
 			All this work on independencies raise the question of whether it is actually worth it: what distributions can be represented using a Bayesian network? And what networks are required to represent a distribution? Also, what other independencies apart from the local Markov assumption are encoded in a network? Some independencies can certainly be derived using the relations presented in \autoref{subsec:condIndependence}. Let \(P\) be the real distribution and let \( I(P) \) be the independencies encoded in the true distribution. Similarly, let \( I_\ell(G) \) be the local independencies (induces by the local Markov assumption) encoded in a graph \(G\). Then the key assumption of Bayesian networks is that
@@ -271,8 +271,8 @@
 				"if": \todo{Proof: Representation Theorem; 2.54}
 
 				"only if": Assume, w.l.o.g., a topological ordering \( X_1, X_2, \dots, X_n \) where \(j < i\) for all children \(X_j\) of some random variable \(X_i\). Applying the chain rule to the joint yields \( P(X_1, X_2, \dots, X_n) = \prod_{i = 1}^{n} P(X_1 \given X_1, X_2, \dots, X_{i - 1}) \). By the topological ordering, \( \Pa(X_1) \subseteq \{ X_1, X_2, \dots, X_{i - 1} \} \) and hence, using the local Markov assumption, \( P(X_i \given X_1, X_2, \dots, X_{i - 1}) = P\bigl(X_1 \given \Pa(X_i) \bigr) \). Therefore, \(P\) factorized according to \eqref{eq:bayesNetJoint}.
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{"Adding Edges Does Not Hurt"}
 			\theorem{Let \(G\) be an I-map for \(P\). Then any DAG \(G'\) having the same directed edges as \(G\), then \(G'\) is also an I-map of \(P\).}
@@ -289,9 +289,9 @@
 				Let \(X\) and \(Y\) be some random variables of \(G\) such that \( Y \not\in \Pa_G(X) \). Then adding an edge \( Y \to X \) only removes local independencies, but does not induce new ones.
 
 				\todo{Proof: Adding Edges Does Not Hurt; 2.57}
-			% end
-		% end
-	% end
+				% end
+				% end
+				% end
 
 	\section{Encoded Independencies}
 		So far, only local independencies have been considered. However, a Bayesian network encodes even more dependencies by applying the algebra of conditional independencies (\autoref{subsec:condIndependence}; see \autoref{fig:moreIndependencies} for an example).
@@ -374,7 +374,7 @@
 				\end{tikzpicture}
 			\end{center}
 			In this case, the independencies are inverted: the simple independence \( X \perp Y \) holds, but \( X \perp Y \given Z \) \emph{does not}. This is the same effect as the "explain away" phenomenon / Berkson's paradox (\autoref{subsec:berkson}).
-		% end
+			% end
 
 		\subsection{d-Separation}
 			\emph{d-Separation} (dependence separation) is a principled way of finding all independencies modeled by a Bayesian network. The main component are trails. A \emph{trail} is a non-cyclic path \( X_1' \fromto X_2' \fromto \cdots \fromto X_k' \) from one random variable \(X_1'\) to another \(X_k'\). Note that a trail can also be along an edge in opposite order (i.e., the trail itself is undirected) and that every edge and note can only be visited once. For example, the network
@@ -416,8 +416,8 @@
 
 				\paragraph{Proof}
 					\todo{Proof: d-Separation Soundness; 3.16}
-				% end
-			% end
+					% end
+					% end
 
 			\subsubsection{Completeness}
 				A distribution \(P\) is said to be \emph{faithful} if it does not have independencies that cannot be read from \(G\).
@@ -428,9 +428,9 @@
 
 				\paragraph{Proof}
 					\todo{Proof: d-Separation Completeness; 3.18}
-				% end
-			% end
-		% end
+					% end
+					% end
+					% end
 
 		\subsection{Context-Specific Independence (CSI)}
 			As already said, d-separation only captures complete independencies, i.e., once for which
@@ -446,20 +446,20 @@
 			One option for representing CSIs are Tree CPDs. \emph{Tree CPDs} encode a distribution \( P\bigl(X \given \Pa(X) \bigr) \) using a decision-tree like structure, where the paths are an assignment of (a subset of) \( \Pa(X) \) and leaves represent the distributions given the assignments on the path. This way, representation size can be drastically reduced when CSIs are present.
 
 			Another variant where CSIs occur is determinism. While determinism already makes the CPT sparse, it has even greater influences on inference as propagating the zeros often leads to a bunch of new zeros.
-		% end
+			% end
 
 		\subsection{The Bayes' Ball Algorithm}
 			The \emph{Bayes' ball algorithm} is a algorithmic approach to applying d-separation.
 			\todo{Bayes' Ball Algorithm; 3.19}
-		% end
-	% end
+			% end
+			% end
 
 	\section{SOTA Modal}
 		Current state-of-the-art (SOTA) models are often characterized by richness in their local structures (determinism, CSI), massive sizes (thousand of variables), and high connectivity (treewidth, see \autoref{subsec:treewidth}). These developments are enabled by high-level modeling tools (relational and first-order logic), the overall advancement in machine learning, and new application areas (e.g., bioinformatics and sensor networks).
 
 		In these big models, it is a must to exploit local and relational structure!
-	% end
-% end
+		% end
+		% end
 
 \chapter{Inference}
 	\label{c:inference}
@@ -497,15 +497,15 @@
 		However, to computing \(P(X_n)\) still requires an exponential number of operations, \( \mathcal{O}(k^n) \):
 		\begin{align}
 			P(X_n)
-				&= \sum_{X_1}^{\marg} \sum_{X_2}^{\marg} \cdots \sum_{X_{n - 1}}^{\marg} P(X_1, X_2, \dots, X_{n - 1}, X_n) \\
-				&= \sum_{X_1}^{\marg} \sum_{X_2}^{\marg} \cdots \sum_{X_{n - 1}}^{\marg} P(X_1) \, P(X_2 \given X_1) \, \cdots \, P(X_n \given X_{n - 1}).
+			 & = \sum_{X_1}^{\marg} \sum_{X_2}^{\marg} \cdots \sum_{X_{n - 1}}^{\marg} P(X_1, X_2, \dots, X_{n - 1}, X_n)                                \\
+			 & = \sum_{X_1}^{\marg} \sum_{X_2}^{\marg} \cdots \sum_{X_{n - 1}}^{\marg} P(X_1) \, P(X_2 \given X_1) \, \cdots \, P(X_n \given X_{n - 1}).
 		\end{align}
 		Instead, it is advisable to reverse the sums and to pull the independent factors out of the marginalization. This corresponds to iteratively computing \( P(X_1) \), \( P(X_2) \), \dots, \( P(X_n) \):
 		\begin{equation}
 			P(X_{i + 1}) = \sum_{X_i}^{\marg} P(X_{i + 1} \given X_i) \, P(X_i).
 		\end{equation}
 		This process is linear in the number of random variables and quadratic in the number of values of a random variable, \( \mathcal{O}(nk^2) \)! Hence, at least for simple chain models, inference is tractable.
-	% end
+		% end
 
 	\section{Variable Elimination}
 		\label{sec:variableElimination}
@@ -543,7 +543,7 @@
 			\caption{Variable Elimination}
 			\label{alg:variableElimination}
 		\end{algorithm}
-	% end
+		% end
 
 	\section{Abductive Inference}
 		So far, only the calculation of a-posterior beliefs/probabilities has been covered. That is, computing queries of the form \( P(\vec{X} \given \vec{E} = \vec{e}) \) (where \(\vec{E}\) is a, possibly empty, set of evidence). While this type of inference is useful in many cases (e.g., to perform predictions by computing the probability of an outcome, diagnosing a disease by computing the probability given some symptoms, \dots), it is also desirable to perform \emph{abductive} inference. \emph{Abductive inference} is concerned with finding a configuration of a set of random variables that "best" explains the evidence at hand. This can be done in two fashions:
@@ -589,7 +589,7 @@
 			\caption{Most Probable Explanations via Variable Elimination}
 			\label{alg:variableEliminationMpe}
 		\end{algorithm}
-	% end
+		% end
 
 	\section{Complexity of Conditional Queries}
 		In general, inference on conditional query \( P(\vec{X} \given \vec{E} = \vec{e}) \) is NP-hard. This can be shown by reducing 3-SAT to inference in a Bayesian network. 3-SAT is concerned with the question whether a propositional formula (in conjunctive normal form) with at most three literals per clause is satisfiable. For instance, is the following formula satisfiable (with boolean \(X_1, X_2, \dots, X_4\))?
@@ -627,7 +627,7 @@
 		However, while NP-hard is already pretty hard, it can also be shown that inference is \#P-complete involving counting all satisfying configurations.
 
 		Even though this shows that inference is hard in the general case, it can be solved for problems with special structures (which are very common). For these, efficient (exact) inference algorithms exist.
-	% end
+		% end
 
 	\section{Variable Elimination in Moral Graphs}
 		\label{sec:veMoral}
@@ -864,17 +864,17 @@
 		\subsection{Complexity}
 			As already pointed out in \autoref{sec:variableElimination}, the driving factor of the complexity of VE is the number of variables in the intermediate factors. Hence, for VE on moral graphs, the complexity is determined by the number of variables in the domains of the potentials producing during the elimination. This leads to a set of domains where all sets that are subsets of other sets can be removed (as they do not affect the complexity). For the elimination ordering shown in \autoref{fig:perfectSequence}, these are, in order of appearance, the following sets:
 			\begin{align}
-				&\bigl\{ \{ X_1, X_2, X_3 \},\, \{ X_2, X_4 \}, \{ X_3, X_6 \}, \{ X_2, X_3, X_5 \}, \{ X_3, X_5 \}, \{ X_5 \} \bigr\} \\
+				 & \bigl\{ \{ X_1, X_2, X_3 \},\, \{ X_2, X_4 \}, \{ X_3, X_6 \}, \{ X_2, X_3, X_5 \}, \{ X_3, X_5 \}, \{ X_5 \} \bigr\} \\
 				\longrightarrow\qquad
-				&\bigl\{ \{ X_1, X_2, X_3 \},\, \{ X_2, X_4 \}, \{ X_3, X_6 \}, \{ X_2, X_3, X_5 \} \bigr\}
+				 & \bigl\{ \{ X_1, X_2, X_3 \},\, \{ X_2, X_4 \}, \{ X_3, X_6 \}, \{ X_2, X_3, X_5 \} \bigr\}
 			\end{align}
 			It turns out that all perfect elimination orderings (i.e., those that do not produce fill-ins), have the same set of potential domains. Also, all perfect elimination orderings ending some random variable \(X\) are \emph{optimal} in terms of computing \( P(X) \).
 
 			For the imperfect elimination ordering \( (X_3, X_4, X_6, X_1, X_2, X_5) \) (for which the first elimination is shown in \autoref{fig:fillIns}), the following sets of potentials are created:
 			\begin{align}
-				&\bigl\{ \{ X_1, X_2, X_3, X_5, X_6 \},\, \{ X_2, X_4 \}, \{ X_1, X_2, X_5, X_6 \}, \{ X_1, X_2, X_5 \}, \{ X_2, X_5 \}, \{ X_5 \} \bigr\} \\
+				 & \bigl\{ \{ X_1, X_2, X_3, X_5, X_6 \},\, \{ X_2, X_4 \}, \{ X_1, X_2, X_5, X_6 \}, \{ X_1, X_2, X_5 \}, \{ X_2, X_5 \}, \{ X_5 \} \bigr\} \\
 				\longrightarrow\qquad
-				&\bigl\{ \{ X_1, X_2, X_3, X_5, X_6 \},\, \{ X_2, X_4 \} \bigr\}
+				 & \bigl\{ \{ X_1, X_2, X_3, X_5, X_6 \},\, \{ X_2, X_4 \} \bigr\}
 			\end{align}
 			Intuitively, the number of items of this clique are closely related to the complexity of VE (a small clique set corresponds to large connectivity in the graph, hence large factors).
 
@@ -909,13 +909,13 @@
 					\caption[Induced Graph for Imperfect Elimination Ordering]{Induced graph for the imperfect elimination ordering \( (X_3, X_4, X_6, X_1, X_2, X_5) \).}
 					\label{fig:imperfectInducedGraph}
 				\end{figure}
-			% end
+				% end
 
 			\subsubsection{(Poly-) Trees}
 				A direct consequence of the tight coupling between the complexity of VE and the treewidth is that inference on a "tree" Bayesian network (one in which every node has at most one parent) is linear in the number of variables (as the treewidth is \num{1} for a tree)! Finding an elimination ordering is also straightforward: by starting from the leaves, each factor only involves two RVs. It is also guaranteed that a tree has a leave, so the ordering cannot stall.
 
 				For polytree Bayesian networks (ones of which the skeleton is a tree but a node may have more than one parent), the treewidth is \num{2} and inference is linear in CPT size (i.e., representation size of the network). Opposed to a tree BN, the treewidth \emph{is not} \num{1} as moral links have to be added between "unmarried" parents.
-			% end
+				% end
 
 			\subsubsection{General Networks}
 				For general networks, the treewidth is usually greater than \num{1}. In fact, for any graph that has a cycle, the treewidth is at least \num{2}. Form graph theory, it is known that finding an optimal ordering minimizing the treewidth is NP-hard, so again, in general, inference is intractable. However, there are some neat heuristics that can be applied for finding "good" (but not necessarily optimal) orderings. There also exist algorithm that---if the graph has low treewidth---find the optimal ordering in polynomial time. Also, incorporating CSIs can reduce the complexity to be tractable even for graphs with large treewidth.
@@ -926,11 +926,11 @@
 					\centering
 					\begin{tabular}{c|c|c}
 						\toprule
-						                                &          \multicolumn{2}{c}{\textbf{Graph Type}}          \\
-						        \textbf{Query}          &         \textbf{General}         & \textbf{Low Treewidth} \\ \midrule
-						    Probabilistic Inference     &           \#P-Complete           &          Easy          \\
-						Most Probable Explanation (MPE) &           NP-Complete            &          Easy          \\
-						  Maximum A Posteriori (MAP)    & \(\text{NP}^\text{PP}\)-Complete &        NP-Hard         \\ \bottomrule
+						                                & \multicolumn{2}{c}{\textbf{Graph Type}}                   \\
+						\textbf{Query}                  & \textbf{General}                 & \textbf{Low Treewidth} \\ \midrule
+						Probabilistic Inference         & \#P-Complete                     & Easy                   \\
+						Most Probable Explanation (MPE) & NP-Complete                      & Easy                   \\
+						Maximum A Posteriori (MAP)      & \(\text{NP}^\text{PP}\)-Complete & NP-Hard                \\ \bottomrule
 					\end{tabular}
 					\begin{center}
 						For approximate probabilistic inference, hardness depends on the error: \\
@@ -943,10 +943,10 @@
 					\caption[Summary of Inference Complexities]{Summary of complexities for various inference queries.}
 					\label{fig:inferenceComplexity}
 				\end{table}
-			% end
-		% end
-	% end
-% end
+				% end
+				% end
+				% end
+				% end
 
 \chapter{Markov Random Fields}
 	\label{c:mrf}
@@ -984,7 +984,7 @@
 
 	\paragraph{Proof}
 		\todo{Proof: Markov Property in MRFs}
-	% end
+		% end
 
 	\section{Bayesian Networks as MRFs}
 		\label{sec:towardsMarkovRandomFields}
@@ -1014,7 +1014,7 @@
 				P(X, Y) \propto \phi(X, Y)
 			\end{equation}
 			with \( \phi(X, Y) \propto P(X) \, P(Y \given X) \).
-		% end
+			% end
 
 		\paragraph{Chain}
 			\begin{center}
@@ -1043,7 +1043,7 @@
 				P(X, Y, Z) \propto \phi(X, Y) \, \phi(Y, Z)
 			\end{equation}
 			by the Markov network with \( \phi(X, Y) \propto P(X) \, P(Y \given X) \) and \( \phi(Y, Z) \propto P(Z \given Y) \). Note that the parametrization of the potentials is not unique.
-		% end
+			% end
 
 		\paragraph{Common Cause}
 			\begin{center}
@@ -1072,7 +1072,7 @@
 				P(X, Y, Z) \propto \phi(X, Y) \, \phi(Y, Z)
 			\end{equation}
 			with \( \phi(X, Y) \propto P(X \given Y) \, P(Y) \) and \( \phi(Y, Z) \propto P(Z \given Y) \). Note again that the parametrization is not unique.
-		% end
+			% end
 
 		\paragraph{Common Effect}
 			\begin{center}
@@ -1109,8 +1109,8 @@
 
 			This observation depends on the fact that two variables \(X\) and \(Y\) are conditionally dependent given \(Z\) if and only if their distribution \( P(X, Y, Z) \) can be written as \( P(X, Y, Z) = \phi(X, Y) \, \phi(Y, Z) \) with some \(\phi(\cdot)\).
 			\todo{Proof: P(X, Y, Z) = f(X, Y) g(Y, Z)}
-		% end
-	% end
+			% end
+			% end
 
 	\section{Triangulated Graphs and Simplicial Nodes}
 		For the upcoming sections, some nomenclature is needed:
@@ -1121,7 +1121,7 @@
 		It follows that in a triangulated graph, the elimination of a simplicial node again yields a triangulated graph. Also, every triangulated graph (with at least two nodes) has at least two simplicial nodes. Hence, it directly follows that a perfect elimination ordering exists for every random variable in the graph.
 
 		Note that it is possible to triangulate every graph by applying any elimination ordering and consider the induced graph instead. However, while this creates a triangulated graph, it does not induce high-performance inference as the produces graph might have very large treewidth!
-	% end
+		% end
 
 	\section{Join Trees}
 		A \emph{join tree} is a special kind of tree where each node (also called \emph{cluster} in join trees) holds a set of variables. Additionally, the \emph{running intersection property} (RIP) holds: for each pair of nodes, \(\mathcal{X}\) and \(\mathcal{Y}\), each node along each path between the two nodes contains the intersection \( \mathcal{X} \cap \mathcal{Y} \). An example is shown in \autoref{fig:joinTree}. It can be shown that if the (maximum) cliques of a undirected graph can be organized into a join tree, then the graph is triangulated and vice versa.
@@ -1198,9 +1198,9 @@
 
 			\paragraph{Proof}
 				\todo{Proof: Junction Tree Factoring}
-			% end
-		% end
-	% end
+				% end
+				% end
+				% end
 
 	\section{Junction Trees}
 		\label{sec:junctionTrees}
@@ -1342,9 +1342,9 @@
 				\caption[Messages Boxes used in Junction Tree Message Passing]{Illustration of the message boxes and potentials used for message passing in junction trees, based on the junction tree shown in \autoref{fig:junctionTree}. For this tree, \(V_1\) is chosen as the root node. The arrow directions depict the forward pass, the backward pass goes in reverse.}
 				\label{fig:junctionTreeInference}
 			\end{figure}
-		% end
-	% end
-% end
+			% end
+			% end
+			% end
 
 \chapter{Learning}
 	Until now, it was assumed that both the network structure and the CPTs are given somehow. This chapter is concerned with learning these from data. It is important to be able to learn structures from data as usually, no expert is available that can craft a network by hand or she is really expensive. And in the age of big data, data is cheap and huge amounts of data are available.
@@ -1359,8 +1359,8 @@
 		\centering
 		\begin{tabular}{c|ccc}
 			\toprule
-			\textbf{Observed} & \textbf{Fixed Structure} & \textbf{Fixed Variables} & \textbf{Hidden Variables} \\ \midrule
-			\textbf{Fully} & Easy (Counting, MLE) & Selection of Edges & --- \\
+			\textbf{Observed}  & \textbf{Fixed Structure}                                            & \textbf{Fixed Variables}                                                      & \textbf{Hidden Variables}          \\ \midrule
+			\textbf{Fully}     & Easy (Counting, MLE)                                                & Selection of Edges                                                            & ---                                \\
 			\textbf{Partially} & \makecell{Numerical Optimization \\ (difficult for large networks)} & \makecell{Encompasses for Difficult Subproblem \\ (only structural EM known)} & \makecell{Scientific \\ Discovery} \\ \bottomrule
 		\end{tabular}
 		\caption[Overview Over Different Learning Problems]{Overview over different learning problems and solution approaches.}
@@ -1377,16 +1377,16 @@
 				An important property of the likelihood for a Bayesian network is that it is \emph{decomposable}. Let \( \theta_i \) be the CPT of \( P\bigl(X_i \given \Pa(X_i) \bigr) \) and let \( \vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \) be the data points. Then the log-likelihood is
 				\begin{equation}
 					\log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given \theta_1, \theta_2, \dots, \theta_n)
-						= \sum_{j = 1}^{N} \log P(\vec{x}^{(j)} \given \theta_j)
-						= \sum_{j = 1}^{N} \sum_{i = 1}^{n} \log P\bigl(X_i = x_i^{(j)} \biggiven \Pa(X_i), \theta_j \bigr).
+					= \sum_{j = 1}^{N} \log P(\vec{x}^{(j)} \given \theta_j)
+					= \sum_{j = 1}^{N} \sum_{i = 1}^{n} \log P\bigl(X_i = x_i^{(j)} \biggiven \Pa(X_i), \theta_j \bigr).
 				\end{equation}
 				By swapping the sums, the log-likelihood can be rewritten as
 				\begin{equation}
 					\log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given \theta_1, \theta_2, \dots, \theta_n)
-						= \sum_{i = 1}^{n} \log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given \theta_i).
+					= \sum_{i = 1}^{n} \log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given \theta_i).
 				\end{equation}
 				Hence, it is possible to maximize each likelihood function independently and subsequently combine the solutions to get an ML estimate. This allows efficient solutions by distributing the calculations.
-			% end
+				% end
 
 			\subsubsection{Likelihood for (Conditional) and Multinomials}
 				An important special case for the CPTs are (conditional) multinomials, i.e., distributions for which
@@ -1407,9 +1407,9 @@
 
 				\paragraph{Proof}
 					\todo{Proof: Multinomial MLE}
-				% end
-			% end
-		% end
+					% end
+					% end
+					% end
 
 		\subsection{Known Structure, Incomplete Data (Expectation-Maximization)}
 			\label{subsec:em}
@@ -1426,7 +1426,7 @@
 			where \( \E[N_{\ell}] \) is analogous to \eqref{eqn:emKgivenEll}.
 
 			In practice, some more things are needed to apply EM. Firstly, the parameters have to be initialized some how (e.g., randomly, or as a best guess from other sources, by estimating from just the complete data points, \dots). Secondly, a stopping criterion has to be defined (only small changes in the likelihood or parameter values, for example). Thirdly, bad local maxima (which the EM algorithm is prone to converge to) have to be avoided (e.g., by running multiple times, pruning unpromising runs soon, \dots). Also, various methods are available to speed up convergence.
-		% end
+			% end
 
 		\subsection{Gradient Ascent}
 			An alternative, rather bruteforcy method for dealing with incomplete data is to just ignore it and use that the gradient
@@ -1436,7 +1436,7 @@
 				\frac{1}{\theta_{k \given \ell}} \sum_{j = 1}^{N} \log P(k, \ell \given \vec{x}^{(i)}, \Theta)
 			\end{equation}
 			can be computed in closed form. Then, gradient ascent can be applied. This has the advantage that training is well-known from training neural networks, coming with the disadvantages that the parameters somehow have to be constrained to be legal and the requirement for smart optimization techniques to ensure convergence.
-		% end
+			% end
 
 		\subsection{Bayesian Parameter Estimation}
 			In Bayesian estimation, the parameters are assumed to be random variables as well. Hence, by putting a prior on the parameters, learning can be understood as a form of inference using Bayes rule:
@@ -1465,13 +1465,13 @@
 			As the true parameter is unknown, one idea is to integrate it out and compute the marginal data likelihood. With the prior \( P(\theta) = 1 \) for \( 0 < \theta < 1 \) and the likelihood \( P(x_1, x_2, \dots, x_n \given \theta) = \theta^k (1 - \theta)^{n - k} \) with \( k = \sum_{i = 1}^{n} X_i \) and binary variables, the marginal likelihood is
 			\begin{equation}
 				P(x_1, x_2, \dots, x_n)
-					= \int_0^1\! P(x_1, x_2, \dots, x_n \given \theta) \, P(\theta) \dd{\theta}
-					= \frac{1}{n + 1} { n \choose k }^{-1}
+				= \int_0^1\! P(x_1, x_2, \dots, x_n \given \theta) \, P(\theta) \dd{\theta}
+				= \frac{1}{n + 1} { n \choose k }^{-1}
 			\end{equation}
 			and, by Bayes rule, the posterior is
 			\begin{equation}
 				P(\theta \given x_1, x_2, \dots, x_n)
-					= (n + 1) { n \choose k } \theta^k (1 - \theta)^{n - k}.
+				= (n + 1) { n \choose k } \theta^k (1 - \theta)^{n - k}.
 			\end{equation}
 			To now perform prediction, it can be considered to compute the probability of the variable \(x_{n + 1}\), treating the realizations as a chain. Observing that \( P(x_{n + 1} \given \theta, x_1, x_2, \dots, x_n) = P(x_{n + 1} \given \theta) \) simplifies the integrals down to
 			\begin{equation}
@@ -1480,12 +1480,12 @@
 			All of these calculations are possible as the chosen prior was \emph{conjugate} to the likelihood. That is, the posterior lies in the same distribution family as the prior.
 
 			Similarly to the above Bayesian network for a single parameter and random variable, Bayesian networks can be constructed for multiple parameters and variables to perform learning as inference. The core idea is that the separate data points are independent given the parameters, hence making inference tractable. The other observation is that the estimation only relies on \emph{sufficient statistics} (these are the count for multinomials, for example).
-		% end
+			% end
 
 		\subsection{Summary}
 			Two approaches for parameter estimation with a fixed structure have been considered: maximum likelihood and Bayesian estimation. While both are asymptotically equivalent and consistent (i.e., they converge to the same "true" value), Bayesian estimation provides smoother result regularized by the prior. And if the prior is chosen to be close to the optimal value, it converges faster.
-		% end
-	% end
+			% end
+			% end
 
 	\section{Structure Learning / Model Selection}
 		In the previous section, it was assumed that the structure of the Bayesian network (the random variables and dependencies between them) where given. However, this is often not the case. In essence, the goal is to find, given a \(P\), a \(G\) which is an I-map of \(P\). To do some, a notion of minimal I-maps and equivalence of I-maps is necessary.
@@ -1515,13 +1515,13 @@
 				\end{tikzpicture}
 			\end{center}
 			Although both models entail the independencies required to be an I-map, the left model is obviously simpler than the right. Hence, the above definition of a minimal I-map (removing an edge results in the graph not being an I-map anymore) is insufficient to capture simplicity and minimalism.
-		% end
+			% end
 
 		\subsection{Perfect Maps (P-Maps) and I-Equivalence}
 			An alternative approach is to not just try to find an I-map but to find a \emph{perfect map} (P-map) with \( I(G) = I(P) \). This eliminates the problem of defining minimalism and simplicity. Instead, a notion of equivalence between maps must be created. Straightforwardly, two models \(G_1\) and \(G_2\) are said to be \emph{I-equivalent} if \( I(G_1) = I(G_2) \). This definition leads to a theorem for I-equivalence of two Bayesian networks:
 			\theorem{Two Bayesian networks \(G_1\) and \(G_2\) are I-equivalent if and only if they have the same skeleton and same immoralities (v-structures with disconnected parents).}
 			But why would one even struggle to find accurate structures? This stems from two factors: first, both networks with too many and networks with too few edges induce wrong assumptions on the structure. Second, networks with too few connections (and thus too many independencies) cannot be compensated by parameter estimation (as the relevant parameters simply do not exist); similarly, networks with too many edges have too many parameters where the number grows super-exponentially with the number of variables, making learning ambiguous and slow.
-		% end
+			% end
 
 		\subsection{Obtaining a P-Map}
 			To obtain a P-map, in a first step the basic independencies of \(P\) (skeleton and immoralities) have to be extracted. This yields the equivalence class the Bayesian network has to live in. In a second step, every BN structure has to be obtained that lies in this equivalence class.
@@ -1582,7 +1582,7 @@
 				\caption{Bayesian Network P-Map Identification}
 				\label{alg:pMapIdent}
 			\end{algorithm}
-		% end
+			% end
 
 		\subsection{Learning Approaches}
 			To learn the structure of a network, two distinctive approaches exist: constraint- and score-based learning. These will be presented in the following two sections.
@@ -1595,7 +1595,7 @@
 					\hat{I}(X; Y \given \mathcal{U}) = \sum_{X, Y}^{\marg} \hat{P}(X, Y \given \mathcal{U}) \, \log\frac{\hat{P}(X, Y \given \mathcal{U})}{\hat{P}(X) \, \hat{P}(Y \given \mathcal{U})}
 				\end{equation}
 				where \(\hat{\cdot}\) denotes that the quantities are approximations (i.e., \(\hat{P}\) is an estimated probability based on counting the examples).
-			% end
+				% end
 
 			\subsubsection{Score-Based}
 				\label{subsubsec:scoreBased}
@@ -1603,7 +1603,7 @@
 				\emph{Score-based} learning depends on a score function to assess a model's accuracy and searches for a structure with maximum score. A straightforward approach is to use the (log-)likelihood
 				\begin{equation}
 					\log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given G)
-						= N \sum_{i = 1}^{n} \bigl( \hat{I}\bigl( X_i; \Pa_G(X_i) \bigr) - \hat{H}(X_i) \bigr)
+					= N \sum_{i = 1}^{n} \bigl( \hat{I}\bigl( X_i; \Pa_G(X_i) \bigr) - \hat{H}(X_i) \bigr)
 				\end{equation}
 				where \(\hat{I}\) and \(\hat{H}\) are the approximate mutual information and entropy, respectively. Note that the data is used in the computation of the mutual information and entropy as the probabilities are based on counting the samples.
 
@@ -1616,12 +1616,12 @@
 				for the marginal likelihood can be approximated as
 				\begin{align}
 					\log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given G)
-						&= \log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given G, \Theta) - \frac{\log M}{2} \dim G + \mathcal{O}(1) \\
-						&= N \sum_{i = 1}^{n} \bigl( \hat{I}\bigl( X_i; \Pa_G(X_i) \bigr) - \hat{H}(X_i) \bigr) - \frac{\log N}{2} \dim G + \mathcal{O}(1),
+					 & = \log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given G, \Theta) - \frac{\log M}{2} \dim G + \mathcal{O}(1)           \\
+					 & = N \sum_{i = 1}^{n} \bigl( \hat{I}\bigl( X_i; \Pa_G(X_i) \bigr) - \hat{H}(X_i) \bigr) - \frac{\log N}{2} \dim G + \mathcal{O}(1),
 				\end{align}
 				where \( \dim G \) is the number of parameters. The the first term is simply the data log-likelihood and assesses the fit to the data while the second term penalizes model complexity (quantified by the number of parameters) and avoid fitting noise. As the amount of data \(N\) grows, the former term becomes prevalent and hence the BIC score is consistent (i.e., converges to the "true" data and overrides the Dirichlet prior).
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{Structure Search as Optimization}
 			Using a scoring function (\autoref{subsubsec:scoreBased}), structure learning can be framed as an optimization problem trying to maximize a score. For this, the optimization algorithm needs the following ingredients:
@@ -1633,7 +1633,7 @@
 
 			\subsubsection{Learning Trees (Complete Data)}
 				If it is known that a tree structure has to be selected and the data is complete, the optimal model can found with time complexity \( \mathcal{O}(n^2 \, \log n) \) by finding the spanning tree with the maximum score. However, if some variables are hidden or incomplete, the problem becomes hard again (and can be approximately solved using EM).
-			% end
+				% end
 
 			\subsubsection{Heuristic (Local) Search}
 				Most of the time, heuristics are used for finding a reasonable model. They leverage a set of application simple actions (e.g., add/remove/flip and edge, \dots) and traverse the search space looking for high-scoring models. Some search techniques are greedy hill-climbing, best first search, simulated annealing, etc.
@@ -1641,16 +1641,16 @@
 				One of the most used approaches is \emph{local search} that starts with some network (e.g., empty, best tree, random, \dots) and at each iteration evaluates all possible changes based on the set of applicable cations and chooses the one that improves the current score the most. The algorithm terminates once no modification can improve the score anymore and a local maximum was found. After a local change, only parts that have changed have to be re-evaluated if the data is complete, but for incomplete data, everything has to be re-calculated after re-estimating the parameters.
 
 				While this approach is simple, it also exhibits some major drawbacks: first, it is prone to get stuck in local maxima. Second, it can get stuck on plateaus where no change makes a difference. As usual, standard heuristics can be used for circumvent some of these issues (e.g., random restarts, TABU search, simulated annealing, \dots).
-			% end
+				% end
 
 			\subsubsection{Structural EM}
 				In practice, applying local search with incomplete data using EM is costly as every evaluation of the scoring function first requires to re-fit the parameters and therefore invoke EM. This costs time as it also has to be run on poor candidates\dots in practice, only a few candidates are evaluated in depth. This introduces structural EM, an EM algorithm specially designed for this problem.
 
 				\emph{Structural EM} (SEM) is based on the idea that instead of optimizing the real score, optimize an alternative surrogate score that is decomposable. This alternative score must have that property that maximizing it improves the real score, too. The E-step works as usual. But in the M-step, the maximization is done in a combined parameter-structure-space, leading to a \emph{parametric} and \emph{structural} M-step, one of which is executed at time.
-			% end
-		% end
-	% end
-% end
+				% end
+				% end
+				% end
+				% end
 
 \chapter{Dynamic Bayesian Networks}
 	So far, only \emph{static} Bayesian networks have been considered that cannot evolve. But the world around us is rather dynamic and changes with time, so incorporating this into the theory of probabilistic graphical models would be good. This chapter covers some basic topics with networks changing dynamically, highlighting the most common one, the hidden Markov model that has lots of nice properties and theoretical development that can all be leveraged when formulating a problem in this framework.
@@ -1658,8 +1658,8 @@
 	A \emph{hidden Markov model} (HMM) is a graphical model with \(T\) \emph{states} \(S_t\), \( t = 1, 2, \dots, T \) and as many \emph{observations} \(O_t\), \( t = 1, 2, \dots, T \); see \autoref{fig:hmm}. The terminology of states and observations stems from its applications in robotics and similar fields where the observations are usually sensor data and the states are the actual, non-observable/latent, physical states (e.g., the acceleration). According to the Bayesian network, the HMM factors as
 	\begin{equation}
 		P(S_1, S_2, \dots, S_T,\, O_1, O_2, \dots, O_T)
-			= P(S_1) \prod_{t = 1}^{T - 1} P(S_{t + 1} \given S_t) \prod_{t = 1}^{T} P(O_t \given S_t)
-			= \pi_{S_1} \, \prod_{t = 1}^{T - 1} a_{S_t S_{t + 1}} \, \prod_{t = 1}^{T} b_{S_t O_t}  \label{eqn:hmmFactor}
+		= P(S_1) \prod_{t = 1}^{T - 1} P(S_{t + 1} \given S_t) \prod_{t = 1}^{T} P(O_t \given S_t)
+		= \pi_{S_1} \, \prod_{t = 1}^{T - 1} a_{S_t S_{t + 1}} \, \prod_{t = 1}^{T} b_{S_t O_t}  \label{eqn:hmmFactor}
 	\end{equation}
 	where \( \pi_{S_1} \coloneqq P(S_1) \), \( a_{S_t S_{t + 1}} \coloneqq P(S_{t + 1} \given S_t) \), \( b_{S_t O_t} \coloneqq P(O_t \given S_t) \) are called the \emph{initial}, \emph{transition}, and \emph{observation} distributions, respectively. By the local Markov assumption, the "future is independent of the past given the present", i.e., the next state only depends on the current state and not on the state beforehand\footnote{Note that there are other variants of HMMs, called \emph{\(k\)-th order HMMs}, that can watch up to \(k\) steps into the past. So the HMM covered here has \(k = 1\). However, any \(k\)-th order HMM can be reduced to a first-order HMM, so the theory stays the same (cf. higher-order ordinary differential equations).}.
 
@@ -1697,10 +1697,10 @@
 		\subsection{Decoding}
 			Decoding is concerned with computing the following probabilities:
 			\begin{align}
-				P(O \given S, \Theta) &= \prod_{t = 1}^{T} b_t &
-				   P(S \given \Theta) &= \pi \prod_{t = 1}^{T - 1} a_t \\
-				P(O, S \given \Theta) &= P(O \given S, \Theta) \, P(S \given \Theta) &
-				   P(O \given \Theta) &= \sum_{S}^{\marg} P(O, S \given \Theta)
+				P(O \given S, \Theta) & = \prod_{t = 1}^{T} b_t                       &
+				P(S \given \Theta)    & = \pi \prod_{t = 1}^{T - 1} a_t                 \\
+				P(O, S \given \Theta) & = P(O \given S, \Theta) \, P(S \given \Theta) &
+				P(O \given \Theta)    & = \sum_{S}^{\marg} P(O, S \given \Theta)
 			\end{align}
 			While of of these are trivial expressions, computing \( P(O \given \Theta) \) has complexity \( \mathcal{O}(N^T \cdot 2T) \) due to the exponential number of entries in the CPT!
 
@@ -1713,9 +1713,9 @@
 			The left column is a forward pass for computing \( \alpha_\ell(T) = P(O_1, O_2, \dots, O_T,\, S_T = \ell \given \Theta) \) and the right column is a backward pass for computing \( \beta_s(1) = P(O_2, O_3, \dots, O_T \given S_1 = s \given \Theta) \). These quantities can then be used in three different fashions for computing \( P(O \given \Theta) \):
 			\begin{equation}
 				P(O \given \Theta)
-					= \sum_s \alpha_s(T)
-					= \sum_s \pi_s \, b_{s O_1} \, \beta_s(1)
-					= \sum_s \alpha_s(t) \, \beta_s(t)
+				= \sum_s \alpha_s(T)
+				= \sum_s \pi_s \, b_{s O_1} \, \beta_s(1)
+				= \sum_s \alpha_s(t) \, \beta_s(t)
 			\end{equation}
 			Where the latter is true for all \( t = 1, 2, \dots, T \).
 
@@ -1723,46 +1723,46 @@
 				Showing that the recursive relation for \( \alpha_\ell(t) \) is straightforward by invoking the chain rule and exploiting the HMM's independencies multiple times (omitting the explicit dependence on \(\Theta\) for brevity):
 				\begin{align}
 					\alpha_\ell(t + 1)
-						&= P(O_1, O_2, \dots, O_t, O_{t + 1},\, S_{t + 1} = \ell) \\
-						&= P(O_1, O_2, \dots, O_t, O_{t + 1} \given S_{t + 1} = \ell) \, P(S_{t + 1} = \ell) \\
-						&= P(O_1, O_2, \dots, O_t \given S_{t + 1} = \ell) \, P(O_{t + 1} \given S_{t + 1} = \ell) \, P(S_{t + 1} = \ell) \\
-						&= P(O_1, O_2, \dots, O_t,\, S_{t + 1} = \ell) \, P(O_{t + 1} \given S_{t + 1} = \ell) \\
-						&= \sum_s P(O_1, O_2, \dots, O_t,\, S_t = s, S_{t + 1} = \ell) \, P(O_{t + 1} \given S_{t + 1} = \ell) \\
-						&= \sum_s P(O_1, O_2, \dots, O_t,\, S_{t + 1} = \ell \given S_t = s) \, P(S_t = s) \, P(O_{t + 1} \given S_{t + 1} = \ell) \\
-						&= \sum_s P(O_1, O_2, \dots, O_t, \given S_t = s) \, P(S_{t + 1} = \ell \given S_t = s) \, P(S_t = s) \, P(O_{t + 1} \given S_{t + 1} = \ell) \\
-						&= \sum_s P(O_1, O_2, \dots, O_t,\, S_t = s) \, P(S_{t + 1} = \ell \given S_t = s) \, P(O_{t + 1} \given S_{t + 1} = \ell) \\
-						&= \sum_s \alpha_s(t) \, a_{s \ell} \, b_{\ell O_{t + 1}}
+					 & = P(O_1, O_2, \dots, O_t, O_{t + 1},\, S_{t + 1} = \ell)                                                                                     \\
+					 & = P(O_1, O_2, \dots, O_t, O_{t + 1} \given S_{t + 1} = \ell) \, P(S_{t + 1} = \ell)                                                          \\
+					 & = P(O_1, O_2, \dots, O_t \given S_{t + 1} = \ell) \, P(O_{t + 1} \given S_{t + 1} = \ell) \, P(S_{t + 1} = \ell)                             \\
+					 & = P(O_1, O_2, \dots, O_t,\, S_{t + 1} = \ell) \, P(O_{t + 1} \given S_{t + 1} = \ell)                                                        \\
+					 & = \sum_s P(O_1, O_2, \dots, O_t,\, S_t = s, S_{t + 1} = \ell) \, P(O_{t + 1} \given S_{t + 1} = \ell)                                        \\
+					 & = \sum_s P(O_1, O_2, \dots, O_t,\, S_{t + 1} = \ell \given S_t = s) \, P(S_t = s) \, P(O_{t + 1} \given S_{t + 1} = \ell)                    \\
+					 & = \sum_s P(O_1, O_2, \dots, O_t, \given S_t = s) \, P(S_{t + 1} = \ell \given S_t = s) \, P(S_t = s) \, P(O_{t + 1} \given S_{t + 1} = \ell) \\
+					 & = \sum_s P(O_1, O_2, \dots, O_t,\, S_t = s) \, P(S_{t + 1} = \ell \given S_t = s) \, P(O_{t + 1} \given S_{t + 1} = \ell)                    \\
+					 & = \sum_s \alpha_s(t) \, a_{s \ell} \, b_{\ell O_{t + 1}}
 				\end{align}
 				By marginalizing out \(S_1\) of \( \alpha_{S_1}(T) \), this is equivalent to \( P(O \given \Theta) \).
 				\qed
-			% end
+				% end
 
 			\paragraph{Proof of Backward Pass}
 				Analogous to the forward pass: invoke the chain rule multiple times and exploit the HMM's independencies.
 				Showing the computation for \( P(O \given \Theta) \) is also straightforward:
 				\begin{align}
 					\sum_s \pi_s \, b_{s O_1} \, \beta_s(1)
-						&= \sum_s P(S_1 = s) \, P(O_1 \given S_1 = s ) \, P(O_2, O_3, \dots, O_T \given S_1 = s) \\
-						&= \sum_s P(S_1 = s) \, P(O_1, O_2, \dots, O_T \given S_1 = s) \\
-						&= \sum_s P(O_1, O_2, \dots, O_T,\, S_1 = s) \\
-						&= P(O_1, O_2, \dots, O_T)
+					 & = \sum_s P(S_1 = s) \, P(O_1 \given S_1 = s ) \, P(O_2, O_3, \dots, O_T \given S_1 = s) \\
+					 & = \sum_s P(S_1 = s) \, P(O_1, O_2, \dots, O_T \given S_1 = s)                           \\
+					 & = \sum_s P(O_1, O_2, \dots, O_T,\, S_1 = s)                                             \\
+					 & = P(O_1, O_2, \dots, O_T)
 				\end{align}
 				\qed
-			% end
+				% end
 
 			\paragraph{Proof of Combined Pass}
 				Showing the combined pass formulation is just plugging in of distributions and leveraging independencies, too:
 				\begin{align}
 					\sum_s \alpha_s(t) \, \beta_s(t)
-						&= \sum_s P(O_1, O_2, \dots, O_t,\, S_t = s) \, P(O_{t + 1}, O_{t + 2}, \dots, O_T \given S_t = s) \\
-						&= \sum_s P(O_1, O_2, \dots, O_t \given S_t = s) \, P(O_{t + 1}, O_{t + 2}, \dots, O_T \given S_t = s) \, P(S_t = s) \\
-						&= \sum_s P(O_1, O_2, \dots, O_T \given S_t = s) \, P(S_t = s) \\
-						&= \sum_s P(O_1, O_2, \dots, O_T,\, S_t = s) \\
-						&= P(O_1, O_2, \dots, O_T)
+					 & = \sum_s P(O_1, O_2, \dots, O_t,\, S_t = s) \, P(O_{t + 1}, O_{t + 2}, \dots, O_T \given S_t = s)                   \\
+					 & = \sum_s P(O_1, O_2, \dots, O_t \given S_t = s) \, P(O_{t + 1}, O_{t + 2}, \dots, O_T \given S_t = s) \, P(S_t = s) \\
+					 & = \sum_s P(O_1, O_2, \dots, O_T \given S_t = s) \, P(S_t = s)                                                       \\
+					 & = \sum_s P(O_1, O_2, \dots, O_T,\, S_t = s)                                                                         \\
+					 & = P(O_1, O_2, \dots, O_T)
 				\end{align}
 				\qed
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{Best State Sequence}
 			To find the most probable/best state sequence for a given observation sequence, two basic approaches exist: first, to get the states that are most likely individually; second, get the most likely sequence.
@@ -1770,9 +1770,9 @@
 			The former is relatively straightforward using the \(\alpha\)'s and \(\beta\)'s defined before:
 			\begin{equation}
 				\gamma_s(t)
-					= P(S_t = s \given O, \Theta)
-					= \frac{P(S_t = s, O \given \Theta)}{P(O \given \Theta)}
-					= \frac{\alpha_s(t) \, \beta_s(t)}{\sum_s \alpha_s(t) \, \beta_s(t)}
+				= P(S_t = s \given O, \Theta)
+				= \frac{P(S_t = s, O \given \Theta)}{P(O \given \Theta)}
+				= \frac{\alpha_s(t) \, \beta_s(t)}{\sum_s \alpha_s(t) \, \beta_s(t)}
 			\end{equation}
 			Subsequently, this quantity can be maximized, \( s_t^\ast = \argmax_s \, \gamma_s(t) \).
 
@@ -1790,28 +1790,28 @@
 			\end{equation}
 			After iterating, the most likely state sequence can be computed using the following:
 			\begin{align}
-				s_T^\ast &= \argmax_s \; \delta_s(T) &
-				s_t^\ast &= \psi_s(t + 1) &
-				P(s^\ast) &= \argmax_s \; \delta_s(T)
+				s_T^\ast  & = \argmax_s \; \delta_s(T) &
+				s_t^\ast  & = \psi_s(t + 1)            &
+				P(s^\ast) & = \argmax_s \; \delta_s(T)
 			\end{align}
 			This allows computing the most likely state sequence efficiently.
-		% end
+			% end
 
 		\subsection{Parameter Estimation (Using EM)}
 			Parameter estimation in a HMM is concerned with finding the parameters \(\Theta\) given an observation sequence. This is essentially done using an EM algorithm like it was introduced before in \autoref{subsec:em}, but using the probabilities \(\alpha\) and \(\beta\). The estimated \(\hat{\pi}\), \(\hat{a}\), and \(\hat{b}\) are then given as
 			\begin{align}
-				\hat{\pi}_{S_1} &= \gamma_{S_1}(1) &
-				\hat{a}_{S_t S_{t + 1}} &= \frac{\sum_{t = 1}^{T - 1} p_t(S_t, S_{t + 1})}{\sum_{t = 1}^{T - 1} \gamma_{S_t}(t)} &
-				\hat{b}_{S_t O_t} &= \frac{\sum_{\substack{t = 1; o_t = O_t}}^{T} \gamma_{S_t}(t)}{\sum_{t = 1}^{T} \gamma_{S_t}(t)}
+				\hat{\pi}_{S_1}         & = \gamma_{S_1}(1)                                                                                 &
+				\hat{a}_{S_t S_{t + 1}} & = \frac{\sum_{t = 1}^{T - 1} p_t(S_t, S_{t + 1})}{\sum_{t = 1}^{T - 1} \gamma_{S_t}(t)}           &
+				\hat{b}_{S_t O_t}       & = \frac{\sum_{\substack{t = 1; o_t = O_t}}^{T} \gamma_{S_t}(t)}{\sum_{t = 1}^{T} \gamma_{S_t}(t)}
 			\end{align}
 			where \( p_t(S_t, S_{t + 1}) \) and \( \gamma_{S_t}(t) \) are the probability of traversing from a state \(S_t\) to a state \(S_{t + 1}\) and the probability of being in a state \(S_t\), respectively:
 			\begin{align}
-				p_t(S_t, S_{t + 1}) &= \frac{\alpha_{S_t}(t) \, a_{S_t S_{t + 1}} \, b_{S_{t + 1} O_{t + 1}} \, \beta_{S_{t + 1}}(t + 1)}{\sum_s \alpha_s(t) \, \beta_s(t)} &
-				\gamma_{S_t}(t) &= \sum_s p_t(S_t, s)
+				p_t(S_t, S_{t + 1}) & = \frac{\alpha_{S_t}(t) \, a_{S_t S_{t + 1}} \, b_{S_{t + 1} O_{t + 1}} \, \beta_{S_{t + 1}}(t + 1)}{\sum_s \alpha_s(t) \, \beta_s(t)} &
+				\gamma_{S_t}(t)     & = \sum_s p_t(S_t, s)
 			\end{align}
 			Note that the data is incorporated in computing the \(p\)'s and \(\gamma\)'s (this is effectively the E-step). By iterating these two sets of equations, the algorithm will converge (although possibly to a local maximum). This is known as the \emph{Baum-Welch algorithm}.
-		% end
-	% end
+			% end
+			% end
 
 	\section{State Estimation (Kalman Filter)}
 		So far, only discrete states that can be enumerated have been considered. In lots of applications such as robotics and other dynamical systems, however, the states are continuous. Also, an agent is able to perform actions \(u\) in the environment but cannot directly observe the states \(x\) but only observations \(z\) that somehow depend on \(x\). State estimation is concerned with recovering the states \(x\). In this section first the general framework of a \emph{Bayes filter} is discussed and subsequently a special case, the Kalman filter is covered. The \emph{Kalman filter} is an approach of applying the built theory to linear Gaussian dynamical systems (LGDS's) where the local distributions are Gaussian and the mean propagation is linear.
@@ -1822,30 +1822,30 @@
 				\mathit{Bel}(\vec{x}_t) \propto P(\vec{z}_t \given \vec{x}_t) \int\! P(\vec{x}_t \given \vec{x}_{t - 1}, \vec{u}_{t - 1}) \mathit{Bel}(\vec{x}_{t - 1}) \dd{\vec{x}_{t - 1}}.
 			\end{equation}
 			For some systems like LGDS's, this integral can be solved in closed form, leading to the Kalman filter discussed in the next section. Another filtering systems used often is a particle filter which is based on using a Monte Carlo approximate of the integral.
-		% end
+			% end
 
 		\subsection{Discrete-Time Kalman Filter}
 			The discrete-time Kalman filter tackles dynamical systems of the form
 			\begin{align}
-				\vec{x}_1 &\sim \mathcal{N}(\vec{\mu}_0, \mat{\Sigma}_0) \\
-				\vec{x}_{t + 1} &\sim \mathcal{N}\bigl( \mat{A}_t \vec{x}_t + \mat{B}_t \vec{u}_t,\, \mat{R}_t \bigr) \\
-				\vec{y}_t &\sim \mathcal{N}\bigl( \mat{C}_t \vec{x}_t,\, \mat{Q}_t \bigr)
+				\vec{x}_1       & \sim \mathcal{N}(\vec{\mu}_0, \mat{\Sigma}_0)                                        \\
+				\vec{x}_{t + 1} & \sim \mathcal{N}\bigl( \mat{A}_t \vec{x}_t + \mat{B}_t \vec{u}_t,\, \mat{R}_t \bigr) \\
+				\vec{y}_t       & \sim \mathcal{N}\bigl( \mat{C}_t \vec{x}_t,\, \mat{Q}_t \bigr)
 			\end{align}
 			where \(\vec{x}_{1:T}\), \(\vec{y}_{1:T}\), and \(\vec{u}_{1:T - 1}\) are the states, observations, and actions, respectively. The matrices \(\mat{A}_t\), \(\mat{B}_t\), \(\mat{C}_t\), \(\mat{R}_t\), and \(\mat{Q}_t\) are the dynamics, control, observation, state covariance, and observation covariance matrices, respectively. \(\vec{\mu}_0\) and \(\mat{\Sigma}_0\) are the mean and covariance of the initial state. All of these parameters are assumed to be known for state estimation.
 
 			As the integrals of the Bayesian filter can be solved in closed form for LGDS's, the Kalman filter equations can also be stated in closed form. The state estimation consists of two steps: \emph{prediction} and \emph{correction}. In the prediction step, the state is predicted from the prior knowledge:
 			\begin{align}
-				\bar{\vec{\mu}}_t &= \mat{A}_t \vec{\mu}_{t - 1} + \mat{B}_t \vec{u}_t &
-				\bar{\mat{\Sigma}}_t &=\mat{A}_t \mat{\sigma}_{t - 1} \mat{A}_t^\top + \mat{R}_t
+				\bar{\vec{\mu}}_t    & = \mat{A}_t \vec{\mu}_{t - 1} + \mat{B}_t \vec{u}_t        &
+				\bar{\mat{\Sigma}}_t & =\mat{A}_t \mat{\sigma}_{t - 1} \mat{A}_t^\top + \mat{R}_t
 			\end{align}
 			In the correction step, a new observation \(\vec{y}_t\) is incorporated to correct the previous prediction:
 			\begin{align}
-				\vec{\mu}_t &= \bar{\vec{\mu}}_t + \mat{K}_t (\vec{y}_t - \mat{C}_t \bar{\vec{\mu}}_t) &
-				\mat{\Sigma}_t &= (\mat{I} - \mat{K}_t \mat{C}_t) \bar{\mat{\Sigma}}_t
+				\vec{\mu}_t    & = \bar{\vec{\mu}}_t + \mat{K}_t (\vec{y}_t - \mat{C}_t \bar{\vec{\mu}}_t) &
+				\mat{\Sigma}_t & = (\mat{I} - \mat{K}_t \mat{C}_t) \bar{\mat{\Sigma}}_t
 			\end{align}
 			Here, \( \mat{K}_t = \bar{\mat{\Sigma}}_t \mat{C}_t^\top \bigl( \mat{C}_t \bar{\mat{\Sigma}}_t \mat{C}_t^\top + \mat{Q}_t \bigr)^{-1} \) is the \emph{Kalman gain}. The estimations \( \vec{\mu}_{1:T} \) are the expected states with covariance \( \mat{\Sigma}_{1:T} \) given the observations \( \vec{y}_{1:T} \).
-		% end
-	% end
+			% end
+			% end
 
 	\section{General Dynamic Bayesian Networks}
 		So far, only HMMs and LGDS's, a special kind of HMM, were considered. For general dynamical Bayesian network, the theory is not that evolved. The basic ideas are based on unrolling the network for a specific number of time steps an then performing various inference tasks in it:
@@ -1860,8 +1860,8 @@
 		In general, exact inference is intractable and approximate methods need to be used (e.g., factored belief states).
 
 		\todo{GDBN; 7.81, 7.82, 7.83, 7.84, 7.85}
-	% end
-% end
+		% end
+		% end
 
 \chapter{Approximate Inference}
 	\label{c:approxInference}
@@ -1924,13 +1924,13 @@
 
 		The messages are constructed as follows (from variables to factors on the top, and vice versa on the bottom; \(\mathcal{N}(\cdot)\) are the neighbors of the node/factor):
 		\begin{align}
-			\mu_{i \to \alpha}(x_i) &= \prod_{\alpha \,\in\, \mathcal{N}(i) \setminus \{ \alpha \}} \mu_{\alpha \to i}(x_i) \\
-			\mu_{\alpha \to i}(x_i) &= \sum_{\vec{x}_\alpha;\, x_{\alpha, i} \,=\, x_i} f_\alpha(\vec{x}_\alpha) \prod_{j \,\in\, \mathcal{N}(\alpha) \setminus \{ i \}} \mu_{j \to \alpha}(x_{\alpha, i})
+			\mu_{i \to \alpha}(x_i) & = \prod_{\alpha \,\in\, \mathcal{N}(i) \setminus \{ \alpha \}} \mu_{\alpha \to i}(x_i)                                                                                \\
+			\mu_{\alpha \to i}(x_i) & = \sum_{\vec{x}_\alpha;\, x_{\alpha, i} \,=\, x_i} f_\alpha(\vec{x}_\alpha) \prod_{j \,\in\, \mathcal{N}(\alpha) \setminus \{ i \}} \mu_{j \to \alpha}(x_{\alpha, i})
 		\end{align}
 		Subsequently (after propagating the messages), the beliefs can be computed as follows:
 		\begin{align}
-			b_i(x_i) &= \prod_{\alpha \,\in\, \mathcal{N}(i)} \mu_{\alpha \to i}(x_i) &
-			b_\alpha(\vec{x}_\alpha) &= f_\alpha(\vec{x}_\alpha) \prod_{i \,\in\, \mathcal{N}(\alpha)} \mu_{i \to \alpha}(x_{\alpha, i})
+			b_i(x_i)                 & = \prod_{\alpha \,\in\, \mathcal{N}(i)} \mu_{\alpha \to i}(x_i)                                    &
+			b_\alpha(\vec{x}_\alpha) & = f_\alpha(\vec{x}_\alpha) \prod_{i \,\in\, \mathcal{N}(\alpha)} \mu_{i \to \alpha}(x_{\alpha, i})
 		\end{align}
 		The complete pseudocode is given in \autoref{alg:spa}.
 
@@ -1965,8 +1965,8 @@
 			However, in some cases, the messages might loop around and drive the beliefs to deterministic distributions as the beliefs are increased in every turn (as the messages are treated to come from independent parts of the graph). But usually, cycles are long or include weak correlations such that the influence is weak.
 
 			Some approaches for dealing with loops is to just stop after a certain number of iterations or stop when the beliefs do not change anymore which can also be accelerated using simulated annealing or similar techniques. Usually, if the algorithm converges, it produces a good approximation. Some exemplary implementations are Turbo Codes and Lifted Inference.
-		% end
-	% end
+			% end
+			% end
 
 	\section{Sampling}
 		Another method of approximate inference is \emph{sampling}. A \emph{sample} is an instantiation \(\vec{x}\) of random variables \(\vec{X}\) generated from a distribution \(P(\vec{X})\). Also, it is desired to also incorporate evidence \(\vec{E} = \vec{e}\) to sample from the distribution \( P(\vec{X} \given \vec{E} = \vec{e}) \). To compute the expected value of a random variable, multiple samples can be generated and averaged which (according to the strong law of large numbers) will converge to the real expectation as the number of samples increases. Similarly, the probability of an outcome can be estimated by counting\footnote{Note that this is only really applicable for discrete random variables as a specific value of a continuous variable has measure zero.}.
@@ -1982,19 +1982,19 @@
 				\KwIn{Bayesian network with variables \(X_1, X_2, \dots, X_n\), number of samples \(T\), evidence \(\vec{E} = \vec{e}\)}
 				\KwOut{Set of samples \( \vec{x}^{(1:T)} \)}
 				\For{\( t = 1, 2, \dots, T \)}{
-					\tcp{Initialize empty sample:}
-					\( \vec{x}^{(t)} \gets \mathit{Empty} \)  \label{algline:forwardSamplingRestart} \;
-					\ForEach{\(X_i\) in a topological ordering}{
-						\( x_i^{(t)} \gets \text{Sample from } P\bigl(X_i \given \Pa(X_i) = \vec{x}^{(t)} \bigr) \) \;
-						\If{\( X_i \in \vec{E} \) and \( x_i^{(t)} \neq e_i \)}{
-							Reject sample and start over (go to \autoref{algline:forwardSamplingRestart}). \;
-						}
-					}
+				\tcp{Initialize empty sample:}
+				\( \vec{x}^{(t)} \gets \mathit{Empty} \)  \label{algline:forwardSamplingRestart} \;
+				\ForEach{\(X_i\) in a topological ordering}{
+				\( x_i^{(t)} \gets \text{Sample from } P\bigl(X_i \given \Pa(X_i) = \vec{x}^{(t)} \bigr) \) \;
+				\If{\( X_i \in \vec{E} \) and \( x_i^{(t)} \neq e_i \)}{
+				Reject sample and start over (go to \autoref{algline:forwardSamplingRestart}). \;
+				}
+				}
 				}
 				\caption{Forward Sampling}
 				\label{alg:forwardSampling}
 			\end{algorithm}
-		% end
+			% end
 
 		\subsection{Gibbs Sampling}
 			Another more efficient method for sampling with evidence is \emph{Gibbs sampling}, a \emph{Markov chain Monte Carlo} (MCMC) method. Compared to forward sampling, the samples are, however, not independent anymore and form a \emph{Markov chain} (hence the name MCMC). The samples are taken from a surrogate distribution \(P'\) that converges to the true distribution \(P\) over time (with guaranteed convergence if all probabilities are positive).
@@ -2025,10 +2025,10 @@
 				\tcp{Initialize zeroth sample somehow, e.g., uniformly:}
 				\( \vec{x}^{(0)} \gets \mathit{Random} \) \;
 				\For{\( t = 1, 2, \dots, T \)}{
-					\For{\( t = 1, 2, \dots, n \)}{
-						\tcp{Generate sample levaraging the Markov blanket \( M(X_i) \) to compute the CPT:}
-						\( x_i^{(t + 1)} \gets \text{Sample from } P(\cdot \given \vec{X}_{i + 1:\tilde{n}} = \vec{x}_{i + 1:\tilde{n}}^{(t)}, \vec{X}_{1:i - 1} = \vec{x}_{1:i - 1}^{(t)}, \vec{E} = \vec{e}) \) \;
-					}
+				\For{\( t = 1, 2, \dots, n \)}{
+				\tcp{Generate sample levaraging the Markov blanket \( M(X_i) \) to compute the CPT:}
+				\( x_i^{(t + 1)} \gets \text{Sample from } P(\cdot \given \vec{X}_{i + 1:\tilde{n}} = \vec{x}_{i + 1:\tilde{n}}^{(t)}, \vec{X}_{1:i - 1} = \vec{x}_{1:i - 1}^{(t)}, \vec{E} = \vec{e}) \) \;
+				}
 				}
 				\caption{Gibbs Sampling}
 				\label{alg:gibbs}
@@ -2036,7 +2036,7 @@
 
 			\subsubsection{Burn-In}
 				One problem of Gibbs sampling is that the first samples do not follow \(P\) as the initialization is random. This is known as the \emph{burn-in phase} and can be solved by throwing away the first \(K\) samples. However, \(K\) cannot be determined in a principled fashion and is set by intuition. Alternative approaches are to draw the first samples from an approximate \( P(\vec{X} \given \vec{E} = \vec{e}) \) found by loopy belief propagation (\autoref{subsec:loopyBelief}), for example.
-			% end
+				% end
 
 			\subsubsection{Convergence: Irreducibility, Aperiodicity, and Ergodicity}
 				The convergence of Gibbs sampling to a stationary distribution \(\pi^\ast\) is guaranteed under three conditions: the sample chain must be irreducible, aperiodic, and ergodic. Let \( p_{ij} = P(\vec{x}^{(i)} \to \vec{x}^{(j)}) \) be the \emph{transition kernel} describing the probability of transition from \(\vec{x}^{(i)}\) to \(\vec{x}^{(j)}\) in the Markov chain. Then irreducibility, aperiodicity, and ergodicity are defined as follows:
@@ -2048,20 +2048,20 @@
 				The required ergodicity requires \( \forall i, j : p_{ij} > 0 \), i.e., it is possible to reach every state from every other state in one step with some probability. This generally holds in networks where all probabilities are positive. Consider a network containing (among others) two random variables \(X\) and \(Y\) that are correlated such that \(X = 0\) iff \(Y = 0\). Then once \(X = 0\) or \(Y = 0\) is reached, Gibbs sampling is force to set the other to zero, too. Hence, it will never be possible to change their values and parts of the sampling space remain uncovered.
 
 				However, it can take quite some time as the samples are dependent (autocorrelation) and variance is extremely high in high-dimensional settings. Hence, speeding up convergence has to tackle these problems: reducing the dependence between samples and reducing the variance. This will be covered in the upcoming two sections.
-			% end
+				% end
 
 			\subsubsection{Reducing Autocorrelation}
 				To reduce autocorrelation between samples, two major techniques have been developed: \emph{skipping samples} and \emph{randomizing the variable order}. While both of these are straightforward to implement and quite intuitive, they have different pros and cons. Of course, skipping samples is inefficient and samples are wasted. Additionally, it increases the variance. Randomizing the variable order, on the other hand, can even decrease the variance! However, it is a tad harder to implement.
-			% end
+				% end
 
 			\subsubsection{Reducing Variance}
 				Reducing the variance can again be tackled by two major techniques: \emph{blocking} and \emph{Rao-Blackwellization}. The former bundles highly correlated variables into \emph{blocks} and samples them in one step, greatly reducing the variance and convergence speed. However, it comes at the cost that the domain that the blocks' domains grow exponentially\dots Raw-Blackwellization, on the other hand, simply reduces the number of variables to sample and samples only a subset. Of course, this reduces the variance of the samples.
-			% end
+				% end
 
 			\subsubsection{Multi-Chain Gibbs Sampling}
 				In \emph{multi-chain Gibbs sampling}, \(M\) chains of size \(K\) are generated which generate independent samples and independent surrogate distributions \( P_m' \). The probability \( P(X_i \given \vec{E} = \vec{e}) \) can then be estimated as the average \( \bar{P}(X_i \given \vec{E} = \vec{e}) = \sum_{m = 1}^{M} P_m' / M \).
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{Likelihood Weighting}
 			\emph{Likelihood weighting} is a forward sampling-based method for sampling that builds on clamping the evidence and weighting the samples by the evidence likelihood, working well for likely evidence. Pseudocode for this process is given in \autoref{alg:likelihoodWeighting}. After generating the samples and weights, the posterior marginals can be estimated. Like Gibbs sampling, likelihood weighting converges to the exact distribution. However, convergence may be slow, too and the sample variance is high.
@@ -2070,25 +2070,25 @@
 				\KwIn{Bayesian network with variables \(X_1, X_2, \dots, X_n\), number of samples \(T\), evidence \(\vec{E} = \vec{e}\)}
 				\KwOut{Set of samples \( \vec{x}^{(1:T)} \) and weights \( w^{(1:T)} \)}
 				\For{\( t = 1, 2, \dots, T \)}{
-					\tcp{Initialize empty sample and sample weight:}
-					\( \vec{x}^{(t)} \gets \mathit{Empty} \) \;
-					\( w^{(t)} \gets 1 \) \;
-					\ForEach{\(X_i\) in a topological ordering}{
-						\If{\( X_i \in \vec{E} \) and \( x_i^{(t)} \neq e_i \)}{
-							\( x_i^{(t)} \gets e_i \) \;
-							\( w^{(t)} \gets w^{(t)} P\bigl(E_i = e_i \given \Pa(X_i) = \vec{x}^{(t)} \bigr) \) \;
-						}
-						\Else{
-							\( x_i^{(t)} \gets \text{Sample from } P\bigl(X_i \given \Pa(X_i) = \vec{x}^{(t)} \bigr) \) \;
-						}
-					}
+				\tcp{Initialize empty sample and sample weight:}
+				\( \vec{x}^{(t)} \gets \mathit{Empty} \) \;
+				\( w^{(t)} \gets 1 \) \;
+				\ForEach{\(X_i\) in a topological ordering}{
+				\If{\( X_i \in \vec{E} \) and \( x_i^{(t)} \neq e_i \)}{
+				\( x_i^{(t)} \gets e_i \) \;
+				\( w^{(t)} \gets w^{(t)} P\bigl(E_i = e_i \given \Pa(X_i) = \vec{x}^{(t)} \bigr) \) \;
+				}
+				\Else{
+				\( x_i^{(t)} \gets \text{Sample from } P\bigl(X_i \given \Pa(X_i) = \vec{x}^{(t)} \bigr) \) \;
+				}
+				}
 				}
 				\caption{Likelihood Weighting Sampling}
 				\label{alg:likelihoodWeighting}
 			\end{algorithm}
-		% end
-	% end
-% end
+			% end
+			% end
+			% end
 
 \chapter{Tractable Probabilistic Models}
 	In the current era of \emph{deep learning}, the trend goes to stacking many layers in neural networks instead of relying on shallow representations as they turn out to be much more powerful. But, opposed to PGMs, they usually have no probabilistic semantics and learning requires extensive computation. Borrowing the idea of deep representations, \emph{probabilistic circuits} have been developed. These circuits are computational graphs for joint distributions.
@@ -2103,8 +2103,8 @@
 		Learning an SPN from data can be done in various fashions. The most simplistic one is to start with a dense SPN and find the structure by learning the parameters (where zero weights indicate the absence of a connection). However, this can cause vanishing gradients by the many multiplications. To directly learn the (Tree-) SPN's structure, testing for independencies similar to learning Bayesian networks (\autoref{subsubsec:constraintBased}) is also a fruitful choice. These tests then identify product nodes while subsequently clustering algorithms like k-means can be used for identifying the sum nodes (which can be understood as mixture models).
 
 		Another major advantage of SPNs is that they can be compiled into simple and library-free code that can be executed on mobile devices. This is useful for real-time applications and similar. As they encode multivariate distributions as polynomials of univariate distributions, they can also be used in symbolic methods for inference.
-	% end
-% end
+		% end
+		% end
 
 \chapter{Deep Generative Models}
 	While data is relatively cheap in the era of big data, the majority of the available data is unlabeled and providing labels is time intensive, costly, requires expertise, etc. Hence, it is desirable to be able to learn without supervision. (Deep) \emph{generative models} are concerned with modeling the distribution of the data itself instead of relying on a discriminator function. The found distribution can then also be used to generate new data points (e.g., images). A major challenge in generative models is the \emph{curse of dimensionality:} in high dimensions, the data is usually sparse and an exponential amount of data is needed to fill the space.
@@ -2148,8 +2148,8 @@
 			To learn the parameters, it is possible to directly maximize the log-likelihood over the dataset \(\mathcal{D}\):
 			\begin{equation}
 				\argmax_\theta \; \log P(\mathcal{D} \given \theta)
-					= \argmax_\theta \; \sum_{\vec{x} \in \mathcal{D}} \log P(\mathcal{D} \given \theta)
-					= \argmax_\theta \; \sum_{\vec{x} \in \mathcal{D}} \sum_{i = 1}^{n} \log P(x_i \given x_1, x_2, \dots, x_{i - 1}).
+				= \argmax_\theta \; \sum_{\vec{x} \in \mathcal{D}} \log P(\mathcal{D} \given \theta)
+				= \argmax_\theta \; \sum_{\vec{x} \in \mathcal{D}} \sum_{i = 1}^{n} \log P(x_i \given x_1, x_2, \dots, x_{i - 1}).
 			\end{equation}
 			The constraint on tractable factors allows exact computation of the likelihood! The conditionals can be evaluated in parallel during training, making it faster. To sample from the model, forward sampling can be used with the usual caveats (i.e., being slow with evidence).
 
@@ -2160,7 +2160,7 @@
 				\item Masked Auto-Encoder Distribution Estimator (MADE): multilayer NN
 			\end{itemize}
 			Also other variants based on recurrent and convolutional neural networks have been proposed.
-		% end
+			% end
 
 		\subsection{Variational Auto-Encoders}
 			\emph{Variational autoencoders} (VAEs) are models using latent variables and inference networks to infer the latent distribution (see \autoref{fig:vae} for the graphical model). Its goal is to maximize the marginal log-likelihood \( \log p_\theta(\mathcal{D}) \) of the dataset. But this quantity is intractable! The key idea of VAEs is to approximate the posterior \( p_\theta(\vec{z} \given \vec{x}) \) with a simpler distribution \( q_\phi(\vec{z} \given \vec{x}) \) represented by a neural network. Inference is then cast as optimization over \(\theta\) and \(\phi\).
@@ -2190,7 +2190,7 @@
 				\caption[Variational Auto-Encoder]{Graphical model of a variational auto-encoder with the latent states \(\vec{z}\), the decoder network \(p_\theta(\vec{x} \given \vec{z})\) and the encoder network \(q_\phi(\vec{z} \given \vec{x})\).}
 				\label{fig:vae}
 			\end{figure}
-		% end
+			% end
 
 		\subsection{Normalizing Flows}
 			\emph{Normalizing flows} leverage invertible neural networks to find a mapping \( \vec{f}_\theta : \R^n \to \R^n \) between a latent space \(\vec{z}\) and \(\vec{x}\) that is invertible and deterministic such that \( \vec{x} = \vec{f}_\theta(\vec{z}) \) and \( \vec{z} = \vec{f}_\theta^{-1}(\vec{x}) \). One example for such functions is a linear map. Then, change of variables
@@ -2200,18 +2200,18 @@
 			is used to define the distributions. In normalizing flows, multiple of these transformations are composed with each other to build complex structures and distributions.
 
 			Learning is again done by maximizing the log-likelihood and exact likelihood-evaluation is possible by design. For sampling, forward sampling can be applied straightforwardly. Also, the latent representation can be inferred using the inverse transformation.
-		% end
-	% end
+			% end
+			% end
 
 	\section{Likelihood-Free}
 		Opposed to likelihood-based models, \emph{likelihood-free} methods do not rely on the computation of a likelihood for learning.
 
 		\subsection{Generative Adversarial Networks}
 			\emph{Generate adversarial networks} (GANs) feature two neural distributions: a generator trying to generate fake images and a discriminator trying to distinguish fake and real images. By training both in an alternating minimax fashion, the generator learns to generate better and better images while the discriminator gets better at differentiating them.
-		% end
-	% end
+			% end
+			% end
 
 	\section{Applications in Scientific Discovery}
 		Generative models have various applications, e.g., causal discovery and inference, model-based reinforcement learning, scientific discovery. But there are still various open questions, e.g., evaluation metrics for sampling and bias and fairness in generative models.
-	% end
-% end
+		% end
+		% end

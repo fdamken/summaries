@@ -26,14 +26,14 @@
 			\caption{Illustration of the model predictive control cycle.}
 			\label{fig:mpcCycle}
 		\end{figure}
-	% end
+		% end
 
 	\section{What is Machine Learning?}
-	   	While there is no unified definition of machine learning, it is often used to describe systems that use a bunch of data to find relations/patterns/connections/\dots in them and to extract general rules. Typical methods are neural networks, Gaussian processes, support vector machines, and many more. In control, the applications of machine learning are twofold: first, it can be used to find a model and use the model in a model-based controller (supervised learning and regression); second, this step can also be skipped and ML can be applied directly as the controller (usually covered in reinforcement learning).
+		While there is no unified definition of machine learning, it is often used to describe systems that use a bunch of data to find relations/patterns/connections/\dots in them and to extract general rules. Typical methods are neural networks, Gaussian processes, support vector machines, and many more. In control, the applications of machine learning are twofold: first, it can be used to find a model and use the model in a model-based controller (supervised learning and regression); second, this step can also be skipped and ML can be applied directly as the controller (usually covered in reinforcement learning).
 
-	   	Machine learning for MPC is covered in detail in \autoref{c:ml}.
-	% end
-% end
+		Machine learning for MPC is covered in detail in \autoref{c:ml}.
+		% end
+		% end
 
 \chapter{Preliminaries}
 	This chapter covers some preliminaries required to understand the upcoming chapters.
@@ -47,9 +47,9 @@
 			\subsubsection{Time-Continuous}
 				A time-continuous nonlinear system is represented by an (ordinary) initial value problem
 				\begin{align}
-					\dot{\vec{x}} &= \vec{f}(\vec{x}, \vec{u}; t) &
-					\vec{y} &= \vec{h}(\vec{x}, \vec{u}; t) &
-					\vec{x}(t_0) &= \vec{x}_0
+					\dot{\vec{x}} & = \vec{f}(\vec{x}, \vec{u}; t) &
+					\vec{y}       & = \vec{h}(\vec{x}, \vec{u}; t) &
+					\vec{x}(t_0)  & = \vec{x}_0
 				\end{align}
 				where \(\vec{x}\) are the states, \(\vec{u}\) is the control input, \(\vec{y}\) are the observations, and \(t\) is the time. If \(\vec{f}\) or \(\vec{h}\) is \(t\)-dependent, the system is called \emph{time-variant}, otherwise it is called \emph{time-invariant}. If \(\vec{f}\) and \(\vec{h}\) are linear functions \( \vec{f}(\vec{x}, \vec{u}; t) = \mat{A}(t) \vec{x} + \mat{B}(t) \vec{u} \) and \( \vec{h}(\vec{x}, \vec{u}; t) = \mat{C}(t) \vec{x} + \mat{D}(t) \vec{u} \), the system is called \emph{linear} with state dynamics matrix \(\mat{A}\), control matrix \(\mat{B}\), output/observation matrix \(\mat{C}\), and control influence matrix \(\mat{D}\).
 
@@ -62,13 +62,13 @@
 					\vec{f}(\vec{x}, \vec{u}; t) \approx \vec{f}(\bar{\vec{x}}, \bar{\vec{u}}; t) + \Biggl( \pdv{\vec{f}}{\vec{x}}\bigg\vert_{\vec{x} = \bar{\vec{x}}} \Biggr) (\vec{x} - \bar{\vec{x}}) + \Biggl( \pdv{\vec{f}}{\vec{u}}\bigg\vert_{\vec{u} = \bar{\vec{u}}} \Biggr) (\vec{u} - \bar{\vec{u}})
 				\end{equation}
 				By cutting off the higher-order terms, this yields a linear approximation.
-			% end
+				% end
 
 			\subsubsection{Time-Discrete}
 				A \emph{time-discrete} nonlinear system is represented by a dynamics equation
 				\begin{align}
-					\vec{x}_{k + 1} &= \vec{f}(\vec{x}_k, \vec{u}_k; k) &
-					\vec{y}_k &= \vec{h}(\vec{x}_k, \vec{u}_k; k)
+					\vec{x}_{k + 1} & = \vec{f}(\vec{x}_k, \vec{u}_k; k) &
+					\vec{y}_k       & = \vec{h}(\vec{x}_k, \vec{u}_k; k)
 				\end{align}
 				with an initial value \(\vec{x}_0\). Time-variant and -invariant systems as well as linear models are defined analogous to time-continuous systems. Again, linear time-invariant models can be solved in closed form:
 				\begin{equation}
@@ -81,8 +81,8 @@
 					\vec{x}_{k + 1} \approx \vec{x}_k + h \dot{x}
 				\end{equation}
 				This is, in fact, equivalent to Euler's method for solving an initial value problem.
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{Stability} % 2.29, 12.4
 			One of the fundamental properties studied in dynamical systems theory is \emph{stability}. Stability describes the asymptotic behavior of a system: a system is either asymptotically stable, instable, or marginally stable. All of these variants can also occur in a \emph{ringing} configuration where the system oscillates between different values (see \autoref{fig:stability}). Usually, the goal of control is to stabilize an unstable system.
@@ -109,12 +109,12 @@
 				By introducing feedback-control \( \vec{u}_k = -\mat{K} \vec{x} \) with a \emph{gain matrix} \(\mat{K}\), the eigenvalues of a dynamical systems are characterized by
 				\begin{equation}
 					\vec{x}_{k + 1}
-						= \mat{A} \vec{x}_k + \mat{B} \vec{u}_k
-						= \mat{A} \vec{x}_k - \mat{B} \mat{K} \vec{x}_k
-						= \underbrace{(\mat{A} - \mat{B} \mat{K})}_{\eqqcolon\, \tilde{\mat{A}}} \vec{x}_k.
+					= \mat{A} \vec{x}_k + \mat{B} \vec{u}_k
+					= \mat{A} \vec{x}_k - \mat{B} \mat{K} \vec{x}_k
+					= \underbrace{(\mat{A} - \mat{B} \mat{K})}_{\eqqcolon\, \tilde{\mat{A}}} \vec{x}_k.
 				\end{equation}
 				Hence, the eigenvalues (also called \emph{poles}) can be placed arbitrarily by modifying \(\mat{K}\) and henceforth \(\tilde{\mat{A}}\) which defines stability.
-			% end
+				% end
 
 			\subsubsection{Lyapunov Stability and Lyapunov Function}
 				For nonlinear systems, multiple or even infinite or no equilibrium points might exist, making characterization of stability difficult. One option is \emph{Lyapunov stability}:
@@ -151,8 +151,8 @@
 				\end{theorem}
 
 				However, finding these Lyapunov functions is generally hard. For systems derived from first order principles, the energy of the system is generally a good candidate for a Lyapunov function worth checking. Other methods for checking stability are, for example, Nyquist and Routh-Hurwitz stability.
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{Detectability, Observability, Controllability, and Stabilizability}
 			As seen before, the eigenvalues of linear systems can be placed using a linear control law. However, being able to control a system like this has some requirements: first, the system must be \emph{observable} (i.e., the states must be known, either by observing them directly of by reconstructing them from the measurements). Second, the system must be \emph{controllable} (i.e., the states must be directly or indirectly influenced by the control inputs). As milder condition to stabilize a system is stabilizability requiring that at least the unstable states must be influenceable\footnote{Note that stabilizability is milder as it does not allow to steer the system to arbitrary states.}.
@@ -169,10 +169,10 @@
 				\begin{equation}
 					\rank
 					\begin{bmatrix}
-						\mat{C} \\
-						\mat{C} \mat{A} \\
-						\mat{C} \mat{A}^2 \\
-						\vdots \\
+						\mat{C}                 \\
+						\mat{C} \mat{A}         \\
+						\mat{C} \mat{A}^2       \\
+						\vdots                  \\
 						\mat{C} \mat{A}^{n - 2} \\
 						\mat{C} \mat{A}^{n - 1}
 					\end{bmatrix}
@@ -185,10 +185,10 @@
 				\begin{equation}
 					\rank
 					\begin{bmatrix}
-						\mat{B} &
-						\mat{A} \mat{B} &
-						\mat{A}^2\, \mat{B} &
-						\cdots &
+						\mat{B}                   &
+						\mat{A} \mat{B}           &
+						\mat{A}^2\, \mat{B}       &
+						\cdots                    &
 						\mat{A}^{n - 2}\, \mat{B} &
 						\mat{A}^{n - 1}\, \mat{B}
 					\end{bmatrix}
@@ -196,8 +196,8 @@
 				\end{equation}
 				The system is stabilizable iff \( \rank \begin{bmatrix} \lambda \mat{I} - \mat{A} & \mat{b} \end{bmatrix} = n \).
 			\end{theorem}
-		% end
-	% end
+			% end
+			% end
 
 	\section{Linear Quadratic Regulator}
 		This section introduces the linear quadratic regulator (LQR), an unconstrained optimal control method for simple linear systems. Of course, to perform optimal control, a notion of \emph{optimality} has to be defined. This definition also defines the overall objective of the controller. Some notions are:
@@ -211,14 +211,14 @@
 		\subsection{Cost Functions}
 			As seen already, the cost function is the core component of an optimal control problem defining \emph{optimality}. Some examples for cost functions are
 			\begin{align}
-				J &= E(\vec{x}(t_f)) &
-				J &= t_f,\, \vec{x}(t_f) = \vec{x}_d &
-				J &= \sum_{k = 1}^{N - 1} L\bigl( \vec{u}_k \bigr) \simeq \int_{t_0}^{t_e}\! L\bigl( \vec{u}(\tau) \bigr) \dd{\tau}
+				J & = E(\vec{x}(t_f))                                                                                                &
+				J & = t_f,\, \vec{x}(t_f) = \vec{x}_d                                                                                &
+				J & = \sum_{k = 1}^{N - 1} L\bigl( \vec{u}_k \bigr) \simeq \int_{t_0}^{t_e}\! L\bigl( \vec{u}(\tau) \bigr) \dd{\tau}
 			\end{align}
 			encoding a terminal cost, minimum time, and minimum energy, respectively (from left to right). The last cost has to be augmented for continuous problems by replacing the sum with an integral, indicated by \( \simeq \). Note that these functions can be combined, e.g., by defining an energy cost and a terminal cost. Also note that \(L\) in the energy cost is pretty general and might even represent quantities aside from energy.
 
 			In a \emph{regulation}, the desired setpoint \(\vec{x}_d\) is constant (and usually zero by shifting the coordinates appropriately) and does not depend on time. The goal is therefore to stabilize the system at the desired state. With \emph{tracking}, the setpoint is time-variant and the goal is to steer the system to follow the trajectory (trajectory tracking).
-		% end
+			% end
 
 		\subsection{LQR Formulation}
 			In the LQR setting, a linear time-discrete system along with a quadratic cost function
@@ -228,14 +228,14 @@
 			with\footnote{For a matrix \(\mat{M}\), \( \mat{M} \succeq 0\) and \( \mat{M} \succ 0 \) mean that \(\mat{M}\) is (semi) positive definite.} \( \mat{Q} \succeq 0 \), \( \mat{R} \succ 0 \), \( \mat{S} \succ 0 \). Besides the dynamics \( \vec{x}_{k + 1} = \mat{A}_k \vec{x}_k + \mat{B}_k \vec{u} \), no further constraints are considered. The optimal control problem is now framed as follows (with \( \tilde{\vec{u}} = \vec{u}_{1:N - 1} = \{ \vec{u}_1, \vec{u}_2, \dots, \vec{u}_{N - 1} \} \)):
 			\begin{align}
 				\min_{\tilde{\vec{u}}}\; & \vec{x}_N^\transposed \mat{S} \vec{x}_N + \sum_{k = 1}^{N - 1} \vec{x}_k^\transposed \mat{Q} \vec{x}_k + \vec{u}_k^\transposed \mat{R} \vec{u}_k \\
-				\text{s.t.}\qquad&
-					\begin{aligned}
-						\vec{x}_{k + 1} &= \mat{A}_k \vec{x}_k + \mat{B}_k \vec{u}_k
-					\end{aligned}
+				\text{s.t.}\qquad        &
+				\begin{aligned}
+					\vec{x}_{k + 1} & = \mat{A}_k \vec{x}_k + \mat{B}_k \vec{u}_k
+				\end{aligned}
 				\label{eqn:lqr}
 			\end{align}
 			In the upcoming sections, this problem is solved in two different fashions.
-		% end
+			% end
 
 		\subsection{Batch Optimization}
 			\label{subsec:batchOpt}
@@ -243,44 +243,44 @@
 			The straightforward approach for solving \eqref{eqn:lqr} in the time-invariant case is to use batch optimization over the variables \(\tilde{\vec{u}}\) by treating them as a function of the initial state \(\vec{x}_0\) by exploiting the closed form solution \eqref{eqn:discreteClosedForm} and writing it in vector form:
 			\begin{equation}
 				\underbrace{\begin{bmatrix}
-					\vec{x}_0 \\
-					\vec{x}_1 \\
-					\vec{x}_2 \\
-					\vdots \\
-					\vec{x}_{N - 1} \\
-					\vec{x}_N
-				\end{bmatrix}}_{\tilde{\vec{x}} \,\coloneqq}
+						\vec{x}_0       \\
+						\vec{x}_1       \\
+						\vec{x}_2       \\
+						\vdots          \\
+						\vec{x}_{N - 1} \\
+						\vec{x}_N
+					\end{bmatrix}}_{\tilde{\vec{x}} \,\coloneqq}
 				=
 				\underbrace{\begin{bmatrix}
-					\mat{I} \\
-					\mat{A} \\
-					\mat{A}^2 \\
-					\vdots \\
-					\mat{A}^{N - 1} \\
-					\mat{A}^N
-				\end{bmatrix}}_{\tilde{\mat{A}} \,\coloneqq}
+						\mat{I}         \\
+						\mat{A}         \\
+						\mat{A}^2       \\
+						\vdots          \\
+						\mat{A}^{N - 1} \\
+						\mat{A}^N
+					\end{bmatrix}}_{\tilde{\mat{A}} \,\coloneqq}
 				\vec{x}_0
 				+
 				\underbrace{\begin{bmatrix}
-					\mat{O}                   & \cdots                    & \cdots                    & \cdots  & \mat{O} \\
-					\mat{B}                   & \mat{O}                   & \cdots                    & \cdots  & \mat{O} \\
-					\mat{A} \mat{B}           & \mat{B}                   & \mat{O}                   & \cdots  & \mat{O} \\
-					\vdots                    & \ddots                    & \ddots                    & \ddots  & \vdots  \\
-					\mat{A}^{N - 2}\, \mat{B} & \mat{A}^{N - 3}\, \mat{B} & \ddots                    & \mat{B} & \mat{O} \\
-					\mat{A}^{N - 1}\, \mat{B} & \mat{A}^{N - 2}\, \mat{B} & \mat{A}^{N - 3}\, \mat{B} & \cdots  & \mat{B}
-				\end{bmatrix}}_{\tilde{\mat{B}} \,\coloneqq}
+						\mat{O}                   & \cdots                    & \cdots                    & \cdots  & \mat{O} \\
+						\mat{B}                   & \mat{O}                   & \cdots                    & \cdots  & \mat{O} \\
+						\mat{A} \mat{B}           & \mat{B}                   & \mat{O}                   & \cdots  & \mat{O} \\
+						\vdots                    & \ddots                    & \ddots                    & \ddots  & \vdots  \\
+						\mat{A}^{N - 2}\, \mat{B} & \mat{A}^{N - 3}\, \mat{B} & \ddots                    & \mat{B} & \mat{O} \\
+						\mat{A}^{N - 1}\, \mat{B} & \mat{A}^{N - 2}\, \mat{B} & \mat{A}^{N - 3}\, \mat{B} & \cdots  & \mat{B}
+					\end{bmatrix}}_{\tilde{\mat{B}} \,\coloneqq}
 				\underbrace{\begin{bmatrix}
-					\vec{u}_0 \\
-					\vec{u}_1 \\
-					\vec{u}_2 \\
-					\vdots \\
-					\vec{u}_{N - 1}
-				\end{bmatrix}}_{\tilde{\vec{u}} \,\coloneqq}
+						\vec{u}_0 \\
+						\vec{u}_1 \\
+						\vec{u}_2 \\
+						\vdots    \\
+						\vec{u}_{N - 1}
+					\end{bmatrix}}_{\tilde{\vec{u}} \,\coloneqq}
 			\end{equation}
 			Using the matrices defined above, this can be written shortly as \( \tilde{\vec{x}} = \tilde{\mat{A}} \vec{x}_0 + \tilde{\mat{B}} \tilde{\vec{u}} \). Similarly, the cost function \eqref{eqn:lqrCost} can be reformulated as \( J(\vec{x}_0, \tilde{\vec{u}}) \propto \tilde{\vec{x}}^\transposed \tilde{\mat{Q}} \tilde{\vec{x}} + \tilde{\vec{u}}^\transposed \tilde{\mat{R}} \tilde{\vec{u}} \) with
 			\begin{align}
-				\tilde{\mat{Q}} &= \diag(\underbrace{\mat{Q}, \mat{Q}, \dots, \mat{Q}}_{N\text{ times}}, \mat{S}) &
-				\tilde{\mat{R}} &= \diag(\underbrace{\mat{R}, \mat{R}, \cdots, \mat{R}}_{N\text{ times}}).
+				\tilde{\mat{Q}} & = \diag(\underbrace{\mat{Q}, \mat{Q}, \dots, \mat{Q}}_{N\text{ times}}, \mat{S}) &
+				\tilde{\mat{R}} & = \diag(\underbrace{\mat{R}, \mat{R}, \cdots, \mat{R}}_{N\text{ times}}).
 			\end{align}
 			By plugging \(\tilde{\vec{x}}\) into this cost function, it can be solved in closed form, yielding the optimal control inputs
 			\begin{equation}
@@ -289,7 +289,7 @@
 			with \( \mat{H} = \tilde{\mat{B}}^\transposed \tilde{\mat{Q}} \tilde{\mat{B}} + \tilde{\mat{R}} \) and \( \mat{F} = \tilde{\mat{A}}^\transposed \tilde{\mat{Q}} \tilde{\mat{B}} \).
 
 			However, while this approach is simplistic, it a major caveat: no feedback is involved (the control signals just depend on the initial value, i.e., it is an open-look controller). Hence, if the real system deviates from the model, the control inputs might be suboptimal or even harmful. This problem is addressed by the next solution method which also exploits the special structure of the problem.
-		% end
+			% end
 
 		\subsection{Dynamic Programming}
 			As seen before, applying batch optimization---while being straightforward---is not ideal as the solution does not incorporate the system's feedback. An alternative approach is to use \emph{dynamic programming}. The underlying idea of dynamic programming is that partial trajectories of trajectories are optimal, too. In other words: a trajectory composed of partial optimal ones is optimal. A relevant quantity for solving LQR with this principle is the optimal \emph{cost to go}, also called the \emph{value function}:
@@ -315,15 +315,15 @@
 				-\dot{\mat{P}}(t) = \mat{P}(t) \mat{A} + \mat{A}^\transposed \mat{P}(t) - \mat{P}(t) \mat{B} \mat{R}^{-1\,} \mat{B}^\transposed \mat{P}(t) + \mat{Q}  \tag{CARE}\label{eqn:care}
 			\end{equation}
 			The optimal cost is again \( J_t^\ast\bigl(\vec{x}(t)\bigr) = \vec{x}^\transposed(t) \mat{P}(t) \vec{x}(t) \). For an infinite horizon, all of this becomes again time-invariant with \( \dot{\mat{P}} = \mat{O} \), turning \eqref{eqn:care} again into al algebraic equation.
-		% end
+			% end
 
 		\subsection{Stability}
 			\begin{theorem}[Stability of the Time-Discrete LQR with Infinite Horizon]
 				Consider a time-discrete linear system with quadratic cost where \( (\mat{A}, \mat{B}) \) is stabilizable and \( (\mat{A}, \mat{Q}^{1/2}) \) is detectable. Then the solution
 				\begin{align}
-					\vec{u}_k^\ast &= \mat{K} \vec{x}_k \\
-					\mat{K} &= -\bigl( \mat{B}^\transposed \mat{P} \mat{B} + \mat{R} \bigr)^{-1\,} \mat{B}^\transposed \mat{P} \mat{A} \\
-					\mat{P} &= \mat{Q} + \mat{A}^\transposed \mat{P} \mat{A} - \mat{A}^\transposed \mat{P} \mat{B} \bigl( \mat{R} + \mat{B}^\transposed \mat{P} \mat{B} \bigr)^{-1\,} \mat{B}^\transposed \mat{P} \mat{A}
+					\vec{u}_k^\ast & = \mat{K} \vec{x}_k                                                                                                                                                                          \\
+					\mat{K}        & = -\bigl( \mat{B}^\transposed \mat{P} \mat{B} + \mat{R} \bigr)^{-1\,} \mat{B}^\transposed \mat{P} \mat{A}                                                                                    \\
+					\mat{P}        & = \mat{Q} + \mat{A}^\transposed \mat{P} \mat{A} - \mat{A}^\transposed \mat{P} \mat{B} \bigl( \mat{R} + \mat{B}^\transposed \mat{P} \mat{B} \bigr)^{-1\,} \mat{B}^\transposed \mat{P} \mat{A}
 				\end{align}
 				of the optimal control problem asymptotically stabilizes the system \( \vec{x}_{k + 1} = \mat{A} \vec{x}_k + \mat{B} \vec{u}_k \).
 			\end{theorem}
@@ -332,8 +332,8 @@
 			\end{proof}
 
 			Note that for finite-horizon LQR, the optimal input is not necessarily stabilizing!
-		% end
-	% end
+			% end
+			% end
 
 	\section{Constrained Static Optimization}
 		\label{sec:staticOpt}
@@ -341,10 +341,10 @@
 		So far, optimal control has been considered without any constraints. However, most real systems have constraints (e.g., a car shall stay on the road, forces are limited, \dots). This section focuses on optimization with constraints in a \emph{static} setting, i.e., where the system does not evolve (it is not a \emph{dynamic} system). The general form of such an optimization problem is
 		\begin{align}
 			\min_{\vec{u} \,\in\, \R^n}\; & F(\vec{u}) \\
-			\text{s.t.}\qquad&
+			\text{s.t.}\qquad             &
 			\begin{aligned}[t]
-				\vec{G}(\vec{u}) &= \vec{0} \\
-				\vec{H}(\vec{u}) &\leq \vec{0}
+				\vec{G}(\vec{u}) & = \vec{0}    \\
+				\vec{H}(\vec{u}) & \leq \vec{0}
 			\end{aligned}
 		\end{align}
 		where \( F : \R^n \to \R \), \( \vec{G} : \R^n \to \R^m \), and \( \vec{H} : \R^n \to \R^p \) are the objective function, equality, and inequality constraints, respectively. The \(=\) and \(\leq\) in the constraints are element-wise (with a slight abuse of notation). A constraint is called \emph{active} if the solution \(\vec{u}^\ast\) causes the constraint to vanish (thus, equality constraints are always active and inequality constraints may be inactive).
@@ -390,12 +390,12 @@
 				\todo{Proof of global optimality of convex optimization problems.}
 
 				To check convexity of an optimization problem, it usually suffices to look at the objective and constraints separately due to the properties of convex sets, namely that the intersection of two convex sets is still convex. If all constraints are convex, their respective (sub-) level sets are convex too, and hence the feasibility set is convex.
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{Quadratic Programming}
 			If the objective function is a quadratic function \( J(\vec{u}) = \vec{u}^\transposed \mat{Q} \vec{u} + \vec{q}^\transposed \vec{u} + r \) with \( \mat{Q} \in \R^{n \times n} \), \( \mat{Q} \succeq 0 \), \( \vec{q} \in \R^n \), and \( r \in \R \) and the constraints are affine, the problem is called q \emph{quadratic program} (QP). For QPs, the optimal \(\vec{u}^\ast\) is either inside the feasible set or at its boundary. If the inequality constraints are quadratic and convex, too, the problem is called a \emph{quadratically constrained quadratic program} (QCQP) and the feasible set is an intersection of the ellipsoids defined by the constraints. Quadratic programs are a friendly class of problems for which many efficient solvers exist.
-		% end
+			% end
 
 		\subsection{Optimality Conditions for Constrained Optimization Problems} % 4.22
 			The optimality conditions for constrained optimization problems use the (generalized) Lagrangian:
@@ -411,11 +411,11 @@
 				Let \(\vec{u}^\ast\) be a (local) extrema of \(F\) subject to \( \vec{G}(\vec{u}^\ast) = \vec{0} \) and \( \vec{H}(\vec{u}^\ast) \leq \vec{0} \), then there exist Lagrangian multipliers \( \vec{\lambda}^\ast \) and \( \vec{\mu}^\ast \) such that all of the following hold:
 				\begin{equation}
 					\begin{aligned}
-						\grad_{\vec{u}} \mathcal{L}(\vec{u}^\ast, \vec{\lambda}^\ast, \vec{\mu}^\ast) &= \vec{0} \\
-						\grad_{\vec{\lambda}} \mathcal{L}(\vec{u}^\ast, \vec{\lambda}^\ast, \vec{\mu}^\ast) &= \vec{0} \\
-						\grad_{\vec{\mu}} \mathcal{L}(\vec{u}^\ast, \vec{\lambda}^\ast, \vec{\mu}^\ast) &\leq \vec{0} \\
-						\bigl(\vec{\mu}^\ast\bigr)^\transposed \vec{H}(\vec{u}^\ast) &= \vec{0} \\
-						\vec{\mu}^\ast &\geq \vec{0}
+						\grad_{\vec{u}} \mathcal{L}(\vec{u}^\ast, \vec{\lambda}^\ast, \vec{\mu}^\ast)       & = \vec{0}    \\
+						\grad_{\vec{\lambda}} \mathcal{L}(\vec{u}^\ast, \vec{\lambda}^\ast, \vec{\mu}^\ast) & = \vec{0}    \\
+						\grad_{\vec{\mu}} \mathcal{L}(\vec{u}^\ast, \vec{\lambda}^\ast, \vec{\mu}^\ast)     & \leq \vec{0} \\
+						\bigl(\vec{\mu}^\ast\bigr)^\transposed \vec{H}(\vec{u}^\ast)                        & = \vec{0}    \\
+						\vec{\mu}^\ast                                                                      & \geq \vec{0}
 					\end{aligned}  \tag{KKT}\label{eqn:kkt}
 				\end{equation}
 				For problems with strong duality, these conditions are also \emph{sufficient}.
@@ -427,7 +427,7 @@
 				\end{equation}
 				If this inequality is strict, this condition is also \emph{sufficient.}
 			\end{theorem}
-		% end
+			% end
 
 		\subsection{Numerical Solvers}
 			A variety of numerical solvers exist for constrained optimization problems, and especially fast solvers exist for QPs (e.g., Matlab's \texttt{quadprog} and \texttt{fmincon}). Some approaches are interior point, trust region, and active set, and the class of sequential quadratic programming (SQP) methods\footnote{See "Optimization of Static and Dynamic Systems" (\url{https://fabian.damken.net/summaries/cs/elective/ce/opt/}) for a more thorough study of numerical optimization techniques}.
@@ -435,9 +435,9 @@
 			SQP methods use a Taylor approximation of the objective (quadratic) and constraints (linear) to solve the optimization problem. By applying this method multiple times, it usually converges to a good local minimum. Another method for dealing with constraints is to reformulate them and integrate them into the objective by using barrier functions and penalty terms: penalty methods add a term \(\epsilon(\vec{u})\) to the objective that has a high values once a constraint is violated, forcing the optimizer to look elsewhere. Common choices for such a barrier term are logarithmic barrier functions and exact penalty functions. An alternative method is to allow the constraints to be violated. This is done by introducing a slack variable \( \vec{H}(\vec{u}) \leq \epsilon \) and penalize it in the objective with a function \( \Theta(\epsilon) \), e.g., a quadratic function in \(\epsilon\)
 
 			\todo{Numerical Solvers; 6.23, 6.24, ..., 6.32}
-		% end
-	% end
-% end
+			% end
+			% end
+			% end
 
 \chapter{Nominal Model Predictive Control}
 	\label{c:mpcNominal}
@@ -447,24 +447,24 @@
 	The general MPC problem has the form
 	\begin{align}
 		\min_{\tilde{\vec{u}}}\; & \sum_{k = 0}^{\infty} F(\vec{x}_k, \vec{u}_k) \\
-		\text{s.t.}\quad&
-			\begin{aligned}[t]
-				\vec{x}_{k + 1} &= \vec{f}(\vec{x}_k, \vec{u}_k),\, \vec{x}_0 \\
-				\vec{x}_k &\in \mathcal{X} \\
-				\vec{u}_k &\in \mathcal{U}
-			\end{aligned}
+		\text{s.t.}\quad         &
+		\begin{aligned}[t]
+			\vec{x}_{k + 1} & = \vec{f}(\vec{x}_k, \vec{u}_k),\, \vec{x}_0 \\
+			\vec{x}_k       & \in \mathcal{X}                              \\
+			\vec{u}_k       & \in \mathcal{U}
+		\end{aligned}
 	\end{align}
 	with stage cost \(F\), the state dynamics \(\vec{f}\) with initial state \(\vec{x}_0\), and state and input constraints \(\mathcal{X}\) and \(\mathcal{U}\), respectively. With LQR-conformant cost, the optimal controller would be stabilizable in general. However, solving this problem with optimal control is impossible due to the constraints. Also, due to the infinite time horizon, it is not possible to apply batch normalization as the number of variables are infinite. The underlying idea of MPC now is to approximate the infinite horizon problem by a finite horizon problem
 	\begin{equation}
 		\begin{aligned}
 			\min_{\tilde{\vec{u}}}\, & E(\vec{x}_N) + \sum_{k = 0}^{N - 1} F(\vec{x}_k, \vec{u}_k) \\
-			\text{s.t.}\quad&
-				\begin{aligned}[t]
-					\vec{x}_{k + 1} &= \vec{f}(\vec{x}_k, \vec{u}_k),\, \vec{x}_0 \\
-					\vec{x}_k &\in \mathcal{X} \\
-					\vec{u}_k &\in \mathcal{U} \\
-					\vec{x}_N &\in \mathcal{E}
-				\end{aligned}
+			\text{s.t.}\quad         &
+			\begin{aligned}[t]
+				\vec{x}_{k + 1} & = \vec{f}(\vec{x}_k, \vec{u}_k),\, \vec{x}_0 \\
+				\vec{x}_k       & \in \mathcal{X}                              \\
+				\vec{u}_k       & \in \mathcal{U}                              \\
+				\vec{x}_N       & \in \mathcal{E}
+			\end{aligned}
 		\end{aligned}
 		\label{eqn:recedingHorizon}
 	\end{equation}
@@ -482,13 +482,13 @@
 		\begin{equation}
 			\begin{aligned}
 				\min_{\tilde{\vec{u}}}\; & \vec{x}_{i + N}^\transposed \mat{S} \vec{x}_{i + N} + \sum_{k = i}^{i + N - 1} \vec{x}_k^\transposed \mat{Q} \vec{x}_k + \vec{u}_k^\transposed \mat{R} \vec{u}_k \\
-				\text{s.t.}\quad &
-					\begin{aligned}[t]
-						\vec{x}_{k + 1} &= \mat{A} \vec{x}_k + \mat{B} \vec{u}_k,\, \vec{x}_i \\
-						\vec{x}_k &\in \mathcal{X} \\
-						\vec{u}_k &\in \mathcal{U} \\
-						\vec{x}_{i + N} &\in \mathcal{E}
-					\end{aligned}
+				\text{s.t.}\quad         &
+				\begin{aligned}[t]
+					\vec{x}_{k + 1} & = \mat{A} \vec{x}_k + \mat{B} \vec{u}_k,\, \vec{x}_i \\
+					\vec{x}_k       & \in \mathcal{X}                                      \\
+					\vec{u}_k       & \in \mathcal{U}                                      \\
+					\vec{x}_{i + N} & \in \mathcal{E}
+				\end{aligned}
 			\end{aligned}
 			\label{eqn:linearRecedingHorizon}
 		\end{equation}
@@ -500,9 +500,9 @@
 			\begin{definition}[Admissible Input Sequence]
 				An input sequence \( U(\vec{x}_0) \coloneqq (\vec{u}_0, \vec{u}_1, \dots, \vec{u}_{N - 1}) \) for an initial state \(\vec{x}_0\) is \emph{admissible} iff all constraints are satisfied:
 				\begin{align}
-					\forall k = 0, 1, \dots, N - 1 : \vec{u}_k &\in \mathcal{U} &
-					\forall k = 0, 1, \dots, N - 2 : \vec{f}(\vec{x}_k, \vec{u}_k) &\in \mathcal{X} &
-					\vec{f}(\vec{x}_{N - 1}, \vec{u}_{N - 1}) &\in \mathcal{E}
+					\forall k = 0, 1, \dots, N - 1 : \vec{u}_k                     & \in \mathcal{U} &
+					\forall k = 0, 1, \dots, N - 2 : \vec{f}(\vec{x}_k, \vec{u}_k) & \in \mathcal{X} &
+					\vec{f}(\vec{x}_{N - 1}, \vec{u}_{N - 1})                      & \in \mathcal{E}
 				\end{align}
 			\end{definition}
 			\begin{definition}[Feasible Initial Conditions]
@@ -529,7 +529,7 @@
 				\begin{proof}
 					\todo{Proof of stability of linear MPC; 5.25, 5.26, 5.27}
 				\end{proof}
-			% end
+				% end
 
 			\subsubsection{Terminal Inequality}
 				To fix the problems introduced by a terminal equality constraint (namely that ht feasible set of initial conditions is small), this section extends the terminal set to have more than a single value. For discusses which properties the terminal set has to fulfill, a few definitions are needed beforehand:
@@ -556,9 +556,9 @@
 				\begin{proof}
 					\todo{Proof of stability of linear MPC; 5.32, 5.35, 5.36}
 				\end{proof}
-			% end
-		% end
-	% end
+				% end
+				% end
+				% end
 
 	\section{Solving MPC Problem}
 		Until now, (nominal) MPC was studied from a rather theoretical perspective without actually solving it. This sections deals with two methods for reformulating a (linear) MPC problem in a quadratic program that can be solved efficiently. For nonlinear MPC, the prevalent approach is to approximate the problem locally to get quadratic optimization problems. Reformulating the optimal control problem as a QP can be done in two versions: with and without substituting the dynamics.
@@ -566,22 +566,22 @@
 		\subsection{Option A: Substituting the Dynamics}
 			This first idea is directly borrowed from batch optimization in LQR (\autoref{subsec:batchOpt}). To incorporate the linear constraints
 			\begin{align}
-				\mathcal{U} &= \{ \vec{u} : \mat{A}_u \vec{u} \leq \vec{b}_u \} &
-				\mathcal{X} &= \{ \vec{x} : \mat{A}_x \vec{x} \leq \vec{b}_x \} &
-				\mathcal{E} &= \{ \vec{x} : \mat{A}_f \vec{x} \leq \vec{b}_f \}
+				\mathcal{U} & = \{ \vec{u} : \mat{A}_u \vec{u} \leq \vec{b}_u \} &
+				\mathcal{X} & = \{ \vec{x} : \mat{A}_x \vec{x} \leq \vec{b}_x \} &
+				\mathcal{E} & = \{ \vec{x} : \mat{A}_f \vec{x} \leq \vec{b}_f \}
 			\end{align}
 			they are reformulated into a single constraint \( \tilde{\mat{H}} \vec{u} \leq \vec{w} + \mat{E} \vec{x}_0 \). In a first step, the constraints
 			\begin{align}
-				\mat{A}_u \vec{u}_k &\leq \vec{b}_u &
-				\mat{A}_x \vec{x}_k &\leq \vec{b}_x &
-				\mat{A}_f \vec{x}_N &\leq \vec{b}_f
+				\mat{A}_u \vec{u}_k & \leq \vec{b}_u &
+				\mat{A}_x \vec{x}_k & \leq \vec{b}_x &
+				\mat{A}_f \vec{x}_N & \leq \vec{b}_f
 			\end{align}
 			for \( k = 0, 1, \dots, N - 1 \) are batched using the matrices and vectors
 			\begin{align}
-				\tilde{\mat{A}}_u &= \diag(\underbrace{\mat{A}_u, \mat{A}_u, \dots, \mat{A}_u}_{N\text{ times}}) &
-				\tilde{\vec{b}}_u &= \bigl(\underbrace{\vec{b}_u^\transposed, \vec{b}_u^\transposed, \dots, \vec{b}_u^\transposed}_{N\text{ times}}\bigr)^\transposed \\
-				\tilde{\mat{A}}_x &= \diag(\underbrace{\mat{A}_x, \mat{A}_x, \dots, \mat{A}_x}_{N\text{ times}}, \mat{A}_f) &
-				\tilde{\vec{b}}_x &= \bigl(\underbrace{\vec{b}_x^\transposed, \vec{b}_x^\transposed, \dots, \vec{b}_x^\transposed}_{N\text{ times}}, \vec{b}_f^\transposed\bigr)^\transposed
+				\tilde{\mat{A}}_u & = \diag(\underbrace{\mat{A}_u, \mat{A}_u, \dots, \mat{A}_u}_{N\text{ times}})                                                                             &
+				\tilde{\vec{b}}_u & = \bigl(\underbrace{\vec{b}_u^\transposed, \vec{b}_u^\transposed, \dots, \vec{b}_u^\transposed}_{N\text{ times}}\bigr)^\transposed                          \\
+				\tilde{\mat{A}}_x & = \diag(\underbrace{\mat{A}_x, \mat{A}_x, \dots, \mat{A}_x}_{N\text{ times}}, \mat{A}_f)                                                                  &
+				\tilde{\vec{b}}_x & = \bigl(\underbrace{\vec{b}_x^\transposed, \vec{b}_x^\transposed, \dots, \vec{b}_x^\transposed}_{N\text{ times}}, \vec{b}_f^\transposed\bigr)^\transposed
 			\end{align}
 			yielding \( \tilde{\mat{A}}_u \tilde{\vec{u}} \leq \tilde{\vec{b}}_u \) and \( \tilde{\mat{A}}_x \tilde{\vec{x}} \leq \tilde{\vec{b}}_x \) with the usual abuse of notation. Note that the control constraints are already in the wanted form (with \( \vec{w} \triangleq \tilde{\vec{b}}_u \)). Reformulating the state constraint is simply by plugging in the (batched) state dynamics:
 			\begin{equation}
@@ -593,23 +593,23 @@
 			\end{equation}
 			Plugging it all together, the constraints are compactly represented as \( \tilde{\mat{H}} \vec{u} \leq \vec{w} + \mat{E} \vec{x}_0 \) with
 			\begin{align}
-				\tilde{\mat{H}} &= \begin{bmatrix} \tilde{\mat{A}}_u \\ \tilde{\mat{A}}_x \end{bmatrix} &
-				\vec{w} &= \begin{bmatrix} \tilde{\vec{b}}_u \\ \tilde{\vec{b}}_x \end{bmatrix} &
-				\mat{E} &= \begin{bmatrix} \mat{O} \\ \tilde{\mat{A}}_x \tilde{\mat{A}} \end{bmatrix}
+				\tilde{\mat{H}} & = \begin{bmatrix} \tilde{\mat{A}}_u \\ \tilde{\mat{A}}_x \end{bmatrix}       &
+				\vec{w}         & = \begin{bmatrix} \tilde{\vec{b}}_u \\ \tilde{\vec{b}}_x \end{bmatrix}       &
+				\mat{E}         & = \begin{bmatrix} \mat{O} \\ \tilde{\mat{A}}_x \tilde{\mat{A}} \end{bmatrix}
 			\end{align}
 			where \(\mat{O}\) are zeros such that \(\mat{E}\) has the appropriate size. After all of this, the QP to solve is as simple as
 			\begin{equation}
 				\begin{aligned}
 					\min_{\tilde{\vec{u}}}\; & \tilde{\vec{u}}^\transposed \mat{H} \tilde{\vec{u}} + 2 \vec{x}_0^\transposed \mat{F} \vec{u} + \vec{x}_0^\transposed \mat{G} \vec{x}_0 \\
-					\text{s.t.}\quad &
-						\begin{aligned}
-							\tilde{\mat{H}} \tilde{\vec{u}} &\leq \vec{w} + \mat{E} \vec{x}_0
-						\end{aligned}
+					\text{s.t.}\quad         &
+					\begin{aligned}
+						\tilde{\mat{H}} \tilde{\vec{u}} & \leq \vec{w} + \mat{E} \vec{x}_0
+					\end{aligned}
 				\end{aligned}
 				\label{eqn:qpA}
 			\end{equation}
 			with \( \mat{H} = \tilde{\mat{B}}^\transposed \tilde{\mat{Q}} \tilde{\mat{B}} + \tilde{\mat{R}} \), \( \mat{F} = \tilde{\mat{A}}^\transposed \tilde{\mat{Q}} \tilde{\mat{B}} \), and \( \mat{G} = \tilde{\mat{A}}^\transposed \tilde{\mat{Q}} \tilde{\mat{A}} \).
-		% end
+			% end
 
 		\subsection{Option B: Adding the Dynamics as Constraints}
 			The second approach is to extend the optimization variables by the states,
@@ -618,63 +618,63 @@
 			\end{equation}
 			and adding the dynamics as an equality constraint. With
 			\begin{align}
-				\mat{H}_\mathrm{eq} &=
-					\begin{bmatrix}
-						\mat{I}  &          &         &          &         & -\mat{B} &          &          &        &          \\
-						-\mat{A} & \mat{I}  &         &          &         &          & -\mat{B} &          &        &          \\
-						         & -\mat{A} & \mat{I} &          &         &          &          & -\mat{B} &        &          \\
-						         &          & \ddots  & \ddots   &         &          &          &          & \ddots &          \\
-						         &          &         & -\mat{A} & \mat{I} &          &          &          &        & -\mat{B}
-					\end{bmatrix} &
-				\mat{E}_\mathrm{eq} &=
-					\begin{bmatrix}
-						\mat{A} \\
-						\mat{O} \\
-						\vdots \\
-						\mat{O}
-					\end{bmatrix}
+				\mat{H}_\mathrm{eq}                                                                                        & =
+				\begin{bmatrix}
+					\mat{I}  &          &         &          &         & -\mat{B} &          &          &        &          \\
+					-\mat{A} & \mat{I}  &         &          &         &          & -\mat{B} &          &        &          \\
+					         & -\mat{A} & \mat{I} &          &         &          &          & -\mat{B} &        &          \\
+					         &          & \ddots  & \ddots   &         &          &          &          & \ddots &          \\
+					         &          &         & -\mat{A} & \mat{I} &          &          &          &        & -\mat{B}
+				\end{bmatrix} &
+				\mat{E}_\mathrm{eq}                                                                                        & =
+				\begin{bmatrix}
+					\mat{A} \\
+					\mat{O} \\
+					\vdots  \\
+					\mat{O}
+				\end{bmatrix}
 			\end{align}
 			the dynamics can be expressed as \( \mat{H}_\mathrm{eq} \vec{z} = \mat{E}_\mathrm{eq} \vec{x}_0 \) in term of the extended optimization variables \(\vec{z}\). Similarly, the state, terminal, and control constraints can be expressed as \( \mat{H}_\mathrm{in} \vec{z} \leq \vec{w} + \mat{E}_\mathrm{in} \vec{x}_0 \) with
 			\begin{align}
-				\mat{H}_\mathrm{in} &=
-					\begin{bmatrix}
-						\mat{O}           & \mat{O}           \\
-						\tilde{\mat{A}}_x & \mat{O}           \\
-						\mat{O}           & \tilde{\mat{A}}_u
-					\end{bmatrix} &
-				\vec{w}_\mathrm{in} &=
-					\begin{bmatrix}
-						\tilde{\vec{b}}_x \\
-						\tilde{\vec{b}}_u
-					\end{bmatrix} &
-				\mat{E}_\mathrm{in} &=
-					\begin{bmatrix}
-						-\mat{A}_x \\
-						\mat{O}    \\
-						\vdots     \\
-						\mat{O}
-					\end{bmatrix}
+				\mat{H}_\mathrm{in}                                       & =
+				\begin{bmatrix}
+					\mat{O}           & \mat{O}           \\
+					\tilde{\mat{A}}_x & \mat{O}           \\
+					\mat{O}           & \tilde{\mat{A}}_u
+				\end{bmatrix} &
+				\vec{w}_\mathrm{in}                                       & =
+				\begin{bmatrix}
+					\tilde{\vec{b}}_x \\
+					\tilde{\vec{b}}_u
+				\end{bmatrix}                     &
+				\mat{E}_\mathrm{in}                                       & =
+				\begin{bmatrix}
+					-\mat{A}_x \\
+					\mat{O}    \\
+					\vdots     \\
+					\mat{O}
+				\end{bmatrix}
 			\end{align}
 			and \(\tilde{\mat{A}}_x\) and \(\tilde{\mat{A}}_u\) defined as in option A. Finally, with \( \bar{\mat{H}} = \diag(\tilde{\mat{Q}}, \tilde{\mat{R}}) \), the QP is as follows:
 			\begin{equation}
 				\begin{aligned}
 					\min_{\vec{z}}\; & \vec{z}^\transposed \bar{\mat{H}} \vec{z} \\
 					\text{s.t.}\quad &
-						\begin{aligned}[t]
-							\mat{H}_\mathrm{eq} \vec{z} &= \mat{E}_\mathrm{eq} \vec{x}_0 \\
-							\mat{H}_\mathrm{in} \vec{z} &\leq \mat{E}_\mathrm{in} \vec{x}_0
-						\end{aligned}
+					\begin{aligned}[t]
+						\mat{H}_\mathrm{eq} \vec{z} & = \mat{E}_\mathrm{eq} \vec{x}_0    \\
+						\mat{H}_\mathrm{in} \vec{z} & \leq \mat{E}_\mathrm{in} \vec{x}_0
+					\end{aligned}
 				\end{aligned}
 				\label{eqn:qpB}
 			\end{equation}
 			A comparison of the two methods is given in the next section.
-		% end
+			% end
 
 		\subsection{Comparison of A and B}
 			Both presented versions, \eqref{eqn:qpA} and \eqref{eqn:qpB}, can be efficiently solved by QP solvers. The main difference is that option A has \(Nm\) variables (with \(m\) input dimensionality) and option B has \(N (n + m)\) variables (with \(n\) being the state dimensionality). While it seems that option A must be more efficient, option B has sparse cost and constraint functions while option A is dense. Note also that option B has the advantage that it can easily be applied to nonlinear MPC.
-		% end
-	% end
-% end
+			% end
+			% end
+			% end
 
 \chapter{Robust Model Predictive Control}
 	\label{c:mpcRobust}
@@ -691,8 +691,8 @@
 
 	For additive uncertainty, two types are covered in this summary: bounded and stochastic uncertainty (left and right, respectively):
 	\begin{align}
-		\vec{w}_k &\in \mathcal{W} &
-		\vec{w}_k &\sim \mathcal{N}(\vec{\mu}, \mat{\Sigma})
+		\vec{w}_k & \in \mathcal{W}                           &
+		\vec{w}_k & \sim \mathcal{N}(\vec{\mu}, \mat{\Sigma})
 	\end{align}
 	In the former case, the noise lies within a bounded set \(\mathcal{W}\) and it is possible to consider worst case scenarios as the disturbances have a maximum/minimum. The state predictions are then sets of states. For stochastic uncertainties, this is not possible as the Gaussian distribution is unbounded (even though very small/high deviations from the mean have low probability). Hence, predictions are distributions over values. This chapter covers bounded uncertainty as \emph{robust} MPC and \autoref{c:mpcStochastic} covers stochastic uncertainty as \emph{stochastic} MPC.
 
@@ -703,35 +703,35 @@
 	with the solution
 	\begin{equation}
 		\vec{x}_k
-			= \underbrace{\mat{A}^{k\,} \vec{x}_0 + \sum_{j = 0}^{k - 1} \mat{A}^{k - j - 1\,} \mat{B} \vec{u}_j}_{\vec{z}_k \,\coloneqq} + \sum_{j = 0}^{k - 1} \mat{A}^{k - j - 1\,} \vec{w}_j
-			= \vec{z}_k + \sum_{j = 0}^{k - 1} \mat{A}^{k - j - 1\,} \vec{w}_j.
+		= \underbrace{\mat{A}^{k\,} \vec{x}_0 + \sum_{j = 0}^{k - 1} \mat{A}^{k - j - 1\,} \mat{B} \vec{u}_j}_{\vec{z}_k \,\coloneqq} + \sum_{j = 0}^{k - 1} \mat{A}^{k - j - 1\,} \vec{w}_j
+		= \vec{z}_k + \sum_{j = 0}^{k - 1} \mat{A}^{k - j - 1\,} \vec{w}_j.
 		\label{eqn:discreteAdditiveUncertaintyClosedForm}
 	\end{equation}
 	\begin{proof}
 		Showing \eqref{eqn:discreteAdditiveUncertaintyClosedForm} is done by induction. The base case, \( k = 0 \), holds trivially. Similarly, \( k = 1 \) holds:
 		\begin{equation}
 			\vec{x}_1
-				= \mat{A}^{1\,} \vec{x}_0 + \sum_{j = 0}^{0} \mat{A}^{-j\,} \mat{B} \vec{u}_j + \sum_{j = 0}^{0} \mat{A}^{-j\,} \vec{w}_j
-				= \mat{A} \vec{x}_0 + \mat{A}^{0\,} \mat{B} \vec{u}_j + \mat{A}^{0\,} \vec{w}_j
-				= \mat{A} \vec{x}_0 + \mat{B} \vec{u}_j + \vec{w}_j
+			= \mat{A}^{1\,} \vec{x}_0 + \sum_{j = 0}^{0} \mat{A}^{-j\,} \mat{B} \vec{u}_j + \sum_{j = 0}^{0} \mat{A}^{-j\,} \vec{w}_j
+			= \mat{A} \vec{x}_0 + \mat{A}^{0\,} \mat{B} \vec{u}_j + \mat{A}^{0\,} \vec{w}_j
+			= \mat{A} \vec{x}_0 + \mat{B} \vec{u}_j + \vec{w}_j
 		\end{equation}
 		For the induction set, assume that \eqref{eqn:discreteAdditiveUncertaintyClosedForm} holds for some \(k\). It then follows that it also holds for \(k + 1\):
 		\begin{align}
 			\vec{x}_{k + 1}
-				&= \mat{A} \vec{x}_k + \mat{B} \vec{u}_k + \vec{w}_k \\
-				&= \mat{A} \biggl( \mat{A}^{k\,} \vec{x}_0 + \sum_{j = 0}^{k - 1} \mat{A}^{k - j - 1\,} \mat{B} \vec{u}_j + \sum_{j = 0}^{k - 1} \mat{A}^{k - j - 1\,} \vec{w}_j \biggr) + \mat{B} \vec{u}_k + \vec{w}_k \\
-				&= \mat{A}^{k + 1\,} \vec{x}_0 + \sum_{j = 0}^{k - 1} \mat{A}^{(k + 1) - j - 1\,} \mat{B} \vec{u}_j + \sum_{j = 0}^{k - 1} \mat{A}^{(k + 1) - j - 1\,} \vec{w}_j + \mat{B} \vec{u}_k + \vec{w}_k \\
-				&= \mat{A}^{k + 1\,} \vec{x}_0 + \sum_{j = 0}^{k - 1} \mat{A}^{(k + 1) - j - 1\,} \mat{B} \vec{u}_j + \sum_{j = 0}^{k - 1} \mat{A}^{(k + 1) - j - 1\,} \vec{w}_j + \mat{A}^{(k + 1) - k - 1} \vec{u}_k + \mat{A}^{(k + 1) - k - 1} \vec{w}_k \\
-				&= \mat{A}^{k + 1\,} \vec{x}_0 + \sum_{j = 0}^{k} \mat{A}^{(k + 1) - j - 1\,} \mat{B} \vec{u}_j + \sum_{j = 0}^{k} \mat{A}^{(k + 1) - j - 1\,} \vec{w}_j \\
+			 & = \mat{A} \vec{x}_k + \mat{B} \vec{u}_k + \vec{w}_k                                                                                                                                                                                         \\
+			 & = \mat{A} \biggl( \mat{A}^{k\,} \vec{x}_0 + \sum_{j = 0}^{k - 1} \mat{A}^{k - j - 1\,} \mat{B} \vec{u}_j + \sum_{j = 0}^{k - 1} \mat{A}^{k - j - 1\,} \vec{w}_j \biggr) + \mat{B} \vec{u}_k + \vec{w}_k                                     \\
+			 & = \mat{A}^{k + 1\,} \vec{x}_0 + \sum_{j = 0}^{k - 1} \mat{A}^{(k + 1) - j - 1\,} \mat{B} \vec{u}_j + \sum_{j = 0}^{k - 1} \mat{A}^{(k + 1) - j - 1\,} \vec{w}_j + \mat{B} \vec{u}_k + \vec{w}_k                                             \\
+			 & = \mat{A}^{k + 1\,} \vec{x}_0 + \sum_{j = 0}^{k - 1} \mat{A}^{(k + 1) - j - 1\,} \mat{B} \vec{u}_j + \sum_{j = 0}^{k - 1} \mat{A}^{(k + 1) - j - 1\,} \vec{w}_j + \mat{A}^{(k + 1) - k - 1} \vec{u}_k + \mat{A}^{(k + 1) - k - 1} \vec{w}_k \\
+			 & = \mat{A}^{k + 1\,} \vec{x}_0 + \sum_{j = 0}^{k} \mat{A}^{(k + 1) - j - 1\,} \mat{B} \vec{u}_j + \sum_{j = 0}^{k} \mat{A}^{(k + 1) - j - 1\,} \vec{w}_j                                                                                     \\
 		\end{align}
 		Hence, \eqref{eqn:discreteAdditiveUncertaintyClosedForm} is the solution of \eqref{eqn:discreteAdditiveUncertainty}.
 	\end{proof}
 
 	With the solution \eqref{eqn:discreteAdditiveUncertaintyClosedForm} the question of how to compute the cost function remains as the uncertainties are unknown. Let \( \tilde{J}(\vec{x}_k, \tilde{\vec{u}}, \tilde{\vec{w}}) \) be the \emph{uncertain} cost-to-go (where \( \tilde{\vec{w}} \) contains all future uncertainties similar), there are three fundamental methods to form a certain cost-to-go:
 	\begin{align}
-		J(\vec{x}^i, \tilde{\vec{u}}) &= \tilde{J}(\vec{x}^i, \tilde{\vec{u}}, \vec{0}) &
-		J(\vec{x}^i, \tilde{\vec{u}}) &= \max_{\tilde{\vec{w}} \,\in\, \mathcal{W}}\, \tilde{J}(\vec{x}^i, \tilde{\vec{u}}, \tilde{\vec{w}}) &
-		J(\vec{x}^i, \tilde{\vec{u}}) &= \E_{\tilde{\vec{w}}}\bigl[ \tilde{J}(\vec{x}^i, \tilde{\vec{u}}, \tilde{\vec{w}}) \bigr]
+		J(\vec{x}^i, \tilde{\vec{u}}) & = \tilde{J}(\vec{x}^i, \tilde{\vec{u}}, \vec{0})                                                      &
+		J(\vec{x}^i, \tilde{\vec{u}}) & = \max_{\tilde{\vec{w}} \,\in\, \mathcal{W}}\, \tilde{J}(\vec{x}^i, \tilde{\vec{u}}, \tilde{\vec{w}}) &
+		J(\vec{x}^i, \tilde{\vec{u}}) & = \E_{\tilde{\vec{w}}}\bigl[ \tilde{J}(\vec{x}^i, \tilde{\vec{u}}, \tilde{\vec{w}}) \bigr]
 		\label{eqn:certainCostFunctions}
 	\end{align}
 	From left to right, these are called \emph{nominal}, \emph{expected}, and \emph{worst case} cost. Note that the worst case and expected cost are only applicable in bounded and stochastic settings, respectively.
@@ -741,18 +741,18 @@
 		\begin{equation}
 			\begin{aligned}
 				\min_{\tilde{\vec{u}}} \max_{\tilde{\vec{w}}}\; & \tilde{J}(\vec{x}^i, \tilde{\vec{u}}, \tilde{\vec{w}}) \\
-				\text{s.t.}\quad &
-					\begin{aligned}[t]
-						\vec{x}_{k + 1} &= \mat{A} \vec{x}_k + \mat{B} \vec{u}_k + \vec{w}_k,\, \vec{x}_0 = \vec{x}^i \\
-						\vec{x}_k &\in \mathcal{X} \\
-						\vec{u}_k &\in \mathcal{U} \\
-						\vec{x}_N &\in \mathcal{E} \\
-						\vec{w}_k &\in \mathcal{W}
-					\end{aligned}
+				\text{s.t.}\quad                                &
+				\begin{aligned}[t]
+					\vec{x}_{k + 1} & = \mat{A} \vec{x}_k + \mat{B} \vec{u}_k + \vec{w}_k,\, \vec{x}_0 = \vec{x}^i \\
+					\vec{x}_k       & \in \mathcal{X}                                                              \\
+					\vec{u}_k       & \in \mathcal{U}                                                              \\
+					\vec{x}_N       & \in \mathcal{E}                                                              \\
+					\vec{w}_k       & \in \mathcal{W}
+				\end{aligned}
 			\end{aligned}
 		\end{equation}
 		While this formulation is straightforward and easy to implement, it is extremely hard to solve due to the nested optimizations. Hence, it is slow and hardly applicable in real-time and thus has very few practical applications. However, current research on approximations on bilevel optimization might enhance applicability in the future.
-	% end
+		% end
 
 	\section{Robust Open-Loop MPC}
 		\label{sec:robustOpenLoopMpc}
@@ -784,13 +784,13 @@
 		\begin{equation}
 			\begin{aligned}
 				\min_{\tilde{\vec{u}}}\; & E(\vec{z}_N) + \sum_{k = 0}^{N - 1} F(\vec{z}_k, \vec{u}_k) \\
-				\text{s.t.}\quad&
-					\begin{aligned}[t]
-						\vec{z}_{k + 1} &= \mat{A} \vec{z}_k + \mat{B} \vec{u}_k,\, \vec{z}_0 = \vec{x}^i \\
-						\vec{z}_k &\in \mathcal{X} \ominus \bigl( \mathcal{W} \oplus \mat{A} \mathcal{W} \oplus \mat{A}^{2\,} \mathcal{W} \oplus \cdots \oplus \mat{A}^{k - 1\,} \mathcal{W} \bigr) \\
-						\vec{z}_N &\in \mathcal{E} \ominus \bigl( \mathcal{W} \oplus \mat{A} \mathcal{W} \oplus \mat{A}^{2\,} \mathcal{W} \oplus \cdots \oplus \mat{A}^{N - 1\,} \mathcal{W} \bigr) \\
-						\vec{u}_k &\in \mathcal{U}
-					\end{aligned}
+				\text{s.t.}\quad         &
+				\begin{aligned}[t]
+					\vec{z}_{k + 1} & = \mat{A} \vec{z}_k + \mat{B} \vec{u}_k,\, \vec{z}_0 = \vec{x}^i                                                                                                 \\
+					\vec{z}_k       & \in \mathcal{X} \ominus \bigl( \mathcal{W} \oplus \mat{A} \mathcal{W} \oplus \mat{A}^{2\,} \mathcal{W} \oplus \cdots \oplus \mat{A}^{k - 1\,} \mathcal{W} \bigr) \\
+					\vec{z}_N       & \in \mathcal{E} \ominus \bigl( \mathcal{W} \oplus \mat{A} \mathcal{W} \oplus \mat{A}^{2\,} \mathcal{W} \oplus \cdots \oplus \mat{A}^{N - 1\,} \mathcal{W} \bigr) \\
+					\vec{u}_k       & \in \mathcal{U}
+				\end{aligned}
 			\end{aligned}
 		\end{equation}
 		This problem is numerically tractable, incorporates the constraints, and does not have nested optimizations. Going even further, the tightened constraints can be calculated offline before the optimization! To study recursive feasibility, again some definitions have to be imposed:
@@ -798,7 +798,7 @@
 			A set \(S\) is \emph{robustly positively invariant} for a system \( \vec{x}_{k + 1} = \vec{f}(\vec{x}_k, \vec{w}_k) \) if \( \vec{f}(\vec{x}, \vec{w}) \in \mathcal{S} \) holds for all \( \vec{x} \in \mathcal{S} \) and \( \vec{w} \in \mathcal{W} \).
 		\end{definition}
 		By choose the terminal set to be robustly positively invariant, feasibility can be shown: the computed trajectory is feasible for any disturbances, and hence it is feasible for the actual observation. However, the primary problem of robust open-loop is that the feasible initial set becomes very small or even empty as the uncertainty prediction becomes very wide. Hence, the "tube" of feasible values becomes small.
-	% end
+		% end
 
 	\section{Tube MPC}
 		\label{sec:tubeMpc}
@@ -813,19 +813,19 @@
 		To compute the error, its dynamics have to be considered. Let the error be \( \vec{e}_k \coloneqq \vec{x}_k - \vec{z}_k \). Then its dynamics are given through the state dynamics (with, as defined above, \( \vec{u}_k = \vec{v}_k + \vec{\mu}_k \) and \( \vec{\mu}_k = \mat{K} \vec{e}_k \)):
 		\begin{align}
 			\vec{e}_{k + 1}
-				&= \vec{x}_{k + 1} - \vec{z}_{k + 1}
-				 = \mat{A} \vec{x}_k + \mat{B} \vec{u}_k + \vec{w}_k - \mat{A} \vec{z}_k - \mat{B} \vec{v}_k
-				 = \mat{A} \vec{e}_k + \mat{B} \vec{u}_k + \vec{w}_k - \mat{B} \vec{v}_k \\
-				&= \mat{A} \vec{e}_k + \mat{B} (\vec{v}_k + \vec{\mu}_k) + \vec{w}_k - \mat{B} \vec{v}_k
-				 = \mat{A} \vec{e}_k + \mat{B} \vec{\mu}_k + \vec{w}_k
-				 = \mat{A} \vec{e}_k + \mat{B} \mat{K} \vec{e}_k + \vec{w}_k
-				 = (\mat{A} + \mat{B} \mat{K}) \vec{e}_k + \vec{w}_k.
+			 & = \vec{x}_{k + 1} - \vec{z}_{k + 1}
+			= \mat{A} \vec{x}_k + \mat{B} \vec{u}_k + \vec{w}_k - \mat{A} \vec{z}_k - \mat{B} \vec{v}_k
+			= \mat{A} \vec{e}_k + \mat{B} \vec{u}_k + \vec{w}_k - \mat{B} \vec{v}_k                    \\
+			 & = \mat{A} \vec{e}_k + \mat{B} (\vec{v}_k + \vec{\mu}_k) + \vec{w}_k - \mat{B} \vec{v}_k
+			= \mat{A} \vec{e}_k + \mat{B} \vec{\mu}_k + \vec{w}_k
+			= \mat{A} \vec{e}_k + \mat{B} \mat{K} \vec{e}_k + \vec{w}_k
+			= (\mat{A} + \mat{B} \mat{K}) \vec{e}_k + \vec{w}_k.
 		\end{align}
 		Now \(\mat{K}\) is chosen such that \( (\mat{A} + \mat{B} \mat{K}) \) is stable, i.e., that the error does not grow indefinitely. Since \( (\mat{A} + \mat{B} \mat{K}) \) is stable and the noise is bounded, the set \( \mat{R}_k \) with \( \vec{e}_k \in \mat{R}_k \) can be computed as
 		\begin{equation}
 			\mathcal{R}_k
-				= \mathcal{W} \oplus (\mat{A} + \mat{B} \mat{K}) \mathcal{W} \oplus (\mat{A} + \mat{B} \mat{K})^{2\,} \mathcal{W} \oplus \cdots \oplus (\mat{A} + \mat{B} \mat{K})^{k - 1\,} \mathcal{W}
-				= \bigoplus_{j = 0}^{k - 1}\, (\mat{A} + \mat{B} \mat{K})^{j\,} \mathcal{W}
+			= \mathcal{W} \oplus (\mat{A} + \mat{B} \mat{K}) \mathcal{W} \oplus (\mat{A} + \mat{B} \mat{K})^{2\,} \mathcal{W} \oplus \cdots \oplus (\mat{A} + \mat{B} \mat{K})^{k - 1\,} \mathcal{W}
+			= \bigoplus_{j = 0}^{k - 1}\, (\mat{A} + \mat{B} \mat{K})^{j\,} \mathcal{W}
 		\end{equation}
 		assuming that \( \vec{e}_0 = \vec{0} \). Instead of using the time-variant set \(\mathcal{R}_k\), it is also possible to calculate the outer hull of all \(\mathcal{R}_k\), the \emph{minimum} robust invariant set, via
 		\begin{equation}
@@ -837,20 +837,20 @@
 		\begin{equation}
 			\begin{aligned}
 				\min_{\tilde{\vec{v}}}\; & E(\vec{z}_N) + \sum_{k = 0}^{N - 1} F(\vec{z}_k, \vec{v}_k) \\
-				\text{s.t.}\quad&
-					\begin{aligned}[t]
-						\vec{z}_{k + 1} &= \mat{A} \vec{z}_k + \mat{B} \vec{v}_k,\, \vec{z}_0 = \vec{x}^i \\
-						\vec{z}_k &\in \mathcal{X} \ominus \mathcal{R} \\
-						\vec{z}_N &\in \mathcal{E} \\
-						\vec{u}_k &\in \mathcal{U} \ominus \mat{K} \mathcal{R}
-					\end{aligned}
+				\text{s.t.}\quad         &
+				\begin{aligned}[t]
+					\vec{z}_{k + 1} & = \mat{A} \vec{z}_k + \mat{B} \vec{v}_k,\, \vec{z}_0 = \vec{x}^i \\
+					\vec{z}_k       & \in \mathcal{X} \ominus \mathcal{R}                              \\
+					\vec{z}_N       & \in \mathcal{E}                                                  \\
+					\vec{u}_k       & \in \mathcal{U} \ominus \mat{K} \mathcal{R}
+				\end{aligned}
 			\end{aligned}
 		\end{equation}
 		is solved in every instance \(i\), and subsequently the control input \( \vec{u}^i = \vec{v}_0^\ast + \mat{K} (\vec{x}^i - \vec{z}^i) \) is applied to the system. Note that the gain \(\mat{K}\) and all constraint sets can be computed beforehand as they are independent of \(\vec{x}^i\) and \(i\) itself. Additionally, the terminal cost and constraints have to be adjusted to obtain stability which is not covered here.
 
 		By adding the additional feedback controller, the uncertainty tubes are kept small and therefore the feasible sets are bigger.
-	% end
-% end
+		% end
+		% end
 
 \chapter{Stochastic Model Predictive Control}
 	\label{c:mpcStochastic}
@@ -871,11 +871,11 @@
 			\E[\vec{x}] \in \tilde{\mathcal{X}}
 		\end{equation}
 		with \( \tilde{\mathcal{X}} = \mathcal{X} \ominus \mathcal{R} \) where \(\mathcal{R}\) is constructed based on the variance\footnote{For instance, with \( n = 1 \) and \( p_x = 0.95 \), the set is \( \mathcal{R} = [-2 \sigma_x, 2 \sigma_x] \) with \( w \sim \mathcal{N}(0, \sigma_x^2) \).}.
-	% end
+		% end
 
 	\section{Stochastic Tube MPC}
 		Similar to robust open-loop MPC (\autoref{sec:robustOpenLoopMpc}), stochastic MPC with chance constraints suffers from the uncertainty tubes getting very wide and the feasibility set shrinks. \emph{Stochastic tube MPC} is analogous to tube MPC (\autoref{sec:tubeMpc}) and used an additional linear feedback law for controlling the tube size. As before, the state tightening is chosen such that the constraints are satisfied with a given probability. The input constraints, on the other hand, are still deterministic and shall be fulfilled in a deterministic sense, i.e., without chance constraints.
-	% end
+		% end
 
 	\section{Outlook}
 		Stochastic MPC is a broad field and this chapter only touched the tip of the iceberg. For example: in a nonlinear system model, the states will in general not be normally distributed anymore even if the noise is Gaussian. Propagating uncertainties through such a nonlinear system is still open research. Some ideas are:
@@ -886,8 +886,8 @@
 			\item and many more\dots
 		\end{itemize}
 		Also, stability and recursive feasibility are an open end, too: due to the probabilistic nature, also recursive feasibility may be lost. Discussing these properties requires extensions to probabilistic convergence.
-	% end
-% end
+		% end
+		% end
 
 \chapter{Machine Learning in Model Predictive Control}
 	\label{c:ml}
@@ -902,8 +902,8 @@
 		\subsection{Learning State Dynamics}
 			Modeling the dynamics of a system using ML, two basic approaches exist: pure ML models using a black box and a combination of first principles and ML models (gray box):
 			\begin{align}
-				\vec{x}_{k + 1} &= \vec{f}_\mathrm{ml}(\vec{x}_k, \vec{u}_k; k) &
-				\vec{x}_{k + 1} &= \vec{f}_\mathrm{fp}(\vec{x}_k, \vec{u}_k; k) + \vec{f}_\mathrm{ml}(\vec{x}_k, \vec{u}_k; k)
+				\vec{x}_{k + 1} & = \vec{f}_\mathrm{ml}(\vec{x}_k, \vec{u}_k; k)                                                &
+				\vec{x}_{k + 1} & = \vec{f}_\mathrm{fp}(\vec{x}_k, \vec{u}_k; k) + \vec{f}_\mathrm{ml}(\vec{x}_k, \vec{u}_k; k)
 			\end{align}
 			In the former, the accounts for the residual error (e.g., friction). A usual choice is to use a linear first-principle model and a nonlinear ML model. If the ML model only depends on \(k\), it models the noise. This can be useful to improve the quality of robust MPC by extrapolating the noise (which might be misleading and is often used in repetitive scenarios). For training these models, three common approaches are \emph{offline}, \emph{online}, and \emph{iterative} learning (see \autoref{fig:offlineOnlineIterative}) which are explained in more detail in the following sections.
 
@@ -958,56 +958,56 @@
 				When training offline, i.e., before the control law is deployed, the training can be time-consuming as it does not have to be executed in real time. However, MPC has to deal with nonlinear dynamics as powerful ML models are usually nonlinear. Also, during training, it has be be made sure that the model is continuously differentiable, a proper MPC-ML-model combination is chosen (e.g., if the model is good, use nominal MPC; if it is bad, use robust or stochastic MPC), and real-time feasibility of the prediction is ensured.
 
 				Overall, this is the most boring method of combining MPC and ML.
-			% end
+				% end
 
 			\subsubsection{Online Learning}
 				In online learning, the training data is collected while running the controller (cf. adaptive control and adaptive MPC) making it possible to adapt the model fast and easy when the situation changes. However, it is quite resource remanding as the training phase is done online. Also, the model accuracy is not known beforehand, making it hard to guarantee stability or robustness. One idea of guaranteeing stability or robustness is to have a fallback controller that is not learning-based which can take over if learning-based MPC fails. Another approach is to directly design a robust MPC that can handle changing models.
 
 				\paragraph{Safe Sets}
 					\emph{Safe sets} implement the first approach with an alternative "safe" controller: if the state is inside a \emph{safe set} \(\mathcal{S}\), learning-supported MPC is used. If it is not, a \emph{safe controller} \( \pi_\mathcal{S}(\vec{x}) \) that guarantees invariance of \(\mathcal{S}\) takes over. To find such a set, the sublevel set \( L_\alpha^- \) of a Lyapunov function \(V(\vec{x})\) of the closed-loop system \( \dot{\vec{x}} = \vec{f}\bigl( \vec{x}, \pi_\mathcal{S}(\vec{x}) \bigr) \) can be used.
-				% end
+					% end
 
 				\paragraph{Learning-Supported Tube MPC}
 					For robust learning-supported tube MPC, two models are used: one which is never updated, incorporates (additive) uncertainty, and is used to ensure constraint satisfaction and one which is updated online and is used for increase performance:
 					\begin{equation}
 						\begin{aligned}
 							\min_{\tilde{\vec{v}}}\; & E(\vec{\zeta}_N) + \sum_{k = 0}^{N - 1} F(\vec{\zeta}_k, \vec{v}_k) \\
-							\text{s.t.}\quad&
-								\begin{aligned}[t]
-									\vec{z}_{k + 1} &= \mat{A} \vec{z}_k + \mat{B} \vec{v}_k,\, \vec{z}_0 = \vec{x}^i \\
-									\vec{\zeta}_{k + 1} &= \mat{A} \vec{\zeta}_k + \mat{B} \vec{v}_k + \vec{f}_\mathrm{ml}(\vec{\zeta}_k, \vec{v}_k),\, \vec{\zeta}_0 = \vec{x}^i \\
-									\vec{z}_k &\in \mathcal{X} \ominus \mat{K} \mathcal{R} \\
-									\vec{z}_N &\in \mathcal{E} \\
-									\vec{v}_k &\in \mathcal{U} \ominus \mat{K} \mathcal{R}
-								\end{aligned}
+							\text{s.t.}\quad         &
+							\begin{aligned}[t]
+								\vec{z}_{k + 1}     & = \mat{A} \vec{z}_k + \mat{B} \vec{v}_k,\, \vec{z}_0 = \vec{x}^i                                                         \\
+								\vec{\zeta}_{k + 1} & = \mat{A} \vec{\zeta}_k + \mat{B} \vec{v}_k + \vec{f}_\mathrm{ml}(\vec{\zeta}_k, \vec{v}_k),\, \vec{\zeta}_0 = \vec{x}^i \\
+								\vec{z}_k           & \in \mathcal{X} \ominus \mat{K} \mathcal{R}                                                                              \\
+								\vec{z}_N           & \in \mathcal{E}                                                                                                          \\
+								\vec{v}_k           & \in \mathcal{U} \ominus \mat{K} \mathcal{R}
+							\end{aligned}
 						\end{aligned}
 					\end{equation}
-				% end
-			% end
+					% end
+					% end
 
 			\subsubsection{Iterative Learning}
 				In iterative learning, the same task is performed repeatedly and the model is updated between the batches by training with the data collected in the previous batch. This has the benefit of no real-time requirements and being able to evaluate the model before deploying it. Iterative learning can also be used to update different parts of the optimal control problem (e.g., reference and constraints).
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{Learning Constraints}
 			Usually, the constraints are known (e.g., actuator limitations, safety regulations, desired operating range). But the constraints can be learned, too. For example, the tightening of the constraints can be learned by modeling the model uncertainties. Another special case is learning the terminal regions by incorporating previous trajectories.
-		% end
+			% end
 
 		\subsection{Learning Cost Functions}
 			Like constraints, the cost function is usually known as it is a pure design decision, does not reflect a physical property, and can be chosen freely. Hence, for simplicity, it is usually chosen to be a quadratic cost. In some special cases, it might be beneficial to learn the costs from data. Some methods are approximating the infinite horizon cost with reinforcement learning, updating the cost in between batches, and training a neural network to learn the cost from demonstrations.
-		% end
+			% end
 
 		\subsection{Learning Control Input: Replacing MPC}
 			When the control input is learned directly, this basically completely replaces MPC with ML. This faces the main drawback of MPC that it is time-consuming. One way of replacing MPC completely is by running MPC offline and training a ML model (e.g., a neural network) to directly map states to the optimal input. This model can then be deployed online allowing fast control.
-		% end
-	% end
+			% end
+			% end
 
 	\section{Gaussian Processes}
 		This section introduces \emph{Gaussian processes} (GPs), a ML model with great applicability and outstanding capabilities of uncertainty estimation\footnote{Note that the treatment of GPs is quite limited here. See Rasmussen and Williams: "Gaussian Processes for Machine Learning" for a very thorough treatment.}. A GP works with a dataset \( \mathcal{D} \coloneqq \{ (\vec{\xi}_i, \gamma_i)_{i = 1, 2, \dots, n} \} \) which contains features \(\vec{\xi}_i \in \R^d\) and corresponding labels \(\gamma_i \in \R\) generated from an unknown function \( \vec{f} : \R^d \to \R \) with Gaussian noise \( \epsilon \sim \mathcal{N}(0, \sigma_n^2) \), i.e., \( \gamma_i = \mathcal{N}\bigl(f(\vec{\xi}_i), \sigma_n^2\bigr) \). To simplify the further discussion, the data is organized into matrices and vectors:
 		\begin{align}
-			\mat{\Xi} &= \begin{bmatrix} \vec{\xi}_1^\transposed \\ \vec{\xi}_2^\transposed \\ \vdots \\ \vec{\xi}_k^\transposed \end{bmatrix} \in \R^{n \times d} &
-			\mat{\Xi}_\ast &= \begin{bmatrix} \vec{\xi}_{\ast 1}^\transposed \\ \vec{\xi}_{\ast 2}^\transposed \\ \vdots \\ \vec{\xi}_{\ast k}^\transposed \end{bmatrix} \in \R^{k \times d}
+			\mat{\Xi}      & = \begin{bmatrix} \vec{\xi}_1^\transposed \\ \vec{\xi}_2^\transposed \\ \vdots \\ \vec{\xi}_k^\transposed \end{bmatrix} \in \R^{n \times d}                      &
+			\mat{\Xi}_\ast & = \begin{bmatrix} \vec{\xi}_{\ast 1}^\transposed \\ \vec{\xi}_{\ast 2}^\transposed \\ \vdots \\ \vec{\xi}_{\ast k}^\transposed \end{bmatrix} \in \R^{k \times d}
 		\end{align}
 		The starred data represents the test data, i.e., the data unobserved during training.
 
@@ -1032,7 +1032,7 @@
 					k(\vec{\xi}, \vec{\xi}') = \sigma_f^2 \exp\biggl\{ -\frac{\lvert \vec{\xi} - \vec{\xi}' \rvert^2}{2 \ell^2} \biggr\}
 				\end{equation}
 				with \emph{signal variance} \( \sigma_f^2 \) and \emph{length scale} \( \ell^2 \). Due to its infinite differentiability, it yields very smooth functions. The signal variance just scales the covariance and therefore the vertical output scale without changing the mean and the length scale control smoothness, i.e., a short length scale exhibits rough functions.
-			% end
+				% end
 
 			\paragraph{Squared Exponential with Automatic Relevance Determination}
 				By assigning a separate length scale to each input,
@@ -1040,7 +1040,7 @@
 					k(\vec{\xi}, \vec{\xi}') = \sigma_f^2 \exp\biggl\{ -\frac{1}{2} (\vec{\xi} - \vec{\xi}')^\transposed \mat{\Lambda}^{-1} (\vec{\xi} - \vec{\xi}') \biggr\},
 				\end{equation}
 				with \( \mat{\Lambda} = \diag(\ell_1^2, \ell_2^2, \dots, \ell_d^2) \), learning the length scale affects the influence of the separate input dimensions on the output. That is, the inverse length scale \( \ell_i^{-2} \) can be understood as weighting factors of the corresponding dimensions.
-			% end
+				% end
 
 			\paragraph{Periodic Kernel}
 				The periodic kernel
@@ -1048,7 +1048,7 @@
 					k(\vec{\xi}, \vec{\xi}') = \sigma_f^2 \exp\biggl\{ -\frac{2 \sin^2\bigl( (\vec{\xi} - \vec{\xi}') / p \bigr)}{\ell^2} \biggr\}
 				\end{equation}
 				introduces periodicity and is thus useful for modeling periodic functions. Like the SE kernel, it yields very smooth functions.
-			% end
+				% end
 
 			\paragraph{Linear Kernel}
 				The linear kernel
@@ -1056,12 +1056,12 @@
 					k(\vec{\xi}, \vec{\xi}') = \sigma_b^2 + \sigma_f^2 \frac{(\vec{\xi} - c)^\transposed (\vec{\xi}' - c)}{\ell^2}
 				\end{equation}
 				yields affine functions with an offset \(c\) where \( \sigma_b^2 \) introduces a bias in \(c\).
-			% end
+				% end
 
 			\paragraph{Many, Many More}
 				There are much more kernels useful for different things, e.g., Matérn, dot product, rational quadratic, etc.
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{GP Prediction}
 			To predict new values with a GP, the distribution is condition on the training data. That is, first a joint distribution
@@ -1072,34 +1072,34 @@
 				\end{bmatrix}
 				\sim
 				\mathcal{N}\Biggl(
-					\begin{bmatrix}
+				\begin{bmatrix}
 						m(\mat{\Xi}) \\
 						m(\mat{\Xi}_\ast)
 					\end{bmatrix},\,
-					\begin{bmatrix}
-						k(\mat{\Xi}, \mat{\Xi}) & k(\mat{\Xi}, \mat{\Xi}_\ast) \\
+				\begin{bmatrix}
+						k(\mat{\Xi}, \mat{\Xi})      & k(\mat{\Xi}, \mat{\Xi}_\ast)      \\
 						k(\mat{\Xi}_\ast, \mat{\Xi}) & k(\mat{\Xi}_\ast, \mat{\Xi}_\ast)
 					\end{bmatrix}
 				\Biggr)
 			\end{equation}
 			is formed and then conditioned on \( f(\mat{\Xi}) \) using basic properties of the Gaussian. The posterior is therefore given by \( f(\mat{\Xi}_\ast) \sim \mathcal{N}(\mu_\ast, \sigma_\ast^2) \) with
 			\begin{align}
-				\mu_\ast &= m(\mat{\Xi}_\ast) + k(\mat{\Xi}_\ast, \mat{\Xi}) k^{-1}(\mat{\Xi}, \mat{\Xi}) \bigl( f(\mat{\Xi}) - m(\mat{\Xi}) \bigr) \\
-				\sigma_\ast^2 &= k(\mat{\Xi}_\ast, \mat{\Xi}_\ast) - k(\mat{\Xi}_\ast, \mat{\Xi}) k^{-1}(\mat{\Xi}, \mat{\Xi}) k(\mat{\Xi}, \mat{\Xi}_\ast)
+				\mu_\ast      & = m(\mat{\Xi}_\ast) + k(\mat{\Xi}_\ast, \mat{\Xi}) k^{-1}(\mat{\Xi}, \mat{\Xi}) \bigl( f(\mat{\Xi}) - m(\mat{\Xi}) \bigr)    \\
+				\sigma_\ast^2 & = k(\mat{\Xi}_\ast, \mat{\Xi}_\ast) - k(\mat{\Xi}_\ast, \mat{\Xi}) k^{-1}(\mat{\Xi}, \mat{\Xi}) k(\mat{\Xi}, \mat{\Xi}_\ast)
 			\end{align}
 			For no observation noise, the predictions now perfectly match the training data, i.e., the conditioning points.
-		% end
+			% end
 
 		\subsection{Hyper-Parameter Optimization}
 			To find the optimal hyper-parameters, gradient ascent is performed on the log-likelihood:
 			\begin{equation}
 				\log p(\vec{y} \given \mat{\Xi}, \theta)
-					= \underbrace{-\frac{1}{2} \bigl( \vec{y} - m(\mat{\Xi}) \bigr)^\transposed k^{-1}(\mat{\Xi}, \mat{\Xi}) \bigl( \vec{y} - m(\mat{\Xi}) \bigr)}_\text{Data Fit}
-					  \underbrace{-\frac{1}{2} \log \lvert \mat{K} \rvert}_\text{Complexity Penalty}
-					  \underbrace{-\frac{n}{2} \log(2\pi)}_\text{Normalization}
+				= \underbrace{-\frac{1}{2} \bigl( \vec{y} - m(\mat{\Xi}) \bigr)^\transposed k^{-1}(\mat{\Xi}, \mat{\Xi}) \bigl( \vec{y} - m(\mat{\Xi}) \bigr)}_\text{Data Fit}
+				\underbrace{-\frac{1}{2} \log \lvert \mat{K} \rvert}_\text{Complexity Penalty}
+				\underbrace{-\frac{n}{2} \log(2\pi)}_\text{Normalization}
 			\end{equation}
 			This is based on the assumption that the posterior over the parameters is sharply peaked around the optimum and hence the posterior can be approximated by the exact value (called \emph{empirical Bayes}).
-		% end
+			% end
 
 		\subsection{Advantages and Drawbacks}
 			A major drawback of GPs is the computationally expensive matrix inversion in the posterior computation (which is cubic in the number of data points). This large resource demand limits the online applicability of GPs. But sometimes, the various advantages outweigh the drawbacks:
@@ -1111,14 +1111,14 @@
 				\item Gaussian processes are somewhat robust towards overfitting
 				\item automatic relevance determination can eliminate input dimensions that are irrelevant
 			\end{itemize}
-		% end
+			% end
 
 		\subsection{Dynamic Process Models}
 			So far, only GPs with a one-dimensional output have been considered. But in a state-space model, often multiple dimensions are needed. Often, the simple approach of training as many independent GPs as the problem has dimensions is used. This ignores the correlation between outputs, but reduces the computational effort that would be required for multi-dimensional GPs.
 
 			In MPC, GPs are usually used to incorporate the uncertainty estimation into stochastic MPC to tighten the constraints. However, propagating the uncertainty more than one time step is challenging and an open research topic. Hence, usually only the mean is propagated (mean prediction) and the uncertainty estimation is taken from a single step only.
-		% end
-	% end
+			% end
+			% end
 
 	\section{(Artificial) Neural Networks}
 		Artificial neural networks are---in their pure form---a relatively simple yet powerful way to approximate any function\footnote{Like before, this is not a thorough study. See "Deep Learning: Architectures and Methods" (\url{https://fabian.damken.net/summaries/cs/elective/iws/dlam/}) for a deeper (haha) treatment.}. This chapter just lists some advantages and drawbacks and leaves the detailed discussion to the aforementioned document.
@@ -1136,11 +1136,11 @@
 			\item training of large networks is hard (local minima, vanishing gradient, exploding gradient, \dots)
 			\item interpretation is hard; hence, neural networks have to be tested on unseen data
 		\end{itemize}
-	% end
+		% end
 
 	\section{Reinforcement Learning vs. MPC}
 		In reinforcement learning, the past data is used to improve the future behavior of an agent. Compared to MPC, reinforcement learning usually works with discrete states and transition probabilities, i.e., incorporates noise in the system by inherently assuming that state transitions are probabilistic. Also, it usually does not assume a model (model-free reinforcement learning). A big problem, however, is to generate the data that can be used for trial-and-error as a robot shall not perform dangerous actions during exploration but needs to explore them to see that they are bad.
 
 		Some years ago, the trend went towards replacing everything physical with machine learning. Nowadays, incorporating prior knowledge from physics and first principles into control and combining control theory with ML gets a lot more attention. In the future, both fields should be considered unified opposed to clearly separated.
-	% end
-% end
+		% end
+		% end

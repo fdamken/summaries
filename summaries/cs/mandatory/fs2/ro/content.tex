@@ -1,198 +1,198 @@
 \chapter{Zahlendarstellung}
-    \section{Kommazahlen}
-        \paragraph{Gleitkommazahlen nach IEEE 754}
-            \begin{tabular}{c | c | c}
-                Typ & Format & Bias \\
-                \hline
-                Single & \bitpattern[startBit = 31]{V}[1]{Characteristik}[8]{Mantisse}[23]/ & 127 \\
-            \end{tabular}
-        % end
-    % end
-% end
+	\section{Kommazahlen}
+		\paragraph{Gleitkommazahlen nach IEEE 754}
+			\begin{tabular}{c | c | c}
+				Typ    & Format                                                             & Bias \\
+				\hline
+				Single & \bitpattern[startBit = 31]{V}[1]{Characteristik}[8]{Mantisse}[23]/ & 127  \\
+			\end{tabular}
+			% end
+			% end
+			% end
 
 \chapter{MIPS}
-    \section{Befehlstypen}
-        \paragraph{R-Typ}
-            Das R steht für Register.
+	\section{Befehlstypen}
+		\paragraph{R-Typ}
+			Das R steht für Register.
 
-            \bitpattern[startBit = 31]{OP}[6]{RS}[5]{RT}[5]{RD}[5]{SHAMT}[5]{FUNCT}[6]/
-        % end
+			\bitpattern[startBit = 31]{OP}[6]{RS}[5]{RT}[5]{RD}[5]{SHAMT}[5]{FUNCT}[6]/
+			% end
 
-        \paragraph{I-Typ}
-            Das I steht für Direktwert (Immediate).
+		\paragraph{I-Typ}
+			Das I steht für Direktwert (Immediate).
 
-            \bitpattern[startBit = 31]{OP}[6]{RS}[5]{RT}[5]{IMM}[16]/
-        % end
+			\bitpattern[startBit = 31]{OP}[6]{RS}[5]{RT}[5]{IMM}[16]/
+			% end
 
-        \paragraph{J-Typ}
-            Das J steht für Sprung (Jump).
-        % end
-    % end
-% end
+		\paragraph{J-Typ}
+			Das J steht für Sprung (Jump).
+			% end
+			% end
+			% end
 
 \chapter{Theoriefragen}
-    \section{Zahlendarstellung}
-        \paragraph{Der IEEE 754 Standard kennt Sonderfälle. Benennen Sie die in der Vorlesung behandelten Sonderfälle und geben Sie die Kodierung an.}
-            \begin{description}
-                \item[normalisiert]    \bitpattern[startBit = 31, noBitNumbers]{$ \pm $}[1]{$ 0 < \text{C} < \text{max} $}[8]{$ \text{Beliebiges Bitmuster} $}[23]/
-                \item[denormalisiert]  \bitpattern[startBit = 31, noBitNumbers]{$ \pm $}[1]{$ 0 $}[8]{$ \text{Beliebiges Bitmuster} \neq 0 $}[23]/
-                \item[Null]            \bitpattern[startBit = 31, noBitNumbers]{$ \pm $}[1]{$ 0 $}[8]{$ 0 $}[23]/
-                \item[Unendlich]       \bitpattern[startBit = 31, noBitNumbers]{$ \pm $}[1]{$ \text{max} $}[8]{$ 0 $}[23]/
-                \item[Keine Zahl, NaN] \bitpattern[startBit = 31, noBitNumbers]{$ \pm $}[1]{$ \text{max} $}[8]{$ \text{Beliebiges Bitmuster} \neq 0 $}[23]/
-            \end{description}
+	\section{Zahlendarstellung}
+		\paragraph{Der IEEE 754 Standard kennt Sonderfälle. Benennen Sie die in der Vorlesung behandelten Sonderfälle und geben Sie die Kodierung an.}
+			\begin{description}
+				\item[normalisiert]    \bitpattern[startBit = 31, noBitNumbers]{$ \pm $}[1]{$ 0 < \text{C} < \text{max} $}[8]{$ \text{Beliebiges Bitmuster} $}[23]/
+				\item[denormalisiert]  \bitpattern[startBit = 31, noBitNumbers]{$ \pm $}[1]{$ 0 $}[8]{$ \text{Beliebiges Bitmuster} \neq 0 $}[23]/
+				\item[Null]            \bitpattern[startBit = 31, noBitNumbers]{$ \pm $}[1]{$ 0 $}[8]{$ 0 $}[23]/
+				\item[Unendlich]       \bitpattern[startBit = 31, noBitNumbers]{$ \pm $}[1]{$ \text{max} $}[8]{$ 0 $}[23]/
+				\item[Keine Zahl, NaN] \bitpattern[startBit = 31, noBitNumbers]{$ \pm $}[1]{$ \text{max} $}[8]{$ \text{Beliebiges Bitmuster} \neq 0 $}[23]/
+			\end{description}
 
-        \paragraph{Läßt sich jede reelle Zahl als Gleitkommazahl nach IEEE 754 darstellen?}
-            Nein, da:
-            \begin{enumerate}
-                \item nicht jede reelle Zahl als Bruch darstellbar ist ($ \mathbb{Q} \subset \mathbb{R} $).
-                \item nicht jeder Bruch dargestellt werden kann (bspw. $ \frac{1}{3} $).
-            \end{enumerate}
+		\paragraph{Läßt sich jede reelle Zahl als Gleitkommazahl nach IEEE 754 darstellen?}
+			Nein, da:
+			\begin{enumerate}
+				\item nicht jede reelle Zahl als Bruch darstellbar ist ($ \mathbb{Q} \subset \mathbb{R} $).
+				\item nicht jeder Bruch dargestellt werden kann (bspw. $ \frac{1}{3} $).
+			\end{enumerate}
 
-        \paragraph{Was ist die größe/kleinste darstellbare Zahl einer $ n $-Bit Zahl in der Festkommanotation $ k.l $ mit Vorzeichen-Bit?}
-            Die größte darstellbare Zahl ist $ 2 ^ k - 1 + \sum _ { i = 1 } ^ { l } \frac{1}{2 ^ i} $.
+		\paragraph{Was ist die größe/kleinste darstellbare Zahl einer $ n $-Bit Zahl in der Festkommanotation $ k.l $ mit Vorzeichen-Bit?}
+			Die größte darstellbare Zahl ist $ 2 ^ k - 1 + \sum _ { i = 1 } ^ { l } \frac{1}{2 ^ i} $.
 
-            Die kleinste darstellbare Zahl ist $ -(2 ^ k - 1 + \sum _ { i = 1 } ^ { l } \frac{1}{2 ^ i}) $.
+			Die kleinste darstellbare Zahl ist $ -(2 ^ k - 1 + \sum _ { i = 1 } ^ { l } \frac{1}{2 ^ i}) $.
 
-        \paragraph{In welche (mathematischen) Form werden Gleitkommazahlen dargestellt?}
-            Eine Gleitkommazahl $ z $ wird in der Form $ z = \pm m \cdot b ^ { \pm e } $ dargestellt.
-    % end
+		\paragraph{In welche (mathematischen) Form werden Gleitkommazahlen dargestellt?}
+			Eine Gleitkommazahl $ z $ wird in der Form $ z = \pm m \cdot b ^ { \pm e } $ dargestellt.
+			% end
 
-    \section{Maschinennahe Programmierung}
-        \paragraph{Was ist der Unterschied zwischen einem byte- und wortadressiertem Speicher?}
-            Bei einem byteadressiertem Speicher hat jedes Byte eine eigene Adresse, bei einem wortadressiertem Speicher nur jedes Wort.
+	\section{Maschinennahe Programmierung}
+		\paragraph{Was ist der Unterschied zwischen einem byte- und wortadressiertem Speicher?}
+			Bei einem byteadressiertem Speicher hat jedes Byte eine eigene Adresse, bei einem wortadressiertem Speicher nur jedes Wort.
 
-        \paragraph{Erklären Sie den Unterschied zwischen Big-Endian und Little-Endian.}
-            Bei Big-Endian wird das höchstwertige Byte (MSB) in der niedrigsten Speicheradresse abgelegt.
+		\paragraph{Erklären Sie den Unterschied zwischen Big-Endian und Little-Endian.}
+			Bei Big-Endian wird das höchstwertige Byte (MSB) in der niedrigsten Speicheradresse abgelegt.
 
-            Bei Little-Endian wird das niederwertigste Byte (LSB) in der niedrigsten Speicheradresse abgelegt.
+			Bei Little-Endian wird das niederwertigste Byte (LSB) in der niedrigsten Speicheradresse abgelegt.
 
-        \paragraph{Was sind Immediates?}
-            Immediates sind Direktwerte, welche direkt im Assemblercode stehen (konstante Werte, Literale).
+		\paragraph{Was sind Immediates?}
+			Immediates sind Direktwerte, welche direkt im Assemblercode stehen (konstante Werte, Literale).
 
-        \paragraph{Wann sollten Daten in Register gespeichert werden?}
-            Daten sollten in Registerns gespeichert werden, wenn diese erneut verwendet werden.
+		\paragraph{Wann sollten Daten in Register gespeichert werden?}
+			Daten sollten in Registerns gespeichert werden, wenn diese erneut verwendet werden.
 
-        \paragraph{Gegeben sei ein wortadressierter Speicher. Wie viele Wörter mit einer Länge von $ n $ Byte lassen sich maximal adressieren, wenn die Adresse $ m $ Byte groß ist?}
-            Es lassen sich maximal $ 2 ^ m $ Worte adressieren.
+		\paragraph{Gegeben sei ein wortadressierter Speicher. Wie viele Wörter mit einer Länge von $ n $ Byte lassen sich maximal adressieren, wenn die Adresse $ m $ Byte groß ist?}
+			Es lassen sich maximal $ 2 ^ m $ Worte adressieren.
 
-        \paragraph{Gegeben sei ein byteadressierter Speicher. Wie viele Wörter mit einer Länge von $ n $ Byte lassen sich maximal adressieren, wenn die Adresse $ m $ Byte groß ist?}
-            Es lassen sich maximal $ \frac{2 ^ n}{m} $ Worte adressieren.
+		\paragraph{Gegeben sei ein byteadressierter Speicher. Wie viele Wörter mit einer Länge von $ n $ Byte lassen sich maximal adressieren, wenn die Adresse $ m $ Byte groß ist?}
+			Es lassen sich maximal $ \frac{2 ^ n}{m} $ Worte adressieren.
 
-        \paragraph{Was ist der Unterschied zwischen einer Funktion und einer Prozedur?}
-            Eine Prozedur hat keine Rückgabe (\texttt{void}), eine Funktion hat eine Rückgabe.
+		\paragraph{Was ist der Unterschied zwischen einer Funktion und einer Prozedur?}
+			Eine Prozedur hat keine Rückgabe (\texttt{void}), eine Funktion hat eine Rückgabe.
 
-        \paragraph{Wann ist es sinnvoll, Programme direkt in Assembler (statt in C oder Java) zu schreiben?}
-            Es ist sinnvoll, Programme direkt in Assembler zu schreiben, wenn:
-            \begin{itemize}
-                \item der Speicherplatz begrenzt ist.
-                \item eine schnelle Reaktionszeit nötig ist (Echtzeitanwendungen).
-                \item manuelle Performanzopimierung nötig ist.
-                \item direkter Zugriff auf den Prozessor nötig ist.
-            \end{itemize}
+		\paragraph{Wann ist es sinnvoll, Programme direkt in Assembler (statt in C oder Java) zu schreiben?}
+			Es ist sinnvoll, Programme direkt in Assembler zu schreiben, wenn:
+			\begin{itemize}
+				\item der Speicherplatz begrenzt ist.
+				\item eine schnelle Reaktionszeit nötig ist (Echtzeitanwendungen).
+				\item manuelle Performanzopimierung nötig ist.
+				\item direkter Zugriff auf den Prozessor nötig ist.
+			\end{itemize}
 
-        \paragraph{Nennen Sie einige Vorteile einer Hochschprache wie C gegenüber Assembler.}
-            \begin{itemize}
-                \item Vorhandene Kontrollstrukturen.
-                \item Bessere Verständlichkeit des Codes.
-                \item Vorhandene Datenstrukturen.
-                \item Typprüfung.
-                \item Besse Wartbarkeit des Codes.
-            \end{itemize}
+		\paragraph{Nennen Sie einige Vorteile einer Hochschprache wie C gegenüber Assembler.}
+			\begin{itemize}
+				\item Vorhandene Kontrollstrukturen.
+				\item Bessere Verständlichkeit des Codes.
+				\item Vorhandene Datenstrukturen.
+				\item Typprüfung.
+				\item Besse Wartbarkeit des Codes.
+			\end{itemize}
 
-        \subsection{MIPS}
-            \paragraph{Ist MIPS wort- oder byteadressiert?}
-                MIPS ist byteadressiert.
+		\subsection{MIPS}
+			\paragraph{Ist MIPS wort- oder byteadressiert?}
+				MIPS ist byteadressiert.
 
-            \paragraph{Wo wird die Rücksprungadresse bei einem Aufruf von \texttt{jal} gespeichert?}
-                Die Rücksprungadresse wird in dem Register \texttt{\$ra} gespeichert.
+			\paragraph{Wo wird die Rücksprungadresse bei einem Aufruf von \texttt{jal} gespeichert?}
+				Die Rücksprungadresse wird in dem Register \texttt{\$ra} gespeichert.
 
-            \paragraph{Welche Register müssen von dem Aufrufer, welche von dem Aufgerufenen gesichert werden?}
-                Der Aufrufer sichert die Register \texttt{\$t0 - \$t9}, \texttt{\$a0 - \$a3}, \texttt{\$v0 - \$v1} und den Stack unterhalb von \texttt{\$sp}.
+			\paragraph{Welche Register müssen von dem Aufrufer, welche von dem Aufgerufenen gesichert werden?}
+				Der Aufrufer sichert die Register \texttt{\$t0 - \$t9}, \texttt{\$a0 - \$a3}, \texttt{\$v0 - \$v1} und den Stack unterhalb von \texttt{\$sp}.
 
-                Der Aufgerufene sichert die Register \texttt{\$s0 - \$s7}, \texttt{\$ra}, \texttt{\$sp} und den Stack oberhalb von \texttt{\$sp}.
+				Der Aufgerufene sichert die Register \texttt{\$s0 - \$s7}, \texttt{\$ra}, \texttt{\$sp} und den Stack oberhalb von \texttt{\$sp}.
 
-            \paragraph{Wie alloziert man Speicher auf dem Stack und wie gibt man diesen wiedr frei?}
-                Alloziert wird Speicher auf dem Stack, in dem die gewünschte Anzahl Bytes von \texttt{\$sp} subtrahiert wird.
+			\paragraph{Wie alloziert man Speicher auf dem Stack und wie gibt man diesen wiedr frei?}
+				Alloziert wird Speicher auf dem Stack, in dem die gewünschte Anzahl Bytes von \texttt{\$sp} subtrahiert wird.
 
-                Freigegeben wird der Speicher auf dem Stack analog, in dem die freuzugebene Anzahl Bytes zu \texttt{\$sp} addiert wird.
+				Freigegeben wird der Speicher auf dem Stack analog, in dem die freuzugebene Anzahl Bytes zu \texttt{\$sp} addiert wird.
 
-            \paragraph{Warum muss bei mehrfachem Aufruf von Unterfunktionen/-prozeduren immer \texttt{\$ra} auf dem Stack gesichert werden?}
-                Bei einem erneuten Aufruf von \texttt{jal} wird das Register \texttt{\$ra} überschrieben, wodurch die bisherigen Rücksprungadressen verloren gehen würden.
+			\paragraph{Warum muss bei mehrfachem Aufruf von Unterfunktionen/-prozeduren immer \texttt{\$ra} auf dem Stack gesichert werden?}
+				Bei einem erneuten Aufruf von \texttt{jal} wird das Register \texttt{\$ra} überschrieben, wodurch die bisherigen Rücksprungadressen verloren gehen würden.
 
-            \paragraph{Nennen Sie alle Adressierungsarten, die MIPS spezifiziert.}
-                MIPS unterstüzt Adressierung durch Register, Adressierung durch Direktwerte aus Instruktionen, relative Adressierung zu der Basisadresse und Pseudodirekte Adressierung.
-        % end
+			\paragraph{Nennen Sie alle Adressierungsarten, die MIPS spezifiziert.}
+				MIPS unterstüzt Adressierung durch Register, Adressierung durch Direktwerte aus Instruktionen, relative Adressierung zu der Basisadresse und Pseudodirekte Adressierung.
+				% end
 
-        \subsection{IA32}
-            \paragraph{Beschreiben Sie kurz den Registersatz, welcher bei IA32 zur Verfügung steht.}
-                Registersatz: \\
-                \begin{tabular}{c | c | c}
-                    ID & Name & Spezielle Bedeutung \\
-                    \hline
-                    EAX & Accumulator & Artithmetik, Ein- und Ausgabe, Interrupts \\
-                    EBX & Base Register & - \\
-                    ECC & Count Register & Schleifen \\
-                    EDX & Data Register & Multiplikation, Division, Portadressen für \texttt{IN}/\texttt{OUT} \\
-                    EBP & Base Pointer & Zeiger auf tempärare Speicheradressen im Stack (bspw. Stackframe) \\
-                    ESP & Stack Pointer & Zeiger auf aktullen Stackkopf \\
-                    ESI & Source Index & Quelle für String-Operationen, Nutzung für indirekter Adressierung \\
-                    EDI & Destination Index & Ziel für String-Operationen, Nutzing für indirekte Adressierung \\
-                \end{tabular}
-        % end
-    % end
+		\subsection{IA32}
+			\paragraph{Beschreiben Sie kurz den Registersatz, welcher bei IA32 zur Verfügung steht.}
+				Registersatz: \\
+				\begin{tabular}{c | c | c}
+					ID  & Name              & Spezielle Bedeutung                                                 \\
+					\hline
+					EAX & Accumulator       & Artithmetik, Ein- und Ausgabe, Interrupts                           \\
+					EBX & Base Register     & -                                                                   \\
+					ECC & Count Register    & Schleifen                                                           \\
+					EDX & Data Register     & Multiplikation, Division, Portadressen für \texttt{IN}/\texttt{OUT} \\
+					EBP & Base Pointer      & Zeiger auf tempärare Speicheradressen im Stack (bspw. Stackframe)   \\
+					ESP & Stack Pointer     & Zeiger auf aktullen Stackkopf                                       \\
+					ESI & Source Index      & Quelle für String-Operationen, Nutzung für indirekter Adressierung  \\
+					EDI & Destination Index & Ziel für String-Operationen, Nutzing für indirekte Adressierung     \\
+				\end{tabular}
+				% end
+				% end
 
-    \section{Mikroarchitektur}
-        \paragraph{Erklären Sie die Begriffe RISC und CISC.}
-            RISC steht für \textit{Reduced Instruction Set Computer}. Diese Computer haben einen einfach gehaltenen Befehlssatz, in dem ausschließlich Register (und Direktwerte) als Parameter genutzt werden können. Somit muss bei einem Zugriff auf den Speicher zuerst der Wert in ein Register geladen werden, damit mit diesem gerechnet werden kann (MIPS: \texttt{lw/sw} Befehle).
+	\section{Mikroarchitektur}
+		\paragraph{Erklären Sie die Begriffe RISC und CISC.}
+			RISC steht für \textit{Reduced Instruction Set Computer}. Diese Computer haben einen einfach gehaltenen Befehlssatz, in dem ausschließlich Register (und Direktwerte) als Parameter genutzt werden können. Somit muss bei einem Zugriff auf den Speicher zuerst der Wert in ein Register geladen werden, damit mit diesem gerechnet werden kann (MIPS: \texttt{lw/sw} Befehle).
 
-            CISC steht für \textit{Complex Instruction Set Computer}. Diese Computer haben einen sehr komplexen Befehlssatz, in dem auch erlaubt wird, direkt mit Daten aus dem Speicher zu rechnen.
+			CISC steht für \textit{Complex Instruction Set Computer}. Diese Computer haben einen sehr komplexen Befehlssatz, in dem auch erlaubt wird, direkt mit Daten aus dem Speicher zu rechnen.
 
-            Da Speicherzugriff (im Vergleich zu Registerzugriffen) sehr lange dauern, ist die Abarbeitungszeit von Befehlen in einem CISC sehr unterschiedlich, wobei diese in einem RISC relativ konstant bleibt. Dadurch sind Beschleunigungsmethoden wie Pipelining in einem RISC deutlich einfacher umzusetzen.
+			Da Speicherzugriff (im Vergleich zu Registerzugriffen) sehr lange dauern, ist die Abarbeitungszeit von Befehlen in einem CISC sehr unterschiedlich, wobei diese in einem RISC relativ konstant bleibt. Dadurch sind Beschleunigungsmethoden wie Pipelining in einem RISC deutlich einfacher umzusetzen.
 
-            Das \textit{reduced}/\textit{complex} bezieht sich nicht auf die Anzahl der vorhanden Befehle im Befehlssatz.
+			Das \textit{reduced}/\textit{complex} bezieht sich nicht auf die Anzahl der vorhanden Befehle im Befehlssatz.
 
-        \paragraph{Was sind die Unterschiede zwischen einem Eintakt-, Mehrtakt- und Pileline-Prozessor?}
-            Bei einem Eintakt-Prozessor wird jeder Befehl in einem Takt abgearbeitet, bei Mehrtakt-Prozessoren kann eine Abarbeitung mehre Takte benötigen, wobei jede Ausführung in mehrere Teilschritte zerlegt wird. Bei einem Pipeline-Prozessor werden die Teilschreitte eines Befehls zeitgleich mit den Teilschritten des nächsten Befehls ausgeführt.
+		\paragraph{Was sind die Unterschiede zwischen einem Eintakt-, Mehrtakt- und Pileline-Prozessor?}
+			Bei einem Eintakt-Prozessor wird jeder Befehl in einem Takt abgearbeitet, bei Mehrtakt-Prozessoren kann eine Abarbeitung mehre Takte benötigen, wobei jede Ausführung in mehrere Teilschritte zerlegt wird. Bei einem Pipeline-Prozessor werden die Teilschreitte eines Befehls zeitgleich mit den Teilschritten des nächsten Befehls ausgeführt.
 
-        \paragraph{Warum benötigt das Registerfeld des vorgestellten Prozessors ein Write-Enable-Signal?}
-            Das Schreiben muss aktiviert werden, da die Daten nicht bei jedem Befehl modifiziert werden (dürfen), beispielsweise bei Sprungbefehlen.
+		\paragraph{Warum benötigt das Registerfeld des vorgestellten Prozessors ein Write-Enable-Signal?}
+			Das Schreiben muss aktiviert werden, da die Daten nicht bei jedem Befehl modifiziert werden (dürfen), beispielsweise bei Sprungbefehlen.
 
-        \paragraph{Erläutern Sie anhand des Datenpfades, wie bei einem \texttt{lw}/\texttt{sw}-Befehl die Adresse berechnet wird.}
-            Zur Berechnung der Speicheradresse wird die Basisadresse des Registers an den Eingang \texttt{A} der ALU angelegt und der Direktwert an den Eingang \texttt{B}. Dann wird eine Addition ausgeführt, das Ergebnis ist die Speicheradresse.
+		\paragraph{Erläutern Sie anhand des Datenpfades, wie bei einem \texttt{lw}/\texttt{sw}-Befehl die Adresse berechnet wird.}
+			Zur Berechnung der Speicheradresse wird die Basisadresse des Registers an den Eingang \texttt{A} der ALU angelegt und der Direktwert an den Eingang \texttt{B}. Dann wird eine Addition ausgeführt, das Ergebnis ist die Speicheradresse.
 
-        \paragraph{Welcher Teil des Prozessors bestimmt, welche Rechenoperation die ALU ausführt?}
-            Das Steuerwerk bestimmt \texttt{ALUControl}.
+		\paragraph{Welcher Teil des Prozessors bestimmt, welche Rechenoperation die ALU ausführt?}
+			Das Steuerwerk bestimmt \texttt{ALUControl}.
 
-        \paragraph{Worin unterscheiden sich eine Harvard- und eine Von-Neumann-Architektur?}
-            Bei der Harvard-Architektur liegen die Instruktionen in einem von den Daten getrennten Speicher, bei der Von-Neumann-Architektur wird ein gemeinsamer Speicher für Instruktionen und Daten genutzt.
+		\paragraph{Worin unterscheiden sich eine Harvard- und eine Von-Neumann-Architektur?}
+			Bei der Harvard-Architektur liegen die Instruktionen in einem von den Daten getrennten Speicher, bei der Von-Neumann-Architektur wird ein gemeinsamer Speicher für Instruktionen und Daten genutzt.
 
-        \subsection{Performanz}
-            \paragraph{Durch was wir die Takfrequenz eines Eintakt-Prozessors bestimmt?}
-                Die langsamste Instruktion bestimmt die Taktfrequenz. Die Dauer einer Instruktion ist auf die Verzögerungszeiten im Datenpfad zurückzuführen.
+		\subsection{Performanz}
+			\paragraph{Durch was wir die Takfrequenz eines Eintakt-Prozessors bestimmt?}
+				Die langsamste Instruktion bestimmt die Taktfrequenz. Die Dauer einer Instruktion ist auf die Verzögerungszeiten im Datenpfad zurückzuführen.
 
-            \paragraph{Erklären Sie die Begriffe Latenz und Durchsatz im Bezug auf einen Prozessor.}
-                \begin{description}
-                    \item[Latenz] Die Latenz beschreibt die Ausführungszeit einer Instruktion.
-                    \item[Durchsatz] Der Durchsatz beschreibt die Anzahl der Instruktionen, die in einem bestimmen Zeitfenster bearbeitet werden können.
-                \end{description}
+			\paragraph{Erklären Sie die Begriffe Latenz und Durchsatz im Bezug auf einen Prozessor.}
+				\begin{description}
+					\item[Latenz] Die Latenz beschreibt die Ausführungszeit einer Instruktion.
+					\item[Durchsatz] Der Durchsatz beschreibt die Anzahl der Instruktionen, die in einem bestimmen Zeitfenster bearbeitet werden können.
+				\end{description}
 
-            \paragraph{In welche Phasen wird die Ausführung einer Instruktion bei dem vorgestellten Pipeline-Prozessor unterteilt?}
-                Die Ausführung einer Instruktion wird in Fetch-, Decode-, Execute-, Memory-, und Writeback-Phase unterteilt.
+			\paragraph{In welche Phasen wird die Ausführung einer Instruktion bei dem vorgestellten Pipeline-Prozessor unterteilt?}
+				Die Ausführung einer Instruktion wird in Fetch-, Decode-, Execute-, Memory-, und Writeback-Phase unterteilt.
 
-            \paragraph{Was versteht man unter einem Hazard?}
-                Hazard sind Abhängigkeiten zwischen Pipeline-Stufen. Es wird zwischen \textit{Data-Hazard} und \textit{Control-Hazard} unterschieden.
-                \begin{description}
-                    \item[Data-Hazard] Ein Data-Hazard trinnt dann auf, wenn Daten gelesen werden, welche in einem vorherigen Befehl geschrieben werden (sollten), dieser aber noch nicht komplett ausgeführt wurde.
-                    \item[Control-Hazard] Ein Control-Hazard trinnt dann auf, wenn Instruktionen ausgeführt werden, welche von einem vorherigen Befehl unterbrochen werden (beispielsweise durch einen Sprung). Da dieser Sprung erst relativ spät entschieden wird, wurde die Ausführung von späteren Instruktionen bereits begonnen.
-                \end{description}
+			\paragraph{Was versteht man unter einem Hazard?}
+				Hazard sind Abhängigkeiten zwischen Pipeline-Stufen. Es wird zwischen \textit{Data-Hazard} und \textit{Control-Hazard} unterschieden.
+				\begin{description}
+					\item[Data-Hazard] Ein Data-Hazard trinnt dann auf, wenn Daten gelesen werden, welche in einem vorherigen Befehl geschrieben werden (sollten), dieser aber noch nicht komplett ausgeführt wurde.
+					\item[Control-Hazard] Ein Control-Hazard trinnt dann auf, wenn Instruktionen ausgeführt werden, welche von einem vorherigen Befehl unterbrochen werden (beispielsweise durch einen Sprung). Da dieser Sprung erst relativ spät entschieden wird, wurde die Ausführung von späteren Instruktionen bereits begonnen.
+				\end{description}
 
-            \paragraph{Bei der Entwicklung moderner Prozessoren werden viele Resourcen in die Verbesserung der Sprungvorhersage gesteckt. Warum wirkt sich ein falsch vorhergesagter Sprung negativ auf die Performanz aus?}
-                Wurde ein Sprung falsch vorhergesagt, müssen bereits berechnete Instruktionen verworfen werden (Flush). Diese Takte hätten für die Berechnung von den korrekten Instruktionen genutzt werden können.
+			\paragraph{Bei der Entwicklung moderner Prozessoren werden viele Resourcen in die Verbesserung der Sprungvorhersage gesteckt. Warum wirkt sich ein falsch vorhergesagter Sprung negativ auf die Performanz aus?}
+				Wurde ein Sprung falsch vorhergesagt, müssen bereits berechnete Instruktionen verworfen werden (Flush). Diese Takte hätten für die Berechnung von den korrekten Instruktionen genutzt werden können.
 
-            \paragraph{Bei Prozessoren unterscheidet man zwischen in-order und out-of-order Ausführung von Instruktionen. Welcher Ansatz ist schneller? Können Sie sich Einsatzszenarien für den anderen Ansatz vorstellen?}
-                Bei out-of-order Ausführung werden Instruktionen umsortiert, um Hazards zu vermeiden. Bei in-order Ausführung werden alle Instruktionen in der eigentlichen Reihenfolge ausgeführt und im Falle von Hazards die CPU angehalten (\texttt{HALT}) oder NoOps eingeführt.
+			\paragraph{Bei Prozessoren unterscheidet man zwischen in-order und out-of-order Ausführung von Instruktionen. Welcher Ansatz ist schneller? Können Sie sich Einsatzszenarien für den anderen Ansatz vorstellen?}
+				Bei out-of-order Ausführung werden Instruktionen umsortiert, um Hazards zu vermeiden. Bei in-order Ausführung werden alle Instruktionen in der eigentlichen Reihenfolge ausgeführt und im Falle von Hazards die CPU angehalten (\texttt{HALT}) oder NoOps eingeführt.
 
-                Da für ot-of-order Ausführung mehr Hardware zur Umsortierung vorhanden sein muss, wird bei billigen Prozessoren noch in-order Ausführung eingesetzt.
-        % end
-    % end
-% end
+				Da für ot-of-order Ausführung mehr Hardware zur Umsortierung vorhanden sein muss, wird bei billigen Prozessoren noch in-order Ausführung eingesetzt.
+				% end
+				% end
+				% end

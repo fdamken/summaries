@@ -1,48 +1,48 @@
 \chapter{Introduction}
 	\section{Motivation} % 1.10
 		\todo{Content}
-	% end
+		% end
 
 	\section{Traditional Reliability Measures} % 1.11, 1.12
 		\todo{Content}
-	% end
+		% end
 
 	\section{Classical Testing} % 1.13, 1.14
 		\todo{Content}
-	% end
+		% end
 
 	\section{Formal Methods} % 1.15, 1.16, 1.17, 1.19, 1.20
 		\todo{Content}
 
 		\subsection{Specification} % 1.18
 			\todo{Content}
-		% end
+			% end
 
 		\subsection{Difficulties} % 1.21, 1.22, 1.23, 1.24
 			\todo{Content}
-		% end
+			% end
 
 		\subsection{Abstraction and Expressiveness} % 1.25, 1.26, 1.27
 			\todo{Content}
-		% end
+			% end
 
 		\subsection{Automatic Proof Search} % 1.28
 			\todo{Content}
-		% end
-	% end
+			% end
+			% end
 
 	\section{Model Checking} % 1.29, 1.30, 1.31
 		\todo{Content}
-	% end
+		% end
 
 	\section{Deductive Verification} % 1.32, 1.33, 1.34
 		\todo{Content}
-	% end
+		% end
 
 	\section{Tool Support} % 1.35
 		\todo{Content}
-	% end
-% end
+		% end
+		% end
 
 \chapter{PROMELA}
 	\textit{PROMELA} is an acronmy for \textit{Process meta-language} and is a language for modeling concurrent systems:
@@ -74,7 +74,7 @@
 			\item Printing using \inlinePromela{printf} uses a simplified C-like formatting syntax.
 			\item PROMELA is general is a bit C-like (also adapts the comment style of C).
 		\end{itemize}
-	% end
+		% end
 
 	\section{Data Types}
 		\subsection{Arithmetic}
@@ -87,13 +87,13 @@
 				\item No floats and no strings.
 				\item The compiler moves all variable declarations to the start of the process, so avoid putting declarations anywhere else than the start!
 			\end{itemize}
-		% end
+			% end
 
 		\subsection{Booleans}
 			\begin{itemize}
 				\item The data type \inlinePromela{bool} has the literals \inlinePromela{true} and \inlinePromela{false} which are only syntactic sugar for \inlinePromela{0} (\inlinePromela{false}) and \inlinePromela{1} (\inlinePromela{true}), thus is \inlinePromela{bool} for \inlinePromela{bit}.
 			\end{itemize}
-		% end
+			% end
 
 		\subsection{Enumerations}
 			\begin{lstlisting}[caption = { PROMELA Enumerations }, label = lst:promelaEnum, language = PROMELA]
@@ -101,13 +101,13 @@ mtype = { red, yellow, green };
 mtype light = green;
 printf("The light is %e\n", light)
 			\end{lstlisting}
-			
+
 			\begin{itemize}
 				\item The literals are names for a non-zero \inlinePromela{byte}, thus at most 255 elements can be defined.
 				\item The abbreviation \inlinePromela{mtype} stands for \textit{message type} (as the first use was for message names).
 				\item It is only possible to define at most one \inlinePromela{mtype} per program.
 			\end{itemize}
-		% end
+			% end
 
 		\subsection{Arrays}
 			\begin{lstlisting}[caption = { PROMELA Arrays }, label = lst:promelaArray, language = PROMELA]
@@ -124,7 +124,7 @@ active proctype P() {
 	}
 }
 			\end{lstlisting}
-		
+
 			\begin{itemize}
 				\item Array indices start with zero, like in C.
 				\item All entries are initialized with zero.
@@ -133,7 +133,7 @@ active proctype P() {
 				\item Only one-dimensional arrays are possible (except for ugly workarounds).
 				\item For-loops like in program~\ref{lst:promelaArray} run over the indices of the array, not the elements!
 			\end{itemize}
-		% end
+			% end
 
 		\subsection{Record}
 			\begin{lstlisting}[caption = { PROMELA Records }, label = lst:promelaRecord, language = PROMELA]
@@ -146,14 +146,14 @@ active proctype P() {
 	D.day = 11;  D.month = 11;  D.year = 1997
 }
 			\end{lstlisting}
-			
+
 			\begin{itemize}
 				\item Similar to structs in C.
 				\item Record types may include references to previously defined record type, but no self-references are allowed!
 				\item Can be used to realize multi-dimensional arrays (with arrays of record types including arrays)\dots
 			\end{itemize}
-		% end
-	% end
+			% end
+			% end
 
 	\section{Control Statements}
 		\begin{description}
@@ -165,7 +165,7 @@ active proctype P() {
 
 		\subsection{Selection}
 			\lstinputlisting[caption = { PROMELA Selection }, label = lst:promelaSelection, language = PROMELA]{\lstbasepath/code/promela/selection.pml}
-			
+
 			\begin{itemize}
 				\item The \textit{guards} (the conditions before the \inlinePromela{->}) may overlap. That is, multiple guard may be true at one time (like in program~\ref{lst:promelaSelection}).
 				\item Any alternative with a true guard is chosen randomly (non-deterministic).
@@ -173,19 +173,19 @@ active proctype P() {
 				\item During command line execution, the trace of the random simulation can be printed:
 					\outputlisting{\lstbasepath/code/promela/selection.pml.out}
 				\item The Symbol \inlinePromela{->} is overloaded in PROMELA:
-				\begin{itemize}
-					\item Also used in conditional expressions \inlinePromela{boolean-guard -> then : else}.
-					\item The brackets are mandatory in conditional expressions.
-				\end{itemize}
+					\begin{itemize}
+						\item Also used in conditional expressions \inlinePromela{boolean-guard -> then : else}.
+						\item The brackets are mandatory in conditional expressions.
+					\end{itemize}
 				\item The first statement after \inlinePromela{::} is evaluated as the guard. It is possible to use a semicolon instead of an arrow, but this is confusing and shall not be done.
 				\item If an alternative should be selectable every time, it can be the literal \inlinePromela{true}.
 				\item To mark an alternative as selectable iff no other alternative is true, it should be marked with \inlinePromela{else}.
 			\end{itemize}
-		% end
+			% end
 
 		\subsection{Repetition}
 			\lstinputlisting[caption = { PROMELA Repetition }, label = lst:promelaDo, language = PROMELA]{\lstbasepath/code/promela/repetition.pml}
-			
+
 			\begin{itemize}
 				\item Like in the selection statement, any alternative with a true guard is chosen randomly.
 				\item The only way to exit a loop is by \inlinePromela{break} or \inlinePromela{goto}.
@@ -194,7 +194,7 @@ active proctype P() {
 				\item During command line execution, the trace of the random simulation can be printed as well as the values of the local variables:
 					\outputlisting{\lstbasepath/code/promela/repetition.pml.out}
 			\end{itemize}
-		
+
 			\subsubsection{For-Loops}
 				\begin{lstlisting}[caption = { PROMELA For-Loops }, label = lst:promelaFor, language = PROMELA]
 #define N 10
@@ -207,24 +207,24 @@ active proctype P() {
 	}
 }
 				\end{lstlisting}
-			
+
 				\begin{itemize}
 					\item Starting from SPIN version 6, it is possible to have C-style for loops.
 					\item They are translated into do-loops by the compiler and can iterate over Array indices (like in program~\ref{lst:promelaArray}) or over ranges (like in program~\ref{lst:promelaFor}).
 				\end{itemize}
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{Jumps}
 			\lstinputlisting[caption = { PROMELA Jumps }, label = lst:promelaGoto language = PROMELA]{\lstbasepath/code/promela/jumps.pml}
-		
+
 			\begin{itemize}
 				\item It is possible to define labels and jump to them using \inlinePromela{goto}.
 				\item These labels must be unique for a process and it is not possible to place labels in front of guards.
 				\item It is easy to write messy code with \inlinePromela{goto}! Take this into account when using!
 			\end{itemize}
-		% end
-	% end
+			% end
+			% end
 
 	\section{Inlining Code}
 		\begin{lstlisting}[caption = { PROMELA Inlines }, label = lst:promelaInline, language = PROMELA]
@@ -247,7 +247,7 @@ active proctype P() {
 			\item The code is then inlined (i.e. copied) into the "calling" place.
 			\item Thus, no new scope is created and all variables may be modified \(\implies\) avoid declaring variables in and inline block, they are visible for the calling process.
 		\end{itemize}
-	% end
+		% end
 
 	\section{Nondeterminism}
 		Deterministic PROMELA programs are trivial: Assuming a program with only one process and no overlapping guards, all variables are (implicitly or explicitly) initialized as no user input is possible and each state is either blocking or has exactly one successor state. Non-trivial PROMELA programs are non-deterministic with different possible sources of non-determinism:
@@ -258,7 +258,7 @@ active proctype P() {
 
 		\subsection{Value Generation}
 			One of the most important sources of non-determinism is the non-deterministic generation of values. This section will cover some possibilities for such generations.
-			
+
 			\paragraph{Overlapping Guards}
 				\begin{lstlisting}[caption = { PROMELA Non-Deterministic Value Generation by Guards }, label = lst:promelaNonDetGuard, language = PROMELA]
 active proctype P() {
@@ -272,13 +272,13 @@ active proctype P() {
 	printf("Chose %d\n", range)
 }
 				\end{lstlisting}
-				
+
 				\begin{itemize}
 					\item The code in listing~\ref{lst:promelaNonDetGuard} is equivalent to multiple Guards \inlinePromela{:: true -> range = 1} etc. as an assignment is always true (it always succeeds).
 					\item This yields a non-deterministic choice for \inlinePromela{range} in the domain \( \{\, 1,\, 2,\, 3,\, 4 \,\} \).
 				\end{itemize}
-			% end
-			
+				% end
+
 			\paragraph{Loop}
 				\begin{lstlisting}[caption = { PROMELA Non-Deterministic Value Generation by Loop }, label = lst:promelaNonDetLoop, language = PROMELA]
 #define LOW  0
@@ -293,14 +293,14 @@ active proctype P() {
 	printf("Chose %d\n", range)
 }
 				\end{lstlisting}
-				
+
 				\begin{itemize}
 					\item The code in listing~\ref{lst:promelaNonDetLoop} generates a value for \inlinePromela{range} in the domain \( \{\, \texttt{LOW},\, \cdots,\, \texttt{HIGH} \,\} \) with the probability \( 2^{-(n + 1)} \) for generating the number \(n\).
 					\item This the probability for larger numbers reduced \( \implies \) does not yields representative test cases for random simulation.
 					\item But as in verification, all computations are generated, this solution works well enough for verification.
 				\end{itemize}
-			% end
-			
+				% end
+
 			\paragraph{Select}
 				\begin{lstlisting}[caption = { PROMELA Non-Deterministic Value Generation by Select }, label = lst:promelaNonDetSelect, language = PROMELA]
 #define LOW  0
@@ -312,14 +312,14 @@ active proctype P() {
 	printf("Chose %d\n", i)
 }
 				\end{lstlisting}
-				
+
 				\begin{itemize}
 					\item The \inlinePromela{select} macro is only available in SPIN version 6 and above.
 					\item Syntactic sugar for generating values in a given range.
 				\end{itemize}
-			% end
-		% end
-	% end
+				% end
+				% end
+				% end
 
 	\section{Concurrent Systems}
 		\begin{itemize}
@@ -333,10 +333,10 @@ active proctype P() {
 				\end{itemize}
 				And these need to be carefully designed, otherwise a deadlock might happen!
 		\end{itemize}
-	
+
 		\subsection{Modeling in PROMELA}
 			\lstinputlisting[caption = { PROMELA with multiple Processes }, label = lst:promelaMultipleProcesses, language = PROMELA]{\lstbasepath/code/promela/multiple-processes.pml}
-		
+
 			\begin{itemize}
 				\item The primary concept for modeling concurrent systems in PROMELA is the use of processes.
 				\item In PROMELA, more than one process can be created (max. 255) that all need unique identifiers.
@@ -349,11 +349,11 @@ active proctype P() {
 				\item One sample execution of the program~\ref{lst:promelaMultipleProcesses} (the indicates the process that has generated the string, "one tab per process ID"; can be suppressed with the switch \texttt{-T}):
 					\outputlisting{\lstbasepath/code/promela/multiple-processes.pml.out}
 			\end{itemize}
-		% end
+			% end
 
 		\subsection{Starting Processing Explicitly}
 			\lstinputlisting[caption = { PROMELA Init Process }, label = lst:promelaInit, language = PROMELA]{\lstbasepath/code/promela/init.pml}
-		
+
 			\begin{itemize}
 				\item There is exactly one \textit{initial process} that spawns the other ones.
 				\item This process is often declared implicitly using the keyword \inlinePromela{active} in the process definition (this process is ran once the program is started).
@@ -361,10 +361,10 @@ active proctype P() {
 				\item Another process is started with the keyword \inlinePromela{run}. This invocation does not wait until the process is ready, thus the code in process \inlinePromela{Q} may be executed even before the first execution of an instance of process \inlinePromela{P}.
 				\item It is also possible to wrap the invocations of \inlinePromela{run} into an \inlinePromela{atomic \{ ... \}} block, causing the process to execute only after all processes are created. The keyword \inlinePromela{atomic} is discussed in detail in section \ref{sec:atomic}.
 			\end{itemize}
-		
+
 			\subsubsection{Parameters}
 				Processes may also have arguments that have to be passed when instantiated by \inlinePromela{run}, see listing~\ref{lst:promelaParams}.
-				
+
 				\begin{lstlisting}[caption = { PROMELA Processes with Parameters }, label = lst:promelaParams, language = PROMELA]
 proctype P(byte i; bool b) { ... }
 
@@ -373,8 +373,8 @@ init {
 	run P(8, false)
 }
 				\end{lstlisting}
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{Joining Processes}
 			\begin{lstlisting}[caption = { Joining PROMELA Processes }, label = lst:promelaJoin, language = PROMELA]
@@ -388,9 +388,9 @@ init {
 	(_nr_pr == 1) -> printf("ready")
 }
 			\end{lstlisting}
-		
+
 			Processes may be joined by using a trick: Wait for the variable \inlinePromela{\_nr\_pr} to equal \inlinePromela{1}, indicating that only one process still runs (the variable holds the number of processes currently running). This utilization is shown in listing~\ref{lst:promelaJoin}.
-		% end
+			% end
 
 		\subsection{Local and Global Data}
 			\begin{itemize}
@@ -404,28 +404,28 @@ init {
 					\end{itemize}
 					Global variables must never be used to model process-local data!
 			\end{itemize}
-		
+
 			\subsubsection{Interference of Global Data}
 				\lstinputlisting[caption = { PROMELA Global Data Interference }, label = lst:promelaInterference, language = PROMELA]{\lstbasepath/code/promela/interference.pml}
-			
+
 				Given the program in listing~\ref{lst:promelaInterference}, how many possible outputs exist? This can be drawn in "transition graph" shown in figure~\ref{fig:promelaInterference}.
-				
+
 				\begin{figure}
 					\centering
 					\includegraphics[width = \textwidth]{tmp-promela-interference\IfDarkModeT{-dark}}
 					\caption{PROMELA Interference Graph}
 					\label{fig:promelaInterference}
 				\end{figure}
-			% end
+				% end
 
 			\subsubsection{Synchronizing Global Data}
 				PROMELA provides no primitives like semaphores, locks or monitors for synchronizing on global data. Instead, PROMELA controls the statement \textit{executability} which is covered in more detail in section~\ref{sec:promelaExec}.
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{Computations}
 			\label{sec:promelaComp}
-		
+
 			\begin{lstlisting}[caption = { PROMELA Computations Example }, label = lst:promelaCompEx, language = PROMELA]
 active [2] proctype P() {
 	byte n = 0;
@@ -433,9 +433,9 @@ active [2] proctype P() {
 	n = 2
 }
 			\end{lstlisting}
-		
+
 			The possible computations of a PROMELA program can be shown in a transition graph. For example, figure~\ref{fig:promelaComp} shows the graph for possible computations of the program~\ref{lst:promelaCompEx} where only one computation is possible (as no global data is used). The program pointer (line number) for each process is shown in the left/upper compartment and the values of the variables in the lower compartment.
-			
+
 			\begin{figure}[H]
 				\centering
 				\includegraphics[width = \textwidth]{tmp-promela-computations\IfDarkModeT{-dark}.pdf}
@@ -446,24 +446,24 @@ active [2] proctype P() {
 			\subsubsection{Interleaving}
 				\definition{Interleaving of independent Computations}{
 					Assume \(n\) independent processes \( P_1, \cdots, P_n \) where process \( P_i\) has the computation \( c^i = (s_0^i, s_1^i, s_2^i, \cdots) \).
-					
+
 					The computation \( (s_0, s_1, s_2, \cdots) \) is an \textit{interleaving} of \( c^1, \cdots, c^n \) iff for all \( s_j = s_{j'}^i \) and \( s_k = s_{k'}^i \) with \( j < k \) it is the case that \( j' < k' \).
 				}
-			
+
 				These interleavings can be represented as a directed graph. See figure~\ref{fig:promelaInterleaving} for the interleaving graph of the program~\ref{lst:promelaCompEx}.
-				
+
 				\begin{figure}
 					\centering
 					\includegraphics[width = \textwidth]{tmp-promela-interleavings\IfDarkModeT{-dark}.pdf}
 					\caption{PROMELA Interleavings}
 					\label{fig:promelaInterleaving}
 				\end{figure}
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{Atomicity}
 			\definition{Atomicity}{An expression or statement that is executed entirely without the possibility of interleaving is called \textit{atomic}.}
-			
+
 			\begin{itemize}
 				\item In PROMELA, assignments, jumps, skip and expressions are atomic.
 				\item In particular, conditional expressions \inlinePromela{(p -> q : r)} are atomic (brackets required).
@@ -509,7 +509,7 @@ Select [1-2]: 2
 [1]    2513 floating point exception  spin -p -g -i divbyzero.pml
 					\end{lstlisting}
 			\end{itemize}
-		
+
 			\lstinputlisting[caption = { Atomicity of Guards in PROMELA }, label = lst:promelaDivByZero, language = PROMELA]{\lstbasepath/code/promela/divbyzero.pml}
 
 			\subsubsection{Deterministic Sequences}
@@ -520,7 +520,7 @@ Select [1-2]: 2
 					\item If the first statement (the "guard") blocks, \inlinePromela{d\_step} is not entered as a whole.
 					\item Listing~\ref{lst:promelaDStep} shows the general syntax.
 				\end{itemize}
-			
+
 				\begin{lstlisting}[caption = { Deterministic Sequence in PROMELA }, label = lst:promelaDStep, language = PROMELA]
 d_step {
 	stmt1;  /* Guard */
@@ -528,11 +528,11 @@ d_step {
 	stmt3
 }
 				\end{lstlisting}
-			% end
+				% end
 
 			\subsubsection{Atomic Sequences}
 				\label{sec:atomic}
-			
+
 				\begin{itemize}
 					\item A sequence marked with \inlinePromela{atomic} is \textit{weakly atomic} and can be interrupted if and only if a statement blocks.
 					\item In an atomic block, non-determinism is possible (so overlapping guards have the well-known behavior of selecting a random alternative).
@@ -540,7 +540,7 @@ d_step {
 					\item The block is only entered iff the first statement (the "guard") does not block.
 					\item Listing~\ref{lst:promelaAtomic} shows the general syntax.
 				\end{itemize}
-			
+
 				\begin{lstlisting}[caption = { Atomic Sequence in PROMELA }, label = lst:promelaAtomic, language = PROMELA]
 atomic {
 	stmt1;  /* Guard */
@@ -548,12 +548,12 @@ atomic {
 	stmt3
 }
 				\end{lstlisting}
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{Executability} % 4.26, 4.27, 4.28
 			\label{sec:promelaExec}
-		
+
 			\begin{itemize}
 				\item PROMELA does not have synchronization primitives like semaphores, locks or monitors.
 				\item Instead, PROMELA controls a statements \textit{executability} (the absence of blocking).
@@ -561,19 +561,19 @@ atomic {
 				\item Most known synchronization primitives like test-and-set, compare-and-swap, semaphores, \dots can be modeled using executability and atomicity.
 				\item The executability of basic statements is shown in table~\ref{tab:promelaExec}.
 			\end{itemize}
-		
+
 			\begin{table}
 				\centering
 				\begin{tabular}{c | c}
-					               \textbf{Statement Type}                & \textbf{Executable}                                   \\ \hline
-					                     Assignments                      & always                                                \\
-					                     Assertions                       & always                                                \\
-					                  Print Statements                    & always                                                \\
-					                Expression Statements                 & iff value not \inlinePromela{0}/\inlinePromela{false} \\
-					   \inlinePromela{atomic}, \inlinePromela{d\_step}    & iff the guard is executable                           \\
-					       \inlinePromela{if}, \inlinePromela{do}         & iff any alternative is executable                     \\
+					\textbf{Statement Type}                               & \textbf{Executable}                                   \\ \hline
+					Assignments                                           & always                                                \\
+					Assertions                                            & always                                                \\
+					Print Statements                                      & always                                                \\
+					Expression Statements                                 & iff value not \inlinePromela{0}/\inlinePromela{false} \\
+					\inlinePromela{atomic}, \inlinePromela{d\_step}       & iff the guard is executable                           \\
+					\inlinePromela{if}, \inlinePromela{do}                & iff any alternative is executable                     \\
 					alternative of \inlinePromela{if}, \inlinePromela{do} & iff the guard is executable                           \\
-					                 \inlinePromela{for}                  & always (body can block)
+					\inlinePromela{for}                                   & always (body can block)
 				\end{tabular}
 				\caption{Basic Executability in PROMELA}
 				\label{tab:promelaExec}
@@ -581,23 +581,23 @@ atomic {
 
 			\subsubsection{Blocking} % 4.29
 				\definition{Blocking}{A \textit{statement} is \textit{blocking} iff it is not executable. A \textit{process} is \textit{blocking} iff its location counter points to a blocking statement.}
-				
+
 				\begin{itemize}
 					\item For the next step of the execution, the scheduler chooses one of the non-blocking statements randomly (non-deterministically).
 					\item Executability and blocking are the basic concepts in PROMELA for modeling solutions to synchronization problems.
 				\end{itemize}
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{Critical Section Problem}
 			The \textit{critical section problem} is an archetypical problem of concurrent systems.
-			
+
 			\definition{Critical Section}{The \textit{critical section} (CS) of a process is the block of code where shared state (e.g. global variables) are accessed and possible manipulated.}
-			
+
 			\definition{CS Problem}{Given a set of processes that each contain at least one critical section, then the result of the computation performed may depend on their execution order.}
-			
+
 			\definition{Mutual Exclusion}{At most one process is executing its critical section at any given time.}
-			
+
 			\begin{itemize}
 				\item Mutual exclusion is a solution to the CS problem.
 				\item There are two main challenges that have to be taken into account when dealing with critical sections:
@@ -607,7 +607,7 @@ atomic {
 					\end{itemize}
 				\item In the following sections, the listing~\ref{lst:promelaCSP} is used as an example. This example also represents the common "critical section pattern".
 			\end{itemize}
-		
+
 			\begin{lstlisting}[caption = { Critical Section Pattern in PROMELA }, label = lst:promelaCSP, language = PROMELA]
 active proctype P() {
 	do
@@ -631,7 +631,7 @@ active proctype Q() {
 			\subsubsection{Mutual Exclusion}
 				\paragraph{First Attempt}
 					Simple idea: Use boolean flags to control access to critical section, see listing~\ref{lst:promelaME1}. But this does not yet solve guarantee mutual exclusion!
-					
+
 					\begin{lstlisting}[caption = { ME in PROMELA: First Attempt }, label = lst:promelaME1, language = PROMELA]
 bool enterCriticalP = false;
 bool enterCriticalQ = false;
@@ -649,16 +649,16 @@ active proctype P() {
 
 active proctype Q() { /* analogous */ }
 					\end{lstlisting}
-				% end
-				
+					% end
+
 				\paragraph{Second Attempt: Busy Waiting}
 					Busy waiting: Loop until the indicator variable gets a specific value, see listing~\ref{lst:promelaME2}.
-					
+
 					\begin{itemize}
 						\item Busy waiting works, but is problematic as it does not block the execution, even if the exclusion property is not fulfilled.
 						\item This is wasteful on resources.
 					\end{itemize}
-					
+
 					\begin{lstlisting}[caption = { ME in PROMELA: Busy Waiting }, label = lst:promelaME2, language = PROMELA]
 bool enterCriticalP = false;
 bool enterCriticalQ = false;
@@ -678,11 +678,11 @@ active proctype P() {
 
 active proctype Q() { /* analogous */ }
 					\end{lstlisting}
-				% end
-				
+					% end
+
 				\paragraph{Third Attempt: Blocking}
 					Blocking: Use the exclusion property to release control if its not fulfilled and continue only when the exclusion properties are fulfilled. For this behavior, no assignment is used by the expression statement \inlinePromela{!enterCriticalQ} which blocks when the expression evaluates to \inlinePromela{false}. See listing~\ref{lst:promelaME3} for an example implementation. This ensures ME, but is insufficient for proofing it using SPIN (see section \ref{sec:proofME} for more details).
-					
+
 					\begin{lstlisting}[caption = { ME in PROMELA: Busy Waiting }, label = lst:promelaME3, language = PROMELA]
 bool enterCriticalP = false;
 bool enterCriticalQ = false;
@@ -700,8 +700,8 @@ active proctype P() {
 
 active proctype Q() { /* analogous */ }
 					\end{lstlisting}
-				% end
-			% end
+					% end
+					% end
 
 			\subsubsection{Variations}
 				\begin{itemize}
@@ -719,7 +719,7 @@ active proctype Q() { /* analogous */ }
 						\end{itemize}
 					\item And many more\dots
 				\end{itemize}
-			% end
+				% end
 
 		\subsection{Deadlocks}
 			\begin{itemize}
@@ -740,14 +740,14 @@ active proctype Q() { /* analogous */ }
 						\item Check and set the critical section flag in one \inlinePromela{atomic} step.
 					\end{itemize}
 			\end{itemize}
-		% end
-	% end
+			% end
+			% end
 
 	\section{Distributed Systems}
 		\label{sec:distributed}
-	
+
 		\info{"You know you have a distributed system when the crash of a computer you've never heard of stops you from getting any work done." (Leslie Lamport)}
-		
+
 		Distributed systems consist of
 		\begin{itemize}
 			\item \textit{nodes} that are connected by
@@ -791,7 +791,7 @@ active proctype Q() { /* analogous */ }
 					\item This sends the values or \inlinePromela{expr1, ..., exprN} as a single message over the channel.
 					\item Example: \inlinePromela{ch ! green, 20, false}
 				\end{itemize}
-			
+
 				The \textit{receive statement} has the form:
 				\begin{center}
 					\inlinePromela{name ? var1, ..., varN}
@@ -805,17 +805,17 @@ active proctype Q() { /* analogous */ }
 					\item An alternative syntax is \inlinePromela{name ? var1(var2, ..., varN)}.
 					\item For copying a message without removing it, the variable names have to be wrapped in \inlinePromela{< >}, e.g. \inlinePromela{ch ? <color, time, flash>}
 				\end{itemize}
-			
+
 				The executability table for channels is shown in table~\ref{tab:promelaExecCh}.
-				
+
 				\begin{table}[h]
 					\centering
 					\begin{tabular}{c | c}
-						        \textbf{Statement Type}         & \textbf{Executable}                                                 \\ \hline
+						\textbf{Statement Type}                 & \textbf{Executable}                                                 \\ \hline
 						\inlinePromela{name ! msg} (rendezvous) & iff some process wants to receive from the channel                  \\
 						\inlinePromela{name ? msg} (rendezvous) & iff a message is available in the channel                           \\
-						 \inlinePromela{name ! msg} (buffered)  & iff the message queue is not full, i.e. \( n < \textrm{capacity} \) \\
-						 \inlinePromela{name ? msg} (buffered)  & iff the channel is not empty, i.e. \( n > 0 \)
+						\inlinePromela{name ! msg} (buffered)   & iff the message queue is not full, i.e. \( n < \textrm{capacity} \) \\
+						\inlinePromela{name ? msg} (buffered)   & iff the channel is not empty, i.e. \( n > 0 \)
 					\end{tabular}
 					\caption{Executability of Send/Receive in PROMELA}
 					\label{tab:promelaExecCh}
@@ -836,7 +836,7 @@ active proctype Q() { /* analogous */ }
 							\end{itemize}
 						\item The receive statement is only executable iff matching succeeds.
 					\end{itemize}
-				% end
+					% end
 
 				\paragraph{Random Receive}
 					For a buffered channel, the syntax
@@ -849,8 +849,8 @@ active proctype Q() { /* analogous */ }
 						\item Can be used to transmit messages with different purposes over one channel.
 						\item The name "random receive" is confusing - the matching is executed deterministically!
 					\end{itemize}
-				% end
-			% end
+					% end
+					% end
 
 			\subsubsection{Scope}
 				\begin{itemize}
@@ -867,7 +867,7 @@ active proctype Q() { /* analogous */ }
 							\item A reference to a local channel may be passed through a global channel.
 						\end{itemize}
 				\end{itemize}
-			% end
+				% end
 
 			\subsubsection{Rendezvous}
 				Because of the executability rules of rendezvous channels, the transfer of a message from sender to receiver is synchronous, i.e. in a single operation. There are only two possibility for the execution of send/receive through a rendezvous channel:
@@ -884,7 +884,7 @@ active proctype Q() { /* analogous */ }
 						\end{enumerate}
 				\end{enumerate}
 				In either case, the location counter both processes is incremented at once. This is the only place in PROMELA where processes are executed synchronously!
-				
+
 				\paragraph{Drawbacks}
 					Rendezvous are too restrictive for many application.
 					\begin{itemize}
@@ -892,8 +892,8 @@ active proctype Q() { /* analogous */ }
 						\item It is difficult to manage uneven workload (small number of servers service thousands of clients).
 						\item Make the channel types as small as possible (this also holds for buffered channels).
 					\end{itemize}
-				% end
-			% end
+					% end
+					% end
 
 			\subsubsection{Buffered}
 				Buffered channels queue messages, so that requests/services do not immediately block clients/servers. Buffered channels with capacity \texttt{cap}\dots
@@ -905,7 +905,7 @@ active proctype Q() { /* analogous */ }
 					\item The executability is shown in table~\ref{tab:promelaExecCh}.
 					\item With the SPIN option \texttt{-m} it is possible to prescribe a different sending semantics: send to a full channel does not block, but the message is lost instead.
 				\end{itemize}
-			
+
 				\paragraph{Checking Channels for being Full/Empty}
 					In order to prevent blocking, it is possible to check the state of a channel \inlinePromela{ch}:
 					\begin{itemize}
@@ -914,46 +914,46 @@ active proctype Q() { /* analogous */ }
 						\item \inlinePromela{empty(ch)}  \tabto{2cm} Checks whether \inlinePromela{ch} is empty.
 						\item \inlinePromela{nempty(ch)} \tabto{2cm} Checks whether \inlinePromela{ch} is not empty.
 					\end{itemize}
-					
+
 					These guards cannot be negated and thus shall not be combined with \inlinePromela{else} (this is an implicit negation), which can result in unintuitive blocking behavior.
-				% end
-				
+					% end
+
 				\paragraph{Drawbacks}
 					Buffered channels are part of the state which enlarges the state space that has to be traversed during verification a lot!
-					
+
 					\begin{itemize}
 						\item Do not use buffered channels unless they are needed.
 						\item Set the capacity as low as possible.
 						\item Make the channel types as small as possible (this also holds for rendezvous channels).
 					\end{itemize}
-				% end
-			% end
-		% end
+					% end
+					% end
+					% end
 
 		\subsection{Client-Server Model}
 			\lstinputlisting[caption = { Client-Server Model in PROMELA }, label = lst:promelaClientServer, language = PROMELA]{\lstbasepath/code/promela/client-server.pml}
-		
+
 			The basic code for the client-server Model is shown in listing~\ref{lst:promelaClientServer}. Because of interleaving, the order of sending is non-deterministic. The execution
 			\outputlisting{\lstbasepath/code/promela/client-server.pml.out}
 			produced a timeout in the server as not further messages are sent by the clients and the server blocks forever.
 
 			\subsubsection{Reply Channels}
 				\lstinputlisting[caption = { Client-Server Model with Replys in PROMELA }, label = lst:promelaClientServerReply, language = PROMELA]{\lstbasepath/code/promela/client-server-reply.pml}
-			
+
 				The above client-server model does not yet have replies which is not very useful. A second channel can be used to reply for the clients. The listing~\ref{lst:promelaClientServerReply} shows a slightly different example where the client sends a message and the server is asked to respond with the same message.
-				
+
 				This protocol has the problem that interleaving may occur and the wrong response is sent (if more than one server is used).
-			% end
+				% end
 
 			\subsubsection{Sending Channels via Channels}
 				\lstinputlisting[caption = { Client-Server Model with Sending Channels in PROMELA }, label = lst:promelaClientServerCh, language = PROMELA]{\lstbasepath/code/promela/client-server-ch.pml}
-			
+
 				One way to fix the protocol is that the clients declare local reply channels that are then send to the server, as shown in listing~\ref{lst:promelaClientServerCh}.
-			% end
+				% end
 
 			\subsubsection{Sending Process IDs}
 				The above examples used fixed constants for client identification (\inlinePromela{nice}, \inlinePromela{rude}). This is inflexible, produces brittle code and does not scale for lots of clients. An improvement is to use process IDs, \inlinePromela{\_pid}, for identification. The code in listing~\ref{lst:promelaClientServerPid} shows the client code for that process.
-			
+
 				\begin{lstlisting}[caption = { Client-Server Model with PID in PROMELA }, label = lst:promelaClientServerPid, language = PROMELA]
 byte serverID, clientID;
 chan reply = [0] of { byte, byte };
@@ -962,10 +962,10 @@ reply ? serverID, clientID;
 
 assert(clientID == _pid)
 				\end{lstlisting}
-			% end
-		% end
-	% end
-% end
+				% end
+				% end
+				% end
+				% end
 
 \chapter{Linear Temporal Logic (LTL)}
 	\section{Propositional Logic}
@@ -985,21 +985,21 @@ assert(clientID == _pid)
 					\item[] The formulas are connected using the \textit{propositional connectives}, listed in table~\ref{tab:propopConn}.
 				\end{itemize}
 			}
-		
+
 			\begin{table}
 				\centering
 				\begin{tabular}{l|c}
 					\textbf{Name}       & \textbf{Symbol} \\ \hline
-					Negation            &    \(\lnot\)    \\
-					Conjunction ("and") &    \(\land\)    \\
-					Disjunction ("or")  &    \(\lor\)     \\
-					Implication         &     \(\to\)     \\
-					Equivalence         &    \(\eqv\)
+					Negation            & \(\lnot\)       \\
+					Conjunction ("and") & \(\land\)       \\
+					Disjunction ("or")  & \(\lor\)        \\
+					Implication         & \(\to\)         \\
+					Equivalence         & \(\eqv\)
 				\end{tabular}
 				\caption{Propositional Connectives}
 				\label{tab:propopConn}
 			\end{table}
-		% end
+			% end
 
 		\subsection{Semantics}
 			\definition{Propositional Interpretation}{
@@ -1008,7 +1008,7 @@ assert(clientID == _pid)
 					\mathcal{I} : \mathcal{P} \to \{\, \lt,\, \lf \,\}
 				\end{equation*}
 			}
-		
+
 			\definition{Valuation Function}{
 				The valuation semantic under an interpretation \(\mathcal{I}\) is defined by the valuation function
 				\begin{equation*}
@@ -1016,44 +1016,44 @@ assert(clientID == _pid)
 				\end{equation*}
 				with the following semantics (let \( p \in \mathcal{P} \), \( \phi, \psi \in \pFor \)):
 				\begin{align*}
-					\val_\mathcal{I}(p) &\coloneqq \mathcal{I}(p) \\
-					\val_\mathcal{I}(\textbf{true}) &\coloneqq \lt \\
-					\val_\mathcal{I}(\textbf{false}) &\coloneqq \lf \\
-					\val_\mathcal{I}(\lnot\phi) &\coloneqq
-						\begin{cases}
-							\lt & \textrm{iff } \val_\mathcal{I}(\phi) = \lf \\
-							\lf & \textrm{otherwise}
-						\end{cases} \\
-					\val_\mathcal{I}(\phi \land \psi) &\coloneqq
-						\begin{cases}
-							\lt & \textrm{iff } \val_\mathcal{I}(\phi) = \lt \textrm{ and } \val_\mathcal{I}(\psi) = \lt \\
-							\lf & \textrm{otherwise}
-						\end{cases} \\
-					\val_\mathcal{I}(\phi \land \psi) &\coloneqq
-						\begin{cases}
-							\lt & \textrm{iff } \val_\mathcal{I}(\phi) = \lt \textrm{ or } \val_\mathcal{I}(\psi) = \lt \\
-							\lf & \textrm{otherwise}
-						\end{cases} \\
-					\val_\mathcal{I}(\phi \to \psi) &\coloneqq
-						\begin{cases}
-							\lt & \textrm{iff } \val_\mathcal{I}(\phi) = \lf \textrm{ or } \val_\mathcal{I}(\psi) = \lt \\
-							\lf & \textrm{otherwise}
-						\end{cases} \\
-					\val_\mathcal{I}(\phi \eqv \psi) &\coloneqq
-						\begin{cases}
-							\lt & \textrm{iff } \val_\mathcal{I}(\phi) = \val_\mathcal{I}(\psi) \\
-							\lf & \textrm{otherwise}
-						\end{cases}
+					\val_\mathcal{I}(p)               & \coloneqq \mathcal{I}(p)                                 \\
+					\val_\mathcal{I}(\textbf{true})   & \coloneqq \lt                                            \\
+					\val_\mathcal{I}(\textbf{false})  & \coloneqq \lf                                            \\
+					\val_\mathcal{I}(\lnot\phi)       & \coloneqq
+					\begin{cases}
+						\lt & \textrm{iff } \val_\mathcal{I}(\phi) = \lf \\
+						\lf & \textrm{otherwise}
+					\end{cases}                                             \\
+					\val_\mathcal{I}(\phi \land \psi) & \coloneqq
+					\begin{cases}
+						\lt & \textrm{iff } \val_\mathcal{I}(\phi) = \lt \textrm{ and } \val_\mathcal{I}(\psi) = \lt \\
+						\lf & \textrm{otherwise}
+					\end{cases} \\
+					\val_\mathcal{I}(\phi \land \psi) & \coloneqq
+					\begin{cases}
+						\lt & \textrm{iff } \val_\mathcal{I}(\phi) = \lt \textrm{ or } \val_\mathcal{I}(\psi) = \lt \\
+						\lf & \textrm{otherwise}
+					\end{cases}  \\
+					\val_\mathcal{I}(\phi \to \psi)   & \coloneqq
+					\begin{cases}
+						\lt & \textrm{iff } \val_\mathcal{I}(\phi) = \lf \textrm{ or } \val_\mathcal{I}(\psi) = \lt \\
+						\lf & \textrm{otherwise}
+					\end{cases}  \\
+					\val_\mathcal{I}(\phi \eqv \psi)  & \coloneqq
+					\begin{cases}
+						\lt & \textrm{iff } \val_\mathcal{I}(\phi) = \val_\mathcal{I}(\psi) \\
+						\lf & \textrm{otherwise}
+					\end{cases}
 				\end{align*}
 			}
-		% end
+			% end
 
 		\subsection{Semantic Notions}
 			Let \( \phi \in \pFor \), \( \Gamma \subseteq \pFor \).
-			
+
 			\definition{Satisfying Interpretation, Consequence Relation}{
 				An interpretation \(\mathcal{I}\) \textit{satisfies} \(\phi\) (write \( \mathcal{I} \models \phi \)) iff \( \val_\mathcal{I}(\phi) = \lt \).
-				
+
 				\indent \(\phi\) \textit{follows from} \( \Gamma \) (write \( \Gamma \models \phi \)) iff for all interpretations \(\mathcal{I}\):
 				\begin{equation*}
 					\textrm{If } \mathcal{I} \models \psi \textrm{ for all } \psi \in \Gamma \textrm{ then also } \mathcal{I} \models \phi
@@ -1063,9 +1063,9 @@ assert(clientID == _pid)
 					\{\, \mathcal{I} : \mathcal{I} \models \psi \textrm{ for all } \psi \in \Gamma \,\} \subseteq \{\, \mathcal{I} : \mathcal{I} \models \phi \,\}
 				\end{equation*}
 			}
-		
+
 			\definition{Satisfiability, Validity}{A formula is \textit{satisfiable} if it is satisfied by some interpretation. If every interpretation satisfied \(\phi\) (write \( \models \phi \)), then \(\phi\) is called \textit{valid}.}
-		% end
+			% end
 
 		\subsection{Expressiveness}
 			\begin{itemize}
@@ -1074,16 +1074,16 @@ assert(clientID == _pid)
 				\item This cannot be done by propositional logic \(\implies\) Linear temporal logic.
 			\end{itemize}
 
-%				\subsubsection{Knights and Knaves}
-%					In old times there existed an island whose inhabitants were either knights or knaves. A knight always tells the truth, while a knave always lies. Hedwig and Katrin lives on that Island. A historian found in the archives the following statements:
-%					\begin{itemize}
-%						\item Hedwig: I am a knave if and only if Katrin is a knave.
-%						\item Katrin: We are of different kind.
-%					\end{itemize}
-%					Who is who?
-%				% end
-		% end
-	% end
+			%				\subsubsection{Knights and Knaves}
+			%					In old times there existed an island whose inhabitants were either knights or knaves. A knight always tells the truth, while a knave always lies. Hedwig and Katrin lives on that Island. A historian found in the archives the following statements:
+			%					\begin{itemize}
+			%						\item Hedwig: I am a knave if and only if Katrin is a knave.
+			%						\item Katrin: We are of different kind.
+			%					\end{itemize}
+			%					Who is who?
+			%				% end
+			% end
+			% end
 
 	\section{Kripke Structure and Transition Systems}
 		\begin{itemize}
@@ -1092,14 +1092,14 @@ assert(clientID == _pid)
 			\item In general, infinitely many different runs are possible.
 			\item Temporal logic is about expressing properties like that a variables changes its value infinitely many often in each run.
 		\end{itemize}
-	
+
 		\begin{figure}
 			\centering
 			\includegraphics[width = \textwidth]{tmp-ltl-kripkestruct\IfDarkModeT{-dark}}
 			\caption{Kripke Structure}
 			\label{fig:kripkeStruct}
 		\end{figure}
-	% end
+		% end
 
 	\section{Syntax}
 		\definition{Syntax of Temporal Logic}{
@@ -1109,40 +1109,40 @@ assert(clientID == _pid)
 			\end{equation*}
 			The formulas are connected using the \textit{temporal connectives}, listed in table~\ref{tab:ltlConn}.
 		}
-	
+
 		\begin{table}
 			\centering
 			\begin{tabular}{l|c|l}
-				\textbf{Name} &   \textbf{Symbol}    & \textbf{Intution}                                                                         \\ \hline
-				Always        &   \(\always \phi\)   & \(\phi\) has to hold on the entire subsequent run                                         \\
+				\textbf{Name} & \textbf{Symbol}      & \textbf{Intution}                                                                         \\ \hline
+				Always        & \(\always \phi\)     & \(\phi\) has to hold on the entire subsequent run                                         \\
 				Sometimes     & \(\sometimes \phi\)  & \(\phi\) eventually has to hold (somewhere)                                               \\
 				Until         & \(\phi \until \psi\) & \(\psi\) at the current or a future position and \(\phi\) has to hold until that position
 			\end{tabular}
 			\caption{Temporal Connectives}
 			\label{tab:ltlConn}
 		\end{table}
-	% end
+		% end
 
 	\section{Semantics}
 		Temporal logic semantics generalize the semantics of propositional logic relative to a sequence of interpretations rather than relative to one interpretation.
-		
+
 		\definition{Run and Suffix}{
 			A \textit{run} \(\sigma\) of a transition system is an infinite chain of states \(s_j\) where \(\mathcal{I}_j\) is the propositional interpretation of variables in the \(j\)-th state. Write \( \sigma = s_0 s_1 \cdots \).
-			
-			Let \( \sigma = s_0 s_1 \cdots \) be a run, then \( \sigma \vert_i \) denotes the \textit{suffix} \( s_i s_{i + 1} \cdots \) of \(\sigma\). 
+
+			Let \( \sigma = s_0 s_1 \cdots \) be a run, then \( \sigma \vert_i \) denotes the \textit{suffix} \( s_i s_{i + 1} \cdots \) of \(\sigma\).
 		}
-	
+
 		\definition{Validity Relation}{
 			The validity of temporal formulas depends on runs \( \sigma = s_0 s_1 \cdots \). Let \( p \in \mathcal{P} \) and \( \psi, \phi \in \pFor \), then the validity relation is defined as:
 			\begin{equation*}
 				\begin{array}{lcl}
-					\sigma \models p               & \iff & \mathcal{I}_0(p) = \lt                                                           \\
-					\sigma \models \lnot \phi      & \iff & \textrm{not } \sigma \models \phi \textrm{ (write \( \sigma \not\models \phi \))} \\
-					\sigma \models \phi \land \psi & \iff & \sigma \models \phi \textrm{ and } \sigma \models \psi                           \\
-					\sigma \models \phi \lor \psi  & \iff & \sigma \models \phi \textrm{ or } \sigma \models \psi                            \\
-					\sigma \models \phi \to \psi   & \iff & \sigma \not\models \psi \textrm{ or } \sigma \models \psi \\
-					\sigma \models \always \phi & \iff & \sigma \vert_k \models \phi \textrm{ for all } k \geq 0 \\
-					\sigma \models \sometimes \phi & \iff & \sigma \vert_k \models \phi \textrm{ for some } k \geq 0 \\
+					\sigma \models p                & \iff & \mathcal{I}_0(p) = \lt                                                                                                              \\
+					\sigma \models \lnot \phi       & \iff & \textrm{not } \sigma \models \phi \textrm{ (write \( \sigma \not\models \phi \))}                                                   \\
+					\sigma \models \phi \land \psi  & \iff & \sigma \models \phi \textrm{ and } \sigma \models \psi                                                                              \\
+					\sigma \models \phi \lor \psi   & \iff & \sigma \models \phi \textrm{ or } \sigma \models \psi                                                                               \\
+					\sigma \models \phi \to \psi    & \iff & \sigma \not\models \psi \textrm{ or } \sigma \models \psi                                                                           \\
+					\sigma \models \always \phi     & \iff & \sigma \vert_k \models \phi \textrm{ for all } k \geq 0                                                                             \\
+					\sigma \models \sometimes \phi  & \iff & \sigma \vert_k \models \phi \textrm{ for some } k \geq 0                                                                            \\
 					\sigma \models \phi \until \psi & \iff & \sigma \vert_k \models \psi \textrm{ for some } k \geq 0 \textrm{ and } \sigma \vert_j \models \phi \textrm{ for all } 0 \leq j < k
 				\end{array}
 			\end{equation*}
@@ -1151,9 +1151,9 @@ assert(clientID == _pid)
 
 		\subsection{Validity}
 			\definition{Validity}{A formula \(\phi\) is called \textit{valid} (write \( \models \phi \)) iff for all runs \( \sigma \) it holds that \( \sigma \models \phi \).}
-			
+
 			\definition{Representation of Runs}{A set of runs can be represented as a sequence of propositional formulas: \( \phi_0 \phi_1 \cdots \) represents all runs \( s_0 s_1 \cdots \) such that \( \mathcal{I}_j \models \phi_j \) for \( j \geq 0 \).}
-		% end
+			% end
 
 		\subsection{Transition Systems}
 			\definition{Transition System}{
@@ -1165,12 +1165,12 @@ assert(clientID == _pid)
 					\item labeling \( \mathcal{I} \) of each state \( s \in S \) with a propositional interpretation \( \mathcal{I}_s \).
 				\end{itemize}
 			}
-		
+
 			\definition{Run of Transition System}{A \textit{run} of \(\mathcal{T}\) is a sequence of states \( \sigma = s_0 s_1 \cdots \) so that \( s_0 \in \textrm{Ini} \) and \( s_i, s_{i + 1} \in \delta \) for all \(i\).}
-			
+
 			\definition{Validity Relation}{Given a transition system \(\mathcal{T}\), a temporal formula \(\phi\) is \textit{valid} \(\mathcal{T}\) (write \( \mathcal{T} \models \phi \)) iff \( \sigma \models \phi \) for all runs \(\sigma\) of \(\mathcal{T}\).}
-		% end
-	% end
+			% end
+			% end
 
 	\section{Safety and Liveness Properties}
 		\subsection{Safety Properties}
@@ -1179,32 +1179,32 @@ assert(clientID == _pid)
 				\item Let \texttt{mutex} be a variable that is true when two processes do not access a critical resource at the same time (so true is good).
 				\item The formula \( \always \texttt{mutex} \) expresses that simultaneous access never happens.
 			\end{itemize}
-		% end
-		
+			% end
+
 		\subsection{Liveness Properties}
 			\begin{itemize}
 				\item Sometimes-formulas called \textit{liveness properties}: "something good happens eventually"
 				\item Let \texttt{s} be a variable that is true when a process delivers a service.
 				\item The formula \( \sometimes \texttt{s} \) expresses that the service is eventually provided.
 			\end{itemize}
-		% end
-		
+			% end
+
 		\subsection{Complex Properties}
 			\begin{equation*}
 				\always \sometimes \phi
 			\end{equation*}
 			A property \(\phi\) becomes true infinitely often during a run (but not necessarily successive or maybe with large gaps).
-			
+
 			\begin{equation*}
 				\sometimes \always \phi
 			\end{equation*}
 			Once in time, a property \(\phi\) becomes true forever (but is not necessarily at the start).
-		% end
-	% end
+			% end
+			% end
 
 	\section{Formal Languages}
 		\definition{Formal Languages}{Given a finite alphabet \(\Sigma\), a word \( w \in \Sigma^\ast \) is a finite sequence \( w = a_0 \cdots a_n \) with \( a_i \in \Sigma \), \( i \in \{\, 0, \cdots, n \,\} \). The subset \( \mathcal{L} \subseteq \Sigma^\ast \) is called a \textit{language} over \(\Sigma\).}
-		
+
 		\definition{Formal \(\omega\)-Languages}{Given a finite alphabet \(\Sigma\), an \(\omega\)-word \( w \in \Sigma^\omega \) is an infinite sequence \( w = a_0 \cdots a_k \cdots \) with \( a_i \in \Sigma \), \( i \in \mathbb{N} \). The subset \( \mathcal{L} \subseteq \Sigma^\omega \) is called an \(\omega\)-language over \(\Sigma\).}
 
 		\subsection{Büchi Automaton}
@@ -1217,28 +1217,28 @@ assert(clientID == _pid)
 					\item transition relation \( \delta \subseteq Q \times \Sigma \times Q \).
 				\end{itemize}
 			}
-		
+
 			\definition{Run and Accepted Run}{
 				An infinite word \( w = a_0 \cdots a_k \cdots \in \Sigma^\omega \) is a \textit{run} of a Büchi automaton if \( q_{i + 1} \in \delta(q_i, a_i) \) for all \( i \geq 0 \) and some initial location \( q_0 \in I \).
-				
+
 				A Büchi automaton \textit{accepts} a run \( w \in \Sigma^\omega \), if some accepting location \( f \in F \) is infinitely often visited during \(w\).
 			}
 
 			\subsubsection{\(\omega\)-Regular Expressions}
 				\(\omega\)-regular expressions are like standard regular expressions but with one additional rule, see table~\ref{tab:omegaRegEx}.
-				
+
 				\begin{table}
 					\centering
 					\begin{tabular}{rl}
-						      \( ab \) & \(a\) then \(b\)                      \\
-						   \( a + b \) & \(a\) or \(b\)                        \\
-						  \( a^\ast \) & arbitrarily, but finitely often \(a\) \\
+						\( ab \)       & \(a\) then \(b\)                      \\
+						\( a + b \)    & \(a\) or \(b\)                        \\
+						\( a^\ast \)   & arbitrarily, but finitely often \(a\) \\
 						\( a^\omega \) & infinitely often \(a\)
 					\end{tabular}
 					\caption{\(\omega\)-Regular Expressions}
 					\label{tab:omegaRegEx}
 				\end{table}
-			% end
+				% end
 
 			\subsubsection{LTL and Büchi Automaton}
 				\begin{itemize}
@@ -1248,13 +1248,13 @@ assert(clientID == _pid)
 					\item Given a set \(\mathcal{P}\) of propositional variables, the alphabet \(\Sigma\) of the Büchi automaton has to contain all interpretations over \(\mathcal{P}\), i.e. \(\Sigma = 2^\mathcal{P}\) (the power set of \(\mathcal{P})\).
 					\item Sadly, the transitions \(\delta\) have to be constructed manually\dots
 				\end{itemize}
-			% end
-		% end
-	% end
+				% end
+				% end
+				% end
 
 	\section{Decidability, Closure Properties}
 		Many properties for regular finite automata also hold for Büchi automata while the latter being strictly more expressive (deterministic automata cannot accept all \(\omega\)-regular expressions).
-		
+
 		\theorem{Decidability}{
 			It is decidable whether the accepted Language \( \mathcal{L}^\omega(\mathcal{B}) \) of a Büchi automaton is empty.
 		}
@@ -1266,12 +1266,12 @@ assert(clientID == _pid)
 				\item If \(\mathcal{L}\) is regular then \( \Sigma^\omega \setminus \mathcal{L} \) is also \(\omega\)-regular.
 			\end{itemize}
 		}
-	% end
-% end
+		% end
+		% end
 
 \chapter{SPIN}
 	\label{c:spin}
-	
+
 	\begin{itemize}
 		\item The main goal of SPIN model checking is to fight design flaws by offering a model-based methodology for improving the design and to exhibit the defects of concurrent and distributed software systems.
 		\item Some problems of concurrent/distributed systems:
@@ -1290,11 +1290,11 @@ assert(clientID == _pid)
 		\item Testing concurrent/distributed systems is also hard, as they cannot be testes exhaustively:
 			\begin{itemize}
 				\item Lack of controllability (scheduling, delays, \dots) \\
-				Some failures are missed in the test phase.
+					Some failures are missed in the test phase.
 				\item Lack of reproducibility \\
-				Even if a failure appears, it is often impossible to analyze/debug it.
+					Even if a failure appears, it is often impossible to analyze/debug it.
 				\item Lack of resources \\
-				Exhaustive testing exhausts the tester long before it exhausts the behavior of the system.
+					Exhaustive testing exhausts the tester long before it exhausts the behavior of the system.
 			\end{itemize}
 		\item The main challenges of modeling are the conflicting goals
 			\begin{itemize}
@@ -1305,26 +1305,26 @@ assert(clientID == _pid)
 	\end{itemize}
 
 	\paragraph{The general usage scenario for PROMELA}
-	\begin{enumerate}
-		\item Model the essential features of a system in PROMELA.
-			\begin{itemize}
-				\item Abstract away from complex (numerical) computations (make use of non-deterministic choices of the outcome).
-				\item Replace unbounded data structures with fixed approximations.
-				\item Assume a fair process scheduler.
-			\end{itemize}
-		\item Identify and select the properties that the model must satisfy.
-			\begin{itemize}
-				\item Mutual exclusion
-				\item Absence of deadlock
-				\item Absence of starvation
-				\item Event sequences (e.g. system responsiveness)
-			\end{itemize}
-		\item Verify that all possible runs satisfy these properties.
-			\begin{itemize}
-				\item Typically several iterations are needed to get the model and the system properties right.
-				\item Failed verification attempts provide feedback in the form of counter examples.
-			\end{itemize}
-	\end{enumerate}
+		\begin{enumerate}
+			\item Model the essential features of a system in PROMELA.
+				\begin{itemize}
+					\item Abstract away from complex (numerical) computations (make use of non-deterministic choices of the outcome).
+					\item Replace unbounded data structures with fixed approximations.
+					\item Assume a fair process scheduler.
+				\end{itemize}
+			\item Identify and select the properties that the model must satisfy.
+				\begin{itemize}
+					\item Mutual exclusion
+					\item Absence of deadlock
+					\item Absence of starvation
+					\item Event sequences (e.g. system responsiveness)
+				\end{itemize}
+			\item Verify that all possible runs satisfy these properties.
+				\begin{itemize}
+					\item Typically several iterations are needed to get the model and the system properties right.
+					\item Failed verification attempts provide feedback in the form of counter examples.
+				\end{itemize}
+		\end{enumerate}
 
 	\section{Model Checking}
 		\begin{itemize}
@@ -1333,7 +1333,7 @@ assert(clientID == _pid)
 			\item On the other hand, this can lead to proofing correctness: The absence of counter examples proofs that the validated properties are correct.
 			\item The counter example search is exhaustive. That is, non-determinism is resolved in every possible way.
 		\end{itemize}
-	
+
 		\subsection{SPIN}
 			\begin{itemize}
 				\item SPIN, an abbreviation for "Simple Promela Interpreter", can simulate a model (randomly/interactively/guided) and can generate a verifier.
@@ -1343,8 +1343,8 @@ assert(clientID == _pid)
 						\item In the case the check is negative: Generates a failing run of the model that can be simulated by SPIN.
 					\end{itemize}
 			\end{itemize}
-		% end
-		
+			% end
+
 		\subsection{LTL Properties}
 			Given a transition system \(\mathcal{T}\) (e.g. derived from a PROMELA program), the verification task is to check whether an LTL formula \(\phi\) is satisfied in all runs of \(\mathcal{T}\), i.e. \( \mathcal{T} \models \phi \). The process has the following steps steps:
 			\begin{enumerate}
@@ -1352,30 +1352,30 @@ assert(clientID == _pid)
 				\item Construct a Büchi automaton \( \mathcal{B}_{\lnot\phi} \) for the negation of formula \(\phi\).
 				\item If \( \mathcal{L}^\omega(\mathcal{B}_\mathcal{T}) \cap \mathcal{L}^\omega(\mathcal{B}_{\lnot\phi}) = \emptyset \), then \(\phi\) holds. Otherwise a counterexample was found. To calculate \( \mathcal{L}^\omega(\mathcal{B}_\mathcal{T}) \cap \mathcal{L}^\omega(\mathcal{B}_{\lnot\phi}) \), construct an intersection automaton and search for cycles through accepting states.
 			\end{enumerate}
-		% end
-	% end
+			% end
+			% end
 
 	\section{Workflow} % 3.9, 3.10, 3.11, 3.18, 3.19, 3.20, 3.26
 		\label{sec:spinWorkflow}
-	
+
 		\todo{Content}
 
 		\subsection{Guided Simulation} % 3.21, 3.22
 			\todo{Content}
-		% end
+			% end
 
 		\subsection{Temporal Properties} % 7.15, 7.20, 7.23, 7.25, 7.26
 			\todo{Content}
-		% end
-	% end
+			% end
+			% end
 
 	\section{Fairness}
 		\definition{Weak Fairness}{A run is \textit{weakly fair} iff the following holds: Each continuously executable statement is executed eventually.}
-	% end
+		% end
 
 	\section{Correctness Properties}
 		Given a PROMELA model \(M\) and correctness properties \( C_1, \cdots, C_n \) and assume there is a check whether a PROMELA run \(R\) satisfies property \(C\).
-		
+
 		\definition{Correctness of model relative to property}{
 			Let \(R_M\) be the set of all possible runs of a PROMELA model \(M\). Then
 			\begin{itemize}
@@ -1384,7 +1384,7 @@ assert(clientID == _pid)
 				\item If \(M\) is not correct, then each \( r \in \big( R_M \setminus (R_{M, C_1} \cap \cdots \cap R_{M, C_n}) \big) \) is a counter example.
 			\end{itemize}
 		}
-	
+
 		These correctness properties can be formulated within or outside of a PROMELA model:
 		\begin{itemize}
 			\item Stating properties \textit{within} of the model.
@@ -1406,7 +1406,7 @@ assert(clientID == _pid)
 
 		\subsection{Assertions}
 			\label{sec:assert}
-		
+
 			\definition{Assertion Statement}{
 				Assertion statements in PROMELA have the form/syntax
 				\begin{center}
@@ -1414,7 +1414,7 @@ assert(clientID == _pid)
 				\end{center}
 				where \inlinePromela{expr} is any PROMELA expression.
 			}
-		
+
 			\begin{itemize}
 				\item Typically, but not necessarily, the expression evaluates to a boolean value (type \inlinePromela{bool}).
 				\item The assert statement can take any statement position.
@@ -1426,21 +1426,21 @@ assert(clientID == _pid)
 				\item The workflow for performing model checking is described in section~\ref{sec:spinWorkflow}.
 				\item Notice that assertions cannot express full function verification as quantification is not possible. But they can perform sanity checks/partial verification.
 			\end{itemize}
-		
+
 			\todo{Content}
-		% end
-		
+			% end
+
 		\subsection{Valid End States}
 			\label{sec:labelEnd}
-			
+
 			\begin{itemize}
 				\item A blocking process is legal, as long as other processes can proceed.
 				\item Blocking for letting other processes proceed is useful and required, e.g. for concurrent and distributed models.
 				\item But it is an error if a process blocks while no other process can proceed \(\implies\) Deadlock.
 			\end{itemize}
-		
+
 			\definition{Valid End State}{An end state of a run is valid iff the location counter of each process is at an end location.}
-			
+
 			\definition{End Location}{
 				\textit{End locations} of a process \(P\) are:
 				\begin{itemize}
@@ -1448,17 +1448,17 @@ assert(clientID == _pid)
 					\item Any location marked with an \textit{end label} of the form \inlinePromela{endXXX:}.
 				\end{itemize}
 			}
-		% end
-		
+			% end
+
 		\subsection{Acceptance Labels/Cycles}
 			\label{sec:labelAccept}
-		
+
 			\definition{Acceptance Location}{A location that is marked with an \textit{acceptance label} of the form \inlinePromela{acceptXXX:} is called an \textit{accept location}.}
-			
+
 			\definition{Acceptance Cycle}{A run that passes an acceptance label infinitely often is called an \textit{acceptance cycle}.}
-			
+
 			Acceptance cycles are mainly used in never claims (see \ref{sec:neverclaim}) to define forbidden infinite behavior.
-		% end
+			% end
 
 		\subsection{Temporal Properties}
 			\begin{itemize}
@@ -1470,7 +1470,7 @@ assert(clientID == _pid)
 				\item Temporal logic can be used to increase the expressiveness of specifications.
 				\item Notice: Even temporal logic is not expressive enough to cover all properties of a PROMELA model, but in practice it is often sufficient.
 			\end{itemize}
-		
+
 			\paragraph{Drawbacks of Assertions}
 				\begin{itemize}
 					\item They only specify about the state at their location in the code.
@@ -1479,7 +1479,7 @@ assert(clientID == _pid)
 					\item It is easy to forget assertions, some correctness properties might be violated at unexpected locations.
 					\item And the biggest drawback: Many properties are not expressible via assertions!
 				\end{itemize}
-			% end
+				% end
 
 			\subsubsection{Boolean Temporal Logic}
 				\begin{itemize}
@@ -1488,7 +1488,7 @@ assert(clientID == _pid)
 					\item So a slight generalization of LTL is required.
 					\item In \textit{Boolean Temporal Logic}, the atomic building blocks are boolean expressions over PROMELA variables rather than propositional variables.
 				\end{itemize}
-		
+
 				\definition{Boolean Temporal Logic Formulas}{
 					The set of \textit{boolean temporal formulas} \(\btlFor\) is inductively defined as
 					\begin{itemize}
@@ -1509,7 +1509,7 @@ assert(clientID == _pid)
 						\item[] where the latter three represent the LTL formulas \( \always \phi \), \( \sometimes \phi \) and \( \phi \until \psi \).
 					\end{itemize}
 				}
-			
+
 				\paragraph{Semantics}
 					A run \(\sigma\) through a PROMELA model \(M\) is a chain of states \( s_1 s_2 \cdots \) with the state tuple \( s_i = (\mathcal{L}_i, \mathcal{I}_i) \):
 					\begin{itemize}
@@ -1517,14 +1517,14 @@ assert(clientID == _pid)
 						\item From \( \mathcal{L}_i \) to \( \mathcal{L}_{i + 1} \), only one of the location counters can advance (exception: channel rendezvous).
 						\item \( \mathcal{I}_i \) maps each variable in \(M\) to its current (possible non-boolean) value.
 					\end{itemize}
-				
+
 					Arithmetic and relation expressions are then interpreted in the states as expected, e.g. \( \mathcal{L}_j, \mathcal{I}_j \models \texttt{x < y} \) iff \( \mathcal{I}_j(\texttt{x}) < \mathcal{I}_j(\texttt{y}) \). Label expressions are evaluated as: \( \mathcal{L}_j, \mathcal{I}_j \models \texttt{P\@l} \) iff \( \mathcal{L}_j(\texttt{P}) \) is at the location labeled with \texttt{l}.
-				% end
-			% end
-			
+					% end
+					% end
+
 			\subsubsection{Model Checking a Temporal Property}
 				\label{sec:temporalProp}
-			
+
 				The general form for the definition of a TL formula is:
 				\begin{center}
 					\inlinePromela{ltl <claim name> \{ <TL formula> \}}
@@ -1534,13 +1534,13 @@ assert(clientID == _pid)
 					\item[\texttt{<claim name>}] is the name of the claim (if more than one formula is defined).
 					\item[\texttt{<TL formula>}] the formula itself.
 				\end{description}
-			
+
 				It is possible to define more than one LTL formula in the PROMELA file, but it is not possible to verify more than one LTL formula at once!
-			% end
-			
+				% end
+
 			\subsubsection{Never Claims}
 				\label{sec:neverclaim}
-			
+
 				\begin{itemize}
 					\item Disproving \( \sometimes \phi \) needs a representation of an infinite computation.
 						\begin{enumerate}
@@ -1560,7 +1560,7 @@ assert(clientID == _pid)
 							\item Finiteness is guaranteed by cyclicity check.
 						\end{itemize}
 				\end{itemize}
-			
+
 				\paragraph{Example}
 					\begin{lstlisting}[caption = { Never Claim PROMELA Process }, label = lst:promelaNeverClaim, language = PROMELA]
 never {  /* !(<>q) */
@@ -1571,20 +1571,20 @@ never {  /* !(<>q) */
 	fi
 }
 					\end{lstlisting}
-				
+
 					Given some PROMELA program \(P\) over a variable \(q\) and the attempt to prove \( P \models \sometimes q \), a never claim process similar to listing~\ref{lst:promelaNeverClaim} is generated. The following is possible:
 					\begin{itemize}
 						\item If \(q\) becomes true, SPIN is blocked at that point and "loses".
 						\item If \(q\) never becomes true, SPIN loops infinitely often over the accept label resulting in an acceptance cycle.
 					\end{itemize}
-				
+
 					PROMELA has a specific construct only for never claim processes. Some never claims are not expressible in temporal logic!
-				% end
-			% end
+					% end
+					% end
 
 			\subsubsection{Liveness Properties} % 7.21, 7.22, 7.23, 7.25, 7.27, 7.29
 				\todo{Content}
-			% end
+				% end
 
 			\subsubsection{Label Checking}
 				\begin{itemize}
@@ -1592,13 +1592,13 @@ never {  /* !(<>q) */
 					\item E.g. all critical sections can be marked with the label \texttt{cs:} and be verified with an LTL formula \texttt{ []!(P\@cs \&\& Q\@cs) } (\texttt{P} and \texttt{Q} are never in the CS at the same time).
 					\item Labels expressions can often remove the need for ghost variables, not only for ME validation.
 				\end{itemize}
-			% end
-		% end
-	% end
-	
-	% TODO: Proofing ME; 4.38, 4.39, 4.40; sec:proofME
-	% TODO: Finding Deadlocks; 4.41
-% end
+				% end
+				% end
+				% end
+
+				% TODO: Proofing ME; 4.38, 4.39, 4.40; sec:proofME
+				% TODO: Finding Deadlocks; 4.41
+				% end
 
 \chapter{First-Order Logic (FOL)}
 	\begin{itemize}
@@ -1617,9 +1617,9 @@ never {  /* !(<>q) */
 				\item A set \(\VSym\) of typed variable symbols, declared \( v : A \) with type \( A \in \TSym \).
 			\end{itemize}
 		}
-	
+
 		\definition{Constants}{A function symbol \( f \in \FSym \) with \(0\) arguments is called a \textit{constant}.}
-		
+
 		\definition{Propositional Variable}{A predicate symbol \( p \in \PSym \) with \(0\) arguments is called a \textit{propositional variable}.}
 
 		\subsection{Terms}
@@ -1631,7 +1631,7 @@ never {  /* !(<>q) */
 				\end{itemize}
 				First-order terms are like side effect-free expressions in programs.
 			}
-		% end
+			% end
 
 		\subsection{Formulas}
 			\definition{First-Order Formulas}{
@@ -1653,8 +1653,8 @@ never {  /* !(<>q) */
 					\item[] In \( \forall x; \phi \) and \( \exists x; \phi \), the variable \(x\) occurs \textit{bound} (i.e. \textit{not free}). Formulas with no free variables are called \textit{closed}.
 				\end{itemize}
 			}
-		% end
-	% end
+			% end
+			% end
 
 	\section{Semantics}
 		\begin{itemize}
@@ -1675,16 +1675,16 @@ never {  /* !(<>q) */
 					\item The set of argument tuples where a predicate is true.
 				\end{enumerate}
 		\end{itemize}
-	
+
 		\paragraph{1: First-Order Domains/Universes}
 			\definition{First-Order Universe/Domain}{A non-empty set \(\mathcal{D}\) is a \textit{universe} or \textit{domain}. Each element of \(\mathcal{D}\) has a fixed given by \( \delta : \mathcal{D} \to \TSym \).}
-			
+
 			\begin{itemize}
 				\item Notation for the domain elements of type \( A \in \TSym \): \( \mathcal{D}^A = \{\, d \in \mathcal{D} : \delta(d) = A \,\} \)
 				\item Obviously, \( \mathcal{D} = \bigcup\limits_{ A \,\in\, \TSym } \mathcal{D}^A \) and if \( A \neq B \) then \( \mathcal{D}^A \cap \mathcal{D}^B = \emptyset \).
 				\item Each type must "contain" at least one domain element, i.e. \( \mathcal{D}^A \neq \emptyset \) for all \( A \in \TSym \).
 			\end{itemize}
-		
+
 			Warning:
 			\begin{itemize}
 				\item Domain elements differ from the terms representing them.
@@ -1694,27 +1694,27 @@ never {  /* !(<>q) */
 						\item Compare to language (e.g. Java) without access to the heap representation.
 					\end{itemize}
 			\end{itemize}
-		% end
-		
+			% end
+
 		\paragraph{2: Variable Assignments}
 			Think of variable assignments as an environment for storage of local variables.
-			
+
 			\definition{Variable Assignment}{
 				A \textit{variable assignment} \( \beta : \VSym \to \mathcal{D} \) maps variables to domain elements while respecting the variable type. That is, if \(x\) has type \(A\) then \( \beta(x) \in \mathcal{D}^A \).
 			}
-		
+
 			\definition{Modified Variable Assignment}{
-				 Let \(y\) be a variable of type \(A\), \(\beta\) a variable assignment and \( d \in \mathcal{D}^A \). Then the \textit{modified variable assignment} is:
-				 \begin{equation*}
-					 \beta_y^d(x) \coloneqq
-					 	\begin{cases}
-					 		\beta(x) & \textrm{iff } x \neq y \\
-					 		d        & \textrm{iff } x = y
-					 	\end{cases}
-				 \end{equation*}
+				Let \(y\) be a variable of type \(A\), \(\beta\) a variable assignment and \( d \in \mathcal{D}^A \). Then the \textit{modified variable assignment} is:
+				\begin{equation*}
+					\beta_y^d(x) \coloneqq
+					\begin{cases}
+						\beta(x) & \textrm{iff } x \neq y \\
+						d        & \textrm{iff } x = y
+					\end{cases}
+				\end{equation*}
 			}
-		% end
-		
+			% end
+
 		\paragraph{3/4: First-Order States/Models}
 			\definition{First-Order State/Model}{
 				Let \( \mathcal{D} \) be a domain with the typing function \( \delta \).
@@ -1724,69 +1724,69 @@ never {  /* !(<>q) */
 				\end{itemize}
 				Then \( s = (\mathcal{D}, \delta, \mathcal{I}) \) is a \textit{first-order state} (or \textit{model}).
 			}
-		% end
-		
+			% end
+
 		\paragraph{Semantics of Equality}
 			\definition{First-Order Equality}{
 				The \textit{equality} symbol \(\doteq\) is declared as \( \doteq(A, A) \) for any type \( A \in \TSym \).
-				
+
 				The interpretation is fixed as \( \mathcal{I}(\doteq) = \{\, (d, d) : d \in \mathcal{D} \,\} \) ("referential equality", holds if arguments refer to identical objects).
 			}
-		% end
+			% end
 
 		\subsection{Semantic Evaluation}
 			Given a first-order state (model) \(s\) and a variable assignment \(\beta\), it is possible to evaluate first-order terms under \(s\) and \(\beta\).
-		
+
 			\definition{Valuation Function for First-Order Terms}{
 				The valuation function \( \val_{s, \beta} : \Trm_A \to \mathcal{D}^A \) for terms is defined inductively for each \( A \in \TSym \):
 				\begin{align*}
-					\val_{s, \beta}(x) &\coloneqq \beta(x) \\
-					\val_{s, \beta}\big( f(t_1, \cdots, t_r) \big) &\coloneqq \mathcal{I}(f) \big( \val_{s, \beta}(t_1), \cdots, \val_{s, \beta}(t_r) \big)
+					\val_{s, \beta}(x)                             & \coloneqq \beta(x)                                                                      \\
+					\val_{s, \beta}\big( f(t_1, \cdots, t_r) \big) & \coloneqq \mathcal{I}(f) \big( \val_{s, \beta}(t_1), \cdots, \val_{s, \beta}(t_r) \big)
 				\end{align*}
 				Since \( \Trm = \bigcup\limits_{ A \,\in\, \TSym } \Trm_a \), \( \val_{s, \beta} \) is defined for all \( t \in \Trm \).
 			}
-		
+
 			\definition{Valuation Function for First-Order Formulas}{
 				The valuation function \( \val_{s, \beta} : \Fml \to \{\, \lt,\, \lf \,\} \) for formulas is defined inductively:
 				\begin{align*}
-					\val_{s, \beta}\big( p(t_1, \cdots, t_r) \big) &\coloneqq
-						\begin{cases}
-							\lt & \textrm{iff } \big( \val_{s, \beta}(t_1), \cdots, \val_{s, \beta}(t_r) \big) \in \mathcal{I}(p)     \\
-							\lf & \textrm{otherwise}
-						\end{cases} \\
-					\val_{s, \beta}(\lnot \phi)                    &\coloneqq
-						\begin{cases}
-							\lt & \textrm{iff } \val_{s, \beta}(\phi) = \lf                                                           \\
-							\lf & \textrm{otherwise}
-						\end{cases} \\
-					\val_{s, \beta}(\phi \land \psi)               &\coloneqq
-						\begin{cases}
-							\lt & \textrm{iff } \val_{s, \beta}(\phi) = \lt \textrm{ and } \val_{s, \beta}(\psi) = \lt                \\
-							\lf & \textrm{otherwise}
-						\end{cases} \\
-					\val_{s, \beta}(\phi \lor \psi)                &\coloneqq
-						\begin{cases}
-							\lt & \textrm{iff } \val_{s, \beta}(\phi) = \lt \textrm{ or } \val_{s, \beta}(\psi) = \lt                 \\
-							\lf & \textrm{otherwise}
-						\end{cases} \\
-					\val_{s, \beta}(\phi \to \psi)                 &\coloneqq
-						\begin{cases}
-							\lt & \textrm{iff } \val_{s, \beta}(\phi) = \lf \textrm{ or } \val_{s, \beta}(\psi) = \lt                 \\
-							\lf & \textrm{otherwise}
-						\end{cases} \\
-					\val_{s, \beta}(\forall x; \phi)               &\coloneqq
-						\begin{cases}
-							\lt & \textrm{iff } \val_{s, \beta_x^d}(\phi) = \lt \textrm{ for all } d \in \mathcal{D}^A, x : A         \\
-							\lf & \textrm{otherwise}
-						\end{cases} \\
-					\val_{s, \beta}(\forall x; \phi)               &\coloneqq
-						\begin{cases}
-							\lt & \textrm{iff } \val_{s, \beta_x^d}(\phi) = \lt \textrm{ for at least one } d \in \mathcal{D}^A, x : A\\
-							\lf & \textrm{otherwise}
-						\end{cases}
+					\val_{s, \beta}\big( p(t_1, \cdots, t_r) \big) & \coloneqq
+					\begin{cases}
+						\lt & \textrm{iff } \big( \val_{s, \beta}(t_1), \cdots, \val_{s, \beta}(t_r) \big) \in \mathcal{I}(p) \\
+						\lf & \textrm{otherwise}
+					\end{cases} \\
+					\val_{s, \beta}(\lnot \phi)                    & \coloneqq
+					\begin{cases}
+						\lt & \textrm{iff } \val_{s, \beta}(\phi) = \lf \\
+						\lf & \textrm{otherwise}
+					\end{cases}                                                                     \\
+					\val_{s, \beta}(\phi \land \psi)               & \coloneqq
+					\begin{cases}
+						\lt & \textrm{iff } \val_{s, \beta}(\phi) = \lt \textrm{ and } \val_{s, \beta}(\psi) = \lt \\
+						\lf & \textrm{otherwise}
+					\end{cases}                          \\
+					\val_{s, \beta}(\phi \lor \psi)                & \coloneqq
+					\begin{cases}
+						\lt & \textrm{iff } \val_{s, \beta}(\phi) = \lt \textrm{ or } \val_{s, \beta}(\psi) = \lt \\
+						\lf & \textrm{otherwise}
+					\end{cases}                           \\
+					\val_{s, \beta}(\phi \to \psi)                 & \coloneqq
+					\begin{cases}
+						\lt & \textrm{iff } \val_{s, \beta}(\phi) = \lf \textrm{ or } \val_{s, \beta}(\psi) = \lt \\
+						\lf & \textrm{otherwise}
+					\end{cases}                           \\
+					\val_{s, \beta}(\forall x; \phi)               & \coloneqq
+					\begin{cases}
+						\lt & \textrm{iff } \val_{s, \beta_x^d}(\phi) = \lt \textrm{ for all } d \in \mathcal{D}^A, x : A \\
+						\lf & \textrm{otherwise}
+					\end{cases}                   \\
+					\val_{s, \beta}(\forall x; \phi)               & \coloneqq
+					\begin{cases}
+						\lt & \textrm{iff } \val_{s, \beta_x^d}(\phi) = \lt \textrm{ for at least one } d \in \mathcal{D}^A, x : A \\
+						\lf & \textrm{otherwise}
+					\end{cases}
 				\end{align*}
 			}
-		% end
+			% end
 
 		\subsection{Semantic Concepts}
 			\definition{Satisfiability, Truth, Validity}{
@@ -1796,10 +1796,10 @@ never {  /* !(<>q) */
 					\item A formula \(\phi\) is \textit{valid} (write \( \models \phi \)) iff for all \(s\) it holds that \( s \models \phi \).
 				\end{itemize}
 			}
-		
+
 			Notice: Closed formulas that are satisfiable are also true.
-		% end
-	% end
+			% end
+			% end
 
 	\section{Sequent Calculus} % 8.34, 8.35, 8.36
 		Showing the validity of a FO formula by computation is impractical:
@@ -1809,9 +1809,9 @@ never {  /* !(<>q) */
 			\item Even when when the domain is finite: recursion leads to an exponential number of cases.
 		\end{itemize}
 		So there is a need for a \textit{syntactical} proof method using only symbols that occur already in the formula and avoiding recursive evaluation whenever possible.
-		
+
 		The idea is to proof the validity of \(\phi\) by \textit{syntactic transformations} of \(\phi\).
-		
+
 		\paragraph{Notation for Sequent}
 			Sequent calculus is based on the notion of a \textit{sequent}:
 			\begin{equation*}
@@ -1821,54 +1821,54 @@ never {  /* !(<>q) */
 			\begin{equation*}
 				(\psi_1 \land \cdots \land \psi_m) \to (\phi_1 \lor \cdots \lor \phi_n)
 			\end{equation*}
-			
+
 			The antecedent/succedent can be considered as (possibly empty) sets of formulas.
-			
+
 			\definition{Schema Variables, Schema Sequents}{
 				Let \( \phi_i, \psi_j, \cdots \) match formulas and \( \Gamma, \Delta, \cdots \) match sets of formulas. Then infinitely many sequents can be characterized by the single \textit{schematic sequent}
 				\begin{equation*}
 					\Gamma \implies \phi \land \psi, \Gamma
 				\end{equation*}
 				that matches all sequents with a top-level occurrence of a conjunction in the succedent.
-				
+
 				\( \phi \land \psi \) is called the \textit{main formula} and \( \Gamma, \Delta \) \textit{side formulas} of a sequent.
 			}
-		% end
-		
+			% end
+
 		\paragraph{Notation for Rules}
 			\textit{Rules} define a syntactic transformation schema for sequents that precisely reflects semantics of connectives. The general notation for such a rule with name \textit{RuleName} is:
 			\begin{equation*}
 				\prftree[l]
-					{ RuleName }
-					{ \overbrace{\Gamma_1 \implies \Delta_1 \quad\cdots\quad \Gamma_r \implies \Delta_r}^\textrm{Premises} }
-					{ \underbrace{\Gamma \implies \Delta}_\textrm{Conclusion} }
+				{ RuleName }
+				{ \overbrace{\Gamma_1 \implies \Delta_1 \quad\cdots\quad \Gamma_r \implies \Delta_r}^\textrm{Premises} }
+				{ \underbrace{\Gamma \implies \Delta}_\textrm{Conclusion} }
 			\end{equation*}
 			Meaning: To proof the conclusion, it is sufficient to proof all premises.
-		% end
+			% end
 
 		\subsection{Overview: Calculus Rules}
 			\paragraph{Propositional Calculus Rules}
 				\begin{gather*}
 					\begin{array}{lcl}
-						\prftree[l]{notLeft}{\Gamma \implies \phi, \Delta}{\Gamma, \lnot\phi \implies \Delta} &\quad\quad\quad\quad& \prftree[l]{notRight}{\Gamma, \phi \implies \Delta}{\Gamma \implies \lnot\phi, \Delta} \\\\
-						\prftree[l]{andLeft}{\Gamma, \phi, \psi \implies \Delta}{\Gamma, \phi \land \psi \implies \Delta} && \prftree[l]{andRight}{\Gamma \implies \phi, \Delta}{\qquad}{\Gamma \implies \psi, \Delta}{\Gamma \implies \phi \land \psi, \Delta} \\\\
-						\prftree[l]{orLeft}{\Gamma, \phi \implies \Delta}{\qquad}{\Gamma, \psi \implies \Delta}{\Gamma, \phi \lor \psi \implies \Delta} && \prftree[l]{orRight}{\Gamma \implies \phi, \psi, \Delta}{\Gamma \implies \phi \lor \psi, \Delta} \\\\
-						\prftree[l]{impLeft}{\Gamma \implies \phi, \Delta}{\qquad}{\Gamma, \psi \implies \Delta}{\Gamma, \phi \to \psi \implies \Delta} && \prftree[l]{impRight}{\Gamma, \phi \implies \psi, \Delta}{\Gamma \implies \phi \to \psi, \Delta}
+						\prftree[l]{notLeft}{\Gamma \implies \phi, \Delta}{\Gamma, \lnot\phi \implies \Delta}                                           & \quad\quad\quad\quad & \prftree[l]{notRight}{\Gamma, \phi \implies \Delta}{\Gamma \implies \lnot\phi, \Delta}                                             \\\\
+						\prftree[l]{andLeft}{\Gamma, \phi, \psi \implies \Delta}{\Gamma, \phi \land \psi \implies \Delta}                               &                      & \prftree[l]{andRight}{\Gamma \implies \phi, \Delta}{\qquad}{\Gamma \implies \psi, \Delta}{\Gamma \implies \phi \land \psi, \Delta} \\\\
+						\prftree[l]{orLeft}{\Gamma, \phi \implies \Delta}{\qquad}{\Gamma, \psi \implies \Delta}{\Gamma, \phi \lor \psi \implies \Delta} &                      & \prftree[l]{orRight}{\Gamma \implies \phi, \psi, \Delta}{\Gamma \implies \phi \lor \psi, \Delta}                                   \\\\
+						\prftree[l]{impLeft}{\Gamma \implies \phi, \Delta}{\qquad}{\Gamma, \psi \implies \Delta}{\Gamma, \phi \to \psi \implies \Delta} &                      & \prftree[l]{impRight}{\Gamma, \phi \implies \psi, \Delta}{\Gamma \implies \phi \to \psi, \Delta}
 					\end{array} \\\\
 					\prftree[l]{close}{\Gamma, \phi \implies \phi, \Delta} \quad\quad\quad\quad \prftree[l]{true}{\Gamma \implies \textbf{true}, \Delta} \quad\quad\quad\quad \prftree[l]{false}{\Gamma, \textbf{false} \implies \Delta}
 				\end{gather*}
-			% end
+				% end
 
 			\paragraph{First-Order Calculus Rules}
 				\begin{gather*}
 					\begin{array}{lcl}
-						\prftree[l]{notLeft}{\Gamma \implies \phi, \Delta}{\Gamma, \lnot\phi \implies \Delta} &\quad\quad\quad\quad& \prftree[l]{notRight}{\Gamma, \phi \implies \Delta}{\Gamma \implies \lnot\phi, \Delta} \\\\
-						\prftree[l]{andLeft}{\Gamma, \phi, \psi \implies \Delta}{\Gamma, \phi \land \psi \implies \Delta} && \prftree[l]{andRight}{\Gamma \implies \phi, \Delta}{\qquad}{\Gamma \implies \psi, \Delta}{\Gamma \implies \phi \land \psi, \Delta} \\\\
-						\prftree[l]{orLeft}{\Gamma, \phi \implies \Delta}{\qquad}{\Gamma, \psi \implies \Delta}{\Gamma, \phi \lor \psi \implies \Delta} && \prftree[l]{orRight}{\Gamma \implies \phi, \psi, \Delta}{\Gamma \implies \phi \lor \psi, \Delta} \\\\
-						\prftree[l]{impLeft}{\Gamma \implies \phi, \Delta}{\qquad}{\Gamma, \psi \implies \Delta}{\Gamma, \phi \to \psi \implies \Delta} && \prftree[l]{impRight}{\Gamma, \phi \implies \psi, \Delta}{\Gamma \implies \phi \to \psi, \Delta} \\\\
-						\prftree[l]{allLeft}{\Gamma, \forall x; \phi, [x/t']\phi \implies \Delta}{\Gamma, \forall x; \phi \implies \Delta} && \prftree[l]{allRight}{\Gamma \implies [x/c]\phi, \Delta}{\Gamma \implies \forall x; \phi, \Delta} \\\\
-						\prftree[l]{exLeft}{\Gamma, [x/c]\phi \implies \Delta}{\Gamma, \exists x; \phi \implies \Delta} && \prftree[l]{exRight}{\Gamma \implies [x/t']\phi, \exists x; \phi, \Delta}{\Gamma \implies \exists x; \phi, \Delta} \\\\
-						\prftree[l]{applyEqL}{\Gamma, t \doteq t', [t/t']\phi \implies \Delta}{\Gamma, t \doteq t', \phi \implies \Delta} && \prftree[l]{applyEqR}{\Gamma, t \doteq t' \implies [t/t']\phi, \Delta}{\Gamma, t \doteq t' \implies \phi, \Delta}
+						\prftree[l]{notLeft}{\Gamma \implies \phi, \Delta}{\Gamma, \lnot\phi \implies \Delta}                                           & \quad\quad\quad\quad & \prftree[l]{notRight}{\Gamma, \phi \implies \Delta}{\Gamma \implies \lnot\phi, \Delta}                                             \\\\
+						\prftree[l]{andLeft}{\Gamma, \phi, \psi \implies \Delta}{\Gamma, \phi \land \psi \implies \Delta}                               &                      & \prftree[l]{andRight}{\Gamma \implies \phi, \Delta}{\qquad}{\Gamma \implies \psi, \Delta}{\Gamma \implies \phi \land \psi, \Delta} \\\\
+						\prftree[l]{orLeft}{\Gamma, \phi \implies \Delta}{\qquad}{\Gamma, \psi \implies \Delta}{\Gamma, \phi \lor \psi \implies \Delta} &                      & \prftree[l]{orRight}{\Gamma \implies \phi, \psi, \Delta}{\Gamma \implies \phi \lor \psi, \Delta}                                   \\\\
+						\prftree[l]{impLeft}{\Gamma \implies \phi, \Delta}{\qquad}{\Gamma, \psi \implies \Delta}{\Gamma, \phi \to \psi \implies \Delta} &                      & \prftree[l]{impRight}{\Gamma, \phi \implies \psi, \Delta}{\Gamma \implies \phi \to \psi, \Delta}                                   \\\\
+						\prftree[l]{allLeft}{\Gamma, \forall x; \phi, [x/t']\phi \implies \Delta}{\Gamma, \forall x; \phi \implies \Delta}              &                      & \prftree[l]{allRight}{\Gamma \implies [x/c]\phi, \Delta}{\Gamma \implies \forall x; \phi, \Delta}                                  \\\\
+						\prftree[l]{exLeft}{\Gamma, [x/c]\phi \implies \Delta}{\Gamma, \exists x; \phi \implies \Delta}                                 &                      & \prftree[l]{exRight}{\Gamma \implies [x/t']\phi, \exists x; \phi, \Delta}{\Gamma \implies \exists x; \phi, \Delta}                 \\\\
+						\prftree[l]{applyEqL}{\Gamma, t \doteq t', [t/t']\phi \implies \Delta}{\Gamma, t \doteq t', \phi \implies \Delta}               &                      & \prftree[l]{applyEqR}{\Gamma, t \doteq t' \implies [t/t']\phi, \Delta}{\Gamma, t \doteq t' \implies \phi, \Delta}
 					\end{array} \\\\
 					\prftree[l]{close}{\Gamma, \phi \implies \phi, \Delta} \quad\quad\quad\quad \prftree[l]{true}{\Gamma \implies \textbf{true}, \Delta} \quad\quad\quad\quad \prftree[l]{false}{\Gamma, \textbf{false} \implies \Delta} \\\\
 					\prftree[l]{eqClose}{\Gamma \implies t \doteq t, \Delta}
@@ -1879,8 +1879,8 @@ never {  /* !(<>q) */
 					\item \( c \) is a new constant of same type as \(x\) (that is not yet used on the current proof branch!).
 					\item Equations can be reversed by symmetry.
 				\end{itemize}
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{Proofing}
 			The goal to proof: \( \mathcal{G} = \psi_1, \cdots, \psi_m \implies \phi_1, \cdots, \phi_n \).
@@ -1896,50 +1896,50 @@ never {  /* !(<>q) */
 				\paragraph{Propositional}
 					\begin{equation*}
 						\prftree[l]{impRight}
-							{ \prftree[l]{andLeft}
-								{ \prftree[l]{impLeft}
-									{ \prftree[l]{close}
-										{p \implies q, p} }
-									{ \prftree[l]{close}
-										{p, q \implies q} }
-									{p, p \to q \implies q} }
-								{p \land (p \to q) \implies q} }
-							{\implies \big(p \land (p \to q)\big) \to q}
+						{ \prftree[l]{andLeft}
+							{ \prftree[l]{impLeft}
+								{ \prftree[l]{close}
+									{p \implies q, p} }
+								{ \prftree[l]{close}
+									{p, q \implies q} }
+								{p, p \to q \implies q} }
+							{p \land (p \to q) \implies q} }
+						{\implies \big(p \land (p \to q)\big) \to q}
 					\end{equation*}
-				% end
+					% end
 
 				\paragraph{First-Order}
 					\begin{equation*}
 						\prftree[l]{exLeft}
-							{ \prftree[l]{allRight}
-								{ \prftree[l]{allLeft}
-									{ \prftree[l]{exRight}
-										{ \prftree[l]{close}{p(c, d), \forall y; p(c, y) \implies p(c, d), \exists x; p(x, y)} }
-											{p(c, d), \forall y; p(c, y) \implies \exists x; p(x, d)} }
-									{\forall y; p(c, y) \implies \exists x; p(x, d)} }
-								{\forall y; p(c, y) \implies \forall y; \exists x; p(x, y)} }
-							{\exists x; \forall y; p(x, y) \implies \forall y; \exists x; p(x, y)}
+						{ \prftree[l]{allRight}
+							{ \prftree[l]{allLeft}
+								{ \prftree[l]{exRight}
+									{ \prftree[l]{close}{p(c, d), \forall y; p(c, y) \implies p(c, d), \exists x; p(x, y)} }
+									{p(c, d), \forall y; p(c, y) \implies \exists x; p(x, d)} }
+								{\forall y; p(c, y) \implies \exists x; p(x, d)} }
+							{\forall y; p(c, y) \implies \forall y; \exists x; p(x, y)} }
+						{\exists x; \forall y; p(x, y) \implies \forall y; \exists x; p(x, y)}
 					\end{equation*}
-				% end
-			% end
-		% end
+					% end
+					% end
+					% end
 
 		\subsection{Soundness and Completeness}
 			\definition{Sound Sequent Rule}{A rule is \textit{sound} (correct) iff the validity of its premises implies the validity of its conclusion.}
-			
+
 			\definition{Soundness of Sequent Calculus}{A sequent calculus is \textit{sound} iff a closed proof implies the validity of the formula corresponding to its root sequent.}
-			
+
 			\definition{Completeness of Sequent Calculus}{A sequent calculus is \textit{complete} iff for any valid formula \(\phi\) a closed proof with root sequent \( \implies \phi \) exists.}
-			
+
 			\theorem{Soundness, Completeness}{
 				The \textit{sequent calculus} introduced above is sound and complete.
 			}
-	% end
-% end
+			% end
+			% end
 
 \chapter{Java Modeling Language (JML)}
 	\label{c:jml}
-	
+
 	This chapter covers deductive verification of Java source code:
 	\begin{enumerate}
 		\item Formally specifying Java programs and
@@ -1966,9 +1966,9 @@ public class BankCard {
 	private boolean invalid = false;
 }
 			\end{lstlisting}
-			
+
 			Listing~\ref{lst:atm} shows the code of the running "ATM"-Example.
-		% end
+			% end
 
 		\subsection{Limited Integer Set}
 			\begin{lstlisting}[caption = { Running Example for JML 2 }, label = lst:lis, language = Java]
@@ -1987,10 +1987,10 @@ public class LimitedIntegerSet {
 	public /* pure @*/ boolean contains(int elem) { ... }
 }
 			\end{lstlisting}
-			
+
 			Listing~\ref{lst:lis} shows the code of the running "Limited Integer Set"-Example (with added specification modifiers that are explained later on).
-		% end
-	% end
+			% end
+			% end
 
 	\section{Specification}
 		\begin{itemize}
@@ -2012,14 +2012,14 @@ public class LimitedIntegerSet {
 					\item Accessible part of pre- and post-state
 				\end{itemize}
 		\end{itemize}
-	
+
 		\subsection{Specifications as Contracts}
 			A useful analogy to stress the different roles in a specification, view a specification as a \textit{contract} between the method implementor and the user, between the caller and the callee: The callee guarantee a certain outcome provided that the caller guarantees some prerequisites.
-		% end
+			% end
 
 		\subsection{Informal Specification (ATM Example, \texttt{enterPin})}
 			"Enter the PIN that belongs to the currently inserted bank card into the ATM. If a wrong PIN is entered three times in a row, the card is confiscated. After having entered the correct PIN, the customer is regarded as authenticated."
-		% end
+			% end
 
 		\subsection{Specification as Contract}
 			The contract states what is guaranteed under which conditions.
@@ -2040,18 +2040,18 @@ public class LimitedIntegerSet {
 						\item[postcondition] Card is confiscated, card is made invalid, user is not authenticated.
 					\end{description}
 			\end{itemize}
-		
+
 			\definition{Satisfying Implementation}{
 				A pre-/post-condition pair for a method \(m\) is \textit{satisfied by the implementation} of \(m\) iff: When \(m\) is called in any state that satisfies the precondition, then any terminating state of \(m\) satisfies the postconditions.
 			}
-		
+
 			Remarks:
 			\begin{itemize}
 				\item No guarantee for anything if the precondition is not satisfied.
 				\item Termination may or may not be guaranteed.
 				\item Terminating state may be reached by normal or abrupt termination (e.g. exception).
 			\end{itemize}
-		% end
+			% end
 
 		\subsection{Formal Specification}
 			Natural language specifications are very important and widely used, but this document focuses on formal specification where contracts are described with mathematical rigor.
@@ -2068,12 +2068,12 @@ public class LimitedIntegerSet {
 						\item program verification
 					\end{itemize}
 			\end{itemize}
-		% end
-	% end
+			% end
+			% end
 
 	\section{Introduction to JML}
 		JML (the \textit{Java Modeling Language}) is a specification language that is tailored to Java and follows the philosophy to integrate specification and implementation in one single language. That is, JML is not external to Java, but an extension of the language, written in annotation-like comments.
-		
+
 		JML annotations include:
 		\begin{itemize}
 			\item Preconditions (section~\ref{sec:precond})
@@ -2091,14 +2091,14 @@ public class LimitedIntegerSet {
 				\item To ensure compatibility with the Java compiler, JML annotations are written inside special Java comments, thus are ignored by the standard Java compiler but recognized by JML tools.
 				\item These special comments have to start with an \texttt{\@} and everything following will be parsed by JML tools.
 			\end{itemize}
-		
+
 			\warning{There must not be a space between the start of the comment and the at! So only \inlineJava{/*@ ... */} and \inlineJava{//@ ...} will be recognized as JML annotations!}
-		% end
-	% end
+			% end
+			% end
 
 	\section{Specification Case}
 		Specifications cases for a method must be directly in front of the method and have the form shown in listing~\ref{lst:jmlSpecCase} (using the ATM example). Multiple specification cases have to be connected using the keyword \inlineJava{also} where it is not necessary iff only one specification case is defined.
-		
+
 		\begin{lstlisting}[caption = { Specification Cases in JML }, label = lst:jmlSpecCase, language = Java]
 /*@
   @ <specification case one>
@@ -2111,9 +2111,9 @@ public class LimitedIntegerSet {
   @*/
 public void enterPin(int pin) { ... }
 		\end{lstlisting}
-		
+
 		A single specification case has the form shown in listing~\ref{lst:jmlSingleSpecCase} (using the ATM example). The details of the specification case components are covered in the following sections.
-		
+
 		\begin{lstlisting}[caption = { Single Specification Case in JML }, label = lst:jmlSingleSpecCase, language = Java]
 /*@ public normal_behavior
   @ requires !customerAuthenticated;
@@ -2130,33 +2130,33 @@ public void enterPin(int pin) { ... }
 				\item is accessible from all classes and interfaces and
 				\item can only refer to \inlineJava{public} fields/methods of the class (to reference also private fields, they must be annotated with the JML modifier \inlineJava{spec\_public} that is covered in section~\ref{sec:specpub}).
 			\end{itemize}
-		% end
-		
+			% end
+
 		\subsection{Preconditions}
 			\label{sec:precond}
-		
+
 			A specification case contains postcondition clauses of the form
 			\begin{center}
 				\inlineJava{requires b;}
 			\end{center}
 			where \texttt{b} is a boolean JML expression. If multiple clauses are given, the precondition is a conjunction of all clauses. In the pre-state, the preconditions must be true to guarantee the postconditions (or exceptional behavior).
-		% end
+			% end
 
 		\subsection{Normal Behavior}
 			Each keyword that is ending in \inlineJava{behavior} opens a specification case. For the \inlineJava{normal\_behavior} specification case, the called method guarantees to not throw an exception if the caller guarantees all preconditions of the specification case.
-			
+
 			\subsubsection{Postconditions}
 				\label{sec:postcond1}
-			
+
 				A normal specification case have multiple postcondition clauses of the form
 				\begin{center}
 					\inlineJava{ensures b;}
 				\end{center}
 				where \texttt{b} is a boolean JML expression. If multiple clauses are given, the postcondition is a conjunction of all clauses.
-				
+
 				If the preconditions of the specification case hold in the pre-state, the postconditions must hold in the post-state.
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{Exceptional Behavior}
 			For an \inlineJava{exceptional\_behavior} specification case, assuming the preconditions are fulfilled, it requires the method to throw an exception iff the pre-state satisfies the preconditions.
@@ -2172,18 +2172,18 @@ public void enterPin(int pin) { ... }
 					\inlineJava{signals\_only E1, ..., EN;}
 				\end{center}
 				where \texttt{E1} to \texttt{EN} are the exception types. The thrown exception must have one of these types.
-			% end
+				% end
 
 			\subsubsection{Postconditions}
 				\label{sec:postcond2}
-			
+
 				An exceptional specification case can have several clauses of the form
 				\begin{center}
 					\inlineJava{signals (E) b;}
 				\end{center}
 				where \texttt{E} is an exception type and \texttt{b} is a boolean JML expression. If an exception of type \texttt{E} is thrown, then \texttt{b} must hold.
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{Non-Termination}
 			By default, both normal and exceptional specifications enforce termination. Non-termination can be allowed by the clause
@@ -2191,8 +2191,8 @@ public void enterPin(int pin) { ... }
 				\inlineJava{diverges true;}
 			\end{center}
 			in the specification. If the precondition of the specification case holds in the pre-state, then the method may or may not terminate.
-		% end
-	% end
+			% end
+			% end
 
 	\section{Assignable}
 		An assignable clause is a clause of the form
@@ -2200,40 +2200,40 @@ public void enterPin(int pin) { ... }
 			\inlineJava{assignable loc1, ..., locN;}
 		\end{center}
 		where \texttt{loc1} to \texttt{locN} are locations (e.g. class variables) that can be modified by the specified method. That is, no other values are allowed to change and must have the same value in the post-state as in the pre-state (but they may change temporarily during the execution of the method).
-		
+
 		Some special values are \inlineJava{\\nothing} and \inlineJava{\\everything} where the first allows no modifications and the latter allows all modifications (default).
-		
+
 		Specifying as less locations as possible makes validating the program more efficient and reduces the amount of specification in the postcondition.
-	% end
+		% end
 
 	\section{Modifiers}
 		\label{sec:additionalmod}
-	
+
 		JML extends the Java modifiers. Those modifiers have to be written between the "normal" modifiers, e.g. \inlineJava{private /*@ spec\_public @*/ int foo;}.
-	
+
 		\subsection{\texttt{spec\_public}}
 			\label{sec:specpub}
-		
+
 			\begin{itemize}
 				\item Public specifications are not able to access class fields that are not public.
 				\item It is not desirable to make every fields public (encapsulation, etc.).
 				\item The visibility of such fields can be increased with the modifier \inlineJava{spec\_public} which keeps the Java visibility but, if necessary, rises the specification visibility to public.
 				\item A different solution that is not covered here is to use specification-only fields.
 			\end{itemize}
-		% end
+			% end
 
 		\subsection{\texttt{pure}}
 			\definition{Pure Method}{A Java method is called \textit{pure} iff it has no side effects and always terminates. Specifically, it may create no new objects.}
-		
+
 			JML expressions are allowed pure methods. Those methods are annotated by the modifier \inlineJava{pure}, e.g. the \texttt{contains} method in the limited integer set example (see listing~\ref{lst:lis}).
-			
+
 			\begin{itemize}
 				\item \inlineJava{pure} puts obligation on the implementor to not cause side effects.
 				\item It is possible to formally verify that a method is pure by writing a contract that expresses it and verifying it.
 				\item \inlineJava{pure} implies \inlineJava{assignable \\nothing;}.
 				\item Assignable clauses are more fine-grained and can be local to specification cases where \inlineJava{pure} always effects the whole method.
 			\end{itemize}
-		% end
+			% end
 
 		\subsection{\texttt{nullable}, \texttt{non\_null}}
 			Class fields, method parameters and returns types may be annotated with
@@ -2241,12 +2241,12 @@ public void enterPin(int pin) { ... }
 				\item \inlineJava{nullable} -- May or may not be \inlineJava{null}.
 				\item \inlineJava{non\_null}  -- Must not be \inlineJava{null} (default).
 			\end{itemize}
-			
+
 			\warning{The default \inlineJava{non\_null} only applies in JML since 2008! Old JML tutorials/articles might use \inlineJava{nullable}-by-default semantics!}
-			
+
 			These modifiers are converted into class invariants by JML, see section~\ref{sec:classinv}.
-		% end
-	% end
+			% end
+			% end
 
 	\section{JML Expressions}
 		\begin{itemize}
@@ -2274,13 +2274,13 @@ public void enterPin(int pin) { ... }
 				\end{itemize}
 				The \inlineJava{boolean} \texttt{a} is called \textit{range predicate} and is syntactic sugar for standard FOL quantifiers.
 		\end{itemize}
-	
+
 		\textbf{Notes:}
 		\begin{itemize}
 			\item Quantified JML expressions over nontrivial types also range over non-created objects which can be restricted with the expressions \inlineJava{\\created(b1)} where \texttt{b1} is a bound variable.
 			\item In postconditions, the return value (result value) of the method can be accessed via \inlineJava{\\result}.
 		\end{itemize}
-	% end
+		% end
 
 	\section{State Constraints}
 		JML can also be used to specify constraints on the state of a class, e.g.:
@@ -2292,13 +2292,13 @@ public void enterPin(int pin) { ... }
 
 		\subsection{Class Invariants}
 			\label{sec:classinv}
-		
+
 			Such constraints can be formulated as \textit{class constraints} that are written anywhere in the class in the following form:
 			\begin{center}
 				\inlineJava{public invariant b;}
 			\end{center}
 			where \texttt{b} is a \inlineJava{boolean} JML expression. Technically, these constraints can be written anywhere in the class but it is common to write them in front of the affected properties. Multiply invariants per class are joined in a conjunction.
-			
+
 			Invariant types:
 			\begin{itemize}
 				\item Instance invariants
@@ -2317,56 +2317,56 @@ public void enterPin(int pin) { ... }
 					\end{itemize}
 			\end{itemize}
 			In classes, instance is default and static is default in interfaces.
-			
+
 			\paragraph{Semantics/Intuition}
 				The class invariants are added as another pre- and postcondition to all methods of a class, so they do need to hold before and after the method call, but not necessarily during the execution.
-			% end
-		% end
-	% end
+				% end
+				% end
+				% end
 
 	\section{Inheritance}
 		All JML contracts (specification cases, class invariants) are inherited from superclasses to subclasses (a class must fulfill all contracts of its superclasses). Subclasses may also add specification cases to those of the superclasses, see listing~\ref{lst:jmlInherit}.
-		
+
 		\begin{lstlisting}[caption = { Inheritance in JML }, label = lst:jmlInherit, language = Java]
 /*@ also
   @ <specification case specific to subclass>
   @*/
 public void method() { ... }
 		\end{lstlisting}
-	% end
+		% end
 
 	\section{Loops}
 		This section only covers the syntax for proofing loop correctness in JML. For a more detailed dive into the formal backbone, lookup section~\ref{sec:dlLoopInv}.
-	
+
 		\subsection{Loop Invariants}
 			\label{sec:loopinv}
-		
+
 			\begin{lstlisting}[caption = { Loop Invariants in JML }, label = lst:jmlLoopInv, language = Java]
 /*@ loop_invariant <expr>;
   @ assignable <assign>;
   @*/
 			\end{lstlisting}
-		
+
 			A \textit{loop invariant} is a statement that is true before and after every loop iteration. It is specified in JML as in listing~\ref{lst:jmlLoopInv} where the expression has to be a \inlineJava{boolean} JML expression and the assign statement is assumed (so it must be true, e.g. with \inlineJava{assignable \\nothing;} it is possible to proof nonsense if its not true). KeY generates a proof obligation that ensures the correctness of the assignable clause.
-		% end
+			% end
 
 		\subsection{Loop Termination}
 			If a loop does not terminate, it is possible to proof its correctness as the initial, preserved and use case are immediately closable. This can lead to nonsense proofs.
-			
+
 			Thus a way is needed to proof the termination of a loop based on an expression called \textit{variant} that is getting smaller w.r.t. \( \mathbb{N} \) is each iteration (it is not possible to decrease infinitely many often in the natural numbers). This decreasing gets added to the \inlineJava{loop\_invariant} annotation with the following syntax:
 			\begin{center}
 				\inlineJava{decreasing v;}
 			\end{center}
 			where \texttt{v} is the decreasing term and \( \texttt{v} \geq 0 \) is ensures by the loop body as well as \texttt{v} is strictly decreased by the loop body. This way, KeY can proof the termination of the loop.
-		% end
-	% end
-% end
+			% end
+			% end
+			% end
 
 \chapter{Dynamic Logic (DL)}
 	\label{c:dl}
-	
+
 	Note: Most of the following uses KeY pretty-printing format for heap access, see section~\ref{sec:keyPP}.
-	
+
 	\begin{itemize}
 		\item A logic and calculus that allows the expressions if properties like "if \dots, then \dots and afterwards \dots" where some state can be modified by the formula itself is needed.
 		\item One such \textit{program logic} is \textit{dynamic logic} (DL), combining first-order logic (FOL) with programs.
@@ -2393,9 +2393,9 @@ public void method() { ... }
 			\end{itemize}
 			Then \( \mathcal{T} = (\TSym, \subof) \) is a \textit{type hierarchy}.
 		}
-	
+
 		The Java type hierarchy is shown in figure~\ref{fig:javaTypeHierarchy} (not all primitive types listed) where each interface and class in the API and in the target program becomes a type with an appropriate subtype relation.
-		
+
 		\begin{figure}
 			\centering
 			\begin{tikzpicture}[->, every node/.style = { draw, rectangle }]
@@ -2409,7 +2409,7 @@ public void method() { ... }
 				\node [below = of Object] (classes) {Java Classes};
 				\node [below = of classes] (Null) {Null};
 				\node [below = of Null] (Empty) {\( \tempty \)};
-				
+
 				\draw (Empty) to[bend left = 40] (int);
 				\draw (Empty) to[bend left = 20] (boolean);
 				\draw (Empty) -- (Null);
@@ -2427,7 +2427,7 @@ public void method() { ... }
 			\caption{Java Type Hierarchy}
 			\label{fig:javaTypeHierarchy}
 		\end{figure}
-	% end
+		% end
 
 	\section{Syntax}
 		\definition{Signature of Dynamic Logic}{
@@ -2441,7 +2441,7 @@ public void method() { ... }
 
 		\subsection{Variables}
 			Program variables cannot be first-order variables and are state-dependent constant symbols where the value is changeable by a program (state-dependent = non-rigid = flexible).
-			
+
 			\begin{itemize}
 				\item The signature of dynamic logic is defined like in FOL, but with additional program variables for each type.
 				\item Rigid signature symbols have the same interpretation in all program states (first-order variables and builtin functions and predicates).
@@ -2457,11 +2457,11 @@ public void method() { ... }
 					\end{itemize}
 				\item Any term that contains at least one flexible symbol is also flexible.
 			\end{itemize}
-		% end
+			% end
 
 		\subsection{Terms}
 			\definition{Dynamic Logic Terms}{The typed first-order terms are defined as in FOL. In addition, a program variable \texttt{v} of type \(A\) is a term in \( \Trm_A \).}
-		% end
+			% end
 
 		\subsection{Modalities}
 			Dynamic logic extends FOL with two additional operations:
@@ -2470,14 +2470,14 @@ public void method() { ... }
 				\item \( [\texttt{p}] \phi \) (box)
 			\end{itemize}
 			with a program \texttt{p} and another DL formula \(\phi\).
-			
+
 			Intuitive meaning:
 			\begin{itemize}
 				\item \( \langle \texttt{p} \rangle \phi \): \texttt{p} terminates and formula \(\phi\) holds in the final state (total correctness).
 				\item \( [\texttt{p}] \phi \): If \texttt{p} terminates, then formula \(\phi\) holds in the final state (partial correctness).
 			\end{itemize}
 			As Java programs are deterministic, if a Java program terminates, then exactly one state is reached from a given initial state.
-		% end
+			% end
 
 		\subsection{Formulas}
 			\definition{Dynamic Logic Formulas}{
@@ -2493,8 +2493,8 @@ public void method() { ... }
 					\item DL formulas are closed under FOL quantifiers and connectives.
 				\end{itemize}
 			}
-		% end
-	% end
+			% end
+			% end
 
 	\section{Semantics}
 		\begin{itemize}
@@ -2502,10 +2502,10 @@ public void method() { ... }
 			\item In dynamic logic, the interpretation of flexible program variable differs from one program state to another.
 			\item The interpretation of rigid symbols is the same in all states.
 		\end{itemize}
-	
+
 		\definition{Program State}{
 			A \textit{program state} \(s\) is a specific first-order state \( (\mathcal{D}, \delta, \mathcal{I}) \).
-			
+
 			For a fixed \( \mathcal{D} \), \( \delta \) the set \( \mathcal{S} \) denotes the set of all program states such that any two states \( s_1, s_2 \in \mathcal{S} \):
 			\begin{itemize}
 				\item Coincide on \( \mathcal{D}, \delta \) and
@@ -2521,7 +2521,7 @@ public void method() { ... }
 					\item Transition relation \( \rho : \Program \rightarrow (\mathcal{S} \rightharpoonup \mathcal{S}) \) with \( \rho(\texttt{p})(s_1) = s_2 \) iff the program \texttt{p}, executed in state \(s_1\), terminates normally and its final state is \(s_2\). Otherwise, the transition is undefined.
 				\end{itemize}
 			}
-		
+
 			\begin{itemize}
 				\item \(\rho\) is the formal semantics of programs \( \texttt{p} \in \Program \).
 				\item \( \rho(\texttt{p})(s) \) may be undefined (denoted by \( \rightharpoonup \)), \texttt{p} might not terminate when started in some state \(s\).
@@ -2529,7 +2529,7 @@ public void method() { ... }
 				\item First-order Kripke structures are infinite (one transition for each program with infinitely many programs).
 				\item The states only differ in the interpretation of the program variables (rigid symbols have the same interpretation in all states).
 			\end{itemize}
-		% end
+			% end
 
 		\subsection{Semantic Evaluation}
 			\subsubsection{Formulas}
@@ -2543,17 +2543,17 @@ public void method() { ... }
 						\end{array}
 					\end{equation*}
 				}
-			
+
 				\begin{itemize}
 					\item Duality:     \( \langle \texttt{p} \rangle \phi \iff \lnot [\texttt{p}] \lnot \phi \)
 					\item Implication: \( \langle \texttt{p} \rangle \phi \implies [\texttt{p}] \phi \) \\ Total correctness implies partial correctness, holds only for deterministic programs.
 				\end{itemize}
-			% end
+				% end
 
 			\subsubsection{Programs}
 				In a Kripke structure \( \mathcal{K} = (\mathcal{S}, \rho) \), \(\rho\) defines the semantics of programs \( \texttt{p} \in \Program \). It is a verify tedious task to define \(\rho\) for Java and thus it is not done here.
-			% end
-		% end
+				% end
+				% end
 
 		\subsection{Sequents}
 			\definition{DL Sequent}{
@@ -2563,18 +2563,18 @@ public void method() { ... }
 				\end{equation*}
 				like in propositional logic and FOL sequents.
 			}
-		
+
 			\definition{Validity of DL Sequents}{
 				A sequent \( \Gamma \implies \Delta \) over DL formulas is valid iff \[ (\mathcal{K}, s) \models (\Gamma \implies \Delta) \] in all states \(s \in \mathcal{S}\) and Kripke structures \(\mathcal{K}\).
-				
+
 				Note that the initial value of program variables can be any domain value!
 			}
-		% end
-	% end
+			% end
+			% end
 
 	\section{KeY Input File} % 11.16, 11.21, 11.22, 12.24
 		\todo{Content}
-	% end
+		% end
 
 	\section{Symbolic Execution} % TODO: 14.3
 		\begin{itemize}
@@ -2592,90 +2592,90 @@ public void method() { ... }
 
 		\subsection{Rules} % 14.4, 14.5, 14.7, 14.12, 14.15
 			\paragraph{Conditional} %12.7
-			\begin{equation*}
-				\prftree[l, r]
+				\begin{equation*}
+					\prftree[l, r]
 					{\texttt{b} simple}
 					{if}
 					{\Gamma, \texttt{b} \doteq \texttt{true} \implies \langle \texttt{p; rest} \rangle \phi, \Delta}
 					{\qquad}
 					{\Gamma, \texttt{b} \doteq \texttt{false} \implies \langle \texttt{q; rest} \rangle \phi, \Delta}
 					{\Gamma \implies \langle \texttt{if (b) \{ p \} else \{ q \}; rest} \rangle \phi, \Delta}
-			\end{equation*}
-			
+				\end{equation*}
+
 			\paragraph{Loops: Unwind} %12.7
-			\begin{equation*}
-				\prftree[l]
+				\begin{equation*}
+					\prftree[l]
 					{unwindLoop}
 					{\Gamma \implies \langle \texttt{if (b) \{ p; while (b) \{ p \} \}; rest} \rangle \phi, \Delta}
 					{\Gamma \implies \langle \texttt{while (b) \{ p \}; rest} \rangle \phi, \Delta}
-			\end{equation*}
-			
+				\end{equation*}
+
 			\paragraph{Assignment} %12.12
-			\begin{equation*}
-				\prftree[l,r]
+				\begin{equation*}
+					\prftree[l,r]
 					{\texttt{t} simple}
 					{assign}
 					{\Gamma \implies \{\, \texttt{x} \coloneqq \texttt{t} \,\} \langle \texttt{rest} \rangle \phi, \Delta}
 					{\Gamma \implies \langle \texttt{x = t; rest} \rangle \phi, \Delta}
-			\end{equation*}
-			
+				\end{equation*}
+
 			\paragraph{Field Assignment} %12.21
-			\begin{equation*}
-				\prftree[l,r]
+				\begin{equation*}
+					\prftree[l,r]
 					{\texttt{t} simple}
 					{assign}
 					{\Gamma \implies \{\, \textrm{heap} \coloneqq \textrm{store}(\textrm{heap}, \texttt{o}, \texttt{f}, t) \,\} \langle \texttt{rest} \rangle \phi, \Delta }
 					{\Gamma \implies \langle \texttt{o.f = t; rest} \rangle \phi, \Delta}
-			\end{equation*}
-			
+				\end{equation*}
+
 			\paragraph{Local Code Transformation} %12.35
-			\begin{equation*}
-				\prftree[l, r]
+				\begin{equation*}
+					\prftree[l, r]
 					{\texttt{t} simple}
 					{evalOrderIteratedAssgnmt}
 					{\Gamma \implies \langle \texttt{y = t; x = y; } \omega \rangle \phi, \Delta}
 					{\Gamma \implies \langle \texttt{x = y = t; } \omega \rangle \phi, \Delta}
-			\end{equation*}
-			
+				\end{equation*}
+
 			\paragraph{Complex Conditional} %12.35
-			\begin{equation*}
-				\prftree[l, r]
+				\begin{equation*}
+					\prftree[l, r]
 					{\texttt{b} complex}
 					{ifEval}
 					{\Gamma \implies \langle \texttt{boolean v0; v0 = b; if (v0) p; } \omega \rangle \phi, \Delta}
 					{\Gamma \implies \langle \texttt{if (b) p; } \omega \rangle \phi, \Delta}
-			\end{equation*}
-			
+				\end{equation*}
+
 			\paragraph{Try-Catch} %12.36
-			{ \footnotesize \begin{equation*}
-				\prftree[l]
-					{tryThrow}
-					{\Gamma \implies \langle \pi \texttt{ if (e instanceof T) \{ try \{ x = e; q \} finally \{ r \} \} else \{ r; throw e; \} } \omega \rangle \phi, \Delta}
-					{\Gamma \implies \langle \pi \texttt{ try \{ throw e; p \} catch (T x) \{ q \} finally \{ r \} } \omega \rangle \phi, \Delta}
-			\end{equation*} }
-		
+				{ \footnotesize \begin{equation*}
+						\prftree[l]
+						{tryThrow}
+						{\Gamma \implies \langle \pi \texttt{ if (e instanceof T) \{ try \{ x = e; q \} finally \{ r \} \} else \{ r; throw e; \} } \omega \rangle \phi, \Delta}
+						{\Gamma \implies \langle \pi \texttt{ try \{ throw e; p \} catch (T x) \{ q \} finally \{ r \} } \omega \rangle \phi, \Delta}
+					\end{equation*} }
+
 			\paragraph{Method Call: Inlining, Void} %13.5
-			\begin{equation*}
-				\prftree[l]
+				\begin{equation*}
+					\prftree[l]
 					{methodBodyExpand}
 					{\Gamma \implies \langle \pi \texttt{ method-frame(source=C, this=C):\{ body \} } \omega \rangle \phi, \Delta}
 					{\Gamma \implies \langle \pi \texttt{ c.m(p\#1, ..., p\#N)@C; } \omega\rangle \phi, \Delta}
-			\end{equation*}
-			
+				\end{equation*}
+
 			\paragraph{Method Call: Contract, Void} %13.16
-			\begin{equation*}
-				\prftree[l]
+				\begin{equation*}
+					\prftree[l]
 					{methodContract}
 					{\let\scriptstyle\textstyle \substack{
-					 \Gamma \implies \mathcal{U} \mathcal{F}(\texttt{preExc}), \Delta \\
-					 \Gamma \implies \mathcal{U} \nu_\texttt{normal} \big( \mathcal{F}(\texttt{postNormal}) \to \langle \pi \texttt{ p } \omega \rangle \phi \big), \Delta \\
-					 \Gamma \implies \mathcal{U} \nu_\texttt{exc} \Big( \big( \texttt{exc} \not\doteq \texttt{null} \land \mathcal{F}(\texttt{postExc}) \big) \to \langle \pi \texttt{ throw exc; p } \omega \rangle \phi \Big), \Delta}}
+							\Gamma \implies \mathcal{U} \mathcal{F}(\texttt{preExc}), \Delta \\
+							\Gamma \implies \mathcal{U} \nu_\texttt{normal} \big( \mathcal{F}(\texttt{postNormal}) \to \langle \pi \texttt{ p } \omega \rangle \phi \big), \Delta \\
+							\Gamma \implies \mathcal{U} \nu_\texttt{exc} \Big( \big( \texttt{exc} \not\doteq \texttt{null} \land \mathcal{F}(\texttt{postExc}) \big) \to \langle \pi \texttt{ throw exc; p } \omega \rangle \phi \Big), \Delta}}
 					{\Gamma \implies \mathcal{U} \langle \pi \texttt{ result = m(arg1, ..., argN); p } \omega \rangle \phi, \Delta}
-			\end{equation*}
-		
-			\todo{Content}
-		% end
-	% end
+				\end{equation*}
+
+				\todo{Content}
+				% end
+				% end
 
 	\section{Updates}
 		\definition{Syntax of Updates, Updated Terms/Formulas}{
@@ -2686,15 +2686,15 @@ public void method() { ... }
 				\item \( \{\, \texttt{v} \coloneqq t \,\} \phi \) a DL formula.
 			\end{itemize}
 		}
-		
+
 		\definition{Semantics of Updates}{
 			Let a state \(s\) interpret the program variable \texttt{v} with \( \mathcal{I}_s(\texttt{v}) \) and let \(\beta\) be a variable assignment for free first-order variables in \(t\). Then the semantics \(\rho\) of an update is defined as:
 			\begin{equation*}
-			\rho\big( \{\, \texttt{v} \coloneqq t \,\} \big)(s) = s'
+				\rho\big( \{\, \texttt{v} \coloneqq t \,\} \big)(s) = s'
 			\end{equation*}
 			where \(s'\) is identical to \(s\) except \( \mathcal{I}_{s'}(\texttt{v}) = \val_{s,\beta}(t) \).
 		}
-	
+
 		\begin{itemize}
 			\item Update semantics are almost identical to those of the assignment statement.
 			\item The value of an update depends on \(s\) and on first-order variables in \(t\).
@@ -2731,33 +2731,33 @@ public void method() { ... }
 			\begin{equation*}
 				\begin{cases}
 					\{\, \texttt{x} \coloneqq t \,\} (\phi \,\&\, \psi) \leadsto \{\, \texttt{x} \coloneqq t \,\} \phi \,\&\, \{\, \texttt{x} \coloneqq t \,\} \psi \\
-					\quad\cdots \\
+					\quad\cdots                                                                                                                                     \\
 					\{\, \texttt{x} \coloneqq t \,\} (\forall y; \phi) \leadsto \forall y; \big( \{\, \texttt{x} \coloneqq t \,\} \phi \big)
 				\end{cases}
 			\end{equation*}
 			\begin{itemize}
 				\item program formula: no rewrite needed!
 			\end{itemize}
-		% end
+			% end
 
 		\subsection{Assignment Rule}
 			\begin{equation*}
 				\prftree[l]
-					{assign}
-					{\Gamma \implies \{\, \texttt{x} \coloneqq \texttt{t} \,\} \langle \texttt{rest} \rangle \phi, \Delta}
-					{\Gamma \implies \langle \texttt{x = t; rest} \rangle \phi, \Delta}
+				{assign}
+				{\Gamma \implies \{\, \texttt{x} \coloneqq \texttt{t} \,\} \langle \texttt{rest} \rangle \phi, \Delta}
+				{\Gamma \implies \langle \texttt{x = t; rest} \rangle \phi, \Delta}
 			\end{equation*}
-			
+
 			\begin{itemize}
 				\item Simple, not variable renaming or similar.
 				\item Works as long as \(t\) does not have any side effects.
 				\item Special case is needed for calculations in the assignment etc.
 			\end{itemize}
-		% end
+			% end
 
 		\subsection{Parallel Updates}
 			If a variable is assigned multiple times, those several sequential updates have to be composed into a parallel update.
-			
+
 			\definition{Parallel Update}{
 				A \textit{parallel update} is an expression of the form \( \{\, \texttt{v}_1 \coloneqq r_1 \,\Vert\, \cdots \,\Vert\, \texttt{v}_n \coloneqq r_n \,\} \) where each \( \{\, \texttt{v}_i \coloneqq r_i \,\} \) is a simple update.
 				\begin{itemize}
@@ -2766,61 +2766,61 @@ public void method() { ... }
 					\item Upon conflict \( \texttt{v}_i = \texttt{v}_j \), \( r_i \neq r_j \), the later update (\( \max \{\, i,\, j \,\} \)) wins.
 				\end{itemize}
 			}
-		
+
 			% TODO: Definition Sequential --> Parallel / Conflict Resolution (12.14)
-		% end
+			% end
 
 		\subsection{Quantifier}
 			Quantifying over a program variable is not possible, but it is possible to quantify over a FOL variable and then update the program variable accordingly:
 			\begin{equation*}
 				\forall i_0; \{\, \texttt{i} \coloneqq i_0 \,\} \langle \cdots \texttt{i} \cdots \rangle \phi
 			\end{equation*}
-		% end
+			% end
 
 		\subsection{Anonymising Updates}
 			\label{sec:anonUpdate}
-		
+
 			Given some assignable clause
 			\begin{center}
 				\inlineJava{assignable modified;}
 			\end{center}
 			the part of the prestate \(\mathcal{U}\) that is unmodified by the execution should be kept. The assignable clause tells what could possibly be modified.
-			
+
 			An \textit{anonymising update} \( \nu \) eases all information about the modified locations
 			\begin{equation*}
 				\nu_\textrm{modified} = \{\, \texttt{l}_1 \coloneqq \texttt{c}_1 \,\Vert\, \cdots \,\Vert\, \texttt{l}_n \coloneqq \texttt{c}_n \,\}
 			\end{equation*}
 			and sets them to a new constant symbol \( \texttt{c}_i \) for each location \( \texttt{l}_i \) in the assignable clause (\texttt{modified}).
-			
+
 			\paragraph{Anonymising Heap Locations}
 				It must also be possible to erase some heap values without throwing everything away, e.g. for the assignable clause
 				\begin{center}
 					\inlineJava{assignable o.a, this.*;}
 				\end{center}
-			
+
 				\definition{Anonymising Function}{
 					Let \( \textrm{anon} : \textrm{Heap} \times \textrm{LocSet} \times \textrm{Heap} \to \textrm{Heap} \) be a function that returns the heap that coincided with the first heap argument on all locations except those specified in the location set. The latter attain their value specified by the second heap argument.
 				}
-			
+
 				Let \textit{ls} of type LocSet be a set of location key \( \subseteq \textrm{Object} \times \textrm{Field} \):
 				\begin{equation*}
 					\textrm{select}(\textrm{anon}(h_1, \textit{ls}, h_2), o, f) =
-						\begin{cases}
-							\textrm{select}(h_2, o, f) & \textrm{iff } \big( (o, f) \in \textit{ls} \land f \neq \texttt{<created>} \big) \lor (o, f) \in \textit{freshLocs}(h_1) \\
-							\textrm{select}(h_1, o, f) & \textrm{otherwise}
-						\end{cases}
+					\begin{cases}
+						\textrm{select}(h_2, o, f) & \textrm{iff } \big( (o, f) \in \textit{ls} \land f \neq \texttt{<created>} \big) \lor (o, f) \in \textit{freshLocs}(h_1) \\
+						\textrm{select}(h_1, o, f) & \textrm{otherwise}
+					\end{cases}
 				\end{equation*}
-			% end
-		% end
-	% end
-	
+				% end
+				% end
+				% end
+
 	\section{Modeling the Heap}
 		In Java, values of reference types live on the heap.
 		\begin{itemize}
 			\item Can change dynamic during symbolic program execution.
 			\item In each program state, the heap associated objects, fields, values.
 		\end{itemize}
-		
+
 		\subsection{Modeling Fields}
 			\begin{itemize}
 				\item For every Java reference type \(C\), there is a FOL type \(C\), e.g. \texttt{Person}.
@@ -2828,7 +2828,7 @@ public void method() { ... }
 				\item The type domain of all possible objects of a reference type \(C\) is \( \mathcal{D}^C \), e.g. \( \mathcal{D}^\texttt{Person} \).
 				\item A heap relates objects and fields to values.
 			\end{itemize}
-			
+
 			\paragraph{Reading Fields}
 				Signature in DL: \texttt{Any select(Heap, Object, Field)}
 				\begin{itemize}
@@ -2836,59 +2836,59 @@ public void method() { ... }
 					\item For casting, use \texttt{type :: select(Heap, Object, Field)}
 					\item It is possible that a field with the same name exists in different classes. Thus, prepend the class name to the field name, e.g. \texttt{Person::\$age}.
 				\end{itemize}
-				
+
 				Example:
 				\begin{description}
 					\item[Java] \texttt{p.age >= 0}
 					\item[FOL]  \texttt{int ::select(heap, p, Person::\$age) >= 0}
 					\item[KeY]  \texttt{p.age >= 0} (using pretty-printing)
 				\end{description}
-			% end
-			
+				% end
+
 			\paragraph{Writing to Fields}
 				Signature in DL: \texttt{Heap store(Heap, Object, Field, Any)}
-				
+
 				Example:
 				\begin{description}
 					\item[Java] \texttt{p.age = 42}
 					\item[FOL]  \texttt{store(heap, p, Person::\$age, 42)}
 					\item[KeY]  \texttt{p.age := 42} (using pretty-printing)
 				\end{description}
-			% end
-		% end
-		
+				% end
+				% end
+
 		\subsection{Field Updates}
 			DL has a reserved flexible constant \( \textrm{Heap} \textrm{heap} \) that stores the Java heap under verification for read/write field access.
-			
+
 			\begin{equation*}
 				\prftree[l]
-					{assign}
-					{\Gamma \implies \{\, \textrm{heap} \coloneqq \textrm{store}(\textrm{heap}, \texttt{o}, \texttt{f}, t) \,\} \langle \texttt{rest} \rangle \phi, \Delta }
-					{\Gamma \implies \langle \texttt{o.f = t; rest} \rangle \phi, \Delta}
+				{assign}
+				{\Gamma \implies \{\, \textrm{heap} \coloneqq \textrm{store}(\textrm{heap}, \texttt{o}, \texttt{f}, t) \,\} \langle \texttt{rest} \rangle \phi, \Delta }
+				{\Gamma \implies \langle \texttt{o.f = t; rest} \rangle \phi, \Delta}
 			\end{equation*}
-		% end
-		
+			% end
+
 		\subsection{Field Access}
 			To compute the value of a field \(f\) of an object \(o\) of type \(A\) in a given heap, perform a lookup in the heap using the pair \( (o, f) \) as key/index.
-		% end
-		
+			% end
+
 		\subsection{Pretty-Printing}
 			\label{sec:keyPP}
-		
+
 			\begin{description}
 				\item[Reading] \texttt{A :: select(heap, o, f)} is shown as \texttt{ o.f }
 				\item[Modifying] \texttt{select(store(heap, o, f, 17), u, f)} is shown as \texttt{u.f@heap[o.f := 17]}
 			\end{description}
+			% end
+
+	\section{Aliasing}
+		Naive reference aliasing causes a proof split (on \( o \doteq u \)) at each access
+		\begin{equation*}
+			\implies \texttt{o.age} \doteq 1 \,\texttt{->}\, \langle \texttt{u.age = 2;} \rangle \texttt{o.age} \doteq \texttt{u.age}
+		\end{equation*}
+		To avoid case distinction on \( o \doteq u \) in the proof, delayed state computation until until it is clear what is required is required as well as simplification of heap terms.
 		% end
-		
-		\section{Aliasing}
-			Naive reference aliasing causes a proof split (on \( o \doteq u \)) at each access
-			\begin{equation*}
-				\implies \texttt{o.age} \doteq 1 \,\texttt{->}\, \langle \texttt{u.age = 2;} \rangle \texttt{o.age} \doteq \texttt{u.age}
-			\end{equation*}
-			To avoid case distinction on \( o \doteq u \) in the proof, delayed state computation until until it is clear what is required is required as well as simplification of heap terms.
-		% end
-		
+
 		\subsection{Static Fields}
 			\paragraph{No Compile-Time Constant}
 				For each class \(C\) with a static field \(f\) of type \(A\) that is not a compile-time constant, there is:
@@ -2898,17 +2898,17 @@ public void method() { ... }
 					\item where \(C\) is the fully qualified class name.
 				\end{itemize}
 				So static values are also stored on the heap!
-			% end
-			
+				% end
+
 			\subsubsection{Compile-Time Constant}
 				For each class \(C\) with a final static field \(f\) of type \(A\) that is a compile-time constant, there is
 				\begin{itemize}
 					\item a constant \(C.f\) of type \(A\) whose interpretation \( \mathcal{I}_s(C.f) \) is the same for all states s.
 				\end{itemize}
 				So static compile-time constants are not stored on the heap!
-			% end
-		% end
-		
+				% end
+				% end
+
 		\subsection{\texttt{this} and \texttt{self}}
 			Reserved name for the object whose Java code is currently executed:
 			\begin{description}
@@ -2917,8 +2917,8 @@ public void method() { ... }
 				\item[KeY]  Arbitrary, but by convention often \texttt{Object self;}. The name is arbitrary as long as it is unique: only a flexible constant.
 			\end{description}
 			The default assumption in JML-KeY translation is \texttt{self != null}.
-		% end
-		
+			% end
+
 		\subsection{Arrays}
 			\begin{itemize}
 				\item The Java type hierarchy includes array types that occur in the current program (only for finiteness).
@@ -2929,16 +2929,16 @@ public void method() { ... }
 				\item Arrays \texttt{a} and \texttt{b} can refer to the same object (aliases).
 				\item KeY implements simplification and evaluation rules for array locations.
 			\end{itemize}
-		% end
-	% end
-	
+			% end
+			% end
+
 	\section{Abrupt Termination}
 		Abrupt termination does not count as a normal termination, so a distinction between normal and exceptional termination is needed. This can be done by extending the definition of the two DL modalities:
 		\begin{itemize}
 			\item \( \langle \texttt{p} \rangle \phi \): \texttt{p} terminated \textit{normally} and formula \(\phi\) holds in the final state (total correctness).
 			\item \( [\texttt{p}] \phi \): If \texttt{p} terminates \textit{normally}, then formula \(\phi\) holds in the final state (partial correctness).
 		\end{itemize}
-	
+
 		\subsection{Null Pointers}
 			There are no "exceptions" in FOL, so a possibility that \( o \doteq \texttt{null} \) has to be modeled in the term \texttt{o.f}:
 			\begin{itemize}
@@ -2946,17 +2946,17 @@ public void method() { ... }
 				\item The value of the term \texttt{null.f} is defined, but unknown.
 				\item It is possible to proof \( \texttt{null.f} \doteq \texttt{null.f} \).
 			\end{itemize}
-		% end
-		
+			% end
+
 		\subsection{Try-Catch}
 			{ \footnotesize \begin{equation*}
-				\prftree[l]
+					\prftree[l]
 					{tryThrow}
 					{\Gamma \implies \langle \pi \texttt{ if (e instanceof T) \{ try \{ x = e; q \} finally \{ r \} \} else \{ r; throw e; \} } \omega \rangle \phi, \Delta}
 					{\Gamma \implies \langle \pi \texttt{ try \{ throw e; p \} catch (T x) \{ q \} finally \{ r \} } \omega \rangle \phi, \Delta}
-			\end{equation*} }
-		% end
-	% end
+				\end{equation*} }
+			% end
+			% end
 
 	\section{Complex Expressions}
 		\begin{itemize}
@@ -2965,27 +2965,27 @@ public void method() { ... }
 			\item FOL terms have not side effect on the state.
 			\item Idea: Simplify complex expression with side effects to side effect-free, simple expressions before translation to FOL.
 		\end{itemize}
-	
+
 		Local code transformation:
 		\begin{equation*}
 			\prftree[l, r]
-				{\texttt{t} simple}
-				{evalOrderIteratedAssgnmt}
-				{\Gamma \implies \langle \texttt{y = t; x = y; } \omega \rangle \phi, \Delta}
-				{\Gamma \implies \langle \texttt{x = y = t; } \omega \rangle \phi, \Delta}
+			{\texttt{t} simple}
+			{evalOrderIteratedAssgnmt}
+			{\Gamma \implies \langle \texttt{y = t; x = y; } \omega \rangle \phi, \Delta}
+			{\Gamma \implies \langle \texttt{x = y = t; } \omega \rangle \phi, \Delta}
 		\end{equation*}
-		
+
 		Temporary variables tore the result of evaluated subexpressions:
 		\begin{equation*}
 			\prftree[l, r]
-				{\texttt{b} complex}
-				{ifEval}
-				{\Gamma \implies \langle \texttt{boolean v0; v0 = b; if (v0) p; } \omega \rangle \phi, \Delta}
-				{\Gamma \implies \langle \texttt{if (b) p; } \omega \rangle \phi, \Delta}
+			{\texttt{b} complex}
+			{ifEval}
+			{\Gamma \implies \langle \texttt{boolean v0; v0 = b; if (v0) p; } \omega \rangle \phi, \Delta}
+			{\Gamma \implies \langle \texttt{if (b) p; } \omega \rangle \phi, \Delta}
 		\end{equation*}
-		
+
 		Guards if conditionals/loops are always evaluated before condition/unwind rules are applied.
-	% end
+		% end
 
 	\section{Method Calls}
 		The syntax of a method call with actual (symbol) parameters \( \texttt{arg1}, \cdots, \texttt{argN} \) is:
@@ -2993,7 +2993,7 @@ public void method() { ... }
 			\{\, \texttt{c} \coloneqq t \,\} \langle \texttt{c.m(arg1, ..., argN)} \rangle \phi
 		\end{equation*}
 		where \texttt{m} is declared as \texttt{void m(A1 p1, ..., AN pN)}.
-		
+
 		Action of the DL rule \textit{methodCall} (type conformance of \texttt{argI} to \texttt{AI} is guaranteed by the Java compiler):
 		\begin{enumerate}
 			\item For each formal parameter \texttt{pI} of \texttt{m}: Declare and initialize a new local variable \texttt{AI p\#i = argI;}
@@ -3001,7 +3001,7 @@ public void method() { ... }
 			\item Create a statically resolved method invocation \texttt{c.m(p\#1, ..., p\#N)@C}.
 		\end{enumerate}
 		The proof splits are required as Java has complex rules for localization of fields and method implementations (polymorphism, late binding, scoping, visibility, \dots).
-	
+
 		\subsection{Method Execution by Inlining (void Methods)}
 			\begin{enumerate}
 				\item Execute code binding actual to formal parameters \texttt{AI p\#i = argI;}
@@ -3011,17 +3011,17 @@ public void method() { ... }
 						\item Replace method invocation by the method frame and method body.
 					\end{enumerate}
 			\end{enumerate}
-		
+
 			\begin{equation*}
 				\prftree[l]
-					{methodBodyExpand}
-					{\Gamma \implies \langle \pi \texttt{ method-frame(source=C, this=C):\{ body \} } \omega \rangle \phi, \Delta}
-					{\Gamma \implies \langle \pi \texttt{ c.m(p\#1, ..., p\#N)@C; } \omega\rangle \phi, \Delta}
+				{methodBodyExpand}
+				{\Gamma \implies \langle \pi \texttt{ method-frame(source=C, this=C):\{ body \} } \omega \rangle \phi, \Delta}
+				{\Gamma \implies \langle \pi \texttt{ c.m(p\#1, ..., p\#N)@C; } \omega\rangle \phi, \Delta}
 			\end{equation*}
-			
+
 			\subsubsection{Limitations of Inlining}
 				\label{sec:methodContractMotivation}
-			
+
 				\begin{itemize}
 					\item Source code might not be available (e.g. for commercial APIs or OS-specific methods).
 					\item Method is invoked multiple times in a program:
@@ -3031,7 +3031,7 @@ public void method() { ... }
 						\end{itemize}
 					\item Cannot handle unbounded recursion.
 				\end{itemize}
-			
+
 				A solution to this is to use contracts instead of the method implementation. Steps:
 				\begin{enumerate}
 					\item Show that the requires clause is satisfied.
@@ -3039,27 +3039,27 @@ public void method() { ... }
 					\item Delete updates to assignable locations from symbolic state.
 				\end{enumerate}
 				This subject is continued in section~\ref{sec:methodContract}.
-			% end
-		% end
-		
+				% end
+				% end
+
 		\subsection{Object Initialization}
 			Assume that the domain \(\mathcal{D}\) is the same in all states of \( \mathcal{K} = (\mathcal{S}, \rho) \), i.e. object creation with \inlineJava{new} does not change the domain! One consequence is that the validity of rigid FOL formulas is unaffected by programs containing \inlineJava{new}.
-			
+
 			Realizing constant domain assumption:
 			\begin{itemize}
 				\item Implicitly declare a flexible function \texttt{boolean <created>(Object);} that returns \texttt{true} iff the argument object has been created.
 				\item Initialized as \( \mathcal{I}(\texttt{<created>})(o) = \lf \) for all \( o \in \mathcal{D} \).
 				\item Object creation is modeled as an update \( \{\, \texttt{heap} \coloneqq \texttt{create(heap), o} \,\} \) for the next "free" \texttt{o}. This essentially sets \texttt{<created>} to \texttt{true}.
 			\end{itemize}
-			
+
 			Java has complex rules for object initialization, e.g. the chain of constructors calls up until Object, implicit \inlineJava{super} call, visibility issues, initialization sequence, etc. These initialization rules are coded in methods \texttt{<createObject>()}, \texttt{<init>()}, \dots which themselves are symbolically executed.
-		% end
+			% end
 
 		\subsection{Method Contract Rule}
 			\label{sec:methodContract}
-			
+
 			See section~\ref{sec:methodContractMotivation} for the motivation for using method contracts.
-			
+
 			\begin{lstlisting}[caption = { Method Contract Rule Specification Example }, label = lst:methodContract, language = Java]
 /*@ public normal_behavior
   @ requires   preNormal;
@@ -3074,62 +3074,62 @@ public void method() { ... }
   @ assignable modified;
   @*
 			\end{lstlisting}
-			
+
 			Given the generic specification in listing~\ref{lst:methodContract}, the method contract rule for the normal behavior case is given as
 			\begin{equation*}
 				\prftree[l]
-					{methodContractNormal}
-					{\let\scriptstyle\textstyle \substack{
-					 \Gamma \implies \mathcal{U} \mathcal{F}(\texttt{preNormal}), \Delta \\
-					 \Gamma \implies \mathcal{U} \nu_\texttt{modified} \big( \mathcal{F}(\texttt{postNormal}) \to \langle \pi \texttt{ p } \omega \rangle \phi \big), \Delta}}
-					{\Gamma \implies \mathcal{U} \langle \pi \texttt{ result = m(arg1, ..., argN); p } \omega \rangle \phi, \Delta}
+				{methodContractNormal}
+				{\let\scriptstyle\textstyle \substack{
+						\Gamma \implies \mathcal{U} \mathcal{F}(\texttt{preNormal}), \Delta \\
+						\Gamma \implies \mathcal{U} \nu_\texttt{modified} \big( \mathcal{F}(\texttt{postNormal}) \to \langle \pi \texttt{ p } \omega \rangle \phi \big), \Delta}}
+				{\Gamma \implies \mathcal{U} \langle \pi \texttt{ result = m(arg1, ..., argN); p } \omega \rangle \phi, \Delta}
 			\end{equation*}
 			where \( \mathcal{F}(\cdot) \) denotes the translation from JML to DL and \( \nu_\texttt{modified} \) is the anonymising update (see section~\ref{sec:anonUpdate}).
-			
+
 			The method contract rule for the exceptional behavior case is given as:
 			\begin{equation*}
 				\prftree[l]
-					{methodContractExc}
-					{\let\scriptstyle\textstyle \substack{
-					 \Gamma \implies \mathcal{U} \mathcal{F}(\texttt{preExc}), \Delta \\
-				     \Gamma \implies \mathcal{U} \nu_\texttt{modified} \Big( \big( \texttt{exc} \not\doteq \texttt{null} \land \mathcal{F}(\texttt{postExc}) \big) \to \langle \pi \texttt{ throw exc; p } \omega \rangle \phi \Big), \Delta}}
-					{\Gamma \implies \mathcal{U} \langle \pi \texttt{ result = m(arg1, ..., argN); p } \omega \rangle \phi, \Delta}
+				{methodContractExc}
+				{\let\scriptstyle\textstyle \substack{
+						\Gamma \implies \mathcal{U} \mathcal{F}(\texttt{preExc}), \Delta \\
+						\Gamma \implies \mathcal{U} \nu_\texttt{modified} \Big( \big( \texttt{exc} \not\doteq \texttt{null} \land \mathcal{F}(\texttt{postExc}) \big) \to \langle \pi \texttt{ throw exc; p } \omega \rangle \phi \Big), \Delta}}
+				{\Gamma \implies \mathcal{U} \langle \pi \texttt{ result = m(arg1, ..., argN); p } \omega \rangle \phi, \Delta}
 			\end{equation*}
-			
+
 			Combined they yield the rule \textit{methodContract}:
 			\begin{equation*}
 				\prftree[l]
-					{methodContract}
-					{\let\scriptstyle\textstyle \substack{
-					 \Gamma \implies \mathcal{U} \mathcal{F}(\texttt{preExc}), \Delta \\
-					 \Gamma \implies \mathcal{U} \nu_\texttt{normal} \big( \mathcal{F}(\texttt{postNormal}) \to \langle \pi \texttt{ p } \omega \rangle \phi \big), \Delta \\
-					 \Gamma \implies \mathcal{U} \nu_\texttt{exc} \Big( \big( \texttt{exc} \not\doteq \texttt{null} \land \mathcal{F}(\texttt{postExc}) \big) \to \langle \pi \texttt{ throw exc; p } \omega \rangle \phi \Big), \Delta}}
-					{\Gamma \implies \mathcal{U} \langle \pi \texttt{ result = m(arg1, ..., argN); p } \omega \rangle \phi, \Delta}
+				{methodContract}
+				{\let\scriptstyle\textstyle \substack{
+						\Gamma \implies \mathcal{U} \mathcal{F}(\texttt{preExc}), \Delta \\
+						\Gamma \implies \mathcal{U} \nu_\texttt{normal} \big( \mathcal{F}(\texttt{postNormal}) \to \langle \pi \texttt{ p } \omega \rangle \phi \big), \Delta \\
+						\Gamma \implies \mathcal{U} \nu_\texttt{exc} \Big( \big( \texttt{exc} \not\doteq \texttt{null} \land \mathcal{F}(\texttt{postExc}) \big) \to \langle \pi \texttt{ throw exc; p } \omega \rangle \phi \Big), \Delta}}
+				{\Gamma \implies \mathcal{U} \langle \pi \texttt{ result = m(arg1, ..., argN); p } \omega \rangle \phi, \Delta}
 			\end{equation*}
-		% end
+			% end
 
 		\subsection{Proofing Correctness of Method Contracts}
 			The usage of the contract rule depends on the correctness of the contract. The correctness of a (normal behavior) JML contract can be shown by proofing
 			\begin{align*}
-				&\mathcal{F}(\texttt{preNormal}) \to \\
-				&\qquad\qquad \Big\langle { \let\scriptstyle\textstyle \substack{\texttt{exc = null;} \\ \texttt{try \{ o.m(); \} catch(Exception e) \{ exc = e; \}}} } \Big\rangle \\
-				&\qquad\qquad\qquad\qquad \big( \texttt{exc} \not\doteq \texttt{null} \,\land\, \mathcal{F}(\texttt{postNormal}) \,\land\, \textit{assignableCorrect} \big)
+				 & \mathcal{F}(\texttt{preNormal}) \to                                                                                                                        \\
+				 & \qquad\qquad \Big\langle { \let\scriptstyle\textstyle \substack{\texttt{exc = null;}                                                                       \\ \texttt{try \{ o.m(); \} catch(Exception e) \{ exc = e; \}}} } \Big\rangle \\
+				 & \qquad\qquad\qquad\qquad \big( \texttt{exc} \not\doteq \texttt{null} \,\land\, \mathcal{F}(\texttt{postNormal}) \,\land\, \textit{assignableCorrect} \big)
 			\end{align*}
-		% end
-	% end
+			% end
+			% end
 
 	\section{Loop Invariants} % 14.4, 14.5, 14.8
 		\label{sec:dlLoopInv}
-	
+
 		\todo{Content}
 
 		\subsection{Deriving Loop Invariants} % 14.9, 14.10, 14.11, 14.29, 14.30
 			\todo{Content}
-		% end
+			% end
 
 		\subsection{Context Loss} % 14.12, 14.14, 14.15
 			\todo{Content}
-	% end
+			% end
 
 	\section{Understanding Unclosed Proofs}
 		Reasons why a proof may not close:
@@ -3139,7 +3139,7 @@ public void method() { ... }
 			\item Maximal number of steps reached; restart or increase number of steps
 			\item Automatic proof search fails; manual rule application necessary
 		\end{itemize}
-	
+
 		Understanding open proof goals:
 		\begin{itemize}
 			\item Follow the control flow from the proof root to the open goal
@@ -3151,6 +3151,6 @@ public void method() { ... }
 
 		\subsection{Model Search} % 14.31, 14.32, 14.33, 14.34
 			\todo{Content}
-		% end
-	% end
-% end
+			% end
+			% end
+			% end

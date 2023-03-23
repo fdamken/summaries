@@ -517,7 +517,7 @@
 		% end
 
 		\subsection{Model-Based Feedback Control}
-			Some problems with PD-control with gravity compensation include that there always needs to be an error in either the position of the velocity to generate a control signal. This implies that high gains are needed in order to be accurate. But high gains cause the robot to be really stiff and dangerous as it moves with higher power!
+			Some problems with PD-control with gravity compensation include that there always needs to be an error in either the position or the velocity to generate a control signal. This implies that high gains are needed in order to be accurate. But high gains cause the robot to be really stiff and dangerous as it moves with higher power!
 
 			If a model of the dynamics is present (e.g. using the recursive Newton-Euler algorithm), it can be used to compute the motor inputs for a desired acceleration. Being able to only set the acceleration is no limitation since dynamical systems are second-order systems anyway, so only the accelerations are directly controllable. This is called \emph{model-based feedback control} and it is described by the following equations:
 			\begin{align*}
@@ -1843,7 +1843,7 @@
 
 			As the system behaves Markovian (the next state only depends on the current state and not the past), the likelihood can be factorized as
 			\begin{equation*}
-				p(\vec{x}_{1:T}, \vec{y}_{1:T}) = p(\vec{x}_1) \prod_{t = 1}^{T - 1} p(\vec{x}_{t + 1} \given \vec{s}_t) \prod_{t = 1}^{T} p(\vec{y}_t \given \vec{x}_t).
+				p(\vec{x}_{1:T}, \vec{y}_{1:T}) = p(\vec{x}_1) \prod_{t = 1}^{T - 1} p(\vec{x}_{t + 1} \given \vec{x}_t) \prod_{t = 1}^{T} p(\vec{y}_t \given \vec{x}_t).
 			\end{equation*}
 			Hence, the log-likelihood is
 			\begin{equation*}
@@ -2335,11 +2335,11 @@
 		\end{equation*}
 		Both of these policies need a Q-function which can also be learned in a TD-fashion, similar to \eqref{eq:tdVFunction}. Let \( (\vec{s}_i, \vec{a}_i, r_i, \vec{s}_i') \) again be a transition of the system. Then the TD-error for the Q-function is defined as
 		\begin{equation}
-			\delta_i^Q \coloneqq \hat{Q}(\vec{s}_i, \vec{a}_i) - Q(\vec{s}_i) \doteq r_i + \gamma Q(\vec{s}_i', \vec{a}_?) - Q(\vec{s}_i)  \label{eq:tdQError}
+			\delta_i^Q \coloneqq \hat{Q}(\vec{s}_i, \vec{a}_?) - Q(\vec{s}_i) \doteq r_i + \gamma Q(\vec{s}_i', \vec{a}_?) - Q(\vec{s}_i)  \label{eq:tdQError}
 		\end{equation}
 		with the one-step prediction \( \hat{Q}(\vec{s}_i) \coloneqq r_i + \gamma Q(\vec{s}_i', \vec{a}_?) \), analogous to \eqref{eq:tdVError}. The update of the Q-function is then
 		\begin{equation*}
-			Q^\mathrm{new}(\vec{s}_i, \vec{a}_i) = Q(\vec{s}_i, \vec{a}_i) + \alpha \delta_i^Q \doteq (1 - \alpha) Q(\vec{s}_i, \vec{a}_i) + \alpha \hat{Q}(\vec{s}_i, \vec{a}_i).
+			Q^\mathrm{new}(\vec{s}_i, \vec{a}_i) = Q(\vec{s}_i, \vec{a}_i) + \alpha \delta_i^Q \doteq (1 - \alpha) Q(\vec{s}_i, \vec{a}_i) + \alpha \hat{Q}(\vec{s}_i, \vec{a}_?).
 		\end{equation*}
 		Other than for updating the V-function, now an action \( \vec{a}_? \) has to be selected to compute the TD-error \eqref{eq:tdQError}. There are two common methods for estimating \(\vec{a}_?\), both forming separate algorithms:
 		\begin{description}[leftmargin=3cm]
@@ -2436,7 +2436,7 @@
 				\quad\tcp{Compute the one-step prediction.}
 				\eqmakebox[algApproxQLearn][r]{\( \delta_i \gets \)} \eqmakebox[algApproxQLearnR][l]{\( \hat{Q}_{\vec{w}}(\vec{s}_i, \vec{a}_i) - Q_{\vec{w}}(\vec{s}_i, \vec{a}_i) \)}
 				\quad\tcp{Compute the TD-error.}
-				\eqmakebox[algApproxQLearn][r]{\( \vec{w}_{i + 1} \gets \)} \eqmakebox[algApproxQLearnR][l]{\( \alpha_i \delta_i \vec{\phi}(\vec{s}_i, \vec{a}_i) \)}
+				\eqmakebox[algApproxQLearn][r]{\( \vec{w}_{i + 1} \gets \)} \eqmakebox[algApproxQLearnR][l]{\( \vec{w}_i + \alpha_i \delta_i \vec{\phi}(\vec{s}_i, \vec{a}_i) \)}
 				\quad\tcp{Update the Q-Function.}
 			}
 
@@ -2585,14 +2585,14 @@
 	This chapter covers \emph{policy search methods} which do not use value functions or similar as a intermediate step for finding an optimal policy but rather search the policy directly. This is motivated by the problems that arise with value function methods as they do not handle continuous actions well (due to the required maximization of the Q-function) and the amount of samples needed grows exponentially with the dimensionality of the state-space. Also, an error in the value function propagates and arbitrarily distorts the policy update. Many of these problems can be fixed by using parametric policies and policy search, i.e. finding the policy directly instead of using a value function. The policies are improved upon demonstrations and it is even possible to use task-appropriate policies or to train on the real system.
 
 	\section{Categorization of Policy Search}
-		In value-based methods, the action to execute is often chosen using an \(\epsilon\)-greedy of soft-max approach, both requiring to either maximize w.r.t. or sum over the actions, both of which is difficult for continuous state spaces. Policy search methods instead use parameterized policies for action selection, for example Gaussian policies
+		In value-based methods, the action to execute is often chosen using an \(\epsilon\)-greedy or soft-max approach, both requiring to either maximize w.r.t. or sum over the actions, both of which is difficult for continuous state spaces. Policy search methods instead use parameterized policies for action selection, for example Gaussian policies
 		\begin{equation*}
 			\pi(\vec{a} \given \vec{s}; \vec{\theta}) = \mathcal{N}(\vec{a} \given \vec{f}_{\vec{w}}(\vec{s}),\, \sigma^2 \mat{I}),\quad \vec{\theta} = \{ \vec{w}, \sigma^2 \}
 		\end{equation*}
-		with a learnable mean function \( \vec{f}_{\vec{w}}(\vec{s}) \). The problem if policy search not is to find parameters \( \vec{\theta} \) that constitute a good policy. Model-free approaches can be broken down into three main steps:
+		with a learnable mean function \( \vec{f}_{\vec{w}}(\vec{s}) \). The problem of policy search is to find parameters \( \vec{\theta} \) that constitute a good policy. Model-free approaches can be broken down into three main steps:
 		\begin{enumerate}
 			\item \eqmakebox[modelFreePolicySearch][l]{Exploration:} Sample trajectories \( \vec{\tau}^{[i]} \) following the current policy \( \pi_k \).
-			\item \eqmakebox[modelFreePolicySearch][l]{Policy Evaluation:} Asses the quality of the trajectories, either \emph{step-based} or \emph{episode-based}.
+			\item \eqmakebox[modelFreePolicySearch][l]{Policy Evaluation:} Assess the quality of the trajectories, either \emph{step-based} or \emph{episode-based}.
 			\item \eqmakebox[modelFreePolicySearch][l]{Policy Improvement:} Compute the next policy \( \pi_{k + 1} \) from the trajectories and evaluations.
 			\item If not converged, go to 1.
 		\end{enumerate}
@@ -2609,7 +2609,7 @@
 			\begin{equation*}
 				\mathcal{D} = \Big\{ \vec{\theta}^{[i]}, R^{[i]} \Big\}_{i \,=\, \subdotsrange{1}{N}}.
 			\end{equation*}
-			This but causes a high variance in \( R^{[i]} \) as it is the sum of \(T\) random variables, but works well for a moderate amount of parameters. Other properties of the episode-based strategy are:
+			But this causes a high variance in \( R^{[i]} \) as it is the sum of \(T\) random variables, but works well for a moderate amount of parameters. Other properties of the episode-based strategy are:
 			\begin{itemize}
 				\item Explores in the parameter space (the data to learn from contains the parameters).
 				\item Allows more sophisticated exploration strategies.
@@ -2634,7 +2634,7 @@
 		\subsection{Step-Based Policy Search}
 			In \emph{step-based} policy evaluation, the quality of single state-action pairs is assessed using the (undiscounted) reward to come
 			\begin{equation}
-			Q_t^{[i]} = \sum_{\tau = r}^{T} r_\tau^{[i]}.  \label{eq:policyGradientRewardToCome}
+			Q_t^{[i]} = \sum_{\tau = t}^{T} r_\tau^{[i]}.  \label{eq:policyGradientRewardToCome}
 			\end{equation}
 			The data for the policy update is
 			\begin{equation*}
@@ -2794,7 +2794,7 @@
 			\end{equation*}
 			on the policy update, the step size is given as \( \alpha_k = \lVert \grad{J} \rVert^{-1} \epsilon \). But the Euclidean metric has the big problem if not being invariant to scaling of the variables! Take for example the policy \( \pi(a \given \vec{s}; \vec{\theta}) = \mathcal{N}(a \given \vec{s}^T \vec{\theta}, \sigma^2) \) with \( \vec{s} \in [0, 1] \times [0, 1000] \) and the different parameters \( \vec{\theta}_1 = [1, 1]^T \), \( \vec{\theta}_2 = [1.1, 1]^T \) and \( \vec{\theta}_3 = [1, 1.1] \). Then the distances \( \lVert \vec{\theta}_1 - \vec{\theta}_2 \rVert \) and \( \lVert \vec{\theta}_1 - \vec{\theta}_3 \rVert \) are equivalent, but the policies \( \pi(a \given \vec{s}; \vec{\theta}_1) \) and \( \pi(a \given \vec{s}; \vec{\theta}_2) \) are less different than \( \pi(a \given \vec{s}; \vec{\theta}_1) \) and \( \pi(a \given \vec{s}; \vec{\theta}_3) \) due to the different scaling in \(\vec{s}\).
 
-			Hence, a metric that is invariant to transformations of the parameters would be better. Let \(\mat{M}\) be a matrix that captures the "influence" of the parameters of the policy, then \(\mat{M}\) can be used to defined a new metric that incorporates this influence:
+			Hence, a metric that is invariant to transformations of the parameters would be better. Let \(\mat{M}\) be a matrix that captures the "influence" of the parameters of the policy, then \(\mat{M}\) can be used to define a new metric that incorporates this influence:
 			\begin{equation*}
 				L_M(\pi_{k + 1}, \pi_k) \coloneqq (\vec{\theta}_{k + 1} - \vec{\theta}_k)^T \mat{M} (\vec{\theta}_{k + 1} - \vec{\theta}_k)
 			\end{equation*}

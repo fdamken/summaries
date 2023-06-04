@@ -1,7 +1,7 @@
 \chapter{Introduction}
 	\section{History} % 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14
 		\todo{OS History}
-		% end
+	% end
 
 	\section{Definition over Hardware Abstraction}
 		An operating system (OS) is a program or a set of programs providing:
@@ -33,7 +33,7 @@
 				\item API standard: Write once, run everywhere.
 				\item POSIX compliance certification is available through IEEE and The Open Group.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Linux Standard Base (LSB)}
 			\begin{itemize}
@@ -46,7 +46,7 @@
 				\item API standard: Compile once, run everywhere.
 				\item LSB compliance certification is available through the Linux Foundation.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{x86 Rings}
 			\begin{itemize}
@@ -72,15 +72,15 @@
 				\item To prevent any program from breaking the OS, only the OS can execute in ring 0 ("kernel mode"), other programs can only execute in ring 3 ("user mode").
 				\item Problematic: Where to set the boundary for what to execute in ring 0 and what not?
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Monolithic vs. Micro-Kernel}
 			\begin{description}
 				\item[Monolithic Kernel] All parts of the kernel (task management, memory management, network stack, file systems, graphics driver, keyboard driver, \dots) run in ring 0. This is the most used kernel type, however in Linux, the user can decide which modules should run in ring 0 and which in ring 3.
 				\item[Micro-Kernel] All parts of the kernel run in 3 excluding HAL and IPC. This is way more secure but has some performance drawbacks as the kernel has to do context switches all the time.
 			\end{description}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Definition over Coordination}
 		An operating system (OS) is a \textit{resource allocator} and a \textit{control program} that
@@ -89,8 +89,8 @@
 			\item decides between conflicting requests for efficient and fair resource use and
 			\item controls the execution of programs to prevent errors and wrong usage of resources (ordering, sequencing, \dots).
 		\end{itemize}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Processes and Inter-Process-Communication}
 	\section{Processes}
@@ -127,7 +127,7 @@
 							\item Execution of a system call after the fork system call to replace the memory space of the process with a new program.
 						\end{enumerate}
 				\end{itemize}
-				% end
+			% end
 
 			\subsubsection{Process Hierarchies}
 				\begin{itemize}
@@ -147,7 +147,7 @@
 								\end{itemize}
 						\end{itemize}
 				\end{itemize}
-				% end
+			% end
 
 			\subsubsection{Example: Process Tree}
 				\begin{figure}[H]
@@ -171,9 +171,9 @@
 					\end{tikzpicture}
 					\caption{Process Tree: Solaris}
 				\end{figure}
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
 
 	\section{Concurrency}
 		\begin{itemize}
@@ -188,7 +188,7 @@
 					\item switching does not operations of a process.
 				\end{itemize}
 		\end{itemize}
-		% end
+	% end
 
 	\section{Process Management}
 		Process management includes the following steps:
@@ -302,7 +302,7 @@
 				\end{tikzpicture}
 				\caption{Process Control Block: Usage}
 			\end{figure}
-			% end
+		% end
 
 		\subsection{Process Creation (POSIX)}
 			\begin{figure}[H]
@@ -334,8 +334,8 @@
 					\lstinputlisting[language = C]{\lstbasepath/code/fork.c}
 					\caption{Forking a Process in C (POSIX)}
 				\end{figure}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Process Termination}
 			\begin{itemize}
@@ -351,7 +351,7 @@
 						\item parent is exiting (some OS do not allow children to continue if the parent terminates (zombie control) \(\rightarrow\) cascading termination).
 					\end{itemize}
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Inter-Process-Communication}
 			\begin{itemize}
@@ -376,8 +376,8 @@
 						\item Coordinate and synchronization (race conditions, deadlocks; critical sections, locking, semaphores, see \ref{c:deadlocks}, \ref{c:scheduling} and \ref{c:mutualexclusion}).
 					\end{itemize}
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Inter-Process-Communication Models}
 		There are two basic IPC-models:
@@ -452,8 +452,8 @@ while (1) {
 \end{lstlisting}
 					\caption{Bounded Buffer in C: Consumer}
 				\end{figure}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Message Passing}
 			\begin{itemize}
@@ -498,7 +498,7 @@ while (1) {
 							\item Example: UNIX pipes like \texttt{cat xzy | lpr} (implicit FIFO mailbox).
 						\end{itemize}
 				\end{itemize}
-				% end
+			% end
 
 			\subsubsection{Synchronization}
 				\begin{itemize}
@@ -515,7 +515,7 @@ while (1) {
 							\item \texttt{NB.Receive} The receive receives a valid message or nothing (null).
 						\end{itemize}
 				\end{itemize}
-				% end
+			% end
 
 			\subsubsection{Message Buffering (Queues)}
 				The messages reside in temporary queues that can be implemented in one of three possible ways:
@@ -524,7 +524,7 @@ while (1) {
 					\item \textit{Bounded capacity} - finite length of \(n\) messages can be stored \\ The sender must only wait if the queue is full.
 					\item \textit{Unbounded capacity} - infinite length \\ The sender never waits.
 				\end{itemize}
-				% end
+			% end
 
 			\subsubsection{Pipes}
 				\begin{itemize}
@@ -546,7 +546,7 @@ while (1) {
 								\end{itemize}
 						\end{itemize}
 				\end{itemize}
-				% end
+			% end
 
 			\subsubsection{Example: (A)LPC in Windows}
 				\begin{figure}[H]
@@ -590,10 +590,10 @@ while (1) {
 					\item The server creates two private communication ports and returns the handle to the client.
 					\item The client and the server use the corresponding port handle to send messages (and callback to listen for replies).
 				\end{enumerate}
-				% end
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
+% end
 
 \chapter{Threads}
 	\begin{itemize}
@@ -631,7 +631,7 @@ while (1) {
 					\item The speedup is best when all threads use different resources (e.g. first one uses the CPU, the second the I/O (keyboard, display, \dots) and the third uses the storage).
 				\end{itemize}
 		\end{itemize}
-		% end
+	% end
 
 	\section{Example: Multi-Threaded Web Server}
 		\begin{itemize}
@@ -640,7 +640,7 @@ while (1) {
 			\item With this method the web server is sped up as the requests can be handled concurrently.
 			\item This multi-process/child model would also work with processes, however that produces a lot of overload due to process creation, context switching, scheduling, etc.
 		\end{itemize}
-		% end
+	% end
 
 	\section{Theoretical Speedup (Amdahl's Law)}
 		Amdahl's Law describes the \textit{theoretical speedup} from adding CPUs to programs with parallelized parts.
@@ -649,7 +649,7 @@ while (1) {
 		\begin{equation*}
 			\textit{speedup} \leq \frac{1}{S + \frac{1 - S}{N}} \qquad\qquad \lim\limits_{N \rightarrow \infty} \textit{speedup} = \frac{1}{S}
 		\end{equation*}
-		% end
+	% end
 
 	\section{Implementations}
 		\begin{itemize}
@@ -684,7 +684,7 @@ while (1) {
 						\item[--] Only one thread can access the kernel at a time \(\rightarrow\) no multiprocess support.
 					\end{itemize}
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{One-to-One}
 			\begin{itemize}
@@ -694,7 +694,7 @@ while (1) {
 				\item The number of threads per process is sometimes restricted due to overhead.
 				\item Examples: Windows, Linux; Solar 9+
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Many-to-Many}
 			\begin{itemize}
@@ -708,15 +708,15 @@ while (1) {
 						\item[--] Less concurrency than one-to-one mapping.
 					\end{itemize}
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Two-level Model}
 			\begin{itemize}
 				\item Similar to many-to-many, except that it allows that a user-level thread is bound to a kernel thread.
 				\item Examples: IRIX, HP-UX, Tru64 UNIX, Solaris prior to version 8
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Linux Threads/Tasks}
 		\begin{itemize}
@@ -740,7 +740,7 @@ while (1) {
 			\item \texttt{struct task\_struct} points to the data structures of the process.
 			\item Both functions \texttt{pthread\_create()} and \texttt{fork()} are implemented using \texttt{clone()}.
 		\end{itemize}
-		% end
+	% end
 
 	\section{POSIX Threads (C)}
 		\begin{figure}[H]
@@ -768,7 +768,7 @@ int main() {
 \end{lstlisting}
 			\caption{POSIX Threads in C}
 		\end{figure}
-		% end
+	% end
 
 	\section{Single to Multi-Threaded}
 		\begin{itemize}
@@ -776,8 +776,8 @@ int main() {
 			\item This problem can be solved by allowing threads to have a private copy of the global variables (thread-local storage, TLS).
 			\item The TLS therefore keeps a private copy of the global variables.
 		\end{itemize}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Deadlocks and Resource Management}
 	\label{c:deadlocks}
@@ -807,7 +807,7 @@ int main() {
 				\item Multiple locks get set; old lock is not released leads to inconsistent masters.
 				\item If server partitions happen, the resource access is inconsistent and R/W data consistency is lost.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Resource Sharing and Inter-Process-Interaction}
 			The ordering of processes/threads for handling resource contentions include the following points to consider:
@@ -821,9 +821,9 @@ int main() {
 
 			\subsubsection{Mutual Exclusion}
 				See \ref{c:mutualexclusion}.
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
 
 	\section{Deadlock/Livelock and Starvation}
 		A set of processes is deadlocked if every process waits for a resources held by another process.
@@ -831,7 +831,7 @@ int main() {
 			\item[Deadlock] None of the processes can be run, releases or be awakened.
 			\item[Livelock] All processes (can be) run, but no progress is made (e.g. because of missing data of another process).
 		\end{description}
-		% end
+	% end
 
 	\section{Deadlock Conditions}
 		For a deadlock to be possible, all of the following conditions have to be fulfilled:
@@ -842,7 +842,7 @@ int main() {
 			\item[Circular Wait] A circular chain of more than one process exists. Let \( \{ P_0, P_1, \cdots, P_n, P_0 \} \) be a chain of waiting processes where each process \( P_i \) waits for a resource held by \( P_{ (i + 1) \textbf{ mod } n } \) (forming a dependency cycle).
 		\end{description}
 		If either of these conditions is not given, no deadlock can occur.
-		% end
+	% end
 
 	\section{Deadlock Modeling and Visualization}
 		Deadlocks (more specifically resource dependencies) can be visualized as graphs (where circles are processes and rectangles resources):
@@ -884,7 +884,7 @@ int main() {
 			\item Tasks have precedence relations, priorities, timing duration, etc.
 		\end{itemize}
 		So this is a very hard task. This task is implemented by \textit{ordering and scheduling algorithms}.
-		% end
+	% end
 
 	\section{Deadlock Strategies}
 		There are three general strategies for dealing with deadlock:
@@ -915,7 +915,7 @@ int main() {
 					\item If a cycle is found, this indicates a deadlock.
 					\item[\(\rightarrow\)] Set up a DS (depth search, e.g. a spanniong) where a cycle is visible via node repetition in the DS. A spanning tree is a subset of the edges of a graph connecting all edges without any cycles.
 				\end{itemize}
-				% end
+			% end
 
 			\subsubsection{Multiple Resources per Type}
 				\label{sec:deadlockdetection}
@@ -963,9 +963,9 @@ int main() {
 					Definition: Let \( a, b \in \mathbb{N}^n \), than \( a \leq b \) hold iff \( a_i \leq b \) for all \( i \).
 
 					If at least one row \(r\) exists in \(R\) with \( r \leq A \), enough resources are available and the process is able to continue. If not, a deadlock \textit{may} occur.
-					% end
-					% end
-					% end
+				% end
+			% end
+		% end
 
 		\subsection{Recovery}
 			\begin{itemize}
@@ -984,7 +984,7 @@ int main() {
 						\item Choose a process that can be rerun (e.g. from beginning or a checkpoint) and does not hold up other active processes with precedence dependencies.
 					\end{itemize}
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Avoidance}
 			\begin{itemize}
@@ -1095,11 +1095,11 @@ int main() {
 					\item It cannot enter either one of the hatched fields, because this would require both processes to access the printer (green) or the plotter (orange), which is denied by the mutual exclusivity (ME). Entering these regions would cause a deadlock.
 					\item The red marked region is an unsafe state as it is only possible for the trajectory to move onto a deadlock.
 				\end{itemize}
-				% end
+			% end
 
 			\subsubsection{Safe/Unsafe States and Execution Orders}
 				An execution order is \textit{safe} iff a sequence order exists that satisfies even if all processes request their maximum resources (keeping in mind that only one process can execute at any time).
-				% end
+			% end
 
 			\subsubsection{Banker's Algorithm for a Single Resource}
 				If a safe order is possible from the current state, then grant access. Otherwise, deny the request.
@@ -1110,7 +1110,7 @@ int main() {
 					\item bursty traffic analysis (likelihood of run on the bank), or
 					\item constrained maxima (this method is the most common, but abused by DoS attacks).
 				\end{itemize}
-				% end
+			% end
 
 			\subsubsection{Banker's Algorithm for Multiple Resource}
 				This algorithm is based on the matrices defined in \ref{sec:deadlockdetection} and contains the following steps:
@@ -1119,8 +1119,8 @@ int main() {
 					\item Assume that the process of the chosen row requests all the resources it needs and finishes. Mark that process as terminated and add all its resources to \(A\).
 					\item Repeat steps 1 and 2 until either all processes are marked as terminated, in which case the initial state was safe, or until a deadlock occurs, in which case it was not.
 				\end{enumerate}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Prevention}
 			Deadlock prevention is about preventing one of the conditions that must hold to allow deadlocks (e.g. by design). That is, "attacking" each of the conditions separately.
@@ -1144,7 +1144,7 @@ int main() {
 							\item As few processes as possible actually claim the resource.
 						\end{itemize}
 				\end{itemize}
-				% end
+			% end
 
 			\subsubsection{Attacking the Hold and Wait Condition}
 				\textbf{To break:} Guarantee that whenever a process requests a resource, it does not hold any other resources or a process that is holding a resource does not request more.
@@ -1156,7 +1156,7 @@ int main() {
 						\end{itemize}
 					\item Variation: A process must give up all resources and then request all immediately needed.
 				\end{itemize}
-				% end
+			% end
 
 			\subsubsection{Attacking the No Preemption Condition}
 				\textbf{Changes:}
@@ -1168,7 +1168,7 @@ int main() {
 				\begin{itemize}
 					\item It is not always an option to preempt and it depends on the resource and the process type (e.g. when taking away a printer halfway in the job).
 				\end{itemize}
-				% end
+			% end
 
 			\subsubsection{Attacking the Circular Wait Condition}
 				\textbf{Option 1:} No chain: Processes are entitled to only hold one resource at a time. All processes that request a resource have to give up all other held resources first.
@@ -1182,190 +1182,190 @@ int main() {
 					\item High complexity for ordering with large resource set or short request/access patterns.
 					\item How to produce consistent numbering across distributed systems?
 				\end{itemize}
-				% end
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
+% end
 
 \chapter{Scheduling}
-	\label{c:scheduling}
+\label{c:scheduling}
 
-	Scheduling is a practical alternative to extended resource management and deadlock detection/prevention:
+Scheduling is a practical alternative to extended resource management and deadlock detection/prevention:
+\begin{itemize}
+	\item Using algorithms to allocate resources
+		\begin{itemize}
+			\item Example: Provide the resources for the shortest job first.
+			\item Works great for multiple short jobs.
+			\item But may cause indefinite postponement of long jobs even if they are not blocked (starvation is possible).
+		\end{itemize}
+	\item Other solutions include:
+		\begin{itemize}
+			\item First come, first serve policy
+			\item Shortest job first, highest priority, deadline first, etc.
+		\end{itemize}
+\end{itemize}
+All these are called \textit{scheduling policies} that should be efficient, fair, deadlock and race free.
+
+\section{Scheduling Criteria (Optimizations)}
 	\begin{itemize}
-		\item Using algorithms to allocate resources
+		\item \textbf{CPU utilization} should be maximized (keep the CPU as busy as possible doing useful things).
+		\item \textbf{Throughput} should be maximized (count of completed processes per time).
+		\item \textbf{Turnaround time} should be minimized (average time to execute a process).
+		\item \textbf{Waiting time} should be minimized (amount of time a process is ready and waits in the queue).
+		\item \textbf{Response time} should be minimized (amount of time it takes from request submission until first response is produced).
+	\end{itemize}
+% end
+
+\section{Issues}
+	\begin{itemize}
+		\item Issue 1: Process/Thread Preemptability
 			\begin{itemize}
-				\item Example: Provide the resources for the shortest job first.
-				\item Works great for multiple short jobs.
-				\item But may cause indefinite postponement of long jobs even if they are not blocked (starvation is possible).
+				\item Non-Preemptable: An ongoing task cannot be displaced.
+				\item Preemptable: Ongoing tasks can be switched in/out. This might be useful but also cause overhead.
 			\end{itemize}
-		\item Other solutions include:
+		\item Issue 2: No single process/CPU usage model
 			\begin{itemize}
-				\item First come, first serve policy
-				\item Shortest job first, highest priority, deadline first, etc.
+				\item The workload has to be guessed or estimated.
+				\item Apps "typically" stay CPU or I/O-bound. Hybrid is "typically" for interactive apps.
 			\end{itemize}
 	\end{itemize}
-	All these are called \textit{scheduling policies} that should be efficient, fair, deadlock and race free.
+% end
 
-	\section{Scheduling Criteria (Optimizations)}
-		\begin{itemize}
-			\item \textbf{CPU utilization} should be maximized (keep the CPU as busy as possible doing useful things).
-			\item \textbf{Throughput} should be maximized (count of completed processes per time).
-			\item \textbf{Turnaround time} should be minimized (average time to execute a process).
-			\item \textbf{Waiting time} should be minimized (amount of time a process is ready and waits in the queue).
-			\item \textbf{Response time} should be minimized (amount of time it takes from request submission until first response is produced).
-		\end{itemize}
-		% end
+\section{Determining Length of next CPU Burst}
+	\begin{itemize}
+		\item The length the task length can only be estimated (which is simple for batch jobs).
+		\item The estimation uses the length of previous CPU bursts (history).
+	\end{itemize}
 
-	\section{Issues}
-		\begin{itemize}
-			\item Issue 1: Process/Thread Preemptability
-				\begin{itemize}
-					\item Non-Preemptable: An ongoing task cannot be displaced.
-					\item Preemptable: Ongoing tasks can be switched in/out. This might be useful but also cause overhead.
-				\end{itemize}
-			\item Issue 2: No single process/CPU usage model
-				\begin{itemize}
-					\item The workload has to be guessed or estimated.
-					\item Apps "typically" stay CPU or I/O-bound. Hybrid is "typically" for interactive apps.
-				\end{itemize}
-		\end{itemize}
-		% end
+	Let \( t_n \) be the actual length of the \(n\)-th CPU bust and \( \tau_{n+1} \) the predicted value for the next CPU burst. Then, with a parameter \( 0 \leq \alpha \leq 1 \), the value can be estimated using:
+	\begin{equation*}
+		\tau _ {n + 1} = \alpha t_n + (1 - \alpha) \tau_n
+	\end{equation*}
+	With \( \alpha = 0 \) this is \( \tau_{n+1}=\tau_n \) (directly follow the prior estimation). With \( \alpha = 1 \) this is \( \tau_{n+1} = t_n \) (directly follow the actual length of the prior run).
 
-	\section{Determining Length of next CPU Burst}
-		\begin{itemize}
-			\item The length the task length can only be estimated (which is simple for batch jobs).
-			\item The estimation uses the length of previous CPU bursts (history).
-		\end{itemize}
+	Often a parameter \(\alpha = \frac{1}{2}\) is used (use information from the prior run and a bit of information of the prior estimation).
+% end
 
-		Let \( t_n \) be the actual length of the \(n\)-th CPU bust and \( \tau_{n+1} \) the predicted value for the next CPU burst. Then, with a parameter \( 0 \leq \alpha \leq 1 \), the value can be estimated using:
+\section{Flavors of Scheduling}
+There are four basic flavors for scheduling:
+\begin{itemize}
+	\item \textbf{First Come, First Serve} (\textbf{FCFS} or \textbf{FIFO})
+	\item \textbf{Shortest Job First} (\textbf{SJF})
+	\item \textbf{Round Robin} (\textbf{RR})
+	\item \textbf{Priority Based} (\textbf{PB})
+\end{itemize}
+OS schedulers implement all of the scheduling policies and the choice of the policy highly depends on the nature of specific applications and the mixture (user-level, kernel-level) of the applications.
+
+Definition: The execution length of a process \(P\) is given by \( E(P) \) and the arrival time by \( A(P) \).
+
+\subsection{First Come, First Serve (Non-Preemptive) (FCFS)} % 5.8, 5.9, 5.10
+\begin{itemize}
+	\item The processes are executed in their arrival order.
+	\item The waiting time can be reduced by reordering the processes (if possible, e.g. no precedence given) using SJF or EDF scheduling.
+\end{itemize}
+
+\paragraph{Properties}
+Let \( P_1, \cdots, P_n \) be processes in a queue that arrived in that order.
+
+\subparagraph{Waiting Time for process \(P_i\)}
+	\begin{equation*}
+		W(P_i) \coloneqq \sum_{j = 1}^{i} E(P_j) - A(P_i)
+	\end{equation*}
+
+	\subparagraph{Average Waiting Time}
 		\begin{equation*}
-			\tau _ {n + 1} = \alpha t_n + (1 - \alpha) \tau_n
+			\frac{1}{n} \sum_{i = 1}^{n} W(P_i) = \sum_{i = 1}^{n} \Bigg(\sum_{j = 1}^{i} E(P_j) - A(P_i)\Bigg) = \sum_{i = 1}^{n} \sum_{j = 1}^{i} E(P_j) - \sum_{i = 1}^{n} A(P_i)
 		\end{equation*}
-		With \( \alpha = 0 \) this is \( \tau_{n+1}=\tau_n \) (directly follow the prior estimation). With \( \alpha = 1 \) this is \( \tau_{n+1} = t_n \) (directly follow the actual length of the prior run).
+	% end
+% end
 
-		Often a parameter \(\alpha = \frac{1}{2}\) is used (use information from the prior run and a bit of information of the prior estimation).
-		% end
-
-	\section{Flavors of Scheduling}
-		There are four basic flavors for scheduling:
+\subsection{Shortest-Job-First (SJF; SRFT/A.SJF)}
+\begin{itemize}
+	\item Each job is associated with the expected length of the CPU burst.
+	\item These lengths are used to determine the process with the shortest execution time which is then executed.
+	\item Options:
 		\begin{itemize}
-			\item \textbf{First Come, First Serve} (\textbf{FCFS} or \textbf{FIFO})
-			\item \textbf{Shortest Job First} (\textbf{SJF})
-			\item \textbf{Round Robin} (\textbf{RR})
-			\item \textbf{Priority Based} (\textbf{PB})
-		\end{itemize}
-		OS schedulers implement all of the scheduling policies and the choice of the policy highly depends on the nature of specific applications and the mixture (user-level, kernel-level) of the applications.
-
-		Definition: The execution length of a process \(P\) is given by \( E(P) \) and the arrival time by \( A(P) \).
-
-		\subsection{First Come, First Serve (Non-Preemptive) (FCFS)} % 5.8, 5.9, 5.10
-			\begin{itemize}
-				\item The processes are executed in their arrival order.
-				\item The waiting time can be reduced by reordering the processes (if possible, e.g. no precedence given) using SJF or EDF scheduling.
-			\end{itemize}
-
-			\paragraph{Properties}
-				Let \( P_1, \cdots, P_n \) be processes in a queue that arrived in that order.
-
-				\subparagraph{Waiting Time for process \(P_i\)}
-					\begin{equation*}
-						W(P_i) \coloneqq \sum_{j = 1}^{i} E(P_j) - A(P_i)
-					\end{equation*}
-
-				\subparagraph{Average Waiting Time}
-					\begin{equation*}
-						\frac{1}{n} \sum_{i = 1}^{n} W(P_i) = \sum_{i = 1}^{n} \Bigg(\sum_{j = 1}^{i} E(P_j) - A(P_i)\Bigg) = \sum_{i = 1}^{n} \sum_{j = 1}^{i} E(P_j) - \sum_{i = 1}^{n} A(P_i)
-					\end{equation*}
-					% end
-					% end
-
-		\subsection{Shortest-Job-First (SJF; SRFT/A.SJF)}
-			\begin{itemize}
-				\item Each job is associated with the expected length of the CPU burst.
-				\item These lengths are used to determine the process with the shortest execution time which is then executed.
-				\item Options:
-					\begin{itemize}
-						\item \textbf{Non-Preemptive:} Once a CPU is assigned it cannot be preempted until the burst completed.
-						\item \textbf{Preemptive:} If a new process arrives and the expected burst length of the running process is shorter than the expected burst length of the new job, the running task is preempted and the new one is assigned (\textit{Shortes-Remaining-Time-First}, \textit{SRTF} or \textit{Adaptive SJF}, \textit{A.SJF}).
-							\begin{itemize}
-								\item This is the optimal as it produces the minimal average waiting time.
-								\item But it can still lead to starvation if a new job keeps coming in and is getting considered "shortest" ranking, a "long" job can potentially starve (Convoy Effect).
-								\item Variation: Earliest Deadline First (EDF)
-							\end{itemize}
-					\end{itemize}
-			\end{itemize}
-
-			\paragraph{Properties (Non-Preemptive)}
-				Let \( P_1, \cdots, P_n \) be processes in a queue that arrived in that order and let \( E_1, \cdots, E_n \) and \( A_1, \cdots, A_n \) the ordered execution and arrival times (ascending).
-
-				\subparagraph{Waiting Time for process \(P_i\)}
-					\begin{equation*}
-						W(P_i) \coloneqq \sum_{j = 1}^{i} E_j - A_i
-					\end{equation*}
-
-				\subparagraph{Average Waiting Time}
-					\begin{equation*}
-						\frac{1}{n} \sum_{i = 1}^{n} W(P_i) = \sum_{i = 1}^{n} \Bigg(\sum_{j = 1}^{i} E_j - A_i\Bigg) = \sum_{i = 1}^{n} \sum_{j = 1}^{i} E_j - \sum_{i = 1}^{n} A_i
-					\end{equation*}
-					% end
-
-			\paragraph{Properties (Preemptive)}
-				Let \( P_1, \cdots, P_n \) be processes in a queue that arrived in that order and let \( E_1, \cdots, E_n \) and \( A_1, \cdots, A_n \) the ordered execution and arrival times (ascending).
-
-				\subparagraph{Waiting Time for process \(P_i\)}
-					complicated \todo{Scheduling: A.SJF: Waiting Time}
-
-				\subparagraph{Average Waiting Time}
-					even more complicated \todo{Scheduling: A.SJF: Avg. Waiting Time}
-					% end
-					% end
-
-		\subsection{Round Robin (RR/TDMA) with Fixed Slots}
-			\begin{itemize}
-				\item Circular queue \(Q\) of processes.
-				\item Each process gets a fixed slice of CPU time (time quantum \(q\)).
-				\item If one of these slots finishes, the process is preempted and added to the end of \(Q\) (sliding window).
-				\item If \(n\) processes are in the queue, each process gets \( \frac{1}{n} \) of CPU time in chunks of \(q\) time units. Therefore, no process waits more than \( (n - 1)q \) time units.
-				\item Choosing \(q\) and \(n\):
-					\begin{itemize}
-						\item If \(q\) is too large, the system has a poor response time.
-						\item If \(q\) is too small, the system has to context switch all over the time which leads to a lot of overhead and reduces the efficiency.
-						\item To stop the first from happening, a \textit{dynamic RR} can be used. If a process finishes in less than \(q\) time units, the next slot starts earlier.
-					\end{itemize}
-				\item RR typically has a higher turnaround time, but better response time.
-				\item If static scheduling is used, the correct choose of \(q\) is crucial for the system to work well.
-				\item Alternative: Have quanta of different lengths (dynamic scheduling costs roughly as much as SJF).
-			\end{itemize}
-
-			\subsubsection{Input Queue Policy}
+			\item \textbf{Non-Preemptive:} Once a CPU is assigned it cannot be preempted until the burst completed.
+			\item \textbf{Preemptive:} If a new process arrives and the expected burst length of the running process is shorter than the expected burst length of the new job, the running task is preempted and the new one is assigned (\textit{Shortes-Remaining-Time-First}, \textit{SRTF} or \textit{Adaptive SJF}, \textit{A.SJF}).
 				\begin{itemize}
-					\item \textbf{Static}
-						\begin{itemize}
-							\item Preemptive FCFS scheduling with predictable waiting time.
-							\item Issue: Setting up the number and the size of slots based on the number of jobs.
-						\end{itemize}
-					\item \textbf{Dynamic}
-						\begin{itemize}
-							\item If \(Q\) keeps adding new jobs, the slot waiting time can vary (extend) for existing jobs, potentially leading to starvation.
-							\item Issue: Throttle the number of incoming requests.
-						\end{itemize}
+					\item This is the optimal as it produces the minimal average waiting time.
+					\item But it can still lead to starvation if a new job keeps coming in and is getting considered "shortest" ranking, a "long" job can potentially starve (Convoy Effect).
+					\item Variation: Earliest Deadline First (EDF)
 				\end{itemize}
-				% end
+		\end{itemize}
+\end{itemize}
 
-				\paragraph{Properties (Preemptive)}
-					Let \( P_1, \cdots, P_n \) be processes in the queue and let the queue to have \(N\) spaces.
+\paragraph{Properties (Non-Preemptive)}
+Let \( P_1, \cdots, P_n \) be processes in a queue that arrived in that order and let \( E_1, \cdots, E_n \) and \( A_1, \cdots, A_n \) the ordered execution and arrival times (ascending).
 
-					\subparagraph{Waiting Time for process \(P_i\)}
-						\begin{equation*}
-							W(P_i) \leq (n - 1)q
-						\end{equation*}
+\subparagraph{Waiting Time for process \(P_i\)}
+\begin{equation*}
+	W(P_i) \coloneqq \sum_{j = 1}^{i} E_j - A_i
+\end{equation*}
 
-					\subparagraph{Average Waiting Time}
-						\begin{equation*}
-							\frac{1}{n} \sum_{i = 1}^{n} W(P_i)
-						\end{equation*}
-						% end
-						% end
+\subparagraph{Average Waiting Time}
+	\begin{equation*}
+		\frac{1}{n} \sum_{i = 1}^{n} W(P_i) = \sum_{i = 1}^{n} \Bigg(\sum_{j = 1}^{i} E_j - A_i\Bigg) = \sum_{i = 1}^{n} \sum_{j = 1}^{i} E_j - \sum_{i = 1}^{n} A_i
+	\end{equation*}
+% end
+
+\paragraph{Properties (Preemptive)}
+Let \( P_1, \cdots, P_n \) be processes in a queue that arrived in that order and let \( E_1, \cdots, E_n \) and \( A_1, \cdots, A_n \) the ordered execution and arrival times (ascending).
+
+\subparagraph{Waiting Time for process \(P_i\)}
+	complicated \todo{Scheduling: A.SJF: Waiting Time}
+
+	\subparagraph{Average Waiting Time}
+		even more complicated \todo{Scheduling: A.SJF: Avg. Waiting Time}
+	% end
+% end
+
+\subsection{Round Robin (RR/TDMA) with Fixed Slots}
+	\begin{itemize}
+		\item Circular queue \(Q\) of processes.
+		\item Each process gets a fixed slice of CPU time (time quantum \(q\)).
+		\item If one of these slots finishes, the process is preempted and added to the end of \(Q\) (sliding window).
+		\item If \(n\) processes are in the queue, each process gets \( \frac{1}{n} \) of CPU time in chunks of \(q\) time units. Therefore, no process waits more than \( (n - 1)q \) time units.
+		\item Choosing \(q\) and \(n\):
+			\begin{itemize}
+				\item If \(q\) is too large, the system has a poor response time.
+				\item If \(q\) is too small, the system has to context switch all over the time which leads to a lot of overhead and reduces the efficiency.
+				\item To stop the first from happening, a \textit{dynamic RR} can be used. If a process finishes in less than \(q\) time units, the next slot starts earlier.
+			\end{itemize}
+		\item RR typically has a higher turnaround time, but better response time.
+		\item If static scheduling is used, the correct choose of \(q\) is crucial for the system to work well.
+		\item Alternative: Have quanta of different lengths (dynamic scheduling costs roughly as much as SJF).
+	\end{itemize}
+
+	\subsubsection{Input Queue Policy}
+		\begin{itemize}
+			\item \textbf{Static}
+				\begin{itemize}
+					\item Preemptive FCFS scheduling with predictable waiting time.
+					\item Issue: Setting up the number and the size of slots based on the number of jobs.
+				\end{itemize}
+			\item \textbf{Dynamic}
+				\begin{itemize}
+					\item If \(Q\) keeps adding new jobs, the slot waiting time can vary (extend) for existing jobs, potentially leading to starvation.
+					\item Issue: Throttle the number of incoming requests.
+				\end{itemize}
+		\end{itemize}
+	% end
+
+	\paragraph{Properties (Preemptive)}
+		Let \( P_1, \cdots, P_n \) be processes in the queue and let the queue to have \(N\) spaces.
+
+		\subparagraph{Waiting Time for process \(P_i\)}
+			\begin{equation*}
+				W(P_i) \leq (n - 1)q
+			\end{equation*}
+
+			\subparagraph{Average Waiting Time}
+				\begin{equation*}
+					\frac{1}{n} \sum_{i = 1}^{n} W(P_i)
+				\end{equation*}
+			% end
+		% end
 
 		\subsection{Priority Scheduling (PS)}
 			\begin{itemize}
@@ -1392,8 +1392,8 @@ int main() {
 						\item If the process is waiting, \lstinline|P_cpu| decreases and therefore the number goes down, the priority up.
 					\end{itemize}
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Scheduler Location}
 		\begin{itemize}
@@ -1414,7 +1414,7 @@ int main() {
 			\item \textbf{Local Scheduling} \\ The thread library decides which thread to but onto an available thread.
 			\item \textbf{Global Scheduling} \\ The kernel decides which kernel thread to run next.
 		\end{itemize}
-		% end
+	% end
 
 	\section{Multilevel Feedback Queue}
 		Using three queues for scheduling:
@@ -1428,7 +1428,7 @@ int main() {
 			\item If the job is not finished, it is preempted and placed in \(Q_1\) and receives 16ms of CPU time.
 			\item If the job is not finished, it is preempted and placed in \(Q_2\) until is completes.
 		\end{enumerate}
-		% end
+	% end
 
 	\section{OS Examples (Solaris, Windows, Linux)}
 		\begin{itemize}
@@ -1438,11 +1438,11 @@ int main() {
 
 		\subsection{Solaris} % 5.30, 5.32
 			\todo{Scheduling: Examples: Solaris}
-			% end
+		% end
 
 		\subsection{Windows} % 5.33
 			\todo{Scheduling: Examples: Windows}
-			% end
+		% end
 
 		\subsection{Linux}
 			Two algorithms: time-sharing and real-time.
@@ -1460,16 +1460,16 @@ int main() {
 						\item Two classes: FCFS and RR, but highest priority always runs first.
 					\end{itemize}
 			\end{itemize}
-			% end
-			% end
-			% end
+		% end
+	% end
+% end
 
 \chapter{Mutual Exclusion}
 	\label{c:mutualexclusion}
 
 	\section{Concurrent Access to Shared Resources}
 		Mutual exclusion is concurrent accesses to shared resources by multiple processes/threads. If the access is blocking it may produce a deadlock, if not, it possibly crash. \(\rightarrow\) mutual exclusion control.
-		% end
+	% end
 
 	\section{Taxonomy of Software Misbehavior}
 		\begin{figure}[H]
@@ -1509,12 +1509,12 @@ int main() {
 				\item \textbf{Bohr bug:} A repeatable bug that manifests reliable under a possible unknown but well-defined set of conditions.
 				\item \textbf{Mandelbug:} A bug whose underlying conditions are so complex and obscure as to make its behavior chaotic or non-deterministic.
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Critical Sections}
 		A set of instructions that cannot be accessed by more than one process at a time is called a \textit{critical section} (CS).
-		% end
+	% end
 
 	\section{Mutual Exclusion and Critical Sections}
 		\textit{Mutual exclusion} (ME) contains the following four elements:
@@ -1525,7 +1525,7 @@ int main() {
 			\item[Bounded Waiting] Every process must be able to enter the CS with a finite delay (i.e. it should not hang forever).
 		\end{description}
 		But mutual exclusion does not guarantee correctness if the execution order of two processes matters.
-		% end
+	% end
 
 	\section{Mutual Exclusion Strategies}
 		There are multiple basic ME strategies:
@@ -1563,7 +1563,7 @@ Exit CS
 				\item If the old \texttt{ipl} is lost, the process hangs and other processes are blocked. Solution: Segregated kernel and user ipl levels.
 				\item Multiprocessor-Systems: CPU 1 disabled, processes on CPU 2 can execute.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Process Alternation}
 			\begin{itemize}
@@ -1575,8 +1575,8 @@ Exit CS
 
 			\subsubsection{Peterson's Algorithm}
 				\todo{ME: Peterson's Algorithm}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Locks}
 			\begin{itemize}
@@ -1593,7 +1593,7 @@ Exit CS
 				\end{itemize}
 
 				\todo{ME: Linux Futex} % 6.22
-				% end
+			% end
 
 			\subsubsection{Barriers}
 				\begin{itemize}
@@ -1601,8 +1601,8 @@ Exit CS
 					\item blocks all arriving processes until all approaching processes arrived and then
 					\item releases all at once.
 				\end{itemize}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Semaphores}
 			\begin{itemize}
@@ -1634,7 +1634,7 @@ signal(sync);
 \end{lstlisting}
 
 				Whereas the semaphore must be initialized with the counter value zero to ensure the desired behavior.
-				% end
+			% end
 
 			\subsubsection{Example: Producer/Consumer}
 				\begin{figure}[H]
@@ -1654,9 +1654,9 @@ signal(sync);
 					\lstinputlisting[language = C]{\lstbasepath/code/semaphore-consumer.c}
 					\caption{Example: Semaphores: Consumer}
 				\end{figure}
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
 
 	\section{Classical Problems}
 		\begin{itemize}
@@ -1674,7 +1674,7 @@ signal(sync);
 			\end{itemize}
 
 			\todo{ME: Dining Philosophers: Code} % 6.30, 6.31
-			% end
+		% end
 
 		\subsection{Readers/Writers Problem}
 			\begin{itemize}
@@ -1684,9 +1684,9 @@ signal(sync);
 			\end{itemize}
 
 			\todo{ME: Readers/Writers Problem: Code} % 6.32, 6.33, 6.34
-			% end
-			% end
-			% end
+		% end
+	% end
+% end
 
 \chapter{Memory Management}
 	\section{Abstraction}
@@ -1696,7 +1696,7 @@ signal(sync);
 			\item Heap: Explicit memory allocations. Stack: Implicit/automatic allocations.
 			\item Naive abstraction: Only one process in memory at a time. This is a massive performance drawback.
 		\end{itemize}
-		% end
+	% end
 
 	\section{Avoiding Slow Disk Loads in Commodity Systems}
 		The following parts are needed:
@@ -1707,35 +1707,35 @@ signal(sync);
 			\item protected of the OS from processes and processes from each other
 		\end{itemize}
 
-		% end
+	% end
 
-		\subsection{Address Spaces and Implementations}
-			\begin{itemize}
-				\item Each program lives in its own memory with its own addresses (\textit{address space}).
-				\item No assumption is made about other processes and a process cannot access the memory of the OS or other processes.
-				\item The basic approaches for implementing address spaces are:
-					\begin{itemize}
-						\item Base and Bounds
-						\item Segmentation
-						\item Paging
-						\item other compiler-based approaches
-					\end{itemize}
-			\end{itemize}
+	\subsection{Address Spaces and Implementations}
+		\begin{itemize}
+			\item Each program lives in its own memory with its own addresses (\textit{address space}).
+			\item No assumption is made about other processes and a process cannot access the memory of the OS or other processes.
+			\item The basic approaches for implementing address spaces are:
+				\begin{itemize}
+					\item Base and Bounds
+					\item Segmentation
+					\item Paging
+					\item other compiler-based approaches
+				\end{itemize}
+		\end{itemize}
 
-			\begin{figure}[H]
-				\centering
-				\begin{bytefield}{16}
-					\bitbox[]{4}{\raisebox{0.65cm}{0 KB}} & \wordbox{2}{Program Code} & \wordbox[]{2}{instructions} \\
-					\bitbox[]{4}{\raisebox{0.65cm}{1 KB}} & \wordbox{2}{Heap} & \wordbox[]{2}{malloc'd data, \\ grows downward} \\
-					\bitbox[]{4}{\raisebox{0.65cm}{2 KB}} & \wordbox[lrt]{1}{Free} \\
-					\bitbox[]{4}{} & \skippedwords \\
-					\bitbox[]{4}{} & \wordbox[lrb]{1}{} \\
-					\bitbox[]{4}{\raisebox{0.65cm}{15 KB}} & \wordbox{2}{Stack} & \wordbox[]{2}{local variables, \\ grows upward} \\
-					\bitbox[]{4}{\raisebox{0.65cm}{16 KB}}
-				\end{bytefield}
-				\caption{Address Spaces: Memory Layout}
-			\end{figure}
-			% end
+		\begin{figure}[H]
+			\centering
+			\begin{bytefield}{16}
+				\bitbox[]{4}{\raisebox{0.65cm}{0 KB}} & \wordbox{2}{Program Code} & \wordbox[]{2}{instructions} \\
+				\bitbox[]{4}{\raisebox{0.65cm}{1 KB}} & \wordbox{2}{Heap} & \wordbox[]{2}{malloc'd data, \\ grows downward} \\
+				\bitbox[]{4}{\raisebox{0.65cm}{2 KB}} & \wordbox[lrt]{1}{Free} \\
+				\bitbox[]{4}{} & \skippedwords \\
+				\bitbox[]{4}{} & \wordbox[lrb]{1}{} \\
+				\bitbox[]{4}{\raisebox{0.65cm}{15 KB}} & \wordbox{2}{Stack} & \wordbox[]{2}{local variables, \\ grows upward} \\
+				\bitbox[]{4}{\raisebox{0.65cm}{16 KB}}
+			\end{bytefield}
+			\caption{Address Spaces: Memory Layout}
+		\end{figure}
+	% end
 
 	\section{Base and Bounds}
 		\begin{itemize}
@@ -1770,7 +1770,7 @@ signal(sync);
 				\item The \textit{base register} contains the address there the program's address zero is assumed.
 				\item The \textit{bound register} contains the program's address where the available memory space ends.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Memory Safety}
 			\begin{itemize}
@@ -1778,7 +1778,7 @@ signal(sync);
 				\item Process safety: Bounds register set by the OS is the highest accessible address.
 				\item If a process exceeds this bounds, an exception (or any other interrupt) happens crashing the process.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Requirements}
 			\begin{itemize}
@@ -1797,7 +1797,7 @@ signal(sync);
 						\item Exception handling for access violations.
 					\end{itemize}
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{OS/Hardware Interactions}
 			\subsubsection{Boot}
@@ -1830,7 +1830,7 @@ signal(sync);
 					\end{tikzpicture}
 					\caption{Base and Bounds: OS/HW Interactions on Boot}
 				\end{figure}
-				% end
+			% end
 
 			\subsubsection{Process Creation}
 				\begin{figure}[H]
@@ -1873,7 +1873,7 @@ signal(sync);
 					\end{tikzpicture}
 					\caption{Base and Bounds: OS/HW Interactions on Process Creation}
 				\end{figure}
-				% end
+			% end
 
 			\subsubsection{Context Switch}
 				\begin{figure}[H]
@@ -1918,7 +1918,7 @@ signal(sync);
 					\end{tikzpicture}
 					\caption{Base and Bounds: OS/HW Interactions on Context Switch}
 				\end{figure}
-				% end
+			% end
 
 			\subsubsection{Process Execution (Memory Load)}
 				\begin{figure}[H]
@@ -1958,7 +1958,7 @@ signal(sync);
 					\end{tikzpicture}
 					\caption{Base and Bounds: OS/HW Interactions on Process Execution (Memory Load)}
 				\end{figure}
-				% end
+			% end
 
 			\subsubsection{Process Execution (Failure)}
 				\begin{figure}[H]
@@ -2006,8 +2006,8 @@ signal(sync);
 					\end{tikzpicture}
 					\caption{Base and Bounds: OS/HW Interactions on Process Execution (Failure)}
 				\end{figure}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Pros and Cons}
 			\begin{itemize}
@@ -2016,8 +2016,8 @@ signal(sync);
 				\item[+] Butter than the single process model (the naive abstraction model).
 				\item[--] Internal fragmentation.
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Segmentation} % 7.23, 7.24, 8.6
 		\todo{MM: Segmentation}
@@ -2034,16 +2034,16 @@ signal(sync);
 
 		\subsection{Memory Layout} % 7.25, 7.26, 8.3
 			\todo{MM: Seg.: Memory Layout}
-			% end
+		% end
 
 		\subsection{Address Translation} % 7.27, 7.28, 8.4
 			\todo{MM: Seg.: Address Translation}
-			% end
+		% end
 
 		\subsection{Stack Address Calculation} % 8.5
 			\todo{MM: Seg.: Stack Address Calculation}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Paging}
 		\begin{itemize}
@@ -2082,7 +2082,7 @@ signal(sync);
 						\item The table holds the physical frame number, a validity bit and other management information.
 					\end{itemize}
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Problems}
 			\begin{itemize}
@@ -2095,7 +2095,7 @@ signal(sync);
 					\end{itemize}
 				\item Problem 2: Latency \( \rightarrow \) caching (see \ref{sec:cachingpaging}).
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Caching (TLB)} % 8.13, 8.14, 8.15, 8.16, 8.17, 8.18, 8.19
 			\label{sec:cachingpaging}
@@ -2118,7 +2118,7 @@ signal(sync);
 						\item If not, flush the TLB on each context switch.
 					\end{itemize}
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Hybrid Paging and Segmentation}
 			\label{sec:hybridpaging}
@@ -2136,7 +2136,7 @@ signal(sync);
 						\item[--] No more segmentation in 64 bit mode on amd64 CPUs.
 					\end{itemize}
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Multi-Level Page Tables} % 8.23, 8.24, 8.25, 8.26
 			\label{sec:multilevelpaging}
@@ -2147,8 +2147,8 @@ signal(sync);
 				\item Facing the same problem as hybrid paging and segmentation.
 				\item Idea: Do not segment the page table but rather page the page table again (\textit{multi-level}).
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Swapping Pages to Disk} % 8.28, 8.29, 8.40
 		\todo{MM: Paging: Swapping: CImplementation}
@@ -2193,8 +2193,8 @@ signal(sync);
 					\end{tabular}
 					\caption{Example: Belady's Optimal Page Replacement}
 				\end{table}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{First In, First Out Replacement (FIFO)} % 8.32
 			\textbf{Principle:} Maintain a list of pages in the order they come in and evict the page at the beginning the list (that came in first).
@@ -2221,8 +2221,8 @@ signal(sync);
 					\end{tabular}
 					\caption{Example: FIFO Page Replacement}
 				\end{table}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Second Chance FIFO Replacement} % 8.33
 			\textbf{Principle:} Each page gets a \textit{second chance bit} (R bit) that is set to 0 for new pages and the pages are sorted in FIFO order. Set the R bit to 1 each time a page is referenced. When looking for a page to replace cycle through the list skipping all pages with the R bit set to 1 while setting it to 0 and evict the first page with the R bit set to 0.
@@ -2247,8 +2247,8 @@ signal(sync);
 					\end{tabular}
 					\caption{Example: FIFO Page Replacement}
 				\end{table}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Random Replacement (RR)}
 			\textbf{Principle:} Replace a randomly selected page.
@@ -2275,8 +2275,8 @@ signal(sync);
 					\end{tabular}
 					\caption{Example: Random Page Replacement}
 				\end{table}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Last Recently Used Replacement (LRU)}
 			\textbf{Principle:} Evict the page that was used least recently.
@@ -2301,10 +2301,10 @@ signal(sync);
 					\end{tabular}
 					\caption{Example: Last Recently Used Replacement}
 				\end{table}
-				% end
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
+% end
 
 \chapter{Input/Output}
 	\section{Hardware}
@@ -2319,7 +2319,7 @@ signal(sync);
 			\end{itemize}
 
 			It is important to distinguish between specific devices in terms of what they do, but it is possible to hide the information how they do what they do.
-			% end
+		% end
 
 		\subsection{Device Controllers}
 			\begin{itemize}
@@ -2327,7 +2327,7 @@ signal(sync);
 				\item The \textit{device controller} is the interface that is accessible by the OS and may be able to handle multiple devices.
 				\item Example controller tasks: Convert bit streams to block of bytes, perform error correction, \dots
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Accessing Devices}
 			\begin{itemize}
@@ -2345,23 +2345,23 @@ signal(sync);
 					\item[+] It is possible to test the status registers directly.
 					\item[--] It steals addresses from the address space.
 				\end{itemize}
-				% end
+			% end
 
-		\subsection{Direct Memory Access}
-			\begin{itemize}
-				\item With \textit{direct memory access} (DMA), the memory bus can be accessed directly without using the CPU. That way, the CPU is not utilized for such dumb operations and can be used for more important operations.
-				\item DMA is done by using a DMA-controller that is attached to the memory bus.
-				\item Notice that DMA is not a replacement for in/out buffers not mapped memory but can apply to both of these options.
-			\end{itemize}
+			\subsection{Direct Memory Access}
+				\begin{itemize}
+					\item With \textit{direct memory access} (DMA), the memory bus can be accessed directly without using the CPU. That way, the CPU is not utilized for such dumb operations and can be used for more important operations.
+					\item DMA is done by using a DMA-controller that is attached to the memory bus.
+					\item Notice that DMA is not a replacement for in/out buffers not mapped memory but can apply to both of these options.
+				\end{itemize}
 			% end
-			% end
+		% end
 
 		\subsection{Programmed I/O}
 			\begin{itemize}
 				\item Reading the I/O device data is done by looping a read function constantly reading the data waiting for a specific response.
 				\item This works, but produces lots of overhead because the CPU is always busy doing nothing but looping.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Interrupts}
 			\begin{itemize}
@@ -2373,7 +2373,7 @@ signal(sync);
 					\item In multiprocessor environments, a local \textit{advanced programmable interrupt controller} (APIC) is available per core for controlling internal CPU stuff.
 					\item The I/O interrupts use a separate APCI outside of the cores (therefore centralized) that then handles the interrupts and decides where to handle the interrupt.
 				\end{itemize}
-				% end
+			% end
 
 			\subsubsection{Interrupt-Driven I/O}
 				\begin{itemize}
@@ -2393,8 +2393,8 @@ signal(sync);
 							\item Schedule and run a new process (and new context).
 						\end{enumerate}
 				\end{itemize}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Buffer Strategies}
 			Buffering can massively improve the performance and there exist four basic buffering options:
@@ -2404,8 +2404,8 @@ signal(sync);
 				\item buffering in the kernel followed by copying to user space
 				\item double buffering in the kernel followed by copying to user space
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Device Diversity and Drivers}
 		\begin{itemize}
@@ -2445,7 +2445,7 @@ signal(sync);
 						\end{itemize}
 				\end{itemize}
 		\end{itemize}
-		% end
+	% end
 
 	\section{I/O Interfaces and Abstraction}
 		The abstraction of I/O interfaces is not standardized and thus every OS produces its own model.
@@ -2460,125 +2460,125 @@ signal(sync);
 						\item The minor number identifies the (virtual) device instance.
 					\end{itemize}
 			\end{itemize}
-			% end
-			% end
-			% end
+		% end
+	% end
+% end
 
 \chapter{File Systems}
-	Preface: For this chapter it is assumed that disks are sequences of blocks that can only be accesses in sequence.
+Preface: For this chapter it is assumed that disks are sequences of blocks that can only be accesses in sequence.
 
-	A file system has to:
-	\begin{itemize}
-		\item store the actual file data,
-		\item store the metadata (access rights, creation/modification/access/birth dates, if a file is references by hard links) and
-		\item relate the file data with the metadata.
-	\end{itemize}
+A file system has to:
+\begin{itemize}
+	\item store the actual file data,
+	\item store the metadata (access rights, creation/modification/access/birth dates, if a file is references by hard links) and
+	\item relate the file data with the metadata.
+\end{itemize}
 
-	\section{Abstraction}
-		A file system can be structured using folders and files which together form paths.
+\section{Abstraction}
+	A file system can be structured using folders and files which together form paths.
 
-		\begin{figure}[H]
-			\centering
-			\begin{tikzpicture}[sibling distance = 5cm, every node/.style = { draw, rectangle, align = center }]
-				\node {\texttt{/}}
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}[sibling distance = 5cm, every node/.style = { draw, rectangle, align = center }]
+			\node {\texttt{/}}
+			child { node {\texttt{foo}}
+				child { node {\texttt{bar.txt}} } }
+			child { node {\texttt{bar}}
+				child { node {\texttt{bar}} }
 				child { node {\texttt{foo}}
-					child { node {\texttt{bar.txt}} } }
-				child { node {\texttt{bar}}
-					child { node {\texttt{bar}} }
-					child { node {\texttt{foo}}
-						child { node {\texttt{bar.txt}} } } };
-			\end{tikzpicture}
-			\caption{File Systems: Hierarchy}
-		\end{figure}
+					child { node {\texttt{bar.txt}} } } };
+		\end{tikzpicture}
+		\caption{File Systems: Hierarchy}
+	\end{figure}
 
-		A \textit{file extension} is commonly used as an indicator of the file content, e.g. \texttt{.txt} for text files, \texttt{.c} for C source code, \texttt{.sh} for shell scripts, etc. In general, these are not necessary (on the most systems) must helpful.
-		% end
+	A \textit{file extension} is commonly used as an indicator of the file content, e.g. \texttt{.txt} for text files, \texttt{.c} for C source code, \texttt{.sh} for shell scripts, etc. In general, these are not necessary (on the most systems) must helpful.
+% end
 
-	\section{Common File Operations}
-		\subsection{File Descriptors}
-			\begin{itemize}
-				\item A \textit{file descriptor} (FD) identifies a specific file or similar.
-				\item It is capable of performing a set of operations.
-				\item Identified by consecutive integer number, whereas 0, 1, 2 are reserved for standard input (stdin), standard output (stdout) and error output (stderr).
-				\item In POSIX, stderr is open for reading and writing.
-			\end{itemize}
-			% end
+\section{Common File Operations}
+	\subsection{File Descriptors}
+		\begin{itemize}
+			\item A \textit{file descriptor} (FD) identifies a specific file or similar.
+			\item It is capable of performing a set of operations.
+			\item Identified by consecutive integer number, whereas 0, 1, 2 are reserved for standard input (stdin), standard output (stdout) and error output (stderr).
+			\item In POSIX, stderr is open for reading and writing.
+		\end{itemize}
+	% end
 
-		\subsection{\texttt{open()}}
-			\lstinline[language = C]|int open(const char *path, int oflag, ...)|
-			\begin{itemize}
-				\item Returns a file descriptor for the named file.
-				\item The \textit{path} argument points to a pathname that names the file to open.
-				\item The \textit{oflag} parameter is one of these flags:
-					\begin{itemize}
-						\item \texttt{O\_EXEC} \tabto{2cm} Open for executing only (non-directory files).
-						\item \texttt{O\_RDONLY} \tabto{2cm} Open for reading only.
-						\item \texttt{O\_RDWR} \tabto{2cm} Open for reading and writing.
-						\item \texttt{O\_SEACRH} \tabto{2cm} Open directory for searching only.
-						\item \texttt{O\_WRONLY} \tabto{2cm} Open for writing only.
-					\end{itemize}
-					combined (bitwise \textit{or}) with any other flags defined in \texttt{<fcntl.h>}.
-			\end{itemize}
-			% end
-
-		\subsection{\texttt{read()}}
-			\lstinline[language = C]|ssize_t read(int fildes, void *buf, size_t nbyte)|
-			\begin{itemize}
-				\item Reads (at most) \textit{nbyte} bytes from the file associated with the file descriptor \textit{fildes} and writes them into the buffer pointed by \textit{buf}.
-				\item If the file supports seeking (e.g. a regular file), the read starts at the position in the file given by the file offset that is associated with the file descriptor.
-				\item Returns the the number of bytes actually read. If the end of file is reached, 0.
-				\item After data was read, the last \textit{data access timestamp} is set to the current timestamp.
-			\end{itemize}
-			% end
-
-		\subsection{\texttt{write()}}
-			\lstinline[language = C]|ssize_t write(int fildes, const void *buf, size_t nbyte)|
-			\begin{itemize}
-				\item Writes \textit{nbyte} bytes from the buffer pointed by \textit{buf} into the file associated with the file descriptor \textit{fildes}.
-				\item If the file supports seeking (e.g. a regular file), the write starts at the position on the file given by the file offset that is associated with the file descriptor. After a successful write, the file offset is incremented by the actual bytes written.
-				\item Returns the number of bytes actuall written.
-				\item After the data was written, the \textit{last modified timestamp} is set to the current timestamp.
-			\end{itemize}
-			% end
-
-		\subsection{\texttt{close()}}
-			\lstinline[language = C]|int close(int fildes)|
-			\begin{itemize}
-				\item Deallocates the file descriptor \textit{fildes} and makes the file eligible for \texttt{open()} again.
-				\item Return 0 for success and -1 for failure.
-			\end{itemize}
-			% end
-
-		\subsection{POSIX File Redirection}
-			\begin{itemize}
-				\item Input and output of a program can be redirected via the shell:
-					\begin{itemize}
-						\item \texttt{>} \tabto{0.7cm} writes the output to a file or file descriptor
-						\item \texttt{>{}>} \tabto{0.7cm} appends the output to a file or file descriptor
-						\item For forward a specific file descriptor, write its number in front of the angle. To redirect all descriptors, use an ampersand (\texttt{\&}). The implicit file descriptor is stdout.
-					\end{itemize}
-				\item A file descriptor can be referenced using an ampersand (\texttt{\&}) followed by its number.
-				\item There exist a few special files that must only be used as described but provide very useful functionality:
-					\begin{itemize}
-						\item \texttt{/dev/null} \tabto{3cm} Discards every byte written to it. Returns EOF on every read.
-						\item \texttt{/dev/zero} \tabto{3cm} Returns an infinite number of null bytes. Cannot be written.
-						\item \texttt{/dev/random} \tabto{3cm} Returns an infinite number of random bytes. Cannot be written.
-						\item \texttt{/dev/urandom} \tabto{3cm} Returns an infinite number of more secure random bytes. Cannot be written. Is not available on every POSIX system.
-					\end{itemize}
-			\end{itemize}
-
-			\paragraph{Examples}
+	\subsection{\texttt{open()}}
+		\lstinline[language = C]|int open(const char *path, int oflag, ...)|
+		\begin{itemize}
+			\item Returns a file descriptor for the named file.
+			\item The \textit{path} argument points to a pathname that names the file to open.
+			\item The \textit{oflag} parameter is one of these flags:
 				\begin{itemize}
-					\item Append all regular output to the log file and discard any error output:
-						\begin{lstlisting}
+					\item \texttt{O\_EXEC} \tabto{2cm} Open for executing only (non-directory files).
+					\item \texttt{O\_RDONLY} \tabto{2cm} Open for reading only.
+					\item \texttt{O\_RDWR} \tabto{2cm} Open for reading and writing.
+					\item \texttt{O\_SEACRH} \tabto{2cm} Open directory for searching only.
+					\item \texttt{O\_WRONLY} \tabto{2cm} Open for writing only.
+				\end{itemize}
+				combined (bitwise \textit{or}) with any other flags defined in \texttt{<fcntl.h>}.
+		\end{itemize}
+	% end
+
+	\subsection{\texttt{read()}}
+		\lstinline[language = C]|ssize_t read(int fildes, void *buf, size_t nbyte)|
+		\begin{itemize}
+			\item Reads (at most) \textit{nbyte} bytes from the file associated with the file descriptor \textit{fildes} and writes them into the buffer pointed by \textit{buf}.
+			\item If the file supports seeking (e.g. a regular file), the read starts at the position in the file given by the file offset that is associated with the file descriptor.
+			\item Returns the the number of bytes actually read. If the end of file is reached, 0.
+			\item After data was read, the last \textit{data access timestamp} is set to the current timestamp.
+		\end{itemize}
+	% end
+
+	\subsection{\texttt{write()}}
+		\lstinline[language = C]|ssize_t write(int fildes, const void *buf, size_t nbyte)|
+		\begin{itemize}
+			\item Writes \textit{nbyte} bytes from the buffer pointed by \textit{buf} into the file associated with the file descriptor \textit{fildes}.
+			\item If the file supports seeking (e.g. a regular file), the write starts at the position on the file given by the file offset that is associated with the file descriptor. After a successful write, the file offset is incremented by the actual bytes written.
+			\item Returns the number of bytes actuall written.
+			\item After the data was written, the \textit{last modified timestamp} is set to the current timestamp.
+		\end{itemize}
+	% end
+
+	\subsection{\texttt{close()}}
+		\lstinline[language = C]|int close(int fildes)|
+		\begin{itemize}
+			\item Deallocates the file descriptor \textit{fildes} and makes the file eligible for \texttt{open()} again.
+			\item Return 0 for success and -1 for failure.
+		\end{itemize}
+	% end
+
+	\subsection{POSIX File Redirection}
+		\begin{itemize}
+			\item Input and output of a program can be redirected via the shell:
+				\begin{itemize}
+					\item \texttt{>} \tabto{0.7cm} writes the output to a file or file descriptor
+					\item \texttt{>{}>} \tabto{0.7cm} appends the output to a file or file descriptor
+					\item For forward a specific file descriptor, write its number in front of the angle. To redirect all descriptors, use an ampersand (\texttt{\&}). The implicit file descriptor is stdout.
+				\end{itemize}
+			\item A file descriptor can be referenced using an ampersand (\texttt{\&}) followed by its number.
+			\item There exist a few special files that must only be used as described but provide very useful functionality:
+				\begin{itemize}
+					\item \texttt{/dev/null} \tabto{3cm} Discards every byte written to it. Returns EOF on every read.
+					\item \texttt{/dev/zero} \tabto{3cm} Returns an infinite number of null bytes. Cannot be written.
+					\item \texttt{/dev/random} \tabto{3cm} Returns an infinite number of random bytes. Cannot be written.
+					\item \texttt{/dev/urandom} \tabto{3cm} Returns an infinite number of more secure random bytes. Cannot be written. Is not available on every POSIX system.
+				\end{itemize}
+		\end{itemize}
+
+		\paragraph{Examples}
+			\begin{itemize}
+				\item Append all regular output to the log file and discard any error output:
+					\begin{lstlisting}
 $ ./a.out >>a.log 2>/dev/null
 \end{lstlisting}
-					\item Discard all output (both stdin and stdout and other file descriptors):
-						\begin{lstlisting}
+				\item Discard all output (both stdin and stdout and other file descriptors):
+					\begin{lstlisting}
 $ ./a.out &>/dev/null
 \end{lstlisting}
-					\item Create a file descriptor to access my server, send a HTTP request and read the response (working example):
-						\begin{lstlisting}[language = BASH]
+				\item Create a file descriptor to access my server, send a HTTP request and read the response (working example):
+					\begin{lstlisting}[language = BASH]
 $ exec 3<> /dev/tcp/dmken.com/80  # Open the file descriptor.
 $ echo -en 'GET /\r\n' >&3        # Send the request.
 $ cat <&3                         # Read the response.
@@ -2591,81 +2591,81 @@ $ cat <&3                         # Read the response.
 </body></html>
 $ exec 3>&-                       # Close the file descriptor.
 \end{lstlisting}
-				\end{itemize}
-				% end
-				% end
-				% end
-
-	\section{File Information (\texttt{stat})}
-		The \texttt{stat} command prints a lot of useful information, including:
-		\begin{itemize}
-			\item Name (and possible link information)
-			\item Site
-			\item Blocks
-			\item IO Block
-			\item Type
-			\item Device
-			\item Inode
-			\item Links
-			\item Access rights
-			\item Owner (UID)
-			\item Group (GID)
-			\item Last access time
-			\item Last modification time
-			\item Last change time
-			\item Birth time
-		\end{itemize}
-		% end
-
-	\section{Links}
-		\subsection{Hard Links}
-			\begin{itemize}
-				\item Hard references in the file table.
-				\item If one hard link is deleted, another to the same file still contains the information.
-				\item Most of the time only one hard link exist for each file.
-				\item Can be used to synchronize file contents in multiple locations.
 			\end{itemize}
-			% end
-
-		\subsection{Symbolic Links}
-			\begin{itemize}
-				\item Kinda files containing just the path to the linked file.
-				\item Must be resolved by software.
-				\item If the original file is deleted, the link becomes invalid.
-				\item Works across file system boundaries.
-				\item Can also be used to synchronize file contents.
-			\end{itemize}
-			% end
-			% end
-
-	\section{Reducing Operation Latencies}
-		\label{sec:reduceopslatencies}
-
-		\begin{enumerate}
-			\item Keeping the storage information separate from the file data improves the operation latencies. \\ This reduces the latencies as follows:
-				\begin{itemize}
-					\item Time for reading: 8/2 reads (slow/fast)
-					\item Time for skipping: 8/2 and 56/2 reads
-					\item Time for reading a file block
-				\end{itemize}
-			\item To further reduce the operation latencies, the file metadata can be stored besides the storage information in a combined data structure, called \textit{index node} (inode). \\ This reduces the latencies as follows:
-				\begin{itemize}
-					\item Metadata operations: 8/2 reads (slow/fast)
-				\end{itemize}
-			\item More optimization: Keep track of the free disk space in separate data structures called \textit{bitmap}. This saves time as reading empty inode blocks can be skipped. Also improves file creation as "walking" all inodes is not required.
-			\item Even more optimization: Add a superblock on the first block that contains information where the other data structures is stored.
-		\end{enumerate}
 		% end
+	% end
+% end
 
-	\section{Associating Files with Data Blocks}
-		Problem: How does the file system keep track about which blocks a file occupies and what their order is according to the file data sequence.
+\section{File Information (\texttt{stat})}
+	The \texttt{stat} command prints a lot of useful information, including:
+	\begin{itemize}
+		\item Name (and possible link information)
+		\item Site
+		\item Blocks
+		\item IO Block
+		\item Type
+		\item Device
+		\item Inode
+		\item Links
+		\item Access rights
+		\item Owner (UID)
+		\item Group (GID)
+		\item Last access time
+		\item Last modification time
+		\item Last change time
+		\item Birth time
+	\end{itemize}
+% end
 
-		There are three different basic approaches:
+\section{Links}
+	\subsection{Hard Links}
 		\begin{itemize}
-			\item Linked lists (used by FAT)
-			\item Indices (used by ext3)
-			\item Extents (used by ext4)
+			\item Hard references in the file table.
+			\item If one hard link is deleted, another to the same file still contains the information.
+			\item Most of the time only one hard link exist for each file.
+			\item Can be used to synchronize file contents in multiple locations.
 		\end{itemize}
+	% end
+
+	\subsection{Symbolic Links}
+		\begin{itemize}
+			\item Kinda files containing just the path to the linked file.
+			\item Must be resolved by software.
+			\item If the original file is deleted, the link becomes invalid.
+			\item Works across file system boundaries.
+			\item Can also be used to synchronize file contents.
+		\end{itemize}
+	% end
+% end
+
+\section{Reducing Operation Latencies}
+	\label{sec:reduceopslatencies}
+
+	\begin{enumerate}
+		\item Keeping the storage information separate from the file data improves the operation latencies. \\ This reduces the latencies as follows:
+			\begin{itemize}
+				\item Time for reading: 8/2 reads (slow/fast)
+				\item Time for skipping: 8/2 and 56/2 reads
+				\item Time for reading a file block
+			\end{itemize}
+		\item To further reduce the operation latencies, the file metadata can be stored besides the storage information in a combined data structure, called \textit{index node} (inode). \\ This reduces the latencies as follows:
+			\begin{itemize}
+				\item Metadata operations: 8/2 reads (slow/fast)
+			\end{itemize}
+		\item More optimization: Keep track of the free disk space in separate data structures called \textit{bitmap}. This saves time as reading empty inode blocks can be skipped. Also improves file creation as "walking" all inodes is not required.
+		\item Even more optimization: Add a superblock on the first block that contains information where the other data structures is stored.
+	\end{enumerate}
+% end
+
+\section{Associating Files with Data Blocks}
+	Problem: How does the file system keep track about which blocks a file occupies and what their order is according to the file data sequence.
+
+	There are three different basic approaches:
+	\begin{itemize}
+		\item Linked lists (used by FAT)
+		\item Indices (used by ext3)
+		\item Extents (used by ext4)
+	\end{itemize}
 
 	\section{Linked Lists}
 		\begin{itemize}
@@ -2673,207 +2673,207 @@ $ exec 3>&-                       # Close the file descriptor.
 			\item The inodes therefore link to the first block.
 			\item Disadvantage: Reading and especially searching through big files is slow as the complete linked list has to be scanned.
 		\end{itemize}
-		% end
+	% end
 
-		\subsection{Indices (inodes) Problems}
-			\begin{itemize}
-				\item Large files cause larges inodes.
-				\item If the inode count cannot grow dynamically, it causes external fragmentation. If not, it causes internal fragmentation.
-			\end{itemize}
-			% end
+	\subsection{Indices (inodes) Problems}
+		\begin{itemize}
+			\item Large files cause larges inodes.
+			\item If the inode count cannot grow dynamically, it causes external fragmentation. If not, it causes internal fragmentation.
+		\end{itemize}
+	% end
 
-		\subsection{Indirect Addressing}
-			\begin{itemize}
-				\item The root inodes reference an address block that itself references more address blocks containing inodes until the data is reached.
-				\item Example: ext3 used triple indirect addressing.
-			\end{itemize}
-			% end
+	\subsection{Indirect Addressing}
+		\begin{itemize}
+			\item The root inodes reference an address block that itself references more address blocks containing inodes until the data is reached.
+			\item Example: ext3 used triple indirect addressing.
+		\end{itemize}
+	% end
 
-		\subsection{Extents}
-			\begin{itemize}
-				\item Indirect addressing is efficient for large files, but deletion takes long as all inodes have to be found.
-				\item \textit{Extents} are contiguous data blocks that are reserved after file creation and stored in the inode.
-				\item They contain the address and length of referenced data blocks.
-				\item This produces less metadata than with indirect addressing.
-				\item Performance boost for sequential data accesses.
-				\item Extents are used by ext4, btrfs, NTFS, HPFS and more.
-				\item If no more extent places are free, the extent can be modified that it references another data block that itself contains more extents. In ext4, this can be done up to 5 levels of indirection.
-			\end{itemize}
-			% end
-			% end
+	\subsection{Extents}
+		\begin{itemize}
+			\item Indirect addressing is efficient for large files, but deletion takes long as all inodes have to be found.
+			\item \textit{Extents} are contiguous data blocks that are reserved after file creation and stored in the inode.
+			\item They contain the address and length of referenced data blocks.
+			\item This produces less metadata than with indirect addressing.
+			\item Performance boost for sequential data accesses.
+			\item Extents are used by ext4, btrfs, NTFS, HPFS and more.
+			\item If no more extent places are free, the extent can be modified that it references another data block that itself contains more extents. In ext4, this can be done up to 5 levels of indirection.
+		\end{itemize}
+	% end
+% end
 
-	\section{Common File Systems}
-		\subsection{vsfs: Very Simple File System}
-			\begin{itemize}
-				\item Just store files and metadata where there is space and
-				\item mark free blocks with some magic number.
-				\item Downsides: Operation latencies (64 slow vs. 2 fast reads, short 64/2). See \ref{sec:reduceopslatencies} for methods to reduce this latency.
-			\end{itemize}
-			% end
+\section{Common File Systems}
+	\subsection{vsfs: Very Simple File System}
+		\begin{itemize}
+			\item Just store files and metadata where there is space and
+			\item mark free blocks with some magic number.
+			\item Downsides: Operation latencies (64 slow vs. 2 fast reads, short 64/2). See \ref{sec:reduceopslatencies} for methods to reduce this latency.
+		\end{itemize}
+	% end
 
-		\subsection{FAT: File Address Table}
-			\begin{itemize}
-				\item Disk blocks are stored as linked lists.
-				\item The inodes (\textit{file address table}, FAT) contain the address of the first data block.
-				\item The data blocks then contain the address of the next data block.
-			\end{itemize}
-			% end
+	\subsection{FAT: File Address Table}
+		\begin{itemize}
+			\item Disk blocks are stored as linked lists.
+			\item The inodes (\textit{file address table}, FAT) contain the address of the first data block.
+			\item The data blocks then contain the address of the next data block.
+		\end{itemize}
+	% end
 
-		\subsection{ext3: Third Extended File System}
-			\begin{itemize}
-				\item Use indirect addressing with 3 levels of indirection.
-			\end{itemize}
+	\subsection{ext3: Third Extended File System}
+		\begin{itemize}
+			\item Use indirect addressing with 3 levels of indirection.
+		\end{itemize}
 
-			\todo{FS: ext3: Block finding} % 10.37
-			% end
+		\todo{FS: ext3: Block finding} % 10.37
+	% end
 
-		\subsection{ext4: Fourth Extended File System}
-			\begin{itemize}
-				\item Use up to 4 extents in the inode and build a 5 levels deep tree if 4 extents are not enough.
-				\item The extent structure is 12 bytes long
-				\item ext4 has the following limitations:
-					\begin{itemize}
-						\item Maximum file system site is 1 EiB.
-						\item Maximum extent size is 128 MiB (16 bit extent length and 15 bit for the address where the MSB is used as an initialization flag).
-						\item Maximum file size is 16 TiB.
-					\end{itemize}
-			\end{itemize}
-			% end
-
-		\subsection{FFS: The Fast File System}
-			\begin{itemize}
-				\item Core motivation: improve FS performance.
-				\item Core idea: Use knowledge about how the disk work:
-					\begin{itemize}
-						\item Moving the heads to adjacent tracks is fast. \\ \(\rightarrow\) Place blocks of a file in a single cylinder group.
-						\item Moving the heads to central metadata is slow. \\ \(\rightarrow\) Replicate metadata in each cylinder group.
-						\item Platters rotate continuously. \\ \(\rightarrow\) Store data in sequential blocks.
-						\item Data block accesses exhibit locally.
-						\item Large files to not benefit from locality beyond raw transfer rate saturation.
-					\end{itemize}
-				\item FFS is drastically faster than vsfs, but provides the same (standardized) interface.
-				\item Drawback: FFS is not optimized for SSDs, so more file systems are needed.
-			\end{itemize}
-			% end
-
-		\subsection{VFS: Virtual File System}
-			\begin{itemize}
-				\item Generic file system structure
-					\begin{itemize}
-						\item Provided abstraction from specific file system implementations.
-						\item Concurrently supports many FS, both local and networked.
-						\item Uniform FS interface \(\rightarrow\) FS is transparent for applications.
-						\item Mapping between VFS and actual FS is required.
-						\item Linux implements VFS.
-					\end{itemize}
-			\end{itemize}
-			\begin{figure}[H]
-				\centering
-				\begin{tikzpicture}[every node/.style = { minimum height = 0.8cm, minimum width = 4cm, draw, rectangle, align = center }]
-					\node (fsi) {File System Interface};
-					\node [below = 1 of fsi] (vfs) {VFS Interface};
-					\node [below = 1 of vfs] (fs2) {Local File System \\ Type 2};
-					\node [left = 1 of fs2] (fs1) {Local File System \\ Type 1};
-					\node [right = 1 of fs2] (fs3) {Remote File System \\ Type 1};
-
-					\draw (fsi) -- (vfs);
-					\draw (vfs) -| (fs1);
-					\draw (vfs) -- (fs2);
-					\draw (vfs) -| (fs3);
-				\end{tikzpicture}
-				\caption{VFS: General Principle}
-			\end{figure}
-			\begin{figure}[H]
-				\centering
-				\begin{tikzpicture}[->, every node/.style = { minimum height = 0.8cm, align = center }]
-					\node [draw, label = above:{Application \\ (user space)}] (a) {\texttt{write()}};
-					\node [draw, right = 2 of a, label = above:{VFS \\ (kernel space)}] (b) {\texttt{vfs\_write()}};
-					\node [draw, right = 2 of b, label = above:{FS (e.g. ext4) \\ (kernel space)}] (c) {FS write method};
-					\node [right = 2 of c] (d) {Drive};
-
-					\draw (a) -- (b);
-					\draw (b) -- (c);
-					\draw (c) -- (d);
-				\end{tikzpicture}
-				\caption{VFS: Write Access}
-			\end{figure}
-			\begin{itemize}
-				\item Is object-oriented (separation of generic operations from FS specifics, each object provides a set of operations).
-				\item VFS has four important objects:
-					\begin{itemize}
-						\item \textbf{inode}       \tabto{2cm} Index node that contains file information (FCB).
-						\item \textbf{file}        \tabto{2.5cm} An \textit{open} file that is currently associated to a process.
-						\item \textbf{dentry}      \tabto{2.5cm} Directory entry that contains single components of a path.
-						\item \textbf{super block} \tabto{2.5cm} Contains detailed information about a specific FS instance.
-					\end{itemize}
-				\item Directories are handled like files, i.e. dentry objects could also be a file, the data structure does only exist in memory, not on the disk.
-				\item Directories are special files that are stored in inodes.
-			\end{itemize}
-
-			\paragraph{inode Object}
+	\subsection{ext4: Fourth Extended File System}
+		\begin{itemize}
+			\item Use up to 4 extents in the inode and build a 5 levels deep tree if 4 extents are not enough.
+			\item The extent structure is 12 bytes long
+			\item ext4 has the following limitations:
 				\begin{itemize}
-					\item UNIX: inodes can be read directly from the disk.
-					\item Get created by the FS.
-					\item In UNIX, everything is a file, so there are a few special inodes:
-						\begin{itemize}
-							\item \textit{i\_pipe} \tabto{1.5cm} Pipes.
-							\item \textit{i\_bdev} \tabto{1.5cm} Block devices.
-							\item \textit{i\_cdev} \tabto{1.5cm} Character devices.
-						\end{itemize}
-					\item Supports direct and indirect data addressing.
-					\item The file systems have to implement the inode operations of VFS and must map their structures and operations onto the provided inode interface. Excerpt of the methods to implement:
-						\begin{itemize}
-							\item \texttt{int (*create) (struct inode *,struct dentry *, umode_t, bool)}
-							\item \texttt{int (*link) (struct dentry *,struct inode *,struct dentry *)}
-							\item \texttt{int (*unlink) (struct inode *,struct dentry *)}
-							\item \texttt{int (*symlink) (struct inode *,struct dentry *,const char *)}
-							\item \texttt{int (*mkdir) (struct inode *,struct dentry *,umode_t)}
-							\item \texttt{int (*atomic_open)(struct inode *, struct dentry *,\\\null\qquad\qquad\qquad\qquad\qquad\qquad struct file *, unsigned open_flag,\\\null\qquad\qquad\qquad\qquad\qquad\qquad umode_t create_mode, int *opened)}
-						\end{itemize}
+					\item Maximum file system site is 1 EiB.
+					\item Maximum extent size is 128 MiB (16 bit extent length and 15 bit for the address where the MSB is used as an initialization flag).
+					\item Maximum file size is 16 TiB.
 				\end{itemize}
-				% end
-				% end
-				% end
+		\end{itemize}
+	% end
 
-	\section{Performance and Timing}
-		When using vsfs with inode data structures, data block usage and inode block usage bitmap it is still pretty slow.
+	\subsection{FFS: The Fast File System}
+		\begin{itemize}
+			\item Core motivation: improve FS performance.
+			\item Core idea: Use knowledge about how the disk work:
+				\begin{itemize}
+					\item Moving the heads to adjacent tracks is fast. \\ \(\rightarrow\) Place blocks of a file in a single cylinder group.
+					\item Moving the heads to central metadata is slow. \\ \(\rightarrow\) Replicate metadata in each cylinder group.
+					\item Platters rotate continuously. \\ \(\rightarrow\) Store data in sequential blocks.
+					\item Data block accesses exhibit locally.
+					\item Large files to not benefit from locality beyond raw transfer rate saturation.
+				\end{itemize}
+			\item FFS is drastically faster than vsfs, but provides the same (standardized) interface.
+			\item Drawback: FFS is not optimized for SSDs, so more file systems are needed.
+		\end{itemize}
+	% end
 
-		\subsection{Recap: Hardware}
+	\subsection{VFS: Virtual File System}
+		\begin{itemize}
+			\item Generic file system structure
+				\begin{itemize}
+					\item Provided abstraction from specific file system implementations.
+					\item Concurrently supports many FS, both local and networked.
+					\item Uniform FS interface \(\rightarrow\) FS is transparent for applications.
+					\item Mapping between VFS and actual FS is required.
+					\item Linux implements VFS.
+				\end{itemize}
+		\end{itemize}
+		\begin{figure}[H]
+			\centering
+			\begin{tikzpicture}[every node/.style = { minimum height = 0.8cm, minimum width = 4cm, draw, rectangle, align = center }]
+				\node (fsi) {File System Interface};
+				\node [below = 1 of fsi] (vfs) {VFS Interface};
+				\node [below = 1 of vfs] (fs2) {Local File System \\ Type 2};
+				\node [left = 1 of fs2] (fs1) {Local File System \\ Type 1};
+				\node [right = 1 of fs2] (fs3) {Remote File System \\ Type 1};
+
+				\draw (fsi) -- (vfs);
+				\draw (vfs) -| (fs1);
+				\draw (vfs) -- (fs2);
+				\draw (vfs) -| (fs3);
+			\end{tikzpicture}
+			\caption{VFS: General Principle}
+		\end{figure}
+		\begin{figure}[H]
+			\centering
+			\begin{tikzpicture}[->, every node/.style = { minimum height = 0.8cm, align = center }]
+				\node [draw, label = above:{Application \\ (user space)}] (a) {\texttt{write()}};
+				\node [draw, right = 2 of a, label = above:{VFS \\ (kernel space)}] (b) {\texttt{vfs\_write()}};
+				\node [draw, right = 2 of b, label = above:{FS (e.g. ext4) \\ (kernel space)}] (c) {FS write method};
+				\node [right = 2 of c] (d) {Drive};
+
+				\draw (a) -- (b);
+				\draw (b) -- (c);
+				\draw (c) -- (d);
+			\end{tikzpicture}
+			\caption{VFS: Write Access}
+		\end{figure}
+		\begin{itemize}
+			\item Is object-oriented (separation of generic operations from FS specifics, each object provides a set of operations).
+			\item VFS has four important objects:
+				\begin{itemize}
+					\item \textbf{inode}       \tabto{2cm} Index node that contains file information (FCB).
+					\item \textbf{file}        \tabto{2.5cm} An \textit{open} file that is currently associated to a process.
+					\item \textbf{dentry}      \tabto{2.5cm} Directory entry that contains single components of a path.
+					\item \textbf{super block} \tabto{2.5cm} Contains detailed information about a specific FS instance.
+				\end{itemize}
+			\item Directories are handled like files, i.e. dentry objects could also be a file, the data structure does only exist in memory, not on the disk.
+			\item Directories are special files that are stored in inodes.
+		\end{itemize}
+
+		\paragraph{inode Object}
 			\begin{itemize}
-				\item A HDD contains platters, cylinders, sectors, \dots that are physically moving parts. These introduce latency to reading.
-				\item The latency is made up two major components:
+				\item UNIX: inodes can be read directly from the disk.
+				\item Get created by the FS.
+				\item In UNIX, everything is a file, so there are a few special inodes:
 					\begin{itemize}
-						\item Seek time \( T_\textrm{seek} \) \\ The time for the disk arm to move its heads to the cylinder containing the desired sector.
-						\item Rotational latency \( T_\textrm{rot} \) \\ Additional time for the disk to rotate the desired sector to the disk head.
+						\item \textit{i\_pipe} \tabto{1.5cm} Pipes.
+						\item \textit{i\_bdev} \tabto{1.5cm} Block devices.
+						\item \textit{i\_cdev} \tabto{1.5cm} Character devices.
 					\end{itemize}
-				\item The I/O rate (bandwidth) \(R_\textrm{io}\) that describes the total number of bytes that can be transferred against the total time it took can be described as:
+				\item Supports direct and indirect data addressing.
+				\item The file systems have to implement the inode operations of VFS and must map their structures and operations onto the provided inode interface. Excerpt of the methods to implement:
+					\begin{itemize}
+						\item \texttt{int (*create) (struct inode *,struct dentry *, umode_t, bool)}
+						\item \texttt{int (*link) (struct dentry *,struct inode *,struct dentry *)}
+						\item \texttt{int (*unlink) (struct inode *,struct dentry *)}
+						\item \texttt{int (*symlink) (struct inode *,struct dentry *,const char *)}
+						\item \texttt{int (*mkdir) (struct inode *,struct dentry *,umode_t)}
+						\item \texttt{int (*atomic_open)(struct inode *, struct dentry *,\\\null\qquad\qquad\qquad\qquad\qquad\qquad struct file *, unsigned open_flag,\\\null\qquad\qquad\qquad\qquad\qquad\qquad umode_t create_mode, int *opened)}
+					\end{itemize}
 			\end{itemize}
-			\begin{equation*}
-				R_\textrm{io} = \frac{\textrm{Size}_\textrm{trans}}{T_\textrm{seek} + T_\textrm{rot} + T_\textrm{trans}}
-			\end{equation*}
+		% end
+	% end
+% end
+
+\section{Performance and Timing}
+When using vsfs with inode data structures, data block usage and inode block usage bitmap it is still pretty slow.
+
+\subsection{Recap: Hardware}
+	\begin{itemize}
+		\item A HDD contains platters, cylinders, sectors, \dots that are physically moving parts. These introduce latency to reading.
+		\item The latency is made up two major components:
 			\begin{itemize}
-				\item[] where \(\textrm{Size}_\textrm{trans}\) is the data size to transfer and \(T_\textrm{trans}\) is the raw transfer time between disk and host. If only the transfer rate \(R_\textrm{trans}\) is given, it holds \( T_\textrm{trans} = \frac{\textrm{Size}_\textrm{trans}}{R_\textrm{trans}} \).
-				\item Of course, the disk access times can vary depending on the head position and position of the wanted block. File systems can effect the position of the wanted block and have to optimize that one.
+				\item Seek time \( T_\textrm{seek} \) \\ The time for the disk arm to move its heads to the cylinder containing the desired sector.
+				\item Rotational latency \( T_\textrm{rot} \) \\ Additional time for the disk to rotate the desired sector to the disk head.
 			\end{itemize}
+		\item The I/O rate (bandwidth) \(R_\textrm{io}\) that describes the total number of bytes that can be transferred against the total time it took can be described as:
+	\end{itemize}
+	\begin{equation*}
+		R_\textrm{io} = \frac{\textrm{Size}_\textrm{trans}}{T_\textrm{seek} + T_\textrm{rot} + T_\textrm{trans}}
+	\end{equation*}
+	\begin{itemize}
+		\item[] where \(\textrm{Size}_\textrm{trans}\) is the data size to transfer and \(T_\textrm{trans}\) is the raw transfer time between disk and host. If only the transfer rate \(R_\textrm{trans}\) is given, it holds \( T_\textrm{trans} = \frac{\textrm{Size}_\textrm{trans}}{R_\textrm{trans}} \).
+		\item Of course, the disk access times can vary depending on the head position and position of the wanted block. File systems can effect the position of the wanted block and have to optimize that one.
+	\end{itemize}
 
-			\paragraph{Sequential vs. Random Access}
-				Sequential access is much fast than random access as neither the disk head nor the sectors have to be relocated:
+	\paragraph{Sequential vs. Random Access}
+		Sequential access is much fast than random access as neither the disk head nor the sectors have to be relocated:
 
-				Assume \( T_\textrm{seek} = 9\textrm{ms} \), \( T_\textrm{rot} = 4.2\textrm{ms} \), \( R_\textrm{trans} = 105\textrm{MiB/s} \), \( \textrm{Size}_\textrm{block} = 4\textrm{MiB} \) and \( \textrm{Size}_\textrm{trans} = 100\textrm{MiB} \).
+		Assume \( T_\textrm{seek} = 9\textrm{ms} \), \( T_\textrm{rot} = 4.2\textrm{ms} \), \( R_\textrm{trans} = 105\textrm{MiB/s} \), \( \textrm{Size}_\textrm{block} = 4\textrm{MiB} \) and \( \textrm{Size}_\textrm{trans} = 100\textrm{MiB} \).
 
-				\subparagraph{Sequential Access}
-					\begin{equation*}
-						R_\textrm{io}^\textrm{seq} = \frac{\textrm{Size}_\textrm{trans}}{T_\textrm{seek} + T_\textrm{rot} + \frac{\textrm{Size}_\textrm{trans}}{R_\textrm{trans}}} = \frac{100\textrm{MiB}}{9\textrm{ms} + 4.2\textrm{ms} + 952\textrm{ms}} \approx 103.6\textrm{MiB/s} \approx 9.7\textrm{ms/MiB}
-					\end{equation*}
-					\( \rightarrow 970\textrm{ms} = 0.97\textrm{s} \) for \( 100\textrm{MiB} \).
+		\subparagraph{Sequential Access}
+			\begin{equation*}
+				R_\textrm{io}^\textrm{seq} = \frac{\textrm{Size}_\textrm{trans}}{T_\textrm{seek} + T_\textrm{rot} + \frac{\textrm{Size}_\textrm{trans}}{R_\textrm{trans}}} = \frac{100\textrm{MiB}}{9\textrm{ms} + 4.2\textrm{ms} + 952\textrm{ms}} \approx 103.6\textrm{MiB/s} \approx 9.7\textrm{ms/MiB}
+			\end{equation*}
+			\( \rightarrow 970\textrm{ms} = 0.97\textrm{s} \) for \( 100\textrm{MiB} \).
 
-				\subparagraph{Random Access}
-					\begin{equation*}
-						R_\textrm{io}^\textrm{rnd} = \frac{\textrm{Size}_\textrm{trans}}{\textrm{Size}_\textrm{block}} \cdot \frac{\textrm{Size}_\textrm{trans}}{T_\textrm{seek} + T_\textrm{rot} + \frac{\textrm{Size}_\textrm{trans}}{R_\textrm{trans}}} = \frac{100\textrm{MiB}}{4\textrm{MiB}} \cdot \frac{100\textrm{MiB}}{9\textrm{ms} + 4.2\textrm{ms} + 952\textrm{ms}} \approx 0.3\textrm{MiB/s} \approx 3.3\textrm{s/MiB}
-					\end{equation*}
-					\( \rightarrow 330\textrm{s} = 5.05\textrm{min} \) for \( 100\textrm{MiB} \).
-					% end
-					% end
+			\subparagraph{Random Access}
+				\begin{equation*}
+					R_\textrm{io}^\textrm{rnd} = \frac{\textrm{Size}_\textrm{trans}}{\textrm{Size}_\textrm{block}} \cdot \frac{\textrm{Size}_\textrm{trans}}{T_\textrm{seek} + T_\textrm{rot} + \frac{\textrm{Size}_\textrm{trans}}{R_\textrm{trans}}} = \frac{100\textrm{MiB}}{4\textrm{MiB}} \cdot \frac{100\textrm{MiB}}{9\textrm{ms} + 4.2\textrm{ms} + 952\textrm{ms}} \approx 0.3\textrm{MiB/s} \approx 3.3\textrm{s/MiB}
+				\end{equation*}
+				\( \rightarrow 330\textrm{s} = 5.05\textrm{min} \) for \( 100\textrm{MiB} \).
+			% end
+		% end
 
 		\subsection{Scheduling}
 			\begin{itemize}
@@ -2925,8 +2925,8 @@ $ exec 3>&-                       # Close the file descriptor.
 						\end{tikzpicture}
 						\caption{FS Scheduling: FCFS}
 					\end{figure}
-					% end
-					% end
+				% end
+			% end
 
 			\subsubsection{Shortest Seek Time First (SSTF)}
 				\textbf{Principle:} Serve the request the minimum expected seek time from the current head position. Similar to SJF scheduling, this has the problem of starvation.
@@ -2966,8 +2966,8 @@ $ exec 3>&-                       # Close the file descriptor.
 						\end{tikzpicture}
 						\caption{FS Scheduling: SSTF}
 					\end{figure}
-					% end
-					% end
+				% end
+			% end
 
 			\subsubsection{SCAN or Elevator Algorithm (SCAN)}
 				\textbf{Principle:} The disk arm starts at one end of the disk and moves to the start/end continuously, servicing all requests on the way.
@@ -3007,8 +3007,8 @@ $ exec 3>&-                       # Close the file descriptor.
 						\end{tikzpicture}
 						\caption{FS Scheduling: SCAN}
 					\end{figure}
-					% end
-					% end
+				% end
+			% end
 
 			\subsubsection{Circular SCAN (C-SCAN)}
 				\textbf{Principle:} Lice SCAN, but not serving requests on the way back.
@@ -3048,8 +3048,8 @@ $ exec 3>&-                       # Close the file descriptor.
 						\end{tikzpicture}
 						\caption{FS Scheduling: C-SCAN}
 					\end{figure}
-					% end
-					% end
+				% end
+			% end
 
 			\subsubsection{SCAN and C-SCAN Variants (LOOK and C-LOOK)} % 11.13
 				\textbf{Principle:} Like SCAN/C-SCAN, but the arm reverses its direction directly and is not moving all the way to the end/start.
@@ -3089,7 +3089,7 @@ $ exec 3>&-                       # Close the file descriptor.
 						\end{tikzpicture}
 						\caption{FS Scheduling: LOOK}
 					\end{figure}
-					% end
+				% end
 
 				\paragraph{Example (C-LOOK)}
 					Assume incoming requests for a disk with sectors \(0\) to \(199\) and the request queue \[ 98, 183, 37, 122, 14, 124, 65, 67 \] and with the head starting at cylinder \( 53 \).
@@ -3126,11 +3126,11 @@ $ exec 3>&-                       # Close the file descriptor.
 						\end{tikzpicture}
 						\caption{FS Scheduling: C-LOOK}
 					\end{figure}
-					% end
-					% end
-					% end
-					% end
-					% end
+				% end
+			% end
+		% end
+	% end
+% end
 
 \chapter{Visualization}
 	\begin{itemize}
@@ -3161,7 +3161,7 @@ $ exec 3>&-                       # Close the file descriptor.
 					\item Solaris zones
 				\end{itemize}
 		\end{itemize}
-		% end
+	% end
 
 	\section{VM Implementation Requirements}
 		\begin{itemize}
@@ -3176,12 +3176,12 @@ $ exec 3>&-                       # Close the file descriptor.
 
 		\subsection{Threats to Safety/Liveness}
 			Because of the way inter-OS memory management and I/O works, the OS cannot natively run next to the hypervisor.
-			% end
+		% end
 
 		\subsection{Types of Instructions}
 			Privileged and sensitive instructions shall only be executed in ring 0 which leads to the definition of \textit{virtualizability} iff all sensitive instructions are privileged \(\rightarrow\) x86 is not virtualizable.
-			% end
-			% end
+		% end
+	% end
 
 	\section{Trap and Emulate}
 		If all sensitive instructions were privileged, then:
@@ -3211,7 +3211,7 @@ $ exec 3>&-                       # Close the file descriptor.
 					\end{itemize}
 				\item Problems: Large code basis and it has to be done for each different hypervisor.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Option 2: Binary rewriting}
 			\begin{itemize}
@@ -3224,7 +3224,7 @@ $ exec 3>&-                       # Close the file descriptor.
 					\end{enumerate}
 				\item No need to rewrite the user mode code, but there is still some overhead.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Option 3: Hardware extensions (Intel VT-x, AMD SVM)}
 			\begin{enumerate}
@@ -3239,8 +3239,8 @@ $ exec 3>&-                       # Close the file descriptor.
 				\item Switch to the handler routine of the hypervisor.
 				\item Do what the OS wants in a way that it does not violate safety or liveness (EMULATE).
 			\end{enumerate}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Memory}
 		\subsection{Shadow Page Tables}
@@ -3260,7 +3260,7 @@ $ exec 3>&-                       # Close the file descriptor.
 				\item Frequent page fault handling.
 				\item Expensive operations (VMM execution leads to a context switch).
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Extended Page Tables}
 			\textbf{Principle:}
@@ -3285,9 +3285,9 @@ $ exec 3>&-                       # Close the file descriptor.
 					\item This way, the memory pressure can be controlled from withing the guest forcing the guest to swap.
 					\item The VMM knows that balloon memory will not be accessed, so no physical to machine memory mapping is used.
 				\end{itemize}
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
 
 	\section{I/O}
 		\begin{itemize}
@@ -3324,9 +3324,9 @@ $ exec 3>&-                       # Close the file descriptor.
 						\item \textbf{Para-Virtualization} (e.g. virtio)
 					\end{itemize}
 			\end{itemize}
-			% end
-			% end
-			% end
+		% end
+	% end
+% end
 
 \chapter{OS Security}
 	See also Chapter 7 of the summary of "Computersystemsicherheit" at \HREF{https://dmken.com/cs} (German).
@@ -3381,7 +3381,7 @@ $ exec 3>&-                       # Close the file descriptor.
 			\item \textbf{No-Write-Down:} \tabto{3.5cm} A high clearance subject must not be able to write less classified objects.
 			\item \textbf{No-Read-Up:}    \tabto{3.5cm} A low clearance subject must not be able to read higher classified objects.
 		\end{itemize}
-		% end
+	% end
 
 	\section{Biba Model}
 		\begin{itemize}
@@ -3390,7 +3390,7 @@ $ exec 3>&-                       # Close the file descriptor.
 			\item \textbf{No-Write-Up:}  \tabto{3.5cm} A low clearance subject must not be able to write higher classified objects.
 			\item \textbf{No-Read-Down:} \tabto{3.5cm} A high clearance subject must not be able to read less classified objects.
 		\end{itemize}
-		% end
+	% end
 
 	\section{Multiuser System Model}
 		\begin{itemize}
@@ -3402,7 +3402,7 @@ $ exec 3>&-                       # Close the file descriptor.
 					\item of the processes in case of malicious OS.
 				\end{itemize}
 		\end{itemize}
-		% end
+	% end
 
 	\section{Inter-Process-Protection}
 		\begin{itemize}
@@ -3446,7 +3446,7 @@ $ exec 3>&-                       # Close the file descriptor.
 						\item \texttt{rw-r-{}-r-{}-} The owner is allowed to read, write; group members and other are only allowed to read.
 					\end{itemize}
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{The Superuser}
 			\begin{itemize}
@@ -3456,7 +3456,7 @@ $ exec 3>&-                       # Close the file descriptor.
 				\item One can also become root itself by issuing \texttt{sudo -i}.
 				\item Notice: Not every user can execute \texttt{sudo}, the have to be allowed to do so by the configuration file \texttt{/etc/sudoers}.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Alternative to ACLs: Capabilities}
 			\begin{itemize}
@@ -3465,8 +3465,8 @@ $ exec 3>&-                       # Close the file descriptor.
 				\item It can be passed to child processes.
 				\item Notice: These are not POSIX capabilities, they are a completely different thing, e.g. to fine grain the superuser rights.
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Protection from Processes}
 		\begin{itemize}
@@ -3483,7 +3483,7 @@ $ exec 3>&-                       # Close the file descriptor.
 					\item All resources of the system are accessible to the OS.
 				\end{itemize}
 		\end{itemize}
-		% end
+	% end
 
 	\section{Hardware Bug: Meltdown}
 		\begin{enumerate}
@@ -3504,8 +3504,8 @@ $ exec 3>&-                       # Close the file descriptor.
 				\item This way, exploited speculative execution cannot read kernel data.
 				\item But a lot of context switches have to happen which are slow. Depending on the type of used software, this can cause an overhead up to 30\%, but is usually around 5\%.
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Exploitable Software Bugs}
 		\subsection{Buffer Overflow}
@@ -3514,7 +3514,7 @@ $ exec 3>&-                       # Close the file descriptor.
 				\item A malicious program can escape from its desired address space (e.g. by \textit{smashing the stack}).
 				\item Mitigation: Ad a \textit{canary} when pushing data an the stack and verify its value when reading from the stack. If the value is not the same anymore, halt.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{String Format Vulnerabilities}
 			\begin{figure}[H]
@@ -3528,7 +3528,7 @@ $ exec 3>&-                       # Close the file descriptor.
 				\item That way, the attacker could figure out the memory and potentially read unauthorized data.
 				\item Fix: Do not just put user-generated content into the format string of \texttt{printf} or similar function.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Return-Oriented Programming (ROP)}
 			\begin{itemize}
@@ -3537,6 +3537,6 @@ $ exec 3>&-                       # Close the file descriptor.
 				\item This way, the attack can execute any code he wants as he can inject code into the stack and then jump to it.
 				\item Mitigation: Use \textit{(kernel) address space layout randomization} ((K)ASLR). This makes it harder for the attacker, but not impossible.
 			\end{itemize}
-			% end
-			% end
-			% end
+		% end
+	% end
+% end

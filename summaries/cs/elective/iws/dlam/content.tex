@@ -14,14 +14,14 @@
 
 	\section{Milestones}
 		The first successful application of deep learning was in 1989 with LeNet to recognize zip codes. Image detection and classification was develop a lot further since that and in 2012, AlexNet broke the human prediction error on ImageNet, a collection of (then) \SI{200}{GB} labeled images. But deep learning is not only useful for image classification: In 2013, DeepMind beat the best human players on basic Arcade games and in 2016 AlphaGo defeated the world champion in the game Go. All of this was possible due to the massive power of deep neural networks and reinforcement learning.
-		% end
+	% end
 
 	\section{The (Surprising?) Success of Deep Neural Networks}
 		It is interesting that deep neural networks are so successful as they are built from extremely simple blocks. Also, the algorithms used for training these networks are extremely basic gradient descent descendants that only find local minima. In other words: they are greedy algorithms which are even more limited in what they can do than the network itself (if a problem has a greedy solution, it is usually regarded as an "easy" problem). But still they are extremely powerful!
 
 		This is partially due to that hierarchical representations as induced by neural networks, are ubiquitous in artificial intelligence and information representation in general (e.g., images are hierarchical as well as natural language). Also, it seems like most learning problem are actually (relatively) easy and they have a gradient descent path towards a good model.
-		% end
-		% end
+	% end
+% end
 
 \chapter{Optimization}
 	\label{c:optimization}
@@ -43,12 +43,12 @@
 			Analytical derivatives is hard and time-consuming, but exact and fast. But it is also error-prone as both the original function and the derivative have to be both implemented and derived. To verify that an analytical gradient is correct one method used in practice is to also evaluate the gradient numerically and checking if the results are roughly equal.
 
 			As neural networks usually have lots of parameters and are fairly complex computational structures, neither of these methods are practical. Hence, automatic differentiation is used. In automatic differentiation, a computational graph is built and then the gradients are propagated backwards through it. This is called backpropagation and is covered in more detail in \autoref{c:backpropagation}.
-			% end
+		% end
 
 		\subsection{Mini-Batch and Stochastic Gradient Descent}
 			In mini-batch GD, only a small portion (common sizes are \num{32}, \num{64}, or \num{128} samples) of the training set is used for computing the gradient. This technique is used as it might not be possible to compute the whole gradient due to memory limitations. This makes the gradient noisy, but the progress is still good on average. It is also called \emph{stochastic} GD as the gradient gets replaced by a Monte-Carlo estimate of the expectation of the gradient.
-			% end
-			% end
+		% end
+	% end
 
 	\section{Newton's Method and L-BFGS}
 		Instead of walking along the gradient, \emph{Newton's method} leverages further knowledge from calculus and uses not only the gradient but the Hessian, too. The update equation is
@@ -58,7 +58,7 @@
 		where \(\mat{H}_L\) is the Hessian. Newton's method is capable of finding the minima of quadratic functions in one step and also converges fast for other problems. But due to its dependence on the Hessian, which is costly to compute, and due to the inverse of the said, it is rarely used in deep learning. The inversion has a time complexity of \( \mathcal{O}(d^3) \), where \(d\) are the number of parameters. As neural networks usually have millions of parameters, inverting the matrix is not practical. Also, matrix inversion is numerically unstable and the Hessian might even be singular.
 
 		Arising from these problems, the L-BFGS algorithm was developed which directly approximates the inverse of the Hessian. Hence, neither calculating nor inverting it is necessary.
-		% end
+	% end
 
 	\section{Convergence}
 		A method is said to converge \emph{quadratically} if the error \( \epsilon_k = x_\ast - x \) depends quadratically on the previous error:
@@ -70,7 +70,7 @@
 			\epsilon_{k + 1} \leq \mu \epsilon_k,\qquad \epsilon_k \in \mathcal{O}(\mu^n)
 		\end{equation}
 		For SGD, when the learning rate is changed to \(1/n\), the convergence is \( \epsilon_k \in \mathcal{O}(1/n) \). So SGD is terrible compared to other methods, but still it is used in practice as one million iterations or so are still enough for reaching single point precision in the error and one million iterations are okay to compute.
-		% end
+	% end
 
 	\section{Momentum}
 		When using SGD, the trajectory along the algorithm converges is very jittery on steep locations as the gradient is large and huge steps are made. On the other hand, only very slow progress is made at locations where the gradient is small. One approach for tackling this problem is \emph{momentum}. The formal definition is
@@ -94,7 +94,7 @@
 				\vec{\phi}^{(k + 1)} & = \vec{\phi}^{(k)} - \mu \vec{v}^{(k)} + (1 + \mu) \vec{v}^{(k + 1)}
 			\end{align}
 			The disadvantage of this change of variables is that now the previous value of the momentum has to be kept in memory, but this is mainly an implementation pitfall one has to care for.
-			% end
+		% end
 
 		\subsection{AdaGrad}
 			Another variant of SGD is \emph{AdaGrad} which changes the update in a ways such that the gradients are normalized by the square-root of gradient norms. This reduces the learning rate when gradients are high and increases it when gradients are small. Hence, the algorithms moves faster in shallow and slower in steep regions:
@@ -103,7 +103,7 @@
 				\vec{\theta}^{(k + 1)} & = \vec{\theta}^{(k)} - \frac{\alpha}{\sqrt{s^{(k + 1)}} + \epsilon} \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr)
 			\end{align}
 			The "gradient cache" \(s\) is initialized with zero and \(\epsilon\) is a small number added to the denominator to prevent divisions by zero. Problems of AdaGrad are that the first step can be far off and that the learning rate vanishes over time due to \(s\) building up large values (as norms can never be negative), causing learning to stagnate.
-			% end
+		% end
 
 		\subsection{RMSProp}
 			\emph{RMSProp} tackles the problem of AdaGrad that the learning rate vanishes by adding a decay rate \(\eta \in [0, 1)\) to it:
@@ -112,7 +112,7 @@
 				\vec{\theta}^{(k + 1)} & = \vec{\theta}^{(k)} - \frac{\alpha}{\sqrt{s^{(k + 1)}} + \epsilon} \cdot \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr)
 			\end{align}
 			With a decay of \( \beta = 0 \), RMSProp is equivalent to AdaGrad. The decay rate should be set to something high like \( \beta = 0.9 \) as small learning rates cause exploding updates in the first steps. Like for AdaGrad, the first few steps can be quite far off.
-			% end
+		% end
 
 		\subsection{Adam}
 			\emph{Adam} is the state-of-the-art optimizer used nearly every time for training neural networks. It combines the idea of momentum with RMSProp
@@ -124,8 +124,8 @@
 				\vec{\theta}^{(k + 1)}  & = \vec{\theta}^{(k)} - \frac{\alpha}{\sqrt{\hat{s}^{(k + 1)}} + \epsilon} \vec{v}^{(k + 1)}
 			\end{align}
 			where the hatted variables are a bias correction that compensates for the zero-initialization of \(\vec{v}\) and \(s\) and only really affects the process in the first few iterations where \(k\) i small.
-			% end
-			% end
+		% end
+	% end
 
 	\section{Learning Rate}
 		All of the above optimizers share at least one hyperparameter: the learning rate \(\alpha\). This hyperparameter is usually the one with the most influence on the learning process. If the learning rate is too small, no learning happens. But if it is too high, the parameters blow up and the loss rises indefinitely. A good learning rate is somewhere im between. Tuning of the learning rate and hyperparameter search will also be covered in \autoref{subsec:hyperparameterOpt}.
@@ -139,8 +139,8 @@
 			\alpha_k = \frac{\alpha_0}{1 + \eta k},
 		\end{equation}
 		again with an initial learning rate \(\alpha_0\) and a decay rate \(\eta\). Other options are for example step-based decay (e.g., every \(n\) iterations, go done by a factor) or even manual decay.
-		% end
-		% end
+	% end
+% end
 
 \chapter{Backpropagation}
 	\label{c:backpropagation}
@@ -241,7 +241,7 @@ db1 = np.einsum('ib->i', dL)
 			Sigmoid is best for learning logical inputs, i.e., functions with binary inputs and is used for control signals in LSTM networks. But they can kill gradients for values \( \lvert x \rvert \lg 0 \) as the derivative is near zero for values far away from the center. Sigmoid is also not good for image networks (better use ReLU) and is not zero-centered. The latter is a problem because the sigmoid itself requires zero-centered input data for producing non-trivial (constant) results.
 
 			Additionally, an always-positive input to a neuron causes the gradients to always be all-positive or all-negative. this leads to a zigzag path through the parameter space (much like axial iteration) which is not near an optimal optimization trajectory. This is also why the input data shall always be zero-centered beforehand (i.e., the mean of the input data should be zero).
-			% end
+		% end
 
 		\subsubsection{Hyperbolic Tangent (Tanh)}
 			The shape of the \emph{hyperbolic tangent} (tanh) activation function is similar, but the numbers are squashed into a range from plus to minus one:
@@ -250,7 +250,7 @@ db1 = np.einsum('ib->i', dL)
 				\tanh'(x) = 1 - \tanh^2(x)
 			\end{align}
 			Much like the sigmoid, gradients are killed for \(x\) values away from zero. But as the output is zero-centered, the tanh activation function is better suited for most problems as opposed to the sigmoid. It is also used for bounded, but signed, values in LSTM networks. But they are not as good as sigmoid for binary functions.
-			% end
+		% end
 
 		\subsubsection{Rectified Linear Unit (ReLU)}
 			The \emph{Rectified Linear Unit} (ReLU) is (at the moment) the go-to activation function for most problems:
@@ -265,7 +265,7 @@ db1 = np.einsum('ib->i', dL)
 			It saturates on half of the real axis and kills the gradient there, but it does never kill the gradient on the other half and is thus better suited for most problems than sigmoid or tanh. This is also visible empirically: networks using ReLU activations converge around six times faster than networks using sigmoid/tanh activations. But it is also not suitable for logical functions or for control in recurrent networks. Also, the output is not zero-centered. Another (theoretical) problem is that the gradient at \(x = 0\) is not defined. In practice this is not a big problem as values are almost never exactly equal to zero. If they are, one usually chooses zero or one as a gradient value, it does not really matter.
 
 			To prevent the gradients from dying (a saturated ReLU is often called a \emph{dead ReLU}), the network is usually initialized with a slightly positive bias (e.g., \num{0.01}).
-			% end
+		% end
 
 		\subsubsection{Leaky and Parametric ReLU}
 			An alternative to the vanilla ReLU are the \emph{leaky} and \emph{parametric} ReLU. The parametric ReLU is given as
@@ -278,7 +278,7 @@ db1 = np.einsum('ib->i', dL)
 				\end{cases}
 			\end{align}
 			where for the leaky ReLU the parameter is fixed to \( \alpha = 0.01 \). This parameter is also learnable. Compared to all activation functions discussed before, the leaky and parametric ReLU do not saturate and have most advantages of the ReLU (e.g., faster convergence than sigmoid/tanh). Also the outputs are closer to zero-mean compared to a vanilla ReLU. But it is still not differentiable at \( x = 0 \).
-			% end
+		% end
 
 		\subsubsection{Exponential Linear Unit (ELU)}
 			The \emph{exponential linear unit} (ELU) combines the pros of a ReLU with differentiability at \(x = 0\):
@@ -296,7 +296,7 @@ db1 = np.einsum('ib->i', dL)
 				\end{cases}
 			\end{align}
 			As can be seen from the derivative, if \(\alpha = 1\) is chosen, the function is continuously differentiable everywhere. Otherwise it is not differentiable at \(x = 0\). The value of \(\alpha\) defines the value of the ELU as \(x \to -\infty\).
-			% end
+		% end
 
 		\subsubsection{Maxout Neuron}
 			The \emph{maxout neuron} is a special kind of neuron that combines the weighting and bias with the activation function:
@@ -304,17 +304,17 @@ db1 = np.einsum('ib->i', dL)
 				\max\bigl( \vec{w}_1^T \vec{x} + b_1,\, \vec{w}_2^T \vec{x} + b_2 \bigr)
 			\end{align}
 			It generalizes the parametric ReLU and works in the linear regime, and hence does not saturate. But it has the problem that it doubles the number of parameters as two weight matrices and biases have to be used.
-			% end
+		% end
 
 		\subsubsection{In Practice\dots}
 			\dots everything should be tried, usually ReLU. But also try leaky ReLU, Maxout and ELU. For binary (logical) functions, use sigmoid and also try out tanh (but do not hope for much).
-			% end
-			% end
+		% end
+	% end
 
 	\section{Regularization}
 		The number of layers and neurons per layer has an extreme impact on the performance and capacity of a network. In general more layers work better over more neurons per layer and more layers/neurons in general work better than less. But large networks can lead to overfitting when there are a lot more parameters then there is data! But instead of regularizing the network using the network size, it is better to use a strong regularization on the weights instead, e.g., L1- or L2-regularization. In these regularization methods, the sum of the absolute (L1) or squared (L2) weights is added to the loss with a penalty factor \(\lambda\) (usually \num{0.1}, \num{0.01}, or \num{0.001}). This keeps the parameters small and thus reduces model complexity.
-		% end
-		% end
+	% end
+% end
 
 \chapter{Training Neural Networks}
 	This chapter covers the complete learning process of neural networks. Some quirks and tricks for data pre-processing and normalization are covered as well as hyperparameter optimization and regularization.
@@ -327,7 +327,7 @@ db1 = np.einsum('ib->i', dL)
 		For images, however, it is common to not standardize or whiten the data but to just subtract the mean (e.g. the mean image in AlexNet of the per-channel mean in VGGNet). This is due to the numbers of an image being bounded by nature, e.g. to the interval from zero to one. Hence different variances along the different axis might even encode information that shall not be removed.
 
 		During test time, the test input data has to be shifted and scaled the same way the training data was, based on the mean/standard deviation/PCA matrix/\dots that was computed from the training data. So the mean is not re-computed during test time!
-		% end
+	% end
 
 	\section{Weight Initialization}
 		An important factor of training neural networks is the initialization of the weights and biases in the neurons. If, for example, all weights are initialized with zeros, all downstream gradients vanish as they get multiplied with the weights. Hence, no learning happens. Besides the methods proposed below, initialization remains an open topic in neural network research and is not well understood. What is well understood, however, is that initialization plays a really important role and more often than expected is the key factor for the success of a neural network\footnote{Jonathan Frankle and Michael Carbin (2018): "The Lottery Ticket Hypothesis: Finding Sparse, Trainable Neural Networks"}.
@@ -382,7 +382,7 @@ db1 = np.einsum('ib->i', dL)
 				\caption{Activation statistics for weights initialized by a Gaussian with big variance. Layer zero is the input layer. For all activation functions it can be seen that the neurons saturates quickly. The standard deviation is not zero, but this is caused by the sigmoid and tanh activation to have two saturation values.}
 				\label{fig:nnInitBigRandom}
 			\end{figure}
-			% end
+		% end
 
 		\paragraph{Xavier Initialization}
 			\emph{Xavier initialization} also uses normally distributed weights, but the standard deviation is reciprocally proportional to the square-root of the number of neurons in the previous layer (called \emph{fan in}): \( \sigma = 1/\sqrt{\textit{fan-in}} \). This is a reasonable activation and works well when using sigmoid or tanh activations. But when using ReLU activations, the gradients vanish again as nearly all activations get saturated in the left half of the ReLU (where it is flat). Instead, He et al. (2015) proposed to divide the fan in by two to get a better initialization, i.e., \( \sigma = 1/\sqrt{\textit{fan-in} / 2} \). This works reasonably well also for ReLU activations.
@@ -432,7 +432,7 @@ db1 = np.einsum('ib->i', dL)
 				\caption{Activation statistics for weights initialized using the modified Xavier initialization by He et al. Layer zero is the input layer. It can be seen that the histograms in the layers are sufficiently wide, enabling learning. Also the ReLU does not saturate.}
 				\label{fig:nnInitHe}
 			\end{figure}
-			% end
+		% end
 
 		\subsection{Batch Normalization}
 			As already seen, unit Gaussian data is best as an input for most activation functions. The idea of batch normalization to just make the data unit Gaussian by subtracting the mean and dividing by the (empirical) standard deviation at each layer. This is done by averaging the incoming data along each dimension and computing the standard deviation for each dimension. Then element-wise subtraction and division is used for normalize and standardize the data. As the network then learns weights and biases on this data, it is theoretically possible that the networks learns to recover the original data by learning the values of the mean and standard deviation. Hence, no prediction power is taken away from the network by adding a batch normalization layer\footnote{Note that this is just a semi-theoretical argument to support batch normalization. In practice, the neural network nearly never learns the mean and standard deviation}.
@@ -440,161 +440,161 @@ db1 = np.einsum('ib->i', dL)
 			Advantages of batch normalization is that it improves the gradient flow through the network, allows higher learning rates by high-quality gradients, and reduces the strong dependence on initialization. It also kind of works as a form of regularization and maybe reduces the need for dropout.
 
 			During test time, the mean and standard deviation that were computed during training are used to normalizing/standardizing the data---the test data is not used to compute the mean/standard deviation again.
-			% end
-			% end
+		% end
+	% end
 
 	\section{Designing a Network and Hyperparameter Optimization}
 		This section covers the basic steps of designing a neural network, i.e., choosing the architecture, the loss, etc. The first step is to pre-process the data (normalization) as this is usually useful. The next step is to choose the architecture. This heavily depends on the task and prior intuition and knowledge are extremely helpful for settings up a good initial network. Furthermore, double check that the loss is reasonable: do not use cross-entropy for regression or quadratic loss for classification and remember to disable any regularization tricks. When enabling regularization, the loss should go up---that can be checked, too.
 
 		The next step is to train the network on a small portion of the training data to see if the model can overfit. If the model is not able to overfit on a very small dataset, its capacity is not high enough and the neural network has to be made larger. If that works, switch to training on the complete dataset and tuning of the learning rate. If the loss is not going down, the learning rate is usually too low. If the loss is exploding, the learning rate is usually too high. A principled way of finding a good learning rate is to use cross-validation on several learning rates that are magnitudes apart (a learning rate of \(0.0002\) usually performs similar to \(0.0001\), so try out \(0.1\), \(0.01\), \(0.001\), \dots). This boils down to hyperparameter optimization as the learning rate is a hyperparameter.
 
-	\section{Hyperparameter Optimization}
-		\label{subsec:hyperparameterOpt}
+		\section{Hyperparameter Optimization}
+			\label{subsec:hyperparameterOpt}
 
-		\emph{Hyperparameter optimization} is a big topic in designing neural networks and deep learning in general. It usually boils down to trying out different hyperparameter settings in a principled way. As a first step, a coarse search for only a few epochs should be done to get a rough idea what parameter settings work. Afterwards, a finer search for more iterations is executed to get more precise parameters. To speed up this process it is often advisable to stop the learning if the loss gets more than three times as high as the original loss. Also, the update ratio, i.e., the ratio between the norm of the old weights and the norm of the new weights \( \lVert \vec{\theta}^{(k)} \rVert_2 / \lVert \vec{\theta}^{(k + 1)} \rVert_2 \), should be around \num{0.001} or so.
+			\emph{Hyperparameter optimization} is a big topic in designing neural networks and deep learning in general. It usually boils down to trying out different hyperparameter settings in a principled way. As a first step, a coarse search for only a few epochs should be done to get a rough idea what parameter settings work. Afterwards, a finer search for more iterations is executed to get more precise parameters. To speed up this process it is often advisable to stop the learning if the loss gets more than three times as high as the original loss. Also, the update ratio, i.e., the ratio between the norm of the old weights and the norm of the new weights \( \lVert \vec{\theta}^{(k)} \rVert_2 / \lVert \vec{\theta}^{(k + 1)} \rVert_2 \), should be around \num{0.001} or so.
 
-		For the coarse search it is best to search in log-space. This is especially true for the learning rate which is the most important parameter. Other hyperparameters to try are for example the network architecture itself, the decay schedule of the learning rate and its update type, regularization (L2/dropout strength), etc. When looking at the accuracy, there should also be a small gap between the training and test accuracy. If the gap is too big, the model overfitted and the regularization strength should be increased. If these is no gap, the model capacity is most likely too low and the network should be enlarged.
+			For the coarse search it is best to search in log-space. This is especially true for the learning rate which is the most important parameter. Other hyperparameters to try are for example the network architecture itself, the decay schedule of the learning rate and its update type, regularization (L2/dropout strength), etc. When looking at the accuracy, there should also be a small gap between the training and test accuracy. If the gap is too big, the model overfitted and the regularization strength should be increased. If these is no gap, the model capacity is most likely too low and the network should be enlarged.
 
-		\subsection{Grid vs. Random Search}
-			When evaluating multiple parameters at once, it is advisable to not evaluate them on a grid, but to sample each from a uniform distribution. It is often the case that one hyperparameter (e.g. the learning rate) has a higher influence on the result than another (e.g. the initialization of the bias). If one uses a grid, a lot of redundant computations will be performed for a single parameter. When using random values, this happens less frequent. This is illustrated in \autoref{fig:gridRandomSearch}.
+			\subsection{Grid vs. Random Search}
+				When evaluating multiple parameters at once, it is advisable to not evaluate them on a grid, but to sample each from a uniform distribution. It is often the case that one hyperparameter (e.g. the learning rate) has a higher influence on the result than another (e.g. the initialization of the bias). If one uses a grid, a lot of redundant computations will be performed for a single parameter. When using random values, this happens less frequent. This is illustrated in \autoref{fig:gridRandomSearch}.
 
-			\begin{figure}
-				\centering
-				\begin{subfigure}{0.49\linewidth}
+				\begin{figure}
 					\centering
-					\begin{tikzpicture}[
-							hp/.style = {
-								draw,
-								circle,
-								fill = black,
-								inner sep = 0,
-								minimum width = 5pt,
-								minimum height = 5pt
-							},
-							lv/.style = {
-								draw,
-								rectangle,
-								fill = black,
-								inner sep = 0,
-								minimum width = 1pt,
-								minimum height = 5pt
-							},
-							lh/.style = {
-								draw,
-								rectangle,
-								fill = black,
-								inner sep = 0,
-								minimum width = 5pt,
-								minimum height = 1pt
-							}
-						]
-						\coordinate (a) at (-1.75, -1.75);
-						\coordinate (b) at (+1.75, -1.75);
-						\coordinate (c) at (+1.75, +1.75);
-						\coordinate (d) at (-1.75, +1.75);
+					\begin{subfigure}{0.49\linewidth}
+						\centering
+						\begin{tikzpicture}[
+								hp/.style = {
+									draw,
+									circle,
+									fill = black,
+									inner sep = 0,
+									minimum width = 5pt,
+									minimum height = 5pt
+								},
+								lv/.style = {
+									draw,
+									rectangle,
+									fill = black,
+									inner sep = 0,
+									minimum width = 1pt,
+									minimum height = 5pt
+								},
+								lh/.style = {
+									draw,
+									rectangle,
+									fill = black,
+									inner sep = 0,
+									minimum width = 5pt,
+									minimum height = 1pt
+								}
+							]
+							\coordinate (a) at (-1.75, -1.75);
+							\coordinate (b) at (+1.75, -1.75);
+							\coordinate (c) at (+1.75, +1.75);
+							\coordinate (d) at (-1.75, +1.75);
 
-						\node [hp] at (-1, -1) {};
-						\node [hp] at ( 0, -1) {};
-						\node [hp] at (+1, -1) {};
-						\node [hp] at (-1,  0) {};
-						\node [hp] at ( 0,  0) {};
-						\node [hp] at (+1,  0) {};
-						\node [hp] at (-1, +1) {};
-						\node [hp] at ( 0, +1) {};
-						\node [hp] at (+1, +1) {};
+							\node [hp] at (-1, -1) {};
+							\node [hp] at ( 0, -1) {};
+							\node [hp] at (+1, -1) {};
+							\node [hp] at (-1,  0) {};
+							\node [hp] at ( 0,  0) {};
+							\node [hp] at (+1,  0) {};
+							\node [hp] at (-1, +1) {};
+							\node [hp] at ( 0, +1) {};
+							\node [hp] at (+1, +1) {};
 
-						\node [lv] at (-1, +1.75) {};
-						\node [lv] at ( 0, +1.75) {};
-						\node [lv] at (+1, +1.75) {};
+							\node [lv] at (-1, +1.75) {};
+							\node [lv] at ( 0, +1.75) {};
+							\node [lv] at (+1, +1.75) {};
 
-						\node [lh] at (-1.75, -1) {};
-						\node [lh] at (-1.75,  0) {};
-						\node [lh] at (-1.75, +1) {};
+							\node [lh] at (-1.75, -1) {};
+							\node [lh] at (-1.75,  0) {};
+							\node [lh] at (-1.75, +1) {};
 
-						\draw (a) -- (b) -- (c) -- (d) -- cycle;
+							\draw (a) -- (b) -- (c) -- (d) -- cycle;
 
-						\path (c) -- node[above, sloped]{Important Param.} (d);
-						\path (a) -- node[above, sloped]{Unimportant Param.} (d);
-					\end{tikzpicture}
-					\caption{Grid Search}
-				\end{subfigure}
-				~
-				\begin{subfigure}{0.49\linewidth}
-					\centering
-					\begin{tikzpicture}[
-							hp/.style = {
-								draw,
-								circle,
-								fill = black,
-								inner sep = 0,
-								minimum width = 5pt,
-								minimum height = 5pt
-							},
-							lv/.style = {
-								draw,
-								rectangle,
-								fill = black,
-								inner sep = 0,
-								minimum width = 1pt,
-								minimum height = 5pt
-							},
-							lh/.style = {
-								draw,
-								rectangle,
-								fill = black,
-								inner sep = 0,
-								minimum width = 5pt,
-								minimum height = 1pt
-							}
-						]
-						\coordinate (a) at (-1.75, -1.75);
-						\coordinate (b) at (+1.75, -1.75);
-						\coordinate (c) at (+1.75, +1.75);
-						\coordinate (d) at (-1.75, +1.75);
+							\path (c) -- node[above, sloped]{Important Param.} (d);
+							\path (a) -- node[above, sloped]{Unimportant Param.} (d);
+						\end{tikzpicture}
+						\caption{Grid Search}
+					\end{subfigure}
+					~
+					\begin{subfigure}{0.49\linewidth}
+						\centering
+						\begin{tikzpicture}[
+								hp/.style = {
+									draw,
+									circle,
+									fill = black,
+									inner sep = 0,
+									minimum width = 5pt,
+									minimum height = 5pt
+								},
+								lv/.style = {
+									draw,
+									rectangle,
+									fill = black,
+									inner sep = 0,
+									minimum width = 1pt,
+									minimum height = 5pt
+								},
+								lh/.style = {
+									draw,
+									rectangle,
+									fill = black,
+									inner sep = 0,
+									minimum width = 5pt,
+									minimum height = 1pt
+								}
+							]
+							\coordinate (a) at (-1.75, -1.75);
+							\coordinate (b) at (+1.75, -1.75);
+							\coordinate (c) at (+1.75, +1.75);
+							\coordinate (d) at (-1.75, +1.75);
 
-						\node [hp] at (+1.43, +1.27) {};
-						\node [hp] at (+0.73, +1.49) {};
-						\node [hp] at (+0.11, -1.32) {};
-						\node [hp] at (-1.17, -0.50) {};
-						\node [hp] at (-1.10, +0.43) {};
-						\node [hp] at (+0.97, -0.77) {};
-						\node [hp] at (-0.68, -0.40) {};
-						\node [hp] at (+0.81, +0.49) {};
-						\node [hp] at (-0.05, -0.33) {};
+							\node [hp] at (+1.43, +1.27) {};
+							\node [hp] at (+0.73, +1.49) {};
+							\node [hp] at (+0.11, -1.32) {};
+							\node [hp] at (-1.17, -0.50) {};
+							\node [hp] at (-1.10, +0.43) {};
+							\node [hp] at (+0.97, -0.77) {};
+							\node [hp] at (-0.68, -0.40) {};
+							\node [hp] at (+0.81, +0.49) {};
+							\node [hp] at (-0.05, -0.33) {};
 
-						\node [lv] at (+1.43, +1.75) {};
-						\node [lv] at (+0.73, +1.75) {};
-						\node [lv] at (+0.11, +1.75) {};
-						\node [lv] at (-1.17, +1.75) {};
-						\node [lv] at (-1.10, +1.75) {};
-						\node [lv] at (+0.97, +1.75) {};
-						\node [lv] at (-0.68, +1.75) {};
-						\node [lv] at (+0.81, +1.75) {};
-						\node [lv] at (-0.05, +1.75) {};
+							\node [lv] at (+1.43, +1.75) {};
+							\node [lv] at (+0.73, +1.75) {};
+							\node [lv] at (+0.11, +1.75) {};
+							\node [lv] at (-1.17, +1.75) {};
+							\node [lv] at (-1.10, +1.75) {};
+							\node [lv] at (+0.97, +1.75) {};
+							\node [lv] at (-0.68, +1.75) {};
+							\node [lv] at (+0.81, +1.75) {};
+							\node [lv] at (-0.05, +1.75) {};
 
-						\node [lh] at (-1.75, +1.27) {};
-						\node [lh] at (-1.75, +1.49) {};
-						\node [lh] at (-1.75, -1.32) {};
-						\node [lh] at (-1.75, -0.50) {};
-						\node [lh] at (-1.75, +0.43) {};
-						\node [lh] at (-1.75, -0.77) {};
-						\node [lh] at (-1.75, -0.40) {};
-						\node [lh] at (-1.75, +0.49) {};
-						\node [lh] at (-1.75, -0.33) {};
+							\node [lh] at (-1.75, +1.27) {};
+							\node [lh] at (-1.75, +1.49) {};
+							\node [lh] at (-1.75, -1.32) {};
+							\node [lh] at (-1.75, -0.50) {};
+							\node [lh] at (-1.75, +0.43) {};
+							\node [lh] at (-1.75, -0.77) {};
+							\node [lh] at (-1.75, -0.40) {};
+							\node [lh] at (-1.75, +0.49) {};
+							\node [lh] at (-1.75, -0.33) {};
 
-						\draw (a) -- (b) -- (c) -- (d) -- cycle;
+							\draw (a) -- (b) -- (c) -- (d) -- cycle;
 
-						\path (c) -- node[above, sloped]{Important Param.} (d);
-						\path (a) -- node[above, sloped]{Unimportant Param.} (d);
-					\end{tikzpicture}
-					\caption{Random Search}
-				\end{subfigure}
-				\caption{Comparison of grid search (left) and random search (right). It can be seen that for random search, more (nine) values of the important parameter are tried while when using grid search, only three values are tested.}
-				\label{fig:gridRandomSearch}
-			\end{figure}
+							\path (c) -- node[above, sloped]{Important Param.} (d);
+							\path (a) -- node[above, sloped]{Unimportant Param.} (d);
+						\end{tikzpicture}
+						\caption{Random Search}
+					\end{subfigure}
+					\caption{Comparison of grid search (left) and random search (right). It can be seen that for random search, more (nine) values of the important parameter are tried while when using grid search, only three values are tested.}
+					\label{fig:gridRandomSearch}
+				\end{figure}
 			% end
-			% end
-			% end
+		% end
+	% end
 
 	\section{Ensembles}
 		\emph{Ensembles} leverage multiple simpler models for constructing a single big model with strong prediction power. There are two basic types for ensembles: \emph{Bagging} (Bootstrap Aggregation) and \emph{Boosting}. In bagging, multiple models are trained on samples of the data and a majority vote (for classification) or average (for regression) is used for prediction. In \emph{boosting}, the learners are ordered and training takes place one after another. Then each learner tries to reduce the residual error of the previous trainers on the examples that where misclassified. Bagging usually reduces the variance whereas boosting reduces the bias of the model (and also probably the variance, but this is not true for every model). In both cases, the resulting prediction is a sum or vote of the base learner predictions.
@@ -602,7 +602,7 @@ db1 = np.einsum('ib->i', dL)
 		Usually bagging yields around \SI{2}{\percent} of extra accuracy, so models can be made better but one can not fix a broken model using bagging. Hence, neural networks are fairly often used with bagging. But they are only rarely used with boosting. The reason for this is that deep neural networks usually model global effects and wide networks model local effects, whereas boosting models from global to local. This means that the first models of a boosting sequence models the global effects and later models are used for fine-tuning locally. So boosting with the same network architecture does not yield good results because the shift from global to local is not representable. An open questions is if it is possible to move from deep to wide networks the further the process of boosting gets. The problem that arises in this case is that it is hard to detect whether the next model in a boosting process models global or local properties.
 
 		A common disadvantage of bagging and boosting is of course that it takes longer to train compared to a single model. One trick to circumvent this in bagging is to average multiple model checkpoints, i.e., the weights of a network at different iterations, rather than completely different models.
-		% end
+	% end
 
 	\section{Dropout Regularization}
 		As neural networks have lots of parameters, sometimes more than there is training data, overfitting is a big problem in deep learning. One regularization technique for tackling this is \emph{dropout}. The core concept of dropout is to randomly set some neurons to zero with probability \(p\) for each neuron during the forward pass, disabling them for the prediction. The idea is that this forces the network to learn redundant representations, making it more robust towards changes in the inputs. Another interpretation is that dropout trains a large ensemble of models that share parameters.
@@ -610,7 +610,7 @@ db1 = np.einsum('ib->i', dL)
 		During test time, it would be ideal to integrate out all the noise, but in practice this is obviously intractable. Instead, the result will be approximated using Monte Carlo integration techniques: calculate multiple forward passes using different (random) dropout masks and average all predictions. But in fact this can be done (approximately) with a single forward pass with all neurons being active! To compensate for the inflation caused by roughly \(1/p\) more neurons being active during the fully activated forward pass, all activations have to be scaled by \(p\).
 
 		As scaling the activations at test time reveals details about the training process\footnote{Take, for example, a model that is deployed on lots on end-user devices (like a face detection model). If the developer finds a better way of training that improves the model, but uses dropout, the end-user model would have to be changed just because the training process changed.}, it is also possible to scale the activations by \(1/p\) in the training forward pass. This is called \emph{inverted dropout}.
-		% end
+	% end
 
 	\section{Gradient Clipping}
 		In gradient descent, big gradients cause divergence while small gradients cause slow convergence. As divergence is much worse and gradients can explode pretty fast, a technique called \emph{gradient clipping} can be used. Gradient clipping limits the magnitude of each gradient
@@ -620,7 +620,7 @@ db1 = np.einsum('ib->i', dL)
 		such that \( \lvert \hat{g}_i \rvert \leq g_\mathrm{max} \). Then a decreasing learning rate is used to converge to an optimum. Standard gradient clipping limits the larges gradient dimensions while others max be very small.
 
 		An alternative, \emph{extreme} gradient clipping which is used in AdaGrad and RMSProp scale all dimensions by the inverse standard deviation such that all dimensions have unit standard deviation. An even more extreme approach are one-bit gradients where all gradient dimensions are clipped such that only their sign is left. This actually works on some problems! But usually, gradient clipping is not used this aggressive.
-		% end
+	% end
 
 	\section{Gradient Noise}
 		In stochastic gradient descent, the gradient resulting from the Monte Carlo approximations is noisy, but SGD still makes good progress on average. This gives the idea of whether it might be good to add a little noise to the gradients? Experiments have shown that this is actually the case, reducing overfitting in complex models. Usually the noise is additive
@@ -634,7 +634,7 @@ db1 = np.einsum('ib->i', dL)
 		where \( \eta \in \{ 0.01, 0.3, 1 \} \) and \( \gamma = 0.55 \). This way the noise added to the gradients is reduced over time, producing more stable gradients towards the end.
 
 		Gradient noise raises some interesting theoretical questions as it turns the model parameters into a Bayesian inference task where the noise magnitude controls the temperature of the distribution (higher noise \(\to\) higher temperature). Cf. momentum which reduces the level of detail.
-		% end
+	% end
 
 	\section{Vanishing Gradients and Residual Networks}
 		The \emph{vanishing gradient problem} is like the opposite of exploding gradients: if an activation function like tanh is used which squashes all numbers between zero and one and only produces gradients between zero and one, multiplying many of these numbers together quickly approaches zero. As many activation values and activation function gradients are stacked on top of each other in a deep network, this causes the gradients to \emph{vanish} or \emph{die}. One way to circumvent this is to use \emph{residual networks} with add \emph{skip connections} from one layer to later layers (see \autoref{fig:resNet}).
@@ -657,8 +657,8 @@ db1 = np.einsum('ib->i', dL)
 			\caption{Illustration of the skip connections in a residual network. To compute the gradient of a node with two outgoing connections, the two incoming gradients are added together. It is also possible to add connections that skip more than one layer.}
 			\label{fig:resNet}
 		\end{figure}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Convolutional Neural Networks}
 	While fully connected neural networks (multilayer perceptrons) are extremely powerful, they are not really well suited for processing large images. This is due to the shear amount of parameters that would be needed for the first layers as all pixels are connected to every neuron. But images do not really have a global correlation, the spatial correlation is fairly local! Hence, fully connected layers are just a waste of resources. Instead, \emph{convolutional neural networks} (CNNs) use convolutions from computer vision as learnable filters to extract locally correlated information first and later plugging the downscaled result into fully connected layers for further processing.
@@ -762,7 +762,7 @@ db1 = np.einsum('ib->i', dL)
 
 	\section{Pooling}
 		A \emph{pooling} layer scales the input down by combining multiple pixels into a single pixel (like a convolution), but usually destructive operations like a maximum (known as \emph{max pooling}) are used. In contrast to convolutional layers, pooling layers operate independently on the input channels, producing as many output channels as there are input channels (i.e., the results to not get combined).
-		% end
+	% end
 
 	\section{Case Studies}
 		This section covers some case studies (concrete models) used for certain tasks, usually classification.
@@ -780,7 +780,7 @@ db1 = np.einsum('ib->i', dL)
 				\item Fully connected, \num{84} neurons.
 				\item Fully connected (output), \num{10} neurons.
 			\end{enumerate}
-			% end
+		% end
 
 		\paragraph{AlexNet}
 			AlexNet was proposed by Krizhevsky et al. in 2012 and is more advanced and evolved than LeNet-5:
@@ -800,13 +800,13 @@ db1 = np.einsum('ib->i', dL)
 				\item Fully connected, \num{1000} neurons.
 			\end{enumerate}
 			Further details: AlexNet was the first model to use ReLU activations and used normalization layers which is not common anymore. Furthermore heavy data augmentation was done as well as dropout with \(p = 0.5\).
-			% end
-			% end
+		% end
+	% end
 
 	\section{Transfer Learning}
 		A common saying about CNNs and computer vision tasks in general is that they take a lot of data for training. While is is true for training untrained models, it is possible to use pre-trained models and fine-tune them on the data at hand. This is called \emph{transfer learning}. The idea is to take a trained deep CNN that was, for example, trained on ImageNet and plug an untrained \emph{classification head}, fix all weights of the "body" of the model and only train the weights and biases of the head. This way deep features provided by the pre-trained model can be used as these are utterly effective, but training time and the amount of data needed is still relatively low. If more data is available, it might also be possible to fine-tune some of the convolutional layers for even better accuracy, but this is often not even needed. Tip: use a smaller learning rate for fine-tuning the final layers (around \(1/10\) of the original learning rate) and use even smaller rates for intermediate layers (around \(1/100\) of the original learning rate).
-		% end
-		% end
+	% end
+% end
 
 \chapter{Computer Vision Tasks}
 	This chapter covers tasks that are common in computer vision like classification, localization, and object detection. In classification, the task is to classify a given image based on what is in it. In combined classification and localization, the image is classified and a bounding box is detected around the object that was classified. Object detection describes the same but for multiple objects, so multiple different objects can be classified and localized within an image. In \emph{image segmentation}, the bounding box is extended so a polygon that gets built around the objects. This is the hardest task of the four. \autoref{fig:computerVisionTasks} shows a comparison of the four tasks.
@@ -849,7 +849,7 @@ db1 = np.einsum('ib->i', dL)
 		For localizing multiple objects in an image (e.g. whole face, left ear, right ear, etc.), the regression head can also output \( 4K \) numbers where \(K\) is the number of objects to localize. Compared to object detection, the number of objects that are detected is fixed and there is only one class label for the image. One application is for example human pose estimation where the \(K\) objects represent the \(K\) joints of a human.
 
 		To further optimize the accuracy of the predictions a \emph{sliding window} can be used that slides over the input image and executes the classification and regression network multiple times. The predictions are then combined into a single final prediction. One example model that uses this technique is Overfeat which uses many sliding window locations and multiple scales. Also, the fully connected layers are turned into convolutions for more efficiency.
-		% end
+	% end
 
 	\section{Object Detection}
 		Compared to combined classification and localization, in object detection a variable sized output is necessary. One approach is again using a sliding window which has the disadvantage that the classifier has to be executed lots of times. But if the model is sufficiently fast, this is a good approach. Additionally it is possible to only look at a tiny subset of possible positions using \emph{region proposals}. Region proposals first find "blobby" image regions which probably contain objects and then a classification model is applied to these proposals for detecting objects. This massively reduces the amount of regions that need to be scanned such that powerful, yet resource hungry, models like CNNs can be used. This then forms the \emph{R-CNN} model.
@@ -873,20 +873,20 @@ db1 = np.einsum('ib->i', dL)
 
 			\subsubsection{Fast R-CNN}
 				\emph{Fast R-CNN} is a variant of R-CNN that speeds up predictions at test time by sharing computation of convolutional layers between proposals for an image. Also, to tackle the second and third problem of R-CNNs, the whole model is just trained end-to-end with no complex training pipeline. Compared to vanilla R-CNN, Fast R-CNN is \num{25} times faster at test time.
-				% end
+			% end
 
 			\subsubsection{Faster R-CNN}
 				An even faster version of R-CNN is \emph{Faster R-CNN} where the extraction of regional proposals is done after the convolutional layers using a \emph{region proposal network} (RPN). This works by sliding a small window along the feature map that uses a small network that is used to classify between "object" and "not object" and outputs bounding boxes (which are used for finer localization in reference to the current window).
 
 				To train Faster R-CNN, the original paper proposed an ugly pipeline consisting of alternating optimization of the RPN and all other components. But since then, the community shifted to just training everything jointly using four losses: RPN classification, RPN regression, Fast R-CNN classification, and Fast R-CNN regression. Compared to vanilla R-CNN, Faster R-CNN is \num{250} times faster at test time.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{YOLO: You Only Look Once}
 			The \emph{You Only Look Once} (YOLO) model uses a different approach than R-CNN and interprets object detection as regression. The image is divided into an \(S \times S\) grid and within each cell bounding boxes with four coordinated and their respective confidence as well as \(C\) class scores are calculated. The model than directly predicts these values using a CNN onto a \( 7 \times 7 \times (5 \cdot B + C) \) tensor. The YOLO model is even faster than Faster R-CNN, but the prediction power is not as good.
-			% end
-			% end
-			% end
+		% end
+	% end
+% end
 
 \chapter{Recurrent Neural Networks}
 	Until now, all discussed neural networks all have a clear topological ordering and a sensor of forward and backward and they can only process one input at a time, producing a single output. \emph{Recurrent neural networks} (RNNs) are a generalization of so-called \emph{feedforward networks} to networks that have a notion of "time" by introducing cycles. They are designed for processing a sequence \( \dotsrange{\vec{x}_1}{\vec{x}_n} \) of inputs and producing a sequence \( \dotsrange{\vec{y}_1}{\vec{y}_m} \) of outputs. \autoref{fig:rnnCell} shows a single RNN cell with its hidden state \(\vec{h}_t\) and how it processes a single input \(\vec{x}_t\). The computed hidden state is then stored and used for the next incoming vector.
@@ -1216,8 +1216,8 @@ db1 = np.einsum('ib->i', dL)
 				\caption{Illustration of image captioning using a CNN to initialize the hidden state.}
 				\label{fig:rnnImageCaptioning}
 			\end{figure}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Long Short-Term Memory (LSTM)}
 		One problem with vanilla RNNs is that if the sequences are very long, gradients vanish quickly as the tangent always reduces the gradient values. Also, if the largest Eigenvalue of weight matrix for the hidden state is larger than one, gradient will explode. If it is lower than one, they will vanish. So only for a single Eigenvalue the gradients are stable. \emph{Long short-term memory networks} tackle the problem of vanishing gradients by adding "highway"\footnote{Not to be confused with highway networks!} connections for the gradients. Exploding gradients can be solved by gradient clipping, so the problem is not that severe.
@@ -1363,8 +1363,8 @@ db1 = np.einsum('ib->i', dL)
 			\caption{Illustration of a single LSTM cell.}
 			\label{fig:lstmCell}
 		\end{figure}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Generative Models}
 	In supervised learning (everything discussed) before, the training dataset contains both input data as well as labels for that data and the goal is to learn a function that maps from the former to the latter. In unsupervised ML, the training data only contains "input" data and no labels. The goal here is to learn the underlying structure in the data rather than an explicit mapping. Examples for this are clustering, dimensionality reduction, and density estimation. Hence, unsupervised learning is the "holy grail" of machine learning: being able to learn and detect structure in data without explicitly providing information on this structure would lead to understanding the world.
@@ -1470,7 +1470,7 @@ db1 = np.einsum('ib->i', dL)
 				\caption{Dependencies of pixels as assumed by a PixelRNN. Generation starts from the top left and propagates through the whole image.}
 				\label{fig:pixelrnn}
 			\end{figure}
-			% end
+		% end
 
 		\subsection{Change of Variables}
 			Instead of sampling from the actual distribution \( p(\vec{x}) \), it is possible to learn a mapping \( \vec{y} = \vec{g}(\vec{x}) \) such that
@@ -1480,7 +1480,7 @@ db1 = np.einsum('ib->i', dL)
 			Then sampling can be done from the distribution \( p_{\vec{y}}(\vec{y}) \) instead and the results can be mapped back to the visible space.
 
 			Disadvantages are that the transformation \(\vec{g}(\cdot)\) must be invertible and that the latent dimension must match the real dimension.
-			% end
+		% end
 
 		\subsection{Boltzmann Machine}
 			A \emph{Boltzmann machine} defines the likelihood as
@@ -1489,8 +1489,8 @@ db1 = np.einsum('ib->i', dL)
 				Z          & = \sum_{\vec{x}} \sum_{\vec{z}} \exp\bigl\{ -E(\vec{x}, \vec{z}) \bigr\}
 			\end{align}
 			As this is intractable, sampling requires Markov chain Monte Carlo methods.
-			% end
-			% end
+		% end
+	% end
 
 	\section{Variational Auto-Encoder (VAE)}
 		\label{sec:vae}
@@ -1553,7 +1553,7 @@ db1 = np.einsum('ib->i', dL)
 				\caption{Illustration of a classical auto-encoder.}
 				\label{fig:autoEncoder}
 			\end{figure}
-			% end
+		% end
 
 		\subsection{Model and Evidence Lower Bound}
 			As already seen in the previous section, auto-encoders work well in finding a low-dimensional embedding that explains the data and provides nonlinear mappings into and out of this embedding. A variational autoencoder is now an extension of classical auto-encoders that have a probabilistic interpretation and place a distribution on the latent space such that it can be sampled. Let \( p_{\vec{\theta}^\ast}(\vec{z}) \) be the true prior of the latent dimension and let \( p_{\vec{\theta}^\ast}(\vec{x} \given \vec{z}) \) be the true conditional. Usually the prior is chosen to be simple, e.g. a Gaussian, and the conditional distribution is represented by a neural network. This is called the decoder network and serves a similar purpose as in classical auto-encoders. To train the model, the data likelihood
@@ -1581,7 +1581,7 @@ db1 = np.einsum('ib->i', dL)
 						 & \eqqcolon \mathcal{L}_\mathrm{ELBO}(\vec{x}; \vec{\theta}, \vec{\phi})
 					\end{align}
 					In the second step the integrand was multiplied by one, the third step uses Jensen's inequality, and the rest is just moving around and exploiting of properties of the logarithm.
-					% end
+				% end
 
 				\paragraph{Without Jensen's Inequality}
 					To derive the ELBO without Jensen's inequality, the data likelihood is surrounded by a noop integral which can then be transformed into the ELBO:
@@ -1598,9 +1598,9 @@ db1 = np.einsum('ib->i', dL)
 					The first step adds an integral over \(\vec{z}\) which is valid because \( p_{\vec{\theta}}(\vec{x}) \) does not depend on \(\vec{z}\) and is thus just a multiplicative constant w.r.t. the integral. In the second step the data likelihood is written out using Bayes' rule. The third step multiplies the argument of the logarithm with a one, not changing the overall value. Then, in the fourth step, the integral can be split into three parts by exploiting properties of the logarithm. This yields, in the fifth step, three components: a tractable expectation, a tractable KL-divergence and an intractable KL-divergence. As the latter it always non-negative it can be discarded in the sixth step, yielding the ELBO (seventh step).
 
 					While this derivation is a tad longer than the derivation using Jensen's inequality, it fives some more insights on what the ELBO is actually neglects: the KL-divergence, or distance, between the approximate posterior and the actual posterior. Thus it is possible that optimizing the ELBO does not even closely approximate the true posterior as it is not enforced. But as the first and second part of the ELBO ensure reconstruction and staying close to the prior, respectively, optimizing it usually yields good embeddings.
-					% end
-					% end
-					% end
+				% end
+			% end
+		% end
 
 		\subsection{Training Procedure and Generating Data}
 			To optimize a VAE, the ELBO has to be maximized. This is done by computing a forward pass through the network and both sampling layers and backpropagating through it. As it is not possible to differentiate a sampling procedure per se, a trick called the \emph{reparametrization trick} is used: instead of directly sampling from the encoder distribution, samples are taken from a fixed distribution and are transformed via the sufficient statistics produced by the encoder network. For a Gaussian \( q_{\vec{\phi}}(\vec{z} \given \vec{x}) = \mathcal{N}(\vec{z} \given \vec{\mu}_{\vec{x}}, \mat{\Sigma}_{\vec{x}}) \), where the mean and covariance are produced by the encoder network, the latent variables are not sampled directly from \( q_{\vec{\phi}} \), but an auxiliary variable \( \vec{\epsilon} \) is sampled from a unit Gaussian. This sample is then transformed using the mean and covariance like it has been sampled from the posterior directly:
@@ -1612,14 +1612,14 @@ db1 = np.einsum('ib->i', dL)
 			Here \( \mat{\Sigma}_{\vec{x}}^{1/2} \) is the Cholesky decomposition of the covariance matrix.
 
 			To generate samples from the VAE, it is now possible to just sample from the prior and push the result through the decoder network. When a diagonal prior was used (like it is usually done), the latent variables are independent and different dimensions of \(\vec{z}\) might encode interpretable information about the data. This is also a good feature representation that can be used in subsequent models.
-			% end
+		% end
 
 		\subsection{Pros and Cons}
 			The advantages of VAEs are that they are a principled approach to generative models and allow inference of \( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \) which exhibits useful feature representations for other tasks. Disadvantages are that the maximization of the ELBO work reasonable well, but is not an evaluation metric as good as the density in PixelRNN/PixelCNN. Also the samples are blurrier and of lower quality compared to state-of-the-art generative models (Generative Adversarial Models, GANs).
 
 			But they are extremely flexibly and allow rich approximations of the posterior, also more than Gaussian distributions. They also incorporate structure in the latent variables that allow for interpretability.
-			% end
-			% end
+		% end
+	% end
 
 	\section{Generative Adversarial Networks}
 		\emph{Generative adversarial networks} (GANs) take a step back and give up explicitly modeling the density \( p(\vec{x}) \) in the favor of specializing on generating data. This is done by training two networks jointly: the generator network \( G_{\vec{\theta}_g(\vec{z})} \) which has the only requirement of being differentiable---especially not necessarily invertible---and the discriminator network \( D_{\vec{\theta}_d}(\vec{x}) \) which must also be differentiable. The generator network is used for transforming the \emph{noise vector} \(\vec{z}\), which is usually sampled from a simple distribution, into output data \(\vec{x}\) (often these are images). Hence, it "generates" images. For some theoretical guarantees the noise vector must be of higher dimension than the image dimensionality, but this is not a necessity. The discriminator network then tries to distinguish real and fake images by assigning each input data a probability of it being real.
@@ -1649,7 +1649,7 @@ db1 = np.einsum('ib->i', dL)
 			and the generator tries to estimate the real distribution: \( p_\mathrm{model}(\vec{x}) \approx p_\mathrm{data}(\vec{x}) \). If the generator would be optimal, \( p_\mathrm{model}(\vec{x}) = p_\mathrm{data}(\vec{x}) \), even the optimal discriminator would output \( D(\vec{x}) = 1/2 \), which is equivalent to random guess.
 
 			Two remaining problems of GANs are that optimizing the objective is still unstable which lies in the nature oj jointly training two networks. This is an open area of research! Another problem is the \emph{mode collapse}: fully training the discriminator while the generator is held constant is safe and probably yields a good discriminator. But fully training the generator while the discriminator is fixed results in a generator that maps all inputs to the argmax of the discriminator, overfitting on the current discriminator and exploiting its weaknesses rather than learning to generate good samples. This can partially be fixed by adding nearest-neighbor features to the discriminator that are constructed from the current minibatch (\emph{minibatch GAN}).
-			% end
+		% end
 
 		\subsection{Convolutional Architectures}
 			Convolutional GANs use super-sampling in the generator with convolutions using a fractional stride, i.e., the stride is a fraction and thus pixels are used multiple times, resulting in a activation output volume, and a vanilla CNN architecture for the discriminator. Some more tips for designing CNN GANs are:
@@ -1661,18 +1661,18 @@ db1 = np.einsum('ib->i', dL)
 				\item Use leaky ReLU activations for every layer in the discriminator.
 			\end{itemize}
 			Using CNN architectures as GANs results in high-definition images that look extremely realistic.
-			% end
+		% end
 
 		\subsection{Vector Space Arithmetic}
 			Basic arithmetic on the noise vectors \(\vec{z}\) can yield interesting interpretable results. If, for instance, a noise vector \( \vec{z}_\text{woman} \) generates a woman, \( \vec{z}_\text{man} \) generates a man without glasses, and \( \vec{z}_\text{glasses} \) generates a man with glasses, then \( \vec{z}_\text{glasses} - \vec{z}_\text{man} + \vec{z}_\text{woman} \) results in a woman with glasses. To use these properties it is of course necessary to get the corresponding noise vectors at first. But when using sufficiently low-dimensional noise vectors, finding the correct ones should not be too hard.
-			% end
+		% end
 
 		\subsection{Pros and Cons}
 			A big advantage of GANs is that they generate beautiful, state-of-the-art samples and images. The downsides on the other hand are that they are a lot trickier to train compared to, for example, VAEs and that they can not solve inference queries such as \( p(\vec{x}) \) and \( p(\vec{z} \given \vec{x}) \) as GANs do not model the distributions explicitly.
 
 			Active areas of research regarding GANs are better loss functions that induce a more stable training (Wasserstein GAN, LSGAN, etc.), Conditional GANs for training multi-purpose GANs, and many more.
-			% end
-			% end
+		% end
+	% end
 
 	\section{Optimization and Game Theory}
 		Optimization and game theory are two topics that should not be viewed independently and have lots of links between them. In optimization, the goal is to find a set of parameters \( \vec{\theta}^\ast \) that are optimal w.r.t. some loss \( J(\vec{\theta}) \):
@@ -1711,8 +1711,8 @@ db1 = np.einsum('ib->i', dL)
 		Some heuristics for finding equilibria are to keep the parameter values close to their running average and periodically assign the running average to the parameters. Also add a loss for deviation from the running average.
 
 		Other games in artificial intelligence are for example robust optimization and robust control, domain-adversarial learning for domain adaption, adversarial privacy, guided cost learning, and predictability minimization.
-		% end
-		% end
+	% end
+% end
 
 \chapter{Probabilistic Graphical Models}
 	This chapter introduces \emph{probabilistic graphical models} and \emph{tractable inference}. The core if inference is to answer given queries \(q\), for example "What is the probability that today is a Monday and there is a traffic jam on Herzl Str.?" Instead of fitting a predictive model, inference takes the step of formulating these kinds of queries statistically over a given model \(m\) of the world. The said query could be expressed as the probability \( q(m) = p_{m}(\text{Day} = \text{Monday},\, \text{Jam}_\text{Herzl} = 1) \). Other types of queries are also possible and different types of these will be discussed in \autoref{subsec:queries}.
@@ -1745,7 +1745,7 @@ db1 = np.einsum('ib->i', dL)
 					p_m(\vec{Q} = \vec{q}).
 				\end{equation}
 				This kind of query is essential in maximum likelihood learning where the joint distribution is computed for every data point.
-				% end
+			% end
 
 			\subsubsection{Marginal Queries (MAR)}
 				\emph{Marginal} (MAR) queries ask for the probability of some random variables having specific values. This comes down to evaluating the marginal probability of the said random variables. An example natural language query is
@@ -1761,7 +1761,7 @@ db1 = np.einsum('ib->i', dL)
 					p_m(\vec{Q} = \vec{q}) = \int\! p_m(\vec{Q} = \vec{q}, \vec{H} = \vec{h}) \dd{\vec{h}}
 				\end{equation}
 				with \( \vec{Q} \subseteq \vec{X} \) and \( \vec{H} = \vec{X} \setminus \vec{Q} \).
-				% end
+			% end
 
 			\subsubsection{Conditional Queries (CON)}
 				\emph{Conditional} (CON) queries ask for the probability of some random variables having specific values given that other random variables are known to have specific values. This comes down to evaluating the conditional probability of the said setting. An example natural language query is
@@ -1777,7 +1777,7 @@ db1 = np.einsum('ib->i', dL)
 					p_m(\vec{Q} = \vec{q} \given \vec{E} = \vec{e}) = \frac{p_m(\vec{Q} = \vec{q}, \vec{E} = \vec{e})}{p_m(\vec{E} = \vec{e})}
 				\end{equation}
 				with \( \vec{Q} \subseteq \vec{X} \), \( \vec{E} \subseteq \vec{X} \), and \( \vec{Q} \cap \vec{E} = \emptyset \). As conditional probabilities can be purely expressed using marginals, the ability to answer CON queries follows from the ability of answering MAR queries.
-				% end
+			% end
 
 			\subsubsection{Maximum A-Posteriori (MAP)}
 				\emph{Maximum a-posteriori} (MAP) or \emph{most probable explanation} (MPE) queries ask for the values of some random variables that are most likely given other random variables are known to have specific values. The combination of variables in question and given variables has to be exhaustive. This comes down to evaluating the configuration of the random variables in question that maximizes the posterior probability. An example natural language query is
@@ -1795,7 +1795,7 @@ db1 = np.einsum('ib->i', dL)
 				with \( \vec{Q} \subseteq \vec{X} \), \( \vec{E} \subseteq \vec{e} \), \( \vec{Q} \cap \vec{E} = \emptyset \), and \( \vec{Q} \cup \vec{E} = \vec{X} \).
 
 				These kinds of queries are intractable for latent variable models!
-				% end
+			% end
 
 			\subsubsection{Marginal MAP (MMAP)}
 				\emph{Marginal maximum a-posteriori} (MMAP) queries ask for the values of some random variables that are most likely given other random variables are known to have specific values. The combination of variables in question and given variables dows not have to be exhaustive. This comes down to evaluating the configuration of the random variables in question that maximizes the marginal posterior probability. An example natural language query is
@@ -1814,7 +1814,7 @@ db1 = np.einsum('ib->i', dL)
 				with \( \vec{Q} \cup \vec{H} \cup \vec{E} = \vec{X} \).
 
 				These kinds of queries are \( \mathit{NP}^\mathit{PP} \)-complete, \( \mathit{NP} \)-hard for trees, and even \(\mathit{NP}\)-hard for naive Bayes!
-				% end
+			% end
 
 			\subsubsection{Advanced Queries}
 				More advanced queries might combine several of the ones introduced above, for example
@@ -1830,8 +1830,8 @@ db1 = np.einsum('ib->i', dL)
 					q(m) = \arg\max_{\text{day}} \; p_m\Big(\text{Day} = \text{day},\, \textstyle\bigvee_{i \,\in\, \text{Route}}\displaystyle \text{Jam}_{\text{Str}i} = 1\Big)
 				\end{equation}
 				and the latter needs counts and group comparisons. These kinds of queries can get very complex very fast.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Models}
 			This section will introduce some models in different levels of detail and relate them to the different query types introduces beforehand in terms of tractability and expressiveness.
@@ -1840,7 +1840,7 @@ db1 = np.einsum('ib->i', dL)
 				GANs are powerful generative models that can generate good-looking samples, but they do not serve well for inference. That is due to the lack of an explicit likelihood and hence EVI is not tractable. Also the training is unstable due to the mode collapse and lots of samples are needed for effective Monte Carlo inference.
 
 				Similar goes for VAEs. They serve an explicit likelihood model, but computing \( \log p_{\vec{\theta}}(\vec{x}) \) is intractable as it is an infinite and uncountable mixture of distributions. Hence, EVI is not tractable. Also, the ELBO has to be optimized instead of the real data likelihood which is "broken"\footnote{Alexander Alemi, Ben Poole, Ian Fischer, Joshua Dillon, Rif A. Saurous, and Kevin Murphy (2018): "Fixing a Broken ELBO"}\footnote{Bin Dai and David Wipf (2019): "Diagnosing and Enhancing VAE Models"}.
-				% end
+			% end
 
 			\subsubsection{Mixture Models}
 				\emph{Mixture models} are built by combining multiple simpler models
@@ -1850,7 +1850,7 @@ db1 = np.einsum('ib->i', dL)
 				e.g. Gaussians. They can be seen as a marginalization over a categorical latent variable \(Z\) that describes the amount one of the distributions participates to the mixture model. This increases the expressiveness of the simpler distributions.
 
 				In fact, a mixture of Gaussians can represent any distribution, but this would need lots of Gaussians. This is known as \emph{expressive efficiency}, settings the expressiveness of a model in relation to its complexity/size.
-				% end
+			% end
 
 			\subsubsection{Probabilistic Graphical Models: Markov and Bayes Networks}
 				Probabilistic graphical models are---in a nutshell---a graphical notation for conditional independence assumptions and a compact representation for probability distributions. They utilize graphs where the nodes represent random variables and the edges represent dependencies between them. They divide into three main types: \emph{Markov networks}, \emph{Bayesian networks}, and \emph{factor graphs}. Markov networks and Bayesian networks are closely related with the difference that the edges in Bayesian networks are directed while they are not in Markov networks. Factor graphs are a more general form of PGMs than can represent all kinds of relations, including everything that can be represented using a Markov or Bayesian network.
@@ -1859,7 +1859,7 @@ db1 = np.einsum('ib->i', dL)
 
 				\paragraph{Fully Factorized Models}
 					\emph{Fully factorized models} are PGMs with no connections between the random variables. That is, each random variable is independent from all others and EVI, MAR, MAP, and MMAP inference is linear in time. But these models are definitely not expressive.
-					% end
+				% end
 
 				\paragraph{Bayesian Networks and Variable Elimination}
 					Bayesian networks are digraphs in which every node is a random variable and all parents of that not are dependencies. \autoref{fig:bayesNetExample} shows an example of a Bayesian network that describes the joint distribution
@@ -1923,16 +1923,16 @@ db1 = np.einsum('ib->i', dL)
 						\caption{Variable Elimination}
 						\label{alg:variableElimination}
 					\end{algorithm}
-					% end
+				% end
 
 				\paragraph{Low-Treewidth PGMs: Trees}
 					If in a Bayesian network every random variable has at most one parent, the Bayesian network is a \emph{tree}. Then EVI, MAR, and CON queries can be answered exactly in linear time \( \mathcal{O}( \lvert \vec{X} \rvert ) \). Also, exact learning from \(d\) samples takes \( \mathcal{O}(d \, \lvert \vec{X} \rvert^2) \) with the Chow-Liu algorithm.
 
 					This comes at the cost of not being able to represent rich and complex classes of distributions. In general, bounded-treewidth PGMs lose the ability to represent all possible distributions.
-					% end
-					% end
-					% end
-					% end
+				% end
+			% end
+		% end
+	% end
 
 	\section{Probabilistic Circuits} % 10b.104, 10b.126
 		\emph{Probabilistic circuits} are computational graphs for probabilistic models. They are built from simple distributions as building blocks and summation and multiplication between them.
@@ -2052,7 +2052,7 @@ db1 = np.einsum('ib->i', dL)
 				\item[Structured Decomposability] A product node is structured decomposable if it decomposes according to a node in a binary tree.
 			\end{description}
 			This is a stronger requirement than decomposability and is not necessary for MAR, CON, and MAP queries. But it enables tractability of the \emph{entropy} of the circuit, \emph{symmetric} and \emph{group queries} (exactly \(k\), odd number, more, etc.), and, for the "right" binary tree, also the probability of logical circuit event in a probabilistic circuit, \emph{multiplication} of two probabilistic circuits, \emph{KL-divergence} between two circuits, \emph{same-decision probability}, \emph{expected same-decision probability}, \emph{expected classifier agreement}, and \emph{expected predictions}. But as structure decomposability is a pretty harsh requirement, it is usually not enforced.
-			% end
+		% end
 
 		\subsection{Other Circuits and Circuit Compilation}
 			This section addresses the similarities and differences between probabilistic, logical, and other circuits. The tractable probabilistic inference view exploits efficient summation for decomposable functions in the commutative semi-ring of probabilities, \( (\R, +, \times, 0, 1) \). This is also possible in other semi-rings with generalized operations, \( (\mathbb{S}, \oplus, \otimes, 0_\oplus, 1_\otimes) \). Historically a very well studied semi-ring is the one for boolean functions: \( (\mathbb{B} = \{ 0, 1 \}, \lor, \land, 0, 1) \). These lead to logical circuits which represent logical functions in a compact way. These look the same way as probabilistic circuits, but the nodes are logical ands and ors instead of sums and products. Also similar to probabilistic circuits, it is possible to define structural properties like \emph{decomposability}, \emph{smoothness}, and \emph{determinism} to allow for tractable computations and---in some sense---inference of boolean values.
@@ -2193,7 +2193,7 @@ db1 = np.einsum('ib->i', dL)
 					\caption{Steps of compiling the probabilistic tree in \autoref{fig:probTree} into a probabilistic circuit. The distribution node with a \(\odot\) described the binary distribution that outputs \num{0} if the condition below the node holds and \num{1} otherwise. Hence, the nodes \( A = 0 \) and \( A = 1 \) are mutually exclusive and determinism holds (similar for the others).}
 					\label{fig:probTreeCirc1}
 				\end{figure}
-				% end
+			% end
 
 			\subsubsection{Equivalent and Related Formulations}
 				As trees, polytrees and thin junction trees can be turned into decomposable, smooth, and deterministic probabilistic circuits, they all support tractable EVI, MAR, CON, and MAP queries. The same goes for arithmetic circuits (ACs) which are also decomposable, smooth, and deterministic.
@@ -2204,9 +2204,9 @@ db1 = np.einsum('ib->i', dL)
 					\item \emph{Probabilistic sentential decision diagrams} (PSDDs): These are also \emph{structured} decomposable, smooth, and deterministic. Hence, EVI, MAR, CON, MAP, and also complex queries are tractable!
 				\end{itemize}
 				As probabilistic circuits are so diverse and expressive, they belong to the most expressive while still tractable models!
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
 
 	\section{Building Circuits} % 10a.39
 		After discussing probabilistic circuits and seeing how expressive and expression efficient they are, the next big question is how to build these circuits tractably because usually the circuits are not given but the shall be learned from data. The first step is to define a \emph{tractable learner}: a learner \(L\) is \emph{tractable} for a class of queries \(\mathcal{Q}\) if and only if
@@ -2227,11 +2227,11 @@ db1 = np.einsum('ib->i', dL)
 					= \arg\max_{\vec{\theta}, \vec{w}} \; \prod_{d \in \mathcal{D}} p_{\vec{\theta}, \vec{w}}(d).
 				\end{equation}
 				With determinism, the likelihood decomposes over the parameters and the optimization problem has a closed-form solution.
-				% end
+			% end
 
 			\subsubsection{Hard/Soft Parameter Updating: Gradient Descent and EM}
 				Optimizing the parameters via gradient descent is simply done by computing the gradient of the likelihood and applying standard optimization techniques. For using EM, each summing node is considered as the marginalization over a hidden variable that is estimated in the E-step.
-				% end
+			% end
 
 			\subsubsection{Bayesian Parameter Learning}
 				In \emph{Bayesian} parameter learning, a prior \( p(\vec{w}) \) is put on the weights of the circuit. Then the posterior
@@ -2246,21 +2246,21 @@ db1 = np.einsum('ib->i', dL)
 
 				\paragraph{Moment Matching (oBMM)}
 					The posterior is approximated with a tractable distribution after each update that matches some moments of the exact, but intractable, posterior. The joint \(p(\vec{w})\) is approximated by a product of Dirichlet distributions and the first and second moment of each marginal \(p(\vec{w}_i)\) are used to set the parameters \(\alpha_i\) of each Dirichlet.
-					% end
+				% end
 
 				\paragraph{oBMM Extended}
 					Uses continuous models with Gaussian leavers.
-					% end
+				% end
 
 				\paragraph{CVB-SPN}
 					Uses a collapsed variational inference algorithm and produces better results than oBMM.
-					% end
+				% end
 
 				\paragraph{Sequential Monomial Approximation and Concave-Convex Procedure}
 					Any complete and decomposable circuit can be transformed into a mixture of trees where each tree corresponds to a product of univariate distributions. \emph{Sequential monomial approximation} learns the parameters based on a maximum likelihood estimator which can be formulated as a sigmonial program. This program can equivalently be transformed into a different of convex functions, yielding the \emph{concave-convex procedure}.
-					% end
-					% end
-					% end
+				% end
+			% end
+		% end
 
 		\subsection{Structure Learning}
 			Instead of "just" learning the parameters of a probabilistic circuit, \emph{structure learning} algorithms address the problem of learning the structure of the circuit, i.e., the connections between the nodes.
@@ -2273,50 +2273,50 @@ db1 = np.einsum('ib->i', dL)
 				A variant of LearnSPN is ID-SPN which starts with a single arithmetic circuit (AC) that represents a tractable Markov network. The process of clustering instances and variables for sum and product nodes is then stopped before the process reaches univariate distributions. These are replaced by a learned tractable MN represented by an AC factorizing multiple distributions. This creates an SPN with tractable multivariate distributions as leaves, so-called Markov network arithmetic circuits (MN AC).
 
 				Another variant is \emph{bottom-up learning} which start from a simple model over a small variable scope and increase this model successively over a larger variable scope guided by dependence tests and a maximum mutual information principle. Other variants are \emph{greedy for deterministic circuits} and \emph{graph SPNs} which transform the network as a hill climbing algorithm using split and merge operations and form tree SPNs my merging similar sub-structures, respectively.
-				% end
+			% end
 
-				% TODO: PGMs: Building Circuits: Structure Learning; 10b.150--10b.160, 10b.161--19b.162, 10b.166--10b.168
+			% TODO: PGMs: Building Circuits: Structure Learning; 10b.150--10b.160, 10b.161--19b.162, 10b.166--10b.168
 
-				%			\paragraph{Cut(e)set Network}
-				%				\emph{Cut(e)set networks} use likelihood decompositions for learning the parameters and for structure learning start with a single tractable model and substitute leaf nodes with the best CNet which improves all likelihood decompositions.
-				%			% end
-				%
-				%			\paragraph{PSDD Structure Learning}
-				%				\emph{PSDD structure learning} learning a binary tree where the leaves are labeled with variables and the internal nodes split the variables into those appearing in the left and those appearing in the right sub-tree. Learning takes place in a bottom-up or top-down fashion max maximizing the pairwise MI instead of the joint MI.
-				%			% end
-				%
-				%			\paragraph{LearnPSDD}
-				%				\emph{LearnPSDD} incrementally improves the structure of a PSDD to better fit the data. Learning continuous until the log-likelihood on the validation data set converges or a desired time or size limit is reached. In every step the structure is changed by executing an operation that is greedily chosen based on the best likelihood improvement per size increment.
-				%			% end
-				%
-				%			\paragraph{Learning Logic Circuits}
-				%				To learn logic circuits, the values and parameters are propagated bottom-up. For parameter learning, due to decomposability and determinism, any logic circuit model can be reduced to a logistic regression model over some features. For structure learning, split operations like in LearnPSDD are performed.
-				%			% end
+			%			\paragraph{Cut(e)set Network}
+			%				\emph{Cut(e)set networks} use likelihood decompositions for learning the parameters and for structure learning start with a single tractable model and substitute leaf nodes with the best CNet which improves all likelihood decompositions.
+			%			% end
+			%
+			%			\paragraph{PSDD Structure Learning}
+			%				\emph{PSDD structure learning} learning a binary tree where the leaves are labeled with variables and the internal nodes split the variables into those appearing in the left and those appearing in the right sub-tree. Learning takes place in a bottom-up or top-down fashion max maximizing the pairwise MI instead of the joint MI.
+			%			% end
+			%
+			%			\paragraph{LearnPSDD}
+			%				\emph{LearnPSDD} incrementally improves the structure of a PSDD to better fit the data. Learning continuous until the log-likelihood on the validation data set converges or a desired time or size limit is reached. In every step the structure is changed by executing an operation that is greedily chosen based on the best likelihood improvement per size increment.
+			%			% end
+			%
+			%			\paragraph{Learning Logic Circuits}
+			%				To learn logic circuits, the values and parameters are propagated bottom-up. For parameter learning, due to decomposability and determinism, any logic circuit model can be reduced to a logistic regression model over some features. For structure learning, split operations like in LearnPSDD are performed.
+			%			% end
 
-				%			\paragraph{Bayesian Structure Learning} % 10b.156
-				%				\todo{Content}
-				%			% end
-				%
-				%			\paragraph{Automatic Bayesian Density Analysis (ABDA)} % 10b.157, 10b.158
-				%				\todo{Content}
-				%			% end
-				%
-				%			\paragraph{Bayesian SPNs} % 10b.159, 10b.160
-				%				\todo{Content}
-				%			% end
-				%
-				%			\paragraph{Randomized Structure Learning: RAT-SPNs} % 10b.161, 19b.162
-				%				\todo{Content}
-				%			% end
-				%
-				%			\paragraph{Extremely Randomized CNets: XCNets} % 10b.166, 10b.167
-				%				\todo{Content}
-				%			% end
-				%
-				%			\paragraph{Online Learning} % 10b.168
-				%				\todo{Content}
-				%			% end
-				% end
+			%			\paragraph{Bayesian Structure Learning} % 10b.156
+			%				\todo{Content}
+			%			% end
+			%
+			%			\paragraph{Automatic Bayesian Density Analysis (ABDA)} % 10b.157, 10b.158
+			%				\todo{Content}
+			%			% end
+			%
+			%			\paragraph{Bayesian SPNs} % 10b.159, 10b.160
+			%				\todo{Content}
+			%			% end
+			%
+			%			\paragraph{Randomized Structure Learning: RAT-SPNs} % 10b.161, 19b.162
+			%				\todo{Content}
+			%			% end
+			%
+			%			\paragraph{Extremely Randomized CNets: XCNets} % 10b.166, 10b.167
+			%				\todo{Content}
+			%			% end
+			%
+			%			\paragraph{Online Learning} % 10b.168
+			%				\todo{Content}
+			%			% end
+		% end
 
 		\subsection{Ensembles of Probabilistic Circuits}
 			To solve issues like the tendency of overfitting of probabilistic circuits and to improve accuracy of a single model, probabilistic circuits an be used in an ensemble in the form of a mixture model
@@ -2328,10 +2328,10 @@ db1 = np.einsum('ib->i', dL)
 			A better alternative for using circuit ensembles is bagging which is more efficient than EM. For training the circuits the mixture components are all set equally probable and are then learned independently on different bootstraps. To make these models even more efficient, random subspace projects can be added (like for CNets).
 
 			It is also possible to boost probabilistic circuits. One method the \emph{boosting density estimation} (BDE) which works like AdaBoost and combined models in the form \( f_m = (1 - \eta_m) f_{m - 1} + \eta_m c_m \) where \(f_m\) is the \(m\)-th model, \(c_m\) is the current weak learner and \(\eta_m\) is the weight of that learner. Another method is GBDE which is kernel-based. It is also possible to use sequential EM which jointly optimized \(\eta_m\) and \(c_m\) while keeping \(f_{m - 1}\) fixed.
-			% end
+		% end
 
-			% TODO: PGMs: Building Circuits: Knowledge Compilation; 10b.169, 10b.170, 10b.171, 10b.172, 10b.173
-			% end
+		% TODO: PGMs: Building Circuits: Knowledge Compilation; 10b.169, 10b.170, 10b.171, 10b.172, 10b.173
+	% end
 
 	\section{Applications}
 		This sections shows some of the applications of tractable inference and probabilistic graphical models in general.
@@ -2381,7 +2381,7 @@ db1 = np.einsum('ib->i', dL)
 		%		\paragraph{And more\dots} % 10b.190
 		%			\todo{Content}
 		%		% end
-		% end
+	% end
 
 	\section{Takeaways and Open Challenges}
 		The three primary challenges in probabilistic graphical models are:
@@ -2394,8 +2394,8 @@ db1 = np.einsum('ib->i', dL)
 				Learn tractable models with millions of datapoints and thousands of feature in tractable time.
 		\end{enumerate}
 		The takeaways are that tractability is a spectrum and there are more and less tractable models, it is possible to be both tractable and expressive at the same time (probabilistic circuits), probabilistic circuits are the foundation for tractable inference and learning, and that there is still a lot more to do.
-		% end
-		% end
+	% end
+% end
 
 \chapter{Natural Language Processing}
 	\emph{Natural language processing} (NLP) is concerned with processing, interpreting, and translating naturally spoken or written text. This chapter will cover some parts of natural language understanding in form of the underlying semantics (\autoref{sec:textSemantics}) as well as translation and structure extraction (\autoref{sec:translation}).
@@ -2417,7 +2417,7 @@ db1 = np.einsum('ib->i', dL)
 
 			% TODO: NLP: Prop. Semantics; 11.12, 11.13, 11.14
 			% TODO: NLP: Prop. Semantics: Contemporary Approaches; 11.6, 11.7, 11.8, 11.9, 11.10, 11.11
-			% end
+		% end
 
 		\subsection{Vector Representation}
 			The second approach to semantic analysis are vector embedding of words. These are based on a notion of \emph{similarity} and are based on the definition of paradigmatic similarity: similar words occur in similar contexts and are exchangeable. Word embeddings are vectors in a high dimensional vector space usually use a bag-of-words, for example:
@@ -2438,7 +2438,7 @@ db1 = np.einsum('ib->i', dL)
 				Given a document \(\vec{t}\), i.e., a row of \(\mat{T}\), \( \vec{v} = \mat{V} \vec{t} \) is an embedding of the document in the latent space and \( \vec{t}' = \mat{U}^T \vec{v} = \mat{U}^T \mat{V} \vec{t} \) is the decoding from its embedding. The latent space can then be used to compute similarities between documents.
 
 				Note how singular value decomposition of the term frequency matrix is used in order to compute the most relevant Eigenvectors for the embedding. This is similar to principal component analysis which essentially does the same thing, but on the covariance matrix. Also, as PCA first normalizes the data, it looses the sparseness of the factorized matrix, making it infeasible for large bag-of-words.
-				% end
+			% end
 
 			\subsubsection{Word2Vec}
 				As opposed to latent semantic analysis, \emph{word2vec} does not use entire documents but only a few positions before and after a word to determine its local context. The pairs of these words are called \emph{skip-grams}. For example, if three context words are used\footnote{Three to five words are usual.}, the {\color{TUDa-9b} red} word is the center word and the {\color{TUDa-1b} blue} words are the context words:
@@ -2456,7 +2456,7 @@ db1 = np.einsum('ib->i', dL)
 					\mathrm{vec}(\text{"woman"}) - \mathrm{vec}(\text{"man"}) \approx \mathrm{vec}(\text{"queen"}) - \mathrm{vec}(\text{"king"})
 				\end{equation}
 				These kinds of relations can be found a lot when analyzing the results from word2vec models.
-				% end
+			% end
 
 			\subsubsection{Skip-Thought Embeddings}
 				All vector representation models discussed before only capture bag-of-words, i.e., the order of how words appear is neglected. But order matters! Take for example the two sentences "dog bites man" and "man bites dog": they have opposite meanings. \emph{Skip-though embeddings} use many-to-many RNNs for predicting the next and previous sentence. The hidden state after the complete sentence was entered into the RNN (but before the prediction started) is then used as the vector embedding. Once the RNN is trained, the two prediction heads can be discarded. \autopageref{fig:skipThoughtVector} illustrates this.
@@ -2569,13 +2569,13 @@ db1 = np.einsum('ib->i', dL)
 					\caption{Illustration of the RNN that backs skip-thought embeddings. The text below the nodes represent inputs to the RNN cell, the text above represents the output. Gray nodes are the input cells, green and blue are the prediction for the previous and next sentence, respectively. The hidden state of the surrounded cell is used as the embedding. "EOS" stands for "end of sentence".}
 					\label{fig:skipThoughtVector}
 				\end{figure}
-				% end
+			% end
 
 			\subsubsection{Siamese Networks}
 				\emph{Siamese networks} utilize two recurrent neural networks (usually LSTMs) that share theirs parameters. It is trained by inputting two different sentences into each RNN and combining them using the Manhattan distance. This produces a similarity measure \(y\). The training data contains pairs of sentences that are labeled with a similarity measure such that well-known backpropagation and gradient descent can be used for training the Siamese network.
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
 
 	\section{Translation Models}
 		\label{sec:translation}
@@ -2671,8 +2671,8 @@ db1 = np.einsum('ib->i', dL)
 			\caption{Illustration of machine translation using a many-to-many RNN. Again, "EOS" stands for "end of sentence".}
 			\label{fig:rnnTranslation}
 		\end{figure}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Attention and Transformers}
 	\label{c:attention}
@@ -2696,25 +2696,25 @@ db1 = np.einsum('ib->i', dL)
 		where \( e_{ij} = a(\vec{s}_{i - 1}, \vec{h}_j) \) is the \emph{alignment score} which is a learnable function. The vector \(\vec{s}_{i - 1}\) the hidden state of the RNN cell right before emitting the output\footnote{Dzmitry Bahdanau, Kyunghyun Cho, and Yoshua Bengio (2015): "Neural Machine Translation by Jointly Learning to Align and Translate"}. The soft attention models are extremely powerful and it only took one year for them to reach the state-of-the-art after release. Currently they are surpassing any preexisting translation models.
 
 		% TODO: Attention: Global/Local; 12.24, 12.25, 12.26
-		% end
+	% end
 
 	\section{Attention for Captioning}
 		It is also possible to use attention for image captioning. Here the output of a CNN is used an interpreted as stacked features which are then weighted according to the attention. This enables the image captioning system (a RNN) to look at different parts of the image for different words. A similar procedure can be used for video data.
 
 		When using soft attention, the features are summed up and weighted according the (normalized) attention. In hard attention, a features is sampled from according to the (normalized) attention which form a probability distribution. But as sampling is not differentiable, one might resort to using the feature with the maximum attention instead. Nevertheless the derivative of this will be zero, killing all subsequent gradients, hence no learning via gradient descent is possible. That is why reinforcement learning is needed in this case and why soft attention is preferred.
-		% end
+	% end
 
 	\section{Attending to Arbitrary Regions}
 		Attending according to the original paper "Show, Attend, and Tell" (Xu et al., 2015) only allows attending for regions on a fixed grid---but would not attending to arbitrary regions be better? It was shown by Graves et al. in 2013 that it is possible to attend to arbitrary regions by predicting the parameters of a mixture model. \emph{DRAW} (Gregor et al., 2015) can classify images by attending to arbitrary images of the input and can also generated images by attending to arbitrary regions of the output.
 
 		Another attention mechanism are \emph{spatial transformer networks} (Jaderberg, 2015). They try to find a mapping between the coordinated of in- and output pixels. Repeating this for all pixels in the output yields a sampling grid. Then a bilinear transformation is used to compute the output.
-		% end
+	% end
 
 	\section{Transformer Networks}
 		\emph{Transformer networks} where originally introduced by Vaswani et al. in 2017 in a paper called "Attention is all you need". They propose an encoder-decoder architecture that is purely based on attention and does not utilize any recurrence. The core idea is that of \emph{multihead attention}, meaning that multiple attentions are computed per query with different weights. Additionally layer normalization is added which normalizes the values of each layer to have zero mean and unit variance\footnote{Note that this is different to batch normalization which normalizes all batches to have zero mean and unit variance.}. This reduces the covariate shift and therefore reduces training time. Also codes for the position of an input are added as otherwise self-attention layers would have no notion of order.
 
 		Compared to RNNs, transformer networks are much more efficient as everything can be computed in parallel as compared to sequential models. Also the maximum path length is reduced, reducing the problem of vanishing gradients. The transformer network achieves better results in machine translation and natural language generation than every previous state-of-the-art model. Example models that use transformers are GPT, GPT-2, and BERT.
-		% end
+	% end
 
 	\section{Takeaways}
 		\begin{description}
@@ -2723,5 +2723,5 @@ db1 = np.einsum('ib->i', dL)
 			\item[Explainability] Attention can yield more interpretability by seeing where the model looks.
 			\item[Hard vs. Soft]  Soft models are generally easier to train; hard models require reinforcement learning. But they can also be combined (Luong et al., 2015).
 		\end{description}
-		% end
-		% end
+	% end
+% end

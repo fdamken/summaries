@@ -26,14 +26,14 @@
 			\caption{Illustration of the model predictive control cycle.}
 			\label{fig:mpcCycle}
 		\end{figure}
-		% end
+	% end
 
 	\section{What is Machine Learning?}
 		While there is no unified definition of machine learning, it is often used to describe systems that use a bunch of data to find relations/patterns/connections/\dots in them and to extract general rules. Typical methods are neural networks, Gaussian processes, support vector machines, and many more. In control, the applications of machine learning are twofold: first, it can be used to find a model and use the model in a model-based controller (supervised learning and regression); second, this step can also be skipped and ML can be applied directly as the controller (usually covered in reinforcement learning).
 
 		Machine learning for MPC is covered in detail in \autoref{c:ml}.
-		% end
-		% end
+	% end
+% end
 
 \chapter{Preliminaries}
 	This chapter covers some preliminaries required to understand the upcoming chapters.
@@ -62,7 +62,7 @@
 					\vec{f}(\vec{x}, \vec{u}; t) \approx \vec{f}(\bar{\vec{x}}, \bar{\vec{u}}; t) + \Biggl( \pdv{\vec{f}}{\vec{x}}\bigg\vert_{\vec{x} = \bar{\vec{x}}} \Biggr) (\vec{x} - \bar{\vec{x}}) + \Biggl( \pdv{\vec{f}}{\vec{u}}\bigg\vert_{\vec{u} = \bar{\vec{u}}} \Biggr) (\vec{u} - \bar{\vec{u}})
 				\end{equation}
 				By cutting off the higher-order terms, this yields a linear approximation.
-				% end
+			% end
 
 			\subsubsection{Time-Discrete}
 				A \emph{time-discrete} nonlinear system is represented by a dynamics equation
@@ -81,8 +81,8 @@
 					\vec{x}_{k + 1} \approx \vec{x}_k + h \dot{x}
 				\end{equation}
 				This is, in fact, equivalent to Euler's method for solving an initial value problem.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Stability} % 2.29, 12.4
 			One of the fundamental properties studied in dynamical systems theory is \emph{stability}. Stability describes the asymptotic behavior of a system: a system is either asymptotically stable, instable, or marginally stable. All of these variants can also occur in a \emph{ringing} configuration where the system oscillates between different values (see \autoref{fig:stability}). Usually, the goal of control is to stabilize an unstable system.
@@ -114,7 +114,7 @@
 					= \underbrace{(\mat{A} - \mat{B} \mat{K})}_{\eqqcolon\, \tilde{\mat{A}}} \vec{x}_k.
 				\end{equation}
 				Hence, the eigenvalues (also called \emph{poles}) can be placed arbitrarily by modifying \(\mat{K}\) and henceforth \(\tilde{\mat{A}}\) which defines stability.
-				% end
+			% end
 
 			\subsubsection{Lyapunov Stability and Lyapunov Function}
 				For nonlinear systems, multiple or even infinite or no equilibrium points might exist, making characterization of stability difficult. One option is \emph{Lyapunov stability}:
@@ -151,8 +151,8 @@
 				\end{theorem}
 
 				However, finding these Lyapunov functions is generally hard. For systems derived from first order principles, the energy of the system is generally a good candidate for a Lyapunov function worth checking. Other methods for checking stability are, for example, Nyquist and Routh-Hurwitz stability.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Detectability, Observability, Controllability, and Stabilizability}
 			As seen before, the eigenvalues of linear systems can be placed using a linear control law. However, being able to control a system like this has some requirements: first, the system must be \emph{observable} (i.e., the states must be known, either by observing them directly of by reconstructing them from the measurements). Second, the system must be \emph{controllable} (i.e., the states must be directly or indirectly influenced by the control inputs). As milder condition to stabilize a system is stabilizability requiring that at least the unstable states must be influenceable\footnote{Note that stabilizability is milder as it does not allow to steer the system to arbitrary states.}.
@@ -196,8 +196,8 @@
 				\end{equation}
 				The system is stabilizable iff \( \rank \begin{bmatrix} \lambda \mat{I} - \mat{A} & \mat{b} \end{bmatrix} = n \).
 			\end{theorem}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Linear Quadratic Regulator}
 		This section introduces the linear quadratic regulator (LQR), an unconstrained optimal control method for simple linear systems. Of course, to perform optimal control, a notion of \emph{optimality} has to be defined. This definition also defines the overall objective of the controller. Some notions are:
@@ -218,7 +218,7 @@
 			encoding a terminal cost, minimum time, and minimum energy, respectively (from left to right). The last cost has to be augmented for continuous problems by replacing the sum with an integral, indicated by \( \simeq \). Note that these functions can be combined, e.g., by defining an energy cost and a terminal cost. Also note that \(L\) in the energy cost is pretty general and might even represent quantities aside from energy.
 
 			In a \emph{regulation}, the desired setpoint \(\vec{x}_d\) is constant (and usually zero by shifting the coordinates appropriately) and does not depend on time. The goal is therefore to stabilize the system at the desired state. With \emph{tracking}, the setpoint is time-variant and the goal is to steer the system to follow the trajectory (trajectory tracking).
-			% end
+		% end
 
 		\subsection{LQR Formulation}
 			In the LQR setting, a linear time-discrete system along with a quadratic cost function
@@ -235,7 +235,7 @@
 				\label{eqn:lqr}
 			\end{align}
 			In the upcoming sections, this problem is solved in two different fashions.
-			% end
+		% end
 
 		\subsection{Batch Optimization}
 			\label{subsec:batchOpt}
@@ -289,7 +289,7 @@
 			with \( \mat{H} = \tilde{\mat{B}}^\transposed \tilde{\mat{Q}} \tilde{\mat{B}} + \tilde{\mat{R}} \) and \( \mat{F} = \tilde{\mat{A}}^\transposed \tilde{\mat{Q}} \tilde{\mat{B}} \).
 
 			However, while this approach is simplistic, it a major caveat: no feedback is involved (the control signals just depend on the initial value, i.e., it is an open-look controller). Hence, if the real system deviates from the model, the control inputs might be suboptimal or even harmful. This problem is addressed by the next solution method which also exploits the special structure of the problem.
-			% end
+		% end
 
 		\subsection{Dynamic Programming}
 			As seen before, applying batch optimization---while being straightforward---is not ideal as the solution does not incorporate the system's feedback. An alternative approach is to use \emph{dynamic programming}. The underlying idea of dynamic programming is that partial trajectories of trajectories are optimal, too. In other words: a trajectory composed of partial optimal ones is optimal. A relevant quantity for solving LQR with this principle is the optimal \emph{cost to go}, also called the \emph{value function}:
@@ -315,7 +315,7 @@
 				-\dot{\mat{P}}(t) = \mat{P}(t) \mat{A} + \mat{A}^\transposed \mat{P}(t) - \mat{P}(t) \mat{B} \mat{R}^{-1\,} \mat{B}^\transposed \mat{P}(t) + \mat{Q}  \tag{CARE}\label{eqn:care}
 			\end{equation}
 			The optimal cost is again \( J_t^\ast\bigl(\vec{x}(t)\bigr) = \vec{x}^\transposed(t) \mat{P}(t) \vec{x}(t) \). For an infinite horizon, all of this becomes again time-invariant with \( \dot{\mat{P}} = \mat{O} \), turning \eqref{eqn:care} again into al algebraic equation.
-			% end
+		% end
 
 		\subsection{Stability}
 			\begin{theorem}[Stability of the Time-Discrete LQR with Infinite Horizon]
@@ -332,8 +332,8 @@
 			\end{proof}
 
 			Note that for finite-horizon LQR, the optimal input is not necessarily stabilizing!
-			% end
-			% end
+		% end
+	% end
 
 	\section{Constrained Static Optimization}
 		\label{sec:staticOpt}
@@ -390,12 +390,12 @@
 				\todo{Proof of global optimality of convex optimization problems.}
 
 				To check convexity of an optimization problem, it usually suffices to look at the objective and constraints separately due to the properties of convex sets, namely that the intersection of two convex sets is still convex. If all constraints are convex, their respective (sub-) level sets are convex too, and hence the feasibility set is convex.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Quadratic Programming}
 			If the objective function is a quadratic function \( J(\vec{u}) = \vec{u}^\transposed \mat{Q} \vec{u} + \vec{q}^\transposed \vec{u} + r \) with \( \mat{Q} \in \R^{n \times n} \), \( \mat{Q} \succeq 0 \), \( \vec{q} \in \R^n \), and \( r \in \R \) and the constraints are affine, the problem is called q \emph{quadratic program} (QP). For QPs, the optimal \(\vec{u}^\ast\) is either inside the feasible set or at its boundary. If the inequality constraints are quadratic and convex, too, the problem is called a \emph{quadratically constrained quadratic program} (QCQP) and the feasible set is an intersection of the ellipsoids defined by the constraints. Quadratic programs are a friendly class of problems for which many efficient solvers exist.
-			% end
+		% end
 
 		\subsection{Optimality Conditions for Constrained Optimization Problems} % 4.22
 			The optimality conditions for constrained optimization problems use the (generalized) Lagrangian:
@@ -427,7 +427,7 @@
 				\end{equation}
 				If this inequality is strict, this condition is also \emph{sufficient.}
 			\end{theorem}
-			% end
+		% end
 
 		\subsection{Numerical Solvers}
 			A variety of numerical solvers exist for constrained optimization problems, and especially fast solvers exist for QPs (e.g., Matlab's \texttt{quadprog} and \texttt{fmincon}). Some approaches are interior point, trust region, and active set, and the class of sequential quadratic programming (SQP) methods\footnote{See "Optimization of Static and Dynamic Systems" (\url{https://fabian.damken.net/summaries/cs/elective/ce/opt/}) for a more thorough study of numerical optimization techniques}.
@@ -435,9 +435,9 @@
 			SQP methods use a Taylor approximation of the objective (quadratic) and constraints (linear) to solve the optimization problem. By applying this method multiple times, it usually converges to a good local minimum. Another method for dealing with constraints is to reformulate them and integrate them into the objective by using barrier functions and penalty terms: penalty methods add a term \(\epsilon(\vec{u})\) to the objective that has a high values once a constraint is violated, forcing the optimizer to look elsewhere. Common choices for such a barrier term are logarithmic barrier functions and exact penalty functions. An alternative method is to allow the constraints to be violated. This is done by introducing a slack variable \( \vec{H}(\vec{u}) \leq \epsilon \) and penalize it in the objective with a function \( \Theta(\epsilon) \), e.g., a quadratic function in \(\epsilon\)
 
 			\todo{Numerical Solvers; 6.23, 6.24, ..., 6.32}
-			% end
-			% end
-			% end
+		% end
+	% end
+% end
 
 \chapter{Nominal Model Predictive Control}
 	\label{c:mpcNominal}
@@ -529,7 +529,7 @@
 				\begin{proof}
 					\todo{Proof of stability of linear MPC; 5.25, 5.26, 5.27}
 				\end{proof}
-				% end
+			% end
 
 			\subsubsection{Terminal Inequality}
 				To fix the problems introduced by a terminal equality constraint (namely that ht feasible set of initial conditions is small), this section extends the terminal set to have more than a single value. For discusses which properties the terminal set has to fulfill, a few definitions are needed beforehand:
@@ -556,9 +556,9 @@
 				\begin{proof}
 					\todo{Proof of stability of linear MPC; 5.32, 5.35, 5.36}
 				\end{proof}
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
 
 	\section{Solving MPC Problem}
 		Until now, (nominal) MPC was studied from a rather theoretical perspective without actually solving it. This sections deals with two methods for reformulating a (linear) MPC problem in a quadratic program that can be solved efficiently. For nonlinear MPC, the prevalent approach is to approximate the problem locally to get quadratic optimization problems. Reformulating the optimal control problem as a QP can be done in two versions: with and without substituting the dynamics.
@@ -609,7 +609,7 @@
 				\label{eqn:qpA}
 			\end{equation}
 			with \( \mat{H} = \tilde{\mat{B}}^\transposed \tilde{\mat{Q}} \tilde{\mat{B}} + \tilde{\mat{R}} \), \( \mat{F} = \tilde{\mat{A}}^\transposed \tilde{\mat{Q}} \tilde{\mat{B}} \), and \( \mat{G} = \tilde{\mat{A}}^\transposed \tilde{\mat{Q}} \tilde{\mat{A}} \).
-			% end
+		% end
 
 		\subsection{Option B: Adding the Dynamics as Constraints}
 			The second approach is to extend the optimization variables by the states,
@@ -668,13 +668,13 @@
 				\label{eqn:qpB}
 			\end{equation}
 			A comparison of the two methods is given in the next section.
-			% end
+		% end
 
 		\subsection{Comparison of A and B}
 			Both presented versions, \eqref{eqn:qpA} and \eqref{eqn:qpB}, can be efficiently solved by QP solvers. The main difference is that option A has \(Nm\) variables (with \(m\) input dimensionality) and option B has \(N (n + m)\) variables (with \(n\) being the state dimensionality). While it seems that option A must be more efficient, option B has sparse cost and constraint functions while option A is dense. Note also that option B has the advantage that it can easily be applied to nonlinear MPC.
-			% end
-			% end
-			% end
+		% end
+	% end
+% end
 
 \chapter{Robust Model Predictive Control}
 	\label{c:mpcRobust}
@@ -752,7 +752,7 @@
 			\end{aligned}
 		\end{equation}
 		While this formulation is straightforward and easy to implement, it is extremely hard to solve due to the nested optimizations. Hence, it is slow and hardly applicable in real-time and thus has very few practical applications. However, current research on approximations on bilevel optimization might enhance applicability in the future.
-		% end
+	% end
 
 	\section{Robust Open-Loop MPC}
 		\label{sec:robustOpenLoopMpc}
@@ -798,7 +798,7 @@
 			A set \(S\) is \emph{robustly positively invariant} for a system \( \vec{x}_{k + 1} = \vec{f}(\vec{x}_k, \vec{w}_k) \) if \( \vec{f}(\vec{x}, \vec{w}) \in \mathcal{S} \) holds for all \( \vec{x} \in \mathcal{S} \) and \( \vec{w} \in \mathcal{W} \).
 		\end{definition}
 		By choose the terminal set to be robustly positively invariant, feasibility can be shown: the computed trajectory is feasible for any disturbances, and hence it is feasible for the actual observation. However, the primary problem of robust open-loop is that the feasible initial set becomes very small or even empty as the uncertainty prediction becomes very wide. Hence, the "tube" of feasible values becomes small.
-		% end
+	% end
 
 	\section{Tube MPC}
 		\label{sec:tubeMpc}
@@ -849,8 +849,8 @@
 		is solved in every instance \(i\), and subsequently the control input \( \vec{u}^i = \vec{v}_0^\ast + \mat{K} (\vec{x}^i - \vec{z}^i) \) is applied to the system. Note that the gain \(\mat{K}\) and all constraint sets can be computed beforehand as they are independent of \(\vec{x}^i\) and \(i\) itself. Additionally, the terminal cost and constraints have to be adjusted to obtain stability which is not covered here.
 
 		By adding the additional feedback controller, the uncertainty tubes are kept small and therefore the feasible sets are bigger.
-		% end
-		% end
+	% end
+% end
 
 \chapter{Stochastic Model Predictive Control}
 	\label{c:mpcStochastic}
@@ -871,11 +871,11 @@
 			\E[\vec{x}] \in \tilde{\mathcal{X}}
 		\end{equation}
 		with \( \tilde{\mathcal{X}} = \mathcal{X} \ominus \mathcal{R} \) where \(\mathcal{R}\) is constructed based on the variance\footnote{For instance, with \( n = 1 \) and \( p_x = 0.95 \), the set is \( \mathcal{R} = [-2 \sigma_x, 2 \sigma_x] \) with \( w \sim \mathcal{N}(0, \sigma_x^2) \).}.
-		% end
+	% end
 
 	\section{Stochastic Tube MPC}
 		Similar to robust open-loop MPC (\autoref{sec:robustOpenLoopMpc}), stochastic MPC with chance constraints suffers from the uncertainty tubes getting very wide and the feasibility set shrinks. \emph{Stochastic tube MPC} is analogous to tube MPC (\autoref{sec:tubeMpc}) and used an additional linear feedback law for controlling the tube size. As before, the state tightening is chosen such that the constraints are satisfied with a given probability. The input constraints, on the other hand, are still deterministic and shall be fulfilled in a deterministic sense, i.e., without chance constraints.
-		% end
+	% end
 
 	\section{Outlook}
 		Stochastic MPC is a broad field and this chapter only touched the tip of the iceberg. For example: in a nonlinear system model, the states will in general not be normally distributed anymore even if the noise is Gaussian. Propagating uncertainties through such a nonlinear system is still open research. Some ideas are:
@@ -886,8 +886,8 @@
 			\item and many more\dots
 		\end{itemize}
 		Also, stability and recursive feasibility are an open end, too: due to the probabilistic nature, also recursive feasibility may be lost. Discussing these properties requires extensions to probabilistic convergence.
-		% end
-		% end
+	% end
+% end
 
 \chapter{Machine Learning in Model Predictive Control}
 	\label{c:ml}
@@ -958,14 +958,14 @@
 				When training offline, i.e., before the control law is deployed, the training can be time-consuming as it does not have to be executed in real time. However, MPC has to deal with nonlinear dynamics as powerful ML models are usually nonlinear. Also, during training, it has be be made sure that the model is continuously differentiable, a proper MPC-ML-model combination is chosen (e.g., if the model is good, use nominal MPC; if it is bad, use robust or stochastic MPC), and real-time feasibility of the prediction is ensured.
 
 				Overall, this is the most boring method of combining MPC and ML.
-				% end
+			% end
 
 			\subsubsection{Online Learning}
 				In online learning, the training data is collected while running the controller (cf. adaptive control and adaptive MPC) making it possible to adapt the model fast and easy when the situation changes. However, it is quite resource remanding as the training phase is done online. Also, the model accuracy is not known beforehand, making it hard to guarantee stability or robustness. One idea of guaranteeing stability or robustness is to have a fallback controller that is not learning-based which can take over if learning-based MPC fails. Another approach is to directly design a robust MPC that can handle changing models.
 
 				\paragraph{Safe Sets}
 					\emph{Safe sets} implement the first approach with an alternative "safe" controller: if the state is inside a \emph{safe set} \(\mathcal{S}\), learning-supported MPC is used. If it is not, a \emph{safe controller} \( \pi_\mathcal{S}(\vec{x}) \) that guarantees invariance of \(\mathcal{S}\) takes over. To find such a set, the sublevel set \( L_\alpha^- \) of a Lyapunov function \(V(\vec{x})\) of the closed-loop system \( \dot{\vec{x}} = \vec{f}\bigl( \vec{x}, \pi_\mathcal{S}(\vec{x}) \bigr) \) can be used.
-					% end
+				% end
 
 				\paragraph{Learning-Supported Tube MPC}
 					For robust learning-supported tube MPC, two models are used: one which is never updated, incorporates (additive) uncertainty, and is used to ensure constraint satisfaction and one which is updated online and is used for increase performance:
@@ -982,26 +982,26 @@
 							\end{aligned}
 						\end{aligned}
 					\end{equation}
-					% end
-					% end
+				% end
+			% end
 
 			\subsubsection{Iterative Learning}
 				In iterative learning, the same task is performed repeatedly and the model is updated between the batches by training with the data collected in the previous batch. This has the benefit of no real-time requirements and being able to evaluate the model before deploying it. Iterative learning can also be used to update different parts of the optimal control problem (e.g., reference and constraints).
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Learning Constraints}
 			Usually, the constraints are known (e.g., actuator limitations, safety regulations, desired operating range). But the constraints can be learned, too. For example, the tightening of the constraints can be learned by modeling the model uncertainties. Another special case is learning the terminal regions by incorporating previous trajectories.
-			% end
+		% end
 
 		\subsection{Learning Cost Functions}
 			Like constraints, the cost function is usually known as it is a pure design decision, does not reflect a physical property, and can be chosen freely. Hence, for simplicity, it is usually chosen to be a quadratic cost. In some special cases, it might be beneficial to learn the costs from data. Some methods are approximating the infinite horizon cost with reinforcement learning, updating the cost in between batches, and training a neural network to learn the cost from demonstrations.
-			% end
+		% end
 
 		\subsection{Learning Control Input: Replacing MPC}
 			When the control input is learned directly, this basically completely replaces MPC with ML. This faces the main drawback of MPC that it is time-consuming. One way of replacing MPC completely is by running MPC offline and training a ML model (e.g., a neural network) to directly map states to the optimal input. This model can then be deployed online allowing fast control.
-			% end
-			% end
+		% end
+	% end
 
 	\section{Gaussian Processes}
 		This section introduces \emph{Gaussian processes} (GPs), a ML model with great applicability and outstanding capabilities of uncertainty estimation\footnote{Note that the treatment of GPs is quite limited here. See Rasmussen and Williams: "Gaussian Processes for Machine Learning" for a very thorough treatment.}. A GP works with a dataset \( \mathcal{D} \coloneqq \{ (\vec{\xi}_i, \gamma_i)_{i = 1, 2, \dots, n} \} \) which contains features \(\vec{\xi}_i \in \R^d\) and corresponding labels \(\gamma_i \in \R\) generated from an unknown function \( \vec{f} : \R^d \to \R \) with Gaussian noise \( \epsilon \sim \mathcal{N}(0, \sigma_n^2) \), i.e., \( \gamma_i = \mathcal{N}\bigl(f(\vec{\xi}_i), \sigma_n^2\bigr) \). To simplify the further discussion, the data is organized into matrices and vectors:
@@ -1032,7 +1032,7 @@
 					k(\vec{\xi}, \vec{\xi}') = \sigma_f^2 \exp\biggl\{ -\frac{\lvert \vec{\xi} - \vec{\xi}' \rvert^2}{2 \ell^2} \biggr\}
 				\end{equation}
 				with \emph{signal variance} \( \sigma_f^2 \) and \emph{length scale} \( \ell^2 \). Due to its infinite differentiability, it yields very smooth functions. The signal variance just scales the covariance and therefore the vertical output scale without changing the mean and the length scale control smoothness, i.e., a short length scale exhibits rough functions.
-				% end
+			% end
 
 			\paragraph{Squared Exponential with Automatic Relevance Determination}
 				By assigning a separate length scale to each input,
@@ -1040,7 +1040,7 @@
 					k(\vec{\xi}, \vec{\xi}') = \sigma_f^2 \exp\biggl\{ -\frac{1}{2} (\vec{\xi} - \vec{\xi}')^\transposed \mat{\Lambda}^{-1} (\vec{\xi} - \vec{\xi}') \biggr\},
 				\end{equation}
 				with \( \mat{\Lambda} = \diag(\ell_1^2, \ell_2^2, \dots, \ell_d^2) \), learning the length scale affects the influence of the separate input dimensions on the output. That is, the inverse length scale \( \ell_i^{-2} \) can be understood as weighting factors of the corresponding dimensions.
-				% end
+			% end
 
 			\paragraph{Periodic Kernel}
 				The periodic kernel
@@ -1048,7 +1048,7 @@
 					k(\vec{\xi}, \vec{\xi}') = \sigma_f^2 \exp\biggl\{ -\frac{2 \sin^2\bigl( (\vec{\xi} - \vec{\xi}') / p \bigr)}{\ell^2} \biggr\}
 				\end{equation}
 				introduces periodicity and is thus useful for modeling periodic functions. Like the SE kernel, it yields very smooth functions.
-				% end
+			% end
 
 			\paragraph{Linear Kernel}
 				The linear kernel
@@ -1056,12 +1056,12 @@
 					k(\vec{\xi}, \vec{\xi}') = \sigma_b^2 + \sigma_f^2 \frac{(\vec{\xi} - c)^\transposed (\vec{\xi}' - c)}{\ell^2}
 				\end{equation}
 				yields affine functions with an offset \(c\) where \( \sigma_b^2 \) introduces a bias in \(c\).
-				% end
+			% end
 
 			\paragraph{Many, Many More}
 				There are much more kernels useful for different things, e.g., Matérn, dot product, rational quadratic, etc.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{GP Prediction}
 			To predict new values with a GP, the distribution is condition on the training data. That is, first a joint distribution
@@ -1088,7 +1088,7 @@
 				\sigma_\ast^2 & = k(\mat{\Xi}_\ast, \mat{\Xi}_\ast) - k(\mat{\Xi}_\ast, \mat{\Xi}) k^{-1}(\mat{\Xi}, \mat{\Xi}) k(\mat{\Xi}, \mat{\Xi}_\ast)
 			\end{align}
 			For no observation noise, the predictions now perfectly match the training data, i.e., the conditioning points.
-			% end
+		% end
 
 		\subsection{Hyper-Parameter Optimization}
 			To find the optimal hyper-parameters, gradient ascent is performed on the log-likelihood:
@@ -1099,7 +1099,7 @@
 				\underbrace{-\frac{n}{2} \log(2\pi)}_\text{Normalization}
 			\end{equation}
 			This is based on the assumption that the posterior over the parameters is sharply peaked around the optimum and hence the posterior can be approximated by the exact value (called \emph{empirical Bayes}).
-			% end
+		% end
 
 		\subsection{Advantages and Drawbacks}
 			A major drawback of GPs is the computationally expensive matrix inversion in the posterior computation (which is cubic in the number of data points). This large resource demand limits the online applicability of GPs. But sometimes, the various advantages outweigh the drawbacks:
@@ -1111,14 +1111,14 @@
 				\item Gaussian processes are somewhat robust towards overfitting
 				\item automatic relevance determination can eliminate input dimensions that are irrelevant
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Dynamic Process Models}
 			So far, only GPs with a one-dimensional output have been considered. But in a state-space model, often multiple dimensions are needed. Often, the simple approach of training as many independent GPs as the problem has dimensions is used. This ignores the correlation between outputs, but reduces the computational effort that would be required for multi-dimensional GPs.
 
 			In MPC, GPs are usually used to incorporate the uncertainty estimation into stochastic MPC to tighten the constraints. However, propagating the uncertainty more than one time step is challenging and an open research topic. Hence, usually only the mean is propagated (mean prediction) and the uncertainty estimation is taken from a single step only.
-			% end
-			% end
+		% end
+	% end
 
 	\section{(Artificial) Neural Networks}
 		Artificial neural networks are---in their pure form---a relatively simple yet powerful way to approximate any function\footnote{Like before, this is not a thorough study. See "Deep Learning: Architectures and Methods" (\url{https://fabian.damken.net/summaries/cs/elective/iws/dlam/}) for a deeper (haha) treatment.}. This chapter just lists some advantages and drawbacks and leaves the detailed discussion to the aforementioned document.
@@ -1136,11 +1136,11 @@
 			\item training of large networks is hard (local minima, vanishing gradient, exploding gradient, \dots)
 			\item interpretation is hard; hence, neural networks have to be tested on unseen data
 		\end{itemize}
-		% end
+	% end
 
 	\section{Reinforcement Learning vs. MPC}
 		In reinforcement learning, the past data is used to improve the future behavior of an agent. Compared to MPC, reinforcement learning usually works with discrete states and transition probabilities, i.e., incorporates noise in the system by inherently assuming that state transitions are probabilistic. Also, it usually does not assume a model (model-free reinforcement learning). A big problem, however, is to generate the data that can be used for trial-and-error as a robot shall not perform dangerous actions during exploration but needs to explore them to see that they are bad.
 
 		Some years ago, the trend went towards replacing everything physical with machine learning. Nowadays, incorporating prior knowledge from physics and first principles into control and combining control theory with ML gets a lot more attention. In the future, both fields should be considered unified opposed to clearly separated.
-		% end
-		% end
+	% end
+% end

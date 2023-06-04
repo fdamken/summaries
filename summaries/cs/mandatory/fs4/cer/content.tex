@@ -3,44 +3,174 @@
 
 	\section{Beispiele} % 1.11, 1.12, 1.13, 1.14, 1.15
 		\todo{Content}
-		% end
+	% end
 
 	\section{Was ist ein Roboter?} % 1.17, 1.18
 		\todo{Content}
 
 		\subsection{Funktionale Anforderungen} % 1.24, 1.25
 			\todo{Content}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Was ist Robotik?} % 1.19, 1.20
 		\todo{Content}
-		% end
+	% end
 
 	\section{Typischer Aufbau eines Roboterarms/-beins} % 1.21, 2.9
 		\todo{Content}
-		% end
+	% end
 
 	\section{Begriffe} % 1.28
 		\todo{Content}
 
 		\subsection{Simulation} % 1.29, 1.30
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Modell} % 1.31, 1.32, 1.33
 			\todo{Content}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Aufgaben einer Simulation} % 1.51
 		\todo{Content}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Mathematische Grundlagen und Notation} % 2.15
-	\section{Vektoren} % 2.16
-		\paragraph{Vektor}
+\section{Vektoren} % 2.16
+\paragraph{Vektor}
+\begin{equation*}
+	p =
+	\begin{bmatrix}
+		p _ x \\
+		p _ y \\
+		p _ z
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		p _ 1 \\
+		p _ 2 \\
+		p _ 3
+	\end{bmatrix}
+	\in \mathbb{R} ^ 3 = \mathbb{R} ^ { 3 \times 1 } \tag{Spaltenvektor}
+\end{equation*}
+
+\paragraph{Nullvektor}
+\begin{equation*}
+	0 =
+	\begin{bmatrix}
+		0 \\
+		0 \\
+		0
+	\end{bmatrix}
+\end{equation*}
+
+\paragraph{Transponierter Vektor}
+\begin{equation*}
+	p ^ T =
+	\begin{bmatrix}
+		p _ 1 & p _ 2 & p _ 3
+	\end{bmatrix}
+	\in \mathbb{R} ^ { 1 \times 3 } \tag{Zeilenvektor}
+\end{equation*}
+
+\paragraph{(Euklidische) Norm eines Vektors}
+\begin{equation*}
+	\lVert p \rVert = \sqrt{p _ 1 ^ 2 + p _ 2 ^ 2 + p _ 3 ^ 2}
+\end{equation*}
+
+\paragraph{Skalarprodukt zweier Vektoren \( p, r \in \mathbb{R} ^ 3 \)}
+\begin{equation*}
+	\langle p, r \rangle = p ^ T p = p _ 1 r _ 1 + p _ 2 r _ 2 + p _ 3 r _ 3
+\end{equation*}
+
+\paragraph{Orthogonale Vektoren \( p \perp r \)}
+\begin{equation*}
+	\langle p, r \rangle = p ^ T r = 0
+\end{equation*}
+
+\paragraph{Winkel \( \Phi \) zwischen zwei Vektoren \( p, r \)}
+	\begin{equation*}
+		\cos(\Phi) = \frac{p ^ T r}{\lVert p \rVert \cdot \lVert r \rVert}
+	\end{equation*}
+% end
+
+\section{Matrizen} % 2.17, 2.18, 2.19, 2.20
+\paragraph{\( (3 \times 3) \)-Matrix}
+\begin{equation*}
+	R =
+	\begin{bmatrix}
+		r _ { 1 1 } & r _ { 1 2 } & r _ { 1 3 } \\
+		r _ { 2 1 } & r _ { 2 2 } & r _ { 2 3 } \\
+		r _ { 3 1 } & r _ { 3 2 } & r _ { 3 3 }
+	\end{bmatrix}
+	\in \mathbb{R} ^ { 3 \times 3 }
+\end{equation*}
+
+\paragraph{Transponierte Matrix}
+\begin{equation*}
+	R ^ T =
+	\begin{bmatrix}
+		r _ { 1 1 } & r _ { 2 1 } & r _ { 3 1 } \\
+		r _ { 1 2 } & r _ { 2 2 } & r _ { 3 2 } \\
+		r _ { 1 3 } & r _ { 2 3 } & r _ { 3 3 }
+	\end{bmatrix}
+	\in \mathbb{R} ^ { 3 \times 3 }
+\end{equation*}
+
+\paragraph{Einheitsmatrix}
+\begin{equation*}
+	I = E =
+	\begin{bmatrix}
+		1 & 0 & 0 \\
+		0 & 1 & 0 \\
+		ß & 0 & 1
+	\end{bmatrix}
+	\in \mathbb{R} ^ { 3 \times 3 }
+\end{equation*}
+
+\paragraph{Nullmatrix}
+\begin{equation*}
+	0 =
+	\begin{bmatrix}
+		0 & 0 & 0 \\
+		0 & 0 & 0 \\
+		0 & 0 & 0
+	\end{bmatrix}
+	\in \mathbb{R} ^ { 3 \times 3 }
+\end{equation*}
+
+\paragraph{Inverse Matrix \( R ^ { -1 } \)}
+\begin{equation*}
+	R R ^ { -1 } = E = R ^ { -1 } R
+\end{equation*}
+
+\paragraph{Orthonormale Matrizen}
+	Für orthonormale (orthogonale und normierte) Matrizen gilt
+	\begin{equation*}
+		R R ^ T = E \implies R ^ T = R ^ { -1 }
+	\end{equation*}
+	Außerdem gilt für orthonormale Matrizen:
+	\begin{equation*}
+		1 = \det(E) = \det(R R ^ T) = \det(R) \det(R ^ T) = (\det(R)) ^ 2 \implies \abs{\det(R)} = 1
+	\end{equation*}
+	Orthonormale Matrizen mit \( \det(R) = +1 \) heißen \textit{Rechtssystem}, orthonormale Matrizen mit \( \det(R) = -1 \) heißen \textit{Linkssystem}.
+% end
+
+\section{Koordinatensysteme} % 2.21
+	\begin{itemize}
+		\item Koordinatensystem dienen der Beschreibung von \textit{Position} und \textit{Orientierung} von Robotergelenken, Endeffektoren, Objekten in der Umgebung u.v.m..
+		\item Oftmals werden \textit{kartesische Rechtskoordinatensysteme} verwendet.
+		\item Die Vektoren \( e _ x, e _ y, e _ z \in \mathbb{R} ^ 3 \), welche das Koordinatensystem aufspannen, sind zueinander orthogonale Einheitsvektoren, das heißt sie bilden eine Basis von \( \mathbb{R} \).
+	\end{itemize}
+% end
+
+\section{Positionsvektor eines Punktes} % 2.22
+	\begin{itemize}
+		\item Die Position eines Punktes im Raum kann durch einen \textit{Positionsvektor} angegeben werden.
+		\item Im dreidimensionalen euklidischen Raum ist dies ein Vektor
 			\begin{equation*}
 				p =
 				\begin{bmatrix}
@@ -48,344 +178,214 @@
 					p _ y \\
 					p _ z
 				\end{bmatrix}
+				= p _ x e _ x + p _ y e _ y + p _ z e _ z
+			\end{equation*}
+		\item \textbf{Notation:} Bei einem Punktvektor relativ zu einem Koordinatensystem \( S _ a \), wird dies mit \( ^a p \) notiert.
+	\end{itemize}
+% end
+
+\section{Räumliche Anordnung eines Objektes} % 2.23, 2.24
+	\begin{itemize}
+		\item Zur Beschreibung der Lage eines Objektes wird ein \textit{lokales Koordinatensystem} erstellt, welches fest mit dem Objekt verbunden ist.
+		\item Die Lage dieses Koordinatensystems \( S _ b \) wird mit \( ^ae_x, ^ae_y, ^ae_z \) bezüglich des äußeren Koordinatensystems \( S _ a \) angegeben.
+		\item So entstehen durch Verschiebung (Translation) und Verdrehung (Rotation) neue Koordinatensysteme.
+	\end{itemize}
+% end
+
+\section{Klassische Transformationsbeziehungen} % 2.25
+	\begin{itemize}
+		\item Eine \textit{klassische Transformationsbeziehung} beim Wechsel von Punktkoordinaten bezüglich \( S _ a \) zu \( S _ b \) wir mit getrennter Translation und Rotation durchgeführt:
+			\begin{equation*}
+				^ap = \,^ar_b + \,^aR_b \,^bp
+			\end{equation*}
+		\item \( ^ar_b \) beschreibt die Translation zwischen \( S _ a \) und \( S _ b \).
+		\item \( ^aR_b \) beschreibt die Rotation zwischen \( S _ a \) und \( S _ b \).
+		\item Die Koordinaten der Einheitsvektoren in \( S _ b \) dargestellt in \( S _ a \) entsprechen den Spalten der Rotationsmatrix \( ^aR_b \).
+			\begin{equation*}
+				^aR_b =
+				\begin{bmatrix}[c|c|c]
+					^ae_{xb} & ^ae_{yb} & ^ae_{zb}
+				\end{bmatrix}
+			\end{equation*}
+	\end{itemize}
+% end
+
+\section{Homogene Transformationsbeziehungen} % 2.26
+	\label{sec:homogeneMatrix}
+
+	\begin{itemize}
+		\item Statt einer klassischen Transformation kann auch eine \textit{homogene Transformation} durchgeführt werden.
+		\item Diese Nutzt nur eine Matrix für die Translation und die Rotation.
+			\begin{equation*}
+				^a\hat{p} =
+				\begin{bmatrix}
+					^ap \\ \hline
+					1
+				\end{bmatrix}
 				=
-				\begin{bmatrix}
-					p _ 1 \\
-					p _ 2 \\
-					p _ 3
+				\begin{bmatrix}[ccc|c]
+					  & ^aR_b &   & ^ar_b \\ \hline
+					0 & 0     & 0 & 1
 				\end{bmatrix}
-				\in \mathbb{R} ^ 3 = \mathbb{R} ^ { 3 \times 1 } \tag{Spaltenvektor}
-			\end{equation*}
-
-		\paragraph{Nullvektor}
-			\begin{equation*}
-				0 =
+				\cdot
 				\begin{bmatrix}
-					0 \\
-					0 \\
-					0
+					^bp \\ \hline
+					1
 				\end{bmatrix}
+				= \,^aT_b \cdot \,^b\hat{p}
 			\end{equation*}
+		\item Die \textit{homogene Transformationsmatrix} wird als \( ^aT_b \) bezeichnet.
+	\end{itemize}
+% end
 
-		\paragraph{Transponierter Vektor}
-			\begin{equation*}
-				p ^ T =
-				\begin{bmatrix}
-					p _ 1 & p _ 2 & p _ 3
-				\end{bmatrix}
-				\in \mathbb{R} ^ { 1 \times 3 } \tag{Zeilenvektor}
-			\end{equation*}
+\section{Lösungsansätze für mathematische Modelle} % 1.61, 1.62
+	Zur Lösung von mathematischen Modellen gibt mehrere Möglichkeiten:
+	\begin{description}
+		\item[Analytisch] Das Problem mit exakt gelöst, es sind keine Vereinfachungen/Näherungen nötig. Dies ist nur in wenigen Fällen (effizient) möglich.
+		\item[Heuristisch] \enquote{Trial \& Error} gemäß einer bestimmten Strategie, vor allem nützlich bei Problemen der diskreten Optimierung.
+		\item[Direkt-Numerisch] Der numerische Algorithmus liefert exakte Lösungen (mglw. mit Rundungsfehlern). Dies ist ein klarer Algorithmus und eine Heuristik mehr, das Erreichen des Ziels ist stets sichergestellt.
+		\item[Approximativ-Numerisch] Iterative Näherungsverfahren für angenäherte Beziehungen (Gleichungen). Dies stellt den häufigsten Fall der Lösungsstrategien dar und ist der Hauptbestandteil der numerischen Simulation.
+	\end{description}
 
-		\paragraph{(Euklidische) Norm eines Vektors}
-			\begin{equation*}
-				\lVert p \rVert = \sqrt{p _ 1 ^ 2 + p _ 2 ^ 2 + p _ 3 ^ 2}
-			\end{equation*}
+	Analytische und Heuristische Verfahren werden im Vergleich zu den numerischen Verfahren selten eingesetzt, da die meisten Probleme analytisch zu schwer zu lösen sind und Heuristiken für die meisten Probleme nicht oder nur langsam konvergieren.
+% end
 
-		\paragraph{Skalarprodukt zweier Vektoren \( p, r \in \mathbb{R} ^ 3 \)}
-			\begin{equation*}
-				\langle p, r \rangle = p ^ T p = p _ 1 r _ 1 + p _ 2 r _ 2 + p _ 3 r _ 3
-			\end{equation*}
+\section{Numerik} %  
+	\subsection{Grundlegende Numerische Verfahren}
+		\todo{Content}
 
-		\paragraph{Orthogonale Vektoren \( p \perp r \)}
-			\begin{equation*}
-				\langle p, r \rangle = p ^ T r = 0
-			\end{equation*}
+		% Vorwärtsdifferenzenquotient
+		% Rückwärtsdifferenenquotient
+		% Quadratregel
+		% Trapezregel
+	% end
 
-		\paragraph{Winkel \( \Phi \) zwischen zwei Vektoren \( p, r \)}
+	\subsection{Lösung nichtlinearer Gleichungsmodelle} % 2.53
+		\paragraph{Aufgabe}
+			Punkte \( x _ s \in \mathbb{R} ^ n \) finden, sodass
 			\begin{equation*}
-				\cos(\Phi) = \frac{p ^ T r}{\lVert p \rVert \cdot \lVert r \rVert}
+				F(x _ s) = 0 \iff
+				\begin{matrix}
+					F _ 1 (x _ 1, \cdots, x _ n) = 0 \\
+					\vdots                           \\
+					F _ n (x _ 1, \cdots, x _ n) = 0
+				\end{matrix}
 			\end{equation*}
-			% end
+			erfüllt ist.
 
-	\section{Matrizen} % 2.17, 2.18, 2.19, 2.20
-		\paragraph{\( (3 \times 3) \)-Matrix}
-			\begin{equation*}
-				R =
-				\begin{bmatrix}
-					r _ { 1 1 } & r _ { 1 2 } & r _ { 1 3 } \\
-					r _ { 2 1 } & r _ { 2 2 } & r _ { 2 3 } \\
-					r _ { 3 1 } & r _ { 3 2 } & r _ { 3 3 }
-				\end{bmatrix}
-				\in \mathbb{R} ^ { 3 \times 3 }
-			\end{equation*}
-
-		\paragraph{Transponierte Matrix}
-			\begin{equation*}
-				R ^ T =
-				\begin{bmatrix}
-					r _ { 1 1 } & r _ { 2 1 } & r _ { 3 1 } \\
-					r _ { 1 2 } & r _ { 2 2 } & r _ { 3 2 } \\
-					r _ { 1 3 } & r _ { 2 3 } & r _ { 3 3 }
-				\end{bmatrix}
-				\in \mathbb{R} ^ { 3 \times 3 }
-			\end{equation*}
-
-		\paragraph{Einheitsmatrix}
-			\begin{equation*}
-				I = E =
-				\begin{bmatrix}
-					1 & 0 & 0 \\
-					0 & 1 & 0 \\
-					ß & 0 & 1
-				\end{bmatrix}
-				\in \mathbb{R} ^ { 3 \times 3 }
-			\end{equation*}
-
-		\paragraph{Nullmatrix}
-			\begin{equation*}
-				0 =
-				\begin{bmatrix}
-					0 & 0 & 0 \\
-					0 & 0 & 0 \\
-					0 & 0 & 0
-				\end{bmatrix}
-				\in \mathbb{R} ^ { 3 \times 3 }
-			\end{equation*}
-
-		\paragraph{Inverse Matrix \( R ^ { -1 } \)}
-			\begin{equation*}
-				R R ^ { -1 } = E = R ^ { -1 } R
-			\end{equation*}
-
-		\paragraph{Orthonormale Matrizen}
-			Für orthonormale (orthogonale und normierte) Matrizen gilt
-			\begin{equation*}
-				R R ^ T = E \implies R ^ T = R ^ { -1 }
-			\end{equation*}
-			Außerdem gilt für orthonormale Matrizen:
-			\begin{equation*}
-				1 = \det(E) = \det(R R ^ T) = \det(R) \det(R ^ T) = (\det(R)) ^ 2 \implies \abs{\det(R)} = 1
-			\end{equation*}
-			Orthonormale Matrizen mit \( \det(R) = +1 \) heißen \textit{Rechtssystem}, orthonormale Matrizen mit \( \det(R) = -1 \) heißen \textit{Linkssystem}.
-			% end
-
-	\section{Koordinatensysteme} % 2.21
-		\begin{itemize}
-			\item Koordinatensystem dienen der Beschreibung von \textit{Position} und \textit{Orientierung} von Robotergelenken, Endeffektoren, Objekten in der Umgebung u.v.m..
-			\item Oftmals werden \textit{kartesische Rechtskoordinatensysteme} verwendet.
-			\item Die Vektoren \( e _ x, e _ y, e _ z \in \mathbb{R} ^ 3 \), welche das Koordinatensystem aufspannen, sind zueinander orthogonale Einheitsvektoren, das heißt sie bilden eine Basis von \( \mathbb{R} \).
-		\end{itemize}
+			Sämtliche Gleichungen können in diese Form überführt werden.
 		% end
 
-	\section{Positionsvektor eines Punktes} % 2.22
-		\begin{itemize}
-			\item Die Position eines Punktes im Raum kann durch einen \textit{Positionsvektor} angegeben werden.
-			\item Im dreidimensionalen euklidischen Raum ist dies ein Vektor
-				\begin{equation*}
-					p =
-					\begin{bmatrix}
-						p _ x \\
-						p _ y \\
-						p _ z
-					\end{bmatrix}
-					= p _ x e _ x + p _ y e _ y + p _ z e _ z
-				\end{equation*}
-			\item \textbf{Notation:} Bei einem Punktvektor relativ zu einem Koordinatensystem \( S _ a \), wird dies mit \( ^a p \) notiert.
-		\end{itemize}
-		% end
+		\subsubsection{Fixpunktiteration} % 2.55, 2.56, 2.57
+			\begin{itemize}
+				\item Die Fixpunktiteration ist ein einfacher Algorithmus, um einen Fixpunkt einer Funktion zu finden.
+				\item Somit muss die Gleichung \( F(x) = 0 \) in eine Fixpunktgleichung \( x = g(x) \), bspw. \( g(x) \coloneqq F(x) + x \) umgebaut werden.
+				\item Es muss außerdem ein Startwert \( x _ 0 \) gegeben sein, welcher eine Näherung der Lösung darstellt.
+				\item Dann gilt für die Iteration:
+					\begin{equation*}
+						x_ { k + 1 } \coloneqq g(x _ k) \quad\quad\quad k \in \mathbb{N}
+					\end{equation*}
+				\item Das Verfahren terminiert, wenn es nahe genug bei der Lösung ist, die maximale Iterationsanzahl erreicht ist oder kein Fortschritt ersichtlich ist.
+				\item Konvergenzbedingung: Sei \( x _ s = g(x _ s) \), dann muss \( x _ 0 \) nahe genug bei \( x _ s \) liegen und alle Eigenwerte von \( \frac{\partial g}{\partial x} (x _ s) \) müssen im Einheitskreis liegen (d.h. \( \forall \lambda : \abs{\lambda} < 1 \)). \\ Dann konvergiert \( x _ k \rightarrow x _ s \).
+			\end{itemize}
 
-	\section{Räumliche Anordnung eines Objektes} % 2.23, 2.24
-		\begin{itemize}
-			\item Zur Beschreibung der Lage eines Objektes wird ein \textit{lokales Koordinatensystem} erstellt, welches fest mit dem Objekt verbunden ist.
-			\item Die Lage dieses Koordinatensystems \( S _ b \) wird mit \( ^ae_x, ^ae_y, ^ae_z \) bezüglich des äußeren Koordinatensystems \( S _ a \) angegeben.
-			\item So entstehen durch Verschiebung (Translation) und Verdrehung (Rotation) neue Koordinatensysteme.
-		\end{itemize}
-		% end
-
-	\section{Klassische Transformationsbeziehungen} % 2.25
-		\begin{itemize}
-			\item Eine \textit{klassische Transformationsbeziehung} beim Wechsel von Punktkoordinaten bezüglich \( S _ a \) zu \( S _ b \) wir mit getrennter Translation und Rotation durchgeführt:
-				\begin{equation*}
-					^ap = \,^ar_b + \,^aR_b \,^bp
-				\end{equation*}
-			\item \( ^ar_b \) beschreibt die Translation zwischen \( S _ a \) und \( S _ b \).
-			\item \( ^aR_b \) beschreibt die Rotation zwischen \( S _ a \) und \( S _ b \).
-			\item Die Koordinaten der Einheitsvektoren in \( S _ b \) dargestellt in \( S _ a \) entsprechen den Spalten der Rotationsmatrix \( ^aR_b \).
-				\begin{equation*}
-					^aR_b =
-					\begin{bmatrix}[c|c|c]
-						^ae_{xb} & ^ae_{yb} & ^ae_{zb}
-					\end{bmatrix}
-				\end{equation*}
-		\end{itemize}
-		% end
-
-	\section{Homogene Transformationsbeziehungen} % 2.26
-		\label{sec:homogeneMatrix}
-
-		\begin{itemize}
-			\item Statt einer klassischen Transformation kann auch eine \textit{homogene Transformation} durchgeführt werden.
-			\item Diese Nutzt nur eine Matrix für die Translation und die Rotation.
-				\begin{equation*}
-					^a\hat{p} =
-					\begin{bmatrix}
-						^ap \\ \hline
-						1
-					\end{bmatrix}
-					=
-					\begin{bmatrix}[ccc|c]
-						  & ^aR_b &   & ^ar_b \\ \hline
-						0 & 0     & 0 & 1
-					\end{bmatrix}
-					\cdot
-					\begin{bmatrix}
-						^bp \\ \hline
-						1
-					\end{bmatrix}
-					= \,^aT_b \cdot \,^b\hat{p}
-				\end{equation*}
-			\item Die \textit{homogene Transformationsmatrix} wird als \( ^aT_b \) bezeichnet.
-		\end{itemize}
-		% end
-
-	\section{Lösungsansätze für mathematische Modelle} % 1.61, 1.62
-		Zur Lösung von mathematischen Modellen gibt mehrere Möglichkeiten:
-		\begin{description}
-			\item[Analytisch] Das Problem mit exakt gelöst, es sind keine Vereinfachungen/Näherungen nötig. Dies ist nur in wenigen Fällen (effizient) möglich.
-			\item[Heuristisch] \enquote{Trial \& Error} gemäß einer bestimmten Strategie, vor allem nützlich bei Problemen der diskreten Optimierung.
-			\item[Direkt-Numerisch] Der numerische Algorithmus liefert exakte Lösungen (mglw. mit Rundungsfehlern). Dies ist ein klarer Algorithmus und eine Heuristik mehr, das Erreichen des Ziels ist stets sichergestellt.
-			\item[Approximativ-Numerisch] Iterative Näherungsverfahren für angenäherte Beziehungen (Gleichungen). Dies stellt den häufigsten Fall der Lösungsstrategien dar und ist der Hauptbestandteil der numerischen Simulation.
-		\end{description}
-
-		Analytische und Heuristische Verfahren werden im Vergleich zu den numerischen Verfahren selten eingesetzt, da die meisten Probleme analytisch zu schwer zu lösen sind und Heuristiken für die meisten Probleme nicht oder nur langsam konvergieren.
-		% end
-
-	\section{Numerik} %  
-		\subsection{Grundlegende Numerische Verfahren}
-			\todo{Content}
-
-			% Vorwärtsdifferenzenquotient
-			% Rückwärtsdifferenenquotient
-			% Quadratregel
-			% Trapezregel
-			% end
-
-		\subsection{Lösung nichtlinearer Gleichungsmodelle} % 2.53
-			\paragraph{Aufgabe}
-				Punkte \( x _ s \in \mathbb{R} ^ n \) finden, sodass
-				\begin{equation*}
-					F(x _ s) = 0 \iff
-					\begin{matrix}
-						F _ 1 (x _ 1, \cdots, x _ n) = 0 \\
-						\vdots                           \\
-						F _ n (x _ 1, \cdots, x _ n) = 0
-					\end{matrix}
-				\end{equation*}
-				erfüllt ist.
-
-				Sämtliche Gleichungen können in diese Form überführt werden.
-				% end
-
-			\subsubsection{Fixpunktiteration} % 2.55, 2.56, 2.57
+			\paragraph{Konvergenzhilfe: Relaxationsmatrix} % 2.59
 				\begin{itemize}
-					\item Die Fixpunktiteration ist ein einfacher Algorithmus, um einen Fixpunkt einer Funktion zu finden.
-					\item Somit muss die Gleichung \( F(x) = 0 \) in eine Fixpunktgleichung \( x = g(x) \), bspw. \( g(x) \coloneqq F(x) + x \) umgebaut werden.
-					\item Es muss außerdem ein Startwert \( x _ 0 \) gegeben sein, welcher eine Näherung der Lösung darstellt.
-					\item Dann gilt für die Iteration:
+					\item Da die Konvergenz nicht garantiert ist, kann eine \textit{Relaxationsmatrix} \( A \in \mathbb{R} ^ { n \times n } \) vorgeschaltet werden, mit deren Hilfe die Konvergenz verbessert werden kann:
 						\begin{equation*}
-							x_ { k + 1 } \coloneqq g(x _ k) \quad\quad\quad k \in \mathbb{N}
+							g(x) \coloneqq A \cdot F(x) + x
 						\end{equation*}
-					\item Das Verfahren terminiert, wenn es nahe genug bei der Lösung ist, die maximale Iterationsanzahl erreicht ist oder kein Fortschritt ersichtlich ist.
-					\item Konvergenzbedingung: Sei \( x _ s = g(x _ s) \), dann muss \( x _ 0 \) nahe genug bei \( x _ s \) liegen und alle Eigenwerte von \( \frac{\partial g}{\partial x} (x _ s) \) müssen im Einheitskreis liegen (d.h. \( \forall \lambda : \abs{\lambda} < 1 \)). \\ Dann konvergiert \( x _ k \rightarrow x _ s \).
+					\item Diese Relaxationsmatrix muss konstant und regulär sein.
+					\item Als einfachster Ansatz kann eine Diagonalmatrix (oder sogar die Einheitsmatrix) verwendet werden.
+					\item Eine optimale Relaxationsmatrix ergibt sich durch
+						\begin{equation*}
+							A = -\bigg[\frac{\partial F}{\partial x} (x _ s)\bigg] ^ {-1} \quad\quad\quad F(x _ s) = 0
+						\end{equation*}
+					\item Durch die Wahl einer optimalen Relaxationsmatrix ist eine konvergente FPI immer möglich (sofern eine Lösung existiert).
 				\end{itemize}
+			% end
+		% end
 
-				\paragraph{Konvergenzhilfe: Relaxationsmatrix} % 2.59
-					\begin{itemize}
-						\item Da die Konvergenz nicht garantiert ist, kann eine \textit{Relaxationsmatrix} \( A \in \mathbb{R} ^ { n \times n } \) vorgeschaltet werden, mit deren Hilfe die Konvergenz verbessert werden kann:
-							\begin{equation*}
-								g(x) \coloneqq A \cdot F(x) + x
-							\end{equation*}
-						\item Diese Relaxationsmatrix muss konstant und regulär sein.
-						\item Als einfachster Ansatz kann eine Diagonalmatrix (oder sogar die Einheitsmatrix) verwendet werden.
-						\item Eine optimale Relaxationsmatrix ergibt sich durch
-							\begin{equation*}
-								A = -\bigg[\frac{\partial F}{\partial x} (x _ s)\bigg] ^ {-1} \quad\quad\quad F(x _ s) = 0
-							\end{equation*}
-						\item Durch die Wahl einer optimalen Relaxationsmatrix ist eine konvergente FPI immer möglich (sofern eine Lösung existiert).
-					\end{itemize}
-					% end
-					% end
+		\subsubsection{Newton-Verfahren} % 2.62, 2.63, 2.64, 2.65
+			\begin{itemize}
+				\item Das Newton-Verfahren ist ein Algorithmus, um eine Nullstelle einer Funktion zu finden.
+				\item Das Newton-Verfahren löst somit eine Gleichung \( F(x) = 0 \).
+				\item Hierzu muss ein Startwert \( x _ 0 \) gegeben sein, welcher eine Näherung der Lösung darstellt.
+				\item Dann gilt für die Iteration:
+					\begin{equation*}
+						x _ { k + 1 } \coloneqq x _ k + \Delta x _ k \quad\quad\quad \Delta x \coloneqq - \bigg[ \frac{\partial F}{\partial x} (x _ k) \bigg] ^ {-1} \cdot F(x _ k)
+					\end{equation*}
+					Die Berechnung von \( \Delta x \) glückt nur, wenn \( \frac{\partial F}{\partial x} (x _ k) \) regulär ist. Ansonsten muss die Gleichung
+					\begin{equation*}
+						0 = F(x _ k) + \frac{\partial F}{\partial x} (x _ k) \cdot \Delta x _ k
+					\end{equation*}
+					gelöst werden.
+				\item Das Verfahren terminiert, wenn es nahe genug bei der Lösung ist, die maximale Iterationsanzahl erreicht ist oder kein Fortschritt ersichtlich ist.
+				\item Konvergenzbedingung: Sei \( x \) so, dass \( F(x) = 0 \) gilt, dann muss \( x _ 0 \) nahe genug bei \( x \) liegen.
+			\end{itemize}
 
-			\subsubsection{Newton-Verfahren} % 2.62, 2.63, 2.64, 2.65
+			\paragraph{Konvergenz: Schrittweitensteuerung} % 2.71, 2.72
 				\begin{itemize}
-					\item Das Newton-Verfahren ist ein Algorithmus, um eine Nullstelle einer Funktion zu finden.
-					\item Das Newton-Verfahren löst somit eine Gleichung \( F(x) = 0 \).
-					\item Hierzu muss ein Startwert \( x _ 0 \) gegeben sein, welcher eine Näherung der Lösung darstellt.
-					\item Dann gilt für die Iteration:
+					\item Bei hoch-nichtlinearen Funktionen kann es passieren, dass über die Nullstele drüber iteriert wird.
+					\item Durch eine geeignete Schrittweitensteuerung \( \alpha \) kann dies verhindert werden (mit \( 0 < \alpha _ \text{min} \leq \alpha _ k \leq 1 \)):
 						\begin{equation*}
-							x _ { k + 1 } \coloneqq x _ k + \Delta x _ k \quad\quad\quad \Delta x \coloneqq - \bigg[ \frac{\partial F}{\partial x} (x _ k) \bigg] ^ {-1} \cdot F(x _ k)
+							x _ { k + 1 } = x _ k + \alpha _ k \cdot \Delta x _ k
 						\end{equation*}
-						Die Berechnung von \( \Delta x \) glückt nur, wenn \( \frac{\partial F}{\partial x} (x _ k) \) regulär ist. Ansonsten muss die Gleichung
-							\begin{equation*}
-								0 = F(x _ k) + \frac{\partial F}{\partial x} (x _ k) \cdot \Delta x _ k
-							\end{equation*}
-							gelöst werden.
-					\item Das Verfahren terminiert, wenn es nahe genug bei der Lösung ist, die maximale Iterationsanzahl erreicht ist oder kein Fortschritt ersichtlich ist.
-					\item Konvergenzbedingung: Sei \( x \) so, dass \( F(x) = 0 \) gilt, dann muss \( x _ 0 \) nahe genug bei \( x \) liegen.
+					\item \( \alpha \) sollte nur \enquote{so klein wie nötig} und \enquote{so groß wie möglich} sein, da nur für \( \alpha \approx 1 \) quadratische Konvergenz zu erwarten ist.
+					\item Die Schrittweite kann beispielsweise durch Minimierung von
+						\begin{equation*}
+							\varphi(\alpha) = \lVert F(x _ k + \alpha \cdot \Delta x _ k) \rVert ^ 2 _ 2 = \sum_{i = 1}^{n} (F _ i (x _ k + \alpha \cdot \Delta x _ k))
+						\end{equation*}
+						bestimmt werden.
 				\end{itemize}
+			% end
 
-				\paragraph{Konvergenz: Schrittweitensteuerung} % 2.71, 2.72
-					\begin{itemize}
-						\item Bei hoch-nichtlinearen Funktionen kann es passieren, dass über die Nullstele drüber iteriert wird.
-						\item Durch eine geeignete Schrittweitensteuerung \( \alpha \) kann dies verhindert werden (mit \( 0 < \alpha _ \text{min} \leq \alpha _ k \leq 1 \)):
-							\begin{equation*}
-								x _ { k + 1 } = x _ k + \alpha _ k \cdot \Delta x _ k
-							\end{equation*}
-						\item \( \alpha \) sollte nur \enquote{so klein wie nötig} und \enquote{so groß wie möglich} sein, da nur für \( \alpha \approx 1 \) quadratische Konvergenz zu erwarten ist.
-						\item Die Schrittweite kann beispielsweise durch Minimierung von
-							\begin{equation*}
-								\varphi(\alpha) = \lVert F(x _ k + \alpha \cdot \Delta x _ k) \rVert ^ 2 _ 2 = \sum_{i = 1}^{n} (F _ i (x _ k + \alpha \cdot \Delta x _ k))
-							\end{equation*}
-							bestimmt werden.
-					\end{itemize}
-					% end
+			\paragraph{Berechnung der Jacobi-Matrix} % 2.74, 2.75
+				\begin{itemize}
+					\item Die Berechnung der Jacobi-Matrix gestaltet sich oft schwierig.
+					\item Außerdem: Ist ein Eintrag in der Jacobi-Matrix falsch, konvergiert das Newton-Verfahren nur schlecht oder gar nicht.
+					\item Somit wird in der Praxis häufig \textit{Vorwärtsdifferenzen-Approximation} verwendet.
+					\item Ist \( F(x) \) nichtlinear, so ver-\(n\)-facht sich der Berechnungsaufwand durch die VD-Approximation.
+					\item Es gibt noch viele weitere Lösungsmethoden für die Jacobi-Matrix.
+						\begin{itemize}
+							\item Untersuchung der Jacobi-Matrix auf \textit{Dünnbesetztheit} und Überspringen der Einträge \( x _ {ij} \approx 0 \). Berechnung der restlichen Einträge bspw. mit VD-Approximation.
+							\item Ersetzung der Jacobi-Matrix \( \frac{\partial F}{\partial x} (x _ k) \) mit einer \textit{konstanten Matrix}, bspw. \( \frac{\partial F}{\partial x} (x _ 0) \).
+								\begin{itemize}
+									\item Das Verfahren ist damit nicht mehr quadratisch, sondern höchstens linear konvergent.
+									\item Sollte es dennoch konvergieren, ist es häufig schneller als ein \enquote{normales} Newton-Verfahren.
+								\end{itemize}
+							\item \textit{Schrittweise Aufaddierung (\enquote{Updates})} einer Approximation der Jacobi-Matrix (\enquote{Quasi-Newton-Verfahren}).
+						\end{itemize}
+				\end{itemize}
+			% end
+		% end
 
-				\paragraph{Berechnung der Jacobi-Matrix} % 2.74, 2.75
-					\begin{itemize}
-						\item Die Berechnung der Jacobi-Matrix gestaltet sich oft schwierig.
-						\item Außerdem: Ist ein Eintrag in der Jacobi-Matrix falsch, konvergiert das Newton-Verfahren nur schlecht oder gar nicht.
-						\item Somit wird in der Praxis häufig \textit{Vorwärtsdifferenzen-Approximation} verwendet.
-						\item Ist \( F(x) \) nichtlinear, so ver-\(n\)-facht sich der Berechnungsaufwand durch die VD-Approximation.
-						\item Es gibt noch viele weitere Lösungsmethoden für die Jacobi-Matrix.
-							\begin{itemize}
-								\item Untersuchung der Jacobi-Matrix auf \textit{Dünnbesetztheit} und Überspringen der Einträge \( x _ {ij} \approx 0 \). Berechnung der restlichen Einträge bspw. mit VD-Approximation.
-								\item Ersetzung der Jacobi-Matrix \( \frac{\partial F}{\partial x} (x _ k) \) mit einer \textit{konstanten Matrix}, bspw. \( \frac{\partial F}{\partial x} (x _ 0) \).
-										\begin{itemize}
-											\item Das Verfahren ist damit nicht mehr quadratisch, sondern höchstens linear konvergent.
-											\item Sollte es dennoch konvergieren, ist es häufig schneller als ein \enquote{normales} Newton-Verfahren.
-										\end{itemize}
-								\item \textit{Schrittweise Aufaddierung (\enquote{Updates})} einer Approximation der Jacobi-Matrix (\enquote{Quasi-Newton-Verfahren}).
-							\end{itemize}
-					\end{itemize}
-					% end
-					% end
+		\subsubsection{Vergleich FPI \( \leftrightarrow \) Newton} % 2.76
+			\paragraph{Fixpunktiteration}
+				\begin{itemize}
+					\item Ausgeglichene globale Konvergenz, aber schlechte lokale Konvergenz.
+					\item Geringer Rechenaufwand pro Iteration.
+					\item Geringer Implementationsaufwand.
+				\end{itemize}
+			% end
 
-			\subsubsection{Vergleich FPI \( \leftrightarrow \) Newton} % 2.76
-				\paragraph{Fixpunktiteration}
-					\begin{itemize}
-						\item Ausgeglichene globale Konvergenz, aber schlechte lokale Konvergenz.
-						\item Geringer Rechenaufwand pro Iteration.
-						\item Geringer Implementationsaufwand.
-					\end{itemize}
-					% end
-
-				\paragraph{Newton-Verfahren}
-					\begin{itemize}
-						\item Schlechte globale Konvergenz, aber sehr gut lokale Konvergenz.
-						\item Hoher Rechenaufwand pro Iteration.
-						\item Hoher Implementationsaufwand.
-					\end{itemize}
-					% end
-					% end
+			\paragraph{Newton-Verfahren}
+				\begin{itemize}
+					\item Schlechte globale Konvergenz, aber sehr gut lokale Konvergenz.
+					\item Hoher Rechenaufwand pro Iteration.
+					\item Hoher Implementationsaufwand.
+				\end{itemize}
+			% end
+		% end
 
 		\subsection{Numerische Simulation} %  
 			Siehe Kapitel \ref{c:numerischesimulation}.
-			% end
+		% end
 
 		\subsection{Numerische Simulation zeitkontinuierlicher Modelle} %  
 			Siehe Kapitel \ref{c:numerischesimulationtime}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Differentialgleichungen} %  
 		Allgemeiner Aufbau eines AWP 1. Ordnung:
@@ -447,8 +447,8 @@
 							\end{bmatrix}
 						\end{align*}
 				\end{itemize}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Autonomisierung nichtautonomer DGL-Systeme} % 3.14
 			Jedes nicht-autonome System von DGL kann mit Einführung einer neuen Zeitvariablen autonomisiert werden.
@@ -522,12 +522,12 @@
 							\end{bmatrix}
 						\end{align*}
 				\end{itemize}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Richtungsfelder} % 3.18
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Lösbarkeit} % 3.17, 3.19
 			\begin{itemize}
@@ -535,7 +535,7 @@
 				\item Allgemein hat ein \textit{autonomes} DGL-System \textit{1. Ordnung} mit Anfangswert eine \textit{eindeutige Lösung} \( x(t), t > 0 \), falls die Funktion \( f(x) \) Lipschitz-Stetig ist (Satz von Picard-Lindelöff).
 				\item Die Funktion \( f(x) \)i st Lipschitz-Stetig gdw. \[ \exists L > 0 : \forall x _ 1, x _ 2 \in \mathbb{R} ^ n : (\lVert f(x _ 1) - f(x _ 2) \rVert \leq L \lVert x _ 1 - x _ 2 \rVert \] gilt mit einer beliebigen Vektornorm \( \lVert \cdot \rVert \).
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Gleichgewichtslösungen} % 3.20, 3.21, 3.23
 			\begin{itemize}
@@ -549,7 +549,7 @@
 					\end{itemize}
 				\item Jede Lösung \( x _ s \in \mathbb{R} ^ n \) heißt \textit{Gleichgewichtslösung}.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Linearisierung um die Ruhelage} % 3.42, 3.46, 3.47, 3.48
 			\label{sec:linearisierung}
@@ -575,7 +575,7 @@
 					\end{itemize}
 				\item Eine Linearisierung ist nicht möglich, wenn der Ruhezustand mit einer Sprung- oder Knickstelle (oder einer anderen Ausnahmestelle) zusammen fällt oder in der engeren Umgebung liegt, da die Funktion in diesen Punkten nicht differenzierbar ist.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Lösung von \( (\Delta x)' = A \cdot \Delta x \)} % 3.50, 3.51, 3.52, 3.103, 3.104
 			\begin{itemize}
@@ -595,7 +595,7 @@
 					\end{itemize}
 				\item Die Koeffizienten \( c _ i, d _ i \) ergeben sich aus den Anfangswerten.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Stabilität von Differentialgleichungen} % 3.55, 3.56, 3.57, 3.58
 			\label{sec:stabilitydgl}
@@ -622,7 +622,7 @@
 						\item Es kann keine Aussage getroffen werden, wenn mindestens ein Eigenwert einen Realanteil Null aufweist und alle übrigen Eigenwerte einen negativen Realanteil aufweisen.
 					\end{itemize}
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Zeitcharakteristik von Differentialgleichungen}
 			\label{sec:mathezeitCharakteristik}
@@ -642,7 +642,7 @@
 				T _ {\min} & = \min\limits _ i (T _ i) \\
 				T _ {\max} & = \max\limits _ i (T _ i)
 			\end{align*}
-			% end
+		% end
 
 		\subsection{Steife Differentialgleichung} % 3.107
 			\label{sec:steifedgl}
@@ -653,7 +653,7 @@
 				\item Numerische Lösungen steifer Differentialgleichungen mit explizitem Integrationsverfahren benötigen hohe Rechenzeiten proportional zu \( \frac{T_\text{max}}{T_\text{min}} \). \\ Mit impliziten Verfahren kann dieses Problem gelöst werden.
 				\item Ein solch steifes Verhalten ist zu erwarten, wenn für \( \dot{x} = f(x, u) \) die Jacobi-Matrix \( \frac{\partial f}{\partial x}(x, u) \) Eigenwerte \( \lambda _ i \) mit Realanteil \( \Re(\lambda) \ll 0 \) sind.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Unstetige rechte Seite} % 3.108
 			\begin{itemize}
@@ -661,9 +661,9 @@
 				\item Mit \textit{Schaltpunkten} und \textit{abschnittsweiser} Berechnung kann dies gelöst werden.
 				\item Für weitere Informationen siehe Abschnitt \ref{sec:integrationunstetig}.
 			\end{itemize}
-			% end
-			% end
-			% end
+		% end
+	% end
+% end
 
 \chapter{Modellung und Simulation mit nichtlinearen Gleichungsmodellen} % 2
 	\section{System und Modell: Notation} % 2.3, 2.4
@@ -678,7 +678,7 @@
 		\todo{Vielleicht ein Bildchen malen?}
 
 		\textit{In diesem Kapitel wird angenommen, dass \( z = 0 \) und \( y = x \) gilt.}
-		% end
+	% end
 
 	\section{Explizite vs. Implizite Gleichungsmodelle} % 2.5
 		\paragraph{Explizite Gleichungsmodelle}
@@ -699,7 +699,7 @@
 				\end{bmatrix}
 			\end{equation*}
 			wobei \( F : \mathbb{R} ^ { n _ u } \rightarrow \mathbb{R} ^ { n _ x } \).
-			% end
+		% end
 
 		\paragraph{Implizite Gleichungsmodelle}
 			Implizite Gleichungsmodelle sind nicht zu der interessanten Variable \( x \) aufgelöst und erfordern meist mehr Rechenaufwand.
@@ -719,8 +719,8 @@
 				\end{bmatrix}
 			\end{equation*}
 			wobei \( F : \mathbb{R} ^ { n _ x \times n _ u } \rightarrow \mathbb{R} ^ { n _ x } \).
-			% end
-			% end
+		% end
+	% end
 
 	\section{Aufbau von Roboterarmen/-beinen} % 2.10
 		\begin{itemize}
@@ -750,15 +750,15 @@
 				\item Mit diesen \( n + 1 \) Koordinatensystemen kann die Vorwärtskinematik (die Hinrichtung) sehr einfach berechnet werden.
 				\item Siehe hierzu \ref{sec:kinematik}.
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Vorwärts-/Rückwärtsmodell} % 2.6
 		\begin{itemize}
 			\item Das \textit{Vorwärtsmodell} eines Systems beschreibt, wie aus gegebenen Gelenkstellungen die Position eines Endeffektors berechnet werden kann.
 			\item Das \textit{Rückwärtsmodell} oder auch \textit{inverses Modell} eines Systems beschreibt, wie aus gegebener Position eines Endeffektors die Gelenkstellungen berechnet werden können.
 		\end{itemize}
-		% end
+	% end
 
 	\section{Vorwärtskinematikmodell} % 2.11, 2.12, 2.13 2.28, 2.29, 2.34, 2.40
 		\label{sec:kinematik}
@@ -802,7 +802,7 @@
 				\end{tabular}
 				\caption{DH-Parameter Beschreibung}
 			\end{table}
-			% end
+		% end
 
 		\subsection{Homogene Transformation in DH-Konvention} % 2.33
 			Die (homogene) Transformation \( ^{i-1}T_i \) zwischen zwei benachbarten Koordinatensystemen \( S _ { i - 1 } \) und \( S _ i \) mit DH-Konvention ergibt sich durch:
@@ -844,8 +844,8 @@
 					0              & 0                             & 0                             & 1
 				\end{bmatrix}
 			\end{align*}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Inverses Kinematikmodell} % 2.36, 2.42, 2.43, 2.44, 2.81
 		\begin{itemize}
@@ -919,7 +919,7 @@
 							\end{itemize}
 					\end{itemize}
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Berechnung} % 2.80
 			Die Gleichung kann auf unterschiedliche Arten berechnet werden:
@@ -930,9 +930,9 @@
 				\item Spezialverfahren unter Ausnutzung der Struktur des Vorwärtskinematikmodells.
 			\end{itemize}
 			Für alle Arten der Berechnung gilt die Anforderung, dass die Lösung in Echtzeit berechnet werden muss und dass alle Lösungen berechnet werden können müssen.
-			% end
-			% end
-			% end
+		% end
+	% end
+% end
 
 \chapter{Zeitkontinuierliche Modelle} % 3
 	\section{Örtlich konzentrierter Systemzustand} % 3.3
@@ -1040,8 +1040,8 @@
 				q
 			\end{equation*}
 			Dabei entsprechen \( \ddot{q} \overset{\text{def}}{=} \ddot{x} \), \( \dot{q} \overset{\text{def}}{=} \dot{x} \) und \( q \overset{\text{def}}{=} x \) und \( M \overset{\text{def}}{=} m \), \( D \overset{\text{def}}{=} d \) und \( K \overset{\text{def}}{=} k \) und \( F(t) \overset{\text{def}}{=} F _ M (t) \) in mehreren Achsen.
-			% end
-			% end
+		% end
+	% end
 
 	\section{Örtlich verteilter Systemzustand} % 3.7
 		Örtlich verteilte Systemzustände werden durch \textit{partielle} Differentialgleichungen beschrieben, die mehrere unabhängige Variablen haben.
@@ -1054,7 +1054,7 @@
 		\end{itemize}
 
 		\textit{Diese Art von Systemen wird nicht weiter behandelt.}
-		% end
+	% end
 
 	\section{Beschreibung zeitkontinuierlicher Systeme} % 3.8
 		\subsection{Allgemeine Zustandsgleichung, Allgemeines Zustandsraummodell} % 3.11, 3.12, 3.102
@@ -1100,8 +1100,8 @@
 				\begin{equation*}
 					h = \Delta t \leq \alpha T _ {\max}, \quad \alpha \approx \frac{1}{20} \text{ bis } \frac{1}{5}
 				\end{equation*}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Lineare/Nichtlineare Systemdynamik} % 3.15
 			Für die Regelungstechnik sehr wichtig sind \textit{lineare Systemdynamiken}, die den allgemeinen Aufbau
@@ -1110,22 +1110,22 @@
 				y       & = g(x, u) = Cx + Eu
 			\end{align*}
 			haben mit \( x \in \mathbb{R} ^ n \), \( y \in \mathbb{R} ^ m \), \( u \in \mathbb{R} ^ l \) und konstanten oder nur Zeitabhängigen Matrizen \( A \in \mathbb{R} ^ { n \times n } \), \( B \in \mathbb{R} ^ { n \times l } \), \( C \in \mathbb{R} ^ { m \times n } \) und \( E \in \mathbb{R} ^ { m \times l } \).
-			% end
-			% end
+		% end
+	% end
 
 	\section{Linearisierung um die Ruhelage} % 3.42, 3.43
 		\begin{itemize}
 			\item Das Verfahren der Linearisierung selbst ist in \ref{sec:linearisierung} beschrieben.
 			\item Eine Linearisierung um die Ruhelage ist von Nöten, damit die Regelung des Systems (um in der Ruhelage zu verweilen) vereinfacht wird.
 		\end{itemize}
-		% end
+	% end
 
 	\section{Stabilität} % 3.49
 		\begin{itemize}
 			\item Ein \textit{stabiles System} ist asymptotisch stabil, d.h. die Veränderungen werden immer kleiner, bis sie schließlich verschwinden.
 			\item Eine mathematische Definition und die Bestimmung, ob ein System stabil ist, ist in \ref{sec:stabilitydgl} gegeben.
 		\end{itemize}
-		% end
+	% end
 
 	\section{Regelung} % 3.68, 3.69, 3.70, 3.71
 		\begin{itemize}
@@ -1173,8 +1173,8 @@
 					\end{tikzpicture}
 					\caption{Regelung}
 				\end{figure}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Regelung} % 3.74, 3.77, 3.75, 3.76
 			\begin{itemize}
@@ -1188,7 +1188,7 @@
 					\end{itemize}
 				\item Es nun die Frage, \textit{wann} eine solche Regelung existiert und \textit{wie} eine stabile oder sogar optimale Steuerung/Regelung bestimmt werden kann? Hierzu gibt es keine allgemeingültigen Antworten, im folgenden wird nur die Regelung eines linearen Feder-Masse-Systems betrachtet.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Lineares Feder-Masse-System} % 3.79
 			\begin{figure}[H]
@@ -1265,7 +1265,7 @@
 							\item Ruhelage \( x _ \text{stat} (t) = 0 \) \\ Viele mechanische Systeme sind in einer Ruhelage, wenn keine Antriebs-/Bremskraft wirkt (\( \frac{d}{dt}x(t)  \rightarrow 0 \) für \( t \rightarrow \infty \)).
 						\end{itemize}
 				\end{itemize}
-				% end
+			% end
 
 			\subsubsection{Erwartetes Bewegungsverhalten} % 3.81
 				\begin{itemize}
@@ -1282,7 +1282,7 @@
 						\end{itemize}
 						\( \implies \) die Masse oszilliert nach einer Auslenkung mehrmals schnell hin und her, bevor sie in die Ruhelage zurückkehrt.
 				\end{itemize}
-				% end
+			% end
 
 			\subsubsection{Berechnung des Bewegungsverhaltens} % 3.82, 3.83, 3.84, 3.85
 				\label{sec:bewegung}
@@ -1319,13 +1319,13 @@
 							\item Dieses Verhalten wird \textit{unterkritisch gedämpft} genannt und die Masse oszilliert mehrmals um die Ruhelage \( x _ \text{stat} \), bevor sie vollständig in die Ruhelage übergeht.
 						\end{itemize}
 				\end{itemize}
-				% end
+			% end
 
 			\subsubsection{Gewünschtes Bewegungsverhalten} % 3.86
 				\begin{itemize}
 					\item Gewünscht ist eine \textit{kritische Dämpfung}, da diese am schnellsten in die Ruhelage zurück kehrt und keine Oszillation auftritt.
 				\end{itemize}
-				% end
+			% end
 
 			\subsubsection{PD-Regelung des Feder-Masse-Systems} % 3.87, 3.88, 3.89, 3.90, 3.91
 				\textit{Der Name PD-Regelung stammt von dem verwendeten Proportions- und Differentialanteil, welche in das Regelgesetz einfließen.}
@@ -1350,15 +1350,15 @@
 						\end{equation*}
 					\item Damit kann das Verhalten auf einen konstanten Sollwert \( x _ d \) geregelt werden, ähnlich ist dies für eine Sollwerttrajektorie \( x _ d (t) \) möglich.
 				\end{itemize}
-				% end
+			% end
 
 			\subsubsection{Mehr Dimensionen und Nichtlineare Systeme}
 				\begin{itemize}
 					\item Es gibt ähnliche Ansätze, um mehr Dimensionen und auch nichtlineare Systeme zu regeln.
 					\item Dabei ist immer das Ziel, die Polstellen so zu legen, dass ein stabiles System auftritt.
 				\end{itemize}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{PID-Bahnregelung eines Servomotors} % 3.93, 3.94
 			\begin{itemize}
@@ -1381,9 +1381,9 @@
 						\item[D-Anteil] Überwachung der \enquote{Zukunft}; Reagiert auf Störungen
 					\end{description}
 			\end{itemize}
-			% end
-			% end
-			% end
+		% end
+	% end
+% end
 
 \chapter{Numerische Simulation} % 4, 4.27
 	\label{c:numerischesimulation}
@@ -1411,7 +1411,7 @@
 		Die Darstellung von Ganz- und Fließkommazahlen sollte hinreichend bekannt sein und wird hier nicht erneut erläutert.
 
 		Siehe \HREF{https://de.wikipedia.org/wiki/IEEE\_754}.
-		% end
+	% end
 
 	\section{Rundungsfehler} % 4.2, 4.5, 4.6
 		\begin{itemize}
@@ -1439,7 +1439,7 @@
 					                                    & \text{mit } \abs{\varepsilon _ i} \leq \eps
 				\end{align*}
 		\end{itemize}
-		% end
+	% end
 
 	\section{Fortpflanzung von Rundungsfehlern} % 4.10, 4.11
 		\begin{itemize}
@@ -1450,7 +1450,7 @@
 				\end{align*}
 			\item Eine Möglichkeit zur Fehleranalyse ist, jeden Ausdruck \( \gl(x \diamond y) \) durch \( (x \diamond y)(1 + \varepsilon) \) zu ersetzen. \\ Daraus ergibt sich eine Darstellung, in der die von den Eingangparametern abhängigen Verstärkungsfaktoren ersichtlich werden.
 		\end{itemize}
-		% end
+	% end
 
 	\section{Kondition} % 4.19, 4.20, 4.21, 4.27
 		\begin{itemize}
@@ -1467,7 +1467,7 @@
 			\item Intuitiv lässt sich sagen, dass \enquote{schlecht konditioniert} heißt, dass kleine Änderungen der Eingabewerte große Änderungen des Ergebnisses bewirken.
 			\item Die Konditionszahlen hängen nur von der Funktion ab und nicht davon, wie die Funktion ausgewertet wird!
 		\end{itemize}
-		% end
+	% end
 
 	\section{Numerische Stabilität} % 4.23, 4.25
 		\begin{itemize}
@@ -1476,8 +1476,8 @@
 			\item Definition: Werden die relativen Eingabefehler eines gut konditionierten Problems \( y = f(x + \Delta x) \) durch ein Berechnungsverfahren nicht verstärkt, so ist das Verfahren \textit{numerisch stabil}. \\ Ein Berechnungsverfahren, welches trotz guter Konditionszahl schlechte Ergebnisse liefert, heißt \textit{numerisch instabil}.
 			\item \( \text{Effizient Lösbar} \subset \text{Numerisch Stabil Lösbar} \subset \text{Gut Konditioniert} \subset \text{Alle Probleme} \)
 		\end{itemize}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Numerische Simulation zeitkontinuierlicher Modelle} % 5
 	\label{c:numerischesimulationtime}
@@ -1523,7 +1523,7 @@
 		\begin{itemize}
 			\item Differentialgleichung von Typ A und D sind im allgemeinen nur numerisch lösbar.
 		\end{itemize}
-		% end
+	% end
 
 	\section{Numerische Integration} % 5.6, 5.7, 5.32
 		\todo{Rechteck, Trapezregel?}
@@ -1548,7 +1548,7 @@
 					mit gegebenem \( x _ k \approx x(t _ k) \).
 				\item Als Konsistenzbedingung muss \( \lim\limits_{h \rightarrow 0} \Phi(t _ k, x _ k, x _ { k + 1 }, h; f) = f(x _ k) \) gelten.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Explizites Euler-Verfahren} % 5.9, 5.10, 5.11
 			\begin{itemize}
@@ -1562,7 +1562,7 @@
 					\phantom{XXXXX} \( \implies \) Für eine hohe Genauigkeit sind sehr kleine Schrittweiten nötig. \\
 					\phantom{XXXXX} \( \implies \) Stabilitätsprobleme.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Implizites Euler-Verfahren} % 5.18, 5.19
 			\begin{itemize}
@@ -1580,7 +1580,7 @@
 					\phantom{XXXXX} \( \implies \) Für eine hohe Genauigkeit sind sehr kleine Schrittweiten nötig.
 					\phantom{XXXXX \( \implies \)} Im Gegensatz zum expliziten Newton-Verfahren ist das implizite aber deutlich stabiler.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Heun-Verfahren} % 5.20
 			\begin{itemize}
@@ -1600,7 +1600,7 @@
 				\item \textbf{Rechenaufwand:} Gering, zwei Auswertungen von \( f \) je Schritt.
 				\item \textbf{Genauigkeit:} \( \mathcal{O}(h ^ 2) \), sehr viel besser als das implizite/explizite Euler-Verfahren.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Runge-Kutta-Verfahren 4. Ordnung} % 5.21, 5.22
 			\begin{itemize}
@@ -1637,7 +1637,7 @@
 				\item \textbf{Rechenaufwand (klassisches RK4):} Vier Funktionsauswertungen von \( f \) je Schritt.
 				\item \textbf{Genauigkeit (klassisches RK4):} \( \mathcal{O}(h ^ 4) \) falls \( f \) 4 Mal stetig differenzierbar ist innerhalb von \( (t _ k, r _ { k + 1 }) \).
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Anmerkungen} % 5.23
 			\begin{itemize}
@@ -1653,7 +1653,7 @@
 					\end{itemize}
 				\item Allerdings verstärken sich Rundungsfehler bei sinkender Schrittweite stark.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Schrittweitensteuerung} % 5.24, 5.25, 5.26
 			\begin{itemize}
@@ -1687,8 +1687,8 @@
 							\end{itemize}
 					\end{enumerate}
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Integration steifer Differentialgleichungen} % 5.28, 5.29
 		Für eine Definition von steifen Differentialgleichungen siehe \ref{sec:steifedgl}.
@@ -1697,7 +1697,7 @@
 			\item Steife Differentialgleichungen sind im allgemeinen schwer zu lösen.
 			\item Zur Berechnung von Lösungen sind ausschließlich implizite Verfahren geeignet.
 		\end{itemize}
-		% end
+	% end
 
 	\section{Integration von Zustands-Differentialgleichungen mit Unstetigkeiten} % 5.35, 5.36
 		\label{sec:integrationunstetig}
@@ -1726,7 +1726,7 @@
 				\item \textit{Unstetige zeitabhängige Stellgrößen \(u\):} Zeitabhängige Eingangsfunktion mit Unstetigkeiten zu bekannten Zeitpunkten (Zeitereignisse) \\ Beispiele: Ventil auf/zu; Gangschaltung
 				\item u.v.m.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Schaltfunktionen} % 5.40
 			\begin{itemize}
@@ -1755,8 +1755,8 @@
 					\item \textbf{Numerische Integration} von einem Schaltpunkt zum nächsten unter \enquote{genauer} Einhaltung der Schaltpunkte. \\ Möglicherweise spezielle Integrationsverfahren mit Schaltpunktsuche verwenden.
 					\item \textbf{Wiederaufsetzen} nach einem Schaltpunkt (wie ein normales, neues Anfangswertproblem). \\ Anfangswert für \(x\) aus einer Zustandsübergangsbedingung, zum Beispiel vom Typ \( x(t _ { s, i } + 0) = \xi(x(t _ { s, i } - 0), t _ { s, i }) \).
 				\end{enumerate}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Anmerkungen} % 5.44
 			Was passiert, wenn der Integrator einfach über die Schaltstelle drüber iteriert?
@@ -1770,9 +1770,9 @@
 					\end{itemize}
 			\end{itemize}
 			Dies führt in allen Fällen dazu, dass die gewünschte Genauigkeit nicht erreicht wird.
-			% end
-			% end
-			% end
+		% end
+	% end
+% end
 
 \chapter{Teilschritte einer Simulationsstudie} % 6, 6.2, 6.5, 6.15, 6.30, 6.33, 1.63
 	Die Teilschritte einer Simulationsstudie sind:
@@ -1839,7 +1839,7 @@
 				\end{itemize}
 			\item[\( \implies \)] Eine Simulation eignet sich, wenn das reale System nicht oder nur unter großem Aufwand zur Verfügung steht.
 		\end{enumerate}
-		% end
+	% end
 
 	\section{Modellierung} % 1.41, 1.42
 		\label{sec:simmodelling}
@@ -1891,7 +1891,7 @@
 						\item Ermittlung von Flaschenhälsen und Störenfrieden
 					\end{itemize}
 			\end{enumerate}
-			% end
+		% end
 
 		\subsection{Zustandsvariablen eines Modells} % 1.55
 			\begin{itemize}
@@ -1901,7 +1901,7 @@
 				\item Nicht redundant
 			\end{itemize}
 			Die Festlegung der Zustandsvariablen ist der Ausgangspunkt jeder Modellbildung.
-			% end
+		% end
 
 		\subsection{Klassifikation der Zustandsänderungen} % 1.59
 			\begin{itemize}
@@ -1913,8 +1913,8 @@
 			\end{itemize}
 
 			\todo{Hier kann man bestimmt noch eine Grafik malen...}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Implementierung} %  
 		\label{sec:simimpl}
@@ -1928,8 +1928,8 @@
 					Simulationsframeworks (SIMULINK, C++-Klassenbibliothek)
 				\item[Level 0] Direkte Programmierung (C++, C, MATLAB, FORTRAN)
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Anwendung} % 6.34
 		\label{sec:simanwendung}
@@ -1939,25 +1939,25 @@
 			\item Dieser Schritt nimmt, im Vergleich zu den vorherigen Schritten, nur wenig (Menschen-) Zeit ein.
 			\item Die Berechnung selbst kann natürlich lange dauern.
 		\end{itemize}
-		% end
+	% end
 
-		\todo{Kann man sich noch überlegen... Eher nicht.}
-		%\section{Beispiel: Schiffsschaukel} %  
-		%    \todo{Content}
-		%
-		%    \subsection{Problemspezifikation} % 6.4, 1.57, 1.58
-		%        \todo{Content}
-		%    % end
-		%
-		%    \subsection{Modellierung} % 6.6, 6.7, 6.8, 6.9, 6.10, 6.11, 6.12, 6.13, 1.55, 1.56
-		%        \todo{Content}
-		%    % end
-		%
-		%    \subsection{Implementierung} % 6.16, 6.17, 6.18, 6.19, 6.20, 6.24, 6.25, 6.26, 6.27, 6.28
-		%        \todo{Content}
-		%    % end
-		%% end
-		% end
+	\todo{Kann man sich noch überlegen... Eher nicht.}
+	%\section{Beispiel: Schiffsschaukel} %  
+	%    \todo{Content}
+	%
+	%    \subsection{Problemspezifikation} % 6.4, 1.57, 1.58
+	%        \todo{Content}
+	%    % end
+	%
+	%    \subsection{Modellierung} % 6.6, 6.7, 6.8, 6.9, 6.10, 6.11, 6.12, 6.13, 1.55, 1.56
+	%        \todo{Content}
+	%    % end
+	%
+	%    \subsection{Implementierung} % 6.16, 6.17, 6.18, 6.19, 6.20, 6.24, 6.25, 6.26, 6.27, 6.28
+	%        \todo{Content}
+	%    % end
+	%% end
+% end
 
 \chapter{Validierung} % 7, 7.3
 	\label{c:simvalidierung}
@@ -1975,7 +1975,7 @@
 			\item \textit{Rundungsfehler}
 			\item \textit{Programmier-, Implementierungsfehler}
 		\end{itemize}
-		% end
+	% end
 
 	\section{Begriffe und Definitionen} % 7.6, 7.7, 7.12
 		\paragraph{Verifikation}
@@ -1984,7 +1984,7 @@
 				\item Aufgrund der großen Anzahl an Parametern, Zustandsverläufen und Störungseinflüssen ist es in der Regel unmöglich, die vollständige Korrektheit des gesamten Systems zu beweisen.
 				\item Durch geeignete Anzahl und systematischer gesuchter Tests kann die Wahrscheinlichkeit der Korrektheit erhöht werden. \\ \( \rightarrow \) Validierung
 			\end{itemize}
-			% end
+		% end
 
 		\paragraph{Validierung}
 			\begin{itemize}
@@ -1992,8 +1992,8 @@
 				\item Ziel der Validierung ist der Nachweis der ausreichenden Glaubwürdigkeit des Simulationsmodells im Hinblick auf den Einsatzbereich.
 				\item Validierung ist wichtig, da dadurch das Risiko von verheerenden Zwischenfällen und Falschaussagen über die Realität stark verringert wird.
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Vorgehensweise} % 7.14
 		Die Validierung erfordert fachliche Einsicht und Kreativität! Es gibt keine pauschal guten Lösungen.
@@ -2004,7 +2004,7 @@
 				\item[I2] \textit{Plausibilitätsprüfung} der Simulationsergebnisse für Spezialfälle (\enquote{naturgetreues} Verhalten)
 				\item[I3] \textit{Numerische Korrektheit} der Implementierung (zum Beispiel durch Vergleich der berechneten Lösung und einer analytischen Lösung)
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Validierung des Modells (M)} % 7.16
 			\begin{itemize}
@@ -2012,7 +2012,7 @@
 				\item[M2] \textit{Ausreichende Detailliertheit} des Modells (und korrekte Modellstruktur)
 				\item[M3] \textit{Korrektheit (Genauigkeit)} der Modellparameter
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Validierung des Berechnungsverfahrens (D, L)} % 7.17
 			\begin{itemize}
@@ -2020,7 +2020,7 @@
 				\item[B2] \textit{Approximationsfehler} des (iterativen) Berechnungsverfahrens
 				\item[B3] Einfluss von \textit{Rundungsfehlern}
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Tests auf Plausibilität und Konsistenz} % 7.18, 7.19
 			\begin{itemize}
@@ -2030,9 +2030,9 @@
 				\item[T4] Systemverhalten in \textit{Extremsituation} \\ Entspricht das simulierte Verhalten in extremen Szenarien den Erwartungen, auch wenn diese in der Realität selten/nie auftreten?
 				\item[T5] \textit{Parametervariationen und Parametersensitivität} \\ Ist das Verhalten sensitiv zu plausiblen Variationen der Modellparameter?
 			\end{itemize}
-			% end
-			% end
-			% end
+		% end
+	% end
+% end
 
 \chapter{Identifikation von Modellen} % 8
 	\label{c:simmodelling}
@@ -2072,7 +2072,7 @@
 					\end{itemize}
 			\end{itemize}
 			Außerdem gibt es noch den Ansatz einer \enquote{Grey Box}, welche Ansätze von Black und White Box vereint.
-			% end
+		% end
 
 		\subsection{Hauptschritte der Systemidentifikation} % 8.6
 			\begin{itemize}
@@ -2081,8 +2081,8 @@
 			\end{itemize}
 
 			\warning{Die beste Lösung ist nicht unbedingt die mit dem kleinsten Fehler. Es müssen auch andere Faktoren, zum Beispiel Differenzierbarkeit betrachtet werden.}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Parameteridentifikation} % 8.8, 8.9, 8.10, 8.11
 		\begin{figure}[H]
@@ -2140,7 +2140,7 @@
 				\end{tikzpicture}
 				\caption{Schema der Parameteridentifikation}
 			\end{figure}
-			% end
+		% end
 
 		\subsection{Gütekriterien} % 8.12, 8.13
 			Zur Bewertung (und Minimierung) des Abweichungsfehlers sind unterschiedliche Gütekriterien möglich, beispielsweise:
@@ -2180,15 +2180,15 @@
 						dann ist die Lösung des Optimierungsproblems eine Lösung mit größtmöglicher Wahrscheinlichkeit.
 					\item Durch Ausnutzung der Struktur von \( \varphi _ 2 \) kann die Effizienz der numerischen Optimierung stark erhöht werden.
 				\end{itemize}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Kalibrierung} % 8.19, 8.20
 			\paragraph{Erfolg}
 				\begin{itemize}
 					\item Können die Parameter \(p\) so berechnet werden, dass die Abweichungen des Modells von dem Experiment \enquote{klein} sind, dann \enquote{stimmen} Modell und Parameter.
 				\end{itemize}
-				% end
+			% end
 
 			\paragraph{Misserfolg}
 				\begin{itemize}
@@ -2200,10 +2200,10 @@
 							\item das verwendete Modell ist nicht detailliert genug oder enthält nicht alle/nicht die richtigen Effekte.
 						\end{enumerate}
 				\end{itemize}
-				% end
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
+% end
 
 \chapter{Physikalisch basierte Spiele} % 9
 	\section{Definition} % 9.5, 9.6
@@ -2217,8 +2217,8 @@
 				\item Ein Computerspiel muss nur auf begrenzt viele und vorhersehbare Eingaben des Spielers reagieren.
 				\item Die meisten Spiele präsentieren die Geschichten und reagieren auf den Spieler in Echtzeit. Das heißt, sie sind interaktive Echtzeit-Simulationen, die sich dementsprechend an gewisse Beschränkungen halten müssen (ein nicht-einhalten hat in der Regel aber keine dramatischen Folgen).
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Game Loop} % 9.7
 		\begin{figure}[H]
@@ -2239,7 +2239,7 @@
 			\end{tikzpicture}
 			\caption{Game Loop der Hauptereignisse}
 		\end{figure}
-		% end
+	% end
 
 	\section{Game Engine} % 9.8
 		Die Game Engine enthält unter anderem:
@@ -2255,7 +2255,7 @@
 			\item Schnittstellen und Kernsystem (mathematische Funktionen, Datenstrukturen, Speicher-/Dateiverwaltung/\dots)
 		\end{itemize}
 		Auf der untersten Ebene Kommuniziert die Game Engine mit den Hardware-Abstraktions-Schichten (z.B. DirectX und OpenGL).
-		% end
+	% end
 
 	\section{Physics \& Collision Engine} % 9.9, 9.10, 9.11
 		Physikalisch basierte Spiele\dots
@@ -2282,8 +2282,8 @@
 						\item Kontaktmodellierung, -detektion und -behandlung; Erkennen von Ort, Kraft und/oder Impuls von Kollision zwischen ruhenden, verbundenden und kollidierenden Objekten.
 					\end{itemize}
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Modellierung eines Objektes} % 9.12
 		\begin{itemize}
@@ -2291,7 +2291,7 @@
 			\item Masse mit Trägheitstensor (Beschreibung der räumlichen Masseverteilung des Objektes)
 			\item Verbundene Partikel (starr oder elastisch)
 		\end{itemize}
-		% end
+	% end
 
 	\section{Kontake, Kollisionen, Kräfte und Impulse} % 9.13, 9.14
 		\begin{itemize}
@@ -2312,8 +2312,8 @@
 					\item Impuls-basierte Physik Engines haben meist einen geringeren Berechnungsaufwand und ähnliches Objektverhalten wie Kräfte-basierte Engines.
 				\end{itemize}
 		\end{itemize}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Simulation autonomer Roboter} % 10, 10.2
 	\begin{itemize}
@@ -2339,9 +2339,9 @@
 			\item Da die Steuerungssoftware sehr komplex sein kann, ist es nötig, diese sehr gut zu testen.
 			\item Durch die Zeit- und Kostenintensive Nutzung realer Roboter ist eine geeignete Robotersimulation notwendig.
 		\end{itemize}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Beispiele aus der Forschung} % 11
 	Dieser Abschnitt wird nicht in der Zusammenfassung behandelt und ist im Foliensatz nachzulesen.
-	% end
+% end

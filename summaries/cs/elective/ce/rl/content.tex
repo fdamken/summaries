@@ -35,7 +35,7 @@
 			\caption{The Reinforcement Learning Cycle}
 			\label{fig:rl}
 		\end{figure}
-		% end
+	% end
 
 	\section{Reinforcement Learning Formulation}
 		\ac{RL} tries to \emph{maximize the long-term reward} by finding a strategy/policy with the general assumption that it is easier to assess a behavior by specifying a cost than specifying the behavior directly. In general, we have the following things different to most (un)supervised settings:
@@ -83,8 +83,8 @@
 					\end{itemize}
 				\item Performance Evaluation
 			\end{enumerate}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Wrap-Up}
 		\begin{itemize}
@@ -97,8 +97,8 @@
 					\item Book: "Introduction to Reinforcement Learning" (Sutton and Barto, 2018), Chapter 1
 				\end{itemize}
 		\end{itemize}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Preliminaries}
 	In this chapter we cover some preliminaries that are necessary for understanding the rest of the course. Note that most of this content is dense and should be used as a reference throughout this course as oppose to an actual introduction to the topic.
@@ -137,7 +137,7 @@
 		\begin{theorem}[Banach Fixed Point Theorem]
 			Let \(\mathcal{X}\) be a complete vector space with a norm \(\lVert \cdot \rVert\) and let \( T : \mathcal{X} \to \mathcal{X} \) be an \(\alpha\)-contraction mapping. Then \(T\) has a unique fixed point \(x^\ast \in \mathcal{X}\) and for all \(x_0 \in \mathcal{X}\) the sequence \( x_{n + 1} = T x_n \) converges to \(x^\ast\) geometrically, i.e., \( \lVert x_n - x^\ast \rVert \leq \alpha^n \lVert x_0 - x^\ast \rVert \).
 		\end{theorem}
-		% end
+	% end
 
 	\section{Statistics}
 		This section introduces some concepts of statistics, but you should
@@ -149,7 +149,7 @@
 				\lim\limits_{n \to \infty} P\bigl( \lvert \hat{\mu}_n - \mu \rvert > \epsilon \bigr) & = 0
 			\end{align}
 			Also, we have the \emph{central limit theorem:} no matter the distribution of \(P\), its mean value converges to a normal distribution, \( \sqrt{n} (\hat{\mu}_n - \mu) \overset{D}{\to} \mathcal{N}(0, \sigma^2) \).
-			% end
+		% end
 
 		\subsection{Bias-Variance Trade-Off}
 			When evaluating/training a \ac{ML} model, the error is due to two factors (illustrated in \autoref{fig:biasVariance}):
@@ -187,7 +187,7 @@
 				\caption[Bias-Variance Trade-Off]{Bias-Variance Trade-Off; Source: Bernhard Thiery (CC BY-SA 3.0)}
 				\label{fig:biasVariance}
 			\end{figure}
-			% end
+		% end
 
 		\subsection{Important Sampling}
 			\label{subsec:importanceSampling}
@@ -204,7 +204,7 @@
 				= \E_{x \sim q} \biggl[ f(x) \frac{p(x)}{q(x)} \biggr]
 			\end{gather}
 			and sample from a surrogate distribution \(q(x)\). This approach obviously has problems if \(q\) does not cover \(p\) sufficiently well along with other problems. See Bishop, 2006, Chapter 11 for details.
-			% end
+		% end
 
 		\subsection{Linear Function Approximation}
 			A basic approximator we will need often is the linear function approximator \( f(\vec{x}) = \vec{w}^\transposed \vec{\phi}(\vec{x}) \) with weights \(\vec{w}\) and features \(\vec{\phi}(\vec{x})\). As the weights are optimized and the features are designed, we have lots of variability here. Actually, constructing useful features is the influential step on the approximation quality. Most importantly, features are the only point where we can introduce interactions between different dimensions. A good representations therefore captures all dimensions and all (possibly complex) interaction.
@@ -218,7 +218,7 @@
 					\vec{\phi}_\mathit{P2}(\vec{x}) & = (1, x_1, x_2, x_1 x_2, x_1^2, x_2^2, x_1 x_2^2, x_1^2 x_2, x_1^2, x_2^2)
 				\end{align}
 				However, the number of features grows \emph{exponentially} with the dimension!
-				% end
+			% end
 
 			\paragraph{Fourier Basis}
 				Fourier series can be used to approximate periodic functions by adding sine and cosine waves with different frequencies and amplitudes. Similarly, we can use them for general function approximation of functions with bounded domain. As it is possible to approximate any even function with just cosine waves and we are only interested in bounded domains, we can set this domain to positive numbers only and can therefore approximate any function. For one dimension, the \(n\)-th order \emph{Fourier (cosine) basis} is
@@ -226,11 +226,11 @@
 					\phi_m(x) = \cos(\pi m \tilde{x}),\quad m = 0, 1, \dots, n.
 				\end{equation}
 				and \( \tilde{x} \) is a normalized version of \(x\), i.e., \( \tilde{x} = (x - x_\mathrm{max}) / (x_\mathrm{max} - x_\mathrm{min}) \).
-				% end
+			% end
 
 			\paragraph{Coarse Coding}
 				\emph{Coarse coding} divides the space into \(M\) different regions and produced \(M\)-dimensional coding features for which the \(j\)-th entry is \num{1} iff the data point lies withing the respective region; all values the data point does not lie in are \num{0}. Features with this codomain are also called \emph{sparse.}
-				% end
+			% end
 
 			\paragraph{Tile Coding}
 				\emph{Tile coding} is a computationally efficient form of coarse coding which use square \emph{tilings} of space. It uses \(N\) tilings, each composed of \(M\) tiles. The features "vector" is then an \(N \times M\) matrix where a single value is \num{1} iff \(x\) lies inside the tile and \num{0} otherwise. \autoref{fig:tileCoding} shows an illustration of this coding.
@@ -241,7 +241,7 @@
 					\caption[Tile Coding]{Tile Coding; Source: {\small \url{https://towardsdatascience.com/reinforcement-learning-tile-coding-implementation-7974b600762b}}}
 					\label{fig:tileCoding}
 				\end{figure}
-				% end
+			% end
 
 			\paragraph{Radial Basis Functions}
 				\emph{Radial basis functions (\acsp{RBF}\acused{RBF})} are a generalization of coarse coding where the features are in the interval \((0, 1]\). A typical \ac{RBF} is the Gaussian
@@ -249,12 +249,12 @@
 					\phi_j(\vec{x}) = \exp\Biggl\{ -\frac{\lVert \vec{x} - \vec{c}_j \rVert_2^2}{2 \sigma_j^2} \Biggr\}
 				\end{equation}
 				with center \(\vec{c}_j\) and bandwidth \( \sigma_j^2 \).
-				% end
+			% end
 
 			\paragraph{Neural Networks}
 				A very powerful alternative to hand-crafting features are \emph{\aclp{NN} (\acsp{NN}\acused{NN}).} By stacking multiple layers of learned features, they are very powerful prediction machines.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Likelihood-Ratio Trick}
 			\label{subsec:likelihoodRatio}
@@ -273,7 +273,7 @@
 				= \E_{x \sim p_\theta} \biggl[ f(x) \, \pdv{\theta} p_\theta(x) \biggr].
 			\end{equation}
 			While this is a very powerful approach, the gradient estimator exhibits high variance!
-			% end
+		% end
 
 		\subsection{Reparametrization Trick}
 			\label{subsec:reparam}
@@ -283,8 +283,8 @@
 				\E_{x \sim p_\theta}[f(x)] = \E_\varepsilon\bigl[ f\bigl( g_\theta(\varepsilon) \bigr) \bigr].
 			\end{equation}
 			For instance, if \( p_\theta(x) = \mathcal{N}(\mu_\theta, \sigma_\theta^2) \) is a Gaussian, \( g_\theta(\varepsilon) = \mu_\theta + \sigma_\theta \varepsilon \) with \( \varepsilon \sim \mathcal{N}(0, 1) \). We can now simply use the chain rule to take the derivative w.r.t. \(\theta\). Compared to the likelihood-ratio trick, this estimator has less variance!
-			% end
-			% end
+		% end
+	% end
 
 	\section{Miscellaneous}
 		Finally, this section contains all the stuff that does not fit into the categories before.
@@ -297,9 +297,9 @@
 				\label{eq:usefulIntegrals}
 			\end{align}
 			The first identity can be shown by swapping the integral and derivative and using the normalization condition of probability densities. For the second we use integration by parts with \( f' = \pdv{\theta} p_\theta(x) \), for which \(f = 0\) due to the first integral. Hence, the second follows.
-			% end
-			% end
-			% end
+		% end
+	% end
+% end
 
 \chapter{Markov Decision Processes and Policies}
 	In this chapter we will develop the groundwork for all upcoming chapters and define some important mathematical concepts.
@@ -380,8 +380,8 @@
 
 		\subsection{Example}
 			\todo{Example; 2.11, 2.12, 2.13}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Markov Reward Processes}
 		\begin{definition}{Markov Reward Process}  \label{def:mrp}
@@ -425,7 +425,7 @@
 				\item \emph{animal and human behavior} also shows preference for immediate rewards---and why try to mimic biology in the end
 			\end{itemize}
 			However, sometimes we still use \emph{undiscounted} \acp{MRP} (i.e., \( \gamma = 1 \)), for instance if all sequences are guaranteed to terminate.
-			% end
+		% end
 
 		\subsection{Value Function}
 			\begin{definition}[Value Function for MRP]
@@ -450,12 +450,12 @@
 				\label{eq:closedFormBellman}
 			\end{equation}
 			where \(\vec{V}\) and \(\vec{R}\) are columns vectors with the values and rewards, respectively, and \(\mat{P}\) is the transition matrix. We can therefore directly solve this linear equation and get the values of the states! However, for \(n\) states the complexity is \(\mathcal{O}(n^3)\) and hence this is only possible for small \acp{MRP}. For large \acp{MRP}, a variety of efficient iterative methods exist. In the following chapters, we will cover \emph{dynamic programming} (\autoref{c:dp}) \emph{Monte-Carlo evaluation} (\autoref{c:mc}) and \emph{temporal difference learning} (\autoref{c:td}).
-			% end
+		% end
 
 		\subsection{Example}
 			\todo{Example; 2.17, 2.22, 2.23, 2.24, 2.26}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Markov Decision Processes}
 		So far, we only considered processes \emph{without} actions, i.e., we were not able to interact with the process. The next natural extension is from \acp{MRP} to \acp{MDP}:
@@ -522,7 +522,7 @@
 				\begin{remark}
 					With these operators, we can compactly write the Bellman equation(s) as \( T^\pi V^\pi = V^\pi \) and \( T^\pi Q^\pi = Q^\pi \) and the policy's state and action value functions are the \emph{unique} respective fixed points of \(T^\pi\). With \autoref{th:bellmanOperatorContract}, repeated application of \(T^\pi\) to any vector converges towards this fixed point.
 				\end{remark}
-				% end
+			% end
 
 			\subsubsection{Optimality}
 				\begin{definition}[Optimality]  \label{def:optimalValueFunc}
@@ -587,13 +587,13 @@
 				\end{remark}
 
 				While we had closed-form solutions for the \ac{MRP} and policy value functions, it is not possible to solve the Bellman optimality equation in closed form as its a nonlinear equation system (due to the involved maximizations). In the following chapters we will look at a variety of methods for solving this problem iteratively, starting with \emph{dynamic programming.}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Example}
 			\todo{Example; 2.31, 2.36, 2.43, 2.45, 2.48}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Wrap-Up}
 		\begin{itemize}
@@ -608,8 +608,8 @@
 					\item Book: "Markov Decision Processes" (Puterman, 2005), Chapter 2
 				\end{itemize}
 		\end{itemize}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Dynamic Programming}
 	\label{c:dp}
@@ -638,7 +638,7 @@
 			The sequence \(\bigl(V^{(k)}\bigr)_{k = 0}^{\infty}\) converges, by Banach's fixed point theorem and \autoref{th:bellmanOperatorContract}, to the fixed point \(V^\pi\). In matrix form, we can also write this update as \( \vec{V}^{(k + 1)} = \vec{R}^\pi + \gamma \mat{P}^\pi \vec{V}^{(k)} \).
 
 			However, in subsequent steps we need the action-value function \(Q^\pi\). There are generally two options for this: either recover \(Q^\pi\) from \(V^\pi\) using \eqref{eq:bellmanExpEqQ} or directly estimate it by repeatedly applying its Bellman operator. As this is completely analogous, we will skip the explicit equations here.
-			% end
+		% end
 
 		\subsection{Policy Improvement}
 			In \emph{policy improvement,} we want to use find a better policy \(\pi' \geq \pi\) using \(Q^\pi\). We do this by acting greedily, i.e., \( \pi'(s) = \argmax_{a \in \mathcal{A}} Q^\pi(s, a) \). With this definition, we have the following inequality:
@@ -665,7 +665,7 @@
 			\end{proof}
 
 			With this theorem of which the premise is fulfilled when acting greedily, we see that the policy is either improved or, if improvement stops and \( V^{\pi'} = V^\pi \), we found the optimal policy through the Bellman optimality equation \( Q^\pi\bigl( s, \pi(s) \bigr) = V^\pi(s) \). Hence, \ac{PI} always converges to the optimal policy \(\pi^\ast\)!
-			% end
+		% end
 
 		\subsection{Remarks}
 			As both policy evaluation and improvement converge to a unique fixed point, policy iteration overall converges to the optimal policy! The algorithm is summarized in \autoref{alg:pi}. Note that recovering \(Q^\pi\) from \(V^\pi\) requires a model of the \ac{MDP}. While this is not a problem for policy iteration as the policy evaluation step requires a model anyway, later on we will estimate the value differently and may not have a model. If so, it makes more sense to directly estimate the action-value function.
@@ -698,12 +698,12 @@
 				\caption{Policy Iteration}
 				\label{alg:pi}
 			\end{algorithm}
-			% end
+		% end
 
 		\subsection{Examples}
 			\todo{Example; 3.13, 3.14, 3.15; 3.20, 3.10}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Value Iteration}
 		\emph{Value iteration (\acsu{VI})} follows a similar idea as \ac{PI}. However, we do not explicitly compute a policy \(\pi\) but instead only find the optimal value function \(V^\ast\) from which we can recover the optimal policy (using \eqref{eq:bellmanOptEqQ} and greedy updates). To find the optimal value function, we repeatedly apply the Bellman optimality operator (\autoref{def:bellmanOptimalityOperator})
@@ -772,7 +772,7 @@
 			\caption{Value Iteration}
 			\label{alg:vi}
 		\end{algorithm}
-		% end
+	% end
 
 	\section{Remarks}
 		In \ac{VI}, we had to repeatedly apply max-operations which can be costly. In contrast, \ac{PI} does not require these redundant maximizations, but needs to carry around an explicit policy. However, both algorithms are in the same complexity class: for \(m\) actions and \(n\) states, the state-value based methods is in \( \mathcal{O}(m n^2) \) and the action-value based methods (where instead of recovering \(Q^\pi\) from \(V^\pi\) we estimate it directly) is in \( \mathcal{O}(m^2 n^2) \).
@@ -791,7 +791,7 @@
 			\caption{Synchronous Dynamic Programming}
 			\label{fig:syncDp}
 		\end{table}
-		% end
+	% end
 
 	\section{Wrap-Up}
 		\begin{itemize}
@@ -802,8 +802,8 @@
 					\item Book: "Introduction to Reinforcement Learning" (Sutton and Barto, 2018), Chapter 4
 				\end{itemize}
 		\end{itemize}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Monte-Carlo Methods}
 	\label{c:mc}
@@ -859,7 +859,7 @@
 
 	\section{Example}
 		\todo{Example; 3.42, 3.43, 3.44, 3.45, 3.46, 3.47, 3.48, 3.49, 3.50, 3.51, 3.52, 3.53, 3.54, 3.55, 3.56, 3.57}
-		% end
+	% end
 
 	\section{Wrap-Up}
 		\begin{itemize}
@@ -871,8 +871,8 @@
 					\item Book: "Monte-Carlo Simulation-Based Statistical Modeling" (Chen and Chen, 2017)
 				\end{itemize}
 		\end{itemize}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Temporal Difference Learning}
 	\label{c:td}
@@ -928,8 +928,8 @@
 
 		\subsection{Backup}
 			\todo{TD/MC: Backup; 3.69, 3.70, 3.71}
-			% end
-			% end
+		% end
+	% end
 
 	\section{\acs{TD}(\(\lambda\))}
 		\label{sec:tdLambda}
@@ -957,7 +957,7 @@
 				= 1.
 			\end{equation}
 			We call the resulting update \( V(s_t) \gets V(s_t) + \alpha \bigl( J_t^\lambda - V(s_t) \bigr) \) \emph{forward-view TD(\(\lambda\)).} Of course now we are back to the initial problem we tried to avoid using \ac{TD} methods: the forward-view \ac{TD} target can only be computed for complete episodes!
-			% end
+		% end
 
 		\subsection{Backward-View and Eligibility Traces}
 			We saw that forward-view TD(\(\lambda\)) provides a good approach to reduce the bias of the \ac{TD} target. However, it had the disadvantage of only working in episodic settings, i.e., only with complete episodes. An alternative is \emph{backward-view TD(\(\lambda\))} following a similar idea, but looking backward in time, allowing updates from incomplete episodes. However, now we have the \emph{credit assignment problem:} how to weigh past rewards and states? Two common heuristics are the \emph{frequency} and \emph{recency} heuristic, i.e., assigning credit to the most frequent or most recent states, respectively. Both of these ideas can be summarized into \emph{eligibility traces.} For every time step \(t\), we keep an eligibility value \( z_t(s) \) for every state \(s\) describing the weight of state \(s\) at time step \(t\). Starting with \( z_{-1}(s) = 0 \), we iteratively compute the next time step as
@@ -994,12 +994,12 @@
 				\caption{Backward-View TD(\(\lambda\))}
 				\label{alg:backwardViewTdLambda}
 			\end{algorithm}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Example}
 		\todo{Example; 3.61, 3.62}
-		% end
+	% end
 
 	\section{Wrap-Up}
 		\begin{itemize}
@@ -1011,8 +1011,8 @@
 					\item Book: "Introduction to Reinforcement Learning" (Sutton and Barto, 2018), Chapters 6, 7, and 12  % TODO: Read
 				\end{itemize}
 		\end{itemize}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Tabular Reinforcement Learning}
 	In this chapter we cover methods from \emph{tabular} \ac{RL} where the state-action-space is small enough such that we can represent the action-value function as a table. We distinguish two categories of methods: on- and off-policy learning. In the former the algorithm learns "on the job," i.e., the experience is sampled from the policy that is being trained. In the latter the algorithms learns "by looking over someone's shoulder," i.e., the experience is samples from a different policy \(q\) that the one that is being trained.
@@ -1070,7 +1070,7 @@
 				for the "maximum" \(a\) and all others, respectively. Note that this maximum is \emph{not} w.r.t. \( Q^\pi(s, a) \) and hence the sum over all actions must be less than or equal to the maximum value of \(Q^\pi(s, a)\). Finally, in step \((\ddagger)\), we used the definition of \(\pi\) and that \(Q^\pi(s, a)\) is its action-value function.
 
 				Using \(\epsilon\)-greedy exploration therefore gives monotonic improvement while not shutting canceling exploration during policy evaluation!
-				% end
+			% end
 
 			\subsubsection{\acs{GLIE} Monte-Carlo}
 				\begin{definition}[Greedy in the Limit of Infinite Exploration (\acs{GLIE})]
@@ -1090,8 +1090,8 @@
 				\begin{theorem}[Convergence of \acs{GLIE} Monte-Carlo]
 					\ac{GLIE} \ac{MC} converges to the \emph{optimal} action-value function.
 				\end{theorem}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{\acs{TD}-Learning: \acs{SARSA}}
 			We already saw in \autoref{c:td} that \ac{TD} learning has several advantages over \ac{MC}, namely lower variance, online capabilities, and learning from incomplete sequences. So a natural idea is to replace \ac{MC} with \ac{TD} in the control loop, i.e., applying \ac{TD} to the action-value function using \(\epsilon\)-greedy policy improvement. In \acsu{SARSA} (for "\acl{SARSA}"), we use the policy's proposed action during the \ac{TD} update, i.e.,
@@ -1161,13 +1161,13 @@
 					\caption{\acs{SARSA}(\(\lambda\))}
 					\label{alg:sarsaLambda}
 				\end{algorithm}
-				% end
+			% end
 
 			\subsubsection{Example}
 				\todo{Example; 4.28, 4.29, 4.33}
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
 
 	\section{Off-Policy Methods}
 		While on-policy methods are great and often exhibit convergence guarantees, they have a major flaw: exploration has to be built into the policy, for instance using \(\epsilon\)-greed. \emph{Off-policy} methods, on the other hand, learn about a target policy \(\pi(a \given s)\) while following a behavioral policy \(q(a \given s)\). We can directly transfer this approach to a variety of tasks such as learning directly from a human or other agents, re-use experience of old policies, explore while learning an optimal policy, or learning multiple policies while following a single.
@@ -1182,7 +1182,7 @@
 				Q(s_t, a_t) \gets Q(s_t, a_t) + \alpha \bigl( J_t^{\pi/q} - Q(s_t, a_t) \bigr).
 			\end{equation}
 			While this allows off-policy \ac{MC}, importance sampling can dramatically increase the variance even further! Also, it is not possible to sample actions for which \(q\) is zero but \(\pi\) is non-zero.
-			% end
+		% end
 
 		\subsection{\acs{TD} and Q-Learning}
 			Similar to off-policy \ac{MC}, we can also use importance sampling in \ac{TD} learning by weighing the \ac{TD} error accordingly:
@@ -1231,9 +1231,9 @@
 
 			\paragraph{Example}
 				\todo{Example; 3.44}
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
 
 	\section{Remarks}
 		Both \ac{SARSA} and Q-learning are great algorithms on their own, but of course have some differences. While \ac{SARSA} is an on-policy \ac{TD} algorithm, Q-learning is off-policy. Also, if \(\epsilon \neq 0\), \ac{SARSA} performs better online, but for \(\epsilon \to 0\), both converge to the optimal solution. Note that for a true online application, constant exploration (and therefore \(\epsilon \neq 0\)) can be necessary! \autoref{fig:dpTdRelationship} shows the relationship between \ac{DP} and \ac{TD}.
@@ -1255,7 +1255,7 @@
 			\caption{Relationship Between Dynamic Programming and Temporal Difference Learning}
 			\label{fig:dpTdRelationship}
 		\end{table}
-		% end
+	% end
 
 	\section{Wrap-Up}
 		\begin{itemize}
@@ -1273,8 +1273,8 @@
 					\item Book: "Introduction to Reinforcement Learning" (Sutton and Barto, 2018), Chapters 5, 6, 7, and 12  % TODO: Read
 				\end{itemize}
 		\end{itemize}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Function Approximation}
 	So far, we considered only discrete (and finite) \acp{MDP} for which we were able to represent the value functions as tables. However, most \ac{RL} problems are not discrete and the state-action-space is continuous and infinite! To handle these kinds of environments, we need to use \emph{function approximation} for the value functions (and also policies). As before, we split this chapter into on- and off-policy methods.
@@ -1303,7 +1303,7 @@
 				\label{eq:sgdFuncApprox}
 			\end{equation}
 			where \(\alpha > 0\) is the \emph{learning rate.} Note that we update the value function for each step in the trajectory, hence we use a "time" index here. For a proper decay of the learning rate, this is guaranteed to converge to a local optimum. However, we usually do not have access to the real value function---this is why we ultimately need learning!
-			% end
+		% end
 
 		\subsection{Gradient Monte-Carlo}
 			As we usually do not have access to the real value function, we replace its appearance in \eqref{eq:sgdFuncApprox} with an arbitrary value estimate \(U_t\):
@@ -1327,7 +1327,7 @@
 				\caption{Gradient Monte-Carlo}
 				\label{alg:gradientMonteCarlo}
 			\end{algorithm}
-			% end
+		% end
 
 		\subsection{Semi-Gradient Methods}
 			In chapter \autoref{c:td}, we saw that \ac{MC} methods are not the only way for estimating \(V\) and indeed, we could also use \ac{DP} or bootstrapped \ac{TD} targets, allowing step-based updates and learning from incomplete episodes. The \ac{DP} and \(n\)-step \ac{TD} targets are:
@@ -1364,7 +1364,7 @@
 				\caption{Semi-Gradient \acs{TD}(\(0\))}
 				\label{alg:semiGradientTd}
 			\end{algorithm}
-			% end
+		% end
 
 		\subsection{Semi-Gradient \acs{SARSA}}
 			Similar to semi-gradient \acs{TD}(\(0\)), we can also approximate the action-value function instead of the state-value function using \ac{SARSA}. The one-step \ac{SARSA} update is then
@@ -1396,8 +1396,8 @@
 				\caption{Semi-Gradient \acs{SARSA}}
 				\label{alg:semiGradientSarsa}
 			\end{algorithm}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Off-Policy Methods}
 		Of course, we can apply function approximation not only in on-, but also in off-policy methods. For instance, we can apply importance sampling to get off-policy \acs{TD}(\(0\)):
@@ -1411,14 +1411,14 @@
 
 		\paragraph{Example}
 			\todo{Example; 5.34+, 5.35, 5.36}
-			% end
-			% end
+		% end
+	% end
 
 	\section{The Deadly Triad}
 		\label{sec:deadlyTriad}
 
 		In fact, we have a lot of instability in methods that are based on the following elements: function approximation, bootstrapping, and off-policy training. However, we need everyone of these! Function approximation to scale, bootstrapping for data efficiency, and off-policy training for heterogeneous experience.
-		% end
+	% end
 
 	\section{Offline Methods}
 		So far, we only looked at \emph{online} methods, i.e., methods that only use the current transitions and which can be applied "on the job." \emph{Offline} or \emph{batch} methods, on the other hand, can use data (transitions and trajectories) that was collected previously.
@@ -1453,7 +1453,7 @@
 				\caption{Least-Squares Policy Iteration}
 				\label{alg:lspi}
 			\end{algorithm}
-			% end
+		% end
 
 		\subsection{Fitted Q-Iteration}
 			Another approach to offline \ac{RL} is \emph{fitted Q-iteration.} Given a data set of transitions, it solves a sequence of regression problems to find the action-value function. For regression trees and kernel averaging, there are also some stability guarantees. A sketch of the algorithm is given in \autoref{alg:fittedQIteration}.
@@ -1472,8 +1472,8 @@
 				\caption{Fitted Q-Iteration}
 				\label{alg:fittedQIteration}
 			\end{algorithm}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Wrap-Up}
 		\begin{itemize}
@@ -1487,8 +1487,8 @@
 					\item Book: "Introduction to Reinforcement Learning" (Sutton and Barto, 2018), Chapters 9, 10, and 11  % TODO: Read
 				\end{itemize}
 		\end{itemize}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Policy Search}
 	So far, we always learned/estimated a value function and extracted a policy from it. However, why bother to learn a value function and not directly learn a policy which is what we are actually interested in? This is the idea of \emph{policy search.} Given a \ac{MDP}, policy search can be formalized as an explicit optimization problem over the expected reward,
@@ -1652,7 +1652,7 @@
 					\end{equation}
 					Solving this system by least squares yields \eqref{eq:lsfd}.
 				\end{proof}
-				% end
+			% end
 
 			\subsubsection{Likelihood-Ratio Trick}
 				As the \ac{LSFD} gradient still has high variance and is inexact. But we can do better: using the likelihood-ratio trick (\autoref{subsec:likelihoodRatio}), we can compute the gradient of a \ac{MC} estimate of \(\mathcal{J}(\theta)\) exactly!
@@ -1689,8 +1689,8 @@
 					\label{eq:policyGradientSimple}
 				\end{equation}
 				This is the simplest likelihood-ratio estimator we can imagine.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{REINFORCE and Baselines}
 			We already saw the simple policy gradient \eqref{eq:policyGradientSimple}. If we combine this with the \ac{MC} estimate of \eqref{eq:policyGradientExp}, we arrive at the \emph{REINFORCE} gradient estimator:
@@ -1770,8 +1770,8 @@
 
 			\subsubsection{Example}
 				\todo{Example; 6.24, 6.25, 6.26, 6.27, 6.28}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{\acs{GPOMDP}}
 			\label{subsec:gpomdp}
@@ -1802,8 +1802,8 @@
 				\caption{\acs{GPOMDP}}
 				\label{alg:gpomdp}
 			\end{algorithm}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Natural Policy Gradient}
 		So far, the gradient methods assumes that the optimization space is Euclidean. However, as we only modify the parameters of a probability distribution, distances between two parameter vectors are not preserved! That is, measuring the distance between parameters gives us close to no information about the distribution's distance. One idea is to use the \ac{KL} divergence of two distributions, but the \ac{KL} is not symmetric and thus not a metric and therefore difficult to use in optimization problems (also, it is hard to compute). Instead we can use the \emph{\ac{FIM}}
@@ -1867,7 +1867,7 @@
 			where \(\alpha(\varepsilon)\) is the learning rate and \( \grad_{\vec{\theta}}^\mathrm{NG} \mathcal{J}(\vec{\theta}) \) is the natural \ac{PG}.
 		\end{proof}
 		With this approach, we find policy updates that are \emph{independent} of the policy's parametrization and we actually take steps in the policy space rather than parameter space. Note, however, that the approximation using the \ac{FIM} is only valid for small perturbations! Also note that the \ac{NG} is not a completely new approach, but rather an extension that can be used to improve the previous methods.
-		% end
+	% end
 
 	\section{The Policy Gradient Theorem}
 		\begin{definition}[Occupancy Measure]
@@ -2084,7 +2084,7 @@
 			\end{align}
 			where the expectation is equal to the \ac{FIM} as the second component of the variance, the expectation-square, vanishes as the expectation over \( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \) is zero (see \eqref{eq:usefulIntegrals}).
 			% TODO: CFA: Is the linear CFA the only CFA? It should be, right?
-			% end
+		% end
 
 		\subsection{Episodic Natural Actor-Critic}
 			\begin{definition}[Advantage Function]
@@ -2147,8 +2147,8 @@
 				\caption{Episodic Natural Actor-Critic}
 				\label{alg:enac}
 			\end{algorithm}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Wrap-Up}
 		\begin{itemize}
@@ -2171,8 +2171,8 @@
 					\item Paper: "A Survey on Policy Search for Robotics" (Deisenroth, Neumann, and Peters, 2013), Chapters 1 to 2.4.1  % TODO: Read!
 				\end{itemize}
 		\end{itemize}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Deep Value-Function Methods}
 	So far, we only discussed \ac{RL} methods relying on classical non-deep \ac{ML}, even though it is theoretically possible to plug in a \ac{NN} function approximator into, for instance, \ac{SARSA}. However, as we will see in this chapter, employing \acp{NN} requires a bunch of tricks and hacks to make them working. While this might be annoying, it allows us to bring \ac{RL} to high-dimensional problems and even learning from images! In this chapter we focus on value-based deep \ac{RL} and the next chapter (\autoref{c:deepAC}) covers actor-critic methods.
@@ -2242,7 +2242,7 @@
 
 		\subsection{Replay Buffer}
 			Instead of using just the current data, we collect individual transitions in a \emph{replay buffer} (with finite capacity). Due to off-policy updates, we can re-use transitions from the buffer. This reduces the negative impacts of the \emph{distribution shift,} i.e., the change of the data distribution as our policy changes.
-			% end
+		% end
 
 		\subsection{Target Network}
 			Instead of directly updating the policy's \ac{NN} in every step, we keep a copy \(\vec{\omega}'\) of the policy network \(\vec{\omega}\), the \emph{target network,} for computing the \ac{TD} error:
@@ -2250,11 +2250,11 @@
 				\mathcal{L}(\vec{\omega}) = \E_{(s, a, r, s') \sim \mathcal{D}}\Bigl[ \bigl( r + \gamma \max_{a' \in \mathcal{A}} \hat{Q}_{\vec{\omega}'}(s', a') - \hat{Q}_{\vec{\omega}}(s, a) \bigr)^2 \Bigr].
 			\end{equation}
 			Periodically (e.g., every \(C\) steps), we copy the parameters \(\vec{\omega} \to \vec{\omega}'\) to the target network. This avoids some instability induced by the function approximation as the \ac{TD} target does not change as frequent as before.
-			% end
+		% end
 
 		\subsection{Minibatch Updates}
 			Instead of using all transitions stored in the replay buffer, we only use a subset (a \emph{minibatch}) for computing the loss. This improves efficiency compared to training on all transitions. Also, random samples are closer to fulfilling the i.i.d.-property assumed by \ac{SGD} compared to the temporally correlated trajectories.
-			% end
+		% end
 
 		\subsection{Reward- and Target-Clipping}
 			Instead of using the "real" reward, we clip the values between \( [-1, 1] \). This also clips the \ac{TD} error,
@@ -2262,12 +2262,12 @@
 				r + \gamma \max_{a' \in \mathcal{A}} \hat{Q}_{\vec{\omega}}(s', a') - \hat{Q}(s, a) \in [-1, 1],
 			\end{equation}
 			at it turns out to be sufficient to use the \emph{Huber loss} instead of the quadratic loss. This improves the stability of the optimization as values stay reasonably small.
-			% end
+		% end
 
 		\subsection{Examples}
 			\todo{Example; 7.14, 7.15, 7.16, 7.17, 7.18}
-			% end
-			% end
+		% end
+	% end
 
 	\section{\acs{DQN} Enhancements}
 		Even though \ac{DQN} is already powerful as is, it still has some flaws we want to and are able to overcome. In this section we discuss some of these flaws and approaches to fixing them. All enhancements are also summarized in \autoref{tab:dqnHacks}.
@@ -2282,7 +2282,7 @@
 				\mathcal{L}(\vec{\theta}) = \E_{(s, a, r, s') \sim \mathcal{D}}\Bigl[ \bigl( r + \gamma \hat{Q}_{\vec{\omega}'}\bigl( s', \argmax_{a' \in \mathcal{A}} Q_{\vec{\omega}}(s', a') \bigr) - \hat{Q}_{\vec{\omega}}(s, a) \bigr)^2 \Bigr].
 			\end{equation}
 			Notice that the parameters of the action-value functions being used for maximization are different! We call this approach \emph{\ac{DDQN}}.
-			% end
+		% end
 
 		\subsection{Prioritized Replay Buffer}
 			The replay buffer might become extremely big, but it is not reasonable to assume that every transition conveys equal amounts of information! Instead, transitions resulting in a high \ac{TD} error are more informative. An approach to tackle this is to weigh the samples using the \ac{TD} error such that the probability of the \(i\)-th sample is
@@ -2294,7 +2294,7 @@
 				w_i = \biggl( \frac{1}{N P(i)} \biggr)^\beta
 			\end{equation}
 			where \(N\) is the total number of data points and \(\beta\) regulates the strength of the importance sampling (where \(\beta = 1\) fully compensates the bias). For stability reasons, the weights are also normalized by \( 1/\max_i w_i \). In practice, the coefficient is usually annealed from \(\beta_0 < 1\) to \(1\).
-			% end
+		% end
 
 		\subsection{Dueling \acs{DQN}}
 			It may be helpful from time to time to recover the state-value and advantage from the action-value function. However, given a \(Q = V + A\), we cannot recover the latter. The idea of \emph{dueling \ac{DQN}} is to split the output of the Q-network into two streams, \(\hat{V}_{\vec{\omega}, \vec{\beta}}\) and \(\hat{A}_{\vec{\omega}, \vec{\alpha}}\), i.e., a network with two regression heads parameterized by \(\vec{\beta}\) and \(\vec{\alpha}\), respectively. However, instead of just adding up the two outputs to get the action-value, dueling \ac{DQN} uses
@@ -2303,7 +2303,7 @@
 			\end{equation}
 			forcing \( \max_{a \in \mathcal{A}} \hat{Q}_{\vec{\omega}, \vec{\alpha}, \vec{\beta}}(s, a) = V_{\vec{\omega}, \vec{\beta}}(s) \).
 			\todo{DQN: Why "dueling"?}
-			% end
+		% end
 
 		\subsection{Noisy \acs{DQN}}
 			Usually, exploration is performed directly on policy level using a \(\varepsilon\)-greedy policy. That is, we perturb the action given an action-value function. However, we can also achieve exploration by perturbing the action-value function directly by adding noise variables \(\varepsilon\) to the \ac{NN}'s layers. Optimization of the parameters is then w.r.t. the expected loss over the noise \(\varepsilon\).
@@ -2313,7 +2313,7 @@
 				\tilde{\vec{y}} = \bigl( \mat{M}_W + \mat{\sigma}_W \odot \mat{\varepsilon}_W \bigr) \vec{x} + (\vec{\mu}_b + \vec{\sigma}_b \odot \vec{\varepsilon}_b)
 			\end{equation}
 			where \( \mat{M}_W \in \R^{q \times p} \), \( \mat{\sigma}_W \in \R^{q \times p} \), \( \vec{\mu}_b \in \R^q \), and \( \mat{\Sigma}_b \in \R^q \) are learnable parameters and \( \mat{\varepsilon}_W \sim \mathcal{N}(\mat{O}, \mat{I}) \in \R^{q \times p} \) and \( \vec{\varepsilon}_b \sim \mathcal{N}(\vec{0}, \mat{I}) \in \R^q \) are noise variables. In practice, we only make the last layer noisy.
-			% end
+		% end
 
 		\subsection{Distributional/Categorical \acs{DQN}}
 			So far, we have always estimated the action-value function directly. That is, we estimate the expected return starting from \(s\) with \(a\):
@@ -2351,7 +2351,7 @@
 				\vec{\omega}_\mathrm{new} = \argmin_{\vec{\omega}'} \; \KL\bigl( \Phi T Z_{\vec{\omega}'}(s, a) \,\big\vert\, Z_{\vec{\omega}}(s, a) \bigr).
 			\end{equation}
 			Again, this is w.r.t. a sampled transition \(\langle s, a, r, s' \rangle\). As we used a categorical approximation, this algorithm is also called \emph{categorical \ac{DQN}.} For more details on it, see the original paper "A Distributional Perspective on Reinforcement Learning" (Bellemare et al., 2017), especially sections 3.3 and 4.
-			% end
+		% end
 
 		\subsection{Rainbow}
 			\emph{Rainbow \ac{DQN}} just throws every of the previous methods,
@@ -2370,8 +2370,8 @@
 				\caption[Performance of Rainbow \acs{DQN}]{Median performance of Rainbow \acs{DQN} across 57 Atari games; Taken from "Rainbow: Combining Improvements in Deep Reinforcement Learning" (Hessel et al., 2018).}
 				\label{fig:rainbowPerformance}
 			\end{figure}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Other \acs{DQN}-Based Exploration Techniques}
 		\label{sec:otherApproaches}
@@ -2388,7 +2388,7 @@
 				R_\mathrm{int}(s, a) = \beta \bigl( N(s) + 0.01 \bigr)^{-1/2},
 			\end{equation}
 			where \(N(s)\) is the number of times \(s\) was visited and \(\beta\) is a hyper-parameter. We call the idea of exploring where we are uncertain \emph{optimism in the face of uncertainty} and the concrete approach \emph{count-based exploration.} While this approach is straightforward for discrete state-spaces, we cannot just count occurrences in continuous spaces. Instead, we have to define some notion of \emph{similarity} (usually found using unsupervised learning like clustering, \ac{KDE}, auto-encoders, etc.) and count similar states. These counts are then \emph{pseudo-counts.}
-			% end
+		% end
 
 		\subsection{Curiosity-Driven Exploration}
 			In \emph{curiosity-driven exploration}, we also add an intrinsic reward \(R_\mathrm{int}(s, a)\), but we use a notion of \emph{curiosity} and want to explore where the knowledge of our model is bad. We hypothesize that states are more interesting if the distance of the predicted next state to the actual next state is large. Hence, we use the intrinsic reward
@@ -2396,16 +2396,16 @@
 				R_\mathrm{int}(s, a) = \frac{\eta}{2} \bigl\lVert \vec{\phi}(\tilde{s}') - \vec{\phi}(s') \bigr\lVert_2^2
 			\end{equation}
 			where \(\tilde{s}'\) is the predicted and \(s'\) is the actual next state and \(\eta\) is a hyper-parameter.
-			% end
+		% end
 
 		\subsection{Empowerment-Driven Exploration}
 			\emph{Empowerment-driven exploration} is also an intrinsic reward approach depending on how much power we have on the environment in some state, i.e., how much effect the actions have
-			% end
+		% end
 
 		\subsection{Ensemble-Driven Exploration}
 			Instead of learning a single action-value function, in \emph{ensemble-driven exploration} we train multiple value functions as an ensemble. The ensemble itself is usually implemented by as single \ac{NN} with \(\kappa\) regression heads. During training, each head is trained with different samples where the samples are chosen according to some masking distribution and the value function for acting in the environment is chosen once per trajectory. The corresponding algorithm is called \emph{bootstrapped \ac{DQN}.}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Wrap-Up}
 		\begin{itemize}
@@ -2423,8 +2423,8 @@
 					\item Paper: "Curiosity-Driven Exploration by Self-Supervised Prediction" (Pathak et al., 2017)  % TODO: Read!
 				\end{itemize}
 		\end{itemize}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Deep Actor-Critic}
 	\label{c:deepAC}
@@ -2482,7 +2482,7 @@
 			\mathcal{L}(\pi_{\vec{\theta}}) = \E_{s \sim d^q(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \given s)}\bigl[ A^q(s, a) \bigr].
 		\end{equation}
 		Also, we approximate the advantage function \( \hat{A}(s, a) \approx A(s, a) \). We select \(q\) to be the previous policy \(\pi_{\vec{\theta}_k}\) and \(\pi_{\vec{\theta}}\) to be the policy we are currently optimizing, i.e., taking the gradient w.r.t. its parameter \(\vec{\theta}\). Additionally, most of the algorithms we discuss introduce another approximation by not using the discounted state distribution \(d^q\) but using the undiscounted one, \(u^q\).
-		% end
+	% end
 
 	\section{Advantage Actor-Critic (\acs{A2C})}
 		\emph{Advantage actor-critic (\acsu{A2C})} is the simplest deep actor-critic methods and just uses \ac{MC} estimates of the value and advantage function. Subsequently, it just follows the gradient of the surrogate loss,
@@ -2519,7 +2519,7 @@
 			\caption{Advantage Actor-Critic (\acs{A2C})}
 			\label{alg:a2c}
 		\end{algorithm}
-		% end
+	% end
 
 	\section{On-Policy Methods}
 		In this section we discuss a variety of on-policy methods which, in the deep actor-critic sense, are on-policy as they do not use a replay buffer.
@@ -2576,7 +2576,7 @@
 				\caption{Trust-Region Policy Optimization}
 				\label{alg:trpo}
 			\end{algorithm}
-			% end
+		% end
 
 		\subsection{Proximal Policy Optimization (\acs{PPO})}
 			Another trust-region-based approach is \emph{\ac{PPO}.} In \ac{PPO}, we include the constraint present in \ac{TRPO} into the objective by clipping the importance sampling weight:
@@ -2602,8 +2602,8 @@
 				\caption{Proximal Policy Optimization}
 				\label{alg:ppo}
 			\end{algorithm}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Off-Policy Methods}
 		In this section we discuss a variety of off-policy methods which, in the deep actor-critic sense, are off-policy as they use a replay buffer.
@@ -2658,7 +2658,7 @@
 				\caption{Deep Deterministic Policy Gradient (\acs{DDPG})}
 				\label{alg:ddpg}
 			\end{algorithm}
-			% end
+		% end
 
 		\subsection{Twin Delayed \acs{DDPG} (\acs{TD3})}
 			Despite all tricks, the \ac{DDPG} still has three major issues:
@@ -2711,7 +2711,7 @@
 				\caption{Twin Delayed \acs{DDPG} (\acs{TD3})}
 				\label{alg:td3}
 			\end{algorithm}
-			% end
+		% end
 
 		\subsection{Soft Actor-Critic (\acs{SAC})}
 			Opposed to \ac{DDPG} (and \ac{TD3}), \emph{\ac{SAC}} uses a stochastic policy \(\pi_{\vec{\theta}}(a \given s)\) with the following objective:
@@ -2774,8 +2774,8 @@
 				\caption{Soft Actor-Critic (\acs{SAC})}
 				\label{alg:sac}
 			\end{algorithm}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Wrap-Up}
 		\begin{itemize}
@@ -2805,8 +2805,8 @@
 					\item Paper: "Soft Actor-Critic Algorithms and Applications" (Haarnoja et al., 2018)
 				\end{itemize}
 		\end{itemize}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Frontiers}
 	In this chapter we go over some frontier, limits, and unsolved problems of \ac{RL}. These are a great place to start research!
@@ -2841,7 +2841,7 @@
 				"Deep Recurrent Q-Learning for Partially Observable \acp{MDP}" (Hausknecht and Stone, 2015)
 		\end{itemize}
 		For further reading on this topic, see "Planning and Acting in Partially Observable Stochastic Domains" (Kaelbling et al., 1998).
-		% end
+	% end
 
 	\section{Hierarchical Control}
 		In a \emph{\ac{SMDP},} the actions are temporally extended, i.e., taking an action \(a\) may effect a (random) number of time steps rather than just the next. We model this in the \ac{MDP} framework by extending the transition probability to \( P(s', N \given s, a) \) which is the probability of reaching state \(s'\) in \(N\) steps after taking action \(a\) in state \(s\) and by extending the reward function to \( R(s, a, N) \) where \(N\) is the number of time steps that occurred in the transition.
@@ -2896,7 +2896,7 @@
 			\item "Reinforcement Learning with Hierarchies of Machines" (Parr and Russel, 1997)
 			\item "Between \acp{MDP} and Semi-\acp{MDP}: A Framework for Temporal Abstract in Reinforcement Learning" (Sutton et al., 1999).
 		\end{itemize}
-		% end
+	% end
 
 	\section{Markov Decision Processed Without Reward}
 		In \acp{MDP} \emph{without rewards}, no reward signal is provided to the agent and the agent cannot "simply" optimize an objective function. Instead, the objective has to be defined differently. One option is to use an \emph{intrinsic} reward, of which we have seen some examples in \autoref{sec:otherApproaches}.
@@ -2917,7 +2917,7 @@
 					\item "Maximum Entropy Inverse Reinforcement Learning" (Ziebart et al., 2008)
 				\end{itemize}
 		\end{itemize}
-		% end
+	% end
 
 	\section{Model-Based Reinforcement Learning}
 		All of this course covered \emph{model-free} \ac{RL} (except for \ac{DP} which uses a known model). In \emph{\ac{MBRL}}, we learn a model of the environment and its transitions. We can then use this model to efficiently solve the task. Two (policy search) approaches for this are \ac{PILCO} and \ac{GPS}.
@@ -2944,7 +2944,7 @@
 					\item "Improving Multi-Step Prediction of Learning Time Series Models" (Venkatraman et al, 2015)
 				\end{itemize}
 		\end{itemize}
-		% end
+	% end
 
 	\section{Wrap-Up}
 		\begin{itemize}
@@ -2973,5 +2973,5 @@
 					\item key issues of \ac{MBRL}
 				\end{itemize}
 		\end{itemize}
-		% end
-		% end
+	% end
+% end

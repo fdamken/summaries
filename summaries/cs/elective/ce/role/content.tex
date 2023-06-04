@@ -10,12 +10,12 @@
 
 		\subsection{Entropy} % 5b.9
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Gaussian Distribution and Properties} % 5b.17, 5b.18, 5b.19
 			\todo{Content}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Kullback-Leibler Divergence} % 10.36, 10.37, 10.38
 		\label{sec:klDivergence}
@@ -26,25 +26,25 @@
 			\label{subsec:fisherInformationMatrix}
 
 			\todo{Content}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Monte-Carlo Integration and Gradient Estimation} % 5b.10
 		\todo{Content}
 
 		\subsection{Gradient Estimation} % 5b.11, 5b.12, 5b.13
 			\todo{Content}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Linear Algebra and Calculus} % 5b.15
 		\todo{Content}
 
 		\subsection{Moore-Penrose Pseudo-Inverse} % 5b.16
 			\todo{Content}
-			% end
-			% end
-			% end
+		% end
+	% end
+% end
 
 \chapter{Robotics}
 	This chapter covers the basics of robotics, covering modeling position, velocity, acceleration and forces as well as representing trajectories. Also the main concepts of linear and model-based control are covered.
@@ -143,7 +143,7 @@
 					\mat{R}_1^0 = \mat{R}_z(\phi) \mat{R}_y(\theta) \mat{R}_x(\psi)
 				\end{equation*}
 				Problems with Euler angles are that they are not unique, i.e. different Euler angles may describe the same rotation, and it is hard to quantify differences between Euler angles. An alternative for describing rotations are \emph{unit quaternions} and angle-axis formulations, where both a rotation axis as well as a rotation angle are given. Both of them solve the singularities with Euler angles and it is easier to computer differences of orientations.
-				% end
+			% end
 
 			\subsubsection{Homogeneous Transformations}
 				\emph{Homogeneous transformations} are a ways to represent combined translation and rotation transformations, e.g.
@@ -174,7 +174,7 @@
 				\begin{equation*}
 					\tilde{\vec{p}}^0 = \mat{H}_1^0 \mat{H}_2^1 \cdots \mat{H}_n^{n - 1} \tilde{\vec{p}}^n
 				\end{equation*}
-				% end
+			% end
 
 			\subsubsection{Denavit-Hartenberg Convention}
 				A common convention for describing the coordinate systems of a robot is the \emph{Denavit-Hartenberg convention} which describes the kinematics of a complete robot with only four parameters per joint. These four parameters are:
@@ -192,8 +192,8 @@
 					\item The \(x_i\)-axis and the \(z_{i - 1}\)-axis have an intersection.
 				\end{itemize}
 				Placing the coordinate system can be formulated as an algorithm, check out the foundations of robotics summary\footnote{\url{https://projects.frisp.org/documents/29} (German)} for more details.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Differential Forward Kinematics (Velocities and Accelerations)}
 			Often it is necessary to get the velocities \(\dot{\vec{x}}\) and accelerations \(\ddot{\vec{x}}\) of the end-effector. These can be computed straightforwardly using the chain rule
@@ -205,7 +205,7 @@
 
 			\subsubsection{Singularities}
 				In some cases, the Jacobian \( \mat{J}(\vec{q}) \) might get rank-deficient, i.e. \( \det \mat{J}(\vec{q}) = 0 \). In this case, infinite velocities in the joints are required to reach a desired end-effector velocities as the Jacobian is not invertible anymore. These positions are called \emph{singularities} of the robot and correspond to a loss in the degrees of freedom, e.g. when the robot stretches out its arm.
-				% end
+			% end
 
 			\subsubsection{Computing the Jacobians}
 				There are two main ways of computing the Jacobian:
@@ -214,8 +214,8 @@
 					\item[Geometric]  These are derived from geometric insights, maybe circumventing the "representational singularities".
 				\end{description}
 				Both of these ways are just different representations of the same concept.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Inverse Kinematics}
 			\label{subsec:inverseKinematics}
@@ -227,7 +227,7 @@
 			For really simple robots, this can again be solved from a geometric perspective. However, there is most likely more than one solution for a given end-effector position! With certain redundancies in the robot, it is even possible to get infinite solutions.
 
 			An additional problem is that the inverse kinematics equations are often not solvable analytically, hence numerical methods have to be used. But those do not guarantee to find all solutions which might be necessary to move into an "optimal" joint configuration. However, for a lot of industrial robots, invertible solutions are possible due to intelligent joint and link design.
-			% end
+		% end
 
 		\subsection{Dynamics}
 			For the dynamics of a robot, a forward model
@@ -263,7 +263,7 @@
 
 				\paragraph{Newton-Euler Method}
 					The Newton-Euler method is based on \emph{force dissection} and exploiting of the required force equilibrium. It yields the \emph{recursive Newton-Euler algorithm} that can be used to straightforwardly compute the torques/forces in the joints.
-					% end
+				% end
 
 				\paragraph{Lagrangian Methods}
 					The \emph{Lagrangian method} is energy-based and works by defining the \emph{Lagrangian}
@@ -303,14 +303,14 @@
 						\item[\(\mat{I}_i\)] is the inertia tensor of the \(i\)-th link, and
 						\item[\(\mat{R}_i(\vec{q})\)] is the orientation of the \(i\)-th link.
 					\end{description}
-					% end
+				% end
 
 				\paragraph{Comparison of Newton-Euler and Lagrangian}
 					Using the Newton-Euler approach manually, i.e. to find the equations directly, is quite tedious and therefore not suitable for large robots. The Lagrangian approach, on the other hand, is a lot faster to execute by hand and therefore appropriate for finding the equations explicitly.
 
 					In most cases, however, the algorithm is used computationally without formulating the equations explicitly. In this case, the Newton-Euler method is better suited as it has a computational complexity of \( \mathcal{O}(n) \) whilst the Lagrangian approach has a complexity of \( \mathcal{O}(n^3) \).
-					% end
-					% end
+				% end
+			% end
 
 			\subsubsection{General Forms}
 				If somehow an inverse dynamics model \( \vec{u} = \vec{f}(\vec{q}, \dot{\vec{q}}, \ddot{\vec{q}}) \) is achieved in the general form \eqref{eq:dynamicsInverseGeneral}, it is easy to compute the forward dynamics model \( \ddot{\vec{q}} = \vec{f}(\vec{q}, \dot{\vec{q}}, \vec{u}) \) by inverting the mass matrix as shown in \eqref{eq:dynamicsGeneral}. By integrating \(\ddot{\vec{q}}\), the velocities and positions can be recovered:
@@ -326,9 +326,9 @@
 					\vec{q}_{k + 1} = \vec{q}_k + h \dot{\vec{q}}_{k + 1}
 				\end{align*}
 				Here, \(k\) is the step, \( h \in (0, 1) \) is the step size with \( t_k \coloneqq kh \), and \( \vec{q}_k \) and \( \dot{\vec{q}}_k \) are the respective approximations of the positions and velocities.
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
 
 	\section{Representing Trajectories}
 		\label{sec:roboticsRepresentingTrajectories}
@@ -404,7 +404,7 @@
 				that can be solved for the parameters \(a_0\), \(a_1\), \(a_2\) and \(a_3\). The via-points are the initial and final position of the spline between them. In case of multiple degrees of freedom, multiple splines have to be used, i.e. the parameters become vectors.
 
 				But cubic splines still exhibit jumps in the acceleration which are dangerous at high speeds and might damage the robot!
-				% end
+			% end
 
 			\subsubsection{Quintic Splines}
 				An alternative are quintic splines
@@ -440,8 +440,8 @@
 					\end{bmatrix}
 				\end{equation*}
 				By equalizing the accelerations at the start and end of each spline, the acceleration becomes continuous, i.e. no jumps are present anymore.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Alternatives}
 			Alternatives to splines are for example
@@ -451,8 +451,8 @@
 				\item potential fields \( V(\vec{q}) \) with \( \dot{\vec{q}} = \pdv{V(\vec{q})}{\vec{q}} \), and
 				\item nonlinear dynamical systems \( \ddot{\vec{q}} = \vec{f}(\vec{q}, \dot{\vec{q}}, \vec{\theta}) \) parameterized by \(\vec{\theta}\).
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Control in Joint-Space}
 		Given a desired trajectory \( \vec{q}_d(t) \)/\( \dot{\vec{q}}_d(t) \)/\( \ddot{\vec{q}}_d(t) \), it is still necessary to find the corresponding motor inputs \(\vec{u}\) to follow this trajectory. This problem is called \emph{control}.
@@ -487,7 +487,7 @@
 					\vec{u}_t = \mat{K}_P (\vec{q}_d - \vec{q}_t)
 				\end{equation*}
 				But a simple P-controller causes high oscillations in the position, making it not suitable for real control.
-				% end
+			% end
 
 			\subsubsection{PD-Controller}
 				An extended version, the \emph{PD-controller}, additionally includes differential values in terms of the joint velocities. The control law is then given as
@@ -502,8 +502,8 @@
 						\vec{u}_t = \mat{K}_P (\vec{q}_d - \vec{q}_t) + \mat{K}_D (\dot{\vec{q}}_d - \dot{\vec{q}}_t) + \vec{g}(\vec{q})
 					\end{equation*}
 					But of course this required a reasonable model which is not always available.
-					% end
-					% end
+				% end
+			% end
 
 			\subsubsection{PID-Controller}
 				Another commonly used control law is the \emph{PID-controller} which, in addition to the proportional and differential terms, adds an integral part that keeps track of the error from the beginning of time:
@@ -513,8 +513,8 @@
 				This approach also removes the steady-state error for steady-state control, i.e. when the robot should move to a single point. However, for tracking control, this approach is not suitable as there may always be a positioning error, letting the integral part become large very quick. This results in high motor commands may causing damage to the robot.
 
 				Also, there is the problem of wind-up where if the position is not reached, the controller might get saturated due to limitations of the motor. This causes the control law to be effectively useless as it cannot react to other errors anymore.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Model-Based Feedback Control}
 			Some problems with PD-control with gravity compensation include that there always needs to be an error in either the position or the velocity to generate a control signal. This implies that high gains are needed in order to be accurate. But high gains cause the robot to be really stiff and dangerous as it moves with higher power!
@@ -525,7 +525,7 @@
 				\vec{u}_t                         & = \mat{M}(\vec{q}_t) \ddot{\vec{q}}_t^{\,\mathrm{ref}} + \vec{c}(\vec{q}, \dot{\vec{q}}) + \vec{g}(\vec{q})
 			\end{align*}
 			A major drawback is of course that this needs an accurate model of the dynamics!
-			% end
+		% end
 
 		\subsection{Feedforward Control}
 			In feedforward control, it is assumed that \( \vec{q}_t \approx \vec{q}_d \) and \( \dot{\vec{q}}_t \approx \dot{\vec{q}}_d \). This directly yields the following control law:
@@ -535,8 +535,8 @@
 				\vec{u}_t             & = \vec{u}_t^\mathrm{FF} + \vec{u}_t^\mathrm{FB}
 			\end{align*}
 			As the inverse model does not play such a high role in feedforward control, it can also be used if the model is only approximate or even bad. Hence, feedforward control is highly relevant in practice as models are often not so good that model-based feedback control can be used. Additionally, it is often possible to pre-compute the feedforward terms \( \vec{u}_t^\mathrm{FF} \) such that less real-time computations are needed.
-			% end
-			% end
+		% end
+	% end
 
 	\section{Control in Task-Space}
 		So far it was assumed that the space to plan the movements in was the joint-space. However, sometimes it is more practical to plan in task-space, e.g. when trying to hit a ball with a table tennis racket. Hence, an inverse kinematics model \( \vec{q} = \vec{f}^{-1}(\vec{x}) \) as discussed in \autoref{subsec:inverseKinematics} is needed. But is is often hard if not impossible to find such a model!
@@ -564,7 +564,7 @@
 				This is called the \emph{Jacobian transpose method}. As already said, the desired joint position \( \vec{q}_d \) can then be recovered by numerically integrating \( \dot{\vec{q}}_d \). All of this can then be fed into an joint-space controller, e.g. a PD- or model-based controller.
 
 				By adding numerical differentiation, it is also possible to use joint-space controllers that control the acceleration.
-				% end
+			% end
 
 			\subsubsection{Jacobian Pseudo-Inverse}
 				Under the assumption that the robot is not too far away from the solution, it is possible to also set desired task space velocities whilst finding the smallest \( \dot{\vec{q}}_d \) that keeps that velocity. This can be formulated as the optimization problem
@@ -599,8 +599,8 @@
 					= \underbrace{\mat{J}^T \big( \mat{J} \mat{J}^T \big)^{-1}}_{\mat{J}^\dagger} \dot{\vec{x}}_d
 					\doteq \mat{J}^\dagger \dot{\vec{x}}_d
 				\end{equation*}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Task-Prioritization with Null-Space Movements}
 			It is possible to modify the task-space control law to simultaneously execute another action in the \emph{null-space}, a space that does not contradict the constraints of the optimization problem \eqref{eq:jacobianPseudoInverseOptProblem}. This can be, for example, to push the robot into a rest position \( \vec{q}_\mathrm{rest} \) where it does not consume energy. This base task can be formulated with a P-controller
@@ -622,7 +622,7 @@
 				\dot{\vec{q}}_d = \mat{J}^\dagger \dot{\vec{x}}_d + \big( \mat{I} - \mat{J}^\dagger \mat{J} \big) \dot{\vec{q}}_0
 			\end{equation*}
 			where again \( \mat{J} \coloneqq \mat{J}(\vec{q}) \). The null-space is characterized by \( \big( \mat{I} - \mat{J}^\dagger \mat{J} \big) \) which includes all movements \( \dot{\vec{q}}_\mathrm{null} \) that do not contradict the constraint \( \mat{J} \dot{\vec{q}} = \dot{\vec{x}}_d \), i.e. \( \dot{\vec{x}}_d = \mat{J} (\dot{\vec{q}} + \dot{\vec{q}}_\mathrm{null}) \) or equivalent \( \mat{J} \dot{\vec{q}}_\mathrm{null} = \vec{0} \) holds.
-			% end
+		% end
 
 		\subsection{More Advanced Solutions}
 			It is also possible to use an acceleration formulation which has the solution
@@ -641,13 +641,13 @@
 					\end{aligned}
 				\end{aligned}
 			\end{equation*}
-			% end
+		% end
 
 		\subsection{Singularities and Damped Pseudo-Inverse}
 			If the Jacobian gets rank-deficient, i.e. singular, it is not longer possible to evaluate the pseudo-inverse \( \mat{J}^\dagger = \mat{J}^T \big( \mat{J} \mat{J}^T \big)^{-1} \) due to the last inversion. It is therefore numerically more stable to use a damped pseudo-inverse \( \mat{J}^{\dagger(\lambda)} = \mat{J}^T \big( \mat{J} \mat{J}^T + \lambda \mat{I} \big)^{-1} \) as a replacement of the regular pseudo-inverse. This avoids singularities in the inversion.
-			% end
-			% end
-			% end
+		% end
+	% end
+% end
 
 \chapter{Machine Learning Foundations}
 	This chapter is a basic introduction into the foundations of machine learning, focusing on the tools that are important for robot learning. Machine learning has become the best approach to various problems (e.g. in robotics and computer vision) in terms of speed, engineering time and robustness due to the shear amount of data that is generated on a daily basis. The goal of machine learning is to \emph{describe} data make \emph{predictions}, and make \emph{decisions} based on data. To learn from previously seen data, several assumptions has to be made like all training data is i.i.d., queries are drawn from the same distribution as the training data or that the answer comes from a set of possible answers known in advance. Of course different machine learning models and algorithms impose different assumptions and some impose severe while others impose mild conditions. In general, there are two core problems when building a machine learning model:
@@ -679,7 +679,7 @@
 
 		\subsection{Problem Class} % 5b.30, 5b.31, 5b.32, 5b.33, 5b.34, 5b.35
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Problem Assumptions}
 			Typical assumptions are for example:
@@ -691,183 +691,183 @@
 				\item Observability.
 				\item Frequentist assumption: there exists a true model.
 			\end{itemize}
-			% end
+		% end
 
 		\subsection{Evaluation} % 5b.37, 5b.38, 5b.39, 5b.40, 5b.41
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Model Type} % 5b.42
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Model Class Selection} % 5b.43, 5b.44, 5b.45
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Algorithm Realization} % 5b.46
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Example} % 5b.47, 5b.48, 5b.49, 5b.50, 5b.51, 5b.52, 5b.53, 5b.54, 5b.55, 5b.56, 5b.57, 5b.58, 5b.59, 5b.60, 5b.61
 			\todo{Content}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Evaluation} % 5b.63, 5b.65
 		\todo{Content}
 
 		\subsection{Occams Razor} % 5b.66
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Bias and Variance} % 5b.67, 5b.68, 5b.69
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Model Selection} % 5b.70, 5b.71, 5b.72, 5b.73
 			\todo{Content}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Frequentist vs. Bayesian Assumptions} % 5b.74, 5b.75
 		\todo{Content}
 
 		\subsection{Maximum Likelihood Estimation} % 5b.76, 5b.77, 5b.78, 5b.79
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Bayesian Thinking and Maximum A-Posteriori} % 5b.80, 5b.81, 5b.82
 			\todo{Content}
 
 			\subsubsection{Ridge Regression (Tikhonov Regularized Regression)} % 5b.83, 5b.84
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Predictions} % 5b.85, 5b.86, 5b.87
 				\todo{Content}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Bayesian Regression} % 5b.88, 5b.89, 5b.90, 5b.91, 5b.92
 			\todo{Content}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Hand-Crafted Feature Construction} % 5b.93, 5b.94
 		\todo{Content}
 
 		\subsection{Discrete Inputs} % 5b.95, 5b.96
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Continuous Inputs} % 5b.97
 			\todo{Content}
 
 			\subsubsection{One-Hot} % 5b.98
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Radial Basis Functions (RBFs)} % 5b.99, 5b.100, 5b.101
 				\todo{Content}
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
 
 	\section{Automatic (Linear) Feature Construction} % 5b.102, 5b.103, 5b.104, 5b.105, 5b.106, 5b.107
 		\todo{Content}
 
 		\subsection{Respective Field Weighted Regression (RFWR)} % 5b.108, 5b.109, 5b.110
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Automatic Adaption of RFWR} % 5b.111, 5b.112, 5b.113
 			\todo{Content}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Non-Parametric Approaches} % 5b.114, 5b.115, 5b.116, 5b.117
 		\todo{Content}
 
 		\subsection{Weighted Linear Regression} % 5b.118, 5b.119, 5b.120, 5b.121, 5b.122
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Locally Weighted Bayesian Linear Regression} % 5b.123
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Kernel Methods} % 5b.124, 5b.125, 5b.128
 			\todo{Content}
 
 			\subsubsection{Kernel Ridge Regression} % 5b.126, 5b.127
 				\todo{Content}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Bayesian Kernel Regression: Gaussian Processes (GPs)} % 5b.129, 5b.130, 5b.131, 5b.136
 			\todo{Content}
 
 			\subsubsection{GP-Posterior} % 5b.132, 5b.133, 5b.134, 5b.135
 				\todo{Content}
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
 
 	\section{Neural Networks} % 5c.1, 5c.2, 5c.4, 5c.5, 5c.6, 5c.7, 5c.7, 5c.8, 5c.9
 		\todo{Content}
 
 		\subsection{Biology and Neuron Abstraction} % 5c.10, 5c.11, 5c.12, 5c.13
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Components of a Neural Network} % N/A
 			\todo{Content}
 
 			\subsubsection{Single- and Multi-Layer Networks} % 5c.14, 5c.15, 5c.16, 5c.17, 5c.18, 5c.19
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Topologies} % 5c.20, 5c.21
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Activation Functions} % 5c.22, 5c.23, 5c.24, 5c.25
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Output Neurons} % 5c.26
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Loss Functions} % 5c.27
 				\todo{Content}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Forward- and Backpropagation} % 5c.28, 5c.29, 5c.30
 			\todo{Content}
 
 			\subsubsection{Forwardpropagation} % 5c.31, 5c.32
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Backpropagation} % 5c.33, 5c.34, 5c.35, 5c.37
 				\todo{Content}
 
 				\paragraph{Skip Connections} % 5c.36
 					\todo{Content}
-					% end
-					% end
+				% end
+			% end
 
 			\subsubsection{Finite Differences} % 5c.38, 5c.39
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Automatic Differentiation} % 5c.40
 				\todo{Content}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Efficient Gradient Descent} % 5c.42, 5c.43, 5c.44, 5c.47
 			\todo{Content}
@@ -876,118 +876,118 @@
 				\label{subsubsec:sgd}
 
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Mini-Batch Gradient Descent} % 5c.46
 				\todo{Content}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Choosing the Learning Rate} % 5c.48, 5c.49, 5c.50, 5c.51
 			\todo{Content}
 
 			\subsubsection{Plateaus and Valleys} % 5c.52
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Adaptive Learning Rates} % N/A
 				\todo{Content}
 
 				\paragraph{Momentum} % 5c.53
 					\todo{Content}
-					% end
+				% end
 
 				\paragraph{Adadelta} % 5c.54
 					\todo{Content}
-					% end
+				% end
 
 				\paragraph{Adam} % 5c.55
 					\todo{Content}
-					% end
-					% end
-					% end
+				% end
+			% end
+		% end
 
 		\subsection{Choosing the Descent Direction} % N/A
 			\todo{Content}
 
 			\subsubsection{Hessian Approaches} % 5c.56
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Conjugate Gradient} % 5c.57
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Levenberg-Marquardt} % 5c.58
 				\todo{Content}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Initialization of the Parameters} % 5c.59, 5c.60
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Overfitting} % 5c.61, 5c.62, 5c.63, 5c.64, 5c.65, 5c.66
 			\todo{Content}
 
 			\subsubsection{Weight Decay} % 5c.67
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Early Stopping} % 5c.68
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Input Noise Augmentation} % 6.69
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Dropout} % 5c.70
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Batch Normalization} % 5c.71
 				\todo{Content}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Theoretical Analysis} % 5c.72, 5c.73, 5c.75, 5c.76, 5c.77
 			\todo{Content}
 
 			\subsubsection{Universal Function Approximation Theorem} % 5c.74
 				\todo{Content}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Network Architectures} % 5c.78, 5c.79, 5c.80
 			\todo{Content}
 
 			\subsubsection{Convolutional Neural Networks (CNNs)} % 5c.81, 5c.82, 5c.83, 5c.84, 5c.85, 5c.86
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Recurrent Neural Networks (RNNs)} % 5c.78
 				\todo{Content}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Neural Networks in Robotics} % 5c.88, 5c.89
 			\todo{Content}
 
 			\subsubsection{Value Functions} % 5c.90, 5c.91
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Policies} % 5c.92, 5c.93
 				\todo{Content}
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
 
 	\section{Wrap-Up} % 5b.138, 5c.95
 		\todo{Content}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Optimal Control}
 	\label{c:optimalControl}
@@ -1063,7 +1063,7 @@
 						Q_t^\ast(\vec{s}, \vec{a}) & = r_t(\vec{s}, \vec{a}) + \E_{\vec{s}' \sim p(\cdot \given \vec{s}, \vec{a})}\big[ V_{t + 1}^\ast(\vec{s}') \big]
 					\end{aligned}  \label{eq:valueQFuncRelations}
 				\end{equation*}
-				% end
+			% end
 
 			\subsubsection{Value Iteration}
 				Applying the principle of dynamic programming to an MDP is straightforward. As in the last time step there is no action, the value function for the last time step is simply
@@ -1097,12 +1097,12 @@
 					\caption{Value Iteration for Finite-Horizon Problems}
 					\label{alg:valueIterationFiniteHorizon}
 				\end{algorithm}
-				% end
+			% end
 
 			\subsubsection{Consequences of a Finite Time Horizon}
 				Choosing a finite time horizon over an infinite one has some major consequences on the environment and the e.g. the value function. First of all, it matters how many time steps are left. This implies that not only the state transition model, but also the policy and the reward function might be time-dependent as denoted by the index \(t\). This leads to also the value and Q-function being time-dependent! However, having a finite amount of steps makes it possible to find the optimal value function in a finite amount of steps.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Infinite-Horizon Optimal Control}
 			Using an infinite time horizon, i.e. \( T = \infty \), the time index is not part of the state! Hence, also the optimal policy as well as the value and Q-function are time-independent and also the reward function and the state transition model are time-independent. But this comes at the cost of the sum of rewards, i.e. the optimization objective, being infinite and hence divergent.
@@ -1141,7 +1141,7 @@
 					\caption{Value Iteration for Infinite-Horizon Problems}
 					\label{alg:valueIterationInfiniteHorizon}
 				\end{algorithm}
-				% end
+			% end
 
 			\subsubsection{Policy Iteration}
 				One major drawback of value iteration as introduced before is that a lot of redundant maximization operations have to be performed when calculating the Q-function values. This drawback can be overcome by \emph{policy iteration}, a similar approach for computing the optimal value and Q-function. It is composed of two steps that are after each other until convergence:
@@ -1200,9 +1200,9 @@
 					\caption{Policy Iteration for Infinite-Horizon Problems}
 					\label{alg:policyIteration}
 				\end{algorithm}
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
 
 	\section{Continuous State-Action Space: Linear Quadratic Regulator}
 		In this section the application of the principle of dynamic programming will be applied to continuous state-action spaces. For continuous systems, this is often just called \emph{optimal control} and a slightly different notation is used, namely \(\vec{x}\) for the state and \(\vec{u}\) for the action. This section will stick to this convention.
@@ -1228,84 +1228,84 @@
 			\end{equation*}
 			The value \(\vec{x}_d\) can be seen as the desired state. Deviations from \(\vec{x}_d\) punish the system with a highly negative reward.
 
-		\subsection{Solving the Optimal Control Problem}
-			Applying the principle of optimal control now says to start with the last time step \(T\) by setting \( V_T^\ast(\vec{x}) = r_T(\vec{x}) \) for all states. Subsequently, iterate over \( t = \dotsrange{T - 1}{1} \) and compute
-			\begin{equation*}
-				V_t^\ast(\vec{x}) = \max_{\vec{u}} \, \Big(\! r_t(\vec{x}_t, \vec{u}_t) + \E_{\vec{x}' \sim p(\cdot \given \vec{x}, \vec{u})}\big[ V_{t + 1}^\ast(\vec{x}') \biggiven \vec{x}, \vec{u} \big] \!\Big).
-			\end{equation*}
-			For applying this to continuous state-action spaces, the expectation and the maximization have to be solved. And this step is only possible for LQR problems! Applying dynamic programming can be split further into the following steps:
-			\begin{enumerate}
-				\item Compute the value function for the last time step:
-					\begin{equation*}
-						V_T^\ast(\vec{x}) = r_T(\vec{x})
-					\end{equation*}
-				\item To get from \(t + 1\) to \(t\), compute the Q-function for all states and actions:
-					\begin{equation*}
-						Q_t^\ast(\vec{x}, \vec{u}) = r_t(\vec{x}_t, \vec{u}_t) + \E_{\vec{x}' \sim p(\cdot \given \vec{x}, \vec{u})}\big[ V_{t + 1}^\ast(\vec{x}') \biggiven \vec{x}, \vec{u} \big]
-					\end{equation*}
-				\item Compute the optimal policy for time step \(t\) for all states:
-					\begin{equation*}
-						\pi_t^\ast(\vec{x}) = \arg\max_{\vec{u}} \, Q_t^\ast(\vec{x}, \vec{u})
-					\end{equation*}
-				\item Compute the optimal value function for time step \(t\) for all states:
-					\begin{equation*}
-						V_t^\ast(\vec{x}) = Q_t^\ast\big(\vec{x}, \pi_t^\ast(\vec{x})\big)
-					\end{equation*}
-				\item Repeat from 2 until \( t = 1 \) is reached.
-			\end{enumerate}
-			The next paragraphs will focus on these steps separately.
-
-			\paragraph{1. Compute the Value Function for the Last Time Step}
-				This can be computed straightforwardly as
+			\subsection{Solving the Optimal Control Problem}
+				Applying the principle of optimal control now says to start with the last time step \(T\) by setting \( V_T^\ast(\vec{x}) = r_T(\vec{x}) \) for all states. Subsequently, iterate over \( t = \dotsrange{T - 1}{1} \) and compute
 				\begin{equation*}
-					V_T^\ast(\vec{x}) = r_T(\vec{x}) = -(\vec{x} - \vec{x}_d)^T \mat{R}_T (\vec{x} - \vec{x}_d) \doteq -(\vec{x} - \vec{x}_d)^T \mat{V}_T (\vec{x} - \vec{x}_d)
+					V_t^\ast(\vec{x}) = \max_{\vec{u}} \, \Big(\! r_t(\vec{x}_t, \vec{u}_t) + \E_{\vec{x}' \sim p(\cdot \given \vec{x}, \vec{u})}\big[ V_{t + 1}^\ast(\vec{x}') \biggiven \vec{x}, \vec{u} \big] \!\Big).
 				\end{equation*}
-				with \( \mat{V}_t \coloneqq \mat{R}_T \).
+				For applying this to continuous state-action spaces, the expectation and the maximization have to be solved. And this step is only possible for LQR problems! Applying dynamic programming can be split further into the following steps:
+				\begin{enumerate}
+					\item Compute the value function for the last time step:
+						\begin{equation*}
+							V_T^\ast(\vec{x}) = r_T(\vec{x})
+						\end{equation*}
+					\item To get from \(t + 1\) to \(t\), compute the Q-function for all states and actions:
+						\begin{equation*}
+							Q_t^\ast(\vec{x}, \vec{u}) = r_t(\vec{x}_t, \vec{u}_t) + \E_{\vec{x}' \sim p(\cdot \given \vec{x}, \vec{u})}\big[ V_{t + 1}^\ast(\vec{x}') \biggiven \vec{x}, \vec{u} \big]
+						\end{equation*}
+					\item Compute the optimal policy for time step \(t\) for all states:
+						\begin{equation*}
+							\pi_t^\ast(\vec{x}) = \arg\max_{\vec{u}} \, Q_t^\ast(\vec{x}, \vec{u})
+						\end{equation*}
+					\item Compute the optimal value function for time step \(t\) for all states:
+						\begin{equation*}
+							V_t^\ast(\vec{x}) = Q_t^\ast\big(\vec{x}, \pi_t^\ast(\vec{x})\big)
+						\end{equation*}
+					\item Repeat from 2 until \( t = 1 \) is reached.
+				\end{enumerate}
+				The next paragraphs will focus on these steps separately.
+
+				\paragraph{1. Compute the Value Function for the Last Time Step}
+					This can be computed straightforwardly as
+					\begin{equation*}
+						V_T^\ast(\vec{x}) = r_T(\vec{x}) = -(\vec{x} - \vec{x}_d)^T \mat{R}_T (\vec{x} - \vec{x}_d) \doteq -(\vec{x} - \vec{x}_d)^T \mat{V}_T (\vec{x} - \vec{x}_d)
+					\end{equation*}
+					with \( \mat{V}_t \coloneqq \mat{R}_T \).
 				% end
 
-			\paragraph{2. Compute the Q-Function}
-				To compute the Q-function
-				\begin{equation*}
-					Q_t^\ast(\vec{x}, \vec{u}) = r_t(\vec{x}_t, \vec{u}_t) + \E_{\vec{x}' \sim p(\cdot \given \vec{x}, \vec{u})}\big[ V_{t + 1}^\ast(\vec{x}') \biggiven \vec{x}, \vec{u} \big],
-				\end{equation*}
-				firstly the expectation has to be computed. By assuming a quadratic structure for the value function of time step \(t + 1\), i.e. \( V_{t + 1}^\ast(\vec{x}) = -(\vec{x} - \vec{x}_d)^T \mat{V}_{t + 1} (\vec{x} - \vec{x}_d) \) with a symmetric and positive-definite \( \mat{V}_{t + 1} \), the expectation becomes
-				\begin{align*}
-					\E_{\vec{x}' \sim p(\cdot \given \vec{x}, \vec{u})}\big[ V_{t + 1}^\ast(\vec{x}') \biggiven \vec{x}, \vec{u} \big]
-					 & = \int\! V_{t + 1}^\ast(\vec{x}') \, p(\vec{x}' \given \vec{x}, \vec{u}) \dd{\vec{x}'}                                                                                                                             \\
-					 & = - \int\! (\vec{x} - \vec{x}_d)^T \mat{V}_{t + 1} (\vec{x} - \vec{x}_d) \, \mathcal{N}\big(\vec{x}' \biggiven \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t,\, \mat{\Sigma}_t \big) \dd{\vec{x}'}           \\
-					 & = -\big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big)^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big) - \tr(\mat{V}_{t + 1} \mat{\Sigma}_t)
-				\end{align*}
-				where in the last step equation (380) from the \matrixcookbook was used. Plugging in the reward function yields the Q-function:
-				\begin{equation*}
-					\begin{aligned}
-						Q_t^\ast(\vec{x}, \vec{u}) =
-						 & \, -(\vec{x} - \vec{x}_d)^T \mat{R}_t (\vec{x} - \vec{x}_d) - \vec{u}^T \mat{H}_t \vec{u}                                                                                     \\
-						 & \, -\big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big)^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big) \\
-						 & \, -\tr(\mat{V}_{t + 1} \mat{\Sigma}_t)
-					\end{aligned}  \label{eq:qFunctionLQR}
-				\end{equation*}
+				\paragraph{2. Compute the Q-Function}
+					To compute the Q-function
+					\begin{equation*}
+						Q_t^\ast(\vec{x}, \vec{u}) = r_t(\vec{x}_t, \vec{u}_t) + \E_{\vec{x}' \sim p(\cdot \given \vec{x}, \vec{u})}\big[ V_{t + 1}^\ast(\vec{x}') \biggiven \vec{x}, \vec{u} \big],
+					\end{equation*}
+					firstly the expectation has to be computed. By assuming a quadratic structure for the value function of time step \(t + 1\), i.e. \( V_{t + 1}^\ast(\vec{x}) = -(\vec{x} - \vec{x}_d)^T \mat{V}_{t + 1} (\vec{x} - \vec{x}_d) \) with a symmetric and positive-definite \( \mat{V}_{t + 1} \), the expectation becomes
+					\begin{align*}
+						\E_{\vec{x}' \sim p(\cdot \given \vec{x}, \vec{u})}\big[ V_{t + 1}^\ast(\vec{x}') \biggiven \vec{x}, \vec{u} \big]
+						 & = \int\! V_{t + 1}^\ast(\vec{x}') \, p(\vec{x}' \given \vec{x}, \vec{u}) \dd{\vec{x}'}                                                                                                                             \\
+						 & = - \int\! (\vec{x} - \vec{x}_d)^T \mat{V}_{t + 1} (\vec{x} - \vec{x}_d) \, \mathcal{N}\big(\vec{x}' \biggiven \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t,\, \mat{\Sigma}_t \big) \dd{\vec{x}'}           \\
+						 & = -\big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big)^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big) - \tr(\mat{V}_{t + 1} \mat{\Sigma}_t)
+					\end{align*}
+					where in the last step equation (380) from the \matrixcookbook was used. Plugging in the reward function yields the Q-function:
+					\begin{equation*}
+						\begin{aligned}
+							Q_t^\ast(\vec{x}, \vec{u}) =
+							 & \, -(\vec{x} - \vec{x}_d)^T \mat{R}_t (\vec{x} - \vec{x}_d) - \vec{u}^T \mat{H}_t \vec{u}                                                                                     \\
+							 & \, -\big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big)^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big) \\
+							 & \, -\tr(\mat{V}_{t + 1} \mat{\Sigma}_t)
+						\end{aligned}  \label{eq:qFunctionLQR}
+					\end{equation*}
 				% end
 
-			\paragraph{3. Compute the Optimal Policy}
-				Computing the optimal policy is done by maximizing the Q-function w.r.t. the action \(\vec{u}\). This means taking the derivative of \eqref{eq:qFunctionLQR} and setting it to zero:
-				\begin{align*}
-					         &                                                                                                                                    & \pdv{\vec{u}} Q_t^\ast(\vec{x}, \vec{u})
-					         & = -2 \mat{H}_t \vec{u} - 2 \mat{B}_t^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big) &                                                                                                                                                                                                                                                               \\
-					         &                                                                                                                                    &                                          & = -2 \mat{H}_t \vec{u} - 2 \mat{B}_t^T \mat{V}_{t + 1} \mat{A}_t \vec{x} - 2 \mat{B}_t^T \mat{V}_{t + 1} \mat{B}_t \vec{u}_t - 2 \mat{B}_t^T \mat{V}_{t + 1} \vec{b}_t + 2 \mat{B}_t^T \mat{V}_{t + 1} \vec{x}_d & \\
-					         &                                                                                                                                    &                                          & = -2 \big( \mat{H}_t + \mat{B}_t^T \mat{V}_{t + 1} \mat{B}_t \big) \vec{u} - 2 \mat{B}_t^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \vec{b}_t - \vec{x}_d \big) \overset{!}{=} \vec{0}                          & \\
-					\implies &                                                                                                                                    & \pi_t^\ast(\vec{x}) = \vec{u}^\ast       & = -\big( \mat{H}_t + \mat{B}_t^T \mat{V}_{t + 1} \mat{B}_t \big)^{-1} \mat{B}_t^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \vec{b}_t - \vec{x}_d \big)                                                          &
-				\end{align*}
-				% TODO: What about v_t?
+				\paragraph{3. Compute the Optimal Policy}
+					Computing the optimal policy is done by maximizing the Q-function w.r.t. the action \(\vec{u}\). This means taking the derivative of \eqref{eq:qFunctionLQR} and setting it to zero:
+					\begin{align*}
+						         &                                                                                                                                    & \pdv{\vec{u}} Q_t^\ast(\vec{x}, \vec{u})
+						         & = -2 \mat{H}_t \vec{u} - 2 \mat{B}_t^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big) &                                                                                                                                                                                                                                                               \\
+						         &                                                                                                                                    &                                          & = -2 \mat{H}_t \vec{u} - 2 \mat{B}_t^T \mat{V}_{t + 1} \mat{A}_t \vec{x} - 2 \mat{B}_t^T \mat{V}_{t + 1} \mat{B}_t \vec{u}_t - 2 \mat{B}_t^T \mat{V}_{t + 1} \vec{b}_t + 2 \mat{B}_t^T \mat{V}_{t + 1} \vec{x}_d & \\
+						         &                                                                                                                                    &                                          & = -2 \big( \mat{H}_t + \mat{B}_t^T \mat{V}_{t + 1} \mat{B}_t \big) \vec{u} - 2 \mat{B}_t^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \vec{b}_t - \vec{x}_d \big) \overset{!}{=} \vec{0}                          & \\
+						\implies &                                                                                                                                    & \pi_t^\ast(\vec{x}) = \vec{u}^\ast       & = -\big( \mat{H}_t + \mat{B}_t^T \mat{V}_{t + 1} \mat{B}_t \big)^{-1} \mat{B}_t^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \vec{b}_t - \vec{x}_d \big)                                                          &
+					\end{align*}
+					% TODO: What about v_t?
 				% end
 
-			\paragraph{4. Compute the Value Function}
-				To compute the value function, plug the obtained optimal policy into the Q-function:
-				% TODO: What about the trace?
+				\paragraph{4. Compute the Value Function}
+					To compute the value function, plug the obtained optimal policy into the Q-function:
+					% TODO: What about the trace?
 				% end
 
 				% TODO: Continue and finish derivation of LQR! Also summarize at the end.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Optimal Control with Learned Models}
 			The problem with local linearization is that it only really works in simulation and not on the real robot. This is caused by the fact that the models for robots are often really bad. So learning models instead of hand-crafting them would be a good alternative\footnote{Model learning will be covered in more detail in \autoref{c:modelLearning}.}!
@@ -1316,11 +1316,11 @@
 				When learning or designing models, a lot of questions have to be answered, for example what the actions \(\vec{u}\) are. They might be motor torques, but this requires a good forward dynamics model for control. Other options are e.g. the joint accelerations, which requires a good inverse dynamics model, or the accelerations in task space. The latter is ideal for control, but requires a good task-space control law.
 
 				Another big question is how to design the reward. It can encode basic information like whether the task was successful or not (using a binary reward) or more task knowledge like how far the end-effector is away from the goal. Typically a mixture is needed with usually hand-crafted weighting between them.
-				% end
+			% end
 
 			\subsubsection{Human Motor Cost Functions}
 				Research in cognitive science shows that also human movements can be explained very well using cost (or reward) functions! Reaching movements for example include minimum jerk, minimum torque change, minimum end-point variance. Even complicated things like locomotion can be explained with minimum metabolic energy consumption.
-				% end
+			% end
 
 			\subsubsection{State-Of-The-Art Approaches}
 				Probabilistic Inference for Learning Control (PILCO):
@@ -1335,10 +1335,10 @@
 					\item LQR-like algorithm for trajectory optimization with the additional constraint that the new trajectory should stay close to the data. This increases the stability!
 					\item Use the optimized trajectories to train a generalizing neural network policy.
 				\end{itemize}
-				% end
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
+% end
 
 \chapter{Approximate Optimal Control}
 	\label{c:approximateOptimalControl}
@@ -1381,7 +1381,7 @@
 					\lim\limits_{k \,\to\, \infty} V_k = V^\ast
 				\end{equation*}
 				So convergence is guaranteed if the function approximator ensures that the Bellman operator is a contraction! Extensive research focused on the fixed-point view of certain algorithms. e.g. TD, Q-Learning, SARSA, \dots Recent work from Dai et al. (2018) proposed the SBEED algorithm that uses nonlinear function approximations with convergence guarantees.
-				% end
+			% end
 
 			\subsubsection{Approximation Error and Performance Loss}
 				Another big question when dealing with function approximations is how the approximation error
@@ -1401,8 +1401,8 @@
 					\big\lVert V^\pi - V^\ast \big\lVert_\infty \leq \frac{2 \gamma}{1 - \gamma} \big\lVert \hat{V} - V^\ast \big\lVert_\infty,
 				\end{equation*}
 				so if for any \(\varepsilon\), \( \big\lVert V^\pi - V^\ast \big\lVert_\infty \leq \varepsilon \) can be achieved, the policy is optimal.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Approximate Policy Iteration}
 			For policy iteration, only policy evaluation has to be altered from the vanilla policy iteration algorithm. But given a policy \(\pi\), it is only possible to estimate \(V^\pi\) from samples or estimate the Bellman operator \( T^\pi \hat{V}_{\vec{\theta}} \), which are both not in the function approximation space \(\Theta\), so the fixed point theorem is not applicable! Hence, projection back to the space \(\Theta\) is needed. Two methods are possible for this:
@@ -1415,8 +1415,8 @@
 			\begin{equation*}
 				\limsup\limits_{k \,\to\, \infty} \big\lVert V^{\pi_k} - V^\ast \big\lVert_\infty \leq \frac{2 \gamma}{(1 - \gamma)^2} \limsup\limits_{k \,\to\, \infty} \big\lVert V^{\pi_k} - V_k \big\lVert_\infty
 			\end{equation*}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Continuous State-Action Space: Differential Dynamic Programming}
 		\label{sec:ddp}
@@ -1557,7 +1557,7 @@
 						\item Automatic differentiation (exact, computationally expensive but personally cheap).
 						\item Finite difference approximation (inexact, computationally okay-ish and personally cheap).
 					\end{itemize}
-					% end
+				% end
 
 				\paragraph{Line Search}
 					As the update is only valid locally, a line search is used to optimize the step size of the update. Each DDP iteration \(i\) gives a local update \( \vec{\delta u}^{(i)} \), so the updated control law is
@@ -1568,8 +1568,8 @@
 					\begin{equation*}
 						\grad{J(\alpha)} = \alpha \sum_{i = 1}^{N - 1} \vec{k}^{(i), T} Q_t^{\vec{u}, (i)} + \frac{\alpha^2}{2} \sum_{i = 1}^{N} \vec{k}^{(i), T} Q_t^{\vec{u} \vec{u}, (i)} \vec{k}^{(i)}.
 					\end{equation*}
-					% end
-					% end
+				% end
+			% end
 
 			\subsubsection{Issues with DDP}
 				Differential dynamic programming has two major issues:
@@ -1579,26 +1579,26 @@
 					\item The Hessian terms are expensive to compute, prohibiting online computation. \\
 						This can be solved by using Hessian approximations (e.g. BFGS).
 				\end{enumerate}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Iterative LQR}
 			When using Gauss-Newton optimization, the Hessians are approximated from the Jacobians (i.e. the Gradients). By leaving out the second-order derivatives of the state dynamics in the derivatives of the Q-function \eqref{eq:ddpDerivatives}, computation time is saved and the DDP model is effectively transformed into a Gauss-Newton equivalent. This is called \emph{iterative LQR} (iLQR). In DDP it is often necessary to regularize \( Q_t^{\vec{u} \vec{u}} \): \( \hat{Q}_t^{\vec{u} \vec{u}} \coloneqq Q_t^{\vec{u} \vec{u}} + \mu \mat{I} \). But this regularization affects the controller as \( Q_t^{\vec{u} \vec{u}} \) defines the feedback control law \eqref{eq:ddpFeedbackControlLaw}. As \( \mu \to \infty \), \( \mat{K}_t \to \mat{O} \). In iLQR the regularization is directly applied to the Hessian of the value function in \eqref{eq:ddpDerivatives} with the motivation of reducing the trajectory update rather than the controller specifically.
-			% end
+		% end
 
 		\subsection{Stochastic DDP}
 			In stochastic DDP, a state-action dependent disturbance \( F(\vec{x}, \vec{u}) \) is considered. This yields equations similar to DDP with additional differential terms due to the disturbances. For constant noise, however, the solution is equivalent to DDP and for state-action dependent noise, the optimal solution seeks lower disturbance regions.
-			% end
+		% end
 
 		\subsection{Guided Policy Search}
 			Guided Policy Search (GPS) mitigates the problem of DDP only being valid along a trajectory by using a DDP-like algorithm for generating multiple controllers which are then used to train a neural network controller. GPS will be discussed in more detail in \autoref{subsec:gps}.
-			% end
-			% end
+		% end
+	% end
 
 	\section{Wrap-Up}
 		This chapter covered two methods for solving nonlinear optimal control problems: differential and approximate dynamic programming. The former applies LQR to nonlinear problems by iteratively linearizing the dynamics around the current trajectory to get time-varying linear controllers. As the algorithm is a bit brittle and only valid along a single trajectory, it is often used online in a model-predictive control fashion. In practice, approximations are used to compute the Hessians which is expensive to do otherwise (e.g. iLQR). These local controllers can then also be used to fit a global controller (guided policy search). The latter uses function approximators to find a global value function while using vanilla value/policy iteration to find local value functions.
-		% end
-		% end
+	% end
+% end
 
 \chapter{State Estimation} % 6.1, 6.2, 6.5, 6.6
 	\label{c:stateEstimation}
@@ -1610,73 +1610,73 @@
 
 		\subsection{Observers} % 6.9, 6.10
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Optimal Observers} % 6.11, 6.12, 6.13, 6.14, 6.15, 6.16, 6.17, 6.18
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Geometric Perspective} % 6.19
 			\todo{Content}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Kalman Filter as Bayesian Inference} % 6.20, 6.21, 6.22, 6.23, 6.24
 		\todo{Content}
-		% end
+	% end
 
 	\section{Partially Observed Optimal Control} % 6.27, 6.28, 6.29, 6.30
 		\todo{Content}
-		% end
+	% end
 
 	\section{Extended, Unscented and Particle Filter} % 6.32, 6.33
 		\todo{Content}
 
 		\subsection{Extended Kalman Filter (EKF)} % 6.34
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Cubature Kalman Filter (CKF)} % 6.35, 6.36, 6.37, 6.38
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Unscented Kalman Filter (UKF)} % 6.39
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Particle Filter / Sequential Monte Carlo (PF/SMC)} % 6.40, 6.41, 6.56
 			\todo{Content}
 
 			\subsubsection{Importance Sampling} % 6.42, 6.43
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Sequential Importance Sampling} % 6.48, 6.49, 6.50, 6.51, 6.52
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Sequential Importance Resampling} % 6.53, 6.54, 6.55
 				\todo{Content}
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Examples} % N/A
 			\todo{Content}
 
 			\subsubsection{Approximate Message Passing} % 6.44, 6.45, 6.46, 6.47
 				\todo{Content}
-				% end
+			% end
 
 			\subsubsection{Pendulum} % 6.57, 6.58, 6.59, 6.60
 				\todo{Content}
-				% end
-				% end
-				% end
+			% end
+		% end
+	% end
 
 	\section{Wrap-Up} % 6.62, 6.63
 		\todo{Content}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Model Learning}
 	\label{c:modelLearning}
@@ -1714,7 +1714,7 @@
 				\caption{Positives and negatives of the white-box modeling strategy.}
 				\label{tab:whiteBox}
 			\end{table}
-			% end
+		% end
 
 		\subsection{Black-Box Strategy}
 			The black-box strategy is the opposite end of the spectrum compared to white-box models. No prior work or domain knowledge is used, instead lots of training data is collected and then a model (e.g. a neural network, Gaussian process) is fit to the data. Some up- and downsides of this strategy are shown in \autoref{tab:blackBox}.
@@ -1730,7 +1730,7 @@
 				\caption{Positives and negatives of the black-box modeling strategy.}
 				\label{tab:blackBox}
 			\end{table}
-			% end
+		% end
 
 		\subsection{Gray-Box Strategy}
 			Gray-box models combine aspects of the white- and black-box models, for example:
@@ -1739,8 +1739,8 @@
 				\item Fit a black-box model with special constraints (e.g. ensure energy conservation in a closed system).
 				\item Construct a model with white- and black-box components that can be trained "end-to-end" (e.g. a differentiable physics model combined with a neural network friction model, jointly trained with gradient decent).
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Collecting the Data for Training the Model}
 		One big problem in model learning is to get the data from the real robot. The main question is what input signal is the best for learning models, i.e. what controls should the robot be given to perform interesting movements?
@@ -1765,7 +1765,7 @@
 				f(t) \approx \sum_{n = -\infty}^{\infty} f(n\Delta_t) \delta(t - n\Delta_t)
 			\end{equation*}
 			where \(\Delta_t\) is a time step. As \(\Delta_t \to 0\), the function is approximated perfectly, i.e. the approximation becomes an equality. This is the main idea of a \emph{convolution}, which is an important part of signal processing and system identification theory.
-			% end
+		% end
 
 		\subsection{Step Response}
 			The step function (also called \emph{Heaviside step function}) is closely related to the impulse, however ot contains a jump and is defined as:
@@ -1779,7 +1779,7 @@
 				\dv{t} \mathit{step}(t - \tau) = \delta(t - \tau)
 			\end{align*}
 			Similarly to the impulse, the step function can be used to represent digital (quantized) signals.
-			% end
+		% end
 
 		\subsection{Characterization of Dynamical Systems}
 			Dynamical systems are usually characterized using the terms \emph{damping} and \emph{resonant frequencies}, which both origin in linear system theory:
@@ -1793,11 +1793,11 @@
 				\item[Resonant Frequencies] These are the frequencies that maximally excite a system. This is important when designing structures like bridges, where hitting the resonant frequencies may cause catastrophic accidents.
 			\end{description}
 			This intuition holds locally for nonlinear system by linear approximation (Taylor-expansion), but the properties vary with the state (and thus the time)!
-			% end
+		% end
 
 		\subsection{Frequency Analysis}
 			Another viewpoint to analyze whether a signal is good for system identification is their frequency spectrum. The broader the bandwidth is, the more informative the response becomes. These frequencies can be obtained with a Fourier transform. For an impulse signal, all frequencies are covered and for sinusoidal harmonics only specific frequencies are covered. Motivate from this, other signal types are studied, for example chirps and white Gaussian noise. Chirps describe an oscillation of which the frequency gets higher and higher, like \( \sin(x^2) \). White Gaussian noise also covers a wide range of frequencies, however both of these signals are impractical in reality: Physical systems require smooth inputs for safety, limiting the frequency. A practical solution to this problem is to low-pass the original signal, but this obviously causes a loss in the amount of frequencies that are covered.
-			% end
+		% end
 
 		\subsection{Ornstein-Uhlenbeck Process and Active Learning}
 			The frequency analysis motivates the \emph{Ornstein-Uhlenbeck process} for identification, which is smoothed noise:
@@ -1815,8 +1815,8 @@
 			Active learning require a model that is capable of expressing the model uncertainty, hence it requires a Bayesian model, e.g. a Gaussian process. Optimizing the trajectories with active learning is still an open research topic!
 
 			In practice, out-of-phase sinuses on every joint create very diverse end-effector trajectories that are useful for learning.
-			% end
-			% end
+		% end
+	% end
 
 	\section{Learning Models}
 		Now given good training data, what is the best objective \(L\) for learning a good model? There are multiple options, e.g.
@@ -1876,8 +1876,8 @@
 			\end{align*}
 
 			Plugging this together with the Kalman smoother, this yields an expectation-maximization (EM) algorithm with the E-step being the Kalman smoother and the M-step being the above update rules. For the LGDS, this guarantees monotonic improvement in the expected log-likelihood! For nonlinear settings, it is possible to approximate the expectations (e.g. using cubature rules or particle methods) and update the parameters using gradient descent. This is called \emph{approximate} EM.
-			% end
-			% end
+		% end
+	% end
 
 	\section{Case Studies}
 		This section looks into some specific examples of model learning that go beyond LGDS.
@@ -1892,11 +1892,11 @@
 				k_\mathrm{rbd}^k(\vec{x}_p, \vec{x}_q) = \vec{\phi}_k^T(\vec{x}_p) \mat{W}_k \vec{\phi}_k(\vec{x}_q) + \sigma_k^2 \delta_{pq}
 			\end{equation*}
 			This kernel was found to have superior performance in handling the residual error.
-			% end
+		% end
 
 		\subsection{Deep Lagrangian Networks}
 			Deep Lagrangian networks (DeLaNs) use neural networks to model the Lagrangian equations of motions, resulting in the inductive bias of energy conservation. This should yield to more physically plausible model predictions. See Lutter et al., "Deep Lagrangian Networks: Using Physics as Model Prior for Deep Learning" (2019) for more information on this.
-			% end
+		% end
 
 		\subsection{The Differentiable Recursive Newton-Euler Algorithm}
 			Implementing the recursive Newton-Euler algorithm that was introduced in \autoref{subsubsec:robotsDynamics} in an automatic differentiation library, physical models can be trained with gradient decent! However, care has to be taken on the parameters, e.g. to enforce positive masses (this can be done, for example, by training the square-root instead of the parameter itself). As it is trained with gradient decent, black-box models can be easily integrated. Some example (where \( f_\mathrm{NN} \) is a feedforward neural network) are:
@@ -1914,9 +1914,9 @@
 				\item[Maximal Coordinates] External reference frame.
 			\end{description}
 			One example for a non-holonomic constraint is the string in the ball-in-cup environment. Black-box models like neural networks or recurrent neural networks fail on this, and the learned policies are not transferable to the real system. The differential recursive Newton-Euler algorithm can plan with the string constraint, and the resulting policies work on the real robot!
-			% end
-			% end
-			% end
+		% end
+	% end
+% end
 
 \chapter{Policy Representations}
 	To train a policy \( \pi(\vec{a} \given \vec{s}) \), this policy has to be represented somehow. In control theory, this policy is commonly known as the \emph{controller} and has the form of a PID controller, for example. In robot learning, however, these policies have to be represented in a "learnable" way. This chapter covers parametric policies with off-the-shelf methods like neural networks and movement primitives which can encode complex behavior in a modular fashion. This chapter focuses on parametric policies, i.e. policies that is represented by a conditional probability distribution \( \pi(\vec{a} \given \vec{s}; \vec{\theta}) \) with the parameters \(\vec{\theta}\). Desirable properties for policy representations are:
@@ -1942,7 +1942,7 @@
 
 		\subsection{Linear Basis Functions}
 			Linear controllers \( \vec{a} = \vec{f}_{\vec{w}}(\vec{s}) = \vec{\phi}^T(\vec{s}) \vec{w} \), in the simplest case a PD-controller with \( \vec{\phi}^T(\vec{s}) = \begin{bmatrix} 1 & \vec{s}^T \end{bmatrix} \), may yield really good policies using a very compact representation. Also they are easy to learn with linear regression. Whoever, a good feature representation has to be used! This representation was successfully applied to balancing a pole on a cart, but even learning the swing-up can be hard.
-			% end
+		% end
 
 		\subsection{Radial Basis Functions (RBFs)}
 			A more expressive policy representation are weighted radial basis functions (RBFs) \( \vec{f}_{\vec{w}}(\vec{s}) = \vec{\phi}^T(\vec{s}) \vec{\beta} \) with the features
@@ -1954,7 +1954,7 @@
 				\vec{f}_{\vec{w}}^\mathit{norm}(\vec{s}) = \frac{\sum_{i = 1}^{K} \phi_i(\vec{s} \beta_i)}{\sum_{j = 1}^{K} \phi_i(\vec{s})},
 			\end{equation*}
 			which do not suffer from this problem. However, this can lead to numerically issues as the denominator gets really small if every basis function is far from being active. Also, this problem is really hard to optimize as the optimization for \( \vec{h}_{1:K} \) is non-convex!
-			% end
+		% end
 
 		\subsection{Trajectory Following Controller}
 			Another method for policy representation is to use the previously discussed methods for representing a trajectory (see \autoref{sec:roboticsRepresentingTrajectories}) and use a feedback controller
@@ -1962,8 +1962,8 @@
 				\pi(\vec{q}, \dot{\vec{q}}, t; \vec{w}) = \mat{K}_P\big( \vec{q}_d(\vec{q}, \dot{\vec{q}}, t; \vec{w}) - \vec{w} \big) + \mat{K}_D\big( \dot{\vec{q}}_d(\vec{q}, \dot{\vec{q}}, t; \vec{w}) - \dot{\vec{q}} \big)
 			\end{equation*}
 			to follow the desired trajectory \( \big( \vec{q}_d(\vec{q}, \dot{\vec{q}}, t; \vec{w}), \dot{\vec{q}}_d(\vec{q}, \dot{\vec{q}}, t; \vec{w}) \big) \). Usually the matrices \( \mat{K}_P \) and \( \mat{K}_D \) are hand-tuned, but they may also be learned.
-			% end
-			% end
+		% end
+	% end
 
 	\section{Movement Primitives}
 		\emph{Movement primitives} are a compact representation of movements that are often represented as trajectory generators \( \vec{\tau} = \vec{f}(\vec{w}) \) with the parameters \( \vec{w} \) of the primitive. They can represent both stroke-based and rhythmic movements and can be time-dependent, state-dependent or both. The basic idea is to use dynamical systems to represent trajectories as integrating it results in a trajectory. Dynamical systems (defined by a second-order differential equation) can encode various different movements and the whole class of stability analysis from ODEs can be used to generate e.g. stroke-based movements by exploiting a single-point attractor. These movement primitives are known as \emph{dynamic} movement primitives (DMPs).
@@ -1986,7 +1986,7 @@
 					\dot{z}  & = -\tau \alpha_z z
 				\end{align*}
 				The variable \(\tau\) is the \emph{temporal scaling variable} and \(z\) is called the \emph{phase}. Higher values of \(\tau\) correspond to higher movement speeds and a value of \( \tau = 1 \) corresponds to the "original" movement speed.
-				% end
+			% end
 
 			\subsubsection{Representation of the Forcing Function}
 				One approach for representing the forcing function is to use the function
@@ -2000,7 +2000,7 @@
 					\phi_i(z) = \exp{ -\frac{1}{2} \frac{(z - c_i)^2}{h_i} }  \label{eq:normRbf}
 				\end{align}
 				with the locations \(c_{1:K}\) and the bandwidths \(h_{1:K}\). These dynamics movement primitives are stable by design as for \( t \to \infty \) the forcing function vanishes\footnote{This is due to \( z \to 0 \) for \( t \to \infty \) as \( \dot{z} = -\tau \alpha_z z \) and \( \tau, \alpha_z > 0 \).} and the  becomes a PD controller.
-				% end
+			% end
 
 			\subsubsection{Imitation Learning}
 				Dynamic movement primitives with radial basis functions can be easily used for imitation learning using linear (ridge) regression. Given a trajectory \( (\vec{q}_{1:T}, \dot{\vec{q}}_{1:T}, \ddot{\vec{q}}_{1:T}) \), a goal attractor \(g\), parameters \(\alpha\), \(\beta\), \(\alpha_z\) and a temporal scaling variable \(\tau\), first compute the target values of the forcing function for each \(t\):
@@ -2012,8 +2012,8 @@
 					\vec{w} = \big( \mat{\Psi}^T \mat{\Psi} + \sigma^2 \mat{I} \big)^{-1} \mat{\Psi} \vec{f}
 				\end{equation*}
 				where \( \mat{\Psi} = \begin{bmatrix} \vec{\psi}_1 & \vec{\psi}_2 & \cdots & \vec{\psi}_T \end{bmatrix} \) is the feature matrix and \(\vec{f}\) is the vector of target values. The parameter \(\sigma^2\) is used for regularization and can also be chosen \( \sigma^2 = 0 \) for non-ridge regression.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Probabilistic Movement Primitives (ProMPs)}
 			Another approach on movement primitives are \emph{probabilistic movement primitives} (ProMPs), a stochastic representation of trajectories \( \vec{\tau} \sim p(\cdot \given \vec{w}) \). This is represented by learning a (parameterized) distribution \( p(\vec{w} \given \vec{\theta}) \) over the parameters \(\vec{w}\), each representing a single trajectory
@@ -2068,7 +2068,7 @@
 					\vec{\mu}_w^\mathrm{new}    & = \vec{\mu}_w + \mat{\Sigma} \mat{\Psi}_{t^\ast} \big( \mat{\Psi}_{t^\ast}^T \mat{\Sigma}_w \mat{\Sigma}_{t^\ast} + \mat{\Sigma}_y^\ast \big)^{-1} \big( \vec{y}_{t^\ast}^\ast - \mat{\Psi}_{t^\ast}^T \vec{\mu}_w \big) \\
 					\mat{\Sigma}_w^\mathrm{new} & = \mat{\Sigma}_w - \mat{\Sigma}_w \mat{\Psi}_{t^\ast} \big( \mat{\Psi}_{t^\ast}^T \mat{\Sigma}_w \mat{\Psi}_{t^\ast} + \mat{\Sigma}_y^\ast \big)^{-1} \mat{\Psi}_{t^\ast}^T \mat{\Sigma}_w
 				\end{align*}
-				% end
+			% end
 
 			\subsubsection{Combination}
 				It is possible to combine multiple ProMPs into one movement to solve a combination of tasks. For the distributions \( \{ p_i(\vec{y}_t) \}_{i = 1}^{N} \), the combined ProMP \( p_\mathrm{co}(\vec{y}_t) \) is given as
@@ -2081,8 +2081,8 @@
 					\mat{\Sigma}_t^\mathrm{co} & = \Bigg( \sum_{i = 1}^{N} \Big( \mat{\Sigma}_t^{[i]} / \alpha_t^{[i]} \Big)^{-1} \Bigg)^{-1}
 				\end{align*}
 				Using the time-varying activation factors \( \alpha_i(t) \), it is also possible to achieve \emph{blending}, i.e. shifting smoothly from one primitive (movement) to another.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Time-Independent Stable Movement Primitives}
 			Both the DMPs and ProMPs consider the time as part of the state, however, knowing the exact time is hard and required external algorithms for phase estimation. It is possible to eliminate the dependency on the time in the state by learning \emph{nonlinear stable dynamical systems}
@@ -2093,14 +2093,14 @@
 
 			\subsubsection{Imitation Flows}
 				A wide range of such invertible transformations can be found by using invertible flows. Invertible flows are a set of neural networks that can be computed forward and backward, i.e. they are bijective. These can represent very complex nonlinear, yet stable, dynamics and are capable of representing both stroke-based and rhythmic movements.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Libraries of Primitives}
 			Usually, one primitive is not enough. Ideally, the robot has a library of primitives which are all good at what they do and the robot "just" has to decide which movement to make by choosing the corresponding primitive.
-			% end
-			% end
-			% end
+		% end
+	% end
+% end
 
 \chapter{Model-Based Reinforcement Learning}
 	\label{c:modelBasedRL}
@@ -2126,7 +2126,7 @@
 					\( \mathcal{O}\big( \lvert \mathcal{S} \rvert^2 \cdot \lvert \mathcal{A} \rvert \big) \)
 			\end{itemize}
 			So both MFRL and MBRL have the same sample efficiency as they both have to traverse the whole state-action space!
-			% end
+		% end
 
 		\paragraph{Continuous Linear System (LQR)}
 			For a continuous linear LQR system with state dimensionality \(n_s\) and action dimensionality \(n_a\) and time horizon \(T\), the \emph{minimum} amount of samples required to solve the MDP are:
@@ -2137,8 +2137,8 @@
 					\eqmakebox[mbrlSamplEffContinuousR][l]{\( \mathcal{O}\big( n_s \cdot (n_s + n_a + 1) \big) \)}   \quad[any trajectory]
 			\end{itemize}
 			As usually \( T \gg n_s \), MBRL is considerable more sample-efficient than MFRL for the LQR case as the amount of samples needed is independent from the time horizon!
-			% end
-			% end
+		% end
+	% end
 
 	\section{Models in Reinforcement Learning}
 		To use a model in RL, there has to be useful domain knowledge. This is available in a variety of settings, for example in well understood physics-based problems (e.g. it lots of robotics applications), for "smooth" dynamical systems where Gaussian processes and neural networks can extrapolate locally, or games with simple transition rules, e.g. using Monte Carlo tree search for Go. Some shallow domain knowledge can also be used to encode symmetries in feature transformations, e.g. using sine features for angles to encode the "full rotation" symmetry. But there are also various settings where no or little domain knowledge is available: e.g. most discrete MDPs that have arbitrary structure and complex, stochastic, partially observed environments (Atari games from pixels, table tennis with low-frequency tracking, \dots).
@@ -2172,12 +2172,12 @@
 					\caption{Cross-Entropy Method for Gaussian Parameter Distribution}
 					\label{alg:cemGaussian}
 				\end{algorithm}
-				% end
+			% end
 
 			\subsubsection{(Model-Predictive) Path Integral Control (MPPI)}
 				\emph{Path integral control} is a control-as-inference method initially derived for continuous time. For discrete time it is really similar to CEM: first sample a control sequence from a prior distribution, then compute a rollout of the dynamics and compute the "likelihood". Afterwards the parameters can be updated in a weighted fashion.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Numerical Sensitivity}
 			Previously, the optimal control problem
@@ -2206,8 +2206,8 @@
 				= \pdv{r}{\vec{a}_1} + \bigg(\! \pdv{r}{\vec{s}_2} + \pdv{r}{\vec{s}_3} \pdv{\vec{s}_3}{\vec{s}_2} + \cdots + \pdv{r}{\vec{s}_T} \pdv{\vec{s}_T}{\vec{s}_{T - 1}} \cdots \pdv{\vec{s}_3}{\vec{s}_2} \pdv{\vec{s}_2}{\vec{s}_1} \!\bigg) \pdv{\vec{s}_2}{\vec{a}_1}
 			\end{equation*}
 			But this gradient is very poorly conditioned as very small changed in \(\vec{a}_1\) have large effects in \(\vec{s}_t\) if \(t\) is large!
-			% end
-			% end
+		% end
+	% end
 
 	\section{Optimism, Pessimism and Uncertainty in Reinforcement Learning}
 		\label{sec:mbrlBayesian}
@@ -2240,8 +2240,8 @@
 				\item \emph{Variational Inference:} The predictive distribution is a sample estimate generated by sampling the network weights from a variational weight distribution. Mean field variational inference (MFVI) methods scale better than Markov chain Monte-Carlo (MCMC) methods, but the inference is less accurate.
 				\item \emph{Ensembles:} Several neural networks, each trained with different mini-batches. The predictive distribution is computed over all the models. While these are popular, how "Bayesian" this method really is is questionable.
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Replanning}
 		\label{sec:mbrlReplanning}
@@ -2259,23 +2259,23 @@
 		This is known as \emph{Model-Predictive Control} (MPC) or \emph{Receding Horizon Control} (RHC).
 
 		A huge benefit of replanning is that the controllers can react to disturbances and model errors. But doing the replanning is really costly and limits real-time execution. Also often a good terminal reward function is needed to prevent overly greedy planning.
-		% end
+	% end
 
 	\section{Case Studies}
 		\subsection{Probabilistic Learning for Control (PILCO)}
 			The PILCO algorithm uses a Gaussian process for the dynamics model with decent sample efficiency and good uncertainty quantification. The policy is represented using e.g. an RBF network and a backpropagation-through-time algorithm is used for computing the gradients. The key idea is that the epistemic uncertainty of the dynamics model regularizes the expected reward. But as backpropagation-through-time is used, the algorithm is a little brittle for large planning horizons, so only small \(T\) may be used.
-			% end
+		% end
 
 		\subsection{Guided Policy Search (GPS)} % 9.48, 9.49, 9.50, 9.51, 9.52
 			\label{subsec:gps}
 
 			\todo{Content}
-			% end
+		% end
 
 		\subsection{Probabilistic Ensemble Trajectory Sampling (PETS)}
 			PETS uses neural network ensembles with CEM MPC where instead of propagating the distributions with moment matching, particles and randomly selected models from the ensemble are propagated.
-			% end
-			% end
+		% end
+	% end
 
 	\section{Wrap-Up}
 		This chapter covered some topics of MBRL. The core of MBRL is to combine model learning with methods from optimal control in various ways. It is often useful if the RL task has some kind of structure that can be incorporated into the model specification, e.g. energy conservation. In practice, regularization is often needed to prevent the optimizer from exploiting beneficial modeling errors like energy generation. Popular methods include inductive biases in these models and uncertainty-based regularization using Bayesian models and replanning.
@@ -2300,8 +2300,8 @@
 				\end{itemize}
 			\item[Other Limitations] Distance between two policies is hard to control; huge computation times.
 		\end{description}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Value Function Methods}
 	\label{c:valueFunctionMethods}
@@ -2381,7 +2381,7 @@
 			\caption{Tabular Q-Learning for Discrete States}
 			\label{alg:tabularQLearning}
 		\end{algorithm}
-		% end
+	% end
 
 	\section{Approximate Temporal Difference Learning}
 		If the states are continuous, it is no longer possible to tabulate them\footnote{Of course discretizing is an option, but the state space becomes really big really quick.}. To keep it simple, use a linear function approximator for the value function:
@@ -2425,19 +2425,19 @@
 			\( \vec{w}_0 \gets \vec{0} \) \;
 			\( t \gets 0 \) \;
 			\Repeat{convergence of \( \vec{w}_i \)}{
-				\( t \gets t + 1 \) \;
-				\If{episode finished}{
-					Start new episode. \;
-				}
-				Observe a transition \( (\vec{s}_i, \vec{a}_i, r_i, \vec{s}_i') \). \;
-				\eqmakebox[algApproxQLearn][r]{\( \vec{a}_? \gets \)} \eqmakebox[algApproxQLearnR][l]{\( \arg\max_{\vec{a}} \, Q_{\vec{w}}(\vec{s}_i', \vec{a}) \)}
-				\quad\tcp{Compute the exploration action.}
-				\eqmakebox[algApproxQLearn][r]{\( \hat{Q}_{\vec{w}}(\vec{s}_i, \vec{a}_i) \gets \)} \eqmakebox[algApproxQLearnR][l]{\( r_i + \gamma Q_{\vec{w}}(\vec{s}_i', \vec{a}_?) \)}
-				\quad\tcp{Compute the one-step prediction.}
-				\eqmakebox[algApproxQLearn][r]{\( \delta_i \gets \)} \eqmakebox[algApproxQLearnR][l]{\( \hat{Q}_{\vec{w}}(\vec{s}_i, \vec{a}_i) - Q_{\vec{w}}(\vec{s}_i, \vec{a}_i) \)}
-				\quad\tcp{Compute the TD-error.}
-				\eqmakebox[algApproxQLearn][r]{\( \vec{w}_{i + 1} \gets \)} \eqmakebox[algApproxQLearnR][l]{\( \vec{w}_i + \alpha_i \delta_i \vec{\phi}(\vec{s}_i, \vec{a}_i) \)}
-				\quad\tcp{Update the Q-Function.}
+			\( t \gets t + 1 \) \;
+			\If{episode finished}{
+				Start new episode. \;
+			}
+			Observe a transition \( (\vec{s}_i, \vec{a}_i, r_i, \vec{s}_i') \). \;
+			\eqmakebox[algApproxQLearn][r]{\( \vec{a}_? \gets \)} \eqmakebox[algApproxQLearnR][l]{\( \arg\max_{\vec{a}} \, Q_{\vec{w}}(\vec{s}_i', \vec{a}) \)}
+			\quad\tcp{Compute the exploration action.}
+			\eqmakebox[algApproxQLearn][r]{\( \hat{Q}_{\vec{w}}(\vec{s}_i, \vec{a}_i) \gets \)} \eqmakebox[algApproxQLearnR][l]{\( r_i + \gamma Q_{\vec{w}}(\vec{s}_i', \vec{a}_?) \)}
+			\quad\tcp{Compute the one-step prediction.}
+			\eqmakebox[algApproxQLearn][r]{\( \delta_i \gets \)} \eqmakebox[algApproxQLearnR][l]{\( \hat{Q}_{\vec{w}}(\vec{s}_i, \vec{a}_i) - Q_{\vec{w}}(\vec{s}_i, \vec{a}_i) \)}
+			\quad\tcp{Compute the TD-error.}
+			\eqmakebox[algApproxQLearn][r]{\( \vec{w}_{i + 1} \gets \)} \eqmakebox[algApproxQLearnR][l]{\( \vec{w}_i + \alpha_i \delta_i \vec{\phi}(\vec{s}_i, \vec{a}_i) \)}
+			\quad\tcp{Update the Q-Function.}
 			}
 
 			\caption{Approximate Q-Learning for Continuous States}
@@ -2456,8 +2456,8 @@
 				\item Due to e.g. off-policy updates, convergence is not guaranteed every time. For linear approximations, however, certain convergence properties hold given that the convergence properties of SGD (see \autoref{subsubsec:sgd}) are fulfilled.
 				\item Temporal difference learning is fast in computation time (i.e. fast convergence), but it is not sample-efficient as every sample is only used once!
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Batch Reinforcement Learning Methods}
 		One major problem of online temporal difference methods is that they are typically highly data-inefficient as every sample is only used once. This property can be improved by using a batch of data to increase the data-efficiency. This section will look into two exemplary algorithms,
@@ -2527,7 +2527,7 @@
 			Equation \eqref{eq:lstdSolution} is the solution of LSTD. By analyzing the convergence properties of TD-learning it can be seen that this is the same solution as the fixed point of TD-learning. Hence, with enough samples, it is possible to calculate the V-function approximation weights in one shot without iterations. As for TD learning, it is also possible to adapt this for learning the Q-function by altering the matrices \( \mat{\Phi} \) and \( \mat{\Phi}_+ \) accordingly. The algorithm is then called least-squares Q-learning (LSQ) and is used for least-squares policy iteration (LSPI).
 
 			However, as opposed to TD learning, LSTD is computationally much more expensive!
-			% end
+		% end
 
 		\subsection{Fitted Q-Iteration}
 			When using batch RL it is also easier to use nonlinear function approximators as many of them only work in a batch setup, e.g. regression trees. Also using just a single sample could lead to catastrophic forgetting, e.g. for neural networks that do not "remember" the states seen previously. \emph{Fitted Q-iteration} is a method that uses some nonlinear regression model \( \mathrm{Regress}(\mat{X}, \vec{y}) \) with input data \(\mat{X}\) and target values \(\vec{y}\) for approximate value iteration. A procedural representation is shown in \autoref{alg:fittedQIteration}. Invoking the regression model performs the required expectation for the Q-function implicitly. But is it still hard to solve the maximization operator on \autoref{algline:fittedQIterationMaxOpt} for continuous actions. See for example \href{https://proceedings.neurips.cc/paper/2008/hash/f79921bbae40a577928b76d2fc3edc2a-Abstract.html}{Neumann and Peters: "Fitted Q-Iteration by Advantage Weighted Regression", NIPS (2008)}.
@@ -2551,8 +2551,8 @@
 				\caption{Fitted Q-Iteration with Regression Model \texorpdfstring{\( \mathrm{Regress}(\mat{X}, \vec{y}) \)}{Regress(X, y)}}
 				\label{alg:fittedQIteration}
 			\end{algorithm}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Wrap-Up}
 		This chapter covered value function methods with have been the driving reinforcement learning approach in the 90s. They can be applied to lots of problems, e.g. chess at professional level, robot soccer, etc. However, they are not always the method of choice as the state-action space has to be filled up with a sufficient amount of samples (the amount of data needed grows exponentially with the dimension) and errors in the value function approximation can cause drastic failures that can be very hard to control.
@@ -2576,8 +2576,8 @@
 				\end{itemize}
 			\item[Other Limitations] Policy update is unbounded, might lead to oscillations.
 		\end{description}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Policy Search Methods}
 	\label{c:policySearch}
@@ -2629,12 +2629,12 @@
 				R_{\vec{\theta}} = \E_{p, \pi}\Bigg[ \sum_{t = 1}^{T} r_t \Bigggiven \vec{\theta} \Bigg].
 			\end{equation*}
 			The exploration is encoded in the upper-level policy \( \pi(\vec{\theta}; \vec{\omega}) \) from which parameters are sampled to generate the trajectories in the exploration step of policy search.
-			% end
+		% end
 
 		\subsection{Step-Based Policy Search}
 			In \emph{step-based} policy evaluation, the quality of single state-action pairs is assessed using the (undiscounted) reward to come
 			\begin{equation}
-			Q_t^{[i]} = \sum_{\tau = t}^{T} r_\tau^{[i]}.  \label{eq:policyGradientRewardToCome}
+				Q_t^{[i]} = \sum_{\tau = t}^{T} r_\tau^{[i]}.  \label{eq:policyGradientRewardToCome}
 			\end{equation}
 			The data for the policy update is
 			\begin{equation*}
@@ -2661,7 +2661,7 @@
 				p(\vec{\tau}; \vec{\theta}) = p(\vec{s}_1) \prod_{t = 1}^{T - 1} p(\vec{s}_{t + 1} \given \vec{s}_t, \vec{a}_t) \pi(\vec{a}_t \given \vec{s}_t; \vec{\theta})  \label{eq:policyGradientTrajectoryDistribution}
 			\end{equation}
 			and the return for a single trajectory \( R_{\vec{\tau}} = \sum_{t = 1}^{T} r_t \). The exploration has to be encoded directly into the lower-level policy \( \pi(\vec{a} \given \vec{s}; \vec{\theta}) \) in contrast to episode-based policy search.
-			% end
+		% end
 
 		\subsection{Exploration vs. Exploitation}
 			The exploration vs. exploitation tradeoff describes the tradeoff between continuing to explore in the next iteration (exploration) and maximizing the reward on the existing samples (exploitation). The fundamental question for policy search is how to control this tradeoff. This requires a quantification of the difference of two policies which will be discussed in more detail in \autoref{subsec:policySearchMetrics}. Usually this leads to limiting the distance between two subsequent policies for the policy update as greedy updates
@@ -2669,8 +2669,8 @@
 				\vec{\theta}^\mathrm{new} = \arg\max_{\tilde{\vec{\theta}}} \, \E_{p, \pi_{\tilde{\vec{\theta}}}}\big[ Q^\pi(\vec{s}, \vec{a}) \big]
 			\end{equation*}
 			will usually lead to an unstable learning process with large jumps.
-			% end
-			% end
+		% end
+	% end
 
 	\section{Policy Gradient Methods}
 		This section covers \emph{policy gradient methods}, a class of policy search methods that use the gradient of the expected long-term reward w.r.t. parameters for updating the policy. The first subsection focuses on plain gradient methods and the second covers more sophisticated methods using relative entropy and natural gradients.
@@ -2694,7 +2694,7 @@
 						\pdv{J(\vec{\theta})}{\vec{\theta}}                                           & \approx \vec{\delta}_\theta^T \big( \vec{\delta}_\theta \vec{\delta}_\theta^T \big)^{-1} \big( J(\vec{\theta} + \vec{\delta}_\theta) - J(\vec{\theta}) \big) &
 					\end{align*}
 					This can be used to update a single parameter estimate, e.g. the mean. A large class of algorithms uses this technique: Kiefer-Wolfowitz Procedure, Robbins-Monroe, Simultaneous Perturbation Stochastic Approximation (SPSA), Random Search, \dots
-					% end
+				% end
 
 				\paragraph{Episode-Based Likelihood Ratio Gradient}
 					For an upper-level policy \( \pi(\vec{\theta}; \vec{\omega}) \) and the expected long-term reward \( R_{\vec{\theta}} \) for a single \(\vec{\theta}\), it is possible to approximate the gradient of the expected reward \eqref{eq:upperLevelReward} using the log-ratio trick. That is, for an arbitrary function \( f(\vec{x}) \), the following holds:
@@ -2710,7 +2710,7 @@
 						 & \approx \frac{1}{N} \sum_{i = 1}^{N} R^{[i]} \, \grad_{\!\vec{\omega}} \ln \pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big) \eqqcolon \grad_{\!\vec{\omega}}^\mathrm{MC} J(\vec{\omega})  \label{eq:episodicPolicyGradientGradient}
 					\end{align}
 					with \(N\) samples \( \vec{\theta}^{[i]} \sim \pi(\cdot; \vec{\omega}) \) and the respective rewards \( R^{[i]} \coloneqq R_{\vec{\theta}^{[i]}} \). This gradient is called the \emph{Parameter Exploring Policy Gradient} (PGPE). The log-ratio trick is needed and Monte-Carlo estimation can not directly be applied to the expectation as that would require differentiation of the sampling which is not possible.
-					% end
+				% end
 
 				\paragraph{Step-Based Likelihood Ratio Policy Gradient}
 					As mentioned in \autoref{subsec:episodeBasedPolicySearch}, the total undiscounted reward \( R_{\vec{\theta}} \) in episode-based evaluation exhibits a very high variance. This variance can be reduced by using step-based evaluation and the reward to come \( Q_t^{[i]} \) as defined in \eqref{eq:policyGradientRewardToCome} instead. This requires maximizing the expected reward \( J(\vec{\theta}) \) as defined in \eqref{eq:policyGradientStepBasedObjective} instead as step-based policy gradient methods to not work with upper- and lower-level policies but rather optimize the policy \( \pi(\vec{a} \given \vec{s}; \vec{\theta}) \) directly. By again using the log-ratio trick, the gradient \( \grad_{\!\vec{\theta}} J(\vec{\theta}) \) can be approximated as
@@ -2744,7 +2744,7 @@
 					\end{equation*}
 
 					\footnotetext{As \(r_t\) and \(\vec{a}_h\) are independent for \(h > t\).}
-					% end
+				% end
 
 				\paragraph{Baselines}
 					A big problem with likelihood ratio policy gradients is that they exhibit a high variance. But this variance can be reduced by subtracting a baseline \(b_i\) from the reward:
@@ -2769,9 +2769,9 @@
 						= \frac{1}{N} \sum_{i = 1}^{N} \sum_{t = 1}^{T - 1} \big( Q_t^{[i]} - b_i\big(\vec{s}_t^{[i]}\big) \!\big) \grad_{\!\vec{\theta}} \ln \pi\big(\vec{a}_t^{[i]} \given \vec{s}_t^{[i]}; \vec{\theta}\big).
 					\end{equation*}
 					where the baseline might even vary with the state. As long as the baseline does not change with the action, the expectation vanishes and the estimator is unbiased.
-					% end
-					% end
-					% end
+				% end
+			% end
+		% end
 
 		\subsection{Step Sizes, Metrics, Relative Entropy and Natural Gradient} % 10.34, 10.35, 10.41, 10.42, 10.43
 			\label{subsec:policySearchMetrics}
@@ -2831,8 +2831,8 @@
 						\vec{\omega}_{k + 1} = \vec{\omega}_k + \eta \grad_{\!\vec{\omega}}^\mathrm{NG} J(\vec{\omega})
 					\end{equation*}
 					with a step size \(\eta\). For the step-based setting, this is not so easy and will be covered in \autoref{subsubsec:compatibleFunctionApproximation}.
-					% end
-					% end
+				% end
+			% end
 
 			\subsubsection{Compatible Function Approximation} % 10.45, 10.46, 10.47, 10.48, 10.49, 10.50, 10.51
 				\label{subsubsec:compatibleFunctionApproximation}
@@ -2857,10 +2857,10 @@
 
 				\paragraph{Episodic Natural Actor-Critic} % 10.52, 10.53, 10.54
 					\todo{Content}
-					% end
-					% end
-					% end
-					% end
+				% end
+			% end
+		% end
+	% end
 
 	\section{Probabilistic Policy Search}
 		\emph{Probabilistic policy search} (a subset of episodic policy search methods) addresses the problems of policy gradient methods, namely the high amount of samples that are needed and the fact that the learning rate still has to be tuned. It is based on the \emph{success matching principle} by Arrow, 1958: "When learning from a set of their own trials in iterated decision problems, humans attempt to match not the best taken action but the reward-weighted frequency of their actions and outcomes." This means that not only the reward, but also the frequency of this reward and the action is relevant. If a state is not very common, it might not be worth it to optimize the policy here.
@@ -2906,7 +2906,7 @@
 					= \frac{1}{N} \sum_{i = 1}^{N} w^{[i]} \grad_{\!\vec{\omega}} \ln \pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big)
 				\end{equation*}
 				and maximize the objective with gradient ascent. The form of the gradient is very similar to the gradient to \eqref{eq:episodicPolicyGradientGradient}, the gradient of the episodic policy gradient method. The difference is that instead of the total reward \( R^{[i]} \), the success probabilities \( w^{[i]} \) are used for weighting the samples. If the rewards are directly used for the weights (e.g. if the reward already is an improper probability distribution), policy gradient and weighted maximum likelihood are actually equivalent.
-				% end
+			% end
 
 			\subsubsection{Computing the Weights}
 				The next problem is to compute the weights (success probabilities) \( w^{[i]} = f\big(R^{[i]}\big) \). The simplest way is to use an exponential transformation
@@ -2932,9 +2932,9 @@
 						\item[M-Step] Estimate new (policy) parameters from weighted samples.
 					\end{description}
 					Algorithms that are based on the EM-principle are Reward-Weighted Regression (Peters, 2007) and PoWER\footnote{PoWER stands for "Policy Learning by Weighting Exploration with the Returns".} (Kober, 2008).
-					% end
-					% end
-					% end
+				% end
+			% end
+		% end
 
 		\subsection{Relative Entropy Policy Search (REPS)}
 			Choosing the next policy inherently requires choosing a got temperature \(\beta\). A too low temperature would converge too slow and a too high temperature would directly jump to a single sample and does not explore enough. This is a variant of the exploration-exploitation tradeoff. As for vanilla policy gradients, this can again be addressed using a metric to control the jump in the policy. The metric of choice for \emph{relative entropy policy search} (REPS) is, as obvious from the name, the KL divergence
@@ -3039,8 +3039,8 @@
 					= \eta\epsilon + \ln \int\! q(\vec{\theta}) \exp{\frac{R(\vec{\theta})}{\eta}} \dd{\vec{\theta}}
 				\end{align*}
 				By approximating this integral with Monte-Carlo integration, the Lagrangian multiplier \(\eta\) can be calculated.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{REPS for Contextual Policy Search}
 			In contextual policy search, the task is dependent on a context \(\vec{c}\) that is fixed before executing (e.g. the target location when throwing a ball). This can be introduced to the policy by conditioning the upper-level policy on the context: \( \pi(\vec{\theta} \given \vec{c}) \). The dataset for the policy update is changed to \( \mathcal{D} = \big\{ \vec{\theta}^{[i]}, \vec{c}^{[i]}, R^{[i]} \big\}_{i \,=\, \subdotsrange{1}{N}} \), taking care of the context. The objective is also changed to maximize the expected reward over all parameters and all contexts with the context distribution \( \mu_0(\vec{c}) \) and the reward \( R(\vec{c}, \vec{\theta}) \):
@@ -3101,7 +3101,7 @@
 					\end{aligned}
 				\end{equation*}
 				where now the KL divergence is discrete too.
-				% end
+			% end
 
 			\subsubsection{Contextual Policies with Weighted ML}
 				It is also possible to get contextual policies using the weighted maximum likelihood approach. For a Gaussian policy
@@ -3120,8 +3120,8 @@
 					\vec{\mu}^{[i]} \coloneqq \mat{K} \vec{c}^{[i]} + \vec{k}
 				\end{align*}
 				where the weights \( w^{[i]} \) are computed some how (e.g. using the exponential transformation) and the samples \( \vec{c}^{[i]} \) and \( \vec{\theta}^{[i]} \) are drawn from the previous distribution. Here, \(\mat{C}\) is the input data matrix (with an appended \(1\) for the bias), \(\mat{D}\) is a diagonal weighting matrix and \(\mat{A}\) is the parameter matrix.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Learning Versatile Solutions and Hierarchical REPS (HiREPS)}
 			In many motor tasks, multiple solutions to the same problem are possible. One problem with the current formulation is that either only one of the solutions is found or the policy averages over multiple solutions. As these solutions may lie far apart, that creates a rather unstable policy. One idea to solve this is to use a hierarchical approach where an upper-level \emph{gating policy} \( \pi(o \given \vec{c}) \) chooses the option \(o\) that then selects an \emph{option policy} \( \pi(\vec{\theta} \given \vec{c}, o_i) \) to handle the task.
@@ -3152,7 +3152,7 @@
 				\end{aligned}
 			\end{equation*}
 			Of course this can readily be adapted to discrete states and parameters by swapping the integrals for sums. The solution of this optimization problem actually learns versatile solutions!
-			% end
+		% end
 
 		\subsection{Sequencing Movement Primitives and Sequential REPS}
 			For many motor tasks it is also necessary to execute different elementary building blocks in a sequence to fulfill a task. This also means that the context of blocks executed later also depends on previously executed blocks! So the long-term effects have to be learned. Similar to the hierarchical approach, this changes the goal from maximizing the expected reward to maximize the expected reward over \(K\) decision steps, i.e. building blocks. For each block an upper-level policy \( \pi_k(\vec{\theta} \given \vec{c}) \) is learned where the \(k\)-th block has to react to the outcome of block \(k\). The objective function is
@@ -3180,8 +3180,8 @@
 				p_k(\vec{c}, \vec{\theta}) \propto q_k(\vec{c}, \vec{\theta}) \exp{ \frac{R_k(\vec{c}, \vec{\theta}) + \E_{p(\vec{c}' \subgiven \vec{c}, \vec{\theta})}\big[ V_{k + 1}(\vec{c}') \big] - V_k(\vec{c})}{\eta_k} }
 			\end{equation*}
 			where \( \E_{p(\vec{c}' \subgiven \vec{c}, \vec{\theta})}\big[ V_{k + 1}(\vec{c}') \big] \) encoded the long-term reward.
-			% end
-			% end
+		% end
+	% end
 
 	\section{Wrap-Up}
 		Policy search is a powerful and practical alternative to value function and model-based methods as learning a model is really hard and a small error in either the model or the value function can have catastrophic consequences. Policy search gradients have been the go-to methods for policy search for a long time, but they still need lots of samples and the learning rate has to be tuned (learning the learning rate is still an open problem). Newer methods are probabilistic policy search methods.
@@ -3227,8 +3227,8 @@
 				\end{itemize}
 			\item[Other Limitations] Mainly used for learning single trajectories (e.g. DMPs).
 		\end{description}
-		% end
-		% end
+	% end
+% end
 
 \chapter{Imitation Learning: Behavioral Cloning and Inverse RL}
 	Ot is often very hard or even impossible and time-consuming to learn policies from scratch using reinforcement learning, e.g. as the search space is too large to explore it in a reasonable amount of time. A human export, for example a professional table tennis player, takes years for perfecting its policy and the robot can avoid that by cloning his policy. This is called \emph{imitation learning} and is discussed in this chapter. Two different types of imitation learning are discussed: behavioral closing, where the actions are reproduced given the state, and inverse reinforcement learning, which is learning the reward function from demonstrations, given the optimal policy. Both of them rely on demonstrations, so a crucial question is how to demonstrate movements? A few possibilities are
@@ -3260,12 +3260,12 @@
 
 			\subsubsection{DAGGER: New Samples to Learn to Recover}
 				In the \emph{DAGGER} (\emph{Dataset Aggregation}, see Ross, Gordon and Bagnell: "A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning" (2010)) algorithm, the robot is given the ability to ask for new demonstrations if it ends up in an unseen states. The teacher then provides new data and the robot aggregates it with the previously seen demonstrations.
-				% end
+			% end
 
 			\subsubsection{DART: Robustness in Imitation Learning}
 				In the \emph{DART} (\emph{Disturbances for Augmenting Robot Trajectories}, see Laskey, et al.: "DART: Noise Injection for Robust Imitation Learning" (2017)) method, noise is added to the demonstrations to learn how the teacher adapts. In consequence, the learned policy will be more robust with respect to unexpected variations. This is an improvement over DAGGER as it does not require a teacher to present which is time consuming.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Generative Adversarial Learning}
 			In \emph{generative adversarial learning}, not the distance between the agents and the experts policy is minimized, but the \emph{occupancy measure}
@@ -3285,8 +3285,8 @@
 				\item The discriminator is trained for a high probability in the experts demonstrations.
 				\item The policy is trained for maximize the discriminator, considering the discriminator as the reward.
 			\end{enumerate}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Inverse Reinforcement Learning}
 		In \emph{inverse reinforcement learning} (IRL), the problem if imitation learning is tackled from a different point of view: assuming the reward function provides the most informative and transferable definition of the task, learn the reward function from demonstrations given a model and a policy and subsequently recover the reward function. This reward function can then be used to further improve the policy or to learn a different policy (apprenticeship learning).
@@ -3322,7 +3322,7 @@
 					(\vec{w}^\ast)^T \vec{\psi}(\pi^\ast) \geq (\vec{w}^\ast)^T \vec{\psi}(\pi)
 				\end{equation*}
 				holds for all policies \(\pi\). This solves the \emph{limited data} challenge as the expectation \( \vec{\psi}(\pi^\ast) \) can be estimated from the sampled trajectories (the distributions). The amount of data obviously scales with the number of features in the reward function, but does not depend on the size of the state space of the complexity of the experts policy!
-				% end
+			% end
 
 			\subsubsection{Addressing the "Ill-Posed" Challenge: (Structured) Max. Margin Solution}
 				To deal with the challenge that the problem is ill-posed, it is possible to enforce a predefined reward margin of \(1\) in the optimization problem. The optimization problem can be written as
@@ -3348,7 +3348,7 @@
 					\end{aligned}
 				\end{equation*}
 				The justification for this is that the reward margin should be larger for policies that are very different for \(\pi^\ast\).
-				% end
+			% end
 
 			\subsubsection{Addressing the "Expert Suboptimality" Challenge: Slack Variables}
 				Instead of enforcing all constraints, it is possible to add slack variables \(\xi\) to the inequality constraints to allow them to be violate a bit:
@@ -3364,7 +3364,7 @@
 				The altering of the objective ensures that the slack variables do not get too high which could lead allowing improper solutions. This resolved the challenge of expert suboptimality.
 
 				\todo{Slide 13.60, Suboptimal Expert Case}
-				% end
+			% end
 
 			\subsubsection{Addressing the "Computation" Challenge: Constraint Generation}
 				One method of dealing with the too much constraints is \emph{constraint generation}. Instead of using all policies \(\pi\) as constraints, only a certain set \( \Pi \) of policies is used as constraints. Policies are added iteratively (with the iteration variable \(k\)) to this set by computing the most-violated constraint
@@ -3372,8 +3372,8 @@
 					\pi^{(k)} = \arg\max_\pi\, \vec{w}^{(k), T} \vec{\psi}(\pi) + m(\pi^\ast, \pi).
 				\end{equation*}
 				If no violations have been found, the iteration stops.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Feature Matching by Max. Entropy}
 			The classical approach to statistical modeling is the principle of maximum entropy. The premise is that modeling should be performed with the least commitment possible, i.e. using the distribution with the maximum entropy (subject to certain constraints).
@@ -3396,7 +3396,7 @@
 					p(x) \propto \exp{ \lambda_1 x + \lambda_2 x^2 }
 				\end{equation*}
 				with the Lagrangian multipliers \(\lambda_{1, 2}\). This is a Gaussian distribution! So the Gaussian is the max. entropy distribution with given mean and variance.
-				% end
+			% end
 
 			\subsubsection{Max. Entropy Approach to Inverse RL}
 				Similarly to inference, the max. entropy approach can be applied to inverse RL with a trajectory distribution \( p(\vec{\tau}) \) and certain features \( \vec{\psi}(\vec{\tau}) \) that have to match \( \vec{\psi}(\pi^\ast) \). The optimization problem is
@@ -3415,7 +3415,7 @@
 					p(\vec{\tau}) \propto \exp{ \vec{w}^T \vec{\psi}(\vec{\tau}) }
 				\end{equation*}
 				with the Lagrangian multipliers \(\vec{w}\). This is a softmax distribution over the trajectories with the return \( r(\vec{\tau}) = \vec{w}^T \vec{\psi}(\vec{\tau}) \). The problem is that the optimization does not take the transition dynamics into account, i.e. there might be trajectories with a huge return that are unlikely due to the dynamics.
-				% end
+			% end
 
 			\subsubsection{Maximum-Casual-Entropy Inverse RL}
 				In contrast for "normal" max. entropy for inverse RL, \emph{maximum-causal-entropy inverse RL} also includes the state dynamics as a constraint:
@@ -3439,8 +3439,8 @@
 					\pi_t(\vec{a} \given \vec{s}) \propto \exp{ Q(\vec{s}, \vec{a}; \vec{w}) }
 				\end{equation*}
 				As this is still a convex problem, the solution can be obtained by solving the dual relatively efficiently.
-				% end
-				% end
+			% end
+		% end
 
 		\subsection{Reward-Parameterized Policies}
 			Alternatively, it is also possible to assume that the policy is a softmax over the Q-function
@@ -3455,8 +3455,8 @@
 			\begin{equation*}
 				p(r, \alpha \given \mathcal{D}) \propto p(\mathcal{D} \given r, \alpha) p(r, \alpha)
 			\end{equation*}
-			% end
-			% end
+		% end
+	% end
 
 	\section{Behavioral Cloning vs. Inverse RL}
 		Behavioral cloning is
@@ -3474,8 +3474,8 @@
 			\item But if successful, reproducing the long-term behavior is possible.
 		\end{itemize}
 		For representation the reward function is used which is a compact description and easily transfers to new tasks.
-		% end
-		% end
+	% end
+% end
 
 \chapter{Bayesian Reinforcement Learning}
 	This chapter covers how to apply Bayesian methods to reinforcement learning. If applicable, they provide a principled way to handle the exploration-exploitation tradeoff by introducing (epistemic) uncertainty on the model or the policy. This can also be seen as regularization on greedy policy updates avoiding aggressive model exploitation. Active learning can also be used for guided exploration with information-theoretic objectives. Bayesian RL can also be used to create risk-sensitive and robust controllers as risk as well as perturbations of certain parameters and be encoded as uncertainty in the model. For MBRL, this was already briefly covered in \autoref{sec:mbrlBayesian}.
@@ -3535,8 +3535,8 @@
 			where \( (\alpha_a, \beta_a) \) are the parameters of the prior, \(n_a\) are the frequencies and \(r_a^{[i]}\) are the reward for each restaurant \(a\). In practice, it is easier to compute the joint distribution for each restaurant and marginalize as needed.
 
 			This Bayesian approach does not require tuning any hyperparameters and converges to the optimal policy! While \(\epsilon\)-greedy methods can be tuned to have faster convergence, it is suboptimal due to constant exploration. To achieve the same optimality, more sophisticated \(\epsilon\)-greedy methods are needed where the exploration rate decreases over time (e.g. linear annealed exploration).
-			% end
-			% end
+		% end
+	% end
 
 	\section{Model-Based Bayesian RL for Discrete MDPs}
 		In model-based Bayesian RL, an MDP with unknown model parameters (the transition and reward functions) are solved. This section will only give a shallow overview on Bayesian MBRL for discrete MDPs and for exploration and exploitation work together to find an optimal policy. An MDP \( \mathcal{M} = (\mathcal{S}, \mathcal{A}, r, P) \) is build from the discrete state space \(\mathcal{S}\), the discrete action space \(\mathcal{A}\), the reward function \( r : \mathcal{S} \times \mathcal{A} \to \R \), and the transition probabilities \( P : \mathcal{S} \times \mathcal{A} \to [0, 1] \) as a distribution over the states. If \(P\) is known, this is a rather easy problem where the value function and the optimal policy can be found using dynamic programming. In the RL setting, \(P\) is unknown, but it can be parameterized by \(\vec{\theta}\): \( P(s' \given s, a; \vec{\theta}) \). For Bayesian RL, the state space is expanded with a \emph{belief} distribution \( b(\vec{\theta}) \) over the transition parameters. The modified MDP -- a Bayes Adaptive MDP (BAMDP) -- has the new state space \( \mathcal{S} \times \mathcal{B} \) where \(\mathcal{S}\) are the MDP states and \(\mathcal{B}\) are the belief states. The transition distribution then becomes \( P(s', b' \given s, b, a) \) and is known! As \(P\) is known, the MDP becomes a "simple" planning problem with a value function \( V : \mathcal{S} \times \mathcal{B} \to \R \).
@@ -3557,7 +3557,7 @@
 				\mathrm{Dir}(\vec{\theta}; \vec{\alpha}) \propto \prod_{s, a, s'} \theta_{s, a, s'}^{\alpha_{s, a, s'} - 1}.
 			\end{equation*}
 			When choosing a Dirichlet distribution as the prior for \( \vec{\theta} \), i.e. the belief \( b(\vec{\theta}) = \mathrm{Dir}(\vec{\theta}; \vec{\alpha}) \), the parameters \( \vec{\alpha} \) are hyperparameters.
-			% end
+		% end
 
 		\subsection{State Transition Model}
 			The state transition model \( P(s', b' \given s, b, a) \) decomposes into a belief and a physical model:
@@ -3577,7 +3577,7 @@
 				\end{cases}
 			\end{equation*}
 
-			% end
+		% end
 
 		\subsection{Optimal Value Function for BAMDPs}
 			The Bellman equation for BAMDPs is
@@ -3587,8 +3587,8 @@
 			for which all components are known decently! Hence, the BE can be solved using dynamic programming. This maximization selects actions that maximize the reward and actions that further explore the environment in a natural way by incorporating the belief in the objective. If only the current belief \(b\) would be used in the maximization, pure exploitation would be done as the change in the belief would be taken into account.
 
 			The BAMDP can be recast as a POMDP with the belief as the hidden variable. In practice, these problems do not scale well with the number of states, making direct implementations infeasible for most problems. Instead different ways are used to approximate the value function and solving the Bellman equation, for example in the BEETLE algorithm\footnote{Poupart et al.: "An Analytic Solution to Discrete Bayesian Reinforcement Learning" (2006)}.
-			% end
-			% end
+		% end
+	% end
 
 	\section{Continuous MDPs and Dual Control}
 		In continuous optimal control, the idea of trading off exploration and exploitation in a principled way is older than for discrete MDPs. Active learning was already covered in \autoref{c:modelLearning} for optimal exploration, and this section covers the combination of optimal control and optimal exploration: \emph{dual control}. Learning from sequential interactions is also known as \emph{continual learning}. Similar to discrete MDPs, the dynamics model \( p(\vec{s}_{t + 1} \given \vec{s}_t, \vec{a}_t) \) is parameterized, making it possible to put a prior on the parameters \(\vec{w}\):
@@ -3636,19 +3636,19 @@
 			}
 
 			% TODO: Finish 1D LQR Dual Control! Slides: 14.47, 14.48, 14.49, 14.50
-			% end
+		% end
 
 		\subsection{Practical Dual Control}
 			Achieving dual control in practice is an open research topic due to the quasi-intractable nature of dual control. One current approaches are to perform certainty equivalence actions while computing the local uncertainties in an inner loop, and approximating dual control in an outer loop (in a MPC fashion). Another approach is to relax the continual learning requirement by focusing on the episodic setting, which is closer to a planning problem with active learning.
-			% end
-			% end
+		% end
+	% end
 
 	\section{Wrap-Up}
 		This chapter covered Bayesian reinforcement learning methods which have a lot to offer, especially regarding exploration, regularization and robustness of policies. But while theoretically appealing, these methods are hard to implement in practice. In a discrete setting, the MDP can be modified into an BAMDP, a kind of POMDP, with a belief over the model parameters. This makes it possible to solve the MDP in a Bayesian fashion, but is computationally very expensive. In continuous control, the problem of exploring and planning simultaneously is older and is known as dual control. But this can not be achieved in closed form\dots
 
 		A common method for Bayesian exploration is Thompson sampling which samples from the posterior policy to achieve said optimal exploration.
-		% end
-		% end
+	% end
+% end
 
 \chapter{Outlook}
 	This "summary" covered lots of topics in the intersection of robotics and machine learning. Separated by chapter, the key terms that should now be known are:
@@ -3678,4 +3678,4 @@
 		\item What are good tasks for benchmarking robot learning algorithms?
 		\item Will dual control ever be tractable?
 	\end{itemize}
-	% end
+% end

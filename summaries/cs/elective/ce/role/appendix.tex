@@ -1,418 +1,418 @@
 \chapter{Self-Test Questions}
-	The text below also contains answers for the self-test questions! Make sure to not spoiler you!
+The text below also contains answers for the self-test questions! Make sure to not spoiler you!
 
-	\section{Robotics}
-		\paragraph{How to compute the racket position, orientation and velocity in a game of table tennis?}
-			\answer{The position and orientation can directly be computed using the forward kinematics model, e.g. using the Denavit-Hartenberg convention. To compute the velocity of the racket, the forward kinematics model has to be differentiated w.r.t. to the time. By using the chain rule, only the Jacobian of the model has to be computed w.r.t. the joint displacements. Multiplying this with the joint velocities gives the racket velocities.}
+\section{Robotics}
+\paragraph{How to compute the racket position, orientation and velocity in a game of table tennis?}
+\answer{The position and orientation can directly be computed using the forward kinematics model, e.g. using the Denavit-Hartenberg convention. To compute the velocity of the racket, the forward kinematics model has to be differentiated w.r.t. to the time. By using the chain rule, only the Jacobian of the model has to be computed w.r.t. the joint displacements. Multiplying this with the joint velocities gives the racket velocities.}
 
-		\paragraph{What is an inverse dynamics model? What is a forward dynamics model?}
-			\answer{The inverse dynamics model computes the joint torques/forces given the respective accelerations. The forward dynamics model computes the accelerations from the torques/forces.}
+\paragraph{What is an inverse dynamics model? What is a forward dynamics model?}
+\answer{The inverse dynamics model computes the joint torques/forces given the respective accelerations. The forward dynamics model computes the accelerations from the torques/forces.}
 
-		\paragraph{What kind of models are needed to build a robot simulator?}
-			\answer{The forward kinematics and dynamics models are needed. The latter is first used to compute the accelerations and then, after integrating the accelerations numerically two times, the former can be used to animate the robot.}
+\paragraph{What kind of models are needed to build a robot simulator?}
+\answer{The forward kinematics and dynamics models are needed. The latter is first used to compute the accelerations and then, after integrating the accelerations numerically two times, the former can be used to animate the robot.}
 
-		\paragraph{How to represent trajectories in such a way that they can be tracked?}
-			\answer{Trajectories have to be at least once, better twice, continuous differentiable, to avoid jumps in the positions and velocities and possibly the accelerations. This can be achieved by modeling a trajectory as a cubic or quintic spline across given via-points. These via-points represent the support points of the spline.}
+\paragraph{How to represent trajectories in such a way that they can be tracked?}
+\answer{Trajectories have to be at least once, better twice, continuous differentiable, to avoid jumps in the positions and velocities and possibly the accelerations. This can be achieved by modeling a trajectory as a cubic or quintic spline across given via-points. These via-points represent the support points of the spline.}
 
-		\paragraph{What does feedback control mean?}
-			\answer{In feedback control, the actual state of the system is used to compute the control inputs. This allows for error correction if the robot does not behave exactly like the model predicts, for example.}
+\paragraph{What does feedback control mean?}
+\answer{In feedback control, the actual state of the system is used to compute the control inputs. This allows for error correction if the robot does not behave exactly like the model predicts, for example.}
 
-		\paragraph{What control laws are common for robots?}
-			\answer{It is common to use PD-controllers with gravity compensation and PID-controllers as well as model-based feedback and feedforward controllers. But the model-based controllers need a really good model.}
+\paragraph{What control laws are common for robots?}
+\answer{It is common to use PD-controllers with gravity compensation and PID-controllers as well as model-based feedback and feedforward controllers. But the model-based controllers need a really good model.}
 
-		\paragraph{What is model-based feedback control?}
-			\answer{In model-based feedback control, a reference acceleration is computed using a PD-controller that assesses the position, velocity and acceleration of the joints. This reference acceleration is then fed into the inverse dynamics model, giving the joint torques/forces that are then applied to the joints.}
+\paragraph{What is model-based feedback control?}
+\answer{In model-based feedback control, a reference acceleration is computed using a PD-controller that assesses the position, velocity and acceleration of the joints. This reference acceleration is then fed into the inverse dynamics model, giving the joint torques/forces that are then applied to the joints.}
 
-		\paragraph{How can be inverse kinematics be computed?}
-			\answer{It is sometimes possible to compute the inverse kinematics analytically. If this is not possible, it might be possible to compute them numerically, e.g. with the Newton method. However, it is better to use the inverse differential kinematics model to compute the velocities of the joints and then integrate them to recover the positions. For square Jacobians this is possible straightforwardly, for non-square Jacobians numerical methods have to be used.}
+\paragraph{How can be inverse kinematics be computed?}
+\answer{It is sometimes possible to compute the inverse kinematics analytically. If this is not possible, it might be possible to compute them numerically, e.g. with the Newton method. However, it is better to use the inverse differential kinematics model to compute the velocities of the joints and then integrate them to recover the positions. For square Jacobians this is possible straightforwardly, for non-square Jacobians numerical methods have to be used.}
 
-		\paragraph{What is task-space control?}
-			\answer{In task-space control, the trajectory is planned in the task-space rather than in the joint-space. Then the task-space data has to be converted into the joint-space to then apply joint-space controllers like the PID-controller. Common methods are for example the Jacobian transpose method and the Jacobian pseudo-inverse method.}
+\paragraph{What is task-space control?}
+\answer{In task-space control, the trajectory is planned in the task-space rather than in the joint-space. Then the task-space data has to be converted into the joint-space to then apply joint-space controllers like the PID-controller. Common methods are for example the Jacobian transpose method and the Jacobian pseudo-inverse method.}
 
-		\paragraph{KI-Campus: Given the joint state of a robot, which model is used to compute the end-effector position?}
-			\answer{Using the forward kinematics model.}
+\paragraph{KI-Campus: Given the joint state of a robot, which model is used to compute the end-effector position?}
+\answer{Using the forward kinematics model.}
 
-		\paragraph{KI-Campus: Given the joint state of a robot, which model is used to compute the torques/forces applied by the physics?}
-			\answer{Using the inverse dynamics model.}
+\paragraph{KI-Campus: Given the joint state of a robot, which model is used to compute the torques/forces applied by the physics?}
+\answer{Using the inverse dynamics model.}
 
-		\paragraph{KI-Campus: Given the desired end-effector state of a robot, which model is used to compute the joint positions to achieve it?}
-			\answer{Using the inverse kinematics model.}
+\paragraph{KI-Campus: Given the desired end-effector state of a robot, which model is used to compute the joint positions to achieve it?}
+\answer{Using the inverse kinematics model.}
 
-		\paragraph{KI-Campus: How to compute the forward kinematics?}
-			\answer{The forward kinematics can be computed straightforwardly, e.g. by using the Denavit-Hartenberg convention and the respective homogeneous transformation matrices. They can also be computed by simple geometric observations in some cases.}
+\paragraph{KI-Campus: How to compute the forward kinematics?}
+\answer{The forward kinematics can be computed straightforwardly, e.g. by using the Denavit-Hartenberg convention and the respective homogeneous transformation matrices. They can also be computed by simple geometric observations in some cases.}
 
-		\paragraph{KI-Campus: What are the limitations of the P-controller?}
-			\answer{It oscillates around the desired position and does not include velocity-control.}
+\paragraph{KI-Campus: What are the limitations of the P-controller?}
+\answer{It oscillates around the desired position and does not include velocity-control.}
 
-		\paragraph{KI-Campus: How can model-based control deal with mismatches between the real system and the model?}
-			\answer{Using feedforward control, a model-based controller is combined with a "standard" PD-controller to eradicate modeling errors.}
+\paragraph{KI-Campus: How can model-based control deal with mismatches between the real system and the model?}
+\answer{Using feedforward control, a model-based controller is combined with a "standard" PD-controller to eradicate modeling errors.}
 
-		\paragraph{KI-Campus: How to compute the analytical solution for inverse kinematics?}
-			\answer{This can be done by inverting the forward kinematics or by geometric observations in the system. This is, however, rather tedious and not always possible.}
+\paragraph{KI-Campus: How to compute the analytical solution for inverse kinematics?}
+\answer{This can be done by inverting the forward kinematics or by geometric observations in the system. This is, however, rather tedious and not always possible.}
 
-		\paragraph{KI-Campus: What are a few examples in which null-space control would make sense.}
-			\answer{For example for saving energy by being in rest postures in a redundant robot. In a redundant prismatic robot, this may be that no joint is fully stretched but all joint are located around the center.}
-			% end
+\paragraph{KI-Campus: What are a few examples in which null-space control would make sense.}
+	\answer{For example for saving energy by being in rest postures in a redundant robot. In a redundant prismatic robot, this may be that no joint is fully stretched but all joint are located around the center.}
+% end
 
-	\section{Machine Learning Foundations}
-		\paragraph{Why does statistics matter to machine learning?}
-			\answer{The real world is often not deterministic, hence it has to be necessary to model stochastic processes. Additionally, a probabilistic treatment of the models allows to quantify the uncertainty, making risk-aware predictions possible.}
+\section{Machine Learning Foundations}
+\paragraph{Why does statistics matter to machine learning?}
+\answer{The real world is often not deterministic, hence it has to be necessary to model stochastic processes. Additionally, a probabilistic treatment of the models allows to quantify the uncertainty, making risk-aware predictions possible.}
 
-		\paragraph{What are the three branches of machine learning?}
-			\answer{Supervised Learning, Unsupervised Learning, Reinforcement Learning -- and various combinations.}
+\paragraph{What are the three branches of machine learning?}
+\answer{Supervised Learning, Unsupervised Learning, Reinforcement Learning -- and various combinations.}
 
-		\paragraph{How to derive linear regression? What is ridge regression?}
-			\answer{By minimizing the MSE between the predictions and the targets. Ridge regression is regularized linear regression where the parameters are also part of the objective to keep them small.}
+\paragraph{How to derive linear regression? What is ridge regression?}
+\answer{By minimizing the MSE between the predictions and the targets. Ridge regression is regularized linear regression where the parameters are also part of the objective to keep them small.}
 
-		\paragraph{How do priors change the solution?}
-			\answer{Priors have the effect of regularizing the solution in a principled way. For linear regression, placing a Gaussian prior on the parameters yields the same solution as empirical ridge regression.}
+\paragraph{How do priors change the solution?}
+\answer{Priors have the effect of regularizing the solution in a principled way. For linear regression, placing a Gaussian prior on the parameters yields the same solution as empirical ridge regression.}
 
-		\paragraph{What is maximum a-priori? What is maximum likelihood? What is MAP?}
-			\answer{For a maximum likelihood estimator, the likelihood \( p(\mathcal{D} \given \vec{\theta}) \) is maximized w.r.t. to the parameters \(\vec{\theta}\). For a maximum a-posteriori estimator (MAP), the posterior \( p(\vec{\theta} \given \mathcal{D}) \) is maximized. This requires placing a prior on the parameters. Maximum a-priori doesn't really make sense.}
+\paragraph{What is maximum a-priori? What is maximum likelihood? What is MAP?}
+\answer{For a maximum likelihood estimator, the likelihood \( p(\mathcal{D} \given \vec{\theta}) \) is maximized w.r.t. to the parameters \(\vec{\theta}\). For a maximum a-posteriori estimator (MAP), the posterior \( p(\vec{\theta} \given \mathcal{D}) \) is maximized. This requires placing a prior on the parameters. Maximum a-priori doesn't really make sense.}
 
-		\paragraph{What is overfitting and how does it relate to the bias-variance tradeoff?}
-			\answer{Overfitting describes the effect if the model perfectly resembles the training data but fails to make out-of-data predictions (e.g. on a training dataset). It relates to the bias-variance tradeoff as a model that overfits has a low bias and high variance while an ideal model has low bias and low variance -- which is usually not really achievable. The equation for relating the squared error with bias and variance is
-			\begin{equation*}
-				L_{\hat{f}}(\vec{x})
-				= \E_{\mathcal{D}}\big[ (y(\vec{x}) - \hat{f}_{\mathcal{D}}(\vec{x}))^2 \big]
-				= \sigma_\epsilon^2 + \Bias^2\big[ \hat{f}_{\mathcal{D}}(\vec{x}) \big] + \Var\big[ \hat{f}_{\mathcal{D}}(\vec{x}) \big]
-			\end{equation*}
-			where \( y(\vec{x}) = f(\vec{x}) + \epsilon \) are the real values with noise \( \epsilon \sim \mathcal{N}(0, \sigma_\epsilon^2) \) and \( \hat{f}_{\mathcal{D}} \) is the model learned from dataset \(\mathcal{D}\).}
+\paragraph{What is overfitting and how does it relate to the bias-variance tradeoff?}
+\answer{Overfitting describes the effect if the model perfectly resembles the training data but fails to make out-of-data predictions (e.g. on a training dataset). It relates to the bias-variance tradeoff as a model that overfits has a low bias and high variance while an ideal model has low bias and low variance -- which is usually not really achievable. The equation for relating the squared error with bias and variance is
+\begin{equation*}
+	L_{\hat{f}}(\vec{x})
+	= \E_{\mathcal{D}}\big[ (y(\vec{x}) - \hat{f}_{\mathcal{D}}(\vec{x}))^2 \big]
+	= \sigma_\epsilon^2 + \Bias^2\big[ \hat{f}_{\mathcal{D}}(\vec{x}) \big] + \Var\big[ \hat{f}_{\mathcal{D}}(\vec{x}) \big]
+\end{equation*}
+where \( y(\vec{x}) = f(\vec{x}) + \epsilon \) are the real values with noise \( \epsilon \sim \mathcal{N}(0, \sigma_\epsilon^2) \) and \( \hat{f}_{\mathcal{D}} \) is the model learned from dataset \(\mathcal{D}\).}
 
-		\paragraph{How do Frequentists differ from Bayesians?}
-			\answer{Frequentists belief that there is a true model / there are true parameters while Bayesians assume parameters to be random variables.}
+\paragraph{How do Frequentists differ from Bayesians?}
+\answer{Frequentists belief that there is a true model / there are true parameters while Bayesians assume parameters to be random variables.}
 
-		\paragraph{What does non-parametric mean?}
-			\answer{A non-parametric model uses every data point as a parameter, so it really has indefinitely many parameters.}
+\paragraph{What does non-parametric mean?}
+\answer{A non-parametric model uses every data point as a parameter, so it really has indefinitely many parameters.}
 
-		\paragraph{What are Kernels? What is Gaussian Process regression?}
-			\answer{Kernels are functions that represent inner products of feature transformations. Using the kernel trick (replacing all inner products with kernels), it is also possible to use infinite-dimensional feature transformations implicitly. Gaussian Process regression is a non-parametric Bayesian regression model that uses kernels for the mean and gauges the uncertainty dependent on the input variable.}
+\paragraph{What are Kernels? What is Gaussian Process regression?}
+\answer{Kernels are functions that represent inner products of feature transformations. Using the kernel trick (replacing all inner products with kernels), it is also possible to use infinite-dimensional feature transformations implicitly. Gaussian Process regression is a non-parametric Bayesian regression model that uses kernels for the mean and gauges the uncertainty dependent on the input variable.}
 
-		\paragraph{What are neural networks and how relate them to the brain?}
-			\answer{Neural networks are a set of artificial neurons that are interconnected. Each input to a neuron gets weighted and the weighted sum is put through an activation function. They resemble the human brain which also has activation functions and weights the inputs. A neuron sheet in the brain the represented by a layer in the artificial neural network.}
+\paragraph{What are neural networks and how relate them to the brain?}
+\answer{Neural networks are a set of artificial neurons that are interconnected. Each input to a neuron gets weighted and the weighted sum is put through an activation function. They resemble the human brain which also has activation functions and weights the inputs. A neuron sheet in the brain the represented by a layer in the artificial neural network.}
 
-		\paragraph{How do neural networks build stacks of feature representations?}
-			\answer{Using multiple layers. Each layer can be seen as a feature transformation, producing features for the next layer.}
+\paragraph{How do neural networks build stacks of feature representations?}
+\answer{Using multiple layers. Each layer can be seen as a feature transformation, producing features for the next layer.}
 
-		\paragraph{If a network with one layer is enough, why is it in practice not a good idea?}
-			\answer{The amount of hidden neurons in that layer rises exponentially with the complexity of the function that has to be represented. By using deep networks, the amount of parameters and the computational cost can be reduced.}
+\paragraph{If a network with one layer is enough, why is it in practice not a good idea?}
+\answer{The amount of hidden neurons in that layer rises exponentially with the complexity of the function that has to be represented. By using deep networks, the amount of parameters and the computational cost can be reduced.}
 
-		\paragraph{How to do forward- and backpropagation?}
-			\answer{Forwardpropagation is straightforward using matrix multiplications and invoking the activation functions with the weighted vectors. Backpropagation is equivalent to an iterative application of the chain rule for each layer to compute the gradient of a loss function w.r.t. all parameters of the network.}
+\paragraph{How to do forward- and backpropagation?}
+\answer{Forwardpropagation is straightforward using matrix multiplications and invoking the activation functions with the weighted vectors. Backpropagation is equivalent to an iterative application of the chain rule for each layer to compute the gradient of a loss function w.r.t. all parameters of the network.}
 
-		\paragraph{What are different ways of doing fast gradient descent? Full, stochastic, mini-batch? Learning rate adaptation? How to initialize the parameters?}
-			\answer{Instead of using all samples for one gradient descent step (full GD), it is also possible to use only some (mini-batch GD) or even just one (stochastic GD) sample. With learning rate adaption (e.g. Adadelta, Adagrad or Adam), it is possible to accelerate learning by using a higher learning rate in flat regions and using a smaller learning rate in steep regions of the loss function. There are multiple ways of initializing the weights, e.g. by drawing them from a Gaussian distribution or using Xavier initialization which samples from a uniform distribution.}
+\paragraph{What are different ways of doing fast gradient descent? Full, stochastic, mini-batch? Learning rate adaptation? How to initialize the parameters?}
+\answer{Instead of using all samples for one gradient descent step (full GD), it is also possible to use only some (mini-batch GD) or even just one (stochastic GD) sample. With learning rate adaption (e.g. Adadelta, Adagrad or Adam), it is possible to accelerate learning by using a higher learning rate in flat regions and using a smaller learning rate in steep regions of the loss function. There are multiple ways of initializing the weights, e.g. by drawing them from a Gaussian distribution or using Xavier initialization which samples from a uniform distribution.}
 
-		\paragraph{Why do neural networks overfit and what to do about it?}
-			\answer{Usually neural networks have a lot more parameters than data is available for training, making it easy for the network to memorize the data instead of learning correlations. This can be fought e.g. using dropout (disabling certain connections in the network with a certain probability) or noise augmentation (make the input data noise).}
+\paragraph{Why do neural networks overfit and what to do about it?}
+\answer{Usually neural networks have a lot more parameters than data is available for training, making it easy for the network to memorize the data instead of learning correlations. This can be fought e.g. using dropout (disabling certain connections in the network with a certain probability) or noise augmentation (make the input data noise).}
 
-		\paragraph{Why are convolutional neural networks used for spatially correlated data?}
-			\answer{Convolutional neural networks use convolution filters which are really good in processing spatially correlated data. For example in images in a non-ML setting, convolutions are used to detect edges in the image.}
+\paragraph{Why are convolutional neural networks used for spatially correlated data?}
+\answer{Convolutional neural networks use convolution filters which are really good in processing spatially correlated data. For example in images in a non-ML setting, convolutions are used to detect edges in the image.}
 
-		\paragraph{Why are recurrent neural networks used for time series data?}
-			\answer{Recurrent neural networks feed the output back as an input just like time series data usually does (e.g. in a dynamical system \( \vec{s}_{t + 1} = \mat{A} \vec{s}_t \), the output of time step \(t\) is feed as an input for time step \(t + 1\)).}
-			% end
+\paragraph{Why are recurrent neural networks used for time series data?}
+	\answer{Recurrent neural networks feed the output back as an input just like time series data usually does (e.g. in a dynamical system \( \vec{s}_{t + 1} = \mat{A} \vec{s}_t \), the output of time step \(t\) is feed as an input for time step \(t + 1\)).}
+% end
 
-	\section{Optimal Control}
-		\subsection{Discrete Optimal Control}
-			\paragraph{What is an MDP, a policy, a value function, a state-action value function?}
-				\answer{An MDP, a Markov decision process, is a system with discrete states and actions that behaves Markovian, i.e. a state only depends on the previous state and the action taken and not on any other states. The initial state is drawn from the initial state distribution. A policy (that can be either deterministic or stochastic) prescribed what action to take given an action. The value function assesses the quality of a state, i.e. it gives the expected long-term reward when following a given policy. The state-action function, also called the Q-function, assesses the quality of state-action pairs, i.e. it gives the expected long-term reward when taking the said action in said state and subsequently following a policy. Maximizing the optimal Q-function yields the optimal policy.}
+\section{Optimal Control}
+\subsection{Discrete Optimal Control}
+\paragraph{What is an MDP, a policy, a value function, a state-action value function?}
+\answer{An MDP, a Markov decision process, is a system with discrete states and actions that behaves Markovian, i.e. a state only depends on the previous state and the action taken and not on any other states. The initial state is drawn from the initial state distribution. A policy (that can be either deterministic or stochastic) prescribed what action to take given an action. The value function assesses the quality of a state, i.e. it gives the expected long-term reward when following a given policy. The state-action function, also called the Q-function, assesses the quality of state-action pairs, i.e. it gives the expected long-term reward when taking the said action in said state and subsequently following a policy. Maximizing the optimal Q-function yields the optimal policy.}
 
-			\paragraph{What is policy evaluation, policy improvement, policy iteration and value iteration?}
-				\answer{Policy evaluation estimated the (state-action) value function for a given policy by iterating the Bellman equation. Policy improvement takes a state-action value and deduces the policy from it w.r.t. the action for every state. Policy iteration iterates policy evaluation and improvement until convergence to find the optimal policy. Value iteration also finds the optimal policy but iterated the Bellman equation directly.}
+\paragraph{What is policy evaluation, policy improvement, policy iteration and value iteration?}
+\answer{Policy evaluation estimated the (state-action) value function for a given policy by iterating the Bellman equation. Policy improvement takes a state-action value and deduces the policy from it w.r.t. the action for every state. Policy iteration iterates policy evaluation and improvement until convergence to find the optimal policy. Value iteration also finds the optimal policy but iterated the Bellman equation directly.}
 
-			\paragraph{What is the main difference between policy iteration vs. value iteration?}
-				\answer{In value iteration a lot of redundant maximization operations are performed for computing the value function. In policy iteration this is circumvented using the embedded policy evaluation.}
+\paragraph{What is the main difference between policy iteration vs. value iteration?}
+\answer{In value iteration a lot of redundant maximization operations are performed for computing the value function. In policy iteration this is circumvented using the embedded policy evaluation.}
 
-			\paragraph{What is the Bellman equation?}
-				The Bellman equation describes how to compute the (optimal) value function from the (optimal) state-action value function. For infinite horizon problems, it is given as
-				\begin{equation*}
-					V^\ast(\vec{s}) = \max_{\vec{a}} \, \Big(\! r(\vec{s}, \vec{a}) + \gamma \sum_{\vec{s}'} p(\vec{s}' \given \vec{s}, \vec{a}) V^\ast(\vec{s}') \!\Big).
-				\end{equation*}
+\paragraph{What is the Bellman equation?}
+The Bellman equation describes how to compute the (optimal) value function from the (optimal) state-action value function. For infinite horizon problems, it is given as
+\begin{equation*}
+	V^\ast(\vec{s}) = \max_{\vec{a}} \, \Big(\! r(\vec{s}, \vec{a}) + \gamma \sum_{\vec{s}'} p(\vec{s}' \given \vec{s}, \vec{a}) V^\ast(\vec{s}') \!\Big).
+\end{equation*}
 
-			\paragraph{What are the differences between finite and infinite horizon objectives? Give examples of robotics problems in both settings.}
-				\answer{For finite-horizon problems, all of the transition dynamics, reward function and (state-action= value functions and therefore also the policy are time-dependent. Also there is a last reward \( r_T(\vec{s}_T) \) that is independent of the action. This can be interpreted as that it is relevant how much steps are left to make decisions. For infinite-horizon objectives, this is no longer relevant and the time-dependencies is dropped for all components. An infinite-horizon problem is, for example, balancing an inverted pendulum where more reward is gained the longer the pendulum can be held upright. An example for a finite-horizon problem is ball-in-cup, where once the ball is in the cup the problem is no longer interesting.}
+\paragraph{What are the differences between finite and infinite horizon objectives? Give examples of robotics problems in both settings.}
+\answer{For finite-horizon problems, all of the transition dynamics, reward function and (state-action= value functions and therefore also the policy are time-dependent. Also there is a last reward \( r_T(\vec{s}_T) \) that is independent of the action. This can be interpreted as that it is relevant how much steps are left to make decisions. For infinite-horizon objectives, this is no longer relevant and the time-dependencies is dropped for all components. An infinite-horizon problem is, for example, balancing an inverted pendulum where more reward is gained the longer the pendulum can be held upright. An example for a finite-horizon problem is ball-in-cup, where once the ball is in the cup the problem is no longer interesting.}
 
-			\paragraph{Why is dynamic programming difficult to apply directly to robotics?}
-				\answer{Dynamic programming as discussed in this chapter is only applicable for discrete state-action spaces. This can be achieved by separating the world in buckets, but this would cause an exponential explosion in the memory required to store the value function. Using LQR (next chapter), dynamic programming can also be used for continuous state-action spaces, but this requires the system to be linear and the reward to be quadratic with Gaussian noise. But the world and therefore robots are not linear, but in most cases highly nonlinear.}
-				% end
+\paragraph{Why is dynamic programming difficult to apply directly to robotics?}
+	\answer{Dynamic programming as discussed in this chapter is only applicable for discrete state-action spaces. This can be achieved by separating the world in buckets, but this would cause an exponential explosion in the memory required to store the value function. Using LQR (next chapter), dynamic programming can also be used for continuous state-action spaces, but this requires the system to be linear and the reward to be quadratic with Gaussian noise. But the world and therefore robots are not linear, but in most cases highly nonlinear.}
+% end
 
-		\subsection{Continuous Optimal Control}
-			\paragraph{What is the LQR problem?}
-				\answer{An LQR problem is given with continuous states and actions with linear state transition dynamics with Gaussian noise, i.e. \( p(\vec{x}_{t + 1} \given \vec{x}_t, \vec{u}_t) = \mathcal{N}\big( \vec{x}_{t + 1} \biggiven \mat{A}_t \vec{x}_t + \mat{B}_t \vec{u}_t\, \mat{\Sigma}_t \big) \). The reward function is quadratic in the states and actions, i.e. \( r_t(\vec{x}, \vec{u}) = -\vec{x}^T \mat{R}_t \vec{x} - \vec{u}^T \mat{H}_t \vec{u} \) with symmetric and positive definite matrices \( \mat{R}_t \) and \( \mat{H}_t \). The optimal policy \(\pi^\ast\) then maximizes the cumulative reward \( J_\pi \) over a finite horizon \(T\). This is, besides the discrete case, the only solvable optimal control problem.}
+\subsection{Continuous Optimal Control}
+\paragraph{What is the LQR problem?}
+\answer{An LQR problem is given with continuous states and actions with linear state transition dynamics with Gaussian noise, i.e. \( p(\vec{x}_{t + 1} \given \vec{x}_t, \vec{u}_t) = \mathcal{N}\big( \vec{x}_{t + 1} \biggiven \mat{A}_t \vec{x}_t + \mat{B}_t \vec{u}_t\, \mat{\Sigma}_t \big) \). The reward function is quadratic in the states and actions, i.e. \( r_t(\vec{x}, \vec{u}) = -\vec{x}^T \mat{R}_t \vec{x} - \vec{u}^T \mat{H}_t \vec{u} \) with symmetric and positive definite matrices \( \mat{R}_t \) and \( \mat{H}_t \). The optimal policy \(\pi^\ast\) then maximizes the cumulative reward \( J_\pi \) over a finite horizon \(T\). This is, besides the discrete case, the only solvable optimal control problem.}
 
-			\paragraph{Derive the LQR value function and optimal policy for the basic case.}
-				\answer{This can be done by following the principle of dynamic programming, i.e. first compute the value function for the last time step and subsequently calculate the Q-function, the optimal policy and the value function for the previous time step. This is done by applying the Bellman equation. See \autoref{subsec:lqr} for the full derivation.}
+\paragraph{Derive the LQR value function and optimal policy for the basic case.}
+\answer{This can be done by following the principle of dynamic programming, i.e. first compute the value function for the last time step and subsequently calculate the Q-function, the optimal policy and the value function for the previous time step. This is done by applying the Bellman equation. See \autoref{subsec:lqr} for the full derivation.}
 
-			\paragraph{What is the form of the solution (value function and policy)? What is their interpretation (qualitatively)?}
-				\answer{The value function is of the form \( V_t(\vec{x}) = \vec{x}^T \mat{V}_t \vec{x} + \vec{x}^T \vec{v}_t \), i.e. it is quadratic-linear. The optimal control input is of the form \( \vec{u}_t^\ast = \mat{K}_t (\vec{x}_t - \vec{x}_d) + \vec{k}_t \), i.e. it is a time-varying P-controller!}
+\paragraph{What is the form of the solution (value function and policy)? What is their interpretation (qualitatively)?}
+\answer{The value function is of the form \( V_t(\vec{x}) = \vec{x}^T \mat{V}_t \vec{x} + \vec{x}^T \vec{v}_t \), i.e. it is quadratic-linear. The optimal control input is of the form \( \vec{u}_t^\ast = \mat{K}_t (\vec{x}_t - \vec{x}_d) + \vec{k}_t \), i.e. it is a time-varying P-controller!}
 
-			\paragraph{What to do when dynamics and/or rewards are not linear? What the pitfalls?}
-				\answer{It is possible to linearize the dynamics and/or the rewards using a Taylor expansion and cutting off the higher-order terms. This, however, leads to oscillations and does only work for systems that are not too nonlinear. This also causes the policies to often not work on the real system due to modeling errors.}
+\paragraph{What to do when dynamics and/or rewards are not linear? What the pitfalls?}
+	\answer{It is possible to linearize the dynamics and/or the rewards using a Taylor expansion and cutting off the higher-order terms. This, however, leads to oscillations and does only work for systems that are not too nonlinear. This also causes the policies to often not work on the real system due to modeling errors.}
 
-			\paragraph{What are the potential issues when using learning models for trajectory optimization?}
-				\answer{One major issue is that the optimizer is prone to exploit error in the model. When using learned models, this might mean to jump out of the space the system learned in, causing unpredictable behaviors. Such policies will most likely never work on the real system as it does not exhibit the same errors.}
-				% end
-				% end
+	\paragraph{What are the potential issues when using learning models for trajectory optimization?}
+		\answer{One major issue is that the optimizer is prone to exploit error in the model. When using learned models, this might mean to jump out of the space the system learned in, causing unpredictable behaviors. Such policies will most likely never work on the real system as it does not exhibit the same errors.}
+	% end
+% end
 
-	\section{Approximate Optimal Control}
-		\subsection{Approximate Dynamic Programming}
-			\paragraph{What are the problems of dynamic programming?}
-				\answer{For large state spaces, dynamic programming becomes infeasible due to the curse of dimensionality. It is not possible to store the value function for all necessary states.}
+\section{Approximate Optimal Control}
+\subsection{Approximate Dynamic Programming}
+\paragraph{What are the problems of dynamic programming?}
+\answer{For large state spaces, dynamic programming becomes infeasible due to the curse of dimensionality. It is not possible to store the value function for all necessary states.}
 
-			\paragraph{Can function approximators be used?}
-				\answer{Yes, by approximating the value function globally.}
+\paragraph{Can function approximators be used?}
+\answer{Yes, by approximating the value function globally.}
 
-			\paragraph{What is approximate value iteration? What is the performance loss?}
-				\answer{Approximate value iteration uses vanilla value/policy iteration to find the optimal value function for a smaller set of states and subsequently fits a global value function approximation on these values. This is repeated until convergence. The performance loss describes the difference of the optimal value function to the value function described by the greedy policy generated by the value function approximation. It is bound by the approximation error of the value function.}
+\paragraph{What is approximate value iteration? What is the performance loss?}
+\answer{Approximate value iteration uses vanilla value/policy iteration to find the optimal value function for a smaller set of states and subsequently fits a global value function approximation on these values. This is repeated until convergence. The performance loss describes the difference of the optimal value function to the value function described by the greedy policy generated by the value function approximation. It is bound by the approximation error of the value function.}
 
-			\paragraph{What is approximate policy iteration? What is the performance loss?}
-				\answer{Approximate policy iteration projects the estimated value function into the parameter space and optimized it there. Again, the performance loss is bound by the approximation error of the value function.}
-				% end
+\paragraph{What is approximate policy iteration? What is the performance loss?}
+	\answer{Approximate policy iteration projects the estimated value function into the parameter space and optimized it there. Again, the performance loss is bound by the approximation error of the value function.}
+% end
 
-		\subsection{Differential Dynamic Programming}
-			\paragraph{What is the difference between LQR around trajectories and DDP?}
-				\answer{In contrast to LQR, DDP is an iterative algorithm that always linearized the dynamics again after executing a set of actions. This way the algorithm converges to a local optima even for nonlinear systems.}
+\subsection{Differential Dynamic Programming}
+\paragraph{What is the difference between LQR around trajectories and DDP?}
+\answer{In contrast to LQR, DDP is an iterative algorithm that always linearized the dynamics again after executing a set of actions. This way the algorithm converges to a local optima even for nonlinear systems.}
 
-			\paragraph{How do you compute the quadratic expansion?}
-				\answer{The quadratic expansion can be computed analytically, with automatic differentiation or finite differences.}
+\paragraph{How do you compute the quadratic expansion?}
+\answer{The quadratic expansion can be computed analytically, with automatic differentiation or finite differences.}
 
-			\paragraph{What is iLQR? What terms does it ignore?}
-				\answer{Iterative LQR (iLQR) is an approximation of the DDP algorithm which approximates the Hessians of the Q-function by ignoring the Hessians of the state dynamics. This can be handy as computing Hessians is usually computationally expensive which prohibits online usage of DDP.}
+\paragraph{What is iLQR? What terms does it ignore?}
+\answer{Iterative LQR (iLQR) is an approximation of the DDP algorithm which approximates the Hessians of the Q-function by ignoring the Hessians of the state dynamics. This can be handy as computing Hessians is usually computationally expensive which prohibits online usage of DDP.}
 
-			\paragraph{How does stochastic DDP differ from deterministic DDP?}
-				\answer{In stochastic DDP state-action dependent noise is assumed, adding more differential term to the solution. For constant noise, however, the solution is equivalent to deterministic DDP.}
+\paragraph{How does stochastic DDP differ from deterministic DDP?}
+	\answer{In stochastic DDP state-action dependent noise is assumed, adding more differential term to the solution. For constant noise, however, the solution is equivalent to deterministic DDP.}
 
-			\paragraph{What is Guided Policy Search?}
-				\answer{Guided policy search uses multiple DDP controllers to find multiple trajectories and subsequently fits a neural network to these trajectories for finding an optimal global controller. This makes the controller less brittle as it can follow more than one trajectory.}
-				% end
-				% end
+	\paragraph{What is Guided Policy Search?}
+		\answer{Guided policy search uses multiple DDP controllers to find multiple trajectories and subsequently fits a neural network to these trajectories for finding an optimal global controller. This makes the controller less brittle as it can follow more than one trajectory.}
+	% end
+% end
 
-	\section{State Estimation} % 6.64
-		\todo{Content}
-		% end
+\section{State Estimation} % 6.64
+	\todo{Content}
+% end
 
-	\section{Model Learning}
-		\paragraph{Why do we need to learn models?}
-			\answer{Building models by hand requires a lot of work (e.g. for disassembling and measuring the robot) and can often not cover complex behavior like friction. But not modeling e.g. friction may result in policies that are not transferable to the real robot, or the motion planning to fail. Learning models from data can overcome these issues.}
+\section{Model Learning}
+\paragraph{Why do we need to learn models?}
+\answer{Building models by hand requires a lot of work (e.g. for disassembling and measuring the robot) and can often not cover complex behavior like friction. But not modeling e.g. friction may result in policies that are not transferable to the real robot, or the motion planning to fail. Learning models from data can overcome these issues.}
 
-		\paragraph{What models exist in robotics?}
-			\answer{Forward/inverse kinematics, forward/inverse dynamics, sensor models, discrete-time models, continuous-time models, \dots}
+\paragraph{What models exist in robotics?}
+\answer{Forward/inverse kinematics, forward/inverse dynamics, sensor models, discrete-time models, continuous-time models, \dots}
 
-		\paragraph{What's a white-box? What's a black-box? What's a gray-box?}
-			\answer{In a white-box model, lots of prior domain knowledge is used to build the model. Example are using physics-based approaches like Lagrangian mechanics to find the equations and then utilize system identification to find e.g. the masses. A black-box model is the opposite, where no prior knowledge is used and the complete model is inferred from data, e.g. using a neural network. A gray-box combined both worlds. It used some prior knowledge (like energy conservation), but also uses a black-box model for learning non-modeled behavior (e.g. friction or handling the residual error).}
+\paragraph{What's a white-box? What's a black-box? What's a gray-box?}
+\answer{In a white-box model, lots of prior domain knowledge is used to build the model. Example are using physics-based approaches like Lagrangian mechanics to find the equations and then utilize system identification to find e.g. the masses. A black-box model is the opposite, where no prior knowledge is used and the complete model is inferred from data, e.g. using a neural network. A gray-box combined both worlds. It used some prior knowledge (like energy conservation), but also uses a black-box model for learning non-modeled behavior (e.g. friction or handling the residual error).}
 
-		\paragraph{How to excite a system to get good data for model learning?}
-			\answer{Use impulse responses for analog signals and step functions for digital signals. As these are not practical (due to high frequencies that may damage the robot), a low-pass filter has to be used. But this again limits the diversity of signals. Another approach is to use active learning for guiding exploration, i.e. letting the model decide where to get new data is also a good option. In practice, out-of-phase sinuses create very diverse end-effector trajectories that are good for model learning.}
+\paragraph{How to excite a system to get good data for model learning?}
+\answer{Use impulse responses for analog signals and step functions for digital signals. As these are not practical (due to high frequencies that may damage the robot), a low-pass filter has to be used. But this again limits the diversity of signals. Another approach is to use active learning for guiding exploration, i.e. letting the model decide where to get new data is also a good option. In practice, out-of-phase sinuses create very diverse end-effector trajectories that are good for model learning.}
 
-		\paragraph{How to learn a linear Gaussian dynamical system model?}
-			\answer{The LGDS system model can be learned using an expectation-maximization algorithm that in the E-step uses a Kalman smoother for finding the expected latent states and subsequently maximized the expected log-likelihood in the M-step. This guarantees monotonic improvement.}
+\paragraph{How to learn a linear Gaussian dynamical system model?}
+\answer{The LGDS system model can be learned using an expectation-maximization algorithm that in the E-step uses a Kalman smoother for finding the expected latent states and subsequently maximized the expected log-likelihood in the M-step. This guarantees monotonic improvement.}
 
-		\paragraph{How to make black-box models physically safe to learn?}
-			\answer{This can be done by impose inductive biases, e.g. energy conservation, on the model. This way it is less likely for the model to be unsafe on the real system. Also for generating data, it is required to low-pass filter the frequencies as high frequencies may cause unsafe movements of the robot.}
+\paragraph{How to make black-box models physically safe to learn?}
+\answer{This can be done by impose inductive biases, e.g. energy conservation, on the model. This way it is less likely for the model to be unsafe on the real system. Also for generating data, it is required to low-pass filter the frequencies as high frequencies may cause unsafe movements of the robot.}
 
-		\paragraph{How can differentiable physics help?}
-			\answer{Differentiable physics makes it possible to use black-box models combined with white-box models like the Newton-Euler algorithm. By implementing the algorithm in an autograd engine, the parameters can be trained with gradient decent, making it simple to add a neural network, e.g. for handling the residual error by adding it to the result of the Newton-Euler algorithm.}
-			% end
+\paragraph{How can differentiable physics help?}
+	\answer{Differentiable physics makes it possible to use black-box models combined with white-box models like the Newton-Euler algorithm. By implementing the algorithm in an autograd engine, the parameters can be trained with gradient decent, making it simple to add a neural network, e.g. for handling the residual error by adding it to the result of the Newton-Euler algorithm.}
+% end
 
-	\section{Policy Representations}
-		\paragraph{What is a policy?}
-			\answer{A policy maps a state \(\vec{s}\) to an action \(\vec{a}\). By using a probabilistic policy \( \pi(\vec{a} \given \vec{s}) \), lot of difference behaviors like exploration can be encoded.}
+\section{Policy Representations}
+\paragraph{What is a policy?}
+\answer{A policy maps a state \(\vec{s}\) to an action \(\vec{a}\). By using a probabilistic policy \( \pi(\vec{a} \given \vec{s}) \), lot of difference behaviors like exploration can be encoded.}
 
-		\paragraph{What off-the-shelf representations can be used for robot learning?}
-			\answer{A lot of standard machine learning regression models can be used to represent policies, e.g. neural networks, linear regression with RBF features, Gaussian process, \dots}
+\paragraph{What off-the-shelf representations can be used for robot learning?}
+\answer{A lot of standard machine learning regression models can be used to represent policies, e.g. neural networks, linear regression with RBF features, Gaussian process, \dots}
 
-		\paragraph{How do off-the-self representations compare to trajectory-based representations?}
-			\answer{Off-the-shelf policies often do not generalize well which can lead to drastic failures. Also it is hard to encode inductive biases, achieve scalability for a high number of degrees of freedom, combine movements. Sample efficiency is also a problem as off-the-shelf methods usually require lots of training data.}
+\paragraph{How do off-the-self representations compare to trajectory-based representations?}
+\answer{Off-the-shelf policies often do not generalize well which can lead to drastic failures. Also it is hard to encode inductive biases, achieve scalability for a high number of degrees of freedom, combine movements. Sample efficiency is also a problem as off-the-shelf methods usually require lots of training data.}
 
-		\paragraph{What are potential advantages of movement primitives?}
-			\answer{With movement primitives, it is usually easy to learn a specific movement from demonstrations using simple linear regression. As the forcing function vanishes over time, they are stable by design, and they can encode temporal scaling to execute a movement faster/slower as needed. Also they scale really well for a higher number of degrees of freedom.}
+\paragraph{What are potential advantages of movement primitives?}
+\answer{With movement primitives, it is usually easy to learn a specific movement from demonstrations using simple linear regression. As the forcing function vanishes over time, they are stable by design, and they can encode temporal scaling to execute a movement faster/slower as needed. Also they scale really well for a higher number of degrees of freedom.}
 
-		\paragraph{What are the main ideas of using movement primitives?}
-			\answer{The stability of a second-order linear dynamical systems can be easily assured by choosing the eigenvalues accordingly. To produce a moving attractor, a forcing function is added to the dynamical system, causing the goal attractor to move accordingly. As the forcing function is designed to vanish over time, the stability of the system is assured as it becomes a PD-controller for \( t \to \infty \).}
+\paragraph{What are the main ideas of using movement primitives?}
+\answer{The stability of a second-order linear dynamical systems can be easily assured by choosing the eigenvalues accordingly. To produce a moving attractor, a forcing function is added to the dynamical system, causing the goal attractor to move accordingly. As the forcing function is designed to vanish over time, the stability of the system is assured as it becomes a PD-controller for \( t \to \infty \).}
 
-		\paragraph{Why to use dynamical systems? What are advantages and disadvantages?}
-			\answer{Dynamical systems are highly expressive in terms of the trajectories they can generate. Also they usually only need a few parameters for generating a variety of different trajectories, exhibiting a desirable parsimonious parameter space. Advantages are that for linear systems, stability analysis is well-studied and simple. For nonlinear dynamics, however, this is different: stability analysis is not well studied and can in most cases only be analyzed using Lyapunov functions which are hard to find. Hence, instability is a real problem with using dynamical systems as trajectory representations!}
+\paragraph{Why to use dynamical systems? What are advantages and disadvantages?}
+\answer{Dynamical systems are highly expressive in terms of the trajectories they can generate. Also they usually only need a few parameters for generating a variety of different trajectories, exhibiting a desirable parsimonious parameter space. Advantages are that for linear systems, stability analysis is well-studied and simple. For nonlinear dynamics, however, this is different: stability analysis is not well studied and can in most cases only be analyzed using Lyapunov functions which are hard to find. Hence, instability is a real problem with using dynamical systems as trajectory representations!}
 
-		\paragraph{Why use a probabilistic representation?}
-			\answer{Using probabilistic representations enables quantifying the uncertainty on the trajectory, marking how important certain via-points are for executing the trajectory by choosing the variance low. A high variance allows variability in the movement and allows for combining and blending trajectories using probabilistic operators. Also, using conditioning, it is possible to specialize the primitive on visiting a specific state.}
+\paragraph{Why use a probabilistic representation?}
+\answer{Using probabilistic representations enables quantifying the uncertainty on the trajectory, marking how important certain via-points are for executing the trajectory by choosing the variance low. A high variance allows variability in the movement and allows for combining and blending trajectories using probabilistic operators. Also, using conditioning, it is possible to specialize the primitive on visiting a specific state.}
 
-		\paragraph{How can nonlinear stable dynamics be obtained?}
-			\answer{This is possible using an (easily achievable) stable linear systems and combining it with a bijective transformation function. Because of the bijectivity, the potential energy is not changed and the nonlinear system is stable too. Using invertible flows (bijective neural networks), a huge range of different nonlinear transformations are possible, allowing for various nonlinear stable dynamics.}
-			% end
+\paragraph{How can nonlinear stable dynamics be obtained?}
+	\answer{This is possible using an (easily achievable) stable linear systems and combining it with a bijective transformation function. Because of the bijectivity, the potential energy is not changed and the nonlinear system is stable too. Using invertible flows (bijective neural networks), a huge range of different nonlinear transformations are possible, allowing for various nonlinear stable dynamics.}
+% end
 
-	\section{Model-Based Reinforcement Learning}
-		\paragraph{How does model-based reinforcement learning relate to optimal control?}
-			\answer{MBRL is essentially optimal control with learned models.}
+\section{Model-Based Reinforcement Learning}
+\paragraph{How does model-based reinforcement learning relate to optimal control?}
+\answer{MBRL is essentially optimal control with learned models.}
 
-		\paragraph{How does model-free contrast to model-based? Does it really have no models?}
-			\answer{In model-based RL, an explicit dynamics model is learned. In model-free RL, the value function (or the policy) is learned directly. But these are also models of the environment and implicitly encode the dynamics. So MFRL does have models!}
+\paragraph{How does model-free contrast to model-based? Does it really have no models?}
+\answer{In model-based RL, an explicit dynamics model is learned. In model-free RL, the value function (or the policy) is learned directly. But these are also models of the environment and implicitly encode the dynamics. So MFRL does have models!}
 
-		\paragraph{Is model-based RL generally better?}
-			\answer{No. While MBRL can be really sample-efficient and can even directly train on the real system due to this, it suffers in generalization. Outside of already seen regions, MBRL methods are usually brittle. Also they suffer from modeling errors which is discussed in more detail in the next questions.}
+\paragraph{Is model-based RL generally better?}
+\answer{No. While MBRL can be really sample-efficient and can even directly train on the real system due to this, it suffers in generalization. Outside of already seen regions, MBRL methods are usually brittle. Also they suffer from modeling errors which is discussed in more detail in the next questions.}
 
-		\paragraph{Why does domain knowledge help model-based RL?}
-			\answer{Domain knowledge can be used to encode relevant properties of the environment, for example encoding rotational symmetries like in the pendulum using sine/cosine transformations. This enables better generalization.}
+\paragraph{Why does domain knowledge help model-based RL?}
+\answer{Domain knowledge can be used to encode relevant properties of the environment, for example encoding rotational symmetries like in the pendulum using sine/cosine transformations. This enables better generalization.}
 
-		\paragraph{Can modeling errors harm model-based RL?}
-			\answer{Yes. If a model has errors (which every model has), the optimizer might be able to exploit those errors in its favor. This could lead to robots walking through walls in the simulation, but just accelerating into them in a real environment. Other modeling problems are for example energy generation if some friction coefficient is negative.}
+\paragraph{Can modeling errors harm model-based RL?}
+\answer{Yes. If a model has errors (which every model has), the optimizer might be able to exploit those errors in its favor. This could lead to robots walking through walls in the simulation, but just accelerating into them in a real environment. Other modeling problems are for example energy generation if some friction coefficient is negative.}
 
-		\paragraph{What are aleatoric and epistemic uncertainty?}
-			\answer{Aleatoric uncertainty describes the noise of a variable. Epistemic uncertainty describes the uncertainty on the model itself, for example the uncertainty on the state dynamics matrix in a LGDS. The latter it often connected to Bayesian models while the former can also be found the frequentist models.}
+\paragraph{What are aleatoric and epistemic uncertainty?}
+\answer{Aleatoric uncertainty describes the noise of a variable. Epistemic uncertainty describes the uncertainty on the model itself, for example the uncertainty on the state dynamics matrix in a LGDS. The latter it often connected to Bayesian models while the former can also be found the frequentist models.}
 
-		\paragraph{How does model-based RL relate to Model-Predictive Control?}
-			\answer{In MPC, a model is used for replanning a action by looking a few steps ahead in time. This enables the robot to adapt to new situations if some previous action was not executed correctly, for example.}
+\paragraph{How does model-based RL relate to Model-Predictive Control?}
+\answer{In MPC, a model is used for replanning a action by looking a few steps ahead in time. This enables the robot to adapt to new situations if some previous action was not executed correctly, for example.}
 
-		\paragraph{What are PILCO and Guided Policy Search?}
-			% TODO: Also answer for Guided Policy Search after looking at the respective slides!
-			\answer{PILCO uses a Gaussian process dynamics model to quantify epistemic uncertainty and use that uncertainty to regularize the reward.}
-			% end
+\paragraph{What are PILCO and Guided Policy Search?}
+	% TODO: Also answer for Guided Policy Search after looking at the respective slides!
+	\answer{PILCO uses a Gaussian process dynamics model to quantify epistemic uncertainty and use that uncertainty to regularize the reward.}
+% end
 
-	\section{Value Function Methods}
-		\paragraph{Why can it be preferable to learn a value function instead of a model?}
-			\answer{Learning a model can be very hard, so model-free methods like value functions methods may be more successful. Not using a model can may also be preferable to prevent modeling errors that might get exploited by the optimizer, making the policy not transferable to a real system. Also lots of optimal control methods are based on linearization, which only works moderately for highly nonlinear tasks.}
+\section{Value Function Methods}
+\paragraph{Why can it be preferable to learn a value function instead of a model?}
+\answer{Learning a model can be very hard, so model-free methods like value functions methods may be more successful. Not using a model can may also be preferable to prevent modeling errors that might get exploited by the optimizer, making the policy not transferable to a real system. Also lots of optimal control methods are based on linearization, which only works moderately for highly nonlinear tasks.}
 
-		\paragraph{What are the V- and Q-function?}
-			\answer{The value function (V-function) describes the expected long-term reward of a state when following a policy. The state-action value function (Q-function) describes the expected long-term reward of a state when executing a given action and subsequently following a policy. The formal definition is as follows:
-				\begin{align*}
-					V^\pi(\vec{s}) = \E_{p, \pi}\!\Bigg[ \sum_{t = 1}^{\infty} \gamma^t r(\vec{s}_t, \vec{a}_t) \Bigggiven \vec{s}_1 = \vec{s} \Bigg]
-					 &  &
-					Q^\pi(\vec{s}, \vec{a}) = \E_{p, \pi}\!\Bigg[ \sum_{t = 1}^{\infty} \gamma^t r(\vec{s}_t, \vec{a}_t) \Bigggiven \vec{s}_1 = \vec{a},\, \vec{a}_1 = \vec{a} \Bigg]
-				\end{align*}}
+\paragraph{What are the V- and Q-function?}
+\answer{The value function (V-function) describes the expected long-term reward of a state when following a policy. The state-action value function (Q-function) describes the expected long-term reward of a state when executing a given action and subsequently following a policy. The formal definition is as follows:
+	\begin{align*}
+		V^\pi(\vec{s}) = \E_{p, \pi}\!\Bigg[ \sum_{t = 1}^{\infty} \gamma^t r(\vec{s}_t, \vec{a}_t) \Bigggiven \vec{s}_1 = \vec{s} \Bigg]
+		 &  &
+		Q^\pi(\vec{s}, \vec{a}) = \E_{p, \pi}\!\Bigg[ \sum_{t = 1}^{\infty} \gamma^t r(\vec{s}_t, \vec{a}_t) \Bigggiven \vec{s}_1 = \vec{a},\, \vec{a}_1 = \vec{a} \Bigg]
+	\end{align*}}
 
-		\paragraph{What is TD-learning? How to derive it?}
-			\answer{TD-learning uses a step-based update to learn the V- or Q-function. This is done by using a one-step bootstrapping prediction of the value function for a state and computing the difference to the current prediction (the TD-error). With a step size \(\alpha\), the V-/Q-function is then updates in a gradient ascent-like fashion. For discrete states, the V-/Q-function can be tabulated, but for continuous states, it has to be approximated, e.g. using a linear model.}
+\paragraph{What is TD-learning? How to derive it?}
+\answer{TD-learning uses a step-based update to learn the V- or Q-function. This is done by using a one-step bootstrapping prediction of the value function for a state and computing the difference to the current prediction (the TD-error). With a step size \(\alpha\), the V-/Q-function is then updates in a gradient ascent-like fashion. For discrete states, the V-/Q-function can be tabulated, but for continuous states, it has to be approximated, e.g. using a linear model.}
 
-		\paragraph{What does on-policy and off-policy mean?}
-			% TODO: Check the answer below!
-			\answer{In an on-policy method the action for calculating the one-step prediction is chosen according to the current policy. In an off-policy method the action does not have to follow the policy. An advantage of off-policy methods is that the estimation policy (i.e. the one that is used to get the estimation action) is separated from the behavioral policy (i.e. the policy that is used to get the trajectory). This can be used for exploration in the behavioral policy, while still directly estimating the optimal Q-function using a greedy estimation policy.}
+\paragraph{What does on-policy and off-policy mean?}
+% TODO: Check the answer below!
+\answer{In an on-policy method the action for calculating the one-step prediction is chosen according to the current policy. In an off-policy method the action does not have to follow the policy. An advantage of off-policy methods is that the estimation policy (i.e. the one that is used to get the estimation action) is separated from the behavioral policy (i.e. the policy that is used to get the trajectory). This can be used for exploration in the behavioral policy, while still directly estimating the optimal Q-function using a greedy estimation policy.}
 
-		\paragraph{What is the difference between Q-Learning and SARSA?}
-			\answer{In Q-learning, the estimation action is chosen using a greedy policy while in SARSA, the estimation action is chosen using the current behavioral policy. Q-learning is off-policy, SARSA is on-policy.}
+\paragraph{What is the difference between Q-Learning and SARSA?}
+\answer{In Q-learning, the estimation action is chosen using a greedy policy while in SARSA, the estimation action is chosen using the current behavioral policy. Q-learning is off-policy, SARSA is on-policy.}
 
-		\paragraph{How do batch methods work?}
-			\answer{Batch methods use multiple samples at once for estimating the V-/Q-function, hence allowing for a better sample efficiency as every sample is used more than once.}
+\paragraph{How do batch methods work?}
+\answer{Batch methods use multiple samples at once for estimating the V-/Q-function, hence allowing for a better sample efficiency as every sample is used more than once.}
 
-		\paragraph{How to derive LSTD?}
-			\answer{For LSTD, multiple samples are used to analytically minimize the mean-squared error introduced for approximate TD-learning. This leads to an iterative update rule for the weights which depends on the previous weights. As convergence requires a fixed point, plugging this assumption into the least-squares solution yields a solution for LSTD. This is computationally costly, but allows learning in one shot without iterating!}
+\paragraph{How to derive LSTD?}
+\answer{For LSTD, multiple samples are used to analytically minimize the mean-squared error introduced for approximate TD-learning. This leads to an iterative update rule for the weights which depends on the previous weights. As convergence requires a fixed point, plugging this assumption into the least-squares solution yields a solution for LSTD. This is computationally costly, but allows learning in one shot without iterating!}
 
-		\paragraph{What was the biggest success of value functions in robot learning?}
-			\answer{In 2009, Martin Riedmiller won a robot soccer contest using batch reinforcement learning methods which was previously only won by big teams with lots of manpower.}
+\paragraph{What was the biggest success of value functions in robot learning?}
+\answer{In 2009, Martin Riedmiller won a robot soccer contest using batch reinforcement learning methods which was previously only won by big teams with lots of manpower.}
 
-		\paragraph{When do value function methods work well?}
-			\answer{For small state-action spaces that can be explored fast, value functions work well. But if the state space is high-dimensional and big, the amount of samples needed grows exponentially, making it unsuitable. Also errors in the value function approximation can have catastrophic effects on the policy that are really hard to control.}
+\paragraph{When do value function methods work well?}
+\answer{For small state-action spaces that can be explored fast, value functions work well. But if the state space is high-dimensional and big, the amount of samples needed grows exponentially, making it unsuitable. Also errors in the value function approximation can have catastrophic effects on the policy that are really hard to control.}
 
-		\paragraph{Why do value function methods often fail for high-dimensional continuous actions?}
-			\answer{Value function methods require to maximize the Q-function w.r.t. the action, which is a really hard problem for itself. For continuous actions, only numerical methods can be used which are computationally expensive for high-dimensional data.}
-			% end
+\paragraph{Why do value function methods often fail for high-dimensional continuous actions?}
+	\answer{Value function methods require to maximize the Q-function w.r.t. the action, which is a really hard problem for itself. For continuous actions, only numerical methods can be used which are computationally expensive for high-dimensional data.}
+% end
 
-	\section{Policy Search}
-		\subsection{Policy Gradient Methods}
-			\paragraph{When to use episode-based and when to use step-based methods?}
-				\answer{Episode-based methods exhibit a higher variance in the total reward as it is the sum of \(T\) random variables. For step-based methods, the reward to come can be used that has lower variance as it is only the sum of \(T - t + 1\) random variables for the \(t\)-th reward. So for a noisy reward, step-based methods are better suited. However, episode-based methods have the advantage that task-specific policies can be used due to the upper- and lower-level policy structure. Step-based methods, on the other hand, provide more data to learn the parameters from as every state-action-reward pair is a data point as opposed to only parameter-reward pairs for episode-based methods.}
+\section{Policy Search}
+\subsection{Policy Gradient Methods}
+\paragraph{When to use episode-based and when to use step-based methods?}
+\answer{Episode-based methods exhibit a higher variance in the total reward as it is the sum of \(T\) random variables. For step-based methods, the reward to come can be used that has lower variance as it is only the sum of \(T - t + 1\) random variables for the \(t\)-th reward. So for a noisy reward, step-based methods are better suited. However, episode-based methods have the advantage that task-specific policies can be used due to the upper- and lower-level policy structure. Step-based methods, on the other hand, provide more data to learn the parameters from as every state-action-reward pair is a data point as opposed to only parameter-reward pairs for episode-based methods.}
 
-			\paragraph{How do finite difference gradient estimators work?}
-				\answer{Finite difference gradient estimators compute the function once for the value in questions and once for a perturbed value. The difference of both is then divided by the perturbation. The method can be derived by Taylor-expanding the function around the value and rearranging the terms in the equation. While this is very simple, it requires evaluation of the objective two times which might be very costly or even problematic if the function is not deterministic.}
+\paragraph{How do finite difference gradient estimators work?}
+\answer{Finite difference gradient estimators compute the function once for the value in questions and once for a perturbed value. The difference of both is then divided by the perturbation. The method can be derived by Taylor-expanding the function around the value and rearranging the terms in the equation. While this is very simple, it requires evaluation of the objective two times which might be very costly or even problematic if the function is not deterministic.}
 
-			\paragraph{What are likelihood ratio gradient estimators?}
-				\answer{Likelihood ratio gradient estimators use the log-ratio trick that from the derivative of the logarithm, \( \dv{\ln f(x)}{x} = \frac{1}{f(x)} \dv{f(x)}{x} \), the derivative of \( f(x) \) can be written as \( \dv{f(x)}{x} = f(x) \dv{\ln f(x)}{x} \). If \( f(x) \) is a probability density under an integral, the integral can now be approximated using Monte-Carlo integration, i.e. sampling from the density and computing the gradient. This method of estimating a gradient is called the likelihood ratio gradient estimator.}
+\paragraph{What are likelihood ratio gradient estimators?}
+\answer{Likelihood ratio gradient estimators use the log-ratio trick that from the derivative of the logarithm, \( \dv{\ln f(x)}{x} = \frac{1}{f(x)} \dv{f(x)}{x} \), the derivative of \( f(x) \) can be written as \( \dv{f(x)}{x} = f(x) \dv{\ln f(x)}{x} \). If \( f(x) \) is a probability density under an integral, the integral can now be approximated using Monte-Carlo integration, i.e. sampling from the density and computing the gradient. This method of estimating a gradient is called the likelihood ratio gradient estimator.}
 
-			\paragraph{Why do baselines lower the variance of the gradient estimate?}
-				% TODO: Explain _why_ baselines lower the variance!
-				\answer{Subtracting a variance can reduce the variance of the gradient estimate while leaving the estimator unbiased. Good baselines are for example the average reward or, for step-based methods, the value function.}
+\paragraph{Why do baselines lower the variance of the gradient estimate?}
+% TODO: Explain _why_ baselines lower the variance!
+\answer{Subtracting a variance can reduce the variance of the gradient estimate while leaving the estimator unbiased. Good baselines are for example the average reward or, for step-based methods, the value function.}
 
-			\paragraph{Why is the Fisher information matrix so important? How does it relate to the KL divergence?}
-				\answer{The Fisher information matrix describes how much influence certain distribution parameters have. This is important as it can be used to make the metric for policy gradient methods invariant to linear transformations of the parameters. The KL divergence can be approximated by using the second-order Taylor-expansion where the Fisher information matrix is used.}
+\paragraph{Why is the Fisher information matrix so important? How does it relate to the KL divergence?}
+\answer{The Fisher information matrix describes how much influence certain distribution parameters have. This is important as it can be used to make the metric for policy gradient methods invariant to linear transformations of the parameters. The KL divergence can be approximated by using the second-order Taylor-expansion where the Fisher information matrix is used.}
 
-			\paragraph{What is a natural gradient? Why is natural gradient ascent invariant to reparametrization?}
-				\answer{Natural gradients are the ascent direction that is closest to the steepest ascent direction (the gradient) while constraining the policy to not diverge too far. The latter is done by using the Fisher information matrix as an approximation of the KL divergence. This is also the reason why it is invariant to reparametrization which is included by the FIM. It represents the steepest ascent direction in the policy space rather than the parameter space.}
+\paragraph{What is a natural gradient? Why is natural gradient ascent invariant to reparametrization?}
+\answer{Natural gradients are the ascent direction that is closest to the steepest ascent direction (the gradient) while constraining the policy to not diverge too far. The latter is done by using the Fisher information matrix as an approximation of the KL divergence. This is also the reason why it is invariant to reparametrization which is included by the FIM. It represents the steepest ascent direction in the policy space rather than the parameter space.}
 
-			\paragraph{What is the compatible function approximation? How is it connected to natural policy gradients?}
-				\todo{Answer}
-				% end
+\paragraph{What is the compatible function approximation? How is it connected to natural policy gradients?}
+	\todo{Answer}
+% end
 
-		\subsection{Probabilistic Policy Search}
-			\paragraph{What is the idea behind success matching?}
-				\answer{The idea of success matching is that humans tend to not jump directly to the optimal policy, but rather make this dependent on how frequent an event is. If an event would yields a really high reward but is relatively uncommon, it might not be worth it to optimize the policy to do that event if it costs on other ends.}
+\subsection{Probabilistic Policy Search}
+\paragraph{What is the idea behind success matching?}
+\answer{The idea of success matching is that humans tend to not jump directly to the optimal policy, but rather make this dependent on how frequent an event is. If an event would yields a really high reward but is relatively uncommon, it might not be worth it to optimize the policy to do that event if it costs on other ends.}
 
-			\paragraph{What is the weighted maximum likelihood solution for Gaussian policies?}
-				Gaussian policies are one of the policy types where closed-form solutions exist. With the weights \( w^{[i]} \) for each sample \( \vec{\theta}^{[i]} \) and the total weights \( W \coloneqq \sum_{i = 1}^{N} w^{[i]} \), the update rules for the mean and covariance are:
-				\begin{align*}
-					\vec{\mu}^\mathrm{new} = \frac{1}{W} \sum_{i = 1}^{N} w^{[i]} \vec{\theta}^{[i]}
-					 &  &
-					\mat{\Sigma}^\mathrm{new} = \frac{1}{W} \sum_{i = 1}^{N} w^{[i]} \big( \vec{\theta}^{[i]} - \vec{\mu}^\mathrm{new} \big) \big( \vec{\theta}^{[i]} - \vec{\mu}^\mathrm{new} \big)^T
-				\end{align*}
+\paragraph{What is the weighted maximum likelihood solution for Gaussian policies?}
+Gaussian policies are one of the policy types where closed-form solutions exist. With the weights \( w^{[i]} \) for each sample \( \vec{\theta}^{[i]} \) and the total weights \( W \coloneqq \sum_{i = 1}^{N} w^{[i]} \), the update rules for the mean and covariance are:
+\begin{align*}
+	\vec{\mu}^\mathrm{new} = \frac{1}{W} \sum_{i = 1}^{N} w^{[i]} \vec{\theta}^{[i]}
+	 &  &
+	\mat{\Sigma}^\mathrm{new} = \frac{1}{W} \sum_{i = 1}^{N} w^{[i]} \big( \vec{\theta}^{[i]} - \vec{\mu}^\mathrm{new} \big) \big( \vec{\theta}^{[i]} - \vec{\mu}^\mathrm{new} \big)^T
+\end{align*}
 
-			\paragraph{What is an exponential transformation? And why and how is it used in the context of policy search?}
-				\answer{The exponential transformation \( \exp{\beta R^{[i]}} \) is used to transform rewards \(R^{[i]}\) to an improper probability distribution. In policy search, it is used to compute the weights for the weighted maximum likelihood estimate. The parameter \(\beta\) is the \emph{temperature} of the transformation and has to be hand-tuned.}
+\paragraph{What is an exponential transformation? And why and how is it used in the context of policy search?}
+\answer{The exponential transformation \( \exp{\beta R^{[i]}} \) is used to transform rewards \(R^{[i]}\) to an improper probability distribution. In policy search, it is used to compute the weights for the weighted maximum likelihood estimate. The parameter \(\beta\) is the \emph{temperature} of the transformation and has to be hand-tuned.}
 
-			\paragraph{What is the main contribution on REPS? How is it different from gradient-based methods?}
-				\answer{The main contribution of REPS is to constrain the KL divergence of the policy update to not exceed a given threshold \(\epsilon\). This eliminates the temperature as a hyperparameter. The temperature is now chosen using an optimization problem and equals the reciprocal of the Lagrangian multiplier for the KL constraint. It differs from gradient-based methods in a way that no step-size has to be chosen.}
+\paragraph{What is the main contribution on REPS? How is it different from gradient-based methods?}
+\answer{The main contribution of REPS is to constrain the KL divergence of the policy update to not exceed a given threshold \(\epsilon\). This eliminates the temperature as a hyperparameter. The temperature is now chosen using an optimization problem and equals the reciprocal of the Lagrangian multiplier for the KL constraint. It differs from gradient-based methods in a way that no step-size has to be chosen.}
 
-			\paragraph{Why does matching feature averages help in solving the constrained optimization problem in contextual policy search?}
-				\answer{Without feature matching, i.e. requiring perfect reproduction of the contextual distribution, the optimization problem has an infinite amount of constraint. Using feature matching with \(M\) features, this is reduced to \(M\) constraints for distribution reproduction. When using Gaussians, this is even exact for the first- and second-order moments as they are sufficient statistics for a Gaussian distribution.}
+\paragraph{Why does matching feature averages help in solving the constrained optimization problem in contextual policy search?}
+	\answer{Without feature matching, i.e. requiring perfect reproduction of the contextual distribution, the optimization problem has an infinite amount of constraint. Using feature matching with \(M\) features, this is reduced to \(M\) constraints for distribution reproduction. When using Gaussians, this is even exact for the first- and second-order moments as they are sufficient statistics for a Gaussian distribution.}
 
-			\paragraph{How does HiREPS ensure learning of different solutions?}
-				\answer{HiREPS constraints the entropy of the option distribution. As a high entropy means high overlap, this constraints the overlap in the options, thus enforcing separate solutions.}
-				% end
-				% end
+	\paragraph{How does HiREPS ensure learning of different solutions?}
+		\answer{HiREPS constraints the entropy of the option distribution. As a high entropy means high overlap, this constraints the overlap in the options, thus enforcing separate solutions.}
+	% end
+% end
 
-	\section{Imitation Learning}
-		\paragraph{What are the strengths and weaknesses of behavioral cloning?}
-			\answer{Behavioral cloning is simple to implement and imposes no assumptions on the model. However, it generalizes badly and lots of samples are needed. It also suffers from the covariate shift problem and the policies are not really transferable.}
+\section{Imitation Learning}
+\paragraph{What are the strengths and weaknesses of behavioral cloning?}
+\answer{Behavioral cloning is simple to implement and imposes no assumptions on the model. However, it generalizes badly and lots of samples are needed. It also suffers from the covariate shift problem and the policies are not really transferable.}
 
-		\paragraph{What makes DAGGER and DART different?}
-			\answer{DAGGER requires a teacher to be present to generate new samples if the robot asks for it. DART on the other hand adds noise to the inputs to achieve better generalization without the need of a teacher.}
+\paragraph{What makes DAGGER and DART different?}
+\answer{DAGGER requires a teacher to be present to generate new samples if the robot asks for it. DART on the other hand adds noise to the inputs to achieve better generalization without the need of a teacher.}
 
-		\paragraph{What is the covariate shift and how does it affect imitation learning?}
-			\answer{The covariate shift is the name of the phenomenon that the robot does not know how to recover if it ends up in an unseen state. The effect of this is that also imperfect samples have to be demonstrated for showing the robot how to recover.}
+\paragraph{What is the covariate shift and how does it affect imitation learning?}
+\answer{The covariate shift is the name of the phenomenon that the robot does not know how to recover if it ends up in an unseen state. The effect of this is that also imperfect samples have to be demonstrated for showing the robot how to recover.}
 
-		\paragraph{What is inverse RL often more suitable than direct imitation learning?}
-			\answer{Direct imitation learning requires lots of samples and the teacher might be imperfect. That way, the robot often has problems of surpassing the teacher or generalize to new situations. Inverse RL tackles this by learning the reward function and building an own policy from it under the assumption that the reward function describes the task the best. Also reward functions are a lot more transferable than complete policies.}
+\paragraph{What is inverse RL often more suitable than direct imitation learning?}
+\answer{Direct imitation learning requires lots of samples and the teacher might be imperfect. That way, the robot often has problems of surpassing the teacher or generalize to new situations. Inverse RL tackles this by learning the reward function and building an own policy from it under the assumption that the reward function describes the task the best. Also reward functions are a lot more transferable than complete policies.}
 
-		\paragraph{What are algorithmic challenges in IRL?}
-			\answer{
-				\begin{itemize}
-					\item Data Availability (often only samples and not the expert policy are available)
-					\item Ill-Posed (e.g. the null-reward is a feasible solution)
-					\item Expert Suboptimality
-					\item Computation (too many constraints, impossible to enumerate policies)
-				\end{itemize}
-			}
+\paragraph{What are algorithmic challenges in IRL?}
+\answer{
+	\begin{itemize}
+		\item Data Availability (often only samples and not the expert policy are available)
+		\item Ill-Posed (e.g. the null-reward is a feasible solution)
+		\item Expert Suboptimality
+		\item Computation (too many constraints, impossible to enumerate policies)
+	\end{itemize}
+}
 
-		\paragraph{What are different methods for IRL?}
-			% TODO: Was this really the question?
-			\answer{Some methods for IRL are e.g. (Structured) Max. Margin and Max. Entropy.}
+\paragraph{What are different methods for IRL?}
+% TODO: Was this really the question?
+\answer{Some methods for IRL are e.g. (Structured) Max. Margin and Max. Entropy.}
 
-		\paragraph{Why use the maximum margin approach?}
-			% TODO: I'm not happy with the answer below. Understand max. margin more!
-			\answer{One problem of IRL is that the problem is ill-posed. This can be solved by altering the constraints such that at least a margin of \(1\) is enforced. This margin can be absorbed into the weights, so it does not change the solution much. However, it makes the null-reward an invalid solution as it violates the constraints.}
+\paragraph{Why use the maximum margin approach?}
+% TODO: I'm not happy with the answer below. Understand max. margin more!
+\answer{One problem of IRL is that the problem is ill-posed. This can be solved by altering the constraints such that at least a margin of \(1\) is enforced. This margin can be absorbed into the weights, so it does not change the solution much. However, it makes the null-reward an invalid solution as it violates the constraints.}
 
-		\paragraph{What is the max. entropy approach?}
-			% TODO: I'm not happy with the answer below. Understand max. entropy more!
-			\answer{In max. entropy approaches, the entropy of the policy is maximized while keeping the constraints valid.}
-			% end
+\paragraph{What is the max. entropy approach?}
+	% TODO: I'm not happy with the answer below. Understand max. entropy more!
+	\answer{In max. entropy approaches, the entropy of the policy is maximized while keeping the constraints valid.}
+% end
 
-	\section{Bayesian Reinforcement Learning}
-		\paragraph{Why is Bayesian RL an interesting problem for robotics? Why is it hard?}
-			\answer{Bayesian RL is a principled way of solving the exploration-exploitation tradeoff by imposing epistemic uncertainty on the model. This uncertainty also serves as a regularization on the policy and makes the policy more robust, which is especially important in robotics. It also serves as risk-sensitive control which is important e.g. in hazardous environments. But Bayesian methods are in general hard as they often need approximate inference due to nonlinear transformations (even when using conjugate priors) requiring sampling which is not really feasible in an online fashion.}
+\section{Bayesian Reinforcement Learning}
+\paragraph{Why is Bayesian RL an interesting problem for robotics? Why is it hard?}
+\answer{Bayesian RL is a principled way of solving the exploration-exploitation tradeoff by imposing epistemic uncertainty on the model. This uncertainty also serves as a regularization on the policy and makes the policy more robust, which is especially important in robotics. It also serves as risk-sensitive control which is important e.g. in hazardous environments. But Bayesian methods are in general hard as they often need approximate inference due to nonlinear transformations (even when using conjugate priors) requiring sampling which is not really feasible in an online fashion.}
 
-		\paragraph{Why are Bandits so frequently covered in Bayesian RL?}
-			\answer{Bandits are really simple MDPs which can model an astonishing amount of tasks, e.g. targeted advertisement. Due to their simplicity, it is a nice setting for analyzing the exploration-exploitation tradeoff and the effect of Bayesian RL methods, i.e. how they do this optimally.}
+\paragraph{Why are Bandits so frequently covered in Bayesian RL?}
+\answer{Bandits are really simple MDPs which can model an astonishing amount of tasks, e.g. targeted advertisement. Due to their simplicity, it is a nice setting for analyzing the exploration-exploitation tradeoff and the effect of Bayesian RL methods, i.e. how they do this optimally.}
 
-		\paragraph{What is Thompson sampling?}
-			\answer{In Thompson sampling, exploration is done by sampling from the posterior. The data that was collected in a response to this sampling is then used for updating the likelihood and subsequently the posterior. This converges to the optimal policy (the posterior), but only works for really simple systems.}
+\paragraph{What is Thompson sampling?}
+\answer{In Thompson sampling, exploration is done by sampling from the posterior. The data that was collected in a response to this sampling is then used for updating the likelihood and subsequently the posterior. This converges to the optimal policy (the posterior), but only works for really simple systems.}
 
-		\paragraph{What makes Bayesian RL different from regular MBRL?}
-			\answer{Bayesian RL methods do not necessarily require a dynamics model, and MBRL is not necessarily Bayesian.}
+\paragraph{What makes Bayesian RL different from regular MBRL?}
+\answer{Bayesian RL methods do not necessarily require a dynamics model, and MBRL is not necessarily Bayesian.}
 
-		\paragraph{What is dual control?}
-			\answer{In dual control, a model of the environment is learned in a Bayesian fashion while simultaneously optimizing the actions to be optimal. This is useful as often a baseline controller is needed in order to get the data to learn a model and a model is needed for learning a controller. However, dual control is quasi-intractable in practice.}
+\paragraph{What is dual control?}
+	\answer{In dual control, a model of the environment is learned in a Bayesian fashion while simultaneously optimizing the actions to be optimal. This is useful as often a baseline controller is needed in order to get the data to learn a model and a model is needed for learning a controller. However, dual control is quasi-intractable in practice.}
 
-		\paragraph{How does Bayesian RL relate to exploration?}
-			\answer{Bayesian RL trades exploration and exploitation off optimally by imposing an epistemic uncertainty quantification on the model. This uncertainty then "tells" the policy where to explore and where exploitation is safe.}
-			% end
-			% end
+	\paragraph{How does Bayesian RL relate to exploration?}
+		\answer{Bayesian RL trades exploration and exploitation off optimally by imposing an epistemic uncertainty quantification on the model. This uncertainty then "tells" the policy where to explore and where exploitation is safe.}
+	% end
+% end
 
 \chapter{Mock Exam}
 	\paragraph{Question 1}
@@ -420,8 +420,8 @@
 
 		\subparagraph{Answer}
 			The \emph{null space} of a robot is the joint space of redundant solutions for a target pose in task space, i.e. all joint configurations that would not violate the constraints of the problem. Task-prioritization with null space uses that space to move the robot in a resting position (e.g. to consume less energy) while remaining in a steady position with the end-effector. A minimal example is the a one-dimensional two-join prismatic robot where the movements of one joint can be compensated by the other. If e.g. a balanced state is less energy-consuming, it would be desirable to prioritize movement that would keep the robot close to this position.
-			% end
-			% end
+		% end
+	% end
 
 	\paragraph{Question 2}
 		Write down and explain the equations for: a) P-controller, b) PD-controller and c) PD + gravity compensation. Intuitively explain what are the limitations/problems of each of these controllers.
@@ -433,8 +433,8 @@
 				\item The equation of the PD controller is \( \vec{u} = \mat{K}_P (\vec{x}_d - \vec{x}) + \mat{K}_D (\dot{\vec{x}}_d - \dot{\vec{x}}) \). In addition to the position error, it also handles errors in the velocity and amplifies them by the gain \(\mat{K}_D\). This controller has the limitation that there remains a steady-state error caused by gravity, i.e. the robot will always remain slightly off target.
 				\item The equation of the PD controller with gravity compensation is \( \vec{u} = \mat{K}_P (\vec{x}_d - \vec{x}) + \mat{K}_D (\dot{\vec{x}}_d - \dot{\vec{x}}) + \vec{g}(\vec{x}) \), where \(\vec{g}(\vec{x})\) is a model of the gravitational forces. While this controller can compensate for the steady-state gravitational error, it requires an accurate model of the gravity which might not be available..
 			\end{itemize}
-			% end
-			% end
+		% end
+	% end
 
 	\paragraph{Question 3}
 		Make an illustrative sketch that shows and connects the following terms: dynamics, control, trajectory, kinematics, desired states, and actual states. Label all connections.
@@ -462,8 +462,8 @@
 					\draw [->] (k) -- (needle6) -- node[above]{Actual Task States} (needle5) -- (needle4);
 				\end{tikzpicture}
 			\end{center}
-			% end
-			% end
+		% end
+	% end
 
 	\paragraph{Question 4}
 		Write down Bayes theorem for estimating the probability of \(A\) given the observation \(B\). Define (i.e. name) the terms.
@@ -472,8 +472,8 @@
 			\begin{equation*}
 				\underbrace{p(A \given B)}_\text{Posterior} = \frac{\overbrace{p(B \given A)}^\text{Likelihood} \overbrace{p(A)}^\text{Prior}}{\underbrace{p(B)}_{\substack{\text{Normalization/}\\\text{Confidence}}}}
 			\end{equation*}
-			% end
-			% end
+		% end
+	% end
 
 	\paragraph{Question 5}
 		Describe the main idea behind Bayesian linear regression. Define all the relevant distributions. How do we perform predictions? Why is it useful?
@@ -484,8 +484,8 @@
 				p(y \given \vec{x}, \mathcal{D}) = \int\! p(y \given \vec{x}, \vec{w}) p(\vec{w} \given \mathcal{D}) \dd{\vec{w}}.
 			\end{equation*}
 			This results in \(\vec{x}\)-dependent variance in mean which can be computed in closed form for linear Gaussian models.
-			% end
-			% end
+		% end
+	% end
 
 	\paragraph{Question 6}
 		A dynamic motor primitive (DMP) is based on the dynamical system
@@ -504,24 +504,24 @@
 				 & = \underbrace{\tau^2 \alpha \beta}_{K_P} (\underbrace{g}_{y_d} - y) + \underbrace{\tau \alpha}_{K_D} (\underbrace{0}_{\dot{y}_d} - \dot{y}) + \underbrace{\tau^2 f_w(z)}_{u_\mathrm{ff}} \\
 				 & = K_P (y_d - y) + K_D (\dot{y}_d - \dot{y}) + u_\mathrm{ff}
 			\end{align*}
-			% end
-			% end
+		% end
+	% end
 
 	\paragraph{Question 7}
 		What are the advantages of using a probabilistic representation for trajectories?
 
 		\subparagraph{Answer}
 			This allows representing how important it is to reach certain points and certain time steps by quantifying the variance at that point accordingly. Also it allows probabilistic operations on the trajectories like conditioning and blending.
-			% end
-			% end
+		% end
+	% end
 
 	\paragraph{Question 8}
 		You want to train your robot to reach a desired position with reinforcement learning. You decide to use a reward of \num{1} when it reaches the desired position and \num{0} otherwise. Why is this reward not a good idea?
 
-	\paragraph{Answer}
-		This reward yields a large exploration problem. The robot would have to reach the exact position by chance at least once in order to recognize that there's a way to increase the reward. As that event is very unlikely, the robot would most likely not learn anything.
+		\paragraph{Answer}
+			This reward yields a large exploration problem. The robot would have to reach the exact position by chance at least once in order to recognize that there's a way to increase the reward. As that event is very unlikely, the robot would most likely not learn anything.
 		% end
-		% end
+	% end
 
 	\paragraph{Question 9}
 		Updating the Q-Function using Temporal Differences is defined with the following equation:
@@ -538,8 +538,8 @@
 
 		\subparagraph{Answer}
 			Method (A) is called \emph{Q-Learning} and is an off-policy method as the predictive action is not sampled from the policy. Method (B) is called \emph{SARSA} and is an on-policy method. SARSA also requires not only state-action-reward-state data but state-action-reward-state-action data to be trained. Also it does not require an explicit maximization and has stronger convergence guarantees as opposed to Q-Learning.
-			% end
-			% end
+		% end
+	% end
 
 	\paragraph{Question 10}
 		Write down (with detail) the optimization problem for the Linear-Quadratic Regulator with discrete-time and infinite-horizon, assuming there is no noise in the transition to the next state.
@@ -556,8 +556,8 @@
 				\end{aligned}
 			\end{equation*}
 			where \(\mat{R}_t\) and \(\mat{H}_t\) are symmetric and positive definite metrics for weighting the state error and to penalize taking actions. The matrices \(\mat{A}_t\) and \(\mat{B}_t\) define the dynamics of the system.
-			% end
-			% end
+		% end
+	% end
 
 	\paragraph{Question 11}
 		When deriving the likelihood ration gradient in the class, we started with the derivative of the cost function \( J(\vec{\theta}) \), which is given by
@@ -574,14 +574,14 @@
 
 		\subparagraph{Answer}
 			It is often easier to take the derivative of a log-density instead of the density itself as the logarithm turns products into sums. Hence, lots of terms that are constant w.r.t. the parameters vanish, yielding a simple gradient. This is especially useful in the step-based setting where the trajectory distribution is factorized into the transition and policy distribution, where only the latter is dependent on the parameters: the former disappears in the gradient due to the logarithm.
-			% end
-			% end
+		% end
+	% end
 
 	\paragraph{Question 12}
 		What is the role of the learning rate in policy gradient methods? What is the role of the temperature in probabilistic policy search methods?
 
 		\subparagraph{Answer}
 			Both the learning rate and the temperature affect the convergence speed of the algorithm. As the learning rate is used as the step size for gradient ascent, the usual properties apply: a too low rate could lead to premature stops during the optimization while a too high rater could lead to oscillations, jumps and probably divergence. The same is true for the temperature. they define how "trustworthy" the update is.
-			% end
-			% end
-			% end
+		% end
+	% end
+% end

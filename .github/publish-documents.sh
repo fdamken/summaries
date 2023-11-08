@@ -52,7 +52,7 @@ while IFS= read -r line; do
         echo "Publishing $document_id."
         cat >"$publish_repo_dir/content/summaries/$document_id.md" <<EOF
 ---
-title: "$meta_title ($meta_lang)"
+title: "$meta_title"
 draft: false
 author: "$meta_author"
 date: $(git log --pretty=tformat:'%as %s' | tail -n 1 | sed -r 's/^([^ ]+).*$/\1/g')

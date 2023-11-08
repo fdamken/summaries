@@ -55,7 +55,7 @@ while IFS= read -r line; do
 title: "$meta_title"
 draft: false
 author: "$meta_author"
-date: $(git log --pretty=tformat:'%as %s' | tail -n 1 | sed -r 's/^([^ ]+).*$/\1/g')
+date: $(git log --pretty=tformat:'%as' "$document_dir" | tail -n 1)
 pdf: https://fabian.damken.net/summaries/$department/$type/$category/$subject/$subject-summary.pdf
 language: $meta_lang_code
 ---

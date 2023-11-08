@@ -41,7 +41,7 @@ while IFS= read -r line; do
         meta_author="$(cat "$document_meta" | head -n 1 | tail -n 1)"
         meta_title="$(cat "$document_meta" | head -n 2 | tail -n 1)"
         meta_lang="$(cat "$document_meta" | head -n 3 | tail -n 1 | sed 's/german/deutsch/')"
-        meta_lang_code="$(echo "$meta_lang" | sed -e 's/german/de/' -e 's/english/en/')"
+        meta_lang_code="$(echo "$meta_lang" | sed -r 's/^(..).*$/\1/')"
 
         if [[ -f "$document_dir/$subject-summary-dark.pdf" ]]; then
             text_dark="[![Download (Dark Mode)](/download-dark.png)]($subject-summary-dark.pdf)"

@@ -66,10 +66,12 @@
 \fdsummary@ifde{\RequirePackage[main = ngerman, USenglish]{babel}}
 \fdsummary@ifen{\RequirePackage[main = USenglish, ngerman]{babel}}
 % Other Packages.
+\RequirePackage{acronym}
 \RequirePackage[ruled, vlined, linesnumbered]{algorithm2e}
 \RequirePackage[normalem]{ulem}
 \RequirePackage{amsmath}
 \RequirePackage{amssymb}
+\RequirePackage{amsthm}
 \RequirePackage{attachfile}
 \RequirePackage{bbm}
 \RequirePackage{bitpattern}
@@ -93,6 +95,7 @@
 \RequirePackage{pgfplots}
 \RequirePackage{physics}
 \RequirePackage{prftree}
+\RequirePackage{qcircuit}
 \RequirePackage{qtree}
 \RequirePackage{rotating}
 \RequirePackage{siunitx}
@@ -104,6 +107,7 @@
 \RequirePackage{tikz-uml}
 \RequirePackage{tikzpeople}
 \RequirePackage{tikz}
+\RequirePackage{xfrac}
 \RequirePackage{xspace}
 \RequirePackage{xstring}
 \RequirePackage[\fdsummary@todoopts]{todonotes}
@@ -244,7 +248,7 @@
 \fdsummary@ifen{\newcommand{\answer}[1]{\subparagraph{Answer} #1}}
 
 % Quad erat demonstrandum.
-\newcommand{\qed}{\hfill\( \Box \)}
+\renewcommand{\qed}{\hfill\( \Box \)}
 
 
 % Boxes surrounded by borders for information and warnings.
@@ -348,6 +352,9 @@
 \DeclareMathOperator{\KEYS}{KEYS}
 \DeclareMathOperator{\PK}{PK}
 \DeclareMathOperator{\DB}{DB}
+% RL.
+\DeclareMathOperator{\KL}{KL}
+\DeclareMathOperator{\clip}{clip}
 
 % Footnotes.
 \newcommand{\oversetfootnotemark}[1]{\stepcounter{footnote} \overset{\mathclap{(\thefootnote)}}{#1}}
@@ -410,6 +417,16 @@
 % Stuff for PGM.
 \newcommand{\from}{\leftarrow}
 \newcommand{\fromto}{\leftrightarrow}
+% QC.
+\newcommand{\ID}{\mathbbm{1}}
+\newcommand{\longto}{\longrightarrow}
+\newcommand{\CZ}{\mathit{CZ}}
+\newcommand{\CNOT}{\mathit{CNOT}}
+\newcommand{\CCNOT}{\mathit{CCNOT}}
+% RL.
+\newcommand{\transposed}{{\!\top\!}}
+\newcommand{\MSVE}{\overline{\mathit{VE}}}
+\renewcommand{\H}{\mathbb{H}}
 
 % BIG!
 \makeatletter
@@ -438,3 +455,73 @@
 % Workarounds and similar stuff.
 \newcommand{\infer}[2]{\prftree{#2}{#1}}
 \DeclareOldFontCommand{\it}{\normalfont\itshape}{\mathit}
+
+\DeclareSIUnit{\sibyte}{B}
+
+\let\definition\undefined
+\let\theorem\undefined
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{plain}
+\newtheorem{example}{Example}
+\newtheorem{theorem}{Theorem}
+\newtheorem{postulate}{Postulate}
+\newtheorem{remark}{Remark}
+
+\newacro{QC}{quantum computing}
+\newacro{QM}{quantum mechanics}
+\newacro{BQP}{Bounded-Error Quantum Polynomial}
+\newacro{CFE}{continued fraction expansion}
+\newacro{GME}{genuine multipartite entangled}
+\newacro{QEC}{quantum error correction}
+\newacro{QKD}{quantum key distribution}
+\newacro{QFT}{quantum Fourier transform}
+\newacro{AI}{artificial intelligence}
+\newacro{RL}{reinforcement learning}
+\newacro{RBF}{radial basis function}
+\newacro{ML}{machine learning}
+\newacro{NN}{neural network}
+\newacro{MDP}{Markov decision process}  \newacroplural{MDP}{Markov decision processes}
+\newacro{MRP}{Markov reward process}  \newacroplural{MRP}{Markov reward processes}
+\newacro{DP}{dynamic programming}
+\newacro{PI}{policy iteration}
+\newacro{VI}{value iteration}
+\newacro{MC}{Monte-Carlo}
+\newacro{TD}{temporal difference}
+\newacro{GLIE}{greedy in the limit of infinite exploration}
+\newacro{SARSA}{state, action, reward, state, action}  \acused{SARSA}
+\newacro{DQN}{deep Q-network}
+\newacro{A2C}{advantage actor-critic}
+\newacro{TRPO}{trust-region actor-critic}
+\newacro{PPO}{proximal policy optimization}
+\newacro{DDPG}{deep deterministic policy gradient}
+\newacro{TD3}{twin delayed \acs{DDPG}}
+\newacro{SAC}{soft actor-critic}
+\newacro{MSVE}{mean squared value error}
+\newacro{SGD}{stochastic gradient descent}
+\newacro{LSTD}{least-squares \ac{TD}}
+\newacro{LSPI}{least-squares \ac{PI}}
+\newacro{LSTDQ}{\ac{LSTD} for action-value functions}  \acused{LSTDQ}
+\newacro{PG}{policy gradient}
+\newacro{LSFD}{least-squares-based finite difference}
+\newacro{POMDP}{partially observable \ac{MDP}}
+\newacro{GPOMDP}{gradient of \ac{POMDP}}  \acused{GPOMDP}
+\newacro{FIM}{Fisher information matrix}
+\newacro{KL}{Kullback-Leibler}
+\newacro{KKT}{Karush-Kuhn-Tucker}
+\newacro{MSE}{mean squared error}
+\newacro{SOTA}{state of the art}
+\newacro{CFA}{compatible function approximation}
+\newacro{eNAC}{episodic natural actor-critic}
+\newacro{NG}{natural gradient}
+\newacro{DDQN}{double \ac{DQN}}
+\newacro{KDE}{kernel density estimation}
+\newacro{PGT}{policy gradient theorem}
+\newacro{GAE}{generalized advantage estimation}
+\newacro{CG}{conjugate gradient}
+\newacro{POMCP}{partially observable \ac{MC} planning}
+\newacro{SMDP}{semi-Markov decision process}
+\newacro{HAM}{hierarchy of abstract machines}
+\newacro{PILCO}{probabilistic inference for learning control}
+\newacro{GPS}{guided policy search}
+\newacro{MBRL}{model-based \ac{RL}}

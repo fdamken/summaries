@@ -1113,43 +1113,7 @@ public class Student {
 
 				\begin{figure}[ht]
 					\centering
-					\begin{tikzpicture}
-						\begin{umlseqdiag}
-							\umlactor[no ddots]{void}
-							\umlobject[class = Query]{query}
-							\umlobject[class = SemesterSelector]{sel}
-							\umlobject[class = Student]{s}
-							
-							\begin{umlcall}[name = initcall, op = {run(students, sel)}, return = result]{void}{query}
-								\begin{umlcall}[op = createEmptyResult(), return = result]{query}{query}
-									\umlcreatecall[class = LinkedList]{query}{result}
-								\end{umlcall}
-								\begin{umlfragment}[type = loop, label = for each Student s in students]
-									\begin{umlcall}[op = accept(s), return = accepted]{query}{sel}
-										\begin{umlcall}[op = getSemester(), return = current]{sel}{s}
-										\end{umlcall}
-									\end{umlcall}
-									\begin{umlfragment}[type = opt, label = accepted]
-										\begin{umlcall}[op = add(s)]{query}{result}
-										\end{umlcall}
-										\umlfpart[else]
-										\begin{umlcall}[op = remove(s)]{query}{result}
-										\end{umlcall}
-									\end{umlfragment}
-								\end{umlfragment}
-							\end{umlcall}
-						\end{umlseqdiag}
-						
-						\coordinate (initcall) at (2, -0.5);
-						\coordinate (finalreturn) at (2, -10);
-						\coordinate (lifeline) at (8, -6);
-						
-						\umlnote[x = 1, y = 6]{void}{Aufruf aus dem \enquote{Nichts} (nicht betrachtet)}
-						\umlnote[x = 3, y = 3]{initcall}{Aufruf der Methode \texttt{run(students, sel)}}
-						\umlnote[x = 7, y = 5]{sel}{Ein Beteiligtes Objekt der Klasse \texttt{SemesterSelector}}
-						\umlnote[x = 3, y = -13]{finalreturn}{Rückgabe einer Methode (wenn ungleich void)}
-						\umlnote[x = 13, y = -12]{lifeline}{Lebenslinie eines Objektes (startend mit Aufruf, endend mit Return (wenn ungleich void))}
-					\end{tikzpicture}
+					\includegraphics{sequenzendiagramm.pdf}  % the tikz version does not compile anymore for whatever reason...
 					\caption{Beispiel: UML Sequenzen Diagramm}
 					\label{fig:sequence}
 				\end{figure}
@@ -1168,7 +1132,7 @@ public class Student {
 					\item Interaktionssequenzen (Protkoll)
 				\end{itemize}
 				
-				Im Diagramm \ref{fig:smd} ist ein Beispiel für ein State Machine Diagramm gegeben. Im folgenden werden die einzelnen Komponenten erläutert.
+				Im Diagramm \ref{diagram:statemachine} ist ein Beispiel für ein State Machine Diagramm gegeben. Im folgenden werden die einzelnen Komponenten erläutert.
 			% end
 		% end
 	% end

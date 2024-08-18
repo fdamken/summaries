@@ -9,10 +9,12 @@
 #include:inputenc
 #include:babel
 # Other Packages.
+#include:acronym
 #include:algorithm2e
 #include:ulem
 #include:amsmath
 #include:amssymb
+#include:amsthm
 #include:attachfile
 #include:bbm
 #include:bitpattern
@@ -36,6 +38,7 @@
 #include:pgfplots
 #include:physics
 #include:prftree
+#include:qcircuit
 #include:qtree
 #include:rotating
 #include:siunitx
@@ -48,6 +51,7 @@
 #include:tikz-uml
 #include:tikzpeople
 #include:tikz
+#include:xfrac
 #include:xspace
 #include:xstring
 #include:todonotes
@@ -187,6 +191,9 @@
 \KEYS#m
 \PK#m
 \DB#m
+% RL.
+\KL#m
+\clip#m
 
 % Footnotes.
 \oversetfootnotemark{argument}#m
@@ -249,6 +256,16 @@
 \from#m
 \to#m
 \fromto#m
+% QC.
+\ID#m
+\longto#m
+\CZ#m
+\CNOT#m
+\CCNOT#m
+% RL.
+\transposed#m
+\MSVE#m
+\H#m
 
 % BIG!
 \makeatletter

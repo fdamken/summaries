@@ -242,34 +242,10 @@ Der letzte Schritt im Informationsvisualisierungsprozess ist die Interaktion, we
 			\end{figure}
 		% end
 
-		\subsubsection{Datenstrukturen}
-			Die bisher diskutierten Daten\emph{typen} beziehen sich immer auf genau eine Datenvariable, wohingegen Daten\emph{strukturen} auch Zusammenhänge zwischen Daten abbilden. Dabei sind Datenvariablen oft Eigenschaften von Objekten, die hier \emph{Item} genannt werden.
+		\subsection{Bildunterschriften}
+			\label{subsec:caption}
 
-			Die einfachste Form einer Datenstruktur ist eine Tabelle, die außerdem sehr flexibel ist, weshalb sie im Informationsvisualisierungsprozess (\autoref{fig:visualisierungsprozess}) namensgebend ist. Innerhalb einer Tabelle hat jede Spalte eine von zwei Rollen: Key oder Value. Dabei definieren die Datentype der Keys die eigentliche Datenstruktur und die Values sind von den Keys abhängig. Dabei müssen die Keys eine Zeile eindeutig identifizieren, \dh es darf keine Kombination mehrfach auftreten.
-
-			Hat eine Tabelle keine Keys sondern ausschließlich Attribute, so werden die Items nur technisch Unterschieden (\bspw durch eine Zeilennummer) und die Daten sind "rein" uni-/bi-/multivariat. Dies ist oft der Fall bei Daten, bei denen die Eigenschaften wichtiger sind als die Identifikation oder bei Daten, in denen die Items nicht identifiziert werden dürfen (Anonymisierung).
-
-			Da eine Tabelle sehr flexibel ist, sind die folgenden Datenstrukturen allesamt auf eine Tabelle abbildbar (die Abbildung ist jeweils durch die Angabe der Keys gegeben). Darüber hinausgehend gibt es auch Datenstrukturen, die am besten auf mehrere Tabellen (als relationales Modell) abgebildet werden. Achtung: Zwar ist die Darstellung als Tabelle hier zweckmäßig, jedoch müssen die Daten nicht zwangsweise technisch als Tabelle gespeichert werden!
-
-			\paragraph{Zeitbezogene Daten}
-				Zeitbezogene Daten haben mindestens einen Zeitstempel als Key, welcher sowohl relativ als auch absolut sein kann. Die Zeit wird häufig über die Position Achse visualisiert (\zB Corona-Fallzahlen). Die Darstellung zeitbezogener Daten wird intensiv in \autoref{sec:visZeitbasiert} behandelt.
-			% end
-
-			\paragraph{Ortsbezogene Daten}
-				Bei ortsbezogenen Daten ist mindestens ein Key eine Ortsangabe, die beispielsweise als geographische Position (Längen- und Breitengrad) oder Ortsname realisiert werden kann. Eine beliebte Darstellung ist das Anzeigen auf einer Karte.
-			% end
-
-			\paragraph{Bewegungsdaten}
-				Bewegungsdaten stellen eine Kombination aus zeit- und ortsbezogenen Daten dar. Auch hierbei gibt es mehrere Varianten, \bspw können Messungen an mehreren, aber individuell festen Orten, durchgeführt werden (\zB Wetterstationen) oder die Messungsorte können sich bewegen (\zB Sportdaten). Eine beliebte Darstellung dieser Daten ist eine Karte, wahlweise als 3D-Darstellung mit der Höhe als Zeit. Dadurch sind schnelle und langsame Bewegungen unterscheidbar und Kreuzungen im Raum entsprechen Treffpunkten.
-			% end
-
-			\paragraph{Graphen und Netzwerke}
-				Graphen und Netzwerke sind spezielle komplexe Datenstrukturen, wobei die Kanten durch zwei Keys desselben Typs auf eine Tabelle abgebildet werden können (die Values sind dann Eigenschaften der Kante, nicht der Knoten). Die Darstellung solcher Daten wird intensiv in \autoref{sec:visGraphen} behandelt.
-			% end
-
-			\paragraph{Bäume und Hierarchien}
-				Ein Baum kann als Spezialfall eines Graphs behandelt werden, wobei ein Value-Attribut den Key eines anderen Eintrags enthält, wodurch eine Kindheits-Relation induziert wird. Alternativ wäre eine Darstellung als Kantenliste, analog zu einem allgemeinen Graph, möglich. Im Vergleich zu allgemeinen Graphen gibt es für Bäume viele spezialisierte Visualisierungswerkzeuge, die in \autoref{sec:visGraphen} behandelt werden. Dies geschieht durch die Ausnutzung der Ordnungsrelation, die durch einen Baum definiert wird.
-			% end
+			Eine \emph{Bildunterschrift} sollte immer eine kurze Interpretation/Einordnung des Bildes mit Verweisen auf die Abbildung enthalten. Dabei sollten das Bild und die Unterschrift idealerweise auch ohne den Haupttext verständlich sein, da die Abbildungen häufig als erstes angeschaut werden. Im Haupttext sollte nachher auf die Abbildung verwiesen, diese aber nicht beschrieben werden (die Beschreibung gehört in die Bildunterschrift). Ebenfalls sollte die zentrale Aussage der Grafik im Text wiedergefunden werden.
 		% end
 	% end
 
@@ -1094,12 +1070,218 @@ wobei \(\alpha_j\) den Winkel der \(j\)-ten Achse und \(u_1\) und \(u_2\) die ho
 		\item relative Datenverhältnisse sind gut sichbar
 	\end{itemize}
 
-	\paragraph{Schwächen}
-		\begin{itemize}
-			\item Achsenanordnung bestimmt die Position
-			\item redundante Achsen verzerren das Ergebnis
-			\item Punktposition ist nicht eindeutig aufgrund der Normierung
-		\end{itemize}
+				\paragraph{Schwächen}
+				\begin{itemize}
+					\item Achsenanordnung bestimmt die Position
+					\item redundante Achsen verzerren das Ergebnis
+					\item Punktposition ist nicht eindeutig aufgrund der Normierung
+				\end{itemize}
+
+				\begin{figure}
+					\centering
+					\includegraphics[width=0.3\linewidth]{radviz\IfDarkModeT{-dark}}
+					\caption[Visualisierungstechnik (nD-Quantitativ): RadViz]{Visualisierungstechnik (nD-Quantitativ): RadViz\\Quelle: Vorlesungsfolien}
+					\label{fig:radviz}
+				\end{figure}
+			% end
+		% end
+
+		\subsection{Kategorische Daten}
+			Dieser Abschnitt behandelt Visualisierungstechniken für hochdimensionale kategorische Daten, \dh Daten mit vielen nominalen oder ordinalen Attributen. Im Allgemeinen lassen sich dafür ebenfalls alle Verfahren aus dem vorherigen Abschnitt anwenden, es gibt jedoch auch einige spezielle Verfahren.
+
+			\subsubsection{Parallel Sets}
+				\emph{Parallel Sets} sind ähnlich zu parallelen Koordinaten, stellen jedoch Datenmengen mit einem bestimmten Attributswert dar, die sich an jeder Achse aufteilen. Des weiteren werden die Achsen oft übereinander statt nebeneinander angeordnet (siehe \autoref{fig:parallelsets}). Durch die Einfärbung nach dem ersten Attribut kann die Zugehörigkeit auch später noch zuordnen. Durch Transparenz wird zusätzlich sichergestellt, dass der Verlauf auch bei Überschneidungen noch sichtbar ist.
+
+				Durch Interaktion lassen sich, wie bei parallelen Koordinaten, einige der unten aufgelisteten Nachteile entschärfen. Dabei kann \bspw die Achsen- und Kategorienreihenfolge verändert sowie Teilmengen hervorgehoben werden. Außerdem könnte die Kategorie, welche die Farbe bestimmt, auswählbar gemacht werden.
+
+				\begin{figure}
+					\centering
+					\includegraphics[width=0.9\linewidth]{parallelsets\IfDarkModeT{-dark}}
+					\caption[Visualisierungstechnik (nD-Kategorisch): Parallel Sets]{Visualisierungstechnik (nD-Kategorisch): Parallel Sets\\Quelle: \url{https://www.jasondavies.com/parallel-sets/}}
+					\label{fig:parallelsets}
+				\end{figure}
+
+				\paragraph{Stärken}
+				\begin{itemize}
+					\item skaliert für beliebig viele Daten (da die Anzahl angezeigter Linien nur von der Anzahl Kategorien und Werte in diesen abhängt)
+					\item geeignet für 20 und mehr Dimensionen
+				\end{itemize}
+
+				\paragraph{Schwächen}
+				\begin{itemize}
+					\item Abhängig von der Anordnung der Achsen
+					\item Abhängig von der Anordnung der Kategorien
+					\item häufige Kategorien dominieren seltene (Overplotting)
+					\item Abhängigkeit von der Zeichnungsreihenfolge (durch Überlagerung; Overplotting)
+				\end{itemize}
+			% end
+
+			\subsubsection{Mosaik-Plot}
+				\label{subsubsec:mosaik}
+
+				Ein \emph{Mosaik-Plot} basiert auf der rekursiven Teilung von Flächen, \dh für die Werte eines Attributs wird die Wertmenge horizontal oder vertikal geteilt, was eine neue Untermenge ergibt. Dabei wird bei jeder Teilung in anderes Attribut gewählt, bis alle darzustellenden Attribute aufgebraucht sind. Der Ort der Teilung entspricht dabei, wie bei den Parallel Sets, der Häufigkeit (siehe \autoref{fig:mosaicplot}).
+
+				\paragraph{Stärken}
+				\begin{itemize}
+					\item effiziente Nutzung des Raums
+					\item skaliert für beliebig viele Daten (da die Anzahl angezeigter Flächen nur von der Anzahl Kategorien und Werte in diesen abhängt)
+					\item Abhängigkeit des zweiten vom ersten Attribut gut sichtbar
+					\item Abhängigkeit des \((i - 1)\)-ten vom \(i\)-ten Attribut einigermaßen gut sichtbar
+				\end{itemize}
+
+				\paragraph{Schwächen}
+				\begin{itemize}
+					\item Abhängig von der Reihenfolge der Attribute
+					\item Abhängig von der Anordnung der Kategorien
+					\item schwere Lesbarkeit bei mehreren Variablen
+					\item allgemein schlecht vergleichbar und lesbar
+					\item Nullwerte müssen gesondert behandelt werden, da die entsprechende Kachel sonst einfach verschwindet
+				\end{itemize}
+
+				\begin{figure}
+					\centering
+					\includegraphics[width=0.8\linewidth]{mosaicplot\IfDarkModeT{-dark}}
+					\caption[Visualisierungstechnik (nD-Kategorisch): Mosaik-Plot]{Visualisierungstechnik (nD-Kategorisch): Mosaik-Plot\\Hinweis: Die Farbe innerhalb der Kacheln kann weitere Daten darstellen; die Skala wurde hier bewusst weggelassen, da dies nicht direkt Teil der Idee eines Mosaik-Plots ist.\\Quelle: \url{https://rkabacoff.github.io/datavis/Models.html}}
+					\label{fig:mosaicplot}
+				\end{figure}
+			% end
+
+			\subsubsection{KV-Map}
+				Die \emph{KV-Map} ist eine fortgeschrittene Visualisierungstechnik, die zunächst -- wie bei einem Mosaik-Plot -- die Daten rekursiv einteilt. Dabei bleibt die Größe der Kacheln jedoch gleich verteilt und die Häufigkeit wird auf die Farbe abgebildet (entweder direkt die Anzahl Elemente oder ob die Attribute statistisch unabhängig sind).
+
+				\paragraph{Stärken}
+				\begin{itemize}
+					\item geeignet für ca. 10 Attribute
+					\item Abhängigkeiten zwischen \emph{allen} Attributen sichtbar
+					\item nutzt die Fähigkeit, Frequenzen und Wiederholungen wahrzunehmen
+				\end{itemize}
+
+				\paragraph{Schwächen}
+				\begin{itemize}
+					\item Wahrnehmung muss gelernt werden
+					\item Muster sind nicht interpretierbar (hierzu sollten automatische Verfahren genutzt werden: Visual Analytics)
+				\end{itemize}
+			% end
+
+			\subsubsection{Tabelle}
+				Eine ganz allgemeine Form der Visualisierung ist eine Tabelle, in der Spalten für Attribute und Zeilen für Items verwendet werden. Dabei werden die Werte grafisch und nicht durch Text dargestellt, \bspw durch Farbe zur Indikation ob ein Wert "hoch" ist. Es können allerdings sehr vielfältige "klein" Visualisierungen verwendet werden.
+
+				\paragraph{Stärken}
+				\begin{itemize}
+					\item Tabellen sind vertraut
+					\item geeignet für 20 und mehr Attribute (als Heatmap)
+					\item im Extremfall ein Datensatz pro Pixelzeile
+					\item Attribute können kategorisch oder quantitativ sein
+					\item Sortierung offenbart Korrelationen über viele Attribute
+				\end{itemize}
+
+				\paragraph{Schwächen}
+				\begin{itemize}
+					\item limitiert auf mehrere hundert Datensätze
+				\end{itemize}
+			% end
+		% end
+	% end
+
+	\section{Große Datenmengen}
+		\label{sec:bigdata}
+
+		Dieser Abschnitt behandelt spezialisierte Methoden zur Darstellung "vieler" Daten. Wie bereits bei hochdimensionalen ist die Bedeutung "viel" relativ zu sein: Bei der mentalen Verarbeitung kann dies bereits in der Größenordnung von wenigen Datenpunkten ("mehr Daten, als man verstehen kann"), bei High-Performance-computing bei vielen Millionen Datenpunkten ("mehr Daten, als man verarbeiten/speichern kann") zutreffen. Dieser Abschnitt behandelt vornehmlich "mehr Daten, als man Anzeigen kann", während "normale" Visualisierungstechniken in den Bereich "mehr Daten, als man lesen kann" fallen. Die Anzahl Datenpunkte liegt damit in der Größenordnung von einigen tausend bis zehntausenden Punkten.
+
+		\subsection{Ordnen}
+			In diesem Abschnitt werden Methoden behandelt, die unter dem Begriff "Ordnen" zusammengefasst werden. Dies sind \bspw Dimensionsreduktion, Feature-Selektion und Sortieren. Bei der Dimensionsreduktion wird versucht, die Attribute so zu kombinieren, dass die Daten besser gruppiert/unterschieden werden können, bei der Feature-Selektion ist die zentrale Frage, welche Attribute tatsächlich wichtig sind und die Sortierung (als Interaktion und automatischer Prozess) stellt die Frage, wonach eigentlich gesucht wird.
+
+			\subsubsection{Dimensionsreduktion}
+				\label{subsubsec:dimred}
+
+				Ein Grundproblem der Visualisierung ist, dass ein Bildschirm (und ein Blatt Papier) nur zwei Dimensionen haben. Des weiteren sind Dimensionen, die über der dritten liegen, nur schwer bis gar nicht verständlich. Das zweite große Problem -- der "Curse of Dimensionality" -- tritt in der Algorithmik auf, wenn je mehr Attribute zwei Items haben, desto eher unterscheiden sie sich auch in einem davon, \dh es werden exponentiell mehr Daten benötigt, um "den Raum zu füllen". Des weiteren werden Berechnungen sehr langsam und redundante Dimensionen verzerren die Ergebnisse (da wiederholte Informationen übergewichtet werden).
+
+				Formal ist das Problem der Dimensionsreduktion wie folgt definiert: Gegeben seien Daten \( \mathcal{X} \) mit \(n > 2\) Attributen \( \vec{x} = (x_1, x_2, \dots, x_n) \in \mathcal{X} \) sowie eine Distanzfunktion \( \mathrm{dist}_n(\cdot, \cdot) \), die einen Abstand/Unterschied zwischen zwei Datenpunkten in \(n\) Dimensionen berechnen kann. Dann wird in der Dimensionsreduktion eine Abbildung \( \mathit{reduce} : \mathcal{X} \to \R^k \) gesucht, sodass \( \mathrm{dist}_k(\vec{x}, \vec{y}) \) sich wie \( \mathrm{dist}_n(\vec{x}, \vec{y}) \) verhält (für alle \( \vec{x}, \vec{y} \in \mathcal{X} \)). In der Visualisierung wird dabei oft \( k = 2 \) und \( \mathrm{dist}_2(\vec{x}, \vec{y}) = \lVert \vec{x} - \vec{y} \rVert_2 \) gewählt.
+
+				Im Folgenden werden einige übliche Verfahren zur Dimensionsreduktion angeschnitten. Eine Übersicht ist in \autoref{tab:dimRed} zu finden.
+
+				\begin{table}
+					\centering
+					\begin{tabular}{l|ll}
+						\toprule
+						\textbf{Verfahren} & \textbf{Besonderheiten und Stärken} & \textbf{Schwächen} \\ \midrule
+						\textbf{PCA} & \multirowcell{3}[][l]{lineares Verfahren\\erhält die Varianz im Originalraum\\einfache, geschlossene Lösung} & keine nichtlineare Zsmh. \\ \midrule
+						\textbf{LDA} & \multirowcell{3}[][l]{lineares Verfahren\\benötigt gelabelte Daten\\sucht Achsen, die die Labels möglichst gut trennen} & keine nichtlineare Zsmh. \\ \midrule
+						\textbf{MDS} & \multirowcell{3}[][l]{nichtlineares Verfahren\\benötigt nur Distanzen, keine Datenpunkte} & Lösung wird nur approximiert \\ \midrule
+						\textbf{SOM} & \multirowcell{2}[][l]{nichtlineares Verfahren\\auch zur Gruppierung der Daten geeignet} & \multirowcell{2}[][l]{Lösung wird nur approximiert\\relativ viele Parameter} \\
+						\bottomrule
+					\end{tabular}
+					\caption{Übersicht über verschiedene Dimensionsreduktionsverfahren}
+					\label{tab:dimRed}
+				\end{table}
+
+				\paragraph{Hauptkomponentenanalyse (Principal Component Analysis, PCA)}
+					Die \emph{Hauptkomponentenanalyse} eignet sich gut für Daten mit linearen Abhängigkeiten, kann aber mittels Kernel-PCA auch auf nichtlineare Zusammenhänge erweitert werden. Die Reduktionsfunktion wird dabei durch Maximierung der Varianz entlang der \emph{Hauptkomponenten} gefunden, welche über die Kovarianzmatrix berechnet werden können, sofern die Achsen im Ursprungsraum orthogonal zueinander stehen. Durch die Varianz entlang der einzelnen Achsen kann dann der Informationsverlust als \emph{erklärte Varianz} quantifiziert werden. Bei PCA handelt es sich also um eine "verlustbehaftete Kompression".
+				% end
+
+				\paragraph{Linear Discriminant Analysis (LDA)}
+					\emph{Linear Discriminant Analysis} benötigt in Klassen geteilte ("gelabelte") Daten und es werden Achsen gesucht, die die Klassen gut unterscheiden, \dh es wird die \emph{Reinheit} der Klassen bewertet. Dabei sind die neuen Achsen Linearkombinationen der alten Achsen. Eine übliche Methode ist die Optimierung des \emph{Fisher-Kriteriums}, welches dafür sorgt, dass die Mittelwerte der Klassen maximal weit auseinander und die Varianzen innerhalb der Klassen möglichst klein werden.
+				% end
+
+				\paragraph{Multidimensional Scaling (MDS)}
+					Bei \emph{Multidimensional Scaling} werden die Daten so in einem niedrigdimensionalen Raum angeordnet, dass die Distanzen aus dem Originalraum möglichst gut abgebildet sind. Dies wird durch direkte Minimierung des Fehlers
+					\begin{equation}
+						\sum_{i, j = 1}^{n} \bigl( d_n(\vec{x}_i, \vec{x}_j) - d_k\bigl( \mathrm{reduce}(\vec{x}_i), \mathrm{reduce}(\vec{x}_i) \bigr) \bigr)
+					\end{equation}
+					erreicht. Die Methode funktioniert daher auch mit Daten, bei denen ausschließlich die Entfernungen bekannt sind und ist, mit Modifikationen, auch auf nominale Daten anwendbar. Die Transformation kann dabei beliebig komplex (auch nichtlinear) sein.
+				% end
+
+				\paragraph{Self-Organizing Map (SOM)}
+					\label{p:som}
+
+					Eine \emph{Self-Organizing Map} (SOM) ist ein Verfahren zur automatischen Anordnung von Visualisierungen (häufig Zeitserien) in einem Raster, dessen Vorgehen analog zu k-Means ist:
+					\begin{enumerate}
+						\item Jede Zelle (in einem fixen Raster) wird zufällig initialisiert. Diese Zellenwerte (die \emph{Prototypen}) entsprechen den Zentroiden bei k-Means.
+						\item Jede Zeitserie wird der Zelle mit dem ähnlichsten (\bspw Euklidische Distanz) Prototyp zugeordnet.
+						\item Die Prototypen einer Zelle sowie ihre direkten Nachbarn werden so verändert, dass sie den Originaldaten, die der Zelle zugeordnet wurden, ähnlicher werden. Ferne Nachbarn (zweiten Grades) werden so verändert, dass sie den Originaldaten unähnlicher werden.
+						\item Schritt 2 und 3 werden so lange wiederholt, bis das Verfahren konvergiert, wodurch die Nachbarschaft in Schritt 3 immer kleiner wird.
+					\end{enumerate}
+				% end
+			% end
+
+			\subsubsection{Feature-Selektion}
+				Ähnlich wie in der Dimensionsreduktion kann die \emph{Feature-Selektion} formal definiert werden: Seien \(\mathcal{X}\) wieder die Daten, dann wählt die Feature-Selektion davon \( k < n \) \emph{relevante} Attribute aus. Dabei ist \emph{relevant} so definiert, dass eine Vorhersage über eine (unbekannte) Eigenschaft eines Datenpunktes basierend auf den reduzierten Features das gleiche Ergebnis liefern soll wie eine Vorhersage auf den originalen Features. Die Relevanz hängt also davon ab, welche Frage gestellt wird.
+
+				Weitere Details zu Feature-Selektionsverfahren werden im Visual Analytics-Teil behandelt, siehe \todo{ref feature selection va}.
+			% end
+		% end
+
+		\subsection{Aggregieren}
+			Eine weitere Gruppe an Techniken für den Umgang mit vielen Daten ist die Aggregation. Diese basiert auf zwei Annahmen: Erstens wird ein Verfahren benötigt, welches beliebig viele Daten darstellen kann; Zweitens wird die Annahme getroffen, dass der*die Nutzer*in nicht an einzelnen Werten, sondern nur an zusammengefassten Informationen, interessiert ist. Basierend darauf gibt es drei (unabhängige) Fragestellungen bei der Aggregation, die allesamt im Kontext der Aufgabe zu sehen sind:
+			\begin{enumerate}
+				\item \emph{Welche} Items werden zusammengefasst? \\
+					Im Allgemeinen kann jede Unterteilung prinzipiell eine sinnvolle Unterteilung liefern.
+				\item \emph{Wie} werden die Items zusammengefasst? \\
+					Beispielsweise Zählen der Items, Durchschnittswert eines Attributs, häufigster Wert, Varianz eines Attributs, minimale Differenz zweier Attribute, uvm., wobei Anzahl und Durchschnitt die häufigsten Methoden sind.
+				\item Wie wird das \emph{dargestellt?} \\
+					Hier gibt es so viele Möglichkeiten wie es Möglichkeiten zur Visualisierung gibt, die Aggregation stellt nur eine Abstraktion dar. Denn: Durch die Aggregation wurde nur ein neuer Datenpunkt, \bzw neue Items, erstellt, der auf beliebige Weise visualisiert werden kann. Es ist für eine Visualisierung also egal, woher die Items kommen.
+			\end{enumerate}
+		% end
+	% end
+
+	\section{Zeitbasierte Daten}
+		\label{sec:visZeitbasiert}
+
+		Nachdem in den vorherigen Abschnitten die Visualisierung von hochdimensionalen Daten und großen Datenmengen behandelt wurde, werden in diesem Abschnitt spezielle Techniken zur Darstellung (vieler) Zeitreihen behandelt. \emph{Zeitbezogene Daten} sind dabei Daten, bei denen mindestens ein Key einen Zeitstempel enthält, welcher entweder absolut oder relativ ist. Da die Zeit meistens ein unabhängiges Attribut ist, wird die (fast) immer auf die Position, \zB die horizontale Achse, abgebildet. Dabei bestimmten die Wahl der Marks die Interpretation der Daten, siehe \autoref{tab:zeitreihenMarks}.
+
+		Eine Übersicht über alle in diesem Abschnitt behandelten Verfahren ist in \autoref{fig:zeitreihen} zu finden.
+
+		\begin{table}
+			\centering
+			\begin{tabular}{c|cc}
+				\toprule
+				                           & \textbf{Kontinuierliche Änderung} & \textbf{Diskrete Messungen} \\ \midrule
+				 \textbf{Einzelne Werte}   &              Linien               &           Punkte            \\
+				\textbf{Anhäufung/Zuwachs} &              Flächen              &           Balken            \\ \bottomrule
+			\end{tabular}
+			\caption{Interpretation verschiedener Marks bei Zeitreihen}
+			\label{tab:zeitreihenMarks}
+		\end{table}
 
 		\begin{figure}
 			\centering
@@ -1818,7 +2000,64 @@ Eines der ersten vorgestellten Verfahren ist das \emph{Force-Directed} Layout. D
 					\begin{figure}
 						\centering
 						\def\svgwidth{\linewidth}
-						\input{plattkarte.pdftex}
+%% Creator: Inkscape inkscape 0.92.5, www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'plattkarte.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%%
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \newcommand*\fsize{\dimexpr\f@size pt\relax}%
+  \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{1200.66000001bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,0.5002804)%
+    \lineheight{1}%
+    \setlength\tabcolsep{0pt}%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{plattkarte.pdf}}%
+  \end{picture}%
+\endgroup%
 						\caption{Verzerrung durch die Plattkarten-Projektion}
 						\label{fig:plattkarte}
 					\end{figure}
@@ -1846,7 +2085,64 @@ Eines der ersten vorgestellten Verfahren ist das \emph{Force-Directed} Layout. D
 					\begin{figure}
 						\centering
 						\def\svgwidth{\linewidth}
-						\input{winkeltripel.pdftex}
+%% Creator: Inkscape inkscape 0.92.5, www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'winkeltripel.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%%
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \newcommand*\fsize{\dimexpr\f@size pt\relax}%
+  \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{2250.00002604bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,0.6111221)%
+    \lineheight{1}%
+    \setlength\tabcolsep{0pt}%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{winkeltripel.pdf}}%
+  \end{picture}%
+\endgroup%
 						\caption{Verzerrung durch die Winkel-Tripel-Projektion}
 						\label{fig:winkeltripel}
 					\end{figure}
@@ -2267,9 +2563,9 @@ Eines der ersten vorgestellten Verfahren ist das \emph{Force-Directed} Layout. D
 	\section{Visualisierungen für Automatische Verfahren}
 		In dem vorherigen Abschnitt wurden Verfahren für die Verbesserung von Visualisierungen durch automatische Verfahren behandelt. In diesem Abschnitt geht es nun um den umgekehrten Fall, also die Verbesserung automatischer Verfahren durch Visualisierung. Dabei werden die Verfahren im Rahmen der in \autoref{fig:autoVerfahren} vorgestellten allgemeinen Struktur automatischer Verfahren behandelt und versucht, jeden einzelnen Schritt (Daten, Verfahren, Parameter, Zwischenergebnis, Bewertung und das Ergebnis) zu visualisieren, \bzw visuelle Verfahren einzusetzen. In der Praxis werden dabei häufig mehrere der im Folgenden vorgestellten Strategien zeitgleich ver- und teilweise sogar für mehrere Verfahren gleichzeitig angewendet.
 
-		Wie im vorherigen Abschnitt wird in jedem der folgenden Abschnitte zunächst ein Problem automatischer Verfahren und dann, in den Unterabschnitten, einige Lösungsmethoden auf Basis von Visualisierungen vorgestellt. I Abschließend wird in \autoref{subsec:visAutoZsm} ein Überblick über die vorgestellten Verfahren und ihre Einordnung in das Modell aus \autoref{fig:autoVerfahren} gegeben.
+		Wie im vorherigen Abschnitt wird in jedem der folgenden Abschnitte zunächst ein Problem automatischer Verfahren und dann, in den Unterabschnitten, einige Lösungsmethoden auf Basis von Visualisierungen vorgestellt. Abschließend wird in \autoref{subsec:visAutoZsm} ein Überblick über die vorgestellten Verfahren und ihre Einordnung in das Modell aus \autoref{fig:autoVerfahren} gegeben.
 
-		\subsection{Ergebnis "Unsichtbar"}
+		\subsection{Ergebnis Unsichtbar}
 			Häufig ist das Ergebnis eines Data-Mining-Verfahrens, das gefundene Modell, nicht sichtbar und das neue Wissen kann nicht "gelesen" oder interpretiert werden, da es häufig zu komplex ist.
 
 			\subsubsection{Modellvisualisierung}
@@ -2362,6 +2658,8 @@ Eines der ersten vorgestellten Verfahren ist das \emph{Force-Directed} Layout. D
 		% end
 
 		\subsection{Überblick über die vorgestellten Methoden}
+			\label{subsec:visAutoZsm}
+
 			Eine Übersicht über die vorgestellten Integrationsvarianten von Visualisierungen in automatische Verfahren ist in \autoref{fig:integrationsvarianten1} und \ref{fig:integrationsvarianten2} gegeben.
 
 			\begin{figure}

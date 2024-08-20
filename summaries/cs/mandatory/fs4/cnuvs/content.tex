@@ -207,11 +207,11 @@
 % end
 
 \chapter{Routing}
-	Routing beschäftigt sich mit der Pfadfindung von Start zu Ziel und wie Pakete am schnellsten zugestellt werden können.
-	\begin{itemize}
-		\item Diese Aufgabe wird auf OSI-Schicht 2 (Network) übernommen, also von IP (o.ä.).
-		\item Zur Pfadfindung werden \textit{Routing Algorithmen} eingesetzt, die den Pfad finden.
-	\end{itemize}
+    Routing beschäftigt sich mit der Pfadfindung von Start zu Ziel und wie Pakete am schnellsten zugestellt werden können.
+    \begin{itemize}
+    	\item Diese Aufgabe wird auf OSI-Schicht 3 (Network) übernommen, also von IP (o.ä.).
+    	\item Zur Pfadfindung werden \textit{Routing Algorithmen} eingesetzt, die den Pfad finden.
+    \end{itemize}
 
 	\section{Weiterleitung (Forwarding)}
 		Als \textit{Forwarding} wird die Weiterleitung von Paketen bezeichnet, die sich an die von Routing Algorithmen berechnete Route hält. Anders ausgedrückt: Forwarding bezeichnet das simple verschieben eines Paketes von einem Knoten zum nächsten.
@@ -459,6 +459,257 @@ reverof
 				\item Dabei sendet jeder Router die Kosten zu seinen Nachbarn an seine Nachbarn (Flooding). \\ Bereits bekannte Pakete oder abgelaufene werden verworfen, die anderen Pakete werden weitergeleitet.
 				\item Sobald alle Pakete bekannt sind, wird die Topologie konstruiert und Dijkstra ausgeführt.
 			\end{itemize}
+        % end
+
+        \subsection{Vergleich DVR \(\leftrightarrow\) LSR}
+            \begin{itemize}
+            	\item Nachrichtenkomplexität
+	            	\begin{description}
+	            		\item[DVR] Austausch nur zwischen den Nachbarn
+	            		\item[LSR] Mit \(n\) Knoten und \(E\) Kanten: \(\mathcal{O}(n \cdot E)\) Nachrichten pro Runde.
+	            	\end{description}
+            	\item Konvergenzgeschwindigkeit
+	            	\begin{description}
+	            		\item[DVR] Kann Schleifen enthalten, Count-to-Infinity Problem
+	            		\item[LSR] \(\mathcal{O}(n^2)\) Algorithmus benötigt \(\mathcal{O}(n \cdot E)\) Nachrichten, kann Schwingungen enthalten
+	            	\end{description}
+            	\item Robustheit (Was passiert, wenn ein Router nicht funktioniert?)
+	            	\begin{description}
+	            		\item[DVR] Knoten können inkorrekte Pfad-Kosten verteilen, jede Tabelle wird von jedem anderen Knoten verwendet \(\implies\) Der Fehler wird durch das gesamte Netz propagiert.
+	            		\item[LSR] Knoten können inkorrekte Link-Kosten verteilen, jeder Knoten hat eine eigene Tabelle \(\implies\) Der Fehler wird nicht propagiert.
+	            	\end{description}
+            \end{itemize}
+        % end
+
+        \subsection{Hierarchisches Routing}
+            \begin{itemize}
+            	\item Bisher wird von flachem Routing ausgegangen.
+            	\item In großen Netzwerken skaliert dies allerdings nicht, weshalb hierarchisches Routing eingesetzt werden sollte.
+                	\begin{itemize}
+                		\item Aufgrund der schieren Anzahl an Knoten ist eine Routing Tabelle der Größe nicht möglich, sie würde die Router abschießen.
+                	\end{itemize}
+                \item Administrativ gesehen ist das Internet ein Netzwerk von Netzwerken.
+                \item Jeder Administrator möchte das Routing in seinem Netz selbst kontrollieren können.
+            \end{itemize}
+
+            \subsubsection{Autonome Systemen (AS)}
+                \begin{itemize}
+                	\item Das globale Internet besteht aus vielen \textit{Autonomen Systemen} (AS), welche untereinander Verbunden sind.
+                    	\begin{description}
+                    		\item[Stub AS] Kleine Organisationen, nur ein Link ins Internet
+                    		\item[Multihomed AS] Große Organisationen, mehrere Links ins Internet
+                    		\item[Transit AS] Provider
+                    	\end{description}
+                    \item Jedes AS hat eine eindeutige ID.
+                    \item Jedes AS muss eine Route in jedes andere AS kennen.
+                    \item Autonome Systeme aggregieren Router in Regionen.
+                    \item Router in einem AS laufen mit dem selben Routing Protokoll. In unterschiedliche AS können unterschiedliche Routing Protokolle verwendet werden.
+                    \item \textit{Gateway Router} sind spezielle Router in einem AS, die das Routing zwischen den AS steuern.
+                \end{itemize}
+            % end
+
+            \subsubsection{Intra-AS/Inter-AS}
+                \begin{itemize}
+                	\item Intra-AS: Routing innerhalb eines AS und Routing von Paket nach außen (zum Inter-AS)
+                    	\begin{itemize}
+                    		\item Routing Information Protocol (RIP): Distance Vector
+                    		\item Open Shortest Path First (OSPF): Link State
+                    		\item Interior Gateway Routing Protocol (IGRP): Distance Vector (Cisco-Proprietär)
+                    	\end{itemize}
+                	\item Inter-AS: Routing zwischen verschiedenen AS und Routing von Paketen nach innen (zu Intra-ASs)
+                    	\begin{itemize}
+                    		\item Border Gateway Protocol (BGP): Path Vector \\ Ähnlich wie Distance Vector, nur mit Schleifenvermeidung etc.
+                    	\end{itemize}
+                \end{itemize}
+            % end
+        % end
+
+        \subsection{Border Gateway Protocol (BGP)}
+            \begin{itemize}
+            	\item Der Standard beim Inter-AS Routing
+            	\item Erhält die Information, wie welche Subnetze innerhalb eines AS erreicht werden können.
+            	\item Propagiert diese an andere AS weiter.
+            	\item Baut \enquote{gute} Routen zu Subnetzen basierend auf den vorherigen Informationen.
+            	\item Erlaubt Subnetzen, sich anzukündigen (\enquote{Halle, ich bin hier!}).
+            \end{itemize}
+
+            \paragraph{Grundlagen}
+                \begin{itemize}
+                	\item BGP Peers tauschen Routing Informationen aus über TCP Verbindungen (BGP Sessions).
+                	\item Prefixes können bei einer Bekanntmachung zusammengeführt werden.
+                	\item Die Prefixe werden den Gateway Routern registriert, welche diese dann im Inter-AS propagieren.
+                \end{itemize}
+            % end
+
+            \paragraph{Attribute und Routen}
+                \begin{itemize}
+                	\item Wenn ein Prefix propagiert wird, so enthält die Nachricht den Prefix selbst und Attribute, was zusammen eine Route ergibt.
+                	\item Die zwei wichtigsten Attribute sind:
+	                	\begin{description}
+	                		\item[AS-PATH] Enthält das AS, durch welches die Nachricht gelaufen ist.
+	                		\item[NEXT-HOP] Enthält den nächsten Intra-AS Router, um zum nächsten AS zu kommen (dies können mehrere Links sein).
+	                	\end{description}
+	                \item Ein Gateway nutzt \textit{Import Policies}, um zu entscheiden, ob eine Route angenommen oder verworfen wird.
+                \end{itemize}
+            % end
+
+            \subsubsection{Skalierung}
+                \begin{itemize}
+                	\item Die steigende Anzahl an AS ist ein Problem.
+                	\item Die Anzahl klein zu halten und dafür die Größe der AS zu erhöhen ist aber auch keine Lösung.
+                	\item Dies würde zu hohen Routing Zeiten innerhalb von ASen führen.
+                	\item Auf großer Sich beeinflusst das Verhalten eines Routers alle anderen.
+                	\item Dies kann zu folgenden Problemen führen:
+                    	\begin{itemize}
+                    		\item Suboptimales Routing
+                    		\item Instabilität der Routen
+                    		\item Schwingungen innerhalb einer Route
+                    	\end{itemize}
+                \end{itemize}
+            % end
+
+            \subsubsection{Security} % 2.75, 2.81, 2.82, 2.83, 2.84, 2.85
+                \begin{description}
+                	\item[Quellen] Untergrabene Router oder Links.
+                	\item[Konsequenzen]
+                    	\begin{itemize}
+                    		\item Falsche Routing Informationen
+                    		\item Täuschung von normalen Routern
+                    		\item Störung der normalen Routerfunktionen
+                    		\item Kompromittierung von Routern (bspw. um Traffic mitzulesen)
+                    	\end{itemize}
+                    \item[Konsequenzbereiche] Einzelne Knoten bis zum gesamten Internet
+                    \item[Konsequenzdauer] Nur während der Attacke bis zu sehr langen Zeitperioden
+                \end{description}
+
+                \textit{Hier fehlen einige Inhalte der Vorlesung, siehe Kapitel 2: Routing, Folie 81 bis 85.}
+            % end
+        % end
+    % end
+
+    \section{Mobile Routing}
+        Siehe \ref{c:mobilenetworks}.
+    % end
+
+    \section{Overlay Routing}
+        \begin{itemize}
+        	\item Overlay Netzwerke sind sehr populär geworden.
+	        	\begin{itemize}
+	        		\item Alle P2P-Netzwerke nutzen Overlay Netzwerke.
+	        		\item Die meisten Cloud-Speicher nutzen Overlay Netzwerke.
+	        	\end{itemize}
+	        \item Ein \textit{Overlay Netzwerk} ist eine virtuelle Netzwerktopologie, die das darunterliegende Netzwerk versteckt (abstrahiert).
+	        \item Nachbarn in einem Overlay Netzwerk sind nicht unbedingt Nachbarn im darunterliegenden Netz.
+	        \item Im Prinzip funktioniert Routing in einem Overlay Netzwerk nicht anders als in einem normalen IP Netzwerk.
+	        \item Doch es müssen einige Metriken beachtet werden, ob das Overlay Netzwerk noch effizient ist:
+		        \begin{itemize}
+		        	\item Die Hops im Overlay Netzwerk.
+		        	\item Die Hops im Underlay Netzwerk.
+		        	\item Der sogenannte \textit{Stretchfaktor}: (\( \frac{\text{Hops im Underlay Netzwerk}}{Hops im Overlay Netzwerk} \))
+		        \end{itemize}
+        \end{itemize}
+    % end
+% end
+
+\chapter{Mobile Netzwerke}
+    \label{c:mobilenetworks}
+
+    In mobilen Netzen ist oftmals keine Infrastruktur vorhanden, sodass das Routing ein großes Problem wird (es kann nicht einfach alles über einen Knoten geleitet werden, also muss jeder Knoten Pakete weiterleiten können). In diesem Kontext geht es um Ad-Hoc Netzwerke, also nicht um UMTS oder ähnliches, wo eine zentrale Infrastruktur verfügbar ist. Außerdem ändert sich mobile Infrastruktur kontinuierlich, somit somit müssen sich die Routing-Algorithmen schnell an neue Netzwerke anpassen können. Außerdem ändert sich, bedingt durch das Übertragungsmedium der Radiowelle, andauernd die Verbindungsqualität zwischen den Knoten.
+
+    \begin{description}
+    	\item[Proaktive Verfahren] Die Route wird festgestellt, bevor ein Paket versendet wird.
+    	\item[Reaktive Verfahren] Die Route wird während der Zustellung des Paketes festgestellt.
+    \end{description}
+
+    \section{Routing}
+	    Traditionelle Algorithmen wie DVR oder LSR funktionieren nicht sehr gut in mobilen Netzwerken, da sie folgende Eigenschaften eines mobilen Netzes nicht gut behandeln:
+	    \begin{itemize}
+         	\item Mobile Netze sind sehr \textit{dynamisch},
+         	\item durch andauernde Routing-Nachrichten nimmt der \textit{Stromverbrauch} zu,
+         	\item die \textit{Bandbreite} zwischen den Knoten ist stark begrenzt,
+         	\item durch sehr unterschiedliche Knoten ist die Bandbreite \textit{asymmetrisch} ($ A \rightarrow B $ kann schneller sein als $ A \leftarrow B $),
+         	\item die Verbindung kann durch andere Knoten \textit{gestört} werden und
+         	\item mobile Netze haben meist eine hohe \textit{Redundanz}, da ein Knoten mit vielen anderen Verbunden sein kann.
+	    \end{itemize}
+
+	    Im folgenden werden folgende mobile Routing-Algorithmen behandelt:
+	    \begin{itemize}
+         	\item Destination Sequenced Distance Vector (DSDV), ein proaktiver Algorithmus und
+         	\item Dynamic Source Routing (DSR), ein reaktiver Algorithmus.
+	    \end{itemize}
+
+	    \subsection{Destination Sequenced Distance Vector}
+		    DSDV ist eine Erweiterung des DVR-Algorithmus um mit mobilen Netzen zu arbeiten (annahmen über die Vermeidung des Count-to-Infinity-Problems funktionieren nicht in mobilen Netzen!).
+
+		    Folgende Erweiterungen sind möglich, damit DVR in mobilen Netzen funktioniert:
+		    \begin{enumerate}
+		    	\item Sequenznummern für alle Routing Updates
+			    	\begin{itemize}
+			    		\item Diese sichern eine geordnete Abarbeitung der Updates
+			    		\item Vermeidet Schleifen und Inkonsistenzen
+			    	\end{itemize}
+		    	\item Geringere Update-Frequenz
+			    	\begin{itemize}
+			    		\item Speicherung der Zeit zwischen \textit{erster} und \textit{bester} Bekanntmachung eines Pfades
+			    		\item Sperrung von Updates wenn die gespeicherten Zeiten unsicher wirken
+			    	\end{itemize}
+		    \end{enumerate}
+
+		    Ist DSDV noch immer proaktiv und leider auch keine wirkliche Verbesserung im Vergleich zu DVR in mobilen Netzen.
+	    % end
+
+	    \subsection{Dynamic Source Routing}
+		    DSR ist nach folgenden Grundsätzen designt worden:
+		    \begin{itemize}
+		    	\item Spaltung von Routing in Pfadfindung und Pfadverwaltung
+		    	\item Vermeidung von periodischen Updates
+		    	\item Unterstützung von statischen und dynamischen Netzwerken mit ca. 200 Knoten (skalierbar)
+		    	\item Der Sender findet den Weg eines Paketes
+		    \end{itemize}
+
+		    \paragraph{Pfadfindung}
+			    \begin{itemize}
+			    	\item Die Pfadfindung wird nur ausgeführt, wenn es wirklich benötigt wird und noch keine Route bekannt ist.
+			    	\item Nutzung von Flooding und Broadcasts mit \textit{Zieladresse} und \textit{ID}.
+				    	\begin{itemize}
+				    		\item Flooding ist im allgemeinen sehr Aufwändig, wird allerdings auch nur selten ausgeführt (bei dem ersten Verbindungsaufbau).
+				    	\end{itemize}
+			    	\item Wenn ein Knoten ein solches Broadcast-Paket erhält, dann:
+				    	\begin{enumerate}
+				    		\item Wurde bereits ein Paket mit der gleichen ID empfangen? \\ \( \implies \) Paket verwerfen.
+				    		\item Ist die eigene Adresse gleich der Zieladresse? \\ \( \implies \) Paket zum Sender zurück senden (der Pfad wird im Paket gehalten).
+				    		\item Ansonsten \\ \( \implies \) Eigene Adresse an das Paket anhängen und Broadcasten.
+				    	\end{enumerate}
+				    \item Am Ende erhält der Sender ein Paket, welches den Pfad zum Ziel enthält.
+				    \item Sind bidirektionale Verbindungen nicht garantiert, so muss das Paket mit Flooding zurück geschickt werden.
+				    \item \textbf{Optimierungen}
+					    \begin{enumerate}
+					    	\item Statt nur einer ID zusätzlich einen Counter mitsenden, der in jedem Schritt erhöht wird.
+						    	\begin{itemize}
+						    		\item Ist der maximale Durchschnitt des Netzwerkes bekannt, kann ein Paket verworfen werden, wenn der Counter größer als der maximale Durchschnitt ist.
+						    	\end{itemize}
+						    \item Cachen der Pfade von vorbeikommenden Paketen.
+							    \begin{itemize}
+							    	\item Im Normalfall würden Knoten nur Pfade lernen, wenn sie Pakete senden.
+							    	\item Während dem Weiterleiten anderer Pakete können diese gecachet werden.
+							    \end{itemize}
+					    \end{enumerate}
+			    \end{itemize}
+		    % end
+
+		    \paragraph{Pfadverwaltung}
+			    \begin{itemize}
+			    	\item Die Pfadverwaltung wird nur ausgeführt, wenn ein bestehender Pfad genutzt werden soll.
+			    	\item Ungenutzte Pfade werden aus der Routing-Tabelle entfernt
+			    	\item Nach Absenden eines Paketes führt ein Knoten einen der folgenden Schritte zur Instandhaltung aus:
+				    	\begin{enumerate}
+				    		\item Warten auf 2 ACKs (wenn möglich, beispielsweise im normalen WLAN).
+				    		\item Carrier-Sense: Abwarten, ob andere Knoten das Paket weiterleiten (nicht möglich bei bspw. Richtfunk)
+				    		\item Explizites Anfragen eines ACKs
+				    	\end{enumerate}
+			    	\item Wenn ein Problem aufgetreten ist, wird entweder der Sender darüber informiert oder ein neuer Weg gesucht (Pfadfindung).
+			    \end{itemize}
+		    % end
 		% end
 
 		\subsection{Vergleich DVR \(\leftrightarrow\) LSR}
@@ -829,7 +1080,96 @@ Das \textit{Internet Protocol} (IP) befindet sich auf OSI-Schicht 3 (Network) un
 
 			In diesem Fall spricht man von \enquote{Classless InterDomain Routing}, kurz CIDR.
 
-			Dies kann zu effizientem Routing führen, beispielsweise weißt man allen IP Adressen in Europa den gleichen Prefix zu, wodurch in Amerika nur ein Routing-Eintrag für jeden Traffic nach Europa erstellt werden muss.
+        \subsection{IPv6 Paketformat}
+            \begin{figure}[H]
+            	\centering
+                \begin{bytefield}[bitwidth = 1.2em]{32}
+		            \bitheader{0-31} \\
+		            \begin{rightwordgroup}{Payload}
+			            \bitbox{4}{Version} & \bitbox{8}{Traffic Class} & \bitbox{20}{Flow Label} \\
+			            \bitbox{16}{Payload Length} & \bitbox{8}{Next Header} & \bitbox{8}{Hop Limit} \\
+			            \bitbox[trl]{32}{} \\
+			            \bitbox[rl]{32}{Source Address} \\
+			            \bitbox[rl]{32}{} \\
+			            \bitbox[rbl]{32}{} \\
+			            \bitbox[trl]{32}{} \\
+			            \bitbox[rl]{32}{Destination Address} \\
+			            \bitbox[rl]{32}{} \\
+			            \bitbox[rbl]{32}{}
+			        \end{rightwordgroup} \\
+		            \begin{rightwordgroup}{Next Header}
+		            	\bitbox{32}{}
+		            \end{rightwordgroup}
+                \end{bytefield}
+                \caption{IPv6 Paketformat}
+                \label{fig:ipv6packet}
+            \end{figure}
+
+            \begin{description}
+            	\item[Version] 4 Bit breit. Die IP-Version. Kann 4 oder 6 sein (IPv4 bzw. IPv6).
+            	\item[Traffic Class] 6+2 Bit breit. Die ersten 6 Bit klassifizieren das Paket, die letzten 2 Bit sind nötig für explizites Congestion Control.
+            	\item[Flow Label] 20 Bit breit. Gibt an, dass Pakete nicht umsortiert werden sollen.
+            	\item[Payload Length] 16 Bit breit. Die Gesamtlänge Der Kopfdaten inklusive Erweiterungsheader.
+            	\item[Next Header] 8 Bit breit. Spezifiziert den Typ des nächsten Headers. Dies kann ein höheres Protokoll (bspw. TCP) sein oder auch Erweiterungsheader.
+            	\item[Hop Limit] 8 Bit breit. Gibt die maximale Anzahl Hops des Paketes an, bevor es verworfen wird (sobald Hop Limit = 0). Der Wert des Feldes wird bei jedem Hop um eins verringert.
+            	\item[Source Address] 128 Bit breit. Die Quelladresse.
+            	\item[Destination Address] 128 Bit breit. Die Zieladresse.
+            	\item[Next Header] Der nächste Header (Erweiterungsheader oder höheres Protokoll).
+            \end{description}
+		% end
+
+        \subsection{Adressierung}
+            IPv6 Adressen sind 128 Bit breit und werden in 16 Bit Blöcken hexadezimal notiert (getrennt mit Doppelpunkten). vorangehende Nullen können weggelassen werden und an genau einer Stelle des Paketes kann ein großer Block nullen weggelassen werden:
+            \begin{align*}
+	                             & \quad\texttt{10111110001101111011111000000000}\dots \\
+	            \rightsquigarrow & \quad\texttt{5f1b:df00:0000:0000:0020:0800:2078:e3e3} \\
+	            \rightsquigarrow & \quad\texttt{5f1b:df00:0:0:20:800:2078:e3e3} \\
+	            \rightsquigarrow & \quad\textbf{\texttt{5f1b:df00::20:800:2078:e3e3}}
+            \end{align*}
+
+            Eine IPv6 Adresse ist in folgende Blöcke unterteilt:
+            \begin{figure}[H]
+            	\centering
+            	\begin{bytefield}[bitwidth = 7pt]{64}
+            		\bitheader{0,2,15,23,47,63} \\
+            		\bitbox{3}{\texttt{001}} & \bitbox{13}{TLA} & \bitbox{8}{Res} & \bitbox{24}{NLA} & \bitbox{16}{SLA} \\
+            		\bitbox{64}{Interface}
+            	\end{bytefield}
+            \end{figure}
+            \begin{description}
+            	\item[TLA] 13 Bit; Top Level Aggregation; global von der IANA zugewiesene ISP-Nummer
+            	\item[Res] 8 Bit; Reserved; Reserviert für Erweiterung von TLA und/oder NLA
+            	\item[NLA] 24 Bit; Next Level Aggregation; Routing-Struktur vom ISP
+            	\item[SLA] 16 Bit; Site Level Aggregation; Routing-Struktur von einer Organisation
+            	\item[Interface] 64 Bit; Client-ID, basierend auf der MAC Adresse oder zufälliger Zahl
+            \end{description}
+		% end
+
+        \subsection{Übergang von IPv4 zu IPv6}
+            Da es keinen festen Termin für die Umstellung von IPv4 auf IPv6 gibt/gab/geben wird, erfolgt der Übergang fließend. Hierzu wurden die folgenden Mechanismen geschaffen:
+            \begin{description}
+            	\item[4in6] Tunneln von IPv4 in IPv6
+            	\item[6in4] Tunneln von IPv6 in IPv4
+            	\item[6over4] Transport von IPv6 Paketen zwischen zwei Dual-Stack Knoten über ein IPv4-Netzwerk
+            	\item[Dual-Stack] Parallelbetrieb IPv4/IPv6
+            	\item[Dual-Stack Lite] Wie Dual-Stack, aber mit globaler IPv6 und Carrier-NAT IPv4
+            	\item[Teredo] Kapselung von IPv6 Paketen in IPv4-UDP Paketen
+            	\item[NAT64] Übersetzung von IPv4 Adressein in IPv6 Adressen
+            	\item[474XLAT] Übersetzung von IPv4 Adressein in IPv6 Adressen in IPv4 Adressen
+            \end{description}
+		% end
+
+        \subsection{Mehr IPv6} % 3.53
+            \begin{itemize}
+            	\item ARP wird nicht mehr genutzt und wurde durch das \textit{Neighbour Discovery Protocol} (NDP) ersetzt.
+            	\item \textit{Duplicate Address Detection} (DAD) wird genutzt, um Adressdopplungen zu vermeiden.
+            	\item Mit IPv6 sollten DHCP Server nur noch der Informationsverteilung dienen, die Adressen werden mittels SLAAC (\textit{Stateless Address Autoconfiguration}) vergeben.
+	            	\begin{itemize}
+	            		\item Der Router vergibt ein \texttt{/64} Netzwerk (\textit{Router Advertisement} (RA) über NDP).
+	            		\item Jeder Knoten weißt sich selbst eine IP Adresse zu mittels EUI-64. \\ Ethernet: Netzadresse + \texttt{FFFE:FFFE} + MAC Adresse
+	            	\end{itemize}
+	            \item Quad-A (AAAA) Records in DNS zur Auflösung von Domains zu IPv6 Adressen.
+            \end{itemize}
 		% end
 	% end
 
@@ -3024,219 +3364,221 @@ Hello, World!
 % end
 
 \chapter{Abkürzungen}
-	\begin{description}
-		\item[A] Address Record
-		\item[AA] Authorative Answer (Flag)
-		\item[AAA] Triple A
-		\item[AAAA] Quad-A Record (A Record for IPv6)
-		\item[ACK] Acknowledge
-		\item[ACM] Association for Computing Machinery
-		\item[ADSL2] Asymmetric Digital Subscriber Line 2
-		\item[AIMD] Additive Increase\, Multiplicative Decrease
-		\item[AK] Acknowledge
-		\item[API] Application Programming Interface
-		\item[ARP] Address Resolution Protocol
-		\item[ARPANET] Advanced Research Projects Agency Network
-		\item[ARQ] Automatic Repeat reQuest
-		\item[AS] Autonomous Systems
-		\item[ASCII] American Standard Code for Information Interchange
-		\item[ASN] Abstract Syntax Notation
-		\item[BER] Basis Encoding Rules
-		\item[BGP] Border Gateway Protocol
-		\item[BSD] Berkeley Software Distribution
-		\item[BTSH] BGP TTL Security Hack
-		\item[CA] Certificate Authority
-		\item[CBT] Core Based Tree
-		\item[CC] Congestion Control
-		\item[CCID] Congestion Control ID
-		\item[CCR] Commitment\, Concurrency and Recovery
-		\item[CD] Collision Detection
-		\item[CDF] Cumulative distribution function
-		\item[CDM] Code Division Multiplexing
-		\item[CIDR] Classless InterDomain Routing
-		\item[CL] Connectionless
-		\item[CLNS] Connectionless-mode Network Service
-		\item[CN] Computer Network
-		\item[CNuvS] Computer Netzwerke und verteilte Systeme
-		\item[CO] Connection-oriented
-		\item[CONS] Connection-oriented Network Service
-		\item[COTS] Connection-oriented Transport Service
-		\item[CPU] Central Processing Unit
-		\item[CR] Connection Request
-		\item[CSCW] Computer Supported Cooperative Work
-		\item[CSMA] Carrier Sense Multiple Access
-		\item[CSRC] Contributing Source
-		\item[CSS] Communication Subsystem
-		\item[CW] Cooperative Work
-		\item[DAD] Duplicate Address Detection
-		\item[DAT] Data Exchange
-		\item[DB] Database
-		\item[DCCP] Datagram Congestion Control Protocol
-		\item[DF] Don't Fragment (Flag)
-		\item[DHCP] Dynamic Host Configuration Protocol
-		\item[DHCPv6]  Dynamic Host Configuration Protocol for IPv6
-		\item[DHT] Distributed Hash Table
-		\item[DIN] Deutsches Institut für Normung
-		\item[DIS] Disconnect
-		\item[DL] Data Link
-		\item[DNS] Domain Name System
-		\item[DoD] Department of Defence
-		\item[DP] Destination Port
-		\item[DR] Disconnect Request
-		\item[DS] Distributed System
-		\item[DSDV] Destination Sequence Distance Vector
-		\item[DSR] Dynamic Source Routing
-		\item[DT] Data
-		\item[DV] Distance Vector Routing
-		\item[DVMRP] Distance Vector Multicast Routing Protocol
-		\item[DVR] Distance Vector Routing
-		\item[EUI-64] 64 Bit Extended Unique Identifier
-		\item[FCFS] First Come\, First Serve
-		\item[FDD] Frequency Division Duplex
-		\item[FDDI] Fiber Distributed Data Interface
-		\item[FDM] Frequency Division Multiplexing
-		\item[FIFO]  First In\, First Out
-		\item[FTP] File Transfer Protocol
-		\item[GB] Gigabyte
-		\item[GBit] Gigabit
-		\item[GE] General Electric
-		\item[GMT] Greenwich Mean Time
-		\item[GT] Graphentheorie
-		\item[HP] Hewlett Packard
-		\item[HTML] Hypertext Markup Language
-		\item[HTTP] Hypertext Transfer Protocol
-		\item[IANA] Internet Assigned Numbers Authority
-		\item[IBM] International Business Machines Corporation
-		\item[ICANN] Internet Corporation for Assigned Names and Numbers
-		\item[ICMP] Internet Control Message Protocol
-		\item[ICMPv6] Internet Control Message Protocol for IPv6
-		\item[ID] Identifier
-		\item[IDL] Interface Definition Language
-		\item[IETF] Internet Engineering Task Force
-		\item[IGMP] Internet Group Management Protocol
-		\item[IGRP] Interior Gateway Routing Protocol
-		\item[IHL] IP Header Length
-		\item[IP] Internet Protocol
-		\item[IPC] Inter Process Communication
-		\item[IPSec] IP Security
-		\item[IPTV] IP Television
-		\item[IPv4] Internet Protocol Version 4
-		\item[IPv6] Internet Protocol Version 6
-		\item[ISO] International Organization for Standardization
-		\item[ISP] Internet Service Provider
-		\item[IT] Information technology
-		\item[ITU-T] ITU Telecommunication Standardization Sector
-		\item[JPEG] Joint Photographic Experts Group
-		\item[KaZaA] KaZaA (Eigenname)
-		\item[KB] Kilobyte
-		\item[KBit] Kilobit
-		\item[LAN] Local Area Network
-		\item[LLC] Logical Link Control
-		\item[LS] Link State Routing
-		\item[LSR] Link State Routing
-		\item[MAC] Medium Access Control
-		\item[MD5] Message Digest Algorithm 5
-		\item[MF] More Fragments (Flag)
-		\item[MOSPF] Multicast Open Shortes Path First
-		\item[MS] Microsoft
-		\item[MSB] Most Significant Bit/Byte
-		\item[MSS] Maximum Segment Size
-		\item[MST] Minimal Spanning Tree
-		\item[MTA] Mail Transfer Agent
-		\item[MUA] Mail User Agent
-		\item[MX] Mail Exchange Resource Record
-		\item[NACK] Negative Acknowledgement
-		\item[NASA] National Aeronautics and Space Administration
-		\item[NAT] Network Address Translation
-		\item[NCP] Network Control Program
-		\item[ND] Neighbour Discovery Protocol
-		\item[NDP] Neighbour Discovery Protocol
-		\item[NIC] Network Interface Card
-		\item[NLA] Next Level Address
-		\item[NS] Network Layer Services / Nameserver Record
-		\item[NW] Network
-		\item[NY] New York
-		\item[OO] Object Oriented
-		\item[OPCode] Operation Code
-		\item[OS] Operating System
-		\item[OSI] Open Systems Interconnection
-		\item[OSN] Online Social Network
-		\item[OSPF] Open Shortes Path First
-		\item[P2P] Peer-to-Peer
-		\item[PC] Personal Computer
-		\item[PCCW] Pacific Century Cyberworks
-		\item[PCI] Peripheral Component Interconnect
-		\item[PDF] Portable Document Format
-		\item[PDU] Protocol Data Unit
-		\item[PH] Physical Layer
-		\item[PHY] Physical Layer
-		\item[PID] Process ID
-		\item[PIM] Protocol Independent Multicast
-		\item[PT] Pakistan Telekom
-		\item[QoS] Quality of Service
-		\item[QUIC] Quick UDP Internet Connection
-		\item[RA] Router Advertisement
-		\item[RARP] Reverse ARP
-		\item[RD] Recusion Desired (Flag)
-		\item[RED] Random Early Detection
-		\item[RFC] Request For Comments
-		\item[RIP] Routing Information Protocol
-		\item[RIPE] Reseaux IP Europeens Network Coordination Centre
-		\item[RIR] Regional Internet Registry
-		\item[ROSE] Remote Operation Service Element
-		\item[RPF] Reverse Path Forwarding
-		\item[RR] Resource Record
-		\item[RST] Reset (Flag)
-		\item[RTCP] Real Time Control Protocol
-		\item[RTP] Real Time Transport Protocol
-		\item[RTT] Round Trip Time
-		\item[SAP] Systeme\, Anwendungen und Produkte in der Datenverarbeitung
-		\item[SCTP] Stream Control Transmission Protocol
-		\item[SD] Queue Discipline
-		\item[SDM] Space Division Multiplexing
-		\item[SDU] Service Data Unit
-		\item[SE] Service Element
-		\item[SHA-1] Secure Hashing Algorithm 1
-		\item[SIGCOMM] Special Interest Group on Data Communications
-		\item[SLA] Site Level Address
-		\item[SLAAC] Stateless Address Autoconfiguration
-		\item[SMTP] Simple Mail Transfer Protocol
-		\item[SNMP] Simple Network Management Protocol
-		\item[SP] Source Port
-		\item[SPT] Shortes Path Trees
-		\item[SRC] Source
-		\item[SSN] Social Security Number
-		\item[SSRC] Synchronization Source
-		\item[SW] Software
-		\item[SYN] Synchronize
-		\item[TC] Truncation (Flag)
-		\item[TCP] Transmission Connection Protocol
-		\item[TDD] Time Division Duplex
-		\item[TDM] Time Division Multiplexing
-		\item[TL] Transport Layer
-		\item[TLA] Top Level Aggregation
-		\item[TLD] Top Level Domain
-		\item[TLS] Transport Layer Security
-		\item[ToS] Type of Service
-		\item[TPDU] Transport Protocol Data Unit
-		\item[TS] Transport Service
-		\item[TSDU] Transport Service Data Unit
-		\item[TTL] Time To Live
-		\item[TV] Television
-		\item[UDP] User Datagram Protocol
-		\item[UI] user Interface
-		\item[UK] United Kingdom
-		\item[UMTS] Universal Mobile Telecommunications System
-		\item[URG] Urgent (Flag)
-		\item[URL] Unified Resource Locator
-		\item[US] United States
-		\item[USA] United States of America
-		\item[VLSM] Variable Length Subnet Masks
-		\item[VoIP] Voice over IP
-		\item[WAN] Wide Area Network
-		\item[WDM] Wavelength Division Multiplexing
-		\item[WLAN] Wireless LAN
-		\item[WSN] Wireless Sensor Network
-		\item[WWW] World Wide Web
-	\end{description}
+    \begin{description}
+        \item[A] Address Record
+        \item[AA] Authorative Answer (Flag)
+        \item[AAA] Triple A
+        \item[AAAA] Quad-A Record (A Record for IPv6)
+        \item[ACK] Acknowledge
+        \item[ACM] Association for Computing Machinery
+        \item[ADSL2] Asymmetric Digital Subscriber Line 2
+        \item[AIMD] Additive Increase\, Multiplicative Decrease
+        \item[AK] Acknowledge
+        \item[API] Application Programming Interface
+        \item[ARP] Address Resolution Protocol
+        \item[ARPANET] Advanced Research Projects Agency Network
+        \item[ARQ] Automatic Repeat reQuest
+        \item[AS] Autonomous Systems
+        \item[ASCII] American Standard Code for Information Interchange
+        \item[ASN] Abstract Syntax Notation
+        \item[BER] Basis Encoding Rules
+        \item[BGP] Border Gateway Protocol
+        \item[BSD] Berkeley Software Distribution
+        \item[BTSH] BGP TTL Security Hack
+        \item[CA] Certificate Authority
+        \item[CBT] Core Based Tree
+        \item[CC] Congestion Control
+        \item[CCID] Congestion Control ID
+        \item[CCR] Commitment\, Concurrency and Recovery
+        \item[CD] Collision Detection
+        \item[CDF] Cumulative distribution function
+        \item[CDM] Code Division Multiplexing
+        \item[CEP] Connection End Point
+        \item[CIDR] Classless InterDomain Routing
+        \item[CL] Connectionless
+        \item[CLNS] Connectionless-mode Network Service
+        \item[CN] Computer Network
+        \item[CNuvS] Computer Netzwerke und verteilte Systeme
+        \item[CO] Connection-oriented
+        \item[CONS] Connection-oriented Network Service
+        \item[COTS] Connection-oriented Transport Service
+        \item[CPU] Central Processing Unit
+        \item[CR] Connection Request
+        \item[CSCW] Computer Supported Cooperative Work
+        \item[CSMA] Carrier Sense Multiple Access
+        \item[CSRC] Contributing Source
+        \item[CSS] Communication Subsystem
+        \item[CW] Cooperative Work
+        \item[DAD] Duplicate Address Detection
+        \item[DAT] Data Exchange
+        \item[DB] Database
+        \item[DCCP] Datagram Congestion Control Protocol
+        \item[DF] Don't Fragment (Flag)
+        \item[DHCP] Dynamic Host Configuration Protocol
+        \item[DHCPv6]  Dynamic Host Configuration Protocol for IPv6
+        \item[DHT] Distributed Hash Table
+        \item[DIN] Deutsches Institut für Normung
+        \item[DIS] Disconnect
+        \item[DL] Data Link
+        \item[DNS] Domain Name System
+        \item[DoD] Department of Defence
+        \item[DP] Destination Port
+        \item[DR] Disconnect Request
+        \item[DS] Distributed System
+        \item[DSDV] Destination Sequence Distance Vector
+        \item[DSR] Dynamic Source Routing
+        \item[DT] Data
+        \item[DV] Distance Vector Routing
+        \item[DVMRP] Distance Vector Multicast Routing Protocol
+        \item[DVR] Distance Vector Routing
+        \item[EUI-64] 64 Bit Extended Unique Identifier
+        \item[FCFS] First Come\, First Serve
+        \item[FDD] Frequency Division Duplex
+        \item[FDDI] Fiber Distributed Data Interface
+        \item[FDM] Frequency Division Multiplexing
+        \item[FIFO]  First In\, First Out
+        \item[FTP] File Transfer Protocol
+        \item[GB] Gigabyte
+        \item[GBit] Gigabit
+        \item[GE] General Electric
+        \item[GMT] Greenwich Mean Time
+        \item[GT] Graphentheorie
+        \item[HP] Hewlett Packard
+        \item[HTML] Hypertext Markup Language
+        \item[HTTP] Hypertext Transfer Protocol
+        \item[IANA] Internet Assigned Numbers Authority
+        \item[IBM] International Business Machines Corporation
+        \item[ICANN] Internet Corporation for Assigned Names and Numbers
+        \item[ICMP] Internet Control Message Protocol
+        \item[ICMPv6] Internet Control Message Protocol for IPv6
+        \item[ID] Identifier
+        \item[IDL] Interface Definition Language
+        \item[IETF] Internet Engineering Task Force
+        \item[IGMP] Internet Group Management Protocol
+        \item[IGRP] Interior Gateway Routing Protocol
+        \item[IHL] IP Header Length
+        \item[IP] Internet Protocol
+        \item[IPC] Inter Process Communication
+        \item[IPSec] IP Security
+        \item[IPTV] IP Television
+        \item[IPv4] Internet Protocol Version 4
+        \item[IPv6] Internet Protocol Version 6
+        \item[ISO] International Organization for Standardization
+        \item[ISP] Internet Service Provider
+        \item[IT] Information technology
+        \item[ITU-T] ITU Telecommunication Standardization Sector
+        \item[JPEG] Joint Photographic Experts Group
+        \item[KaZaA] KaZaA (Eigenname)
+        \item[KB] Kilobyte
+        \item[KBit] Kilobit
+        \item[LAN] Local Area Network
+        \item[LLC] Logical Link Control
+        \item[LS] Link State Routing
+        \item[LSR] Link State Routing
+        \item[MAC] Medium Access Control
+        \item[MD5] Message Digest Algorithm 5
+        \item[MF] More Fragments (Flag)
+        \item[MOSPF] Multicast Open Shortes Path First
+        \item[MS] Microsoft
+        \item[MSB] Most Significant Bit/Byte
+        \item[MSS] Maximum Segment Size
+        \item[MST] Minimal Spanning Tree
+        \item[MTA] Mail Transfer Agent
+        \item[MUA] Mail User Agent
+        \item[MX] Mail Exchange Resource Record
+        \item[NACK] Negative Acknowledgement
+        \item[NASA] National Aeronautics and Space Administration
+        \item[NAT] Network Address Translation
+        \item[NCP] Network Control Program
+        \item[ND] Neighbour Discovery Protocol
+        \item[NDP] Neighbour Discovery Protocol
+        \item[NIC] Network Interface Card
+        \item[NLA] Next Level Address
+        \item[NS] Network Layer Services / Nameserver Record
+        \item[NW] Network
+        \item[NY] New York
+        \item[OO] Object Oriented
+        \item[OPCode] Operation Code
+        \item[OS] Operating System
+        \item[OSI] Open Systems Interconnection
+        \item[OSN] Online Social Network
+        \item[OSPF] Open Shortes Path First
+        \item[P2P] Peer-to-Peer
+        \item[PC] Personal Computer
+        \item[PCCW] Pacific Century Cyberworks
+        \item[PCI] Peripheral Component Interconnect
+        \item[PDF] Portable Document Format
+        \item[PDU] Protocol Data Unit
+        \item[PH] Physical Layer
+        \item[PHY] Physical Layer
+        \item[PID] Process ID
+        \item[PIM] Protocol Independent Multicast
+        \item[PT] Pakistan Telekom
+        \item[QoS] Quality of Service
+        \item[QUIC] Quick UDP Internet Connection
+        \item[RA] Router Advertisement
+        \item[RARP] Reverse ARP
+        \item[RD] Recusion Desired (Flag)
+        \item[RED] Random Early Detection
+        \item[RFC] Request For Comments
+        \item[RIP] Routing Information Protocol
+        \item[RIPE] Reseaux IP Europeens Network Coordination Centre
+        \item[RIR] Regional Internet Registry
+        \item[ROSE] Remote Operation Service Element
+        \item[RPF] Reverse Path Forwarding
+        \item[RR] Resource Record
+        \item[RST] Reset (Flag)
+        \item[RTCP] Real Time Control Protocol
+        \item[RTP] Real Time Transport Protocol
+        \item[RTT] Round Trip Time
+        \item[SAP] Systeme\, Anwendungen und Produkte in der Datenverarbeitung
+        \item[SAP] Service Access Point
+        \item[SCTP] Stream Control Transmission Protocol
+        \item[SD] Queue Discipline
+        \item[SDM] Space Division Multiplexing
+        \item[SDU] Service Data Unit
+        \item[SE] Service Element
+        \item[SHA-1] Secure Hashing Algorithm 1
+        \item[SIGCOMM] Special Interest Group on Data Communications
+        \item[SLA] Site Level Address
+        \item[SLAAC] Stateless Address Autoconfiguration
+        \item[SMTP] Simple Mail Transfer Protocol
+        \item[SNMP] Simple Network Management Protocol
+        \item[SP] Source Port
+        \item[SPT] Shortes Path Trees
+        \item[SRC] Source
+        \item[SSN] Social Security Number
+        \item[SSRC] Synchronization Source
+        \item[SW] Software
+        \item[SYN] Synchronize
+        \item[TC] Truncation (Flag)
+        \item[TCP] Transmission Connection Protocol
+        \item[TDD] Time Division Duplex
+        \item[TDM] Time Division Multiplexing
+        \item[TL] Transport Layer
+        \item[TLA] Top Level Aggregation
+        \item[TLD] Top Level Domain
+        \item[TLS] Transport Layer Security
+        \item[ToS] Type of Service
+        \item[TPDU] Transport Protocol Data Unit
+        \item[TS] Transport Service
+        \item[TSDU] Transport Service Data Unit
+        \item[TTL] Time To Live
+        \item[TV] Television
+        \item[UDP] User Datagram Protocol
+        \item[UI] user Interface
+        \item[UK] United Kingdom
+        \item[UMTS] Universal Mobile Telecommunications System
+        \item[URG] Urgent (Flag)
+        \item[URL] Unified Resource Locator
+        \item[US] United States
+        \item[USA] United States of America
+        \item[VLSM] Variable Length Subnet Masks
+        \item[VoIP] Voice over IP
+        \item[WAN] Wide Area Network
+        \item[WDM] Wavelength Division Multiplexing
+        \item[WLAN] Wireless LAN
+        \item[WSN] Wireless Sensor Network
+        \item[WWW] World Wide Web
+    \end{description}
 % end

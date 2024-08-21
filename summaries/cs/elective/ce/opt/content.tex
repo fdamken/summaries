@@ -1014,8 +1014,8 @@
 		\min_{\vec{p} \in \R^{n_p}} & \, \varphi(\vec{p}) \\
 		\mathrm{subject~to}\quad    & \,
 		\begin{alignedat}[t]{3}
-			\vec{a}(\vec{p}) &= \vec{0},\quad & \vec{a} : \R^{n_p} \to \R^{n_a} \\
-			\vec{b}(\vec{p}) &\geq \vec{0},\quad & \vec{b} : \R^{n_p} \to \R^{n_b}
+			\vec{a}(\vec{p}) & = \vec{0},\quad    & \vec{a} : \R^{n_p} \to \R^{n_a} \\
+			\vec{b}(\vec{p}) & \geq \vec{0},\quad & \vec{b} : \R^{n_p} \to \R^{n_b}
 		\end{alignedat}
 	\end{align*}
 	Such an optimization problem is called a \emph{nonlinear programming problem} (NLP).
@@ -1373,7 +1373,7 @@
 					\min_{\vec{d}_p \in \R^{n_p}} & \, \varphi\big(\vec{p}^{(k)}\big) + \Big(\!\grad{\varphi}\big(\vec{p}^{(k)}\big)\!\Big)^T \vec{d}_p + \frac{1}{2} \vec{d}_p^T \mat{H}_L^{\vec{p}}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}, \vec{\sigma}^{(k)}\big) \vec{d}_p \\
 					\mathrm{subject~to}\quad      & \,
 					\begin{alignedat}[t]{2}
-						\vec{a}\big(\vec{p}^{(k)}\big) + \mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \vec{d}_p &= \vec{0} \\
+						\vec{a}\big(\vec{p}^{(k)}\big) + \mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \vec{d}_p & = \vec{0}    \\
 						\vec{b}\big(\vec{p}^{(k)}\big) + \mat{J}_{\vec{b}}^T\big(\vec{p}^{(k)}\big) \vec{d}_p & \geq \vec{0}
 					\end{alignedat}  \label{eq:qp}
 				\end{align}
@@ -1503,7 +1503,7 @@
 					\min_{\vec{d}_p \in \R^{n_p}} & \, \varphi\big(\vec{p}^{(k)}\big) + \Big(\!\grad{\varphi}\big(\vec{p}^{(k)}\big)\!\Big)^T \vec{d}_p + \frac{1}{2} \vec{d}_p^T \mat{H}_L^{\vec{p}}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}, \vec{\sigma}^{(k)}\big) \vec{d}_p \\
 					\mathrm{subject~to}\quad      & \,
 					\begin{alignedat}[t]{2}
-						\vec{a}\big(\vec{p}^{(k)}\big) + \mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \vec{d}_p &= \vec{0}
+						\vec{a}\big(\vec{p}^{(k)}\big) + \mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \vec{d}_p & = \vec{0}
 					\end{alignedat}  \label{eq:activeQp}
 				\end{align}
 				where the last Jacobian \( \mat{J}_{\vec{a}}^T \) might also contain active inequality constraints which are left out here for brevity. But they are handled the same as regular equality constraints and can be considered to be part of it knowing which are active (as assumed). The degrees of freedom of this NLP are therefore \( n_p - n_a \).
@@ -1625,7 +1625,7 @@
 					\min_{\vec{d}_p \in \R^{n_p}} & \, \varphi\big(\vec{p}^{(k)}\big) + \Big(\!\grad{\varphi}\big(\vec{p}^{(k)}\big)\!\Big)^T \vec{d}_p + \frac{1}{2} \vec{d}_p^T \mat{H}_L^{\vec{p}}\big(\vec{p}^{(k)}, \vec{\mu}^{(k)}, \vec{\sigma}^{(k)}\big) \vec{d}_p \\
 					\mathrm{subject~to}\quad      & \,
 					\begin{alignedat}[t]{2}
-						\vec{a}\big(\vec{p}^{(k)}\big) + \mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \vec{d}_p &= \vec{0} \\
+						\vec{a}\big(\vec{p}^{(k)}\big) + \mat{J}_{\vec{a}}^T\big(\vec{p}^{(k)}\big) \vec{d}_p & = \vec{0}    \\
 						\vec{b}\big(\vec{p}^{(k)}\big) + \mat{J}_{\vec{b}}^T\big(\vec{p}^{(k)}\big) \vec{d}_p & \geq \vec{0}
 					\end{alignedat}
 				\end{align*} \;
@@ -2220,8 +2220,8 @@
 			\min_{\vec{x}}      & \, J[\vec{x}],\quad J[\vec{x}] = \int_a^b\! L\big(\vec{x}(t), \dot{\vec{x}}, t\big) \dd{t} \\
 			\mathrm{subject~to} & \,
 			\begin{alignedat}{2}
-				\vec{x}(a) &= \vec{x}_a \\
-				\vec{x}(b) &= \vec{x}_b
+				\vec{x}(a) & = \vec{x}_a \\
+				\vec{x}(b) & = \vec{x}_b
 			\end{alignedat}
 		\end{align*}
 		where \( \vec{x} : \R \to \R^{n_x} \), \( L : \R^{n_x} \times \R^{n_x} \times R \to R \) are two times continuously differentiable.
@@ -2287,12 +2287,12 @@
 		\min                & \, J[\vec{u}],\quad J[\vec{u}] = \phi\big(\vec{x}(t_f), t_f\big) + \int_{0}^{t_f} \! L\big(\vec{x}(t), \vec{u}(t)\big) \dd{t} \\
 		\mathrm{subject~to} & \,
 		\begin{alignedat}[t]{2}
-			\dot{\vec{x}}(t) &= \vec{f}\big(\vec{x}(t), \vec{u}(t)\big) \\
-			x_i(0) &= x_{i, 0} = \const,\quad i \in \{\, \dotsrange{1}{n_x} \,\} \\
-			\vec{r}\big(\vec{x}(t_f), t_f\big) &= \vec{0},\quad \text{e.g. } x_j(t_f) = x_{j, f},\, j \in \{\, \dotsrange{1}{n_x} \,\} \\
-			\vec{g}\big(\vec{x}(t), \vec{u}(t)\big) &\geq \vec{0} \\
-			\vec{g}\big(\vec{x}(t)\big) &\geq \vec{0} \\
-			\vec{r}^i\big( \vec{x}(t_s - 0), \vec{x}(t_s + 0), t_s \big) &= \vec{0}
+			\dot{\vec{x}}(t)                                             & = \vec{f}\big(\vec{x}(t), \vec{u}(t)\big)                                              \\
+			x_i(0)                                                       & = x_{i, 0} = \const,\quad i \in \{\, \dotsrange{1}{n_x} \,\}                           \\
+			\vec{r}\big(\vec{x}(t_f), t_f\big)                           & = \vec{0},\quad \text{e.g. } x_j(t_f) = x_{j, f},\, j \in \{\, \dotsrange{1}{n_x} \,\} \\
+			\vec{g}\big(\vec{x}(t), \vec{u}(t)\big)                      & \geq \vec{0}                                                                           \\
+			\vec{g}\big(\vec{x}(t)\big)                                  & \geq \vec{0}                                                                           \\
+			\vec{r}^i\big( \vec{x}(t_s - 0), \vec{x}(t_s + 0), t_s \big) & = \vec{0}
 		\end{alignedat}
 	\end{align*}
 	The constraints (from to bottom) are called:
@@ -2328,9 +2328,9 @@
 			\min                & \, J[\vec{u}],\quad J[\vec{u}] = \phi\big(\vec{x}(t_f), t_f\big) + \int_{0}^{t_f} \! L\big(\vec{x}(t), \vec{u}(t)\big) \dd{t} \\
 			\mathrm{subject~to} & \,
 			\begin{alignedat}[t]{2}
-				\dot{\vec{x}}(t) &= \vec{f}\big(\vec{x}(t), \vec{u}(t)\big) \\
-				x_i(0) &= x_{i, 0} = \const,\quad i \in \{\, \dotsrange{1}{n_x} \,\} \\
-				\vec{r}\big(\vec{x}(t_f), t_f\big) &= \vec{0},\quad \text{e.g. } x_j(t_f) = x_{j, f},\, j \in \{\, \dotsrange{1}{n_x} \,\}
+				\dot{\vec{x}}(t)                   & = \vec{f}\big(\vec{x}(t), \vec{u}(t)\big)                                              \\
+				x_i(0)                             & = x_{i, 0} = \const,\quad i \in \{\, \dotsrange{1}{n_x} \,\}                           \\
+				\vec{r}\big(\vec{x}(t_f), t_f\big) & = \vec{0},\quad \text{e.g. } x_j(t_f) = x_{j, f},\, j \in \{\, \dotsrange{1}{n_x} \,\}
 			\end{alignedat}
 		\end{align*}
 		For formulating the necessary optimality conditions, the following auxiliary functions are needed (the latter one is called \emph{Hamiltonian}):
@@ -2816,11 +2816,11 @@
 			\min_{\vec{u}}           & \, J[\vec{u}] = \phi\big(\vec{x}(t_0), \vec{x}(t_f), t_f\big) \\
 			\mathrm{subject~to}\quad & \,
 			\begin{alignedat}[t]{2}
-				\dot{\vec{x}}(t) &= \vec{f}\big(\vec{x}(t), \vec{u}(t)\big),\quad t \in [t_0, t_f] \\
-				x_i(0) &= x_{i, 0},\quad i \in I_0 \subseteq \{\, \dotsrange{1}{n_x} \,\} \\
-				x_j(t_f) &= x_{j, f},\quad j \in I_f \subseteq \{\, \dotsrange{1}{n_x} \,\} \\
-				\vec{g}\big(\vec{x}(t)\big) &\geq \vec{0} \\
-				\vec{g}\big(\vec{x}(t), \vec{u}(t)\big) &\geq \vec{0}
+				\dot{\vec{x}}(t)                        & = \vec{f}\big(\vec{x}(t), \vec{u}(t)\big),\quad t \in [t_0, t_f]  \\
+				x_i(0)                                  & = x_{i, 0},\quad i \in I_0 \subseteq \{\, \dotsrange{1}{n_x} \,\} \\
+				x_j(t_f)                                & = x_{j, f},\quad j \in I_f \subseteq \{\, \dotsrange{1}{n_x} \,\} \\
+				\vec{g}\big(\vec{x}(t)\big)             & \geq \vec{0}                                                      \\
+				\vec{g}\big(\vec{x}(t), \vec{u}(t)\big) & \geq \vec{0}
 			\end{alignedat}
 		\end{align*}
 		The biggest difference is that this problem does not have a Lagrangian term, but as the Lagrangian can be transformed to a Mayer term, this is no loss of generality.
@@ -2863,10 +2863,10 @@
 					\min_{\vec{p} \,\in\, \R^{n_p}} & \, \varphi(\vec{p}),\quad \varphi(\vec{p}) = \phi\big(\vec{p}_1^x, \vec{p}_{n_s + 1}^x, t_f\big) \\
 					\mathrm{subject~to}\quad        & \,
 					\begin{alignedat}[t]{2}
-						\vec{f}\big( \tilde{\vec{x}}(t_{j + 1/2}),\, \tilde{\vec{u}}(t_{j + 1/2}) \big) - \dot{\tilde{\vec{x}}}(t_{j + 1/2}) &= \vec{0},\quad j = \dotsrange{1}{n_s} \\
-						\tilde{x}_i(t_0) &= x_{i, 0},\quad i \in I_0 \subseteq \{\, \dotsrange{1}{n_x} \,\} \\
-						\tilde{x}_j(t_f) &= x_{j, f},\quad j \in I_f \subseteq \{\, \dotsrange{1}{n_x} \,\} \\
-						\vec{g}\big( \tilde{\vec{x}}(t_{j + 1/2}), \tilde{\vec{u}}(t_{j + 1/2}) \big) &\geq \vec{0},\quad j = \dotsrange{1}{n_s}
+						\vec{f}\big( \tilde{\vec{x}}(t_{j + 1/2}),\, \tilde{\vec{u}}(t_{j + 1/2}) \big) - \dot{\tilde{\vec{x}}}(t_{j + 1/2}) & = \vec{0},\quad j = \dotsrange{1}{n_s}                            \\
+						\tilde{x}_i(t_0)                                                                                                     & = x_{i, 0},\quad i \in I_0 \subseteq \{\, \dotsrange{1}{n_x} \,\} \\
+						\tilde{x}_j(t_f)                                                                                                     & = x_{j, f},\quad j \in I_f \subseteq \{\, \dotsrange{1}{n_x} \,\} \\
+						\vec{g}\big( \tilde{\vec{x}}(t_{j + 1/2}), \tilde{\vec{u}}(t_{j + 1/2}) \big)                                        & \geq \vec{0},\quad j = \dotsrange{1}{n_s}
 					\end{alignedat}
 				\end{align*}
 				With \( \tilde{\vec{u}}(t_{j + 1/2}) = \vec{p}_j^u \),\,\, \( \tilde{\vec{x}}(t_{j + 1/2}) = \frac{1}{2} \big( \vec{p}_j^x + \vec{p}_{j + 1}^x \big) \) and \( \dot{\tilde{\vec{x}}}(t_{j + 1/2}) = \frac{1}{h_j} \big( \vec{p}_{j + 1}^x - \vec{p}_j^x \big) \).
@@ -2940,10 +2940,10 @@
 					\min_{\vec{p} \,\in\, \R^{n_p}} & \, \varphi(\vec{p}),\quad \varphi(\vec{p}) = \phi\big(\vec{p}_1^x, \vec{p}_{n_s + 1}^x, t_f\big) \\
 					\mathrm{subject~to}\quad        & \,
 					\begin{alignedat}[t]{2}
-						\vec{f}\big( \tilde{\vec{x}}(t_{j + 1/2}),\, \tilde{\vec{u}}(t_{j + 1/2}) \big) - \dot{\tilde{\vec{x}}}(t_{j + 1/2}) &= \vec{0},\quad j = \dotsrange{1}{n_s} \\
-						\tilde{x}_i(t_0) &= x_{i, 0},\quad i \in I_0 \subseteq \{\, \dotsrange{1}{n_x} \,\} \\
-						\tilde{x}_j(t_f) &= x_{j, f},\quad j \in I_f \subseteq \{\, \dotsrange{1}{n_x} \,\} \\
-						\vec{g}\big( \tilde{\vec{x}}(t_{j + 1/2}), \tilde{\vec{u}}(t_{j + 1/2}) \big) &\geq \vec{0},\quad j = \dotsrange{1}{n_s}
+						\vec{f}\big( \tilde{\vec{x}}(t_{j + 1/2}),\, \tilde{\vec{u}}(t_{j + 1/2}) \big) - \dot{\tilde{\vec{x}}}(t_{j + 1/2}) & = \vec{0},\quad j = \dotsrange{1}{n_s}                            \\
+						\tilde{x}_i(t_0)                                                                                                     & = x_{i, 0},\quad i \in I_0 \subseteq \{\, \dotsrange{1}{n_x} \,\} \\
+						\tilde{x}_j(t_f)                                                                                                     & = x_{j, f},\quad j \in I_f \subseteq \{\, \dotsrange{1}{n_x} \,\} \\
+						\vec{g}\big( \tilde{\vec{x}}(t_{j + 1/2}), \tilde{\vec{u}}(t_{j + 1/2}) \big)                                        & \geq \vec{0},\quad j = \dotsrange{1}{n_s}
 					\end{alignedat}
 				\end{align*}
 				With \( \tilde{\vec{u}}(t_{j + 1/2}) = \vec{p}_j^u \),\,\, \( \tilde{\vec{x}}(t_{j + 1/2}) = \frac{1}{2} \big( \vec{p}_j^x + \vec{p}_{j + 1}^x \big) \) and \( \dot{\tilde{\vec{x}}}(t_{j + 1/2}) = \frac{1}{h_j} \big( \vec{p}_{j + 1}^x - \vec{p}_j^x \big) \).
@@ -3015,8 +3015,8 @@
 						\min_{\vec{p} \,\in\, \R^{n_p}} & \, \varphi(\vec{p}) \\
 						\mathrm{subject~to}\quad        & \,
 						\begin{alignedat}[t]{2}
-							\vec{a}(\vec{p}) &= \vec{0} \\
-							\vec{b}(\vec{p}) &\geq \vec{0}
+							\vec{a}(\vec{p}) & = \vec{0}    \\
+							\vec{b}(\vec{p}) & \geq \vec{0}
 						\end{alignedat}
 					\end{align*} \;
 					\( k \gets k + 1 \) \;
@@ -3147,9 +3147,9 @@
 			\min_{\vec{u}}           & \, J[\vec{u}],\quad J[\vec{u}] = \int_{t_0}^{t_f} \Big( \vec{x}^T\!(t) \mat{Q} \vec{x}(t) + \vec{u}^T\!(t) \mat{\Gamma} \vec{u}(t) \Big) \dd{t} \\
 			\mathrm{subject~to}\quad & \,
 			\begin{alignedat}{2}
-				\dot{\vec{x}}(t) &= \mat{A}(t) \vec{x}(t) + \mat{B}(t) \vec{u}(t) \\
-				\vec{x}(t) &= \vec{x}_0 \\
-				\vec{x}(t_f) &\phantom{=}\,\,\, \text{free}
+				\dot{\vec{x}}(t) & = \mat{A}(t) \vec{x}(t) + \mat{B}(t) \vec{u}(t) \\
+				\vec{x}(t)       & = \vec{x}_0                                     \\
+				\vec{x}(t_f)     & \phantom{=}\,\,\, \text{free}
 			\end{alignedat}
 		\end{align*}
 		with a symmetric and positive definite matrix \( \mat{Q} \) and a diagonal Matrix \( \mat{\Gamma} = \diag(\dotsrange{\gamma_1}{\gamma_{n_u}}) \). The optimal control law is then given as

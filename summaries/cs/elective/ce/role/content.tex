@@ -1354,9 +1354,9 @@
 			\begin{algorithm}  \DontPrintSemicolon
 				Initialize \( \vec{\theta} \) somehow. \;
 				\Repeat{convergence of \(\vec{\theta}\)}{
-				Get a subset \( \mathcal{S}' \subseteq \mathcal{S} \) with \( \lvert \mathcal{S}' \rvert \ll \lvert \mathcal{S} \rvert \). \;
-				Calculate \( V(\vec{s}') \) for all \( \vec{s}' \in \mathcal{S} \) using value/policy iteration. \;
-				Minimize MSE:\,\, \(\displaystyle \vec{\theta}^\mathrm{new} \gets \arg\min_{\vec{\theta}'}\, \frac{1}{\lvert \mathcal{S}' \rvert} \sum_{\vec{s}' \,\in\, \mathcal{S}'} \big( \hat{V}_{\vec{\theta}'}(\vec{s}') - V(\vec{s}') \big)^2 \) \;
+					Get a subset \( \mathcal{S}' \subseteq \mathcal{S} \) with \( \lvert \mathcal{S}' \rvert \ll \lvert \mathcal{S} \rvert \). \;
+					Calculate \( V(\vec{s}') \) for all \( \vec{s}' \in \mathcal{S} \) using value/policy iteration. \;
+					Minimize MSE:\,\, \(\displaystyle \vec{\theta}^\mathrm{new} \gets \arg\min_{\vec{\theta}'}\, \frac{1}{\lvert \mathcal{S}' \rvert} \sum_{\vec{s}' \,\in\, \mathcal{S}'} \big( \hat{V}_{\vec{\theta}'}(\vec{s}') - V(\vec{s}') \big)^2 \) \;
 				}
 
 				\caption{Approximate Value Iteration}
@@ -2157,16 +2157,16 @@
 					\( \vec{\mu} \gets \vec{0} \),\, \( \mat{\Sigma} \gets \mat{I} \)
 					\quad\tcp{Exemplary initialization.}
 					\Repeat{convergence of \(\vec{\mu}\) and \(\mat{\Sigma}\)}{
-					\eqmakebox[cemGaussian][r]{\( \vec{\theta}_{k \,=\, \subdotsrange{1}{K}} \sim \)} \eqmakebox[cemGaussianR][l]{\( \mathcal{N}(\vec{\mu}, \mat{\Sigma}) \)}
-					\quad\tcp{Sample parameters.}
-					\eqmakebox[cemGaussian][r]{\( J_k \gets \)} \eqmakebox[cemGaussianR][l]{\( J(\vec{\theta}_k) \)}
-					\quad\tcp{Evaluate parameters for \( k = \dotsrange{1}{K} \)}
-					\eqmakebox[cemGaussian][r]{\( \vec{\theta}_{(k) \,=\, \subdotsrange{(1)}{(K)}} \gets \)} \eqmakebox[cemGaussianR][l]{\( \sort\limits_J\, \vec{\theta}_{k \,=\, \subdotsrange{1}{K}} \)}
-					\quad\tcp{Sort parameters w.r.t. the performance.}
-					\BlankLine
-					\tcp{Fit new distribution parameters:}
-					\eqmakebox[cemGaussian][r]{\( \vec{\mu}^\mathrm{new} \gets \)} \( K_\mathrm{top}^{-1} \sum_{k = 1}^{K_\mathrm{top}} \vec{\theta}_{(k)} \) \;
-					\eqmakebox[cemGaussian][r]{\( \mat{\Sigma}^\mathrm{new} \gets \)} \( K_\mathrm{top}^{-1} \sum_{k = 1}^{K_\mathrm{top}} (\vec{\theta}_k - \vec{\mu}^\mathrm{new}) (\vec{\theta}_k - \vec{\mu}^\mathrm{new})^T \) \;
+						\eqmakebox[cemGaussian][r]{\( \vec{\theta}_{k \,=\, \subdotsrange{1}{K}} \sim \)} \eqmakebox[cemGaussianR][l]{\( \mathcal{N}(\vec{\mu}, \mat{\Sigma}) \)}
+						\quad\tcp{Sample parameters.}
+						\eqmakebox[cemGaussian][r]{\( J_k \gets \)} \eqmakebox[cemGaussianR][l]{\( J(\vec{\theta}_k) \)}
+						\quad\tcp{Evaluate parameters for \( k = \dotsrange{1}{K} \)}
+						\eqmakebox[cemGaussian][r]{\( \vec{\theta}_{(k) \,=\, \subdotsrange{(1)}{(K)}} \gets \)} \eqmakebox[cemGaussianR][l]{\( \sort\limits_J\, \vec{\theta}_{k \,=\, \subdotsrange{1}{K}} \)}
+						\quad\tcp{Sort parameters w.r.t. the performance.}
+						\BlankLine
+						\tcp{Fit new distribution parameters:}
+						\eqmakebox[cemGaussian][r]{\( \vec{\mu}^\mathrm{new} \gets \)} \( K_\mathrm{top}^{-1} \sum_{k = 1}^{K_\mathrm{top}} \vec{\theta}_{(k)} \) \;
+						\eqmakebox[cemGaussian][r]{\( \mat{\Sigma}^\mathrm{new} \gets \)} \( K_\mathrm{top}^{-1} \sum_{k = 1}^{K_\mathrm{top}} (\vec{\theta}_k - \vec{\mu}^\mathrm{new}) (\vec{\theta}_k - \vec{\mu}^\mathrm{new})^T \) \;
 					}
 
 					\caption{Cross-Entropy Method for Gaussian Parameter Distribution}
@@ -2425,19 +2425,19 @@
 			\( \vec{w}_0 \gets \vec{0} \) \;
 			\( t \gets 0 \) \;
 			\Repeat{convergence of \( \vec{w}_i \)}{
-			\( t \gets t + 1 \) \;
-			\If{episode finished}{
-				Start new episode. \;
-			}
-			Observe a transition \( (\vec{s}_i, \vec{a}_i, r_i, \vec{s}_i') \). \;
-			\eqmakebox[algApproxQLearn][r]{\( \vec{a}_? \gets \)} \eqmakebox[algApproxQLearnR][l]{\( \arg\max_{\vec{a}} \, Q_{\vec{w}}(\vec{s}_i', \vec{a}) \)}
-			\quad\tcp{Compute the exploration action.}
-			\eqmakebox[algApproxQLearn][r]{\( \hat{Q}_{\vec{w}}(\vec{s}_i, \vec{a}_i) \gets \)} \eqmakebox[algApproxQLearnR][l]{\( r_i + \gamma Q_{\vec{w}}(\vec{s}_i', \vec{a}_?) \)}
-			\quad\tcp{Compute the one-step prediction.}
-			\eqmakebox[algApproxQLearn][r]{\( \delta_i \gets \)} \eqmakebox[algApproxQLearnR][l]{\( \hat{Q}_{\vec{w}}(\vec{s}_i, \vec{a}_i) - Q_{\vec{w}}(\vec{s}_i, \vec{a}_i) \)}
-			\quad\tcp{Compute the TD-error.}
-			\eqmakebox[algApproxQLearn][r]{\( \vec{w}_{i + 1} \gets \)} \eqmakebox[algApproxQLearnR][l]{\( \vec{w}_i + \alpha_i \delta_i \vec{\phi}(\vec{s}_i, \vec{a}_i) \)}
-			\quad\tcp{Update the Q-Function.}
+				\( t \gets t + 1 \) \;
+				\If{episode finished}{
+					Start new episode. \;
+				}
+				Observe a transition \( (\vec{s}_i, \vec{a}_i, r_i, \vec{s}_i') \). \;
+				\eqmakebox[algApproxQLearn][r]{\( \vec{a}_? \gets \)} \eqmakebox[algApproxQLearnR][l]{\( \arg\max_{\vec{a}} \, Q_{\vec{w}}(\vec{s}_i', \vec{a}) \)}
+				\quad\tcp{Compute the exploration action.}
+				\eqmakebox[algApproxQLearn][r]{\( \hat{Q}_{\vec{w}}(\vec{s}_i, \vec{a}_i) \gets \)} \eqmakebox[algApproxQLearnR][l]{\( r_i + \gamma Q_{\vec{w}}(\vec{s}_i', \vec{a}_?) \)}
+				\quad\tcp{Compute the one-step prediction.}
+				\eqmakebox[algApproxQLearn][r]{\( \delta_i \gets \)} \eqmakebox[algApproxQLearnR][l]{\( \hat{Q}_{\vec{w}}(\vec{s}_i, \vec{a}_i) - Q_{\vec{w}}(\vec{s}_i, \vec{a}_i) \)}
+				\quad\tcp{Compute the TD-error.}
+				\eqmakebox[algApproxQLearn][r]{\( \vec{w}_{i + 1} \gets \)} \eqmakebox[algApproxQLearnR][l]{\( \vec{w}_i + \alpha_i \delta_i \vec{\phi}(\vec{s}_i, \vec{a}_i) \)}
+				\quad\tcp{Update the Q-Function.}
 			}
 
 			\caption{Approximate Q-Learning for Continuous States}

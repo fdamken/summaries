@@ -121,7 +121,7 @@
 		The evolution of quantum states, i.e., how they pass between states, is described by linear transformations \(U\), also called \emph{gates.} These gates transform a quantum state \(\ket{\psi}\) into another quantum state \(\ket{\psi'}\). In quantum circuits, we denote an application of \(U_1\) and then \(U_2\) to a state \(\ket{\psi}\), i.e., \( U_2 U_1 \ket{\psi} \), as:
 		\begin{equation}
 			\Qcircuit @C=1em @R=1em {
-			\lstick{\ket{\psi}} & \gate{U_1} & \gate{U_2} & \rstick{U_2 U_1 \ket{\psi}} \qw
+				\lstick{\ket{\psi}} & \gate{U_1} & \gate{U_2} & \rstick{U_2 U_1 \ket{\psi}} \qw
 			}
 		\end{equation}
 
@@ -526,8 +526,8 @@
 				For brevity, we will write
 				\begin{equation}
 					\Qcircuit @C=1em @R=1em {
-					\lstick{\ket{0}} & \multigate{1}{\Phi^+} & \qw \\
-					\lstick{\ket{0}} & \ghost{\Psi^+}        & \qw
+						\lstick{\ket{0}} & \multigate{1}{\Phi^+} & \qw \\
+						\lstick{\ket{0}} & \ghost{\Psi^+}        & \qw
 					}
 				\end{equation}
 				from now on whenever a Bell state is prepared between two qubits. Also, we will leave out the explicit derivation of the Bell state will from derivations.
@@ -576,9 +576,9 @@
 			Consider the following circuit:
 			\begin{equation}
 				\Qcircuit @C=1em @R=1em {
-				\lstick{\ket{\psi}} & \ustick{A'} \qw & \qw                   & \ctrl{1} & \gate{H} & \meter & \ustick{m_2} \cw         & \cw \cwx[2]    &                         \\
-				\lstick{\ket{0}}    & \ustick{A}  \qw & \multigate{1}{\Phi^+} & \targ    & \qw      & \meter & \ustick{m_1} \cw \cwx[1] &                &                         \\
-				\lstick{\ket{0}}    & \ustick{B}  \qw & \ghost{\Phi^+}        & \qw      & \qw      & \qw    & \gate{X^{m_1}}           & \gate{Z^{m_2}} & \rstick{\ket{\psi}} \qw
+					\lstick{\ket{\psi}} & \ustick{A'} \qw & \qw                   & \ctrl{1} & \gate{H} & \meter & \ustick{m_2} \cw         & \cw \cwx[2]    &                         \\
+					\lstick{\ket{0}}    & \ustick{A}  \qw & \multigate{1}{\Phi^+} & \targ    & \qw      & \meter & \ustick{m_1} \cw \cwx[1] &                &                         \\
+					\lstick{\ket{0}}    & \ustick{B}  \qw & \ghost{\Phi^+}        & \qw      & \qw      & \qw    & \gate{X^{m_1}}           & \gate{Z^{m_2}} & \rstick{\ket{\psi}} \qw
 				}  \label{eq:teleportation}
 			\end{equation}
 			Note how the state \(\ket{\psi}\) is teleported from qubit \(A\) to qubit \(B\). Also note that the state is not cloned as Alice's measurement destroys her copy. To see that the above circuit actually copies the state, we can simply calculate what it does to the circuit. Let \( \ket{\psi} = c_0 \ket{0} + c_1 \ket{1} \) be the qubit to be copied. Right before the measurements, the system has the following state:
@@ -622,8 +622,8 @@
 			We are now concerned with the "opposite" problem of qubit teleportation: instead of teleporting a qubit's state, we physically transport it to another location but encode two classical bits of information in it. That is, we transmit two bits of classical information by only transmitting a single qubit. Consider the following circuit:
 			\begin{equation}
 				\Qcircuit @C=1em @R=1em {
-				\lstick{\ket{0}} & \ustick{A} \qw & \multigate{1}{\Phi^+} & \gate{U} & \ctrl{1} & \gate{H} & \meter & \rstick{m_1} \cw \\
-				\lstick{\ket{0}} & \ustick{B} \qw & \ghost{\Phi^+}        & \qw      & \targ    & \qw      & \meter & \rstick{m_2} \cw
+					\lstick{\ket{0}} & \ustick{A} \qw & \multigate{1}{\Phi^+} & \gate{U} & \ctrl{1} & \gate{H} & \meter & \rstick{m_1} \cw \\
+					\lstick{\ket{0}} & \ustick{B} \qw & \ghost{\Phi^+}        & \qw      & \targ    & \qw      & \meter & \rstick{m_2} \cw
 				}
 			\end{equation}
 			After creating the Bell state, Alice applies a unitary \( U \in \{ \ID, X, Z, ZX \} \) and subsequently transmits the qubit to Bob. He, now in possession of both qubits \(A\) and \(B\), now applies the rest of the gates to read out what unitary Alice applied. The measurement results are as follows:
@@ -717,10 +717,10 @@
 	In general, a quantum circuit is just a unitary \(U\) and measurements,
 	\begin{equation}
 		\Qcircuit @C=1em @R=1em {
-		\lstick{\ket{x_1}}     & \multigate{3}{U} & \meter \\
-		\lstick{\ket{x_2}}     & \ghost{U}        & \meter \\
-		\raisebox{5pt}{\vdots} &                  & \raisebox{5pt}{\vdots} \\
-		\lstick{\ket{x_n}}     & \ghost{U}        & \meter
+			\lstick{\ket{x_1}}     & \multigate{3}{U} & \meter \\
+			\lstick{\ket{x_2}}     & \ghost{U}        & \meter \\
+			\raisebox{5pt}{\vdots} &                  & \raisebox{5pt}{\vdots} \\
+			\lstick{\ket{x_n}}     & \ghost{U}        & \meter
 		}
 	\end{equation}
 	with an initialization \( \ket{x_1 x_2 \dots x_n} \). However, this circuit has to be constructed somehow from gates we have available in the lab. this raises the natural question of what gates we have to implement to build every unitary---and whether there are actually a set of gates fulfilling this.
@@ -812,15 +812,15 @@
 			Let \( U \eqqcolon e^{i \alpha} A X B X C \) be a decomposition of \(U\) such that \( A B C = \ID \) (note that this is always possible due to \autoref{th:twoByTwoDecomposition}). The following circuit implements a controlled-U-gate:
 			\begin{equation}
 				\Qcircuit @C=1em @R=1em {
-				& \qw      & \ctrl{1} & \qw      & \ctrl{1} & \gate{E} & \qw \\
-				& \gate{C} & \targ    & \gate{B} & \targ    & \gate{A} & \qw
+					& \qw      & \ctrl{1} & \qw      & \ctrl{1} & \gate{E} & \qw \\
+					& \gate{C} & \targ    & \gate{B} & \targ    & \gate{A} & \qw
 				}
 			\end{equation}
 			with \( E \coloneqq \diag(1, e^{i \alpha}) \). For \(\ket{0x}\), both \(E\) and the CNOT-gates have no effect and therefore due to \(A B C = \ID\), the state is left as is. For \(\ket{1x}\), both \(E\) and the CNOT-gates are applied and therefore the unitary \(C X B X A\) acts on the second qubit together with the global phase \(e^{i \alpha}\), which is equivalent to applying \(U\). Similarly,
 			\begin{equation}
 				\Qcircuit @C=1em @R=1em {
-				& \qw              & \ctrl{1} & \qw              & \ctrl{1} & \gate{E^\dagger} & \qw \\
-				& \gate{A^\dagger} & \targ    & \gate{B^\dagger} & \targ    & \gate{C^\dagger} & \qw
+					& \qw              & \ctrl{1} & \qw              & \ctrl{1} & \gate{E^\dagger} & \qw \\
+					& \gate{A^\dagger} & \targ    & \gate{B^\dagger} & \targ    & \gate{C^\dagger} & \qw
 				}
 			\end{equation}
 			implements the controlled-\(U^\dagger\)-gate necessary for the next step (the proof is analogous).
@@ -828,9 +828,9 @@
 			The controlled-controlled-U-gate is realized by
 			\begin{equation}
 				\Qcircuit @C=1em @R=1em {
-				& \qw      & \ctrl{1} & \qw              & \ctrl{1} & \ctrl{2} & \qw \\
-				& \ctrl{1} & \targ    & \ctrl{1}         & \targ    & \qw      & \qw \\
-				& \gate{V} & \qw      & \gate{V^\dagger} & \qw      & \gate{V} & \qw
+					& \qw      & \ctrl{1} & \qw              & \ctrl{1} & \ctrl{2} & \qw \\
+					& \ctrl{1} & \targ    & \ctrl{1}         & \targ    & \qw      & \qw \\
+					& \gate{V} & \qw      & \gate{V^\dagger} & \qw      & \gate{V} & \qw
 				}  \label{eq:ccu}
 			\end{equation}
 			with \(V\) being the half-U-gate, i.e., \( V^2 = U \). For \(\ket{00x}\), no gate is ever applied. For \(\ket{01x}\), \(V\) and \(V^\dagger\) are applied, canceling each other out. For \(\ket{10x}\), \(V^\dagger\) and \(V\) are applied, canceling each other out. For \(\ket{11x}\), however, both \(V\) but not \(V^\dagger\) are applied (due to the CNOT-gates canceling the activation on the second qubit), resulting in \(VV = V^2 = U\) being applied to the this qubit. Hence, this circuit realizes the controlled-controlled-U-gate. By some clever arrangement, this circuit needs eight single-qubit gates and six CNOT-gates.
@@ -899,7 +899,7 @@
 		In \autoref{c:universality}, we saw that it is possible to implement arbitrary circuits on a quantum computer. However, exponentially many gates where necessary! So what is the reason why we think that \ac{QC} accelerates computation? Classically, we can evaluate some function only one input at a time. In \ac{QC}, however, we can make use of the linear evolution. We can therefore prepare a superposition, apply the query unitary, and therefore evaluate it on all \(2^n\) inputs simultaneously. For brevity, we denote quantum wires containing more than one qubit as
 		\begin{equation}
 			\Qcircuit @C=1em @R=1em {
-			\lstick{\ket{0}^n} & /\qw & \gate{H} & /\qw & \gate{U} & /\qw & \qw
+				\lstick{\ket{0}^n} & /\qw & \gate{H} & /\qw & \gate{U} & /\qw & \qw
 			}
 		\end{equation}
 		or will simply keep the multi-qubit wire implicit. However, we can not use the calculation of this circuit as we do not know which input produced which output! We therefore have to come up with a better approach based on \emph{interference.}
@@ -908,15 +908,15 @@
 			Consider a function \( f : \{ 0, 1 \}^n \to \{ 0, 1 \} : x \mapsto f(x) \) with the unitary \( U_f : \ket{x}\ket{y} \mapsto \ket{x}\ket{y \oplus f(x)} \) (we will proof that this is in fact a unitary transformation in \autoref{subsec:queryUnitary}). In circuit notation, we write:
 			\begin{equation}
 				\Qcircuit @C=1em @R=1em {
-				\lstick{\ket{x}^n} & \multigate{1}{U_f} & \rstick{\ket{x}^n} \qw \\
-				\lstick{\ket{y}}   & \ghost{U_f}        & \rstick{\ket{y \oplus f(x)}} \qw
+					\lstick{\ket{x}^n} & \multigate{1}{U_f} & \rstick{\ket{x}^n} \qw \\
+					\lstick{\ket{y}}   & \ghost{U_f}        & \rstick{\ket{y \oplus f(x)}} \qw
 				}
 			\end{equation}
 			This circuit keeps the inputs and the outputs together! We can now make use of superposition,
 			\begin{equation}
 				\Qcircuit @C=1em @R=1em {
-				\lstick{\ket{0}^n} & /\qw & \gate{H} & /\qw & \multigate{1}{U_f} & /\qw & \qw \\
-				\lstick{\ket{0}}   &  \qw & \qw      &  \qw & \ghost{U_f}        &  \qw & \qw
+					\lstick{\ket{0}^n} & /\qw & \gate{H} & /\qw & \multigate{1}{U_f} & /\qw & \qw \\
+					\lstick{\ket{0}}   &  \qw & \qw      &  \qw & \ghost{U_f}        &  \qw & \qw
 				}
 			\end{equation}
 			which produces the following output:
@@ -930,8 +930,8 @@
 			Assume \(n = 1\), i.e., a single input qubit. Then \emph{Deutsch's approach} is to also use a superposition as the "input" for the target qubit and to apply a second Hadamard gate after the unitary on the input qubit:
 			\begin{equation}
 				\Qcircuit @C=1em @R=1em {
-				\lstick{\ket{0}} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \qw \\
-				\lstick{\ket{1}} & \gate{H} & \ghost{U_f}        & \qw      & \qw
+					\lstick{\ket{0}} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \qw \\
+					\lstick{\ket{1}} & \gate{H} & \ghost{U_f}        & \qw      & \qw
 				}  \label{eq:deutschsApproachPartially}
 			\end{equation}
 			The core idea is now how \(U_f\) acts an the product state of a basis state \(\ket{x}\) and \(\ket{-}\):
@@ -970,8 +970,8 @@
 			Finally, we can measure the first qubit. But we did still not read out evaluations of \(f\)! It turns out that in \ac{QC}, we can often not read out individual results, but global properties of functions. In this case, a measurement \num{0} means that our function is constant and \num{1} that it is not. Also, we did not use the target qubit in the end---it was only useful for transferring function results into the global phase. In fact, we usually apply a Hadamard gate to it in the end to restore the original state. Hence, the entire "algorithm" of Deutsch's approach is:
 			\begin{equation}
 				\Qcircuit @C=1em @R=1em {
-				\lstick{\ket{0}} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \rstick{\ket{f(0) \oplus f(1)}} \qw \\
-				\lstick{\ket{1}} & \gate{H} & \ghost{U_f}        & \gate{H} & \rstick{\ket{1}} \qw
+					\lstick{\ket{0}} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \rstick{\ket{f(0) \oplus f(1)}} \qw \\
+					\lstick{\ket{1}} & \gate{H} & \ghost{U_f}        & \gate{H} & \rstick{\ket{1}} \qw
 				}  \label{eq:deutschsApproach}
 			\end{equation}
 			This approach uses quantum parallelism and interference to learn a global property of \(f\). All subsequent algorithms will rely on this or a similar technique for their speedup along with massive classical post-processing in some cases.
@@ -1078,8 +1078,8 @@
 				\tcp{Run quantum circuit.}
 				\( \displaystyle\qquad\qquad
 				\Qcircuit @C=1em @R=1em {
-				\lstick{\ket{0}^{\otimes n}} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \meter & \rstick{x} \cw \\
-				\lstick{\ket{1}}             & \gate{H} & \ghost{U_f}        & \gate{H} & \qw    & \qw
+					\lstick{\ket{0}^{\otimes n}} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \meter & \rstick{x} \cw \\
+					\lstick{\ket{1}}             & \gate{H} & \ghost{U_f}        & \gate{H} & \qw    & \qw
 				}
 				\) \;
 				\If{all \(x\) are zero}{
@@ -1143,8 +1143,8 @@
 				\tcp{Run quantum circuit.}
 				\( \displaystyle\qquad\qquad
 				\Qcircuit @C=1em @R=1em {
-				\lstick{\ket{0}^{\otimes n}} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \meter & \rstick{s} \cw \\
-				\lstick{\ket{1}}             & \gate{H} & \ghost{U_f}        & \gate{H} & \qw    & \qw
+					\lstick{\ket{0}^{\otimes n}} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \meter & \rstick{s} \cw \\
+					\lstick{\ket{1}}             & \gate{H} & \ghost{U_f}        & \gate{H} & \qw    & \qw
 				}
 				\) \;
 				\Return \(s\) \;
@@ -1180,8 +1180,8 @@
 				Opposed to the previous two algorithms, we do not directly apply Deutsch's approach. Instead, we only put the first \(n\) qubits into a superposition and use zero-qubits for the targets:
 				\begin{equation}
 					\Qcircuit @C=1em @R=1em {
-					\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \qw & \meter & \rstick{y} \cw \\
-					\lstick{\ket{0}^n} & \qw      & \ghost{U_f}        & \meter   &     &        &
+						\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \qw & \meter & \rstick{y} \cw \\
+						\lstick{\ket{0}^n} & \qw      & \ghost{U_f}        & \meter   &     &        &
 					}
 				\end{equation}
 				After the \(U_f\)-gate, we have the state
@@ -1252,17 +1252,17 @@
 				\KwOut{the period \(a\)}
 				\( \mathcal{Y} \gets \{ \} \)  \quad\tcp{Prepare the sample set.}
 				\ForEach{\( i = 1, 2, \dots, n + m \)}{
-				\tcp{Run quantum circuit.}
-				\( \displaystyle\qquad\qquad
-				\Qcircuit @C=1em @R=1em {
-				\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \qw & \meter & \rstick{y_i} \cw \\
-				\lstick{\ket{0}^n} & \qw      & \ghost{U_f}        & \meter   &     &        &
-				}
-				\) \;
-				\tcp{Rule out uninforming zeros and duplicates.}
-				\If{\( y_i \neq 0 \) and \( y_i \not\in \mathcal{Y} \)}{
-					\( \mathcal{Y} \gets \mathcal{Y} \cup \{ y_i \} \)  \quad\tcp{Add "meaningful" sample to the sample set.}
-				}
+					\tcp{Run quantum circuit.}
+					\( \displaystyle\qquad\qquad
+					\Qcircuit @C=1em @R=1em {
+						\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \qw & \meter & \rstick{y_i} \cw \\
+						\lstick{\ket{0}^n} & \qw      & \ghost{U_f}        & \meter   &     &        &
+					}
+					\) \;
+					\tcp{Rule out uninforming zeros and duplicates.}
+					\If{\( y_i \neq 0 \) and \( y_i \not\in \mathcal{Y} \)}{
+						\( \mathcal{Y} \gets \mathcal{Y} \cup \{ y_i \} \)  \quad\tcp{Add "meaningful" sample to the sample set.}
+					}
 				}
 				\( a^\ast \gets \mathrm{solve}_a \bigl\{ a \dotproduct y_i \bigforwhich i = 1, 2, \dots, n + m \bigr\} \)  \quad\tcp{Gauss-Jordan Elimination}
 				\Return \( a^\ast \) \;
@@ -1383,10 +1383,10 @@
 			As the \ac{QFT} is not simply an application of a unitary (or at least we do not want to use a bruteforce approach to generate it), we need to consider the qubits individually. First, we show that
 			\begin{equation}
 				\Qcircuit @C=1em @R=1em {
-				\lstick{\ket{j_1}}       & \gate{H} & \gate{R_2} & \qw & \cdots & & \gate{R_{n - 1}} & \gate{R_n} & \qw      & \qw & \cdots & & \qw              & \qw              & \qw      & \qw        & \qw      & \rstick{\ket{J_1}} \qw \\
-				\lstick{\ket{j_2}}       & \qw      & \ctrl{-1}  & \qw & \cdots & & \qw              & \qw        & \gate{H} & \qw & \cdots & & \gate{R_{n - 2}} & \gate{R_{n - 1}} & \qw      & \qw        & \qw      & \rstick{\ket{J_2}} \qw \\
-				\lstick{\ket{j_{n - 1}}} & \qw      & \qw        & \qw & \cdots & & \ctrl{-2}        & \qw        & \qw      & \qw & \cdots & & \ctrl{-1}        & \qw              & \gate{H} & \gate{R_2} & \qw      & \rstick{\ket{J_{n - 1}}} \qw \\
-				\lstick{\ket{j_n}}       & \qw      & \qw        & \qw & \cdots & & \qw              & \ctrl{-3}  & \qw      & \qw & \cdots & & \qw              & \ctrl{-2}        & \qw      & \ctrl{-1}  & \gate{H} & \rstick{\ket{J_n}} \qw
+					\lstick{\ket{j_1}}       & \gate{H} & \gate{R_2} & \qw & \cdots & & \gate{R_{n - 1}} & \gate{R_n} & \qw      & \qw & \cdots & & \qw              & \qw              & \qw      & \qw        & \qw      & \rstick{\ket{J_1}} \qw \\
+					\lstick{\ket{j_2}}       & \qw      & \ctrl{-1}  & \qw & \cdots & & \qw              & \qw        & \gate{H} & \qw & \cdots & & \gate{R_{n - 2}} & \gate{R_{n - 1}} & \qw      & \qw        & \qw      & \rstick{\ket{J_2}} \qw \\
+					\lstick{\ket{j_{n - 1}}} & \qw      & \qw        & \qw & \cdots & & \ctrl{-2}        & \qw        & \qw      & \qw & \cdots & & \ctrl{-1}        & \qw              & \gate{H} & \gate{R_2} & \qw      & \rstick{\ket{J_{n - 1}}} \qw \\
+					\lstick{\ket{j_n}}       & \qw      & \qw        & \qw & \cdots & & \qw              & \ctrl{-3}  & \qw      & \qw & \cdots & & \qw              & \ctrl{-2}        & \qw      & \ctrl{-1}  & \gate{H} & \rstick{\ket{J_n}} \qw
 				}
 				\label{eq:qftCircuitPart}
 			\end{equation}
@@ -1433,10 +1433,10 @@
 				\tcp{Run quantum circuit.}
 				\( \displaystyle\qquad\quad
 				\Qcircuit @C=1em @R=1em {
-				\lstick{\ket{j_1}}       & \gate{H} & \gate{R_2} & \qw & \cdots & & \gate{R_{n - 1}} & \gate{R_n} & \qw      & \qw & \cdots & & \qw              & \qw              & \qw      & \qw        & \qw      & \qswap      & \qw         & \rstick{\ket{k_1}} \qw \\
-				\lstick{\ket{j_2}}       & \qw      & \ctrl{-1}  & \qw & \cdots & & \qw              & \qw        & \gate{H} & \qw & \cdots & & \gate{R_{n - 2}} & \gate{R_{n - 1}} & \qw      & \qw        & \qw      & \qw \qwx    & \qswap      & \rstick{\ket{k_2}} \qw \\
-				\lstick{\ket{j_{n - 1}}} & \qw      & \qw        & \qw & \cdots & & \ctrl{-2}        & \qw        & \qw      & \qw & \cdots & & \ctrl{-1}        & \qw              & \gate{H} & \gate{R_2} & \qw      & \qw \qwx    & \qswap \qwx & \rstick{\ket{k_{n - 1}}} \qw \\
-				\lstick{\ket{j_n}}       & \qw      & \qw        & \qw & \cdots & & \qw              & \ctrl{-3}  & \qw      & \qw & \cdots & & \qw              & \ctrl{-2}        & \qw      & \ctrl{-1}  & \gate{H} & \qswap \qwx & \qw         & \rstick{\ket{k_n}} \qw
+					\lstick{\ket{j_1}}       & \gate{H} & \gate{R_2} & \qw & \cdots & & \gate{R_{n - 1}} & \gate{R_n} & \qw      & \qw & \cdots & & \qw              & \qw              & \qw      & \qw        & \qw      & \qswap      & \qw         & \rstick{\ket{k_1}} \qw \\
+					\lstick{\ket{j_2}}       & \qw      & \ctrl{-1}  & \qw & \cdots & & \qw              & \qw        & \gate{H} & \qw & \cdots & & \gate{R_{n - 2}} & \gate{R_{n - 1}} & \qw      & \qw        & \qw      & \qw \qwx    & \qswap      & \rstick{\ket{k_2}} \qw \\
+					\lstick{\ket{j_{n - 1}}} & \qw      & \qw        & \qw & \cdots & & \ctrl{-2}        & \qw        & \qw      & \qw & \cdots & & \ctrl{-1}        & \qw              & \gate{H} & \gate{R_2} & \qw      & \qw \qwx    & \qswap \qwx & \rstick{\ket{k_{n - 1}}} \qw \\
+					\lstick{\ket{j_n}}       & \qw      & \qw        & \qw & \cdots & & \qw              & \ctrl{-3}  & \qw      & \qw & \cdots & & \qw              & \ctrl{-2}        & \qw      & \ctrl{-1}  & \gate{H} & \qswap \qwx & \qw         & \rstick{\ket{k_n}} \qw
 				}
 				\) \;
 				\Return \( \ket{k_1 k_2 \dots k_{n - 1} k_n} \) \;
@@ -1622,8 +1622,8 @@
 				\tcp{Run quantum circuit.}
 				\( \displaystyle\qquad\qquad
 				\Qcircuit @C=1em @R=1em {
-				\lstick{\ket{0}^n}     & \gate{H} & \multigate{1}{U_f} & \qw    & \gate{U_\mathrm{FT}} & \meter & \rstick{y_k} \cw \\
-				\lstick{\ket{0}^{n_0}} & \qw      & \ghost{U_f}        & \meter &                      &        &
+					\lstick{\ket{0}^n}     & \gate{H} & \multigate{1}{U_f} & \qw    & \gate{U_\mathrm{FT}} & \meter & \rstick{y_k} \cw \\
+					\lstick{\ket{0}^{n_0}} & \qw      & \ghost{U_f}        & \meter &                      &        &
 				}
 				\) \;
 				\If{\( y_k = 0 \)}{
@@ -1669,8 +1669,8 @@
 			Note that the only \(\ket{x}\) with a bit flip are the solutions \(x^\ast\) we are looking for. However, as usual, we cannot simply measure the state but have to find clever ways of reading out the information. Instead, we introduce a new unitary transformation \(\tilde{U}\) followed by Hadamard layers:
 			\begin{equation}
 				\Qcircuit @C=1em @R=1em {
-				\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \gate{\tilde{U}} & \gate{H} & \qw \\
-				\lstick{\ket{0}}   & \gate{H} & \ghost{U_f}        & \qw      & \qw              & \qw      & \qw
+					\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{U_f} & \gate{H} & \gate{\tilde{U}} & \gate{H} & \qw \\
+					\lstick{\ket{0}}   & \gate{H} & \ghost{U_f}        & \qw      & \qw              & \qw      & \qw
 				}
 			\end{equation}
 			This unitary transformation is defined as
@@ -1682,8 +1682,8 @@
 			For brevity, we write \( U_R \coloneqq H^{\otimes n} \tilde{U} H^{\otimes n} \) and \( G \coloneqq U_R U_f \) which we call \emph{Grover's unitary.} We claim (and show) now that applying \(G\) for \(\sqrt{N}\) times,
 			\begin{equation}
 				\Qcircuit @C=1em @R=1em {
-				\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{G} & \multigate{1}{G} & \qw & \cdots & & \multigate{1}{G} & \meter & \rstick{x^\ast} \cw \\
-				&          & \ghost{G}        & \ghost{G}        & \qw & \cdots & & \ghost{G}        & \qw    & \qw
+					\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{G} & \multigate{1}{G} & \qw & \cdots & & \multigate{1}{G} & \meter & \rstick{x^\ast} \cw \\
+					&          & \ghost{G}        & \ghost{G}        & \qw & \cdots & & \ghost{G}        & \qw    & \qw
 				}
 			\end{equation}
 			yields a correct result \( f(x^\ast) = 1 \) when measuring with almost unit probability. We will now first look an at algebraic derivation why this is the case and then look at a graphical illustration.
@@ -1774,8 +1774,8 @@
 				\tcp{Run quantum circuit.}
 				\( \displaystyle\qquad\qquad
 				\Qcircuit @C=1em @R=1em {
-				\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{G^k} & \meter & \rstick{x^\ast} \cw \\
-				\lstick{\ket{0}}   & \gate{H} & \ghost{G^k}        & \qw    & \qw
+					\lstick{\ket{0}^n} & \gate{H} & \multigate{1}{G^k} & \meter & \rstick{x^\ast} \cw \\
+					\lstick{\ket{0}}   & \gate{H} & \ghost{G^k}        & \qw    & \qw
 				}
 				\) \;
 				\Return \(x^\ast\) \;
@@ -1986,25 +1986,25 @@
 			\centering
 			\begin{equation}
 				\resizebox{0.9\linewidth}{!}{
-				\Qcircuit @C=1em @R=1em {
-				\lstick{\ket{\psi}_1} & \ctrl{5} & \ctrl{10} & \gate{H} &        \qw         & \ctrl{1} & \ctrl{2} & \gate{X^{i_1}} & \gate{Z^{\ell_1}} & \ctrl{3} &   \qw    &   \qw    &   \qw    &  \qw   & \multigate{2}{C_1}    & \gate{H} & \ctrl{15} &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &   \multigate{12}{C}  & \qw \\
-				&          &           &          & \lstick{\ket{0}_2} &  \targ   &   \qw    & \gate{X^{j_1}} & \gate{Z^{m_1}}    &   \qw    & \ctrl{2} & \ctrl{3} &   \qw    &  \qw   & \ghost{C_1}           & \gate{H} &    \qw    & \ctrl{14} &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
-				&          &           &          & \lstick{\ket{0}_3} &   \qw    &  \targ   & \gate{X^{k_1}} & \gate{Z^{n_1}}    &   \qw    &   \qw    &   \qw    & \ctrl{2} &  \qw   & \ghost{C_1}           & \gate{H} &    \qw    &    \qw    & \ctrl{13} &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
-				&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &  \targ   &  \targ   &   \qw    &  \qw     & \meter & \rstick{x_1} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &                      &     \\
-				&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &  \targ   &  \targ   & \meter & \rstick{y_1} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &                      &     \\
-				\lstick{\ket{0}_4}   &  \targ   &    \qw    & \gate{H} &        \qw         & \ctrl{1} & \ctrl{2} & \gate{X^{i_2}} & \gate{Z^{\ell_2}} & \ctrl{3} &   \qw    &   \qw    &   \qw    &  \qw   & \multigate{2}{C_2}    & \gate{H} &    \qw    &    \qw    &    \qw    & \ctrl{10} &   \qw    &   \qw    & \ctrl{11} &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
-				&          &           &          & \lstick{\ket{0}_5} &  \targ   &   \qw    & \gate{X^{j_2}} & \gate{Z^{m_2}}    &   \qw    & \ctrl{2} & \ctrl{3} &   \qw    &  \qw   & \ghost{C_2}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    & \ctrl{9} &   \qw    &    \qw    & \ctrl{10} &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
-				&          &           &          & \lstick{\ket{0}_6} &   \qw    &  \targ   & \gate{X^{k_2}} & \gate{Z^{n_2}}    &   \qw    &   \qw    &   \qw    & \ctrl{2} &  \qw   & \ghost{C_2}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    & \ctrl{8} &    \qw    &    \qw    & \ctrl{9} &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
-				&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &  \targ   &  \targ   &   \qw    &   \qw    & \meter & \rstick{x_2} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &                      &     \\
-				&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &  \targ   &  \targ   & \meter & \rstick{y_2} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &                      &     \\
-				\lstick{\ket{0}_7}   &   \qw    &   \targ   & \gate{H} &        \qw         & \ctrl{1} & \ctrl{2} & \gate{X^{i_3}} & \gate{Z^{\ell_3}} & \ctrl{3} &   \qw    &   \qw    &   \qw    &  \qw   & \multigate{2}{C_3}    & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    & \ctrl{6} &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
-				&          &           &          & \lstick{\ket{0}_8} &  \targ   &   \qw    & \gate{X^{j_3}} & \gate{Z^{m_3}}    &   \qw    & \ctrl{2} & \ctrl{3} &   \qw    &  \qw   & \ghost{C_3}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    & \ctrl{5} &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
-				&          &           &          & \lstick{\ket{0}_9} &   \qw    &  \targ   & \gate{X^{k_3}} & \gate{Z^{n_3}}    &   \qw    &   \qw    &   \qw    & \ctrl{2} &  \qw   & \ghost{C_3}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    & \ctrl{4} & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
-				&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &  \targ   &  \targ   &   \qw    &   \qw    & \meter & \rstick{x_3} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &         \cwx         &     \\
-				&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &  \targ   &  \targ   & \meter & \rstick{y_3} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &         \cwx         &     \\
-				&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &   \qw    &   \qw    &  \qw   & \qw                   &   \qw    &   \targ   &   \targ   &   \targ   &   \targ   &  \targ   &  \targ   &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw & \meter & \cw      &  \rstick{x} \cw \cwx &     \\
-				&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &   \qw    &   \qw    &  \qw   & \qw                   &   \qw    &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \targ   &   \targ   &  \targ   &  \targ   &  \targ   &  \targ   & \qw & \meter & \cw      &  \rstick{y} \cw \cwx &
-				}
+					\Qcircuit @C=1em @R=1em {
+						\lstick{\ket{\psi}_1} & \ctrl{5} & \ctrl{10} & \gate{H} &        \qw         & \ctrl{1} & \ctrl{2} & \gate{X^{i_1}} & \gate{Z^{\ell_1}} & \ctrl{3} &   \qw    &   \qw    &   \qw    &  \qw   & \multigate{2}{C_1}    & \gate{H} & \ctrl{15} &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &   \multigate{12}{C}  & \qw \\
+						&          &           &          & \lstick{\ket{0}_2} &  \targ   &   \qw    & \gate{X^{j_1}} & \gate{Z^{m_1}}    &   \qw    & \ctrl{2} & \ctrl{3} &   \qw    &  \qw   & \ghost{C_1}           & \gate{H} &    \qw    & \ctrl{14} &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+						&          &           &          & \lstick{\ket{0}_3} &   \qw    &  \targ   & \gate{X^{k_1}} & \gate{Z^{n_1}}    &   \qw    &   \qw    &   \qw    & \ctrl{2} &  \qw   & \ghost{C_1}           & \gate{H} &    \qw    &    \qw    & \ctrl{13} &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+						&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &  \targ   &  \targ   &   \qw    &  \qw     & \meter & \rstick{x_1} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &                      &     \\
+						&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &  \targ   &  \targ   & \meter & \rstick{y_1} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &                      &     \\
+						\lstick{\ket{0}_4}   &  \targ   &    \qw    & \gate{H} &        \qw         & \ctrl{1} & \ctrl{2} & \gate{X^{i_2}} & \gate{Z^{\ell_2}} & \ctrl{3} &   \qw    &   \qw    &   \qw    &  \qw   & \multigate{2}{C_2}    & \gate{H} &    \qw    &    \qw    &    \qw    & \ctrl{10} &   \qw    &   \qw    & \ctrl{11} &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+						&          &           &          & \lstick{\ket{0}_5} &  \targ   &   \qw    & \gate{X^{j_2}} & \gate{Z^{m_2}}    &   \qw    & \ctrl{2} & \ctrl{3} &   \qw    &  \qw   & \ghost{C_2}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    & \ctrl{9} &   \qw    &    \qw    & \ctrl{10} &   \qw    &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+						&          &           &          & \lstick{\ket{0}_6} &   \qw    &  \targ   & \gate{X^{k_2}} & \gate{Z^{n_2}}    &   \qw    &   \qw    &   \qw    & \ctrl{2} &  \qw   & \ghost{C_2}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    & \ctrl{8} &    \qw    &    \qw    & \ctrl{9} &   \qw    &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+						&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &  \targ   &  \targ   &   \qw    &   \qw    & \meter & \rstick{x_2} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &                      &     \\
+						&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &  \targ   &  \targ   & \meter & \rstick{y_2} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &                      &     \\
+						\lstick{\ket{0}_7}   &   \qw    &   \targ   & \gate{H} &        \qw         & \ctrl{1} & \ctrl{2} & \gate{X^{i_3}} & \gate{Z^{\ell_3}} & \ctrl{3} &   \qw    &   \qw    &   \qw    &  \qw   & \multigate{2}{C_3}    & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    & \ctrl{6} &   \qw    &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+						&          &           &          & \lstick{\ket{0}_8} &  \targ   &   \qw    & \gate{X^{j_3}} & \gate{Z^{m_3}}    &   \qw    & \ctrl{2} & \ctrl{3} &   \qw    &  \qw   & \ghost{C_3}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    & \ctrl{5} &   \qw    & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+						&          &           &          & \lstick{\ket{0}_9} &   \qw    &  \targ   & \gate{X^{k_3}} & \gate{Z^{n_3}}    &   \qw    &   \qw    &   \qw    & \ctrl{2} &  \qw   & \ghost{C_3}           & \gate{H} &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    & \ctrl{4} & \qw &  \qw   & \gate{H} &       \ghost{C}      & \qw \\
+						&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &  \targ   &  \targ   &   \qw    &   \qw    & \meter & \rstick{x_3} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &         \cwx         &     \\
+						&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &  \targ   &  \targ   & \meter & \rstick{y_3} \cw \cwx &          &           &           &           &           &          &          &           &           &          &          &          &          &     &        &          &         \cwx         &     \\
+						&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &   \qw    &   \qw    &  \qw   & \qw                   &   \qw    &   \targ   &   \targ   &   \targ   &   \targ   &  \targ   &  \targ   &    \qw    &    \qw    &   \qw    &   \qw    &   \qw    &   \qw    & \qw & \meter & \cw      &  \rstick{x} \cw \cwx &     \\
+						&          &           &          &                    &          &          &                & \lstick{\ket{0}}  &   \qw    &   \qw    &   \qw    &   \qw    &  \qw   & \qw                   &   \qw    &    \qw    &    \qw    &    \qw    &    \qw    &   \qw    &   \qw    &   \targ   &   \targ   &  \targ   &  \targ   &  \targ   &  \targ   & \qw & \meter & \cw      &  \rstick{y} \cw \cwx &
+					}
 				}
 			\end{equation}
 			\caption[Shor's Code]{Quantum circuit for encoding in Shor's code (the left part until the error gates \(X\) and \(Z\)) and for decoding (everything to the right of the error gates). The matrices \(C_1\), \(C_2\), \(C_3\), and \(C\) denote the corresponding correction matrices for the bit flip ("inner" code) and the phase flip ("outer" code). The "error indices" are mutually exclusive per index or all zero, i.e., \( (i_a, j_a, k_a), (\ell_b, m_b, n_b) \in \bigl\{ (0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1) \bigr\} \) for \( a, b \in \{ 1, 2, 3 \} \).}

@@ -1056,7 +1056,7 @@
 					\begin{cases*}
 						\epsilon/m + 1 - \epsilon & if \( a = \argmax_{a \in \mathcal{A}} Q^\pi(s, a) \) \\
 						\epsilon/m                & otherwise
-					\end{cases*}                                                                                                       \\
+					\end{cases*}                                                                                                        \\
 					 & \overset{\mathclap{(\ast)}}{=} \frac{\epsilon}{m} \sum_{a \in \mathcal{A}} Q^\pi(s, a) + (1 - \epsilon) \max_{a \in \mathcal{A}} Q^\pi(s, a)                                                         \\
 					 & \overset{\mathclap{(\dagger)}}{\geq} \frac{\epsilon}{m} \sum_{a \in \mathcal{A}} Q^\pi(s, a) + (1 - \epsilon) \sum_{a \in \mathcal{A}} \frac{\pi(a \given s) - \epsilon/m}{1 - \epsilon} Q^\pi(s, a)
 					\overset{\mathclap{(\ddagger)}}{=} \sum_{a \in \mathcal{A}} \pi(a \given s) Q^\pi(s, a)
@@ -2216,24 +2216,24 @@
 			initialize parameters \(\vec{\omega}\) appropriately \;
 			initialize target parameters \( \vec{\omega}' \gets \vec{\omega} \) \;
 			\Repeat{convergence}{
-			initialize \(s\) \;
-			\While{\(s\) is not terminal}{
-			\tcp{Execute the policy.}
-			take action \( a \sim \epsilon\text{-greedy}\bigl( \hat{Q}_{\vec{\omega}} \bigr) \), observe reward \(r\) and next state \(s'\) \;
-			store transition \( \langle s, a, r, s' \rangle \) in \(\mathcal{D}\) \;
-			\tcp{Sample a minibatch of transitions from the replay buffer.}
-			\(\displaystyle \langle s_i, a_i, r_i, s_i' \rangle_{i = 1}^{M} \sim \mathcal{D} \) \;
-			\tcp{Compute \acs{TD} targets.}
-			\(\displaystyle y_i \gets
-			\begin{cases}
-				r_i                                                                      & \text{if }s_i'\text{ is terminal} \\
-				r_i + \gamma \max_{a' \in \mathcal{A}} \hat{Q}_{\vec{\omega}'}(s_i', a') & \text{otherwise}
-			\end{cases}
-			\) \;
-			\tcp{Perform the optimization.}
-			perform gradient descent step on \( \bigl( y_i - \hat{Q}_{\vec{\omega}}(s_i, a_i) \bigr)^2 \) w.r.t. \(\vec{\omega}\) \;
-			every \(C\) steps, update target \( \vec{\omega}' \gets \vec{\omega} \) \;
-			}
+				initialize \(s\) \;
+				\While{\(s\) is not terminal}{
+					\tcp{Execute the policy.}
+					take action \( a \sim \epsilon\text{-greedy}\bigl( \hat{Q}_{\vec{\omega}} \bigr) \), observe reward \(r\) and next state \(s'\) \;
+					store transition \( \langle s, a, r, s' \rangle \) in \(\mathcal{D}\) \;
+					\tcp{Sample a minibatch of transitions from the replay buffer.}
+					\(\displaystyle \langle s_i, a_i, r_i, s_i' \rangle_{i = 1}^{M} \sim \mathcal{D} \) \;
+					\tcp{Compute \acs{TD} targets.}
+					\(\displaystyle y_i \gets
+					\begin{cases}
+						r_i                                                                      & \text{if }s_i'\text{ is terminal} \\
+						r_i + \gamma \max_{a' \in \mathcal{A}} \hat{Q}_{\vec{\omega}'}(s_i', a') & \text{otherwise}
+					\end{cases}
+					\) \;
+					\tcp{Perform the optimization.}
+					perform gradient descent step on \( \bigl( y_i - \hat{Q}_{\vec{\omega}}(s_i, a_i) \bigr)^2 \) w.r.t. \(\vec{\omega}\) \;
+					every \(C\) steps, update target \( \vec{\omega}' \gets \vec{\omega} \) \;
+				}
 			}
 			\Return \(\vec{\omega}\)
 			\caption{Deep Q-Learning using Deep Q-Network}

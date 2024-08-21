@@ -6,7 +6,7 @@ on:
 jobs:
   documents:
     name: Collect Documents
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: .
@@ -25,50 +25,47 @@ jobs:
       documents: ${{ steps.documents.outputs.documents }}
   build:
     name: Build Document
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/tudalgo/algotex:latest
     needs: documents
     if: needs.documents.outputs.documents != '[]'
     defaults:
       run:
         working-directory: .
+        shell: bash
     strategy:
       matrix:
         document: ${{ fromJSON(needs.documents.outputs.documents) }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Install Graphviz, Imagamagick and Spin
+      - name: Install Python
         run: |
-          sudo apt update
-          sudo apt install -y graphviz spin imagemagick ghostscript
-      - name: Change ImageMagick security policy
-        run: |
-          DQT='"'
-          SRC="rights=${DQT}none${DQT} pattern=${DQT}PDF${DQT}"
-          RPL="rights=${DQT}read\|write${DQT} pattern=${DQT}PDF${DQT}"
-          sudo sed -i "s/$SRC/$RPL/" /etc/ImageMagick-6/policy.xml
-      - name: Install TeXLive
-        run: sudo apt install -y texlive-base texlive-fonts-extra texlive-humanities texlive-lang-cyrillic texlive-lang-english texlive-lang-german texlive-latex-extra texlive-latex-recommended texlive-latex-recommended texlive-luatex texlive-pictures texlive-plain-generic texlive-publishers texlive-science
-      - name: install additional latex-packages
-        run: |
-          mkdir -p setup/latex/darkmode-latex-package
-          git clone https://github.com/Rdeisenroth/darkmode-latex-package.git setup/latex/darkmode-latex-package
-          cd setup/latex/darkmode-latex-package
-          l3build install
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.8
-          cache: pip
+          apt update && apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl libbz2-dev -y
+          curl -O https://www.python.org/ftp/python/3.8.19/Python-3.8.19.tar.xz
+          tar -xf Python-3.8.19.tar.xz
+          cd Python-3.8.19
+          ./configure --disable-option-checking
+          make -j
+          make altinstall
+          cd ..
+          update-alternatives --install /usr/bin/python python /usr/local/bin/python3.8 1
+          update-alternatives --install /usr/bin/pip pip /usr/local/bin/pip3.8 1
+          rm -rf Python-3.8.19
       - name: Install Python Dependencies
         run: "pip install -f https://download.pytorch.org/whl/torch_stable.html -r sys/requirements.txt"
+      - name: Install fdsummary pkg
+        run: |
+          ln -s "$(pwd)/pkg" "$(kpsewhich -var-value=TEXMFDIST)/tex/latex/fdsummary"
+          texhash --verbose
       - name: Build Document (Light Mode)
         id: build-light
         run: .github/build-document.sh ${{ matrix.document }}
       - name: Upload Artifact (Light Mode)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.document }}
           path: ${{ steps.build-light.outputs.artifact_path }}
@@ -78,23 +75,23 @@ jobs:
         env:
           DARK_MODE: 1
       - name: Upload Artifact (Dark Mode)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.document }} dark
           path: ${{ steps.build-dark.outputs.artifact_path }}
   publish:
     name: Publish Documents
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     needs:
       - documents
       - build
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Download Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
       - name: Fix Document Paths
         run: ".github/move-documents.sh '${{ needs.documents.outputs.documents }}'"
       - name: Publish Documents

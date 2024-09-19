@@ -109,33 +109,33 @@
 				To model revolute joints, a decent modeling of rotations is needed. In two-dimensional settings, a rotary transformation around an arbitrary angle \(\alpha\) is described by the following matrix:
 				\begin{equation*}
 					\mat{R}(\alpha) =
-						\begin{bmatrix}
-							\cos\alpha & -\sin\alpha \\
-							\sin\alpha &  \cos\alpha
-						\end{bmatrix}
+					\begin{bmatrix}
+						\cos\alpha & -\sin\alpha \\
+						\sin\alpha & \cos\alpha
+					\end{bmatrix}
 				\end{equation*}
 				In three-dimensional settings, one transformation is needed for a rotation around one of the Cartesian axis. Letting \(x\), \(y\) and \(z\) be the first, second and third Cartesian axis, respectively, the corresponding rotation matrices around an angle \(\alpha\) are given as:
 				\begin{align*}
 					\mat{R}_x(\alpha) =
-						\begin{bmatrix}
-							1 & 0          & 0           \\
-							0 & \cos\alpha & -\sin\alpha \\
-							0 & \sin\alpha &  \cos\alpha
-						\end{bmatrix}
-					&&
+					\begin{bmatrix}
+						1 & 0          & 0           \\
+						0 & \cos\alpha & -\sin\alpha \\
+						0 & \sin\alpha & \cos\alpha
+					\end{bmatrix}
+					 &  &
 					\mat{R}_y(\alpha) =
-						\begin{bmatrix}
-							 \cos\alpha & 0 & \sin\alpha \\
-							 0          & 1 & 0          \\
-							-\sin\alpha & 0 & \cos\alpha
-						\end{bmatrix}
-					&&
+					\begin{bmatrix}
+						\cos\alpha  & 0 & \sin\alpha \\
+						0           & 1 & 0          \\
+						-\sin\alpha & 0 & \cos\alpha
+					\end{bmatrix}
+					 &  &
 					\mat{R}_z(\alpha) =
-						\begin{bmatrix}
-							\cos\alpha & -\sin\alpha & 0 \\
-							\sin\alpha &  \cos\alpha & 0 \\
-							0          &  0          & 1
-						\end{bmatrix}
+					\begin{bmatrix}
+						\cos\alpha & -\sin\alpha & 0 \\
+						\sin\alpha & \cos\alpha  & 0 \\
+						0          & 0           & 1
+					\end{bmatrix}
 				\end{align*}
 
 				One of many methods of representing arbitrary rotations are \emph{Euler angles} which are parameterized by roll \(\psi\), pitch \(\theta\) and yaw \(\phi\). They transform from a coordinate system \(1\) into a coordinate system \(0\) as follows:
@@ -157,18 +157,18 @@
 					\vec{p}^0 = \mat{R}_1^0 \vec{p}^1 + \vec{\delta}^0
 					\quad\implies\quad
 					\underbrace{\begin{bmatrix}
-						\vec{p}^1 \\
-						1
-					\end{bmatrix}}_{\tilde{\vec{p}}^1}
+							\vec{p}^1 \\
+							1
+						\end{bmatrix}}_{\tilde{\vec{p}}^1}
 					=
 					\underbrace{\begin{bmatrix}
-						\mat{R}_1^0 & \vec{\delta}^1 \\
-						\vec{0}     & 1
-					\end{bmatrix}}_{\mat{H}_1^0}
+							\mat{R}_1^0 & \vec{\delta}^1 \\
+							\vec{0}     & 1
+						\end{bmatrix}}_{\mat{H}_1^0}
 					\underbrace{\begin{bmatrix}
-						\vec{p}^0 \\
-						1
-					\end{bmatrix}}_{\tilde{\vec{p}}^0}
+							\vec{p}^0 \\
+							1
+						\end{bmatrix}}_{\tilde{\vec{p}}^0}
 				\end{equation*}
 				Hence, multiple translation-rotation transformations can be stacked as follows:
 				\begin{equation*}
@@ -198,8 +198,8 @@
 		\subsection{Differential Forward Kinematics (Velocities and Accelerations)}
 			Often it is necessary to get the velocities \(\dot{\vec{x}}\) and accelerations \(\ddot{\vec{x}}\) of the end-effector. These can be computed straightforwardly using the chain rule
 			\begin{align}
-				\dot{\vec{x}} &= \dv{t} \vec{f}(\vec{q}) = \dv{\vec{f}(\vec{q})}{\vec{q}} \dv{\vec{q}}{t} = \underbrace{\mat{J}(\vec{q})}_{\mathclap{\text{Jacobian}}} \dot{\vec{q}}  \label{eq:diffForwardKin} \\
-				\ddot{\vec{x}} &= \dot{\mat{J}}(\vec{q}) \dot{\vec{q}} + \mat{J}(\vec{q}) \ddot{\vec{q}}  \nonumber
+				\dot{\vec{x}}  & = \dv{t} \vec{f}(\vec{q}) = \dv{\vec{f}(\vec{q})}{\vec{q}} \dv{\vec{q}}{t} = \underbrace{\mat{J}(\vec{q})}_{\mathclap{\text{Jacobian}}} \dot{\vec{q}}  \label{eq:diffForwardKin} \\
+				\ddot{\vec{x}} & = \dot{\mat{J}}(\vec{q}) \dot{\vec{q}} + \mat{J}(\vec{q}) \ddot{\vec{q}}  \nonumber
 			\end{align}
 			where the end-effector velocities and accelerations are computed from the joint velocities and accelerations.
 
@@ -316,13 +316,13 @@
 				If somehow an inverse dynamics model \( \vec{u} = \vec{f}(\vec{q}, \dot{\vec{q}}, \ddot{\vec{q}}) \) is achieved in the general form \eqref{eq:dynamicsInverseGeneral}, it is easy to compute the forward dynamics model \( \ddot{\vec{q}} = \vec{f}(\vec{q}, \dot{\vec{q}}, \vec{u}) \) by inverting the mass matrix as shown in \eqref{eq:dynamicsGeneral}. By integrating \(\ddot{\vec{q}}\), the velocities and positions can be recovered:
 				\begin{align*}
 					\dot{\vec{q}}(t) = \int_0^t \! \ddot{\vec{q}}(\tau) \dd{\tau}
-					&&
+					 &  &
 					\vec{q}(t) = \int_0^t \! \dot{\vec{q}}(\tau) \dd{\tau}
 				\end{align*}
 				But this is (in most cases) not possible in closed form, so numerical integration techniques are required. One suitable method is for example the \emph{symplectic Euler method}, also called the \emph{semi-implicit Euler method}. It first integrates for the velocity with an explicit Euler method and subsequently integrates for the position with an implicit Euler method:
 				\begin{align*}
 					\dot{\vec{q}}_{k + 1} = \dot{\vec{q}}_k + h \ddot{\vec{q}}(t_k)
-					&&
+					 &  &
 					\vec{q}_{k + 1} = \vec{q}_k + h \dot{\vec{q}}_{k + 1}
 				\end{align*}
 				Here, \(k\) is the step, \( h \in (0, 1) \) is the step size with \( t_k \coloneqq kh \), and \( \vec{q}_k \) and \( \dot{\vec{q}}_k \) are the respective approximations of the positions and velocities.
@@ -338,22 +338,22 @@
 		\begin{figure}
 			\centering
 			\begin{tikzpicture}[
-						dot/.style = {
-							circle,
-							fill,
-							minimum size = 5pt,
-							inner sep = 0pt,
-							outer sep = 0pt
-						},
-						cross/.style = {
-							draw,
-							cross out,
-							thick,
-							minimum size = 5pt,
-							inner sep = 0pt,
-							outer sep = 0pt
-						}
-					]
+					dot/.style = {
+						circle,
+						fill,
+						minimum size = 5pt,
+						inner sep = 0pt,
+						outer sep = 0pt
+					},
+					cross/.style = {
+						draw,
+						cross out,
+						thick,
+						minimum size = 5pt,
+						inner sep = 0pt,
+						outer sep = 0pt
+					}
+				]
 
 				\node [dot, label=left:Start] (start) at (0,  0) {};
 				\node [dot, label=right:Goal] (goal)  at (4, -4) {};
@@ -521,8 +521,8 @@
 
 			If a model of the dynamics is present (e.g. using the recursive Newton-Euler algorithm), it can be used to compute the motor inputs for a desired acceleration. Being able to only set the acceleration is no limitation since dynamical systems are second-order systems anyway, so only the accelerations are directly controllable. This is called \emph{model-based feedback control} and it is described by the following equations:
 			\begin{align*}
-				\ddot{\vec{q}}_t^{\,\mathrm{ref}} &= \mat{K}_P (\vec{q}_d - \vec{q}_t) + \mat{K}_D (\dot{\vec{q}}_d - \dot{\vec{q}}_t) + \ddot{\vec{q}}_d \\
-				\vec{u}_t &= \mat{M}(\vec{q}_t) \ddot{\vec{q}}_t^{\,\mathrm{ref}} + \vec{c}(\vec{q}, \dot{\vec{q}}) + \vec{g}(\vec{q})
+				\ddot{\vec{q}}_t^{\,\mathrm{ref}} & = \mat{K}_P (\vec{q}_d - \vec{q}_t) + \mat{K}_D (\dot{\vec{q}}_d - \dot{\vec{q}}_t) + \ddot{\vec{q}}_d      \\
+				\vec{u}_t                         & = \mat{M}(\vec{q}_t) \ddot{\vec{q}}_t^{\,\mathrm{ref}} + \vec{c}(\vec{q}, \dot{\vec{q}}) + \vec{g}(\vec{q})
 			\end{align*}
 			A major drawback is of course that this needs an accurate model of the dynamics!
 		% end
@@ -530,9 +530,9 @@
 		\subsection{Feedforward Control}
 			In feedforward control, it is assumed that \( \vec{q}_t \approx \vec{q}_d \) and \( \dot{\vec{q}}_t \approx \dot{\vec{q}}_d \). This directly yields the following control law:
 			\begin{align*}
-				\vec{u}_t^\mathrm{FF} &= \mat{M}(\vec{q}_d) \ddot{\vec{q}}_d + \vec{c}(\vec{q}_d, \dot{\vec{q}}_d) + \vec{g}(\vec{q}_d) \\
-				\vec{u}_t^\mathrm{FB} &= \mat{K}_P (\vec{q}_d - \vec{q}) + \mat{K}_D (\dot{\vec{q}}_d - \dot{\vec{q}}) \\
-				\vec{u}_t &= \vec{u}_t^\mathrm{FF} + \vec{u}_t^\mathrm{FB}
+				\vec{u}_t^\mathrm{FF} & = \mat{M}(\vec{q}_d) \ddot{\vec{q}}_d + \vec{c}(\vec{q}_d, \dot{\vec{q}}_d) + \vec{g}(\vec{q}_d) \\
+				\vec{u}_t^\mathrm{FB} & = \mat{K}_P (\vec{q}_d - \vec{q}) + \mat{K}_D (\dot{\vec{q}}_d - \dot{\vec{q}})                  \\
+				\vec{u}_t             & = \vec{u}_t^\mathrm{FF} + \vec{u}_t^\mathrm{FB}
 			\end{align*}
 			As the inverse model does not play such a high role in feedforward control, it can also be used if the model is only approximate or even bad. Hence, feedforward control is highly relevant in practice as models are often not so good that model-based feedback control can be used. Additionally, it is often possible to pre-compute the feedforward terms \( \vec{u}_t^\mathrm{FF} \) such that less real-time computations are needed.
 		% end
@@ -570,11 +570,11 @@
 				Under the assumption that the robot is not too far away from the solution, it is possible to also set desired task space velocities whilst finding the smallest \( \dot{\vec{q}}_d \) that keeps that velocity. This can be formulated as the optimization problem
 				\begin{equation}
 					\begin{aligned}
-						\dot{\vec{q}}_d = \arg\min_{\dot{\vec{q}}} \,& \frac{1}{2} \dot{\vec{q}}^T \dot{\vec{q}} \\
-						\mathrm{s.t.} \quad&
-							\begin{aligned}[t]
-								\mat{J}(\vec{q}) \dot{\vec{q}} &= \dot{\vec{x}}_d
-							\end{aligned}
+						\dot{\vec{q}}_d = \arg\min_{\dot{\vec{q}}} \, & \frac{1}{2} \dot{\vec{q}}^T \dot{\vec{q}} \\
+						\mathrm{s.t.} \quad                           &
+						\begin{aligned}[t]
+							\mat{J}(\vec{q}) \dot{\vec{q}} & = \dot{\vec{x}}_d
+						\end{aligned}
 					\end{aligned}  \label{eq:jacobianPseudoInverseOptProblem}
 				\end{equation}
 				This can be solved with Lagrangian optimization with the multipliers \( \vec{\lambda} \). For brevity, let \( \mat{J} \coloneqq \mat{J}(\vec{q}) \). Given the Lagrangian
@@ -589,15 +589,15 @@
 				\end{equation}
 				Inserting this into the Lagrangian, taking the derivative w.r.t. \( \vec{\lambda} \) and setting it to zero then yields the solution of the optimization problem:
 				\begin{align*}
-					&& \mathcal{L} &= \frac{1}{2} \dot{\vec{q}}^T \dot{\vec{q}} - \vec{\lambda}^T \big( \mat{J} \dot{\vec{q}} - \dot{\vec{x}}_d \big) = \frac{1}{2} \vec{\lambda}^T \mat{J} \mat{J}^T \vec{\lambda} - \vec{\lambda}^T \big( \mat{J} \mat{J}^T \vec{\lambda} - \dot{\vec{x}}_d \big) \\
-					\implies && \pdv{\mathcal{L}}{\vec{\lambda}} &= \mat{J} \mat{J}^T \vec{\lambda} - 2 \mat{J} \mat{J}^T \vec{\lambda} + \dot{\vec{x}}_d = -\mat{J} \mat{J}^T \vec{\lambda} + \dot{\vec{x}}_d \overset{!}{=} 0 \\
-					\implies && \vec{\lambda} &= \big( \mat{J} \mat{J}^T \big)^{-1} \dot{\vec{x}}_d
+					         &  & \mathcal{L}                      & = \frac{1}{2} \dot{\vec{q}}^T \dot{\vec{q}} - \vec{\lambda}^T \big( \mat{J} \dot{\vec{q}} - \dot{\vec{x}}_d \big) = \frac{1}{2} \vec{\lambda}^T \mat{J} \mat{J}^T \vec{\lambda} - \vec{\lambda}^T \big( \mat{J} \mat{J}^T \vec{\lambda} - \dot{\vec{x}}_d \big) \\
+					\implies &  & \pdv{\mathcal{L}}{\vec{\lambda}} & = \mat{J} \mat{J}^T \vec{\lambda} - 2 \mat{J} \mat{J}^T \vec{\lambda} + \dot{\vec{x}}_d = -\mat{J} \mat{J}^T \vec{\lambda} + \dot{\vec{x}}_d \overset{!}{=} 0                                                                                                   \\
+					\implies &  & \vec{\lambda}                    & = \big( \mat{J} \mat{J}^T \big)^{-1} \dot{\vec{x}}_d
 				\end{align*}
 				Plugging this result back into \eqref{eq:jacobianPseudoInversePartial} yields the desired joint velocity and the solution of the optimization problem:
 				\begin{equation*}
 					\dot{\vec{q}}_d
-						= \underbrace{\mat{J}^T \big( \mat{J} \mat{J}^T \big)^{-1}}_{\mat{J}^\dagger} \dot{\vec{x}}_d
-						\doteq \mat{J}^\dagger \dot{\vec{x}}_d
+					= \underbrace{\mat{J}^T \big( \mat{J} \mat{J}^T \big)^{-1}}_{\mat{J}^\dagger} \dot{\vec{x}}_d
+					\doteq \mat{J}^\dagger \dot{\vec{x}}_d
 				\end{equation*}
 			% end
 		% end
@@ -611,10 +611,10 @@
 			\begin{equation*}
 				\begin{aligned}
 					\dot{\vec{q}}_d = \arg\min_{\dot{\vec{q}}} \, & \frac{1}{2} (\dot{\vec{q}} - \dot{\vec{q}}_0)^T (\dot{\vec{q}} - \dot{\vec{q}}_0) \\
-					\mathrm{s.t.} \quad&
-						\begin{aligned}[t]
-							\mat{J}(\vec{q}) \dot{\vec{q}} &= \dot{\vec{x}}_d
-						\end{aligned}
+					\mathrm{s.t.} \quad                           &
+					\begin{aligned}[t]
+						\mat{J}(\vec{q}) \dot{\vec{q}} & = \dot{\vec{x}}_d
+					\end{aligned}
 				\end{aligned}
 			\end{equation*}
 			The result of this optimization problem is
@@ -632,13 +632,13 @@
 			There is a whole class of so-called \emph{operational space control laws}, i.e. task-space control laws, that can all be derived from the following most general optimization problem:
 			\begin{equation*}
 				\begin{aligned}
-					\min_{\vec{u}} \,& \frac{1}{2} (\vec{u} - \vec{u}_0)^T (\vec{u} - \vec{u}_0) \\
-					\mathrm{s.t.} \quad&
-						\begin{aligned}[t]
-							\mat{A}(\vec{q}, \dot{\vec{q}}, t) \ddot{\vec{q}} &= \dot{\vec{b}}(\vec{q}, \dot{\vec{q}}, t) \\
-							                                        \vec{u}_0 &= \vec{g}(\vec{q}, \dot{\vec{q}}, t) \\
-							                  \mat{M}(\vec{q}) \ddot{\vec{q}} &= \vec{u} + \vec{c}(\vec{q}, \dot{\vec{q}}) + \vec{g}(\vec{q})
-						\end{aligned}
+					\min_{\vec{u}} \,   & \frac{1}{2} (\vec{u} - \vec{u}_0)^T (\vec{u} - \vec{u}_0) \\
+					\mathrm{s.t.} \quad &
+					\begin{aligned}[t]
+						\mat{A}(\vec{q}, \dot{\vec{q}}, t) \ddot{\vec{q}} & = \dot{\vec{b}}(\vec{q}, \dot{\vec{q}}, t)                     \\
+						\vec{u}_0                                         & = \vec{g}(\vec{q}, \dot{\vec{q}}, t)                           \\
+						\mat{M}(\vec{q}) \ddot{\vec{q}}                   & = \vec{u} + \vec{c}(\vec{q}, \dot{\vec{q}}) + \vec{g}(\vec{q})
+					\end{aligned}
 				\end{aligned}
 			\end{equation*}
 		% end
@@ -1048,8 +1048,8 @@
 			\subsubsection{Value and State-Action Value Functions}
 				To assess the "quality" of a state or state-action pair, two functions are defined: The value and the state-action value functions, where the latter is often called the Q-function. For some policy \(\pi\), they are defined as follows:
 				\begin{align*}
-					V_t^\pi(\vec{s})          &= \E_{p, \pi}\Bigg[ \sum_{\tau = t}^{T} r_\tau(\vec{s}_\tau, \vec{a}_\tau) \Bigggiven \vec{s}_t = \vec{s} \Bigg]                        \\
-					Q_t^\pi(\vec{s}, \vec{a}) &= \E_{p, \pi}\Bigg[ \sum_{\tau = t}^{T} r_\tau(\vec{s}_\tau, \vec{a}_\tau) \Bigggiven \vec{s}_t = \vec{s},\, \vec{a}_t = \vec{a} \Bigg]
+					V_t^\pi(\vec{s})          & = \E_{p, \pi}\Bigg[ \sum_{\tau = t}^{T} r_\tau(\vec{s}_\tau, \vec{a}_\tau) \Bigggiven \vec{s}_t = \vec{s} \Bigg]                        \\
+					Q_t^\pi(\vec{s}, \vec{a}) & = \E_{p, \pi}\Bigg[ \sum_{\tau = t}^{T} r_\tau(\vec{s}_\tau, \vec{a}_\tau) \Bigggiven \vec{s}_t = \vec{s},\, \vec{a}_t = \vec{a} \Bigg]
 				\end{align*}
 				The intuition of these functions is as follows:
 				\begin{description}[leftmargin = 3.5cm]
@@ -1059,8 +1059,8 @@
 				Given the optimal policy \( \pi^\ast \), i.e. the policy that maximizes \eqref{eq:expectedLongTermReward}, the respective value and Q-functions are usually called \( V_t^\ast \) and \( Q_t^\ast \). For the optimal policy, the value and Q-function can be calculated from each other straightforwardly:
 				\begin{equation*}
 					\begin{aligned}
-						V_t^\ast(\vec{s})          &= \max_{\vec{a}} \, Q_t^\ast(\vec{s}, \vec{a}) \\
-						Q_t^\ast(\vec{s}, \vec{a}) &= r_t(\vec{s}, \vec{a}) + \E_{\vec{s}' \sim p(\cdot \given \vec{s}, \vec{a})}\big[ V_{t + 1}^\ast(\vec{s}') \big]
+						V_t^\ast(\vec{s})          & = \max_{\vec{a}} \, Q_t^\ast(\vec{s}, \vec{a})                                                                    \\
+						Q_t^\ast(\vec{s}, \vec{a}) & = r_t(\vec{s}, \vec{a}) + \E_{\vec{s}' \sim p(\cdot \given \vec{s}, \vec{a})}\big[ V_{t + 1}^\ast(\vec{s}') \big]
 					\end{aligned}  \label{eq:valueQFuncRelations}
 				\end{equation*}
 			% end
@@ -1113,13 +1113,13 @@
 			\end{equation*}
 			analogous to the objective for the finite horizon \eqref{eq:expectedLongTermReward}. The value and state-action value functions are defined accordingly as
 			\begin{align*}
-				V^\pi(\vec{s}) &= \E_{p, \pi}\Bigg[ \sum_{t = 1}^{\infty} \gamma^t r(\vec{s}_t, \vec{a}_t) \Bigggiven \vec{s}_1 = \vec{s} \Bigg] \\
-				Q^\pi(\vec{s}, \vec{a}) &= \E_{p, \pi}\Bigg[ \sum_{t = 1}^{\infty} \gamma^t r(\vec{s}_t, \vec{a}_t) \Bigggiven \vec{s}_1 = \vec{s},\, \vec{a}_1 = \vec{a} \Bigg]\!,
+				V^\pi(\vec{s})          & = \E_{p, \pi}\Bigg[ \sum_{t = 1}^{\infty} \gamma^t r(\vec{s}_t, \vec{a}_t) \Bigggiven \vec{s}_1 = \vec{s} \Bigg]                           \\
+				Q^\pi(\vec{s}, \vec{a}) & = \E_{p, \pi}\Bigg[ \sum_{t = 1}^{\infty} \gamma^t r(\vec{s}_t, \vec{a}_t) \Bigggiven \vec{s}_1 = \vec{s},\, \vec{a}_1 = \vec{a} \Bigg]\!,
 			\end{align*}
 			with the relations
 			\begin{align*}
-				V^\pi(\vec{s}) &= \E_\pi\big[ Q^\pi(\vec{s}, \vec{a}) \biggiven \vec{a} \big] \\
-				Q^\pi(\vec{s}, \vec{a}) &= r(\vec{s}, \vec{a}) + \gamma \E_{\vec{s}' \sim p(\cdot \given \vec{s}, \vec{a})}\big[ V^\pi(\vec{s}') \big]
+				V^\pi(\vec{s})          & = \E_\pi\big[ Q^\pi(\vec{s}, \vec{a}) \biggiven \vec{a} \big]                                                 \\
+				Q^\pi(\vec{s}, \vec{a}) & = r(\vec{s}, \vec{a}) + \gamma \E_{\vec{s}' \sim p(\cdot \given \vec{s}, \vec{a})}\big[ V^\pi(\vec{s}') \big]
 			\end{align*}
 			between them. These are analogous to the finite-horizon case relations in \eqref{eq:valueQFuncRelations}, however in the last formula the expectation is multiplied with the discount factor. Also the maximization in the first equation was replaced with an expectation as now the policy might be suboptimal. In the finite case, only the optimal policy was used which equals using the maximum operator.
 
@@ -1152,10 +1152,10 @@
 				The process of policy evaluation is shown in \autoref{alg:policyEvaluation}. The main difference is that the value and Q-functions are not the optimal ones any more but the ones for the given policy \(\pi\). This results in the computation of the value function on \autoref{algline:policyEvaluationInfiniteHorizon-vComputation} to become an expectation (the policy is not optimal anymore and so is the Q-function, so using the maximum action would be wrong). The next step for policy iteration is to improve the policy by taking the actions with the highest quality. This corresponds to choosing the policy as
 				\begin{equation*}
 					\pi(\vec{a} \given \vec{s}) =
-						\begin{cases}
-							1 & \text{if } \vec{a} = \arg\max_{\vec{a}'} \, Q^\pi(\vec{s}, \vec{a}') \\
-							0 & \text{otherwise}
-						\end{cases}
+					\begin{cases}
+						1 & \text{if } \vec{a} = \arg\max_{\vec{a}'} \, Q^\pi(\vec{s}, \vec{a}') \\
+						0 & \text{otherwise}
+					\end{cases}
 				\end{equation*}
 				where \( Q^\pi \) is the Q-function found via policy evaluation. Putting it all together, policy iteration is shown in \autoref{alg:policyIteration}.
 
@@ -1188,11 +1188,11 @@
 						}
 						\tcp{Improve policy for all \( \vec{s} \in \mathcal{S} \) and \( \vec{a} \in \mathcal{A} \):}
 						\(
-							\pi(\vec{a} \given \vec{s}) =
-								\begin{cases}
-									1 & \text{if } \vec{a} = \arg\max_{\vec{a}'} \, Q^\pi(\vec{s}, \vec{a}') \\
-									0 & \text{otherwise}
-								\end{cases}
+						\pi(\vec{a} \given \vec{s}) =
+						\begin{cases}
+							1 & \text{if } \vec{a} = \arg\max_{\vec{a}'} \, Q^\pi(\vec{s}, \vec{a}') \\
+							0 & \text{otherwise}
+						\end{cases}
 						\)
 					}
 					\Return \( \pi \) \;
@@ -1271,17 +1271,17 @@
 					firstly the expectation has to be computed. By assuming a quadratic structure for the value function of time step \(t + 1\), i.e. \( V_{t + 1}^\ast(\vec{x}) = -(\vec{x} - \vec{x}_d)^T \mat{V}_{t + 1} (\vec{x} - \vec{x}_d) \) with a symmetric and positive-definite \( \mat{V}_{t + 1} \), the expectation becomes
 					\begin{align*}
 						\E_{\vec{x}' \sim p(\cdot \given \vec{x}, \vec{u})}\big[ V_{t + 1}^\ast(\vec{x}') \biggiven \vec{x}, \vec{u} \big]
-							&= \int\! V_{t + 1}^\ast(\vec{x}') \, p(\vec{x}' \given \vec{x}, \vec{u}) \dd{\vec{x}'} \\
-							&= - \int\! (\vec{x} - \vec{x}_d)^T \mat{V}_{t + 1} (\vec{x} - \vec{x}_d) \, \mathcal{N}\big(\vec{x}' \biggiven \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t,\, \mat{\Sigma}_t \big) \dd{\vec{x}'} \\
-							&= -\big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big)^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big) - \tr(\mat{V}_{t + 1} \mat{\Sigma}_t)
+						 & = \int\! V_{t + 1}^\ast(\vec{x}') \, p(\vec{x}' \given \vec{x}, \vec{u}) \dd{\vec{x}'}                                                                                                                             \\
+						 & = - \int\! (\vec{x} - \vec{x}_d)^T \mat{V}_{t + 1} (\vec{x} - \vec{x}_d) \, \mathcal{N}\big(\vec{x}' \biggiven \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t,\, \mat{\Sigma}_t \big) \dd{\vec{x}'}           \\
+						 & = -\big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big)^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big) - \tr(\mat{V}_{t + 1} \mat{\Sigma}_t)
 					\end{align*}
 					where in the last step equation (380) from the \matrixcookbook was used. Plugging in the reward function yields the Q-function:
 					\begin{equation*}
 						\begin{aligned}
 							Q_t^\ast(\vec{x}, \vec{u}) =
-								&\, -(\vec{x} - \vec{x}_d)^T \mat{R}_t (\vec{x} - \vec{x}_d) - \vec{u}^T \mat{H}_t \vec{u} \\
-								&\, -\big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big)^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big) \\
-								&\, -\tr(\mat{V}_{t + 1} \mat{\Sigma}_t)
+							 & \, -(\vec{x} - \vec{x}_d)^T \mat{R}_t (\vec{x} - \vec{x}_d) - \vec{u}^T \mat{H}_t \vec{u}                                                                                     \\
+							 & \, -\big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big)^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big) \\
+							 & \, -\tr(\mat{V}_{t + 1} \mat{\Sigma}_t)
 						\end{aligned}  \label{eq:qFunctionLQR}
 					\end{equation*}
 				% end
@@ -1289,11 +1289,11 @@
 				\paragraph{3. Compute the Optimal Policy}
 					Computing the optimal policy is done by maximizing the Q-function w.r.t. the action \(\vec{u}\). This means taking the derivative of \eqref{eq:qFunctionLQR} and setting it to zero:
 					\begin{align*}
-						&& \pdv{\vec{u}} Q_t^\ast(\vec{x}, \vec{u})
-							&= -2 \mat{H}_t \vec{u} - 2 \mat{B}_t^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big) & \\
-						&&	&= -2 \mat{H}_t \vec{u} - 2 \mat{B}_t^T \mat{V}_{t + 1} \mat{A}_t \vec{x} - 2 \mat{B}_t^T \mat{V}_{t + 1} \mat{B}_t \vec{u}_t - 2 \mat{B}_t^T \mat{V}_{t + 1} \vec{b}_t + 2 \mat{B}_t^T \mat{V}_{t + 1} \vec{x}_d & \\
-						&&	&= -2 \big( \mat{H}_t + \mat{B}_t^T \mat{V}_{t + 1} \mat{B}_t \big) \vec{u} - 2 \mat{B}_t^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \vec{b}_t - \vec{x}_d \big) \overset{!}{=} \vec{0} & \\
-						\implies && \pi_t^\ast(\vec{x}) = \vec{u}^\ast &= -\big( \mat{H}_t + \mat{B}_t^T \mat{V}_{t + 1} \mat{B}_t \big)^{-1} \mat{B}_t^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \vec{b}_t - \vec{x}_d \big) &
+						         &                                                                                                                                    & \pdv{\vec{u}} Q_t^\ast(\vec{x}, \vec{u})
+						         & = -2 \mat{H}_t \vec{u} - 2 \mat{B}_t^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \mat{B}_t \vec{u}_t + \vec{b}_t - \vec{x}_d \big) &                                                                                                                                                                                                                                                               \\
+						         &                                                                                                                                    &                                          & = -2 \mat{H}_t \vec{u} - 2 \mat{B}_t^T \mat{V}_{t + 1} \mat{A}_t \vec{x} - 2 \mat{B}_t^T \mat{V}_{t + 1} \mat{B}_t \vec{u}_t - 2 \mat{B}_t^T \mat{V}_{t + 1} \vec{b}_t + 2 \mat{B}_t^T \mat{V}_{t + 1} \vec{x}_d & \\
+						         &                                                                                                                                    &                                          & = -2 \big( \mat{H}_t + \mat{B}_t^T \mat{V}_{t + 1} \mat{B}_t \big) \vec{u} - 2 \mat{B}_t^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \vec{b}_t - \vec{x}_d \big) \overset{!}{=} \vec{0}                          & \\
+						\implies &                                                                                                                                    & \pi_t^\ast(\vec{x}) = \vec{u}^\ast       & = -\big( \mat{H}_t + \mat{B}_t^T \mat{V}_{t + 1} \mat{B}_t \big)^{-1} \mat{B}_t^T \mat{V}_{t + 1} \big( \mat{A}_t \vec{x} + \vec{b}_t - \vec{x}_d \big)                                                          &
 					\end{align*}
 					% TODO: What about v_t?
 				% end
@@ -1426,37 +1426,37 @@
 		The simplest idea for approximating nonlinear systems is to locally linearize them. This means Taylor-expanding the dynamics \( \vec{x}_{t + 1} = \vec{f}_t(\vec{x}_t, \vec{a}_t) \) around a point \( (\tilde{\vec{x}}_t, \tilde{\vec{u}}_t) \) as
 		\begin{equation*}
 			\vec{f}_t(\vec{x}, \vec{u})
-				\approx \underbrace{\vec{f}_t(\tilde{\vec{x}}_t, \tilde{\vec{u}}_t)}_{\tilde{\vec{f}}_t \,\coloneqq}
-					+ \underbrace{\pdv{\vec{f}_t}{\vec{x}} \bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t}}_{\mat{B}_t \,\coloneqq} \vec{\Delta x}_t
-					+ \underbrace{\pdv{\vec{f}_t}{\vec{u}} \bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t}}_{\mat{B}_t \,\coloneqq} \vec{\Delta u}_t
-				\doteq \tilde{\vec{f}}_t + \mat{A}_t \vec{\Delta x}_t + \mat{B}_t \vec{\Delta u}_t
+			\approx \underbrace{\vec{f}_t(\tilde{\vec{x}}_t, \tilde{\vec{u}}_t)}_{\tilde{\vec{f}}_t \,\coloneqq}
+			+ \underbrace{\pdv{\vec{f}_t}{\vec{x}} \bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t}}_{\mat{B}_t \,\coloneqq} \vec{\Delta x}_t
+			+ \underbrace{\pdv{\vec{f}_t}{\vec{u}} \bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t}}_{\mat{B}_t \,\coloneqq} \vec{\Delta u}_t
+			\doteq \tilde{\vec{f}}_t + \mat{A}_t \vec{\Delta x}_t + \mat{B}_t \vec{\Delta u}_t
 		\end{equation*}
 		with \( \vec{\Delta x}_t \coloneqq \vec{x}_t - \tilde{\vec{x}}_t \) and \( \vec{\Delta u}_t \coloneqq \vec{u}_t - \tilde{\vec{u}}_t \). Similarly the reward can be linearized using a second-order Taylor expansion
 		\begin{align*}
 			r_t(\vec{x}_t, \vec{u}_t) \approx\,
-					&\eqmakebox[optimalControlApproxNonLin][l]{\(\underbrace{r_t(\tilde{\vec{x}}_t, \tilde{\vec{u}}_t)}_{\mathclap{r_t \,\coloneqq}}\)} + \pdv{r_t}{\vec{x}}\bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t} \vec{\Delta x}_t + \vec{\Delta x}_t^T \pdv[2]{r_t}{\vec{x}}\bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t} \vec{\Delta x}_t \\
-					&\eqmakebox[optimalControlApproxNonLin][l]{} + \pdv{r_t}{\vec{u}}\bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t} \vec{\Delta u}_t + \vec{\Delta u}_t^T \pdv[2]{r_t}{\vec{u}}\bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t} \vec{\Delta u}_t \\
-					&\eqmakebox[optimalControlApproxNonLin][l]{} + \vec{\Delta x}_t^T \pdv{r_t}{\vec{x}}{\vec{u}}\bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t} \vec{\Delta u}_t + \vec{\Delta u}_t^T \pdv{r_t}{\vec{u}}{\vec{x}}\bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t} \vec{\Delta x}_t \\
-				\doteq\,& r_t +
-					\begin{bmatrix}
-						\vec{\Delta x}_t^T & \vec{\Delta u}_t^T
-					\end{bmatrix}
-					\begin{bmatrix}
-						r_t^{\vec{x}} \\
-						r_t^{\vec{u}}
-					\end{bmatrix}
-					+
-					\begin{bmatrix}
-						\vec{\Delta x}_t^T & \vec{\Delta u}_t^T
-					\end{bmatrix}
-					\underbrace{\begin{bmatrix}
-						r_t^{\vec{x} \vec{x}} & r_t^{\vec{x} \vec{u}} \\
-						r_t^{\vec{x} \vec{u}, T} & r_t^{\vec{u} \vec{u}}
-					\end{bmatrix}}_{\mat{R} \,\coloneqq}
-					\begin{bmatrix}
-						\vec{\Delta x}_t \\
-						\vec{\Delta u}_t
-					\end{bmatrix}
+			         & \eqmakebox[optimalControlApproxNonLin][l]{\(\underbrace{r_t(\tilde{\vec{x}}_t, \tilde{\vec{u}}_t)}_{\mathclap{r_t \,\coloneqq}}\)} + \pdv{r_t}{\vec{x}}\bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t} \vec{\Delta x}_t + \vec{\Delta x}_t^T \pdv[2]{r_t}{\vec{x}}\bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t} \vec{\Delta x}_t \\
+			         & \eqmakebox[optimalControlApproxNonLin][l]{} + \pdv{r_t}{\vec{u}}\bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t} \vec{\Delta u}_t + \vec{\Delta u}_t^T \pdv[2]{r_t}{\vec{u}}\bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t} \vec{\Delta u}_t                                                                                        \\
+			         & \eqmakebox[optimalControlApproxNonLin][l]{} + \vec{\Delta x}_t^T \pdv{r_t}{\vec{x}}{\vec{u}}\bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t} \vec{\Delta u}_t + \vec{\Delta u}_t^T \pdv{r_t}{\vec{u}}{\vec{x}}\bigg\vert_{\vec{x} = \tilde{\vec{x}}_t,\, \vec{u} = \tilde{\vec{u}}_t} \vec{\Delta x}_t                                                      \\
+			\doteq\, & r_t +
+			\begin{bmatrix}
+				\vec{\Delta x}_t^T & \vec{\Delta u}_t^T
+			\end{bmatrix}
+			\begin{bmatrix}
+				r_t^{\vec{x}} \\
+				r_t^{\vec{u}}
+			\end{bmatrix}
+			+
+			\begin{bmatrix}
+				\vec{\Delta x}_t^T & \vec{\Delta u}_t^T
+			\end{bmatrix}
+			\underbrace{\begin{bmatrix}
+					            r_t^{\vec{x} \vec{x}}    & r_t^{\vec{x} \vec{u}} \\
+					            r_t^{\vec{x} \vec{u}, T} & r_t^{\vec{u} \vec{u}}
+				            \end{bmatrix}}_{\mat{R} \,\coloneqq}
+			\begin{bmatrix}
+				\vec{\Delta x}_t \\
+				\vec{\Delta u}_t
+			\end{bmatrix}
 		\end{align*}
 		with the gradients \( r_t^{\vec{x}} \) and \( r_t^{\vec{u}} \) and Hessians \( r_t^{\vec{x} \vec{x}} \), \( r_t^{\vec{u} \vec{u}} \), and \( r_t^{\vec{x} \vec{u}} \) w.r.t. the respective parameters evaluated at \( (\tilde{\vec{x}}_t, \tilde{\vec{u}}_t) \).
 
@@ -1470,11 +1470,11 @@
 			The first- and second-order derivatives are therefore:
 			\begin{equation}
 				\begin{aligned}
-					Q_t^{\vec{x}} \coloneqq \pdv{Q_t}{\vec{x}} &= \pdv{r_t}{\vec{x}} + \pdv{\vec{f}_t}{\vec{x}} \pdv{V_{t + 1}}{\vec{s}} \\
-					Q_t^{\vec{u}} \coloneqq \pdv{Q_t}{\vec{u}} &= \pdv{r_t}{\vec{u}} + \pdv{\vec{f}_t}{\vec{u}} \pdv{V_{t + 1}}{\vec{s}} \\
-					Q_t^{\vec{x} \vec{x}} \coloneqq \pdv[2]{Q_t}{\vec{x}} &= \pdv[2]{r_t}{\vec{x}} + \bigg(\! \pdv{\vec{f}_t}{\vec{x}} \!\bigg)^{\!T} \pdv[2]{V_{t + 1}}{\vec{x}} \pdv{\vec{f}_t}{\vec{x}} + \pdv{V_{t + 1}}{\vec{s}} \cdot \pdv[2]{\vec{f}_t}{\vec{x}} \\
-					Q_t^{\vec{x} \vec{u}} \coloneqq \pdv[2]{Q_t}{\vec{u}} &= \pdv[2]{r_t}{\vec{u}} + \bigg(\! \pdv{\vec{f}_t}{\vec{u}} \!\bigg)^{\!T} \pdv[2]{V_{t + 1}}{\vec{u}} \pdv{\vec{f}_t}{\vec{u}} + \pdv{V_{t + 1}}{\vec{s}} \cdot \pdv[2]{\vec{f}_t}{\vec{u}} \\
-					Q_t^{\vec{x} \vec{u}} \coloneqq \pdv{Q_t}{\vec{x}}{\vec{u}} &= \pdv{r_t}{\vec{x}}{\vec{u}} + \bigg(\! \pdv{\vec{f}_t}{\vec{x}} \!\bigg)^{\!T} \pdv{V_{t + 1}}{\vec{x}}{\vec{u}} \pdv{\vec{f}_t}{\vec{u}} + \pdv{V_{t + 1}}{\vec{x}} \cdot \pdv{\vec{f}_t}{\vec{x}}{\vec{u}}
+					Q_t^{\vec{x}} \coloneqq \pdv{Q_t}{\vec{x}}                  & = \pdv{r_t}{\vec{x}} + \pdv{\vec{f}_t}{\vec{x}} \pdv{V_{t + 1}}{\vec{s}}                                                                                                                                       \\
+					Q_t^{\vec{u}} \coloneqq \pdv{Q_t}{\vec{u}}                  & = \pdv{r_t}{\vec{u}} + \pdv{\vec{f}_t}{\vec{u}} \pdv{V_{t + 1}}{\vec{s}}                                                                                                                                       \\
+					Q_t^{\vec{x} \vec{x}} \coloneqq \pdv[2]{Q_t}{\vec{x}}       & = \pdv[2]{r_t}{\vec{x}} + \bigg(\! \pdv{\vec{f}_t}{\vec{x}} \!\bigg)^{\!T} \pdv[2]{V_{t + 1}}{\vec{x}} \pdv{\vec{f}_t}{\vec{x}} + \pdv{V_{t + 1}}{\vec{s}} \cdot \pdv[2]{\vec{f}_t}{\vec{x}}                   \\
+					Q_t^{\vec{x} \vec{u}} \coloneqq \pdv[2]{Q_t}{\vec{u}}       & = \pdv[2]{r_t}{\vec{u}} + \bigg(\! \pdv{\vec{f}_t}{\vec{u}} \!\bigg)^{\!T} \pdv[2]{V_{t + 1}}{\vec{u}} \pdv{\vec{f}_t}{\vec{u}} + \pdv{V_{t + 1}}{\vec{s}} \cdot \pdv[2]{\vec{f}_t}{\vec{u}}                   \\
+					Q_t^{\vec{x} \vec{u}} \coloneqq \pdv{Q_t}{\vec{x}}{\vec{u}} & = \pdv{r_t}{\vec{x}}{\vec{u}} + \bigg(\! \pdv{\vec{f}_t}{\vec{x}} \!\bigg)^{\!T} \pdv{V_{t + 1}}{\vec{x}}{\vec{u}} \pdv{\vec{f}_t}{\vec{u}} + \pdv{V_{t + 1}}{\vec{x}} \cdot \pdv{\vec{f}_t}{\vec{x}}{\vec{u}}
 				\end{aligned}  \label{eq:ddpDerivatives}
 			\end{equation}
 			These derivatives can now be used to solve the optimization problem
@@ -1484,60 +1484,60 @@
 			which describes the optimal action perturbation \( \vec{\delta u}^\ast \) at a point \( (\vec{x}, \vec{u}) \) with the Q-function for a perturbation defined as
 			\begin{align}
 				\tilde{Q}_t(\vec{\delta x}, \vec{\delta u})
-					\coloneqq&\, Q(\vec{x} + \vec{\delta x}, \vec{u} + \vec{\delta u}) - Q(\vec{x}, \vec{u})  \nonumber \\
-					=&\, r_t(\vec{x} + \vec{\delta x}, \vec{u} + \vec{\delta u}) - r_t(\vec{x}, \vec{u}) + V_{t + 1}\big( \vec{f}(\vec{x} + \vec{\delta x}, \vec{u} + \vec{\delta u}) \big) -  V_{t + 1}\big( \vec{f}(\vec{x}, \vec{u}) \big)  \nonumber \\
+				\coloneqq & \, Q(\vec{x} + \vec{\delta x}, \vec{u} + \vec{\delta u}) - Q(\vec{x}, \vec{u})  \nonumber                                                                                                                                          \\
+				=         & \, r_t(\vec{x} + \vec{\delta x}, \vec{u} + \vec{\delta u}) - r_t(\vec{x}, \vec{u}) + V_{t + 1}\big( \vec{f}(\vec{x} + \vec{\delta x}, \vec{u} + \vec{\delta u}) \big) -  V_{t + 1}\big( \vec{f}(\vec{x}, \vec{u}) \big)  \nonumber \\
 				\intertext{and the second-order Taylor approximation}
-					\approx&\, \frac{1}{2}
-						\begin{bmatrix}
-							1 & \vec{\delta x}^T & \vec{\delta u}^T
-						\end{bmatrix}
-						\begin{bmatrix}
-							0             & Q_t^{\vec{x}, T}      & Q_t^{\vec{u}, T}      \\
-							Q_t^{\vec{x}} & Q_t^{\vec{x} \vec{x}} & Q_t^{\vec{x} \vec{u}} \\
-							Q_t^{\vec{u}} & Q_t^{\vec{u} \vec{x}} & Q_t^{\vec{u} \vec{u}}
-						\end{bmatrix}
-						\begin{bmatrix}
-							1 \\
-							\vec{\delta x} \\
-							\vec{\delta u}
-						\end{bmatrix}  \label{eq:qTildeApprox}
+				\approx   & \, \frac{1}{2}
+				\begin{bmatrix}
+					1 & \vec{\delta x}^T & \vec{\delta u}^T
+				\end{bmatrix}
+				\begin{bmatrix}
+					0             & Q_t^{\vec{x}, T}      & Q_t^{\vec{u}, T}      \\
+					Q_t^{\vec{x}} & Q_t^{\vec{x} \vec{x}} & Q_t^{\vec{x} \vec{u}} \\
+					Q_t^{\vec{u}} & Q_t^{\vec{u} \vec{x}} & Q_t^{\vec{u} \vec{u}}
+				\end{bmatrix}
+				\begin{bmatrix}
+					1              \\
+					\vec{\delta x} \\
+					\vec{\delta u}
+				\end{bmatrix}  \label{eq:qTildeApprox}
 			\end{align}
 			This optimization problem can be solved in closed form by taking the derivative of the quadratic expansion \eqref{eq:qTildeApprox} and setting it to zero:
 			\begin{align}
-				&& \pdv{\tilde{Q}_t}{\vec{\delta u}}
-					&\approx
-						\begin{bmatrix}
-							0 & 0 & 1
-						\end{bmatrix}
-						\begin{bmatrix}
-							0             & Q_t^{\vec{x}, T}      & Q_t^{\vec{u}, T}      \\
-							Q_t^{\vec{x}} & Q_t^{\vec{x} \vec{x}} & Q_t^{\vec{x} \vec{u}} \\
-							Q_t^{\vec{u}} & Q_t^{\vec{u} \vec{x}} & Q_t^{\vec{u} \vec{u}}
-						\end{bmatrix}
-						\begin{bmatrix}
-							1 \\
-							\vec{\delta x} \\
-							\vec{\delta u}
-						\end{bmatrix}
-					=
-						\begin{bmatrix}
-							Q_t^{\vec{u}} & Q_t^{\vec{u} \vec{x}} & Q_t^{\vec{u} \vec{u}}
-						\end{bmatrix}
-						\begin{bmatrix}
-							1 \\
-							\vec{\delta x} \\
-							\vec{\delta u}
-						\end{bmatrix} &  \nonumber \\
-					&&&= Q_t^{\vec{u}} + Q_t^{\vec{u} \vec{x}} \vec{\delta x} + Q_t^{\vec{u} \vec{u}} \vec{\delta u} \vec{\delta u} \overset{!}{=} \vec{0}  \nonumber \\
-				\implies && Q_t^{\vec{u} \vec{u}} \vec{\delta u} &= -Q_t^{\vec{u}} - Q_t^{\vec{u} \vec{x}} \vec{\delta x} &  \nonumber \\
-				\iff && \vec{\delta u}^\ast &= -\big(Q_t^{\vec{u} \vec{u}}\big)^{-1} \big(Q_t^{\vec{u}} + Q_t^{\vec{u} \vec{x}} \vec{\delta x}\big) \doteq \vec{k}_t + \mat{K}_t \vec{\delta x} &  \label{eq:ddpFeedbackControlLaw}
+				                  &           & \pdv{\tilde{Q}_t}{\vec{\delta u}}
+				                  & \approx
+				\begin{bmatrix}
+					0 & 0 & 1
+				\end{bmatrix}
+				\begin{bmatrix}
+					0             & Q_t^{\vec{x}, T}      & Q_t^{\vec{u}, T}      \\
+					Q_t^{\vec{x}} & Q_t^{\vec{x} \vec{x}} & Q_t^{\vec{x} \vec{u}} \\
+					Q_t^{\vec{u}} & Q_t^{\vec{u} \vec{x}} & Q_t^{\vec{u} \vec{u}}
+				\end{bmatrix}
+				\begin{bmatrix}
+					1              \\
+					\vec{\delta x} \\
+					\vec{\delta u}
+				\end{bmatrix}
+				=
+				\begin{bmatrix}
+					Q_t^{\vec{u}} & Q_t^{\vec{u} \vec{x}} & Q_t^{\vec{u} \vec{u}}
+				\end{bmatrix}
+				\begin{bmatrix}
+					1              \\
+					\vec{\delta x} \\
+					\vec{\delta u}
+				\end{bmatrix} & \nonumber                                                                                                                                                                                                                                    \\
+				                  &           &                                      & = Q_t^{\vec{u}} + Q_t^{\vec{u} \vec{x}} \vec{\delta x} + Q_t^{\vec{u} \vec{u}} \vec{\delta u} \vec{\delta u} \overset{!}{=} \vec{0}  \nonumber                                        \\
+				\implies          &           & Q_t^{\vec{u} \vec{u}} \vec{\delta u} & = -Q_t^{\vec{u}} - Q_t^{\vec{u} \vec{x}} \vec{\delta x}                                                                                            & \nonumber                        \\
+				\iff              &           & \vec{\delta u}^\ast                  & = -\big(Q_t^{\vec{u} \vec{u}}\big)^{-1} \big(Q_t^{\vec{u}} + Q_t^{\vec{u} \vec{x}} \vec{\delta x}\big) \doteq \vec{k}_t + \mat{K}_t \vec{\delta x} & \label{eq:ddpFeedbackControlLaw}
 			\end{align}
 			Here, \( \vec{k}_t \coloneqq -\big(Q_t^{\vec{u} \vec{u}}\big)^{-1} Q_t^{\vec{u}} \) and \( \mat{K}_t \coloneqq -\big(Q_t^{\vec{u} \vec{u}}\big)^{-1} Q_t^{\vec{u} \vec{x}} \vec{\delta x} \). Plugging this result back into \eqref{eq:qTildeApprox} yields a quadratic model for the value function:
 			\begin{align*}
 				V_t(\vec{x}) = -\frac{1}{2} \vec{k}_t^T Q_t^{\vec{u} \vec{u}} \vec{k}
-				&&
+				 &  &
 				V_t^{\vec{x}}(\vec{x}) = Q_t^{\vec{x}} - \mat{K}_t^T Q_t^{\vec{u} \vec{u}} \vec{k}
-				&&
+				 &  &
 				V_t^{\vec{x} \vec{x}}(\vec{x}) = Q_t^{\vec{x} \vec{x}} - \mat{K}^T Q_t^{\vec{u} \vec{u}} \mat{K}
 			\end{align*}
 			This can be iterated backwards in time to compute a local approximation of the value function.
@@ -1751,13 +1751,13 @@
 			The delta function (an \emph{impulse}) is widely used in physics and signal processing. It is defined to have the following properties:
 			\begin{align*}
 				\delta(t - \tau) =
-					\begin{cases}
-						1 & \text{if } t = \tau \\
-						0 & \text{otherwise}
-					\end{cases}
-				&&
+				\begin{cases}
+					1 & \text{if } t = \tau \\
+					0 & \text{otherwise}
+				\end{cases}
+				 &  &
 				\int_{-\infty}^{\infty} \! \delta(t - \tau) \dd{t} = 1
-				&&
+				 &  &
 				\int_{-\infty}^{\infty} \! f(t) \delta(t - \tau) \dd{t} = f(\tau)
 			\end{align*}
 			Impulse functions can be used to approximate an arbitrary function as a sequence of impulses as
@@ -1771,11 +1771,11 @@
 			The step function (also called \emph{Heaviside step function}) is closely related to the impulse, however ot contains a jump and is defined as:
 			\begin{align*}
 				\mathit{step}(t - \tau) =
-					\begin{cases}
-						1 & \text{if } t \geq \tau \\
-						0 & \text{otherwise}
-					\end{cases}
-				&&
+				\begin{cases}
+					1 & \text{if } t \geq \tau \\
+					0 & \text{otherwise}
+				\end{cases}
+				 &  &
 				\dv{t} \mathit{step}(t - \tau) = \delta(t - \tau)
 			\end{align*}
 			Similarly to the impulse, the step function can be used to represent digital (quantized) signals.
@@ -1832,8 +1832,8 @@
 
 			Linear Gaussian dynamical systems are given as linear state transitions in an unobserved (latent) space \(\vec{x}_t\) from which measurements \(\vec{y}_t\) are taken (also linearly). Both of these parts underlie additive Gaussian noise, forming the following probabilistic model
 			\begin{align*}
-				p(\vec{x}_{t + 1} \given \vec{x}_t) &= \mathcal{N}\big( \vec{x}_{t + 1} \biggiven \mat{A} \vec{x}_t,\, \mat{\Sigma}_\eta \big) \\
-				p(\vec{y}_t \given \vec{x}_t) &= \mathcal{N}\big( \vec{y}_t \biggiven \mat{C} \vec{x}_t,\, \mat{\Sigma}_\zeta \big)
+				p(\vec{x}_{t + 1} \given \vec{x}_t) & = \mathcal{N}\big( \vec{x}_{t + 1} \biggiven \mat{A} \vec{x}_t,\, \mat{\Sigma}_\eta \big) \\
+				p(\vec{y}_t \given \vec{x}_t)       & = \mathcal{N}\big( \vec{y}_t \biggiven \mat{C} \vec{x}_t,\, \mat{\Sigma}_\zeta \big)
 			\end{align*}
 			with the initial state distribution \( \vec{x}_1 \sim \mathcal{N}(\cdot \given \vec{\mu}_1, \mat{\Sigma}_1) \). The model parameters are defined as
 			\begin{equation*}
@@ -1852,27 +1852,27 @@
 			As the latent states \(\vec{x}_t\) are unknown, it is not possible to maximize the log-likelihood directly, but rather the \emph{expected} log-likelihood over \(\vec{x}_t\), conditioned on the observations, has to be maximized. This can be done straightforwardly by exploiting the invariance of the trace under cycling permutations. This (rather ugly) process\footnote{See \url{https://www.ias.informatik.tu-darmstadt.de/uploads/Team/JoeWatson/Damken_Bsc_2020.pdf}, pages 75 to 82 for the full derivation.} yields the expected log-likelihood
 			\begin{align*}
 				\E_{\vec{x}_{1:T}}\big[\! \log p(\vec{x}_{1:T}, \vec{y}_{1:T}) \biggiven \vec{y}_{1:T} \big] =\,
-					& \underbrace{-\frac{T (k + p)}{2} \log(2\pi) - \frac{1}{2} \log \lvert \mat{\Sigma}_1 \rvert - \frac{T - 1}{2} \log \lvert \mat{\Sigma}_\eta \rvert - \frac{T}{2} \log \lvert \mat{\Sigma}_\zeta \rvert}_\text{Entropies} \\
-					& \underbrace{-\frac{1}{2} \tr\Big( \mat{P}_1^{-1} \Big(\! \mat{\Sigma}_1 - \hat{\vec{x}}_1 \vec{\mu}_1^T - \vec{\mu}_1 \hat{\vec{x}}_1^T + \vec{\mu}_1 \vec{\mu}_1^T \Big) \!\Big)}_\text{Initial State Error} \\
-					& \underbrace{-\frac{1}{2} \tr\Big( \mat{\Sigma}_\eta^{-1} \Big(\! \textstyle\sum_{t = 2}^{T}\displaystyle \mat{P}_t - \mat{P}_{t, t - 1} \mat{A}^T - \mat{A} \mat{P}_{t, t - 1} + \mat{A} \mat{P}_{t - 1} \mat{A}^T \Big) \!\Big)}_\text{Dynamics Error} \\
-					& \underbrace{-\frac{1}{2} \tr\Big( \mat{\Sigma}_\zeta^{-1} \Big(\! \textstyle\sum_{t = 1}^{T}\displaystyle \vec{y}_t \vec{y}_t^T - \vec{y}_t \hat{\vec{x}}_t^T \mat{C}^T - \mat{C} \hat{\vec{x}}_t \vec{y}_t^T + \mat{C} \mat{P}_t \mat{C}^T \Big) \!\Big)}_\text{Observation Error}
+				 & \underbrace{-\frac{T (k + p)}{2} \log(2\pi) - \frac{1}{2} \log \lvert \mat{\Sigma}_1 \rvert - \frac{T - 1}{2} \log \lvert \mat{\Sigma}_\eta \rvert - \frac{T}{2} \log \lvert \mat{\Sigma}_\zeta \rvert}_\text{Entropies}                                                            \\
+				 & \underbrace{-\frac{1}{2} \tr\Big( \mat{P}_1^{-1} \Big(\! \mat{\Sigma}_1 - \hat{\vec{x}}_1 \vec{\mu}_1^T - \vec{\mu}_1 \hat{\vec{x}}_1^T + \vec{\mu}_1 \vec{\mu}_1^T \Big) \!\Big)}_\text{Initial State Error}                                                                       \\
+				 & \underbrace{-\frac{1}{2} \tr\Big( \mat{\Sigma}_\eta^{-1} \Big(\! \textstyle\sum_{t = 2}^{T}\displaystyle \mat{P}_t - \mat{P}_{t, t - 1} \mat{A}^T - \mat{A} \mat{P}_{t, t - 1} + \mat{A} \mat{P}_{t - 1} \mat{A}^T \Big) \!\Big)}_\text{Dynamics Error}                             \\
+				 & \underbrace{-\frac{1}{2} \tr\Big( \mat{\Sigma}_\zeta^{-1} \Big(\! \textstyle\sum_{t = 1}^{T}\displaystyle \vec{y}_t \vec{y}_t^T - \vec{y}_t \hat{\vec{x}}_t^T \mat{C}^T - \mat{C} \hat{\vec{x}}_t \vec{y}_t^T + \mat{C} \mat{P}_t \mat{C}^T \Big) \!\Big)}_\text{Observation Error}
 			\end{align*}
 			with the expectations
 			\begin{align*}
 				\mat{P}_t \coloneqq \E_{\vec{x}_{1:T}}\big[ \vec{x}_t \vec{x}_t^T \biggiven \vec{y}_{1:T} \big]
-				&&
+				 &  &
 				\mat{P}_{t, t - 1} \coloneqq \E_{\vec{x}_{1:T}}\big[ \vec{x}_t \vec{x}_{t - 1}^T \biggiven \vec{y}_{1:T} \big]
-				&&
+				 &  &
 				\hat{\vec{x}}_t \coloneqq \E_{\vec{x}_{1:T}}[ \vec{x}_t \given \vec{y}_{1:T} ]
 			\end{align*}
 			that encode the self and cross correlation and the expected states, respectively. By maximizing the expected log-likelihood, closed-form update rules for the parameters can be derived given an expected latent trajectory. This yields the following update rules:
 			\begin{align*}
-				\mat{A}^\mathrm{new} &= \Bigg(\! \sum_{t = 2}^{T} \mat{P}_{t, t - 1} \!\Bigg) \Bigg(\! \sum_{t = 2}^{T} \mat{P}_{t - 1} \!\Bigg)^{-1} \\
-				\mat{C}^\mathrm{new} &= \Bigg(\! \sum_{t = 1}^{T} \vec{y}_t \hat{\vec{x}}_t^T \!\Bigg) \Bigg(\! \sum_{t = 1}^{T} \mat{P}_t \!\Bigg) \\
-				\mat{\Sigma}_\eta^\mathrm{new} &= \frac{1}{T - 1} \Bigg( \sum_{t = 2}^{T} \mat{P}_t - \mat{A}^\mathrm{new} \sum_{t = 2}^{T} \mat{P}_{t, t - 1} \Bigg) \\
-				\mat{\Sigma}_\zeta^\mathrm{new} &= \frac{1}{T} \sum_{t = 1}^{T} \vec{y}_t \vec{y}_t^T - \mat{C}^\mathrm{new} \hat{\vec{x}}_t \vec{y}_t^T \\
-				\vec{\mu}_1^\mathrm{new} &= \hat{\vec{x}}_1 \\
-				\mat{\Sigma}_1^\mathrm{new} &= \mat{P}_1 - \hat{\vec{x}}_1 \hat{\vec{x}}_1^T
+				\mat{A}^\mathrm{new}            & = \Bigg(\! \sum_{t = 2}^{T} \mat{P}_{t, t - 1} \!\Bigg) \Bigg(\! \sum_{t = 2}^{T} \mat{P}_{t - 1} \!\Bigg)^{-1}       \\
+				\mat{C}^\mathrm{new}            & = \Bigg(\! \sum_{t = 1}^{T} \vec{y}_t \hat{\vec{x}}_t^T \!\Bigg) \Bigg(\! \sum_{t = 1}^{T} \mat{P}_t \!\Bigg)         \\
+				\mat{\Sigma}_\eta^\mathrm{new}  & = \frac{1}{T - 1} \Bigg( \sum_{t = 2}^{T} \mat{P}_t - \mat{A}^\mathrm{new} \sum_{t = 2}^{T} \mat{P}_{t, t - 1} \Bigg) \\
+				\mat{\Sigma}_\zeta^\mathrm{new} & = \frac{1}{T} \sum_{t = 1}^{T} \vec{y}_t \vec{y}_t^T - \mat{C}^\mathrm{new} \hat{\vec{x}}_t \vec{y}_t^T               \\
+				\vec{\mu}_1^\mathrm{new}        & = \hat{\vec{x}}_1                                                                                                     \\
+				\mat{\Sigma}_1^\mathrm{new}     & = \mat{P}_1 - \hat{\vec{x}}_1 \hat{\vec{x}}_1^T
 			\end{align*}
 
 			Plugging this together with the Kalman smoother, this yields an expectation-maximization (EM) algorithm with the E-step being the Kalman smoother and the M-step being the above update rules. For the LGDS, this guarantees monotonic improvement in the expected log-likelihood! For nonlinear settings, it is possible to approximate the expectations (e.g. using cubature rules or particle methods) and update the parameters using gradient descent. This is called \emph{approximate} EM.
@@ -1982,9 +1982,9 @@
 			\subsubsection{Temporal Scaling}
 				To achieve temporal scaling, a phase variable \( z(t) \) is added to the system to replace the time \(t\) in \eqref{eq:nonTemporalScaledDMP}:
 				\begin{align*}
-					\ddot{y} &= \tau^2 \alpha \big( \beta (g - y) - \dot{y} / \tau \big) + \tau^2 f_{\vec{w}}(z) \\
-					 \dot{z} &= -\tau \alpha_z z
- 				\end{align*}
+					\ddot{y} & = \tau^2 \alpha \big( \beta (g - y) - \dot{y} / \tau \big) + \tau^2 f_{\vec{w}}(z) \\
+					\dot{z}  & = -\tau \alpha_z z
+				\end{align*}
 				The variable \(\tau\) is the \emph{temporal scaling variable} and \(z\) is called the \emph{phase}. Higher values of \(\tau\) correspond to higher movement speeds and a value of \( \tau = 1 \) corresponds to the "original" movement speed.
 			% end
 
@@ -1996,7 +1996,7 @@
 				with \(K\) normalized RBF basis functions\footnote{Notice the multiplication with the phase variable \(z\) in the RBF! This is used to make the DMP stable and is just more convenient to put it there instead of in the forcing function itself.}
 				\begin{align}
 					\psi_i(z) = \frac{\phi_i(z) z}{\sum_{j = 1}^{K} \phi_j(z)}
-					&&
+					 &  &
 					\phi_i(z) = \exp{ -\frac{1}{2} \frac{(z - c_i)^2}{h_i} }  \label{eq:normRbf}
 				\end{align}
 				with the locations \(c_{1:K}\) and the bandwidths \(h_{1:K}\). These dynamics movement primitives are stable by design as for \( t \to \infty \) the forcing function vanishes\footnote{This is due to \( z \to 0 \) for \( t \to \infty \) as \( \dot{z} = -\tau \alpha_z z \) and \( \tau, \alpha_z > 0 \).} and the  becomes a PD controller.
@@ -2031,12 +2031,12 @@
 			be the \(i\)-th RBF feature (\( i = \dotsrange{1}{K} \)) of the \(d\)-th degree of freedom (\( d = \dotsrange{1}{D} \)). Then let
 			\begin{equation*}
 				\mat{\Psi}_t^T \coloneqq
-					\begin{bmatrix}
-						\psi_1^{(1)}(z_t) & \psi_2^{(1)}(z_t) & \cdots & \psi_K^{(1)}(z_t) \\
-						\psi_1^{(2)}(z_t) & \psi_2^{(2)}(z_t) & \cdots & \psi_K^{(2)}(z_t) \\
-						\vdots            & \vdots            & \ddots & \vdots            \\
-						\psi_1^{(D)}(z_t) & \psi_2^{(D)}(z_t) & \cdots & \psi_K^{(D)}(z_t)
-					\end{bmatrix}
+				\begin{bmatrix}
+					\psi_1^{(1)}(z_t) & \psi_2^{(1)}(z_t) & \cdots & \psi_K^{(1)}(z_t) \\
+					\psi_1^{(2)}(z_t) & \psi_2^{(2)}(z_t) & \cdots & \psi_K^{(2)}(z_t) \\
+					\vdots            & \vdots            & \ddots & \vdots            \\
+					\psi_1^{(D)}(z_t) & \psi_2^{(D)}(z_t) & \cdots & \psi_K^{(D)}(z_t)
+				\end{bmatrix}
 			\end{equation*}
 			be the phase-dependent basis for the ProMP. One trajectory is given as
 			\begin{equation*}
@@ -2053,9 +2053,9 @@
 			By using a Gaussian \( p(\vec{w} \given \vec{\theta}) = \mathcal{N}(\vec{w} \given \vec{\mu}_w, \mat{\Sigma}_w) \) with \( \vec{\theta} = \{ \vec{\mu}_w, \mat{\Sigma}_w \} \) for the weight distribution, the trajectory distribution can be computed in closed form for a time step \(t\):
 			\begin{align*}
 				p(\vec{y}_t \given \vec{\theta})
-					&= \int\! p(\vec{y}_t \given \vec{w}) p(\vec{w} \given \vec{\theta}) \dd{\vec{w}} \\
-					&= \int\! \mathcal{N}\big( \vec{y}_t \biggiven \mat{\Psi}_t^T \vec{w},\, \mat{\Sigma}_y \big) \, \mathcal{N}(\vec{w} \given \vec{\mu}_w, \mat{\Sigma}_w) \dd{\vec{w}} \\
-					&= \mathcal{N}\big( \vec{y}_t \biggiven \mat{\Psi}_t^T \vec{\mu}_w,\, \mat{\Psi}_t^T \mat{\Sigma}_w \mat{\Psi}_t + \mat{\Sigma}_y \big)
+				 & = \int\! p(\vec{y}_t \given \vec{w}) p(\vec{w} \given \vec{\theta}) \dd{\vec{w}}                                                                                     \\
+				 & = \int\! \mathcal{N}\big( \vec{y}_t \biggiven \mat{\Psi}_t^T \vec{w},\, \mat{\Sigma}_y \big) \, \mathcal{N}(\vec{w} \given \vec{\mu}_w, \mat{\Sigma}_w) \dd{\vec{w}} \\
+				 & = \mathcal{N}\big( \vec{y}_t \biggiven \mat{\Psi}_t^T \vec{\mu}_w,\, \mat{\Psi}_t^T \mat{\Sigma}_w \mat{\Psi}_t + \mat{\Sigma}_y \big)
 			\end{align*}
 
 			\subsubsection{Conditioning}
@@ -2065,8 +2065,8 @@
 				\end{equation*}
 				This allows ProMPs to generalize to other end-points of the movement or reaching intermediate points. Using Gaussian weight distributions, Bayes rule can be computed in closed form:
 				\begin{align*}
-					\vec{\mu}_w^\mathrm{new} &= \vec{\mu}_w + \mat{\Sigma} \mat{\Psi}_{t^\ast} \big( \mat{\Psi}_{t^\ast}^T \mat{\Sigma}_w \mat{\Sigma}_{t^\ast} + \mat{\Sigma}_y^\ast \big)^{-1} \big( \vec{y}_{t^\ast}^\ast - \mat{\Psi}_{t^\ast}^T \vec{\mu}_w \big) \\
-					\mat{\Sigma}_w^\mathrm{new} &= \mat{\Sigma}_w - \mat{\Sigma}_w \mat{\Psi}_{t^\ast} \big( \mat{\Psi}_{t^\ast}^T \mat{\Sigma}_w \mat{\Psi}_{t^\ast} + \mat{\Sigma}_y^\ast \big)^{-1} \mat{\Psi}_{t^\ast}^T \mat{\Sigma}_w
+					\vec{\mu}_w^\mathrm{new}    & = \vec{\mu}_w + \mat{\Sigma} \mat{\Psi}_{t^\ast} \big( \mat{\Psi}_{t^\ast}^T \mat{\Sigma}_w \mat{\Sigma}_{t^\ast} + \mat{\Sigma}_y^\ast \big)^{-1} \big( \vec{y}_{t^\ast}^\ast - \mat{\Psi}_{t^\ast}^T \vec{\mu}_w \big) \\
+					\mat{\Sigma}_w^\mathrm{new} & = \mat{\Sigma}_w - \mat{\Sigma}_w \mat{\Psi}_{t^\ast} \big( \mat{\Psi}_{t^\ast}^T \mat{\Sigma}_w \mat{\Psi}_{t^\ast} + \mat{\Sigma}_y^\ast \big)^{-1} \mat{\Psi}_{t^\ast}^T \mat{\Sigma}_w
 				\end{align*}
 			% end
 
@@ -2077,8 +2077,8 @@
 				\end{equation*}
 				with the activation factors \( \alpha_i(t) \). For Gaussian distributions \( p_i(\vec{y}_t) = \mathcal{N}\big( \vec{y}_t \biggiven \vec{\mu}_t^{[i]}, \mat{\Sigma}_y^{[i]} \big) \), the combined distribution has the following mean and covariance:
 				\begin{align*}
-					\vec{\mu}_t^\mathrm{co} &= \big( \mat{\Sigma}_t^\mathrm{co} \big)^{-1} \Bigg( \sum_{i = 1}^{N} \Big( \mat{\Sigma}_t^{[i]} / \alpha_t^{[i]} \Big)^{-1} \vec{\mu}_t^{[i]} \Bigg) \\
-					\mat{\Sigma}_t^\mathrm{co} &= \Bigg( \sum_{i = 1}^{N} \Big( \mat{\Sigma}_t^{[i]} / \alpha_t^{[i]} \Big)^{-1} \Bigg)^{-1}
+					\vec{\mu}_t^\mathrm{co}    & = \big( \mat{\Sigma}_t^\mathrm{co} \big)^{-1} \Bigg( \sum_{i = 1}^{N} \Big( \mat{\Sigma}_t^{[i]} / \alpha_t^{[i]} \Big)^{-1} \vec{\mu}_t^{[i]} \Bigg) \\
+					\mat{\Sigma}_t^\mathrm{co} & = \Bigg( \sum_{i = 1}^{N} \Big( \mat{\Sigma}_t^{[i]} / \alpha_t^{[i]} \Big)^{-1} \Bigg)^{-1}
 				\end{align*}
 				Using the time-varying activation factors \( \alpha_i(t) \), it is also possible to achieve \emph{blending}, i.e. shifting smoothly from one primitive (movement) to another.
 			% end
@@ -2183,11 +2183,11 @@
 			Previously, the optimal control problem
 			\begin{equation*}
 				\begin{aligned}
-					\max_{\vec{a}_{1:T - 1}} \,& \sum_{t = 1}^{T} r(\vec{s}_t, \vec{a}_t) \\
-					\mathrm{s.t.} \quad&
-						\begin{aligned}
-							\vec{s}_{t + 1} &= \vec{f}(\vec{s}_t, \vec{a}_t)
-						\end{aligned}
+					\max_{\vec{a}_{1:T - 1}} \, & \sum_{t = 1}^{T} r(\vec{s}_t, \vec{a}_t) \\
+					\mathrm{s.t.} \quad         &
+					\begin{aligned}
+						\vec{s}_{t + 1} & = \vec{f}(\vec{s}_t, \vec{a}_t)
+					\end{aligned}
 				\end{aligned}
 			\end{equation*}
 			with \( r(\vec{s}_T, \vec{a}_T) \coloneqq r(\vec{s}_T) \) was assessed from a dynamic programming perspective (DDP). Other techniques are for example \emph{backpropagation-through-time} or \emph{sequential dynamic programming} (check out the optimization of static and dynamical systems summary\footnote{\url{https://projects.frisp.org/documents/32}} for more details on SQP methods).
@@ -2203,7 +2203,7 @@
 			with the objective \( J = \sum_{t = 0}^{T} r(\vec{s}_t, \vec{a}_t) \). To optimize the objective, it is possible to take the derivative w.r.t. the actions through time. For example for \(\vec{a}_1\):
 			\begin{equation*}
 				\pdv{J}{\vec{a}_1}
-					= \pdv{r}{\vec{a}_1} + \bigg(\! \pdv{r}{\vec{s}_2} + \pdv{r}{\vec{s}_3} \pdv{\vec{s}_3}{\vec{s}_2} + \cdots + \pdv{r}{\vec{s}_T} \pdv{\vec{s}_T}{\vec{s}_{T - 1}} \cdots \pdv{\vec{s}_3}{\vec{s}_2} \pdv{\vec{s}_2}{\vec{s}_1} \!\bigg) \pdv{\vec{s}_2}{\vec{a}_1}
+				= \pdv{r}{\vec{a}_1} + \bigg(\! \pdv{r}{\vec{s}_2} + \pdv{r}{\vec{s}_3} \pdv{\vec{s}_3}{\vec{s}_2} + \cdots + \pdv{r}{\vec{s}_T} \pdv{\vec{s}_T}{\vec{s}_{T - 1}} \cdots \pdv{\vec{s}_3}{\vec{s}_2} \pdv{\vec{s}_2}{\vec{s}_1} \!\bigg) \pdv{\vec{s}_2}{\vec{a}_1}
 			\end{equation*}
 			But this gradient is very poorly conditioned as very small changed in \(\vec{a}_1\) have large effects in \(\vec{s}_t\) if \(t\) is large!
 		% end
@@ -2227,11 +2227,11 @@
 		\subsection{Optimism Under Uncertainty}
 			Adding uncertainty to the model has the effect of softening the reward for uncertain states. For example in a Gaussian setting with the reward \( r(x) = -x^2 \) where \( x \sim \mathcal{N}(\mu, \sigma^2) \), the expected reward include the variance: \( \E\big[r(x)\big] = -(\mu^2 +\sigma^2) \). Therefore the higher the (epistemic) uncertainty, the lower the reward. This is the idea behind Bayesian dynamics models: the epistemic uncertainty should anticipate prediction errors. For Bayesian linear regression models, including Gaussian processes, the decomposition of the uncertainty into aleatoric and epistemic uncertainty is obvious. Take for example Gaussian Bayesian linear regression with the features \( \vec{\phi}(\vec{x}) \):
 			\begin{align*}
-				y(\vec{x}) &= \vec{\phi}^T(\vec{x}) \vec{w} + \vec{\eta},\quad
-					\vec{w} \sim \mathcal{N}(\vec{\mu}_w, \mat{\Sigma}_w),\quad
-					\vec{\eta} \sim \mathcal{N}(\vec{0}, \sigma_\eta^2 \mat{I}) \\
-				\mu_y(\vec{x}) &= \vec{\phi}^T(\vec{x}) \vec{\mu}_w \\
-				\sigma_y^2 &= \underbrace{\sigma_\eta^2}_\text{aleatoric} + \underbrace{\sigma_\eta^2 \vec{\phi}^T(\vec{x}) \mat{\Sigma}_w \vec{\phi}(\vec{x})}_\text{epistemic}
+				y(\vec{x})     & = \vec{\phi}^T(\vec{x}) \vec{w} + \vec{\eta},\quad
+				\vec{w} \sim \mathcal{N}(\vec{\mu}_w, \mat{\Sigma}_w),\quad
+				\vec{\eta} \sim \mathcal{N}(\vec{0}, \sigma_\eta^2 \mat{I})                                                                                                           \\
+				\mu_y(\vec{x}) & = \vec{\phi}^T(\vec{x}) \vec{\mu}_w                                                                                                                  \\
+				\sigma_y^2     & = \underbrace{\sigma_\eta^2}_\text{aleatoric} + \underbrace{\sigma_\eta^2 \vec{\phi}^T(\vec{x}) \mat{\Sigma}_w \vec{\phi}(\vec{x})}_\text{epistemic}
 			\end{align*}
 			Some other approaches are:
 			\begin{itemize}
@@ -2249,11 +2249,11 @@
 		For replanning, the optimization problem for a single action \( \vec{a}_t \) takes the next \(T\) time steps into account\footnote{The notation of \(\arg\max\) is abused a bit here as only the first action is used as the result of the optimization problem. But the other steps can be used as a "warm start" for the upcoming optimization problems.}:
 		\begin{equation*}
 			\begin{aligned}
-				\vec{a}_t^\ast = \arg\max_{\vec{a}_{t:t + T}} \,& \sum_{\tau = t}^{t + T} r(\vec{s}_\tau, \vec{a}_\tau) \\
-				\mathrm{s.t.} \quad&
-					\begin{aligned}
-						\vec{s}_{t + 1} &= \vec{f}(\vec{s}_t, \vec{a}_t)
-					\end{aligned}
+				\vec{a}_t^\ast = \arg\max_{\vec{a}_{t:t + T}} \, & \sum_{\tau = t}^{t + T} r(\vec{s}_\tau, \vec{a}_\tau) \\
+				\mathrm{s.t.} \quad                              &
+				\begin{aligned}
+					\vec{s}_{t + 1} & = \vec{f}(\vec{s}_t, \vec{a}_t)
+				\end{aligned}
 			\end{aligned}
 		\end{equation*}
 		This is known as \emph{Model-Predictive Control} (MPC) or \emph{Receding Horizon Control} (RHC).
@@ -2324,10 +2324,10 @@
 		The value \(\alpha\) describes the amount of trust in the prediction. For \(\alpha = 1\), the value function directly jumps to the prediction, and for \(\alpha = 0\) the value function always stays the same. This part of the algorithm can be seen as the \emph{policy evaluation} with temporal differences. To form a complete RL algorithm, also policy improvement is needed. As the algorithm has to also reach areas unseen before, exploration is needed in the policy. Two basic approaches for this problem are \(\epsilon\)-greedy policies
 		\begin{equation*}
 			\pi(\vec{a} \given \vec{s}) =
-				\begin{cases}
-					\arg\max_{\vec{a}'} \, Q^\pi(\vec{s}, \vec{a}') & \text{with probability } 1 - \epsilon \\
-					\text{any action } \vec{a}                      & \text{with probability } \epsilon
-				\end{cases}
+			\begin{cases}
+				\arg\max_{\vec{a}'} \, Q^\pi(\vec{s}, \vec{a}') & \text{with probability } 1 - \epsilon \\
+				\text{any action } \vec{a}                      & \text{with probability } \epsilon
+			\end{cases}
 		\end{equation*}
 		and soft-max policies, enabling also learning the exploration (with a parameter \(\beta\)):
 		\begin{equation*}
@@ -2399,21 +2399,21 @@
 		This objective can be optimized with (stochastic) gradient descent (see \autoref{subsubsec:sgd}) by approximating the bootstrapped objective \eqref{eq:approxTdMse} with a single sample \( (\vec{s}_i, \vec{a}_i, r_i, \vec{s}_i') \):
 		\begin{equation}
 			\MSE_\mathrm{BS}(\vec{w})
-				\approx \big( \hat{V}^\pi(\vec{s}_i) - V_{\vec{w}}(\vec{s}_i) \big)^2
-				\approx \big( r_i + \gamma V_{\vec{w}_\mathrm{old}}(\vec{s}_i') - V_{\vec{w}}(\vec{s}_i) \big)^2  \label{eq:approxValueError}
+			\approx \big( \hat{V}^\pi(\vec{s}_i) - V_{\vec{w}}(\vec{s}_i) \big)^2
+			\approx \big( r_i + \gamma V_{\vec{w}_\mathrm{old}}(\vec{s}_i') - V_{\vec{w}}(\vec{s}_i) \big)^2  \label{eq:approxValueError}
 		\end{equation}
 		The gradient descent step is then given as
 		\begin{align*}
 			\vec{w}_{i + 1}
-				&= \vec{w}_i + \tilde{\alpha}_i \pdv{\MSE_\mathrm{BS}}{\vec{w}} \bigg\vert_{\vec{w} \,=\, \vec{w}_i,\, \vec{w}_\mathrm{old} \,=\, \vec{w}_i} \\
-				&= \vec{w}_i + \alpha_i \underbrace{\big( r_i + \gamma V_{\vec{w}_i}(\vec{s}_i') - V_{\vec{w}_i}(\vec{s}_i) \big)}_{\delta_i} \vec{\phi}(\vec{s}_i) \\
-				&= \vec{w}_i + \alpha_i \delta_i \vec{\phi}(\vec{s}_i)
+			 & = \vec{w}_i + \tilde{\alpha}_i \pdv{\MSE_\mathrm{BS}}{\vec{w}} \bigg\vert_{\vec{w} \,=\, \vec{w}_i,\, \vec{w}_\mathrm{old} \,=\, \vec{w}_i}        \\
+			 & = \vec{w}_i + \alpha_i \underbrace{\big( r_i + \gamma V_{\vec{w}_i}(\vec{s}_i') - V_{\vec{w}_i}(\vec{s}_i) \big)}_{\delta_i} \vec{\phi}(\vec{s}_i) \\
+			 & = \vec{w}_i + \alpha_i \delta_i \vec{\phi}(\vec{s}_i)
 		\end{align*}
 		for a linear approximation \( V_{\vec{w}}(\vec{s}) = \vec{\phi}^T(\vec{s}) \vec{w} \) and the derivative
 		\begin{equation}
 			\pdv{\MSE_\mathrm{BS}}{\vec{w}}
-				= 2 \big( r_i + \gamma V_{\vec{w}_\mathrm{old}}(\vec{s}_i') - V_{\vec{w}}(\vec{s}_i) \big) \pdv{V_{\vec{w}}(\vec{s}_i)}{\vec{w}}
-				= 2 \big( r_i + \gamma V_{\vec{w}_\mathrm{old}}(\vec{s}_i') - V_{\vec{w}}(\vec{s}_i) \big) \vec{\phi}(\vec{s}_i)  \label{eq:approxValueErrorPrime}
+			= 2 \big( r_i + \gamma V_{\vec{w}_\mathrm{old}}(\vec{s}_i') - V_{\vec{w}}(\vec{s}_i) \big) \pdv{V_{\vec{w}}(\vec{s}_i)}{\vec{w}}
+			= 2 \big( r_i + \gamma V_{\vec{w}_\mathrm{old}}(\vec{s}_i') - V_{\vec{w}}(\vec{s}_i) \big) \vec{\phi}(\vec{s}_i)  \label{eq:approxValueErrorPrime}
 		\end{equation}
 		of the function approximator\footnote{The multiplication with two is absorbed into \( \alpha_i = 2 \tilde{\alpha}_i \).}. Of course this can be readily extended for deep function approximators like neural networks by replacing the derivative \( \pdv{V_{\vec{w}}(\vec{s}_i)}{\vec{w}} \) in \eqref{eq:approxValueErrorPrime} with e.g. an autograd engine or backpropagation. As for tabular TD methods, similar update rules can be achieved for the Q-function, enabling approximate Q-learning and SARSA with \( Q_{\vec{w}}(\vec{s}, \vec{a}) = \vec{\phi}^T(\vec{s}, \vec{a}) \vec{w} \):
 		\begin{equation*}
@@ -2471,35 +2471,35 @@
 			For \emph{least-squares temporal differences}, the bootstrapped mean-squared error \eqref{eq:approxTdMse} is solved analytically for \(N\) samples. Let
 			\begin{align*}
 				\vec{r} \coloneqq
-					\begin{bmatrix}
-						r_1 \\
-						r_2 \\
-						\vdots \\
-						r_N
-					\end{bmatrix}
-				&&
+				\begin{bmatrix}
+					r_1    \\
+					r_2    \\
+					\vdots \\
+					r_N
+				\end{bmatrix}
+				 &  &
 				\vec{\Phi}^T \coloneqq
-					\begin{bmatrix}
-						\vec{\phi}^T(\vec{s}_1) \\
-						\vec{\phi}^T(\vec{s}_2) \\
-						\vdots \\
-						\vec{\phi}^T(\vec{s}_N)
-					\end{bmatrix}
-				&&
+				\begin{bmatrix}
+					\vec{\phi}^T(\vec{s}_1) \\
+					\vec{\phi}^T(\vec{s}_2) \\
+					\vdots                  \\
+					\vec{\phi}^T(\vec{s}_N)
+				\end{bmatrix}
+				 &  &
 				\vec{\Phi}_+^T \coloneqq
-					\begin{bmatrix}
-						\vec{\phi}^T(\vec{s}_1') \\
-						\vec{\phi}^T(\vec{s}_2') \\
-						\vdots \\
-						\vec{\phi}^T(\vec{s}_N')
-					\end{bmatrix}
+				\begin{bmatrix}
+					\vec{\phi}^T(\vec{s}_1') \\
+					\vec{\phi}^T(\vec{s}_2') \\
+					\vdots                   \\
+					\vec{\phi}^T(\vec{s}_N')
+				\end{bmatrix}
 			\end{align*}
 			be the rewards, steps and next steps, respectively. Then the bootstrapped objective \eqref{eq:approxTdMse} can be rewritten as
 			\begin{align*}
 				\MSE_\mathrm{BS}(\vec{w})
-					&\approx \sum_{i = 1}^{N} \big( r_i + \gamma V_{\vec{w}_\mathrm{old}}(\vec{s}_i') - V_{\vec{w}}(\vec{s}_i) \big)^2 \\
-					&= \sum_{i = 1}^{N} \big( r_i + \gamma \vec{\phi}^T(\vec{s}_i') \vec{w}_\mathrm{old} - \vec{\phi}^T(\vec{s}_i) \vec{w} \big)^2 \\
-					&= \big( \vec{r} + \gamma \mat{\Phi}_+^T \vec{w}_\mathrm{old} - \mat{\Phi}^T \vec{w} \big)^T \big( \vec{r} + \gamma \mat{\Phi}_+^T \vec{w}_\mathrm{old} - \mat{\Phi}^T \vec{w} \big).
+				 & \approx \sum_{i = 1}^{N} \big( r_i + \gamma V_{\vec{w}_\mathrm{old}}(\vec{s}_i') - V_{\vec{w}}(\vec{s}_i) \big)^2                                                                    \\
+				 & = \sum_{i = 1}^{N} \big( r_i + \gamma \vec{\phi}^T(\vec{s}_i') \vec{w}_\mathrm{old} - \vec{\phi}^T(\vec{s}_i) \vec{w} \big)^2                                                        \\
+				 & = \big( \vec{r} + \gamma \mat{\Phi}_+^T \vec{w}_\mathrm{old} - \mat{\Phi}^T \vec{w} \big)^T \big( \vec{r} + \gamma \mat{\Phi}_+^T \vec{w}_\mathrm{old} - \mat{\Phi}^T \vec{w} \big).
 			\end{align*}
 			By taking the derivative of the mean-squared error and setting it to zero\footnote{\( -\frac{1}{2} \pdv{\vec{w}} \big\lVert \vec{r} + \gamma \mat{\Phi}_+^T \vec{w}_\mathrm{old} - \mat{\Phi}_+^T \vec{w} \big\rVert_2^2 = \mat{\Phi} \big( \vec{r} + \gamma \mat{\Phi}_+^T \vec{w}_\mathrm{old} - \mat{\Phi}^T \vec{w} \big) = \mat{\Phi} \big( \vec{r} + \gamma \mat{\Phi}_+^T \vec{w}_\mathrm{old} \big) - \mat{\Phi} \mat{\Phi}^T \vec{w} \overset{!}{=} \vec{0} \)}, the least-squares solution is
 			\begin{equation}
@@ -2507,22 +2507,22 @@
 			\end{equation}
 			However, this equation still contains \( \vec{w}_\mathrm{old} \). For convergence, \( \vec{w} = \vec{w}_\mathrm{old} \) should hold. Plugging this into the least-squares solution \eqref{eq:lstdLeastSquaresSol} yields the solution to the complete least-squares temporal differences algorithm:
 			\begin{align}
-				&&
-				\vec{w} &= \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \big( \vec{r} + \gamma \mat{\Phi}_+^T \vec{w}_\mathrm{old} \big) &  \nonumber \\
-				\overset{\mathclap{\raisebox{1pt}{\scriptsize \( \vec{w}_\mathrm{old} \,\overset{!}{=}\, \vec{w} \)}}}{\quad\implies} &&
-				\vec{w} &= \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \big( \vec{r} + \gamma \mat{\Phi}_+^T \vec{w} \big) &  \nonumber \\
-				\iff &&
-				\vec{w} &= \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \vec{r} + \gamma \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi}_+^T \vec{w} &  \nonumber \\
-				\iff &&
-				\Big( \mat{I} - \gamma \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi}_+^T \Big) \vec{w} &= \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \vec{r} &  \nonumber \\
-				\iff &&
-				\Big(\! \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \mat{\Phi}^T - \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \gamma \mat{\Phi}_+^T \Big) \vec{w} &= \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \vec{r} &  \nonumber \\
-				\iff &&
-				\big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \big( \mat{\Phi}^T - \gamma \mat{\Phi}_+^T \big) \vec{w} &= \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \vec{r} &  \nonumber \\
-				\iff &&
-				\mat{\Phi} \big( \mat{\Phi}^T - \gamma \mat{\Phi}_+^T \big) \vec{w} &= \mat{\Phi} \vec{r} &  \nonumber \\
-				\iff &&
-				\vec{w} &= \Big(\! \mat{\Phi} \big( \mat{\Phi}^T - \gamma \mat{\Phi}_+^T \big) \!\Big)^{-1} \mat{\Phi} \vec{r} &  \label{eq:lstdSolution}
+				                                                                                                                                                        &                                                                                                                                        &
+				\vec{w}                                                                                                                                                 & = \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \big( \vec{r} + \gamma \mat{\Phi}_+^T \vec{w}_\mathrm{old} \big)                 & \nonumber               \\
+				\overset{\mathclap{\raisebox{1pt}{\scriptsize \( \vec{w}_\mathrm{old} \,\overset{!}{=}\, \vec{w} \)}}}{\quad\implies}                                   &                                                                                                                                        &
+				\vec{w}                                                                                                                                                 & = \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \big( \vec{r} + \gamma \mat{\Phi}_+^T \vec{w} \big)                              & \nonumber               \\
+				\iff                                                                                                                                                    &                                                                                                                                        &
+				\vec{w}                                                                                                                                                 & = \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \vec{r} + \gamma \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi}_+^T \vec{w} & \nonumber               \\
+				\iff                                                                                                                                                    &                                                                                                                                        &
+				\Big( \mat{I} - \gamma \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi}_+^T \Big) \vec{w}                                                            & = \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \vec{r}                                                                          & \nonumber               \\
+				\iff                                                                                                                                                    &                                                                                                                                        &
+				\Big(\! \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \mat{\Phi}^T - \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \gamma \mat{\Phi}_+^T \Big) \vec{w} & = \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \vec{r}                                                                          & \nonumber               \\
+				\iff                                                                                                                                                    &                                                                                                                                        &
+				\big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \big( \mat{\Phi}^T - \gamma \mat{\Phi}_+^T \big) \vec{w}                                            & = \big( \mat{\Phi} \mat{\Phi}^T \big)^{-1} \mat{\Phi} \vec{r}                                                                          & \nonumber               \\
+				\iff                                                                                                                                                    &                                                                                                                                        &
+				\mat{\Phi} \big( \mat{\Phi}^T - \gamma \mat{\Phi}_+^T \big) \vec{w}                                                                                     & = \mat{\Phi} \vec{r}                                                                                                                   & \nonumber               \\
+				\iff                                                                                                                                                    &                                                                                                                                        &
+				\vec{w}                                                                                                                                                 & = \Big(\! \mat{\Phi} \big( \mat{\Phi}^T - \gamma \mat{\Phi}_+^T \big) \!\Big)^{-1} \mat{\Phi} \vec{r}                                  & \label{eq:lstdSolution}
 			\end{align}
 			Equation \eqref{eq:lstdSolution} is the solution of LSTD. By analyzing the convergence properties of TD-learning it can be seen that this is the same solution as the fixed point of TD-learning. Hence, with enough samples, it is possible to calculate the V-function approximation weights in one shot without iterations. As for TD learning, it is also possible to adapt this for learning the Q-function by altering the matrices \( \mat{\Phi} \) and \( \mat{\Phi}_+ \) accordingly. The algorithm is then called least-squares Q-learning (LSQ) and is used for least-squares policy iteration (LSPI).
 
@@ -2535,10 +2535,10 @@
 			\begin{algorithm}  \DontPrintSemicolon
 				\KwIn{Dataset \( \mathcal{D} = \big\{ (\vec{s}_i, \vec{a}_i, r_i, \vec{s}_i') \big\}_{i = 1}^{N} \)}
 				\eqmakebox[fittedQIterationI][r]{\( \mat{X} \gets \)} \(
-					\begin{bmatrix}
-						\vec{s}_1 & \vec{s}_2 & \cdots & \vec{s}_N \\
-						\vec{a}_1 & \vec{a}_2 & \cdots & \vec{a}_N
-					\end{bmatrix}^T
+				\begin{bmatrix}
+					\vec{s}_1 & \vec{s}_2 & \cdots & \vec{s}_N \\
+					\vec{a}_1 & \vec{a}_2 & \cdots & \vec{a}_N
+				\end{bmatrix}^T
 				\) \;
 				\eqmakebox[fittedQIterationI][r]{\( Q(\vec{s}, \vec{a}) \gets \)} \( 0 \) for all \( \vec{s} \in \mathcal{S} \) and \( \vec{a} \in \mathcal{A} \) \;
 				\Repeat{convergence of \(Q\)}{
@@ -2621,8 +2621,8 @@
 			For episodic policy search, an upper-level policy \( \pi(\vec{\theta}; \vec{\omega}) \) over the parameters of the low-level control policy \( \pi(\vec{a} \given \vec{s}; \vec{\theta}) \) is learned. This can, for example, be a Gaussian \( \pi(\vec{\theta}; \vec{\omega}) = \mathcal{N}(\vec{\theta} \given \vec{\mu}, \mat{\Sigma}) \) with the parameters \( \vec{\omega} = \{ \vec{\mu}, \mat{\Sigma} \} \). To reduce the variance in the returns, the upper-level policy is often chosen to be deterministic. Then a policy \( \pi(\vec{\theta}; \vec{\omega}) \) is searched that maximizes the expected reward
 			\begin{equation}
 				J(\vec{\omega})
-					= \E_{\pi(\vec{\theta}; \vec{\omega})}\big[ R_{\vec{\theta}} \big]
-					= \int\! \pi(\vec{\theta}; \vec{\omega}) R_{\vec{\theta}} \dd{\vec{\theta}}  \label{eq:upperLevelReward}
+				= \E_{\pi(\vec{\theta}; \vec{\omega})}\big[ R_{\vec{\theta}} \big]
+				= \int\! \pi(\vec{\theta}; \vec{\omega}) R_{\vec{\theta}} \dd{\vec{\theta}}  \label{eq:upperLevelReward}
 			\end{equation}
 			with the expected long-term reward
 			\begin{equation*}
@@ -2634,11 +2634,11 @@
 		\subsection{Step-Based Policy Search}
 			In \emph{step-based} policy evaluation, the quality of single state-action pairs is assessed using the (undiscounted) reward to come
 			\begin{equation}
-			Q_t^{[i]} = \sum_{\tau = t}^{T} r_\tau^{[i]}.  \label{eq:policyGradientRewardToCome}
+				Q_t^{[i]} = \sum_{\tau = t}^{T} r_\tau^{[i]}.  \label{eq:policyGradientRewardToCome}
 			\end{equation}
 			The data for the policy update is
 			\begin{equation*}
-			\mathcal{D} = \Big\{ \vec{s}_t^{[i]}, \vec{a}_t^{[i]}, Q_t^{[i]} \Big\}_{t \,=\, \subdotsrange{1}{T}}^{i \,=\, \subdotsrange{1}{N}}.
+				\mathcal{D} = \Big\{ \vec{s}_t^{[i]}, \vec{a}_t^{[i]}, Q_t^{[i]} \Big\}_{t \,=\, \subdotsrange{1}{T}}^{i \,=\, \subdotsrange{1}{N}}.
 			\end{equation*}
 			This causes less variance in \( Q_t^{[i]} \) as it is the sum of only \( T - t + 1 \) random variables. Other properties of the step-based strategy are:
 			\begin{itemize}
@@ -2653,8 +2653,8 @@
 			For step-based policy search, the lower-level policy \( \pi(\vec{a} \given \vec{s}; \vec{\theta}) \) is learned directly. This is done by maximizing the expected reward
 			\begin{equation}
 				J(\vec{\theta})
-					= \E_{p(\vec{\tau}; \vec{\theta})}\big[ R_{\vec{\tau}} \big]
-					= \int\! p(\vec{\tau}; \vec{\theta}) R_{\vec{\tau}} \dd{\vec{\tau}}  \label{eq:policyGradientStepBasedObjective}
+				= \E_{p(\vec{\tau}; \vec{\theta})}\big[ R_{\vec{\tau}} \big]
+				= \int\! p(\vec{\tau}; \vec{\theta}) R_{\vec{\tau}} \dd{\vec{\tau}}  \label{eq:policyGradientStepBasedObjective}
 			\end{equation}
 			with the trajectory distribution
 			\begin{equation}
@@ -2684,14 +2684,14 @@
 				\paragraph{Finite Differences}
 					Finite difference gradient approximation is the most straightforward way of approximating the derivative using a first-order Taylor approximation around \(\vec{\theta}\):
 					\begin{align*}
-						&&
-						J(\vec{\theta} + \vec{\delta}_\theta) &\approx J(\vec{\theta}) + \pdv{J(\vec{\theta})}{\vec{\theta}} \vec{\delta}_\theta & \\
-						\iff &&
-						\pdv{J(\vec{\theta})}{\vec{\theta}} \vec{\delta}_\theta &\approx J(\vec{\theta} + \vec{\delta}_\theta) - J(\vec{\theta}) & \\
-						\iff &&
-						\pdv{J(\vec{\theta})}{\vec{\theta}} \vec{\delta}_\theta \vec{\delta}_\theta^T &\approx \vec{\delta}_\theta^T \big( J(\vec{\theta} + \vec{\delta}_\theta) - J(\vec{\theta}) \big) & \\
-						\iff &&
-						\pdv{J(\vec{\theta})}{\vec{\theta}} &\approx \vec{\delta}_\theta^T \big( \vec{\delta}_\theta \vec{\delta}_\theta^T \big)^{-1} \big( J(\vec{\theta} + \vec{\delta}_\theta) - J(\vec{\theta}) \big) &
+						                                                                              &                                                                                                                                                              &
+						J(\vec{\theta} + \vec{\delta}_\theta)                                         & \approx J(\vec{\theta}) + \pdv{J(\vec{\theta})}{\vec{\theta}} \vec{\delta}_\theta                                                                            & \\
+						\iff                                                                          &                                                                                                                                                              &
+						\pdv{J(\vec{\theta})}{\vec{\theta}} \vec{\delta}_\theta                       & \approx J(\vec{\theta} + \vec{\delta}_\theta) - J(\vec{\theta})                                                                                              & \\
+						\iff                                                                          &                                                                                                                                                              &
+						\pdv{J(\vec{\theta})}{\vec{\theta}} \vec{\delta}_\theta \vec{\delta}_\theta^T & \approx \vec{\delta}_\theta^T \big( J(\vec{\theta} + \vec{\delta}_\theta) - J(\vec{\theta}) \big)                                                            & \\
+						\iff                                                                          &                                                                                                                                                              &
+						\pdv{J(\vec{\theta})}{\vec{\theta}}                                           & \approx \vec{\delta}_\theta^T \big( \vec{\delta}_\theta \vec{\delta}_\theta^T \big)^{-1} \big( J(\vec{\theta} + \vec{\delta}_\theta) - J(\vec{\theta}) \big) &
 					\end{align*}
 					This can be used to update a single parameter estimate, e.g. the mean. A large class of algorithms uses this technique: Kiefer-Wolfowitz Procedure, Robbins-Monroe, Simultaneous Perturbation Stochastic Approximation (SPSA), Random Search, \dots
 				% end
@@ -2704,10 +2704,10 @@
 					BY applied this to the gradient of the expected return, the gradient turns into an expectation that can be approximated using Monte-Carlo integration
 					\begin{align}
 						\grad_{\!\vec{\omega}} J(\vec{\omega})
-							&= \grad_{\!\vec{\omega}} \!\int\! \pi(\vec{\theta}; \vec{\omega}) R_{\vec{\theta}} \dd{\vec{\theta}}
-							 = \int\! \grad_{\!\vec{\omega}} \pi(\vec{\theta}; \vec{\omega}) R_{\vec{\theta}} \dd{\vec{\theta}}  \nonumber \\
-							&= \int\! \pi(\vec{\theta}; \vec{\omega}) R_{\vec{\theta}} \grad_{\!\vec{\omega}} \ln \pi(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}}  \nonumber \\
-							&\approx \frac{1}{N} \sum_{i = 1}^{N} R^{[i]} \, \grad_{\!\vec{\omega}} \ln \pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big) \eqqcolon \grad_{\!\vec{\omega}}^\mathrm{MC} J(\vec{\omega})  \label{eq:episodicPolicyGradientGradient}
+						 & = \grad_{\!\vec{\omega}} \!\int\! \pi(\vec{\theta}; \vec{\omega}) R_{\vec{\theta}} \dd{\vec{\theta}}
+						= \int\! \grad_{\!\vec{\omega}} \pi(\vec{\theta}; \vec{\omega}) R_{\vec{\theta}} \dd{\vec{\theta}}  \nonumber                                                                                                                       \\
+						 & = \int\! \pi(\vec{\theta}; \vec{\omega}) R_{\vec{\theta}} \grad_{\!\vec{\omega}} \ln \pi(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}}  \nonumber                                                                                \\
+						 & \approx \frac{1}{N} \sum_{i = 1}^{N} R^{[i]} \, \grad_{\!\vec{\omega}} \ln \pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big) \eqqcolon \grad_{\!\vec{\omega}}^\mathrm{MC} J(\vec{\omega})  \label{eq:episodicPolicyGradientGradient}
 					\end{align}
 					with \(N\) samples \( \vec{\theta}^{[i]} \sim \pi(\cdot; \vec{\omega}) \) and the respective rewards \( R^{[i]} \coloneqq R_{\vec{\theta}^{[i]}} \). This gradient is called the \emph{Parameter Exploring Policy Gradient} (PGPE). The log-ratio trick is needed and Monte-Carlo estimation can not directly be applied to the expectation as that would require differentiation of the sampling which is not possible.
 				% end
@@ -2716,10 +2716,10 @@
 					As mentioned in \autoref{subsec:episodeBasedPolicySearch}, the total undiscounted reward \( R_{\vec{\theta}} \) in episode-based evaluation exhibits a very high variance. This variance can be reduced by using step-based evaluation and the reward to come \( Q_t^{[i]} \) as defined in \eqref{eq:policyGradientRewardToCome} instead. This requires maximizing the expected reward \( J(\vec{\theta}) \) as defined in \eqref{eq:policyGradientStepBasedObjective} instead as step-based policy gradient methods to not work with upper- and lower-level policies but rather optimize the policy \( \pi(\vec{a} \given \vec{s}; \vec{\theta}) \) directly. By again using the log-ratio trick, the gradient \( \grad_{\!\vec{\theta}} J(\vec{\theta}) \) can be approximated as
 					\begin{align}
 						\grad_{\!\vec{\theta}} J(\vec{\theta})
-							&= \grad_{\!\vec{\theta}} \!\int\! p(\vec{\tau}; \vec{\theta}) R_{\vec{\tau}} \dd{\vec{\tau}}
-							 = \int\! \grad_{\!\vec{\theta}} p(\vec{\tau}; \vec{\theta}) R_{\vec{\tau}} \dd{\vec{\tau}}  \nonumber \\
-							&= \int\! p(\vec{\tau}; \vec{\theta}) R_{\vec{\tau}} \grad_{\!\vec{\theta}} \ln p(\vec{\tau}; \vec{\theta}) \dd{\vec{\tau}}  \nonumber \\
-							&\approx \frac{1}{N} \sum_{i = 1}^{N} R^{[i]} \grad_{\!\vec{\theta}} \ln p\big(\vec{\tau}^{[i]}; \vec{\theta}\big) \eqqcolon \grad_{\!\vec{\omega}}^\mathrm{MC} J(\vec{\omega})  \label{eq:policyGradientStepBasedMonteCarlo}
+						 & = \grad_{\!\vec{\theta}} \!\int\! p(\vec{\tau}; \vec{\theta}) R_{\vec{\tau}} \dd{\vec{\tau}}
+						= \int\! \grad_{\!\vec{\theta}} p(\vec{\tau}; \vec{\theta}) R_{\vec{\tau}} \dd{\vec{\tau}}  \nonumber                                                                                                                           \\
+						 & = \int\! p(\vec{\tau}; \vec{\theta}) R_{\vec{\tau}} \grad_{\!\vec{\theta}} \ln p(\vec{\tau}; \vec{\theta}) \dd{\vec{\tau}}  \nonumber                                                                                        \\
+						 & \approx \frac{1}{N} \sum_{i = 1}^{N} R^{[i]} \grad_{\!\vec{\theta}} \ln p\big(\vec{\tau}^{[i]}; \vec{\theta}\big) \eqqcolon \grad_{\!\vec{\omega}}^\mathrm{MC} J(\vec{\omega})  \label{eq:policyGradientStepBasedMonteCarlo}
 					\end{align}
 					with the trajectory distribution \( p(\vec{\tau}; \vec{\theta}) \) and \(N\) samples \( \vec{\tau}^{[i]} \sim p(\cdot; \vec{\theta}) \) and the respective rewards \( R^{[i]} \coloneqq R_{\vec{\tau}^{[i]}} \). What remains is to calculate the gradient of logarithm of the trajectory distribution. Applying the logarithm to the distribution \eqref{eq:policyGradientTrajectoryDistribution} yields
 					\begin{equation*}
@@ -2728,19 +2728,19 @@
 					where the last terms are constant w.r.t. \(\vec{\theta}\). Hence, these terms vanish when taking the gradient w.r.t. \(\vec{\theta}\). Plugging this result into the Monte-Carlo approximation \eqref{eq:policyGradientStepBasedMonteCarlo} yields
 					\begin{equation*}
 						\grad_{\!\vec{\omega}}^\mathrm{MC} J(\vec{\omega})
-							= \frac{1}{N} \sum_{i = 1}^{N} \sum_{t = 1}^{T - 1} R^{[i]} \, \grad_{\!\vec{\theta}} \ln \pi\big(\vec{a}_t^{[i]} \Biggiven \vec{s}_t^{[i]}; \vec{\theta}\big)
+						= \frac{1}{N} \sum_{i = 1}^{N} \sum_{t = 1}^{T - 1} R^{[i]} \, \grad_{\!\vec{\theta}} \ln \pi\big(\vec{a}_t^{[i]} \Biggiven \vec{s}_t^{[i]}; \vec{\theta}\big)
 					\end{equation*}
 					which is called the REINFORCE algorithm. But this still used the total rewards with high variance! As the rewards in the past are not correlated with the actions in the future, i.e.
 					\begin{equation*}
 						\E_{p(\vec{\tau})}\big[ r_t \grad_{\!\vec{\theta}} \ln \pi(\vec{a}_h \given \vec{s}_h; \vec{\theta}) \big]
-							\,\oversetfootnotemark{=}\, \E_{p(\vec{\tau})}[r_t] \, \underbrace{\E_{p(\vec{\tau}; \vec{\theta})}\big[ \grad_{\!\vec{\theta}} \ln \pi(\vec{a}_h \given \vec{s}_h; \vec{\theta}) \big]}_{\mathclap{=\, \grad_{\!\vec{\theta}} \E_{p(\vec{\tau}; \vec{\theta})}[1] \,=\, \grad_{\!\vec{\theta}} 1 \,=\, 0}}
-							= 0
+						\,\oversetfootnotemark{=}\, \E_{p(\vec{\tau})}[r_t] \, \underbrace{\E_{p(\vec{\tau}; \vec{\theta})}\big[ \grad_{\!\vec{\theta}} \ln \pi(\vec{a}_h \given \vec{s}_h; \vec{\theta}) \big]}_{\mathclap{=\, \grad_{\!\vec{\theta}} \E_{p(\vec{\tau}; \vec{\theta})}[1] \,=\, \grad_{\!\vec{\theta}} 1 \,=\, 0}}
+						= 0
 					\end{equation*}
 					holds for all \( h > t \), replacing the total reward with the reward to come only scales the gradient. This is called the \emph{policy gradient theorem}. The result gradient then is
 					\begin{equation*}
 						\grad_{\!\vec{\omega}}^\mathrm{MC} J(\vec{\omega})
-							\propto \grad_{\!\vec{\theta}}^\mathrm{PG} J(\vec{\theta})
-							= \frac{1}{N} \sum_{i = 1}^{N} \sum_{t = 1}^{T - 1} Q_t^{[i]} \, \grad_{\!\vec{\theta}} \ln \pi\big(\vec{a}_t^{[i]} \Biggiven \vec{s}_t^{[i]}; \vec{\theta}\big).
+						\propto \grad_{\!\vec{\theta}}^\mathrm{PG} J(\vec{\theta})
+						= \frac{1}{N} \sum_{i = 1}^{N} \sum_{t = 1}^{T - 1} Q_t^{[i]} \, \grad_{\!\vec{\theta}} \ln \pi\big(\vec{a}_t^{[i]} \Biggiven \vec{s}_t^{[i]}; \vec{\theta}\big).
 					\end{equation*}
 
 					\footnotetext{As \(r_t\) and \(\vec{a}_h\) are independent for \(h > t\).}
@@ -2750,23 +2750,23 @@
 					A big problem with likelihood ratio policy gradients is that they exhibit a high variance. But this variance can be reduced by subtracting a baseline \(b_i\) from the reward:
 					\begin{equation}
 						\grad_{\!\vec{\omega}}^\mathrm{MC} J(\vec{\omega})
-							= \frac{1}{N} \sum_{i = 1}^{N} \big(R^{[i]} - b^{[i]}\big) \grad_{\!\vec{\omega}} \ln \pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big)  \label{eq:policyGradientWithBaseline}
+						= \frac{1}{N} \sum_{i = 1}^{N} \big(R^{[i]} - b^{[i]}\big) \grad_{\!\vec{\omega}} \ln \pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big)  \label{eq:policyGradientWithBaseline}
 					\end{equation}
 					If the baseline is good, this trick can lower the variance of the estimate. It is still an unbiased estimator as the expectation of the baseline \(b\) vanishes:
 					\begin{align*}
 						\E_{p(\vec{\theta}; \vec{\omega})}\big[ \grad_{\!\vec{\omega}} \ln p(\vec{\theta}; \vec{\omega}) b \big]
-							&= \int\! p(\vec{\theta}; \vec{\omega}) \grad_{\!\vec{\omega}} \ln p(\vec{\theta}; \vec{\omega}) b \dd{\vec{\theta}}
-							 = b \int\! p(\vec{\theta}; \vec{\omega}) \grad_{\!\vec{\omega}} \ln p(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}} \\
-							&= b \int\! \grad_{\!\vec{\omega}} p(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}}
-							 = b \grad_{\!\vec{\omega}} \!\int\!  p(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}}
-							 = b \grad_{\!\vec{\omega}} 1
-							 = b \cdot 0
-							 = 0
+						 & = \int\! p(\vec{\theta}; \vec{\omega}) \grad_{\!\vec{\omega}} \ln p(\vec{\theta}; \vec{\omega}) b \dd{\vec{\theta}}
+						= b \int\! p(\vec{\theta}; \vec{\omega}) \grad_{\!\vec{\omega}} \ln p(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}}    \\
+						 & = b \int\! \grad_{\!\vec{\omega}} p(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}}
+						= b \grad_{\!\vec{\omega}} \!\int\!  p(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}}
+						= b \grad_{\!\vec{\omega}} 1
+						= b \cdot 0
+						= 0
 					\end{align*}
 					A usually good baseline is the average reward, but there also exists an optimal baseline for each algorithm that minimizes the variance of the gradient estimate. The principle of subtracting baselines can analogously be applied to step-based gradients
 					\begin{equation*}
 						\grad_{\!\vec{\theta}}^\mathrm{PG} J(\vec{\theta})
-							= \frac{1}{N} \sum_{i = 1}^{N} \sum_{t = 1}^{T - 1} \big( Q_t^{[i]} - b_i\big(\vec{s}_t^{[i]}\big) \!\big) \grad_{\!\vec{\theta}} \ln \pi\big(\vec{a}_t^{[i]} \given \vec{s}_t^{[i]}; \vec{\theta}\big).
+						= \frac{1}{N} \sum_{i = 1}^{N} \sum_{t = 1}^{T - 1} \big( Q_t^{[i]} - b_i\big(\vec{s}_t^{[i]}\big) \!\big) \grad_{\!\vec{\theta}} \ln \pi\big(\vec{a}_t^{[i]} \given \vec{s}_t^{[i]}; \vec{\theta}\big).
 					\end{equation*}
 					where the baseline might even vary with the state. As long as the baseline does not change with the action, the expectation vanishes and the estimator is unbiased.
 				% end
@@ -2779,13 +2779,13 @@
 			An important factor when using policy gradient methods is the step size \(\alpha\) in the policy update
 			\begin{align*}
 				\vec{\omega}_{k + 1} = \vec{\omega}_k + \alpha \grad_{\!\vec{\omega}} J(\vec{\omega})
-				&&
+				 &  &
 				\vec{\theta}_{k + 1} = \vec{\theta}_k + \alpha \grad_{\!\vec{\theta}} J(\vec{\theta})
 			\end{align*}
 			for episode- or step-based evaluation, respectively. The simplest (naive) idea is to constrain the policy update using a distance metric in the parameter space, for example the Euclidean distance \( L_2(\pi_{k + 1}, \pi_k) \) defined as
 			\begin{align*}
 				L_2(\pi_{k + 1}, \pi_k) \coloneqq \lVert \vec{\omega}_{k + 1} - \vec{\omega}_k \rVert
-				&&
+				 &  &
 				L_2(\pi_{k + 1}, \pi_k) \coloneqq \lVert \vec{\theta}_{k + 1} - \vec{\theta}_k \rVert
 			\end{align*}
 			for the episode- and step-based evaluation, respectively. With a constraint
@@ -2801,11 +2801,11 @@
 			By choosing a good matrix \(\mat{M}\), different influence like in the example above can be captured. Using this metric can be incorporated into the gradient ascent with a separate optimization problem for the ascent direction \( \vec{\delta}_\theta \):
 			\begin{equation}
 				\begin{aligned}
-					\vec{\delta}_\theta^\ast = \arg\max_{\vec{\delta}_\theta} \,& \big( \grad_{\!\vec{\theta}} J(\vec{\theta}) \big)^T \vec{\delta}_\theta \\
-					\mathrm{s.t.} \quad&
-						\begin{aligned}[t]
-							\vec{\delta}_\theta^T \mat{M} \vec{\delta}_\theta & \leq \epsilon
-						\end{aligned}
+					\vec{\delta}_\theta^\ast = \arg\max_{\vec{\delta}_\theta} \, & \big( \grad_{\!\vec{\theta}} J(\vec{\theta}) \big)^T \vec{\delta}_\theta \\
+					\mathrm{s.t.} \quad                                          &
+					\begin{aligned}[t]
+						\vec{\delta}_\theta^T \mat{M} \vec{\delta}_\theta & \leq \epsilon
+					\end{aligned}
 				\end{aligned}  \label{eq:policyGradientAscentOpt}
 			\end{equation}
 			This optimization problem encodes that the actual ascent direction should stay as close as possible to the steepest ascent direction, i.e. the gradient, but should not create jumps in the policy. The solution to this optimization problem is
@@ -2840,7 +2840,7 @@
 				For the step-based policy gradient with a baseline
 				\begin{equation*}
 					\grad_{\!\vec{\theta}}^\mathrm{PG} J(\vec{\theta})
-						= \frac{1}{N} \sum_{i = 1}^{N} \sum_{t = 1}^{T - 1} \big(Q_t^{[i]} - b_i\big(\vec{s}_t^{[i]}\big)\big) \grad_{\!\vec{\theta}} \ln \pi\big(\vec{a}_t^{[i]} \given \vec{s}_t^{[i]}; \vec{\theta}\big),
+					= \frac{1}{N} \sum_{i = 1}^{N} \sum_{t = 1}^{T - 1} \big(Q_t^{[i]} - b_i\big(\vec{s}_t^{[i]}\big)\big) \grad_{\!\vec{\theta}} \ln \pi\big(\vec{a}_t^{[i]} \given \vec{s}_t^{[i]}; \vec{\theta}\big),
 				\end{equation*}
 				the gradient estimate can be improved by estimating the reward to come with a function approximator
 				\begin{equation*}
@@ -2849,7 +2849,7 @@
 				This approximator works only on the states and actions and does not depend on the time step or the sample sequence. The function approximation (FA) gradient is
 				\begin{equation*}
 					\grad_{\!\vec{\theta}}^\mathrm{FA} J(\vec{\theta})
-						\coloneqq \frac{1}{N} \sum_{i = 1}^{N} \sum_{t = 1}^{T - 1} f_{\vec{w}}\big( \vec{s}_t^{[i]}, \vec{a}_t^{[i]} \big) \, \grad_{\!\vec{\theta}} \ln \pi\big(\vec{a}_t^{[i]} \given \vec{s}_t^{[i]}; \vec{\theta}\big),
+					\coloneqq \frac{1}{N} \sum_{i = 1}^{N} \sum_{t = 1}^{T - 1} f_{\vec{w}}\big( \vec{s}_t^{[i]}, \vec{a}_t^{[i]} \big) \, \grad_{\!\vec{\theta}} \ln \pi\big(\vec{a}_t^{[i]} \given \vec{s}_t^{[i]}; \vec{\theta}\big),
 				\end{equation*}
 				which is still unbiased for the features \( \vec{\psi}(\vec{s}, \vec{a}) = \grad_{\!\vec{\theta}} \ln \pi(\vec{a} \given \vec{s}; \vec{\theta}) \).
 
@@ -2883,18 +2883,18 @@
 			A first idea to find the policy \( \pi\big(\vec{\theta}^{[i]}; \vec{\omega}_{k + 1}\big) \) that best fits the distribution \( p\big(\vec{\theta}^{[i]}\big) \propto w^{[i]} \pi\big(\vec{\theta}^{[i]}; \vec{\omega}_{k + 1}\big) \) is to minimize the KL divergence between the two:
 			\begin{align}
 				\vec{\omega}_{k + 1}
-					&= \arg\min_{\vec{\omega}}\, D_\mathrm{KL}\big( p(\vec{\theta}) \Vert \pi(\vec{\theta}; \vec{\omega}) \big)
-					 = \arg\min_{\vec{\omega}}\, \int\! p(\vec{\theta}) \ln \frac{p(\vec{\theta})}{\pi(\vec{\theta}; \vec{\omega})} \dd{\vec{\theta}}  \nonumber \\
-					&= \arg\min_{\vec{\omega}}\, \underbrace{\int\! p(\vec{\theta}) \ln p(\vec{\theta}) \dd{\vec{\theta}}}_\text{constant w.r.t. \(\pi\)} - \int\! p(\vec{\theta}) \ln \pi(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}}  \nonumber \\
-					&= \arg\max_{\vec{\omega}}\, \int\! p(\vec{\theta}) \ln \pi(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}}
-					 = \arg\max_{\vec{\omega}}\, \int\! \pi(\vec{\theta}; \vec{\omega}) \frac{p(\vec{\theta})}{\pi(\vec{\theta}; \vec{\omega})} \ln \pi(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}}  \nonumber \\
-					&\approx \arg\max_{\vec{\omega}}\, \frac{1}{N} \sum_{i = 1}^{N} \underbrace{\frac{p\big(\vec{\theta}^{[i]}\big)}{\pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big)}}_{=\, w^{[i]}} \ln \pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big)
-					 = \arg\max_{\vec{\omega}} \frac{1}{N} \sum_{i = 1}^{N} w^{[i]} \ln \pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big)  \label{eq:weightedMaxLikelihoodObjective}
+				 & = \arg\min_{\vec{\omega}}\, D_\mathrm{KL}\big( p(\vec{\theta}) \Vert \pi(\vec{\theta}; \vec{\omega}) \big)
+				= \arg\min_{\vec{\omega}}\, \int\! p(\vec{\theta}) \ln \frac{p(\vec{\theta})}{\pi(\vec{\theta}; \vec{\omega})} \dd{\vec{\theta}}  \nonumber                                                                                        \\
+				 & = \arg\min_{\vec{\omega}}\, \underbrace{\int\! p(\vec{\theta}) \ln p(\vec{\theta}) \dd{\vec{\theta}}}_\text{constant w.r.t. \(\pi\)} - \int\! p(\vec{\theta}) \ln \pi(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}}  \nonumber  \\
+				 & = \arg\max_{\vec{\omega}}\, \int\! p(\vec{\theta}) \ln \pi(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}}
+				= \arg\max_{\vec{\omega}}\, \int\! \pi(\vec{\theta}; \vec{\omega}) \frac{p(\vec{\theta})}{\pi(\vec{\theta}; \vec{\omega})} \ln \pi(\vec{\theta}; \vec{\omega}) \dd{\vec{\theta}}  \nonumber                                        \\
+				 & \approx \arg\max_{\vec{\omega}}\, \frac{1}{N} \sum_{i = 1}^{N} \underbrace{\frac{p\big(\vec{\theta}^{[i]}\big)}{\pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big)}}_{=\, w^{[i]}} \ln \pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big)
+				= \arg\max_{\vec{\omega}} \frac{1}{N} \sum_{i = 1}^{N} w^{[i]} \ln \pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big)  \label{eq:weightedMaxLikelihoodObjective}
 			\end{align}
 			This estimate of \( \pi^\mathrm{new}(\vec{\theta}) \) is called the \emph{weighted maximum likelihood estimate}. For a Gaussian policy \( \pi(\vec{\theta}) = \pi(\vec{\theta}; \vec{\omega}) = \mathcal{N}(\vec{\theta} \given \vec{\mu}, \mat{\Sigma}) \) with \( \vec{\omega} = \{ \vec{\mu}, \mat{\Sigma} \} \), the estimates can be computed in closed form
 			\begin{align*}
 				\vec{\mu}_{k + 1} = \frac{1}{W} \sum_{i = 1}^{N} w^{[i]} \vec{\theta}^{[i]}
-				&&
+				 &  &
 				\mat{\Sigma}_{k + 1} = \frac{1}{W} \sum_{i = 1}^{N} w^{[i]} \big( \vec{\theta}^{[i]} - \vec{\mu}_{k + 1} \big) \big( \vec{\theta}^{[i]} - \vec{\mu}_{k + 1} \big)^T
 			\end{align*}
 			with \( W \coloneqq \sum_{i = 1}^{N} w^{[i]} \). Closed-form solutions also exist for more complicated policies like Gaussian mixture models and Gaussian processes. With closed-form solutions, no learning rates are needed!
@@ -2903,7 +2903,7 @@
 				If no closed-form solution exists for a parametric policy \( \pi(\vec{\theta}; \vec{\omega}) \), it is always possible to take the gradient of the objective \eqref{eq:weightedMaxLikelihoodObjective} as
 				\begin{equation*}
 					\grad_{\!\vec{\omega}}\Bigg(\! \frac{1}{N} \sum_{i = 1}^{N} w^{[i]} \ln \pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big) \!\!\Bigg)
-						= \frac{1}{N} \sum_{i = 1}^{N} w^{[i]} \grad_{\!\vec{\omega}} \ln \pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big)
+					= \frac{1}{N} \sum_{i = 1}^{N} w^{[i]} \grad_{\!\vec{\omega}} \ln \pi\big(\vec{\theta}^{[i]}; \vec{\omega}\big)
 				\end{equation*}
 				and maximize the objective with gradient ascent. The form of the gradient is very similar to the gradient to \eqref{eq:episodicPolicyGradientGradient}, the gradient of the episodic policy gradient method. The difference is that instead of the total reward \( R^{[i]} \), the success probabilities \( w^{[i]} \) are used for weighting the samples. If the rewards are directly used for the weights (e.g. if the reward already is an improper probability distribution), policy gradient and weighted maximum likelihood are actually equivalent.
 			% end
@@ -2944,12 +2944,12 @@
 			constraining the information loss between the new policy\footnote{Note REPS does not assume the policy to be parametric. In the following, an upper-level policy is optimized, but it is also possible to directly optimize a policy that produces actions dependent on states. See Peters, Mülling, Altün: "Relative Entropy Policy Search" (2010).} \(\pi(\vec{\theta})\) and the old policy \(q(\vec{\theta})\) to be at most \(\epsilon\). The REPS optimization problem is:
 			\begin{equation}
 				\begin{aligned}
-					\max_\pi \,& \int\! \pi(\vec{\theta}) R(\vec{\theta}) \dd{\vec{\theta}} \\
-					\mathrm{s.t.} \quad&
-						\begin{aligned}[t]
-							D_\mathrm{KL}\big( \pi(\vec{\theta}) \,\Vert\, q(\vec{\theta}) \big) &\leq \epsilon \\
-							\int\! \pi(\vec{\theta}) \dd{\vec{\theta}} &= 1
-						\end{aligned}
+					\max_\pi \,         & \int\! \pi(\vec{\theta}) R(\vec{\theta}) \dd{\vec{\theta}} \\
+					\mathrm{s.t.} \quad &
+					\begin{aligned}[t]
+						D_\mathrm{KL}\big( \pi(\vec{\theta}) \,\Vert\, q(\vec{\theta}) \big) & \leq \epsilon \\
+						\int\! \pi(\vec{\theta}) \dd{\vec{\theta}}                           & = 1
+					\end{aligned}
 				\end{aligned}
 			\end{equation}
 			The analytical solution to this optimization problem is
@@ -2959,19 +2959,19 @@
 			where \( R(\vec{\theta}) \) is the total reward for a parameter \( \vec{\theta} \) and \(\eta\) is the Lagrangian multiplier for the KL constraint. This the same result as for the weighted maximum likelihood approach using the exponential transformation with temperature \( \beta = 1/\eta \). The scaling factor \(\eta\) is determined by the optimization problem and specified by the KL bound \(\epsilon\). To get \(\eta\), the dual objective (approximated with Monte-Carlo integration, \( \vec{\theta}_i \sim q(\cdot) \))
 			\begin{equation*}
 				\eta\epsilon + \ln \int\! q(\vec{\theta}) \exp{\frac{R(\vec{\theta})}{\eta}} \dd{\vec{\theta}}
-					\approx \eta\epsilon + \ln \Bigg(\! \frac{1}{N} \sum_{i = 1}^{N} \exp{\frac{R(\vec{\theta}_i)}{\eta}} \!\Bigg)
+				\approx \eta\epsilon + \ln \Bigg(\! \frac{1}{N} \sum_{i = 1}^{N} \exp{\frac{R(\vec{\theta}_i)}{\eta}} \!\Bigg)
 			\end{equation*}
 			has to be minimized (subject to \( \eta \geq 0 \)). This can be done with standard numerical optimization algorithms like trust-region methods or similar.
 
 			For discrete \(\vec{\theta}\), the optimization problem is
 			\begin{equation}
 				\begin{aligned}
-					\max_\pi \,& \sum_{\vec{\theta}} \pi(\vec{\theta}) R(\vec{\theta}) \\
-					\mathrm{s.t.} \quad&
-						\begin{aligned}[t]
-							D_\mathrm{KL}\big( \pi(\vec{\theta}) \,\Vert\, q(\vec{\theta}) \big) &\leq \epsilon \\
-							\sum_{\vec{\theta}} \pi(\vec{\theta}) &= 1
-						\end{aligned}
+					\max_\pi \,         & \sum_{\vec{\theta}} \pi(\vec{\theta}) R(\vec{\theta}) \\
+					\mathrm{s.t.} \quad &
+					\begin{aligned}[t]
+						D_\mathrm{KL}\big( \pi(\vec{\theta}) \,\Vert\, q(\vec{\theta}) \big) & \leq \epsilon \\
+						\sum_{\vec{\theta}} \pi(\vec{\theta})                                & = 1
+					\end{aligned}
 				\end{aligned}
 			\end{equation}
 			where now the KL divergence is discrete too.
@@ -2979,20 +2979,20 @@
 			\subsubsection{Derivation of REPS}
 				With the multipliers \( \lambda \) and \( \eta \), the Lagrangian of this problem is
 				\begin{align}
-					L[\pi, \lambda, \eta] &=
-						  \int\! \pi(\vec{\theta}) R(\vec{\theta}) \dd{\vec{\theta}}
-						+ \lambda \bigg(\! 1 - \int\! \pi(\vec{\theta}) \dd{\vec{\theta}} \!\!\bigg)
-						+ \eta \big( \epsilon - D_\mathrm{KL}\big( \pi(\vec{\theta}) \,\Vert\, q(\vec{\theta}) \big) \big)  \nonumber \\
-					&=
-						  \int\! \pi(\vec{\theta}) R(\vec{\theta}) \dd{\vec{\theta}}
-						+ \lambda \bigg(\! 1 - \int\! \pi(\vec{\theta}) \dd{\vec{\theta}} \!\!\bigg)
-						+ \eta \bigg(\! \epsilon - \int\! \pi(\vec{\theta}) \ln \frac{\pi(\vec{\theta})}{q(\vec{\theta})} \dd{\vec{\theta}} \!\!\bigg)  \nonumber \\
-					&= (\lambda + \eta \epsilon)
-						+ \int\! \pi(\vec{\theta}) R(\vec{\theta}) \dd{\vec{\theta}}
-						- \lambda \int\! \pi(\vec{\theta}) \dd{\vec{\theta}}
-						- \eta \int\! \pi(\vec{\theta}) \ln \frac{\pi(\vec{\theta})}{q(\vec{\theta})} \dd{\vec{\theta}}  \label{eq:repsLagrangian} \\
-					&= (\lambda + \eta\epsilon)
-						+ \int\! \pi(\vec{\theta}) \bigg[ R(\vec{\theta}) - \lambda - \eta \ln \frac{\pi(\vec{\theta})}{q(\vec{\theta})} \bigg] \dd{\vec{\theta}}.  \nonumber
+					L[\pi, \lambda, \eta] & =
+					\int\! \pi(\vec{\theta}) R(\vec{\theta}) \dd{\vec{\theta}}
+					+ \lambda \bigg(\! 1 - \int\! \pi(\vec{\theta}) \dd{\vec{\theta}} \!\!\bigg)
+					+ \eta \big( \epsilon - D_\mathrm{KL}\big( \pi(\vec{\theta}) \,\Vert\, q(\vec{\theta}) \big) \big)  \nonumber                             \\
+					                      & =
+					\int\! \pi(\vec{\theta}) R(\vec{\theta}) \dd{\vec{\theta}}
+					+ \lambda \bigg(\! 1 - \int\! \pi(\vec{\theta}) \dd{\vec{\theta}} \!\!\bigg)
+					+ \eta \bigg(\! \epsilon - \int\! \pi(\vec{\theta}) \ln \frac{\pi(\vec{\theta})}{q(\vec{\theta})} \dd{\vec{\theta}} \!\!\bigg)  \nonumber \\
+					                      & = (\lambda + \eta \epsilon)
+					+ \int\! \pi(\vec{\theta}) R(\vec{\theta}) \dd{\vec{\theta}}
+					- \lambda \int\! \pi(\vec{\theta}) \dd{\vec{\theta}}
+					- \eta \int\! \pi(\vec{\theta}) \ln \frac{\pi(\vec{\theta})}{q(\vec{\theta})} \dd{\vec{\theta}}  \label{eq:repsLagrangian}                \\
+					                      & = (\lambda + \eta\epsilon)
+					+ \int\! \pi(\vec{\theta}) \bigg[ R(\vec{\theta}) - \lambda - \eta \ln \frac{\pi(\vec{\theta})}{q(\vec{\theta})} \bigg] \dd{\vec{\theta}}.  \nonumber
 				\end{align}
 				To maximize this Lagrangian w.r.t. the primal variable \( \pi(\vec{\theta}) \), the term can be discarded as it does not depend on the primal variable. The remaining integral is a function over the primal variable that can be solved using variational calculus. Let
 				\begin{equation*}
@@ -3001,20 +3001,20 @@
 				be the respective Lagrangian. As \(\mathcal{L}\) does not depend on \( \pi'(\vec{\theta}) \), the Euler-Lagrange equation becomes \( \pdv{\mathcal{L}}{\pi(\vec{\theta})} = 0 \). This yields the algebraic equation
 				\begin{equation*}
 					\pdv{\mathcal{L}}{\pi(\vec{\theta})}
-						= R(\vec{\theta}) - \lambda - \eta \ln \frac{\pi(\vec{\theta})}{q(\vec{\theta})} - \eta \pi(\vec{\theta}) \frac{1}{\pi(\vec{\theta})}
-						= R(\vec{\theta}) - \eta \ln \pi(\vec{\theta}) + \eta \ln q(\vec{\theta}) - (\eta + \lambda)
-						\overset{!}{=} 0
+					= R(\vec{\theta}) - \lambda - \eta \ln \frac{\pi(\vec{\theta})}{q(\vec{\theta})} - \eta \pi(\vec{\theta}) \frac{1}{\pi(\vec{\theta})}
+					= R(\vec{\theta}) - \eta \ln \pi(\vec{\theta}) + \eta \ln q(\vec{\theta}) - (\eta + \lambda)
+					\overset{!}{=} 0
 				\end{equation*}
 				that is easily solvable for \( \pi(\vec{\theta}) \):
 				\begin{align*}
-					&&
-					0 &= R(\vec{\theta}) - \eta \ln \pi(\vec{\theta}) + \eta \ln q(\vec{\theta}) - (\eta + \lambda) & \\
-					\iff&&
-					\eta \ln \pi(\vec{\theta}) &= R(\vec{\theta}) + \eta \ln q(\vec{\theta}) - (\eta + \lambda) & \\
-					\iff&&
-					\ln \pi(\vec{\theta}) &= \frac{R(\vec{\theta})}{\eta} + \ln q(\vec{\theta}) - \frac{\eta + \lambda}{\eta} & \\
-					\iff&&
-					\pi(\vec{\theta}) &= q(\vec{\theta}) \exp{\frac{R(\vec{\theta})}{\eta}} \exp{-\frac{\eta + \lambda}{\eta}} &
+					                           &                                                                                              &
+					0                          & = R(\vec{\theta}) - \eta \ln \pi(\vec{\theta}) + \eta \ln q(\vec{\theta}) - (\eta + \lambda) & \\
+					\iff                       &                                                                                              &
+					\eta \ln \pi(\vec{\theta}) & = R(\vec{\theta}) + \eta \ln q(\vec{\theta}) - (\eta + \lambda)                              & \\
+					\iff                       &                                                                                              &
+					\ln \pi(\vec{\theta})      & = \frac{R(\vec{\theta})}{\eta} + \ln q(\vec{\theta}) - \frac{\eta + \lambda}{\eta}           & \\
+					\iff                       &                                                                                              &
+					\pi(\vec{\theta})          & = q(\vec{\theta}) \exp{\frac{R(\vec{\theta})}{\eta}} \exp{-\frac{\eta + \lambda}{\eta}}      &
 				\end{align*}
 				But the last exponential term is just a normalization factor! Hence, it can also be written as
 				\begin{equation*}
@@ -3025,18 +3025,18 @@
 				To get the dual objective \( h(\lambda, \eta) \), the solution of the primal variable has to be plugged into the Lagrangian \eqref{eq:repsLagrangian}:
 				\begin{align*}
 					h(\lambda, \eta)
-						&= L[\pi^\ast, \lambda, \eta]
-						 = (\lambda + \eta\epsilon)
-							+ \int\! \pi^\ast(\vec{\theta}) R(\vec{\theta}) \dd{\vec{\theta}}
-							- \lambda \underbrace{\int\! \pi^\ast(\vec{\theta}) \dd{\vec{\theta}}}_{=\, 1}
-							- \,\eta \int\! \pi(\vec{\theta}) \ln \frac{\pi^\ast(\vec{\theta})}{q(\vec{\theta})} \dd{\vec{\theta}} \\
-						&= \eta\epsilon + \int\! \pi^\ast(\vec{\theta}) \bigg[ R(\vec{\theta}) - \eta \ln \frac{\pi^\ast(\vec{\theta})}{q(\vec{\theta})} \bigg] \dd{\vec{\theta}} \\
-						&= \eta\epsilon + \int\! \pi^\ast(\vec{\theta}) \bigg[ R(\vec{\theta}) - \eta \ln \frac{q(\vec{\theta}) \exp{\frac{R(\vec{\theta})}{\eta}} \exp{-\frac{\eta + \lambda}{\eta}}}{q(\vec{\theta})} \bigg] \dd{\vec{\theta}} \\
-						&= \eta\epsilon + \int\! \pi^\ast(\vec{\theta}) \bigg[ R(\vec{\theta}) - \eta \ln \bigg(\!\! \exp{\frac{R(\vec{\theta})}{\eta}} \exp{-\frac{\eta + \lambda}{\eta}} \!\bigg) \bigg] \dd{\vec{\theta}} \\
-						&= \eta\epsilon + \int\! \pi^\ast(\vec{\theta}) \bigg[ R(\vec{\theta}) - \eta \frac{R(\vec{\theta})}{\eta} + \eta \frac{\eta + \lambda}{\eta} \bigg] \dd{\vec{\theta}} \\
-						&= \eta\epsilon + \eta \frac{\eta + \lambda}{\eta} \underbrace{\int\! \pi^\ast(\vec{\theta}) \dd{\vec{\theta}}}_{=\, 1}
-						 = \eta\epsilon + \eta \frac{\eta + \lambda}{\eta}
-						 = \eta\epsilon + \ln \int\! q(\vec{\theta}) \exp{\frac{R(\vec{\theta})}{\eta}} \dd{\vec{\theta}}
+					 & = L[\pi^\ast, \lambda, \eta]
+					= (\lambda + \eta\epsilon)
+					+ \int\! \pi^\ast(\vec{\theta}) R(\vec{\theta}) \dd{\vec{\theta}}
+					- \lambda \underbrace{\int\! \pi^\ast(\vec{\theta}) \dd{\vec{\theta}}}_{=\, 1}
+					- \,\eta \int\! \pi(\vec{\theta}) \ln \frac{\pi^\ast(\vec{\theta})}{q(\vec{\theta})} \dd{\vec{\theta}}                                                                                                                     \\
+					 & = \eta\epsilon + \int\! \pi^\ast(\vec{\theta}) \bigg[ R(\vec{\theta}) - \eta \ln \frac{\pi^\ast(\vec{\theta})}{q(\vec{\theta})} \bigg] \dd{\vec{\theta}}                                                                \\
+					 & = \eta\epsilon + \int\! \pi^\ast(\vec{\theta}) \bigg[ R(\vec{\theta}) - \eta \ln \frac{q(\vec{\theta}) \exp{\frac{R(\vec{\theta})}{\eta}} \exp{-\frac{\eta + \lambda}{\eta}}}{q(\vec{\theta})} \bigg] \dd{\vec{\theta}} \\
+					 & = \eta\epsilon + \int\! \pi^\ast(\vec{\theta}) \bigg[ R(\vec{\theta}) - \eta \ln \bigg(\!\! \exp{\frac{R(\vec{\theta})}{\eta}} \exp{-\frac{\eta + \lambda}{\eta}} \!\bigg) \bigg] \dd{\vec{\theta}}                     \\
+					 & = \eta\epsilon + \int\! \pi^\ast(\vec{\theta}) \bigg[ R(\vec{\theta}) - \eta \frac{R(\vec{\theta})}{\eta} + \eta \frac{\eta + \lambda}{\eta} \bigg] \dd{\vec{\theta}}                                                   \\
+					 & = \eta\epsilon + \eta \frac{\eta + \lambda}{\eta} \underbrace{\int\! \pi^\ast(\vec{\theta}) \dd{\vec{\theta}}}_{=\, 1}
+					= \eta\epsilon + \eta \frac{\eta + \lambda}{\eta}
+					= \eta\epsilon + \ln \int\! q(\vec{\theta}) \exp{\frac{R(\vec{\theta})}{\eta}} \dd{\vec{\theta}}
 				\end{align*}
 				By approximating this integral with Monte-Carlo integration, the Lagrangian multiplier \(\eta\) can be calculated.
 			% end
@@ -3050,13 +3050,13 @@
 			The REPS optimization problem for contextual policy search directly optimized the joint distribution \( p(\vec{c}, \vec{\theta}) = \mu_0(\vec{c}) \pi(\vec{\theta} \given \vec{c}) \) instead of conditioning the optimization problem:
 			\begin{equation*}
 				\begin{aligned}
-					\max_p \,& \iint\! p(\vec{c}, \vec{\theta}) R(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} \\
-					\mathrm{s.t.} \quad&
-						\begin{aligned}[t]
-							D_\mathrm{KL}\big( p(\vec{c}, \vec{\theta}) \,\Vert\, q(\vec{c}, \vec{\theta}) \big) &\leq \epsilon \\
-							\iint\! p(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} &= 1 \\
-							\forall \vec{c} : \int\! p(\vec{c}, \vec{\theta}) \dd{\vec{\theta}} &= \mu_0(\vec{c})
-						\end{aligned}
+					\max_p \,           & \iint\! p(\vec{c}, \vec{\theta}) R(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} \\
+					\mathrm{s.t.} \quad &
+					\begin{aligned}[t]
+						D_\mathrm{KL}\big( p(\vec{c}, \vec{\theta}) \,\Vert\, q(\vec{c}, \vec{\theta}) \big) & \leq \epsilon    \\
+						\iint\! p(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}}                      & = 1              \\
+						\forall \vec{c} : \int\! p(\vec{c}, \vec{\theta}) \dd{\vec{\theta}}                  & = \mu_0(\vec{c})
+					\end{aligned}
 				\end{aligned}
 			\end{equation*}
 			Some major problems with this approach are that the context distributions cannot be freely chosen by the algorithm, there are an infinite amount of constraints and for each context a lot of parameter samples are needed.
@@ -3065,39 +3065,39 @@
 				Instead of perfectly matching the context distribution which emits an infinite amount of constraints, one idea is to instead match certain features \( \vec{\phi}(\vec{c}) \), for example the first- and second-order moments \( \vec{\phi}^T(c) = \begin{bmatrix} c & c^2 \end{bmatrix} \). This would be equivalent to matching mean and variance which, for Gaussian distributions, is exact (mean and variance are sufficient statistics). With the target features \( \hat{\vec{\phi}} \), the the optimization problem is given as:
 				\begin{equation*}
 					\begin{aligned}
-						\max_p \,& \iint\! p(\vec{c}, \vec{\theta}) R(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} \\
-						\mathrm{s.t.} \quad&
-							\begin{aligned}[t]
-								D_\mathrm{KL}\big( p(\vec{c}, \vec{\theta}) \,\Vert\, q(\vec{c}, \vec{\theta}) \big) &\leq \epsilon \\
-								\iint\! p(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} &= 1 \\
-								\iint\! p(\vec{c}, \vec{\theta}) \vec{\phi}(\vec{c}) \dd{\vec{c}} \dd{\vec{\theta}} &= \hat{\vec{\phi}}
-							\end{aligned}
+						\max_p \,           & \iint\! p(\vec{c}, \vec{\theta}) R(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} \\
+						\mathrm{s.t.} \quad &
+						\begin{aligned}[t]
+							D_\mathrm{KL}\big( p(\vec{c}, \vec{\theta}) \,\Vert\, q(\vec{c}, \vec{\theta}) \big) & \leq \epsilon      \\
+							\iint\! p(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}}                      & = 1                \\
+							\iint\! p(\vec{c}, \vec{\theta}) \vec{\phi}(\vec{c}) \dd{\vec{c}} \dd{\vec{\theta}}  & = \hat{\vec{\phi}}
+						\end{aligned}
 					\end{aligned}
 				\end{equation*}
 				This optimization problem can again be solved in closed form
 				\begin{equation*}
 					p(\vec{c}, \vec{\theta})
-						= \mu_0(\vec{c}) \pi(\vec{\theta} \given \vec{c})
-						\propto q(\vec{c}, \vec{\theta}) \exp{ \frac{R(\vec{c}, \vec{\theta}) - V(\vec{c})}{\eta} }
+					= \mu_0(\vec{c}) \pi(\vec{\theta} \given \vec{c})
+					\propto q(\vec{c}, \vec{\theta}) \exp{ \frac{R(\vec{c}, \vec{\theta}) - V(\vec{c})}{\eta} }
 				\end{equation*}
 				with \( V(\vec{c}) = \vec{\phi}^T(\vec{c}) \vec{v} \) with the Lagrangian multipliers \(\eta\) and \(\vec{v}\). Those are for the KL and the moment matching constraints, respectively. The Lagrangian multipliers are again given as the solution of the dual optimization problem. The dual function is
 				\begin{align*}
 					h(\eta, \vec{v})
-						&= \eta\epsilon + \hat{\vec{\phi}}^T \vec{v} + \eta \ln \int\! q(\vec{c}, \vec{\theta}) \exp{ \frac{R(\vec{c}, \vec{\theta}) - \vec{\phi}^T(\vec{c}) \vec{v}}{\eta} } \\
-						&\approx \eta\epsilon + \hat{\vec{\phi}}^T \vec{v} + \eta \ln \Bigg(\! \frac{1}{N} \sum_{i = 1}^{N} q(\vec{c}_i, \vec{\theta}_i) \exp{ \frac{R(\vec{c}_i, \vec{\theta}_i) - \vec{\phi}^T(\vec{c}_i) \vec{v}}{\eta} } \!\Bigg)
+					 & = \eta\epsilon + \hat{\vec{\phi}}^T \vec{v} + \eta \ln \int\! q(\vec{c}, \vec{\theta}) \exp{ \frac{R(\vec{c}, \vec{\theta}) - \vec{\phi}^T(\vec{c}) \vec{v}}{\eta} }                                                         \\
+					 & \approx \eta\epsilon + \hat{\vec{\phi}}^T \vec{v} + \eta \ln \Bigg(\! \frac{1}{N} \sum_{i = 1}^{N} q(\vec{c}_i, \vec{\theta}_i) \exp{ \frac{R(\vec{c}_i, \vec{\theta}_i) - \vec{\phi}^T(\vec{c}_i) \vec{v}}{\eta} } \!\Bigg)
 				\end{align*}
 				with Monte-Carlo samples \( (\vec{c}_i, \vec{\theta}_i) \) drawn from \( q(\vec{c}, \vec{\eta}) \).
 
 				For discrete \(\vec{c}\) and \(\vec{\theta}\), the optimization problem is
 				\begin{equation*}
 					\begin{aligned}
-						\max_p \,& \sum_{\vec{c}, \vec{\theta}} p(\vec{c}, \vec{\theta}) R(\vec{c}, \vec{\theta}) \\
-						\mathrm{s.t.} \quad&
-							\begin{aligned}[t]
-								D_\mathrm{KL}\big( p(\vec{c}, \vec{\theta}) \,\Vert\, q(\vec{c}, \vec{\theta}) \big) &\leq \epsilon \\
-								\sum_{\vec{c}, \vec{\theta}} p(\vec{c}, \vec{\theta}) &= 1 \\
-								\sum_{\vec{c}, \vec{\theta}} p(\vec{c}, \vec{\theta}) \vec{\phi}(\vec{c}) &= \hat{\vec{\phi}}
-							\end{aligned}
+						\max_p \,           & \sum_{\vec{c}, \vec{\theta}} p(\vec{c}, \vec{\theta}) R(\vec{c}, \vec{\theta}) \\
+						\mathrm{s.t.} \quad &
+						\begin{aligned}[t]
+							D_\mathrm{KL}\big( p(\vec{c}, \vec{\theta}) \,\Vert\, q(\vec{c}, \vec{\theta}) \big) & \leq \epsilon      \\
+							\sum_{\vec{c}, \vec{\theta}} p(\vec{c}, \vec{\theta})                                & = 1                \\
+							\sum_{\vec{c}, \vec{\theta}} p(\vec{c}, \vec{\theta}) \vec{\phi}(\vec{c})            & = \hat{\vec{\phi}}
+						\end{aligned}
 					\end{aligned}
 				\end{equation*}
 				where now the KL divergence is discrete too.
@@ -3114,9 +3114,9 @@
 						\vec{k}^T \\
 						\mat{K}^T
 					\end{bmatrix} = \big( \mat{C}^T \mat{D} \mat{C} \big)^{-1} \mat{C}^T \mat{D} \mat{A}
-					&&
+					 &  &
 					\mat{\Sigma} = \frac{1}{\sum_{i = 1}^{N} w_i} \sum_{i = 1}^{N} w^{[i]} \big( \vec{\theta}^{[i]} - \vec{\mu}^{[i]} \big) \big( \vec{\theta}^{[i]} - \vec{\mu}^{[i]} \big)
-					&&
+					 &  &
 					\vec{\mu}^{[i]} \coloneqq \mat{K} \vec{c}^{[i]} + \vec{k}
 				\end{align*}
 				where the weights \( w^{[i]} \) are computed some how (e.g. using the exponential transformation) and the samples \( \vec{c}^{[i]} \) and \( \vec{\theta}^{[i]} \) are drawn from the previous distribution. Here, \(\mat{C}\) is the input data matrix (with an appended \(1\) for the bias), \(\mat{D}\) is a diagonal weighting matrix and \(\mat{A}\) is the parameter matrix.
@@ -3129,26 +3129,26 @@
 			The naive hierarchical approach is to define the joint distribution \( p(\vec{c}, \vec{\theta}, o) = \mu_0(\vec{c}) \pi(\vec{\theta} \given \vec{c}, o) \pi(o \given \vec{c}) \) and solve the optimization problem
 			\begin{equation*}
 				\begin{aligned}
-					\max_p \,& \sum_o \iint\! p(\vec{c}, \vec{\theta}, o) R(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} \\
-					\mathrm{s.t.} \quad&
-						\begin{aligned}[t]
-							D_\mathrm{KL}\big( p(\vec{c}, \vec{\theta}, o) \,\Vert\, q(\vec{c}, \vec{\theta}, o) \big) &\leq \epsilon \\
-							\sum_o \iint\! p(\vec{c}, \vec{\theta}, o) \dd{\vec{c}} \dd{\vec{\theta}} &= 1 \\
-							\sum_o \iint\! p(\vec{c}, \vec{\theta}, o) \vec{\phi}(\vec{c}) \dd{\vec{c}} \dd{\vec{\theta}} &= \hat{\vec{\phi}}
-						\end{aligned}
+					\max_p \,           & \sum_o \iint\! p(\vec{c}, \vec{\theta}, o) R(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} \\
+					\mathrm{s.t.} \quad &
+					\begin{aligned}[t]
+						D_\mathrm{KL}\big( p(\vec{c}, \vec{\theta}, o) \,\Vert\, q(\vec{c}, \vec{\theta}, o) \big)    & \leq \epsilon      \\
+						\sum_o \iint\! p(\vec{c}, \vec{\theta}, o) \dd{\vec{c}} \dd{\vec{\theta}}                     & = 1                \\
+						\sum_o \iint\! p(\vec{c}, \vec{\theta}, o) \vec{\phi}(\vec{c}) \dd{\vec{c}} \dd{\vec{\theta}} & = \hat{\vec{\phi}}
+					\end{aligned}
 				\end{aligned}
 			\end{equation*}
 			while still matching the features. But this optimization problem does not enforce versatile solutions, i.e. multiple options are learned, but no separated between them is done. The insight to solve this is that versatile solutions are characterized by a small overlap in the solutions. This can be represented as limiting the entropy of \( p(o \given \vec{c}, \vec{\theta}) \). This leads to the optimization problem underlying \emph{Hierarchical REPS} (HiREPS):
 			\begin{equation*}
 				\begin{aligned}
-					\max_p \,& \sum_o \iint\! p(\vec{c}, \vec{\theta}, o) R(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} \\
-					\mathrm{s.t.} \quad&
-						\begin{aligned}[t]
-							D_\mathrm{KL}\big( p(\vec{c}, \vec{\theta}, o) \,\Vert\, q(\vec{c}, \vec{\theta}, o) \big) &\leq \epsilon \\
-							\sum_o \iint\! p(\vec{c}, \vec{\theta}, o) \dd{\vec{c}} \dd{\vec{\theta}} &= 1 \\
-							\sum_o \iint\! p(\vec{c}, \vec{\theta}, o) \vec{\phi}(\vec{c}) \dd{\vec{c}} \dd{\vec{\theta}} &= \hat{\vec{\phi}} \\
-							\sum_o \iint\! p(\vec{c}, \vec{\theta}, o) \big[\! -p(o \given \vec{c}, \vec{\theta}) \ln p(o \given \vec{c}, \vec{\theta}) \big] \dd{\vec{c}} \dd{\vec{\theta}} &\leq \kappa
-						\end{aligned}
+					\max_p \,           & \sum_o \iint\! p(\vec{c}, \vec{\theta}, o) R(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} \\
+					\mathrm{s.t.} \quad &
+					\begin{aligned}[t]
+						D_\mathrm{KL}\big( p(\vec{c}, \vec{\theta}, o) \,\Vert\, q(\vec{c}, \vec{\theta}, o) \big)                                                                       & \leq \epsilon      \\
+						\sum_o \iint\! p(\vec{c}, \vec{\theta}, o) \dd{\vec{c}} \dd{\vec{\theta}}                                                                                        & = 1                \\
+						\sum_o \iint\! p(\vec{c}, \vec{\theta}, o) \vec{\phi}(\vec{c}) \dd{\vec{c}} \dd{\vec{\theta}}                                                                    & = \hat{\vec{\phi}} \\
+						\sum_o \iint\! p(\vec{c}, \vec{\theta}, o) \big[\! -p(o \given \vec{c}, \vec{\theta}) \ln p(o \given \vec{c}, \vec{\theta}) \big] \dd{\vec{c}} \dd{\vec{\theta}} & \leq \kappa
+					\end{aligned}
 				\end{aligned}
 			\end{equation*}
 			Of course this can readily be adapted to discrete states and parameters by swapping the integrals for sums. The solution of this optimization problem actually learns versatile solutions!
@@ -3166,13 +3166,13 @@
 			With \( p_k(\vec{c}, \vec{\theta}) = \mu_k(\vec{c}) \pi(\vec{\theta} \given \vec{c}) \), the optimization problem of \emph{Sequential REPS} is
 			\begin{equation*}
 				\begin{aligned}
-					\max_p \,& \sum_{k = 1}^{K} \iint\! p_k(\vec{c}, \vec{\theta}) R_k(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} \\
-					\mathrm{s.t.} \quad&
-						\begin{aligned}[t]
-							D_\mathrm{KL}\big( p_k(\vec{c}, \vec{\theta}) \,\Vert\, q_k(\vec{c}, \vec{\theta}) \big) &\leq \epsilon,\, \forall k \\
-							\iint\! p_k(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} &= 1,\, \forall k \\
-							\iint\! p_{k - 1}(\vec{c}, \vec{\theta}) p(\vec{c}' \given \vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} &= p_k(\vec{c}'),\, \forall k > 1
-						\end{aligned}
+					\max_p \,           & \sum_{k = 1}^{K} \iint\! p_k(\vec{c}, \vec{\theta}) R_k(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} \\
+					\mathrm{s.t.} \quad &
+					\begin{aligned}[t]
+						D_\mathrm{KL}\big( p_k(\vec{c}, \vec{\theta}) \,\Vert\, q_k(\vec{c}, \vec{\theta}) \big)                         & \leq \epsilon,\, \forall k       \\
+						\iint\! p_k(\vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}}                                                & = 1,\, \forall k                 \\
+						\iint\! p_{k - 1}(\vec{c}, \vec{\theta}) p(\vec{c}' \given \vec{c}, \vec{\theta}) \dd{\vec{c}} \dd{\vec{\theta}} & = p_k(\vec{c}'),\, \forall k > 1
+					\end{aligned}
 				\end{aligned}
 			\end{equation*}
 			with the solution
@@ -3313,9 +3313,9 @@
 				Assuming the reward function is linear in some features \( \vec{\phi}(\vec{s}) \), i.e. \( r(\vec{s}) = \vec{w}^T \vec{\phi}(\vec{s}) \), the right hand side of \eqref{eq:inverseRLBasicPrinciple} becomes
 				\begin{equation*}
 					\E_{p, \pi}\Bigg[ \sum_{t = 1}^{\infty} \gamma^t r(\vec{s}_t) \Bigg]
-						= \E_{p, \pi}\Bigg[ \sum_{t = 1}^{\infty} \gamma^t \vec{w}^T \vec{\phi}(\vec{s}) \Bigg]
-						= \vec{w}^T \underbrace{\E_{p, \pi}\Bigg[ \sum_{t = 1}^{\infty} \gamma^t \vec{\phi}(\vec{s}) \Bigg]}_{\vec{\psi}(\pi) \,\coloneqq}
-						\doteq \vec{w}^T \vec{\psi}(\pi)
+					= \E_{p, \pi}\Bigg[ \sum_{t = 1}^{\infty} \gamma^t \vec{w}^T \vec{\phi}(\vec{s}) \Bigg]
+					= \vec{w}^T \underbrace{\E_{p, \pi}\Bigg[ \sum_{t = 1}^{\infty} \gamma^t \vec{\phi}(\vec{s}) \Bigg]}_{\vec{\psi}(\pi) \,\coloneqq}
+					\doteq \vec{w}^T \vec{\psi}(\pi)
 				\end{equation*}
 				with \( \vec{\psi}(\pi) \) being the expected discounted features of policy \(\pi\). The feasibility problem \eqref{eq:inverseRLBasicPrinciple} now is for find some \( \vec{w}^\ast \) such that
 				\begin{equation*}
@@ -3328,11 +3328,11 @@
 				To deal with the challenge that the problem is ill-posed, it is possible to enforce a predefined reward margin of \(1\) in the optimization problem. The optimization problem can be written as
 				\begin{equation*}
 					\begin{aligned}
-						\min_{\vec{w}} \,& \vec{w}^T \vec{w} \\
-						\mathrm{s.t.} \quad&
-							\begin{aligned}
-								\forall\pi : \vec{w}^T \vec{\psi}(\pi^\ast) &\geq \vec{w}^T \vec{\psi}(\pi) + 1
-							\end{aligned}
+						\min_{\vec{w}} \,   & \vec{w}^T \vec{w} \\
+						\mathrm{s.t.} \quad &
+						\begin{aligned}
+							\forall\pi : \vec{w}^T \vec{\psi}(\pi^\ast) & \geq \vec{w}^T \vec{\psi}(\pi) + 1
+						\end{aligned}
 					\end{aligned}
 				\end{equation*}
 				where the optimization objective serves as regularization of the parameters. This enforced margin does not change the problem much as it can be absorbed in the weights/features (e.g. by introducing a bias feature), but does not allow \( \vec{w} = \vec{0} \) as solution anymore. This is called the \emph{max. margin} solution.
@@ -3340,11 +3340,11 @@
 				A more sophisticated approach is to use a metric \( m(\pi^\ast, \pi) \) to measure the distance between two policies (e.g. the sum of minimum distances from the path generated by \(\pi^\ast\) for the path generated by \(\pi\)) and use this metric as the minimum reward margin:
 				\begin{equation*}
 					\begin{aligned}
-						\min_{\vec{w}} \,& \vec{w}^T \vec{w} \\
-						\mathrm{s.t.} \quad&
-							\begin{aligned}
-								\forall\pi : \vec{w}^T \vec{\psi}(\pi^\ast) &\geq \vec{w}^T \vec{\psi}(\pi) + m(\pi^\ast, \pi)
-							\end{aligned}
+						\min_{\vec{w}} \,   & \vec{w}^T \vec{w} \\
+						\mathrm{s.t.} \quad &
+						\begin{aligned}
+							\forall\pi : \vec{w}^T \vec{\psi}(\pi^\ast) & \geq \vec{w}^T \vec{\psi}(\pi) + m(\pi^\ast, \pi)
+						\end{aligned}
 					\end{aligned}
 				\end{equation*}
 				The justification for this is that the reward margin should be larger for policies that are very different for \(\pi^\ast\).
@@ -3354,11 +3354,11 @@
 				Instead of enforcing all constraints, it is possible to add slack variables \(\xi\) to the inequality constraints to allow them to be violate a bit:
 				\begin{equation*}
 					\begin{aligned}
-						\min_{\vec{w}, \xi} \,& \vec{w}^T \vec{w} + C \xi \\
-						\mathrm{s.t.} \quad&
-							\begin{aligned}
-								\forall\pi : \vec{w}^T \vec{\psi}(\pi^\ast) &\geq \vec{w}^T \vec{\psi}(\pi) + m(\pi^\ast, \pi) - \xi
-							\end{aligned}
+						\min_{\vec{w}, \xi} \, & \vec{w}^T \vec{w} + C \xi \\
+						\mathrm{s.t.} \quad    &
+						\begin{aligned}
+							\forall\pi : \vec{w}^T \vec{\psi}(\pi^\ast) & \geq \vec{w}^T \vec{\psi}(\pi) + m(\pi^\ast, \pi) - \xi
+						\end{aligned}
 					\end{aligned}
 				\end{equation*}
 				The altering of the objective ensures that the slack variables do not get too high which could lead allowing improper solutions. This resolved the challenge of expert suboptimality.
@@ -3382,13 +3382,13 @@
 				Given the first- and second-order moments \(m_1\) and \(m_2\), the distribution with the maximum entropy is given as the solution of
 				\begin{equation*}
 					\begin{aligned}
-						\max_p \,& \int\! p(x) \big[\! -\!\ln p(x) \big] \dd{x} \\
-						\mathrm{s.t.} \quad&
-							\begin{aligned}[t]
-								\int\! p(x) \dd{x} &= 1 \\
-								\int\! p(x) x \dd{x} &= m_1 \\
-								\int\! p(x) x^2 \dd{x} &= m_2
-							\end{aligned}
+						\max_p \,           & \int\! p(x) \big[\! -\!\ln p(x) \big] \dd{x} \\
+						\mathrm{s.t.} \quad &
+						\begin{aligned}[t]
+							\int\! p(x) \dd{x}     & = 1   \\
+							\int\! p(x) x \dd{x}   & = m_1 \\
+							\int\! p(x) x^2 \dd{x} & = m_2
+						\end{aligned}
 					\end{aligned}
 				\end{equation*}
 				where the first constraint specifies that \(p(x)\) is actually a distribution. The solution to this problem is
@@ -3402,12 +3402,12 @@
 				Similarly to inference, the max. entropy approach can be applied to inverse RL with a trajectory distribution \( p(\vec{\tau}) \) and certain features \( \vec{\psi}(\vec{\tau}) \) that have to match \( \vec{\psi}(\pi^\ast) \). The optimization problem is
 				\begin{equation*}
 					\begin{aligned}
-						\max_p \,& \int\! p(\vec{\tau}) \big[\! -\!\ln p(\vec{\tau}) \big] \dd{\vec{\tau}} \\
-						\mathrm{s.t.} \quad&
-							\begin{aligned}[t]
-								\int\! p(\vec{\tau}) \dd{\vec{\tau}} &= 1 \\
-								\int\! p(\vec{\tau}) \vec{\psi}(\vec{\tau}) \dd{\vec{\tau}} &= \vec{\psi}(\pi^\ast)
-							\end{aligned}
+						\max_p \,           & \int\! p(\vec{\tau}) \big[\! -\!\ln p(\vec{\tau}) \big] \dd{\vec{\tau}} \\
+						\mathrm{s.t.} \quad &
+						\begin{aligned}[t]
+							\int\! p(\vec{\tau}) \dd{\vec{\tau}}                        & = 1                    \\
+							\int\! p(\vec{\tau}) \vec{\psi}(\vec{\tau}) \dd{\vec{\tau}} & = \vec{\psi}(\pi^\ast)
+						\end{aligned}
 					\end{aligned}
 				\end{equation*}
 				and has the solution
@@ -3421,13 +3421,13 @@
 				In contrast for "normal" max. entropy for inverse RL, \emph{maximum-causal-entropy inverse RL} also includes the state dynamics as a constraint:
 				\begin{equation*}
 					\begin{aligned}
-						\max_\pi \,& \sum_t \iint\! \mu_t(\vec{s}) \pi_t(\vec{a} \given \vec{s}) \ln \pi_t(\vec{a} \given \vec{s}) \dd{\vec{s}} \dd{\vec{a}} \\
-						\mathrm{s.t.} \quad&
-							\begin{aligned}[t]
-								\forall \vec{s} : \int\! \pi(\vec{a} \given \vec{s}) &= 1 \\
-								\sum_t \int\! \mu_t(\vec{s}) \vec{\phi}(\vec{s}) &= \vec{\psi}(\pi^\ast) \\
-								\iint\! \mu_{t - 1}(\vec{s}) \pi_{t - 1}(\vec{a} \given \vec{s}) p(\vec{s}' \given \vec{s}, \vec{a}) \dd{\vec{s}} \dd{\vec{a}} &= \mu_t(\vec{s}_t')
-							\end{aligned}
+						\max_\pi \,         & \sum_t \iint\! \mu_t(\vec{s}) \pi_t(\vec{a} \given \vec{s}) \ln \pi_t(\vec{a} \given \vec{s}) \dd{\vec{s}} \dd{\vec{a}} \\
+						\mathrm{s.t.} \quad &
+						\begin{aligned}[t]
+							\forall \vec{s} : \int\! \pi(\vec{a} \given \vec{s})                                                                           & = 1                    \\
+							\sum_t \int\! \mu_t(\vec{s}) \vec{\phi}(\vec{s})                                                                               & = \vec{\psi}(\pi^\ast) \\
+							\iint\! \mu_{t - 1}(\vec{s}) \pi_{t - 1}(\vec{a} \given \vec{s}) p(\vec{s}' \given \vec{s}, \vec{a}) \dd{\vec{s}} \dd{\vec{a}} & = \mu_t(\vec{s}_t')
+						\end{aligned}
 					\end{aligned}
 				\end{equation*}
 				As usual, the first constraint specifies that \(\pi\) is actual a distribution. The second and third constraint specify that the features are matched and that the transition dynamics distribution is consistent. The solution to this optimization problem is
@@ -3498,10 +3498,10 @@
 		\centering
 		\begin{tabular}{c|c|c}
 			\textbf{Likelihood} \( p(\mathcal{D} \given \vec{w}) \) & \textbf{Parameter} \( \vec{w} \) & \textbf{Conjugate Prior} \( p(\vec{w}) \) \\ \hline
-			                       Bernoulli                        &              \(p\)               &                   Beta                    \\
-			                        Poisson                         &           \(\lambda\)            &                   Gamma                   \\
-			                       Gaussian                         &             \(\mu\)              &                 Gaussian                  \\
-			                       Gaussian                         &           \(\sigma^2\)           &               Inverse Gamma
+			Bernoulli                                               & \(p\)                            & Beta                                      \\
+			Poisson                                                 & \(\lambda\)                      & Gamma                                     \\
+			Gaussian                                                & \(\mu\)                          & Gaussian                                  \\
+			Gaussian                                                & \(\sigma^2\)                     & Inverse Gamma
 		\end{tabular}
 		\caption{Examples for Conjugate Likelihood-Prior-Pairs}
 		\label{tab:conjugatePrior}
@@ -3514,11 +3514,11 @@
 			Consider three restaurants \(a_1\), \(a_2\), and \(a_3\) and the binary reward \( r \in \{ 0, 1 \} \) where \(1\) encodes that the meal was delicious and \(0\) encodes that it was not. Let the reward be
 			\begin{equation*}
 				p(r = 1 \given a) =
-					\begin{cases}
-						0.05 & \text{for } a = a_1 \\
-						0.1  & \text{for } a = a_2 \\
-						0.85 & \text{for } a = a_3
-					\end{cases}
+				\begin{cases}
+					0.05 & \text{for } a = a_1 \\
+					0.1  & \text{for } a = a_2 \\
+					0.85 & \text{for } a = a_3
+				\end{cases}
 			\end{equation*}
 			so every restaurant is capable of serving delicious meals, but with different odds. Three strategies for maximizing the reward are now:
 			\begin{enumerate}
@@ -3529,7 +3529,7 @@
 			Obviously the first approach will not maximize the reward. This section focuses on the third approach. For the model for \( p(r \given a) \), simply calculate the frequencies of the past rewards for each restaurant -- this yields a binomial likelihood distribution. Then put a Prior \( \mathrm{Beta}(p_a; \alpha_a, \beta_a) \) on the probabilities \( p_a \) for each restaurant. With \( \alpha_a = \beta_a = 2 \), the prior has a mean and mode of \(0.5\) which facilitates exploration. The posterior \( p(a \given r) = \mathrm{Beta}(a \given r; \tilde{\alpha}_a, \tilde{\beta}_a) \) can then be computed in closed form as the Beta distribution is a conjugate prior for the Binomial likelihood. The new parameters are
 			\begin{align*}
 				\tilde{\alpha}_a = \alpha_a + \sum_{i = 1}^{n_a} r_a^{[i]}
-				&&
+				 &  &
 				\tilde{\beta}_a = \beta_a + n_a - \sum_{i = 1}^{n_a} r_a^{[i]}
 			\end{align*}
 			where \( (\alpha_a, \beta_a) \) are the parameters of the prior, \(n_a\) are the frequencies and \(r_a^{[i]}\) are the reward for each restaurant \(a\). In practice, it is easier to compute the joint distribution for each restaurant and marginalize as needed.
@@ -3571,10 +3571,10 @@
 			This leaves the belief model to be unknown. But as \(b(\vec{\theta})\) is a conjugate prior for the likelihood \( P(s' \given s, a; \vec{\theta}) \), it is possible to just set the believe model to one if the next belief equals the posterior belief:
 			\begin{equation*}
 				P(b' \given s, b, a, s') =
-					\begin{cases}
-						1 & \text{if } b'(\vec{\theta}) = b(\vec{\theta} \given s, a, s') \\
-						0 & \text{otherwise}
-					\end{cases}
+				\begin{cases}
+					1 & \text{if } b'(\vec{\theta}) = b(\vec{\theta} \given s, a, s') \\
+					0 & \text{otherwise}
+				\end{cases}
 			\end{equation*}
 
 		% end
@@ -3598,8 +3598,8 @@
 		By also adding a prior \(p(\vec{s}_t)\) on the state, it is possible to integrate the state out too (where \( \vec{z}_t \coloneqq (\vec{s}_t, \vec{w}) \)):
 		\begin{equation*}
 			p(\vec{s}_{t + 1})
-				= \iint\! p(\vec{s}_{t + 1} \given \vec{s}_t, \vec{a}_t, \vec{w}) p(\vec{s}_t) p(\vec{w}) \dd{\vec{s}_t} \dd{\vec{w}}
-				\doteq \int\! p(\vec{s}_{t + 1} \given \vec{z}_t, \vec{a}_t) p(\vec{z}_t) \dd{\vec{z}_t}
+			= \iint\! p(\vec{s}_{t + 1} \given \vec{s}_t, \vec{a}_t, \vec{w}) p(\vec{s}_t) p(\vec{w}) \dd{\vec{s}_t} \dd{\vec{w}}
+			\doteq \int\! p(\vec{s}_{t + 1} \given \vec{z}_t, \vec{a}_t) p(\vec{z}_t) \dd{\vec{z}_t}
 		\end{equation*}
 		This way incremental learning can be incorporated into the dynamics model
 		\begin{equation*}
@@ -3614,21 +3614,21 @@
 			\end{equation*}
 			and the reward function\footnote{The reward gain \(R\) was omitted as a one-dimensional reward function can be normalized w.r.t. \(R\) by dividing both errors by \(R\).} \( r(s_{t + 1}, a_t) = -s_{t + 1}^2 - H a_t^2 \). The optimal one-step action can be derived by maximizing \( r(s_{t + 1}, a_t) \):
 			\begin{align*}
-				&& \pdv{\E_{s_{t + 1}}\big[ r(s_{t + 1}, a_t) \biggiven a_t \big]}{a_t}
-					&= -\pdv{a_t} \Big( \E_{s_{t + 1}}\big[ s_{t + 1}^2 \biggiven a_t \big] + H a_t^2 \Big)
-					= -\pdv{a_t} \Big(\! \big( A s_t + B a_t \big)^2 + \sigma_\eta^2 + H a_t^2 \Big) & \\
-					&&&= -\pdv{a_t} \Big(\! \big( A s_t + B a_t \big)^2 + H a_t^2 \Big)
-					\propto (A s_t + B a_t) B + H a_t \overset{!}{=} 0 & \\
-				&&\implies a_t^\ast &= -\frac{A B s_t}{H + B^2} &
+				                                                                                 &                                                                                        & \pdv{\E_{s_{t + 1}}\big[ r(s_{t + 1}, a_t) \biggiven a_t \big]}{a_t}
+				                                                                                 & = -\pdv{a_t} \Big( \E_{s_{t + 1}}\big[ s_{t + 1}^2 \biggiven a_t \big] + H a_t^2 \Big)
+				= -\pdv{a_t} \Big(\! \big( A s_t + B a_t \big)^2 + \sigma_\eta^2 + H a_t^2 \Big) &                                                                                                                                                                                                                                    \\
+				                                                                                 &                                                                                        &                                                                      & = -\pdv{a_t} \Big(\! \big( A s_t + B a_t \big)^2 + H a_t^2 \Big)
+				\propto (A s_t + B a_t) B + H a_t \overset{!}{=} 0                               &                                                                                                                                                                                                                                    \\
+				                                                                                 &                                                                                        & \implies a_t^\ast                                                    & = -\frac{A B s_t}{H + B^2}                                       &
 			\end{align*}
 			Considering a Bayesian time-varying uncertainty model \( B_t \sim \mathcal{N}(\mu_{B, t}, \sigma_{B, t}^2) \), the "certainty equivalent" optimal one-step control is:
 			\begin{align*}
-				&& \pdv{\E_{s_{t + 1}, B_t}\big[ r(s_{t + 1}, a_t) \biggiven a_t \big]}{a_t}
-					&= -\pdv{a_t} \Big( \E_{s_{t + 1}, B_t}\big[ s_{t + 1}^2 \biggiven a_t \big] + H a_t^2 \Big) & \\
-					&&&= -\pdv{a_t} \Big( \E_{\eta, B_t}\big[ (A s_t + B_t a_t + \eta)^2 \biggiven a_t \big] + H a_t^2 \Big) & \\
-					&&&\oversetfootnotemark{=} -\pdv{a_t} \Big(\! \big( A s_t + \mu_{B, t} a_t \big)^2 + \sigma_{B, t}^2 a_t^2 + \sigma_\eta^2 + H a_t^2 \Big) & \\
-					&&&\propto (A s_t + \mu_{B, t} a_t) \mu_{B, t} + \sigma_{B, t}^2 a_t + H a_t \overset{!}{=} 0 & \\
-				&&\implies a_t^\mathrm{CE} &= -\frac{A \mu_{B, t} s_t}{H + \mu_{B, t}^2 + \sigma_{B, t}^2}
+				 &                                                                                             & \pdv{\E_{s_{t + 1}, B_t}\big[ r(s_{t + 1}, a_t) \biggiven a_t \big]}{a_t}
+				 & = -\pdv{a_t} \Big( \E_{s_{t + 1}, B_t}\big[ s_{t + 1}^2 \biggiven a_t \big] + H a_t^2 \Big) &                                                                                                                                                                                                                       \\
+				 &                                                                                             &                                                                           & = -\pdv{a_t} \Big( \E_{\eta, B_t}\big[ (A s_t + B_t a_t + \eta)^2 \biggiven a_t \big] + H a_t^2 \Big)                                   & \\
+				 &                                                                                             &                                                                           & \oversetfootnotemark{=} -\pdv{a_t} \Big(\! \big( A s_t + \mu_{B, t} a_t \big)^2 + \sigma_{B, t}^2 a_t^2 + \sigma_\eta^2 + H a_t^2 \Big) & \\
+				 &                                                                                             &                                                                           & \propto (A s_t + \mu_{B, t} a_t) \mu_{B, t} + \sigma_{B, t}^2 a_t + H a_t \overset{!}{=} 0                                              & \\
+				 &                                                                                             & \implies a_t^\mathrm{CE}                                                  & = -\frac{A \mu_{B, t} s_t}{H + \mu_{B, t}^2 + \sigma_{B, t}^2}
 			\end{align*}
 			This result has the interesting property that as the uncertainty \( \sigma_{B, t}^2 \) increases, the control input decreases! This is the uncertainty-based regularization that was introduced earlier on and is usually known as the "caution" or "turn-off phenomenon".
 			\footnotetext{

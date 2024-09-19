@@ -32,8 +32,6 @@ fi
 
 echo "Starting build."
 cd "$document_dir"
-echo "Copying fdsummary class and tuda_logo."
-cp -r "$root/sys/tuda_logo.pdf" "$root/pkg/"* .
 "$root/bin/compile-summary"
 
 if [[ ! -f "$document_pdf" ]]; then

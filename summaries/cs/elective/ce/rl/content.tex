@@ -61,8 +61,8 @@
 			\begin{tabular}{c||cc}
 				\toprule
 				            & actions \emph{do not} change the state of the world & actions change the state of the world \\ \midrule
-				 no model   &                (Multi-Armed) Bandits                &        Reinforcement Learning         \\
-				known model &                   Decision Theory                   &       Optimal Control, Planning       \\ \bottomrule
+				no model    & (Multi-Armed) Bandits                               & Reinforcement Learning                \\
+				known model & Decision Theory                                     & Optimal Control, Planning             \\ \bottomrule
 			\end{tabular}
 			\caption{Problem Classification}
 			\label{tab:problemClassification}
@@ -145,8 +145,8 @@
 		\subsection{Monte-Carlo Estimation}
 			Let \(X\) be a random variable with mean \( \mu = \E[X] \) and variance \( \sigma^2 = \Var[X] \) and let \( \{ x_i \}_{i = 1}^{n} \) be i.i.d. realizations of \(X\). We then have the \emph{empirical mean} \( \hat{\mu}_n = \frac{1}{n} \sum_{i = 1}^{n} x_i \) and we can show that \( \E[\hat{\mu}_n] = \mu \) and \( \Var[\hat{\mu}_n] = \sigma^2/n \). Also, if the sample size \(n\) goes to infinity, we have the \emph{strong} and \emph{weak law of large numbers,} respectively:
 			\begin{align}
-				P\bigl( \lim\limits_{n \to \infty} \hat{\mu}_n = \mu \bigr) &= 1 &
-				\lim\limits_{n \to \infty} P\bigl( \lvert \hat{\mu}_n - \mu \rvert > \epsilon \bigr) &= 0
+				P\bigl( \lim\limits_{n \to \infty} \hat{\mu}_n = \mu \bigr)                          & = 1 &
+				\lim\limits_{n \to \infty} P\bigl( \lvert \hat{\mu}_n - \mu \rvert > \epsilon \bigr) & = 0
 			\end{align}
 			Also, we have the \emph{central limit theorem:} no matter the distribution of \(P\), its mean value converges to a normal distribution, \( \sqrt{n} (\hat{\mu}_n - \mu) \overset{D}{\to} \mathcal{N}(0, \sigma^2) \).
 		% end
@@ -195,13 +195,13 @@
 			If we want to estimate the expectation of some function \(f(x)\) for \( x \sim p(x) \), but cannot sample from \(p(x)\) (which is often the case for complicated models), we can instead use the following relation(s):
 			\begin{gather}
 				\E_{x \sim p}\bigl[ f(x) \bigr]
-					= \sum_x f(x) p(x)
-					= \sum_x f(x) \frac{p(x)}{q(x)} q(x)
-					= \E_{x \sim q} \biggl[ f(x) \frac{p(x)}{q(x)} \biggr] \\
+				= \sum_x f(x) p(x)
+				= \sum_x f(x) \frac{p(x)}{q(x)} q(x)
+				= \E_{x \sim q} \biggl[ f(x) \frac{p(x)}{q(x)} \biggr] \\
 				\E_{x \sim p}\bigl[ f(x) \bigr]
-					= \int\! f(x) p(x) \dd{x}
-					= \int\! f(x) \frac{p(x)}{q(x)} p(x) \dd{x}
-					= \E_{x \sim q} \biggl[ f(x) \frac{p(x)}{q(x)} \biggr]
+				= \int\! f(x) p(x) \dd{x}
+				= \int\! f(x) \frac{p(x)}{q(x)} p(x) \dd{x}
+				= \E_{x \sim q} \biggl[ f(x) \frac{p(x)}{q(x)} \biggr]
 			\end{gather}
 			and sample from a surrogate distribution \(q(x)\). This approach obviously has problems if \(q\) does not cover \(p\) sufficiently well along with other problems. See Bishop, 2006, Chapter 11 for details.
 		% end
@@ -214,8 +214,8 @@
 			\paragraph{Polynomial Features}
 				\emph{Polynomial features} are particularly simple and capture the interaction between dimensions by multiplication. For instance, the first- and second-order polynomial features of a two-dimensional state \( \vec{x} = (x_1, x_2)^\transposed \) are:
 				\begin{align}
-					\vec{\phi}_\mathit{P1}(\vec{x}) &= (1, x_1, x_2, x_1 x_2)^\transposed &
-					\vec{\phi}_\mathit{P2}(\vec{x}) &= (1, x_1, x_2, x_1 x_2, x_1^2, x_2^2, x_1 x_2^2, x_1^2 x_2, x_1^2, x_2^2)
+					\vec{\phi}_\mathit{P1}(\vec{x}) & = (1, x_1, x_2, x_1 x_2)^\transposed                                       &
+					\vec{\phi}_\mathit{P2}(\vec{x}) & = (1, x_1, x_2, x_1 x_2, x_1^2, x_2^2, x_1 x_2^2, x_1^2 x_2, x_1^2, x_2^2)
 				\end{align}
 				However, the number of features grows \emph{exponentially} with the dimension!
 			% end
@@ -268,9 +268,9 @@
 			to reformulate the derivative of the expectation as
 			\begin{equation}
 				\pdv{\theta} \E_{x \sim p_\theta}[f(x)]
-					= \int\! f(x) \pdv{\theta} p_\theta(x) \dd{x}
-					= \int\! f(x) \biggl( \pdv{\theta} p_\theta(x) \biggr) p_\theta(x) \dd{x}
-					= \E_{x \sim p_\theta} \biggl[ f(x) \, \pdv{\theta} p_\theta(x) \biggr].
+				= \int\! f(x) \pdv{\theta} p_\theta(x) \dd{x}
+				= \int\! f(x) \biggl( \pdv{\theta} p_\theta(x) \biggr) p_\theta(x) \dd{x}
+				= \E_{x \sim p_\theta} \biggl[ f(x) \, \pdv{\theta} p_\theta(x) \biggr].
 			\end{equation}
 			While this is a very powerful approach, the gradient estimator exhibits high variance!
 		% end
@@ -292,8 +292,8 @@
 		\subsection{Useful Integrals}
 			The following hold for a distribution \( p_\theta(x) \):
 			\begin{align}
-				\int\! \pdv{\theta} p_\theta(x) \dd{x} &= 0 &
-				\int\! \pdv{\theta} \log p_\theta(x) \dd{x} &= \int\! \frac{\pdv{\theta} p_\theta(x)}{p_\theta(x)} \dd{x} = 0
+				\int\! \pdv{\theta} p_\theta(x) \dd{x}      & = 0                                                              &
+				\int\! \pdv{\theta} \log p_\theta(x) \dd{x} & = \int\! \frac{\pdv{\theta} p_\theta(x)}{p_\theta(x)} \dd{x} = 0
 				\label{eq:usefulIntegrals}
 			\end{align}
 			The first identity can be shown by swapping the integral and derivative and using the normalization condition of probability densities. For the second we use integration by parts with \( f' = \pdv{\theta} p_\theta(x) \), for which \(f = 0\) due to the first integral. Hence, the second follows.
@@ -314,9 +314,9 @@
 			\begin{tabular}{c|cc}
 				\toprule
 				                  & \multicolumn{2}{c}{\textbf{All states observable?}} \\
-				\textbf{Actions?} &           Yes           &            No             \\ \midrule
-				       Yes        & Markov Decision Process & Partially Observable MDP  \\
-				       No         &      Markov Chain       &    Hidden Markov Model    \\ \bottomrule
+				\textbf{Actions?} & Yes                     & No                        \\ \midrule
+				Yes               & Markov Decision Process & Partially Observable MDP  \\
+				No                & Markov Chain            & Hidden Markov Model       \\ \bottomrule
 			\end{tabular}
 			\caption{Types of Markov Models}
 			\label{tab:markovModels}
@@ -349,15 +349,15 @@
 			Assume w.l.o.g. \( t = 0 \) We proof this by induction. For the base case, let \(k = 1\). Let \( \vec{p}_0 = (p_{0, 1}, p_{0, 2}, \dots, p_{0, n}) \) be an arbitrary probability row vector. By linearity, we have
 			\begin{align}
 				\vec{p}_0 \mat{P}_{ss'}
-					&= \sum_{i = 1}^{n} p_{0, 1} \vec{e}_i^\transposed \mat{P}
-					 = \sum_{i = 1}^{n} p_{0, 1} \mat{P}_i \\
+				 & = \sum_{i = 1}^{n} p_{0, 1} \vec{e}_i^\transposed \mat{P}
+				= \sum_{i = 1}^{n} p_{0, 1} \mat{P}_i                                                             \\
 				\intertext{where \(\mat{P}_i\) is the \(i\)-th row of \(\mat{P}\). Rewriting this equation in terms of explicit transition probabilities, we have}
-					&= \sum_{i = 1}^{n} P(S_0 = i) \sum_{j = 1}^{n} \vec{e}_j^\transposed P(S_1 = j \given S_0 = i)
-					 = \sum_{j = 1}^{n} \vec{e}_j^\transposed \,\sum_{i = 1}^{n} P(S_0 = i) P(S_1 = j \given S_0 = i) \\
-					&= \sum_{j = 1}^{n} \vec{e}_j^\transposed \,\sum_{i = 1}^{n} P(S_1 = j, S_0 = i)
-					 = \sum_{j = 1}^{n} \vec{e}_j^\transposed P(S_1 = j)
-					 = \sum_{j = 1}^{n} p_{1, j} \vec{e}_j^\transposed
-					 = \vec{p}_1.
+				 & = \sum_{i = 1}^{n} P(S_0 = i) \sum_{j = 1}^{n} \vec{e}_j^\transposed P(S_1 = j \given S_0 = i)
+				= \sum_{j = 1}^{n} \vec{e}_j^\transposed \,\sum_{i = 1}^{n} P(S_0 = i) P(S_1 = j \given S_0 = i)  \\
+				 & = \sum_{j = 1}^{n} \vec{e}_j^\transposed \,\sum_{i = 1}^{n} P(S_1 = j, S_0 = i)
+				= \sum_{j = 1}^{n} \vec{e}_j^\transposed P(S_1 = j)
+				= \sum_{j = 1}^{n} p_{1, j} \vec{e}_j^\transposed
+				= \vec{p}_1.
 			\end{align}
 			The first equality is due to the definition of \(\mat{P}_i\), the third is due to the definition of conditional probabilities, the fourth is due to marginalizing out \(S_0\), and the final is just another application of the definit ion of the probability row vector. For the induction step \( k \to k + 1 \), assume that \( \vec{p}_k = \vec{p}_t \mat{P}^k \) holds for some \(k\). We then have \( \vec{p}_{k + 1} = \vec{p}_k \mat{P} = \vec{p}_0 \mat{P}^k \mat{P} = \vec{p}_0 \mat{P}^{k + 1} \) where the first equality is due to the base case and the second is due to the induction hypothesis.
 		\end{proof}
@@ -394,9 +394,9 @@
 			\begin{definition}[Cumulative Reward]
 				The \emph{cumulative reward} summarizes the reward signals of a \ac{MRP}. We define the following:
 				\begin{align}
-					J_t^\mathrm{total} &\coloneqq \sum_{k = 1}^{T} r_{t + k} &
-					J_t^\mathrm{average} &\coloneqq \frac{1}{T} \sum_{k = 1}^{T} r_{t + k} &
-					J_t \equiv J_t^\mathrm{discounted} &\coloneqq \sum_{k = t + 1}^{T} \gamma^{k - t - 1} r_k,
+					J_t^\mathrm{total}                 & \coloneqq \sum_{k = 1}^{T} r_{t + k}                   &
+					J_t^\mathrm{average}               & \coloneqq \frac{1}{T} \sum_{k = 1}^{T} r_{t + k}       &
+					J_t \equiv J_t^\mathrm{discounted} & \coloneqq \sum_{k = t + 1}^{T} \gamma^{k - t - 1} r_k,
 				\end{align}
 				For an infinite horizon, we take the limit of these as \(T \to \infty\).
 			\end{definition}
@@ -405,10 +405,10 @@
 			\end{theorem}
 			\begin{proof}
 				\(
-					J_t = \sum_{k = t + 1}^{T} \gamma^{k - t - 1} r_k
-						= r_{t + 1} + \sum_{k = t + 2}^{T} \gamma^{k - t - 1} r_k
-						= r_{t + 1} + \gamma \sum_{k = t + 2}^{T} \gamma^{k - t - 2} r_k
-						= r_{t + 1} + \gamma J_{t + 1}
+				J_t = \sum_{k = t + 1}^{T} \gamma^{k - t - 1} r_k
+				= r_{t + 1} + \sum_{k = t + 2}^{T} \gamma^{k - t - 1} r_k
+				= r_{t + 1} + \gamma \sum_{k = t + 2}^{T} \gamma^{k - t - 2} r_k
+				= r_{t + 1} + \gamma J_{t + 1}
 				\)
 			\end{proof}
 			\begin{definition}[Return]
@@ -436,10 +436,10 @@
 			\end{theorem}
 			\begin{proof}
 				\(
-					V(s)
-						= \E\bigl[ J_t \biggiven s_t = s \bigr]
-						= R(s) + \gamma \E\bigl[ J_{t + 1} \biggiven s_t = s \bigr]
-						= R(s) + \gamma \E\bigl[ V(s_{t + 1}) \biggiven s_t = s \bigr]
+				V(s)
+				= \E\bigl[ J_t \biggiven s_t = s \bigr]
+				= R(s) + \gamma \E\bigl[ J_{t + 1} \biggiven s_t = s \bigr]
+				= R(s) + \gamma \E\bigl[ V(s_{t + 1}) \biggiven s_t = s \bigr]
 				\)
 			\end{proof}
 			The Bellman equation allows us to decompose the value of any state into its immediate reward and the value of the subsequent states (in expectation). As we only consider discrete \acp{MRP}, we can also express the Bellman equation in matrix form,
@@ -473,8 +473,8 @@
 			\end{definition}
 			Note that we can reduce a deterministic policy \( a = \pi(s) \) to a stochastic one using \( \pi(a \given s) = \mathbbm{1}\!\bigl[ a = \pi(s) \bigr] \) for discrete and \( \pi(a \given s) = \delta\bigl( a - \pi(s) \bigr) \) for continuous action spaces. Given an \ac{MDP} \( \mathcal{M} = \langle \mathcal{S}, \mathcal{A}, \mat{P}, R, \gamma, \iota \rangle \) and a policy \(\pi\), let \( \mathcal{M}^\pi = \langle \mathcal{S}, \mathcal{A}, \mat{P}^\pi, R^\pi, \gamma, \iota \rangle \) be the policy \(\pi\)'s \ac{MRP} with
 			\begin{align}
-				\mat{P}_{ss'}^\pi &= \E_{a \sim \pi(\cdot \given s)}\bigl[ \mat{P}_{ss'}^a \bigr] &
-				R^\pi(s) &= \E_{a \sim \pi(\cdot \given s)}\bigl[ R(s, a) \bigr].
+				\mat{P}_{ss'}^\pi & = \E_{a \sim \pi(\cdot \given s)}\bigl[ \mat{P}_{ss'}^a \bigr] &
+				R^\pi(s)          & = \E_{a \sim \pi(\cdot \given s)}\bigl[ R(s, a) \bigr].
 				\label{eq:mdpToMrp}
 			\end{align}
 			This allows us to apply theory of \acp{MRP} and Markov chains to \acp{MDP}. However, it is often useful to exploit the action distribution instead of reducing it to the state dynamics.
@@ -495,8 +495,8 @@
 				\begin{theorem}[Bellman Expectation Equation]
 					For all states \(s \in \mathcal{S}\), we have the following decompositions:
 					\begin{align}
-						V^\pi(s) &= \E_{a, s'}\bigl[ R(s, a) + \gamma V^\pi(s') \biggiven s \bigr] = \E_{a}\bigl[ Q^\pi(s, a) \bigr] \\
-						Q^\pi(s, a) &= R(s, a) + \gamma \E_{s', a'} \bigl[ Q^\pi(s', a') \biggiven s, a \bigr] = R(s, a) + \gamma \E_{s'}\bigl[ V^\pi(s') \biggiven s, a \bigr]  \label{eq:bellmanExpEqQ}
+						V^\pi(s)    & = \E_{a, s'}\bigl[ R(s, a) + \gamma V^\pi(s') \biggiven s \bigr] = \E_{a}\bigl[ Q^\pi(s, a) \bigr]                                                                   \\
+						Q^\pi(s, a) & = R(s, a) + \gamma \E_{s', a'} \bigl[ Q^\pi(s', a') \biggiven s, a \bigr] = R(s, a) + \gamma \E_{s'}\bigl[ V^\pi(s') \biggiven s, a \bigr]  \label{eq:bellmanExpEqQ}
 					\end{align}
 					Note that the \(Q\)-function decomposition is very similar to the \ac{MRP}-decomposition of the state value function.
 				\end{theorem}
@@ -509,8 +509,8 @@
 				\begin{definition}[Bellman Operator]  \label{def:bellmanOperator}
 					The \emph{Bellman operator} for \(V\) and \(Q\) is an operator \(T^\pi\) mapping from state and action value functions to state and action value functions. It is defined as follows:
 					\begin{align}
-						(T^\pi V)(s) &= \E_{a, s'}\bigl[ R(s, a) + \gamma V(s') \biggiven s \bigr] \\
-						(T^\pi Q)(s, a) &= R(s, a) + \gamma \E_{s', a'} \bigl[ Q(s', a') \biggiven s, a \bigr]
+						(T^\pi V)(s)    & = \E_{a, s'}\bigl[ R(s, a) + \gamma V(s') \biggiven s \bigr]          \\
+						(T^\pi Q)(s, a) & = R(s, a) + \gamma \E_{s', a'} \bigl[ Q(s', a') \biggiven s, a \bigr]
 					\end{align}
 				\end{definition}
 				\begin{theorem}  \label{th:bellmanOperatorContract}
@@ -528,8 +528,8 @@
 				\begin{definition}[Optimality]  \label{def:optimalValueFunc}
 					The optimal state/action-value function is the maximum value over all policies:
 					\begin{align}
-						V^\ast(s) &\coloneqq \max_\pi V^\pi(s) &
-						Q^\ast(s, a) &\coloneqq \max_\pi Q^\pi(s, a).
+						V^\ast(s)    & \coloneqq \max_\pi V^\pi(s)     &
+						Q^\ast(s, a) & \coloneqq \max_\pi Q^\pi(s, a).
 					\end{align}
 					The optimal value function then specifies the \emph{best} possible performance in the \ac{MDP} and we call an \ac{MDP} \emph{solved} when we know the optimal value function.
 				\end{definition}
@@ -543,10 +543,10 @@
 					We can recover the optimal deterministic policy by maximizing \(Q^\ast(s, a)\) over \(a\):
 					\begin{equation}
 						\pi^\ast(s \given a) =
-							\begin{cases*}
-								1 & if \( a = \argmax_{a \in \mathcal{A}} Q^\ast(s, a) \) \\
-								0 & otherwise
-							\end{cases*}
+						\begin{cases*}
+							1 & if \( a = \argmax_{a \in \mathcal{A}} Q^\ast(s, a) \) \\
+							0 & otherwise
+						\end{cases*}
 					\end{equation}
 				\end{remark}
 
@@ -559,10 +559,10 @@
 				\begin{theorem}[Bellman Optimality Equation]
 					For all states \(s \in \mathcal{S}\), we have the following decompositions:
 					\begin{align}
-						V^\ast(s) &= \max_{a \in \mathcal{A}} Q^\ast(s, a)
-						           = \max_{a \in \mathcal{A}} \;\Bigl\{ R(s, a) + \gamma \E_{s'}\bigl[ V^\ast(s') \biggiven s \bigr] \Bigr\} \\
-						Q^\ast(s, a) &= R(s, a) + \gamma \E_{s'}\bigl[ V^\ast(s') \biggiven s \bigr]
-						              = R(s, a) + \gamma \E_{s'}\bigl[ \textstyle\max_{a' \in \mathcal{A}}\displaystyle Q^\ast(s', a') \biggiven s \bigr]  \label{eq:bellmanOptEqQ}
+						V^\ast(s)    & = \max_{a \in \mathcal{A}} Q^\ast(s, a)
+						= \max_{a \in \mathcal{A}} \;\Bigl\{ R(s, a) + \gamma \E_{s'}\bigl[ V^\ast(s') \biggiven s \bigr] \Bigr\} \\
+						Q^\ast(s, a) & = R(s, a) + \gamma \E_{s'}\bigl[ V^\ast(s') \biggiven s \bigr]
+						= R(s, a) + \gamma \E_{s'}\bigl[ \textstyle\max_{a' \in \mathcal{A}}\displaystyle Q^\ast(s', a') \biggiven s \bigr]  \label{eq:bellmanOptEqQ}
 					\end{align}
 				\end{theorem}
 				\begin{proof}
@@ -572,8 +572,8 @@
 				\begin{definition}[Bellman Optimality Operator]  \label{def:bellmanOptimalityOperator}
 					The \emph{Bellman optimality operator} for \(V\) and \(Q\) is an operator \(T^\ast\) mapping from state- and action-value functions to state- and action-value functions. It is defined as follows:
 					\begin{align}
-						(T^\ast V)(s) &= \max_{a \in \mathcal{A}} \;\Bigl\{ R(s, a) + \gamma \E_{s'}\bigl[ V(s') \biggiven s \bigr] \Bigr\} \\
-						(T^\ast Q)(s, a) &= R(s, a) + \gamma \E_{s'}\bigl[ \textstyle\max_{a' \in \mathcal{A}}\displaystyle Q(s', a') \biggiven s \bigr]
+						(T^\ast V)(s)    & = \max_{a \in \mathcal{A}} \;\Bigl\{ R(s, a) + \gamma \E_{s'}\bigl[ V(s') \biggiven s \bigr] \Bigr\}           \\
+						(T^\ast Q)(s, a) & = R(s, a) + \gamma \E_{s'}\bigl[ \textstyle\max_{a' \in \mathcal{A}}\displaystyle Q(s', a') \biggiven s \bigr]
 					\end{align}
 				\end{definition}
 				\begin{theorem}  \label{th:bellmanOptimalityOperatorContract}
@@ -632,8 +632,8 @@
 			In \emph{policy evaluation,} we want to compute the value function \(V^\pi\) for a given policy \(\pi\) (i.e., perform prediction). For this we would either directly solve the Bellman expectation equation using \eqref{eq:closedFormBellman}, but this has complexity \(\mathcal{O}(n^3)\). Instead, we start with some approximation \( V_{k = 0} \) of the value function (which can be arbitrarily bad) and repeatedly apply the Bellman operator (\autoref{def:bellmanOperator}) until convergence:
 			\begin{equation}
 				V^{(k + 1)}(s)
-					\gets (T^\pi V^{(k)})(s)
-					= \sum_{a \in \mathcal{A}} \pi(s \given a) \Biggl( R(s, a) + \gamma \sum_{s' \in \mathcal{S}} P(s' \given s, a) V^{(k)}(s') \Biggr).
+				\gets (T^\pi V^{(k)})(s)
+				= \sum_{a \in \mathcal{A}} \pi(s \given a) \Biggl( R(s, a) + \gamma \sum_{s' \in \mathcal{S}} P(s' \given s, a) V^{(k)}(s') \Biggr).
 			\end{equation}
 			The sequence \(\bigl(V^{(k)}\bigr)_{k = 0}^{\infty}\) converges, by Banach's fixed point theorem and \autoref{th:bellmanOperatorContract}, to the fixed point \(V^\pi\). In matrix form, we can also write this update as \( \vec{V}^{(k + 1)} = \vec{R}^\pi + \gamma \mat{P}^\pi \vec{V}^{(k)} \).
 
@@ -644,9 +644,9 @@
 			In \emph{policy improvement,} we want to use find a better policy \(\pi' \geq \pi\) using \(Q^\pi\). We do this by acting greedily, i.e., \( \pi'(s) = \argmax_{a \in \mathcal{A}} Q^\pi(s, a) \). With this definition, we have the following inequality:
 			\begin{equation}
 				Q^\pi\bigl( s, \pi'(s) \bigr)
-					= \max_{a \in \mathcal{A}} Q^\pi(s, a)
-					\geq Q^\pi\bigl( s, \pi(s) \bigr)
-					= V^\pi(s).
+				= \max_{a \in \mathcal{A}} Q^\pi(s, a)
+				\geq Q^\pi\bigl( s, \pi(s) \bigr)
+				= V^\pi(s).
 			\end{equation}
 			\begin{theorem}[Policy Improvement Theorem]  \label{th:policyImprovement}
 				Let \(\pi\) and \(\pi'\) be policies with \( Q^\pi\bigl( s, \pi'(s) \bigr) \geq V^\pi(s) \). Then \( \pi' \geq \pi \).
@@ -655,12 +655,12 @@
 				By repeatedly applying the premise \((\ast)\), the Bellman expectation equation \((\dagger)\), and the definition of the value function \((\ddagger)\), we find the following inequality chain:
 				\begin{align}
 					V^\pi(s)
-						&\overset{\mathclap{(\ast)}}{\leq} Q^\pi\bigl( s, \pi'(a) \bigr)
-						 \overset{\mathclap{(\dagger)}}{=} \E_{\pi', \mat{P}}\bigl[ r_{t + 1} + \gamma V^\pi(s_{t + 1}) \biggiven s_t = s \bigr]
-						 \overset{\mathclap{(\ast)}}{\leq} \E_{\pi', \mat{P}}\bigl[ r_{t + 1} + \gamma Q^\pi\bigl( s_{t + 1}, \pi'(s_{t + 1}) \bigr) \biggiven s_t = s \bigr] \\
-						&\overset{\mathclap{(\ast\dagger)}}{\leq} \E_{\pi', \mat{P}}\bigl[ r_{t + 1} + \gamma r_{t + 2} + \gamma^2 Q^\pi\bigl( s_{t + 2}, \pi'(s_{t + 2}) \bigr) \biggiven s_t = s \bigr]
-						 \overset{\mathclap{(\ast\dagger)}}{\leq} \E_{\pi', \mat{P}}\bigl[ r_{t + 1} + \gamma r_{t + 2} + \dots \biggiven s_t = s \bigr]
-						 \overset{\mathclap{(\ddagger)}}{=} V^{\pi'}(s)
+					 & \overset{\mathclap{(\ast)}}{\leq} Q^\pi\bigl( s, \pi'(a) \bigr)
+					\overset{\mathclap{(\dagger)}}{=} \E_{\pi', \mat{P}}\bigl[ r_{t + 1} + \gamma V^\pi(s_{t + 1}) \biggiven s_t = s \bigr]
+					\overset{\mathclap{(\ast)}}{\leq} \E_{\pi', \mat{P}}\bigl[ r_{t + 1} + \gamma Q^\pi\bigl( s_{t + 1}, \pi'(s_{t + 1}) \bigr) \biggiven s_t = s \bigr]                                \\
+					 & \overset{\mathclap{(\ast\dagger)}}{\leq} \E_{\pi', \mat{P}}\bigl[ r_{t + 1} + \gamma r_{t + 2} + \gamma^2 Q^\pi\bigl( s_{t + 2}, \pi'(s_{t + 2}) \bigr) \biggiven s_t = s \bigr]
+					\overset{\mathclap{(\ast\dagger)}}{\leq} \E_{\pi', \mat{P}}\bigl[ r_{t + 1} + \gamma r_{t + 2} + \dots \biggiven s_t = s \bigr]
+					\overset{\mathclap{(\ddagger)}}{=} V^{\pi'}(s)
 				\end{align}
 			\end{proof}
 
@@ -687,11 +687,11 @@
 					\vspace{5pt}
 					\tcp{Policy Improvement}
 					\(
-						\pi(a \given s) \gets
-							\begin{cases}
-								1 & \text{if }a = \argmax_{a \in \mathcal{A}} Q^{(\infty)}(s, a) \\
-								0 & \text{otherwise}
-							\end{cases}
+					\pi(a \given s) \gets
+					\begin{cases}
+						1 & \text{if }a = \argmax_{a \in \mathcal{A}} Q^{(\infty)}(s, a) \\
+						0 & \text{otherwise}
+					\end{cases}
 					\) \;
 				}
 				\Return \( V^{(\infty)} \), \( Q^{(\infty)} \), \( \pi \)
@@ -719,17 +719,17 @@
 			First, we show that an application of the Bellman optimality operator to \(V - V^\ast\) is a contraction,
 			\begin{align}
 				\lVert T^\ast V - T^\ast V^\ast \rVert_\infty
-					&= \biggl\lVert \max_{a \in \mathcal{A}} \Bigl\{ R(s, a) + \gamma \E_{s' \sim P(\cdot \given s, a)}\bigl[ V(s') \bigr] \Bigr\} - \max_{a \in \mathcal{A}} \Bigl\{ R(s, a) + \gamma \E_{s' \sim P(\cdot \given s, a)}\bigl[ V^\ast(s') \bigr] \Bigr\} \biggr\rVert_\infty \\
-					&\leq \biggl\lVert \max_{a \in \mathcal{A}} \Bigl\{ R(s, a) + \gamma \E_{s' \sim P(\cdot \given s, a)}\bigl[ V(s') \bigr] - R(s, a) - \gamma \E_{s' \sim P(\cdot \given s, a)}\bigl[ V^\ast(s') \bigr] \Bigr\} \biggr\rVert_\infty \\
-					&= \biggl\lVert \max_{a \in \mathcal{A}} \Bigl\{ \gamma \E_{s' \sim P(\cdot \given s, a)}\bigl[ V(s') \bigr] - \gamma \E_{s' \sim P(\cdot \given s, a)}\bigl[ V^\ast(s') \bigr] \Bigr\} \biggr\rVert_\infty \\
-					&= \gamma \biggl\lVert \max_{a \in \mathcal{A}} \Bigl\{ \E_{s' \sim P(\cdot \given s, a)}\bigl[ V(s') - V^\ast(s') \bigr] \Bigr\} \biggr\rVert_\infty
-					 = \gamma \biggl\lVert \max_{a \in \mathcal{A}} \sum_{s' \in \mathcal{S}} P(s' \given s, a) \bigl( V(s') - V^\ast(s') \bigr) \biggr\rVert_\infty \\
-					&\leq \gamma \biggl\lVert \max_{a \in \mathcal{A}} \max_{s' \in \mathcal{S}} P(s' \given s, a) \bigl( V(s') - V^\ast(s') \bigr) \biggr\rVert_\infty
-					 \leq \gamma \biggl\lVert \max_{a \in \mathcal{A}} \max_{s' \in \mathcal{S}} \, \bigl( V(s') - V^\ast(s') \bigr) \biggr\rVert_\infty \\
-					&= \gamma \max_{s \in \mathcal{S}} \; \biggl\lvert \max_{a \in \mathcal{A}} \max_{s' \in \mathcal{S}} \, \bigl( V(s') - V^\ast(s') \bigr) \biggr\rvert
-					 \leq \gamma \max_{s \in \mathcal{S}} \max_{a \in \mathcal{A}} \max_{s' \in \mathcal{S}} \; \biggl\lvert \bigl( V(s') - V^\ast(s') \bigr) \biggr\rvert \\
-					&= \gamma \max_{s' \in \mathcal{S}} \; \bigl\lvert V(s') - V^\ast(s') \bigr\rvert
-					 = \gamma \bigl\lVert V - V^\ast \bigr\rVert.
+				 & = \biggl\lVert \max_{a \in \mathcal{A}} \Bigl\{ R(s, a) + \gamma \E_{s' \sim P(\cdot \given s, a)}\bigl[ V(s') \bigr] \Bigr\} - \max_{a \in \mathcal{A}} \Bigl\{ R(s, a) + \gamma \E_{s' \sim P(\cdot \given s, a)}\bigl[ V^\ast(s') \bigr] \Bigr\} \biggr\rVert_\infty \\
+				 & \leq \biggl\lVert \max_{a \in \mathcal{A}} \Bigl\{ R(s, a) + \gamma \E_{s' \sim P(\cdot \given s, a)}\bigl[ V(s') \bigr] - R(s, a) - \gamma \E_{s' \sim P(\cdot \given s, a)}\bigl[ V^\ast(s') \bigr] \Bigr\} \biggr\rVert_\infty                                       \\
+				 & = \biggl\lVert \max_{a \in \mathcal{A}} \Bigl\{ \gamma \E_{s' \sim P(\cdot \given s, a)}\bigl[ V(s') \bigr] - \gamma \E_{s' \sim P(\cdot \given s, a)}\bigl[ V^\ast(s') \bigr] \Bigr\} \biggr\rVert_\infty                                                              \\
+				 & = \gamma \biggl\lVert \max_{a \in \mathcal{A}} \Bigl\{ \E_{s' \sim P(\cdot \given s, a)}\bigl[ V(s') - V^\ast(s') \bigr] \Bigr\} \biggr\rVert_\infty
+				= \gamma \biggl\lVert \max_{a \in \mathcal{A}} \sum_{s' \in \mathcal{S}} P(s' \given s, a) \bigl( V(s') - V^\ast(s') \bigr) \biggr\rVert_\infty                                                                                                                            \\
+				 & \leq \gamma \biggl\lVert \max_{a \in \mathcal{A}} \max_{s' \in \mathcal{S}} P(s' \given s, a) \bigl( V(s') - V^\ast(s') \bigr) \biggr\rVert_\infty
+				\leq \gamma \biggl\lVert \max_{a \in \mathcal{A}} \max_{s' \in \mathcal{S}} \, \bigl( V(s') - V^\ast(s') \bigr) \biggr\rVert_\infty                                                                                                                                        \\
+				 & = \gamma \max_{s \in \mathcal{S}} \; \biggl\lvert \max_{a \in \mathcal{A}} \max_{s' \in \mathcal{S}} \, \bigl( V(s') - V^\ast(s') \bigr) \biggr\rvert
+				\leq \gamma \max_{s \in \mathcal{S}} \max_{a \in \mathcal{A}} \max_{s' \in \mathcal{S}} \; \biggl\lvert \bigl( V(s') - V^\ast(s') \bigr) \biggr\rvert                                                                                                                      \\
+				 & = \gamma \max_{s' \in \mathcal{S}} \; \bigl\lvert V(s') - V^\ast(s') \bigr\rvert
+				= \gamma \bigl\lVert V - V^\ast \bigr\rVert.
 			\end{align}
 			Let \(k\) be the iteration and \(V_k\) the corresponding value function. We can then easily see that
 			\begin{equation}
@@ -762,11 +762,11 @@
 			}
 			\tcp{Recover optimal policy.}
 			\(
-				\pi(a \given s) =
-					\begin{cases}
-						1 & \text{if }a = \argmax_{a \in \mathcal{A}} \;\Bigl\{ R(s, a) + \gamma \sum_{s' \in \mathcal{S}} P(s' \given s, a) V^{(k)}(s') \Bigr\} \\
-						0 & \text{otherwise}
-					\end{cases}
+			\pi(a \given s) =
+			\begin{cases}
+				1 & \text{if }a = \argmax_{a \in \mathcal{A}} \;\Bigl\{ R(s, a) + \gamma \sum_{s' \in \mathcal{S}} P(s' \given s, a) V^{(k)}(s') \Bigr\} \\
+				0 & \text{otherwise}
+			\end{cases}
 			\) \;
 			\Return \( V^{(\infty)} \), \( \pi \)
 			\caption{Value Iteration}
@@ -783,10 +783,10 @@
 			\centering
 			\begin{tabular}{ccc}
 				\toprule
-				\textbf{Problem} &           \textbf{Core Equation}            & \textbf{Algorithm} \\ \midrule
-				   Prediction    &              Bellman Exp. Eq.               & Policy Evaluation  \\
-				    Control      & Bellman Exp. Eq., Greedy Policy Improvement &  Policy Iteration  \\
-				    Control      &           Bellman Optimality Eq.            &  Value Iteration   \\ \bottomrule
+				\textbf{Problem} & \textbf{Core Equation}                      & \textbf{Algorithm} \\ \midrule
+				Prediction       & Bellman Exp. Eq.                            & Policy Evaluation  \\
+				Control          & Bellman Exp. Eq., Greedy Policy Improvement & Policy Iteration   \\
+				Control          & Bellman Optimality Eq.                      & Value Iteration    \\ \bottomrule
 			\end{tabular}
 			\caption{Synchronous Dynamic Programming}
 			\label{fig:syncDp}
@@ -917,10 +917,10 @@
 			\centering
 			\begin{tabular}{c|cc}
 				\toprule
-				  \textbf{Method}    & \textbf{Uses Bootstrapping} & \textbf{Uses Sampling} \\ \midrule
-				Dynamic Programming  &             Yes             &           No           \\
-				    Monte-Carlo      &             No              &          Yes           \\
-				Temporal Differences &             Yes             &          Yes           \\ \bottomrule
+				\textbf{Method}      & \textbf{Uses Bootstrapping} & \textbf{Uses Sampling} \\ \midrule
+				Dynamic Programming  & Yes                         & No                     \\
+				Monte-Carlo          & No                          & Yes                    \\
+				Temporal Differences & Yes                         & Yes                    \\ \bottomrule
 			\end{tabular}
 			\caption{Dynamic Programming vs. Monte-Carlo vs. Temporal Difference}
 			\label{fig:comparisonDpMcTd}
@@ -952,9 +952,9 @@
 			which uses the weighting function \( (1 - \lambda) \lambda^{n - 1} \), \( \lambda \in [0, 1) \) for the \(n\)-step return. The factor \((1 - \lambda)\) is necessary for the sum to be convex, i.e.,
 			\begin{equation}
 				(1 - \lambda) \sum_{n = 1}^{\infty} \lambda^{n - 1}
-					= (1 - \lambda) \sum_{n = 0}^{\infty} \lambda^n
-					= (1 - \lambda) \frac{1}{1 - \lambda}
-					= 1.
+				= (1 - \lambda) \sum_{n = 0}^{\infty} \lambda^n
+				= (1 - \lambda) \frac{1}{1 - \lambda}
+				= 1.
 			\end{equation}
 			We call the resulting update \( V(s_t) \gets V(s_t) + \alpha \bigl( J_t^\lambda - V(s_t) \bigr) \) \emph{forward-view TD(\(\lambda\)).} Of course now we are back to the initial problem we tried to avoid using \ac{TD} methods: the forward-view \ac{TD} target can only be computed for complete episodes!
 		% end
@@ -1028,10 +1028,10 @@
 			During decision-making, we have two options: \emph{exploit} the current knowledge to make the best known decision or \emph{explore} and gather more information. In other words, the best long-term options (which we want to find) might involve short-term sacrifices. This dilemma is a fundamental problem in \ac{RL} and we do not have a satisfying solution yet. Two common approaches are \emph{\(\epsilon\)-greedy},
 			\begin{align}
 				a =
-					\begin{cases*}
-						a^\ast & with probability \(1 - \epsilon\) \\
-						\text{random action} & with probability \(\epsilon\)
-					\end{cases*},
+				\begin{cases*}
+					a^\ast               & with probability \(1 - \epsilon\) \\
+					\text{random action} & with probability \(\epsilon\)
+				\end{cases*},
 			\end{align}
 			and \emph{softmax.} A softmax policy biases the action selection towards exploitation. The most common softmax is the Boltzmann distribution
 			\begin{equation}
@@ -1043,29 +1043,29 @@
 				The simplest exploration strategy, \(\epsilon\)-greedy, can also be formulated as a distribution:
 				\begin{equation}
 					\pi(a \given s) =
-						\begin{cases*}
-							\epsilon/m + 1 - \epsilon & if \( a = \argmax_{a \in \mathcal{A}} Q(s, a) \) \\
-							\epsilon/m                & otherwise
-						\end{cases*}
+					\begin{cases*}
+						\epsilon/m + 1 - \epsilon & if \( a = \argmax_{a \in \mathcal{A}} Q(s, a) \) \\
+						\epsilon/m                & otherwise
+					\end{cases*}
 				\end{equation}
 				Interestingly, the \(\epsilon\)-greedy policy still causes monotonic improvements as for any \(\epsilon\)-greedy policy \(\pi\), the \(\epsilon\)-greedy policy w.r.t. \(Q^\pi\) fulfills the premise of the policy improvement theorem (\autoref{th:policyImprovement}):
 				\begin{align}
 					Q^\pi\bigl( s, \pi'(s) \bigr)
-						&= \sum_{a \in \mathcal{A}} \pi'(a \given s) Q^\pi(s, a)
-					 = \sum_{a \in \mathcal{A}} Q^\pi(s, a)
-							\begin{cases*}
-								\epsilon/m + 1 - \epsilon & if \( a = \argmax_{a \in \mathcal{A}} Q^\pi(s, a) \) \\
-								\epsilon/m                & otherwise
-							\end{cases*} \\
-						&\overset{\mathclap{(\ast)}}{=} \frac{\epsilon}{m} \sum_{a \in \mathcal{A}} Q^\pi(s, a) + (1 - \epsilon) \max_{a \in \mathcal{A}} Q^\pi(s, a) \\
-						&\overset{\mathclap{(\dagger)}}{\geq} \frac{\epsilon}{m} \sum_{a \in \mathcal{A}} Q^\pi(s, a) + (1 - \epsilon) \sum_{a \in \mathcal{A}} \frac{\pi(a \given s) - \epsilon/m}{1 - \epsilon} Q^\pi(s, a)
-					 \overset{\mathclap{(\ddagger)}}{=} \sum_{a \in \mathcal{A}} \pi(a \given s) Q^\pi(s, a)
-					 = V^\pi(s)
+					 & = \sum_{a \in \mathcal{A}} \pi'(a \given s) Q^\pi(s, a)
+					= \sum_{a \in \mathcal{A}} Q^\pi(s, a)
+					\begin{cases*}
+						\epsilon/m + 1 - \epsilon & if \( a = \argmax_{a \in \mathcal{A}} Q^\pi(s, a) \) \\
+						\epsilon/m                & otherwise
+					\end{cases*}                                                                                                        \\
+					 & \overset{\mathclap{(\ast)}}{=} \frac{\epsilon}{m} \sum_{a \in \mathcal{A}} Q^\pi(s, a) + (1 - \epsilon) \max_{a \in \mathcal{A}} Q^\pi(s, a)                                                         \\
+					 & \overset{\mathclap{(\dagger)}}{\geq} \frac{\epsilon}{m} \sum_{a \in \mathcal{A}} Q^\pi(s, a) + (1 - \epsilon) \sum_{a \in \mathcal{A}} \frac{\pi(a \given s) - \epsilon/m}{1 - \epsilon} Q^\pi(s, a)
+					\overset{\mathclap{(\ddagger)}}{=} \sum_{a \in \mathcal{A}} \pi(a \given s) Q^\pi(s, a)
+					= V^\pi(s)
 				\end{align}
 				In step \((\ast)\) we explicitly plugged in the policy \(\pi'\) using that its first case is applied exactly once for the maximum of \(Q^\pi(s, a)\). Hence, we can pull it out of the sum. In step \((\dagger)\), we "inverse plugged in" an \(\epsilon\)-greedy policy using the relations
 				\begin{align}
-					\frac{\pi(a \given s) - \epsilon/m}{1 - \epsilon} &= \frac{\epsilon/m - \epsilon/m}{1 - \epsilon} = 0 &
-					\frac{\pi(a \given s) - \epsilon/m}{1 - \epsilon} &= \frac{\epsilon/m + 1 - \epsilon - \epsilon/m}{1 - \epsilon} = 1
+					\frac{\pi(a \given s) - \epsilon/m}{1 - \epsilon} & = \frac{\epsilon/m - \epsilon/m}{1 - \epsilon} = 0                &
+					\frac{\pi(a \given s) - \epsilon/m}{1 - \epsilon} & = \frac{\epsilon/m + 1 - \epsilon - \epsilon/m}{1 - \epsilon} = 1
 				\end{align}
 				for the "maximum" \(a\) and all others, respectively. Note that this maximum is \emph{not} w.r.t. \( Q^\pi(s, a) \) and hence the sum over all actions must be less than or equal to the maximum value of \(Q^\pi(s, a)\). Finally, in step \((\ddagger)\), we used the definition of \(\pi\) and that \(Q^\pi(s, a)\) is its action-value function.
 
@@ -1187,8 +1187,8 @@
 		\subsection{\acs{TD} and Q-Learning}
 			Similar to off-policy \ac{MC}, we can also use importance sampling in \ac{TD} learning by weighing the \ac{TD} error accordingly:
 			\begin{align}
-				\rho_t &= \frac{\pi(a_t \given s_t)}{q(s_t \given a_t)} &
-				V(s_t) &\gets V(s_t) + \alpha \rho_t \delta_t.
+				\rho_t & = \frac{\pi(a_t \given s_t)}{q(s_t \given a_t)} &
+				V(s_t) & \gets V(s_t) + \alpha \rho_t \delta_t.
 			\end{align}
 			Compared to \ac{MC}, the \ac{TD} has much lower variance and the policies only need to be similar over a single step, hence the risk of \(q \approx 0\) is reduced. But we can do better and mitigate the use of importance sampling at all!
 
@@ -1199,8 +1199,8 @@
 			where \( a_t \sim q(\cdot \given s_t) \) is sampled from the behavioral policy and \( a' \sim \pi(\cdot \given s_{t + 1}) \) is sampled from another policy. With a greedy \(\pi\) and, for instance, an \(\epsilon\)-greedy \(q\), the Q-learning target simplifies to
 			\begin{equation}
 				r_{t + 1} + \gamma Q(s_{t + 1}, a')
-					= r_{t + 1} + \gamma Q\bigl( s_{t + 1}, \textstyle\argmax_{a' \in \mathcal{A}}\displaystyle Q(s_{t + 1}, a') \bigr)
-					= r_{t + 1} + \gamma \textstyle\max_{a' \in \mathcal{A}}\displaystyle Q(s_{t + 1}, a')
+				= r_{t + 1} + \gamma Q\bigl( s_{t + 1}, \textstyle\argmax_{a' \in \mathcal{A}}\displaystyle Q(s_{t + 1}, a') \bigr)
+				= r_{t + 1} + \gamma \textstyle\max_{a' \in \mathcal{A}}\displaystyle Q(s_{t + 1}, a')
 			\end{equation}
 			which we can directly plug into \eqref{eq:qLearningUpdatePre} yielding the following update rule:
 			\begin{equation}
@@ -1242,14 +1242,14 @@
 			\centering
 			\begin{tabular}{c|c}
 				\toprule
-				                               \textbf{Full Backup (Dynamic Programming)}                                 &                              \textbf{Sample Backup (Temporal Differences)}                              \\ \midrule
-				                                       Iterative Policy Evaluation                                        &                                            \acs{TD} Learning                                            \\
-				               \( V(s) \gets \E_{a, s'}\bigl[ R(s, a) + \gamma V(s') \biggiven s \bigr] \)                &                  \( V(s_t) \overset{\alpha}{\gets} r_{t + 1} + \gamma V(s_{t + 1}) \)                   \\
+				\textbf{Full Backup (Dynamic Programming)}                                                                & \textbf{Sample Backup (Temporal Differences)}                                                           \\ \midrule
+				Iterative Policy Evaluation                                                                               & \acs{TD} Learning                                                                                       \\
+				\( V(s) \gets \E_{a, s'}\bigl[ R(s, a) + \gamma V(s') \biggiven s \bigr] \)                               & \( V(s_t) \overset{\alpha}{\gets} r_{t + 1} + \gamma V(s_{t + 1}) \)                                    \\
 				                                                                                                          &                                                                                                         \\
-				                                           Q-Policy Iteration                                             &                                               \acs{SARSA}                                               \\
-				         \( Q(s, a) \gets R(s, a) + \gamma \E_{s', a'}\bigl[ Q(s', a') \biggiven s, a \bigr] \)           &          \( Q(s_t, a_t) \overset{\alpha}{\gets} r_{t + 1} + \gamma Q(s_{t + 1}, a_{t + 1}) \)           \\
+				Q-Policy Iteration                                                                                        & \acs{SARSA}                                                                                             \\
+				\( Q(s, a) \gets R(s, a) + \gamma \E_{s', a'}\bigl[ Q(s', a') \biggiven s, a \bigr] \)                    & \( Q(s_t, a_t) \overset{\alpha}{\gets} r_{t + 1} + \gamma Q(s_{t + 1}, a_{t + 1}) \)                    \\
 				                                                                                                          &                                                                                                         \\
-				                                            Q-Value Iteration                                             &                                               Q-Learning                                                \\
+				Q-Value Iteration                                                                                         & Q-Learning                                                                                              \\
 				\( Q(s, a) \gets R(s, a) + \gamma \E_{s'}\bigl[ \max_{a' \in \mathcal{A}} Q(s', a') \biggiven s \bigr] \) & \( Q(s_t, a_t) \overset{\alpha}{\gets} r_{t + 1} + \gamma \max_{a' \in \mathcal{A}} Q(s_{t + 1}, a') \) \\ \bottomrule
 			\end{tabular}
 			\caption{Relationship Between Dynamic Programming and Temporal Difference Learning}
@@ -1282,8 +1282,8 @@
 	\section{On-Policy Methods}
 		For large state-spaces, it is infeasible to store or update \(V(s)\) and \(Q(s, a)\) in a table. Hence, we use function approximations
 		\begin{align}
-			\hat{V}(s; \vec{w}) &\approx V(s) &
-			\hat{Q}(s, a; \vec{w}) &\approx Q(s, a)
+			\hat{V}(s; \vec{w})    & \approx V(s)    &
+			\hat{Q}(s, a; \vec{w}) & \approx Q(s, a)
 		\end{align}
 		with weights \(\vec{w} \in \R^d\). Common choices are linear regression, neural networks, regression trees, and Gaussian processes. As the weights are far fewer than the states (otherwise the approximation would not make sense), changing a weight affects the approximation of the value \emph{for all states} and may even decrease the accuracy of some. We measure the accuracy using the \emph{\ac{MSVE}}
 		\begin{equation}
@@ -1298,9 +1298,9 @@
 			Assuming the real value function \(V(s)\) is known, we can find suitable parameters \(\vec{w}\) for a differentiable \(V(s; \vec{w})\) by \ac{SGD}. For each time step \(t = 0, 1, \dots\), we can then locally update the weights using the update rule
 			\begin{equation}
 				\vec{w}_{t + 1}
-					\gets \vec{w}_t - \frac{1}{2} \alpha \grad_{\vec{w}} \bigl[ V(s_t) - \hat{V}(s; \vec{w}) \bigr]^2 \Bigr\rvert_{\vec{w} = \vec{w}_t}
-					= \vec{w}_t + \alpha \bigl[ V(s_t) - \hat{V}(s; \vec{w}_t) \bigr] \grad_{\vec{w}} \hat{V}(s_t; \vec{w}) \bigr\rvert_{\vec{w} = \vec{w}_t}
-					\label{eq:sgdFuncApprox}
+				\gets \vec{w}_t - \frac{1}{2} \alpha \grad_{\vec{w}} \bigl[ V(s_t) - \hat{V}(s; \vec{w}) \bigr]^2 \Bigr\rvert_{\vec{w} = \vec{w}_t}
+				= \vec{w}_t + \alpha \bigl[ V(s_t) - \hat{V}(s; \vec{w}_t) \bigr] \grad_{\vec{w}} \hat{V}(s_t; \vec{w}) \bigr\rvert_{\vec{w} = \vec{w}_t}
+				\label{eq:sgdFuncApprox}
 			\end{equation}
 			where \(\alpha > 0\) is the \emph{learning rate.} Note that we update the value function for each step in the trajectory, hence we use a "time" index here. For a proper decay of the learning rate, this is guaranteed to converge to a local optimum. However, we usually do not have access to the real value function---this is why we ultimately need learning!
 		% end
@@ -1332,18 +1332,18 @@
 		\subsection{Semi-Gradient Methods}
 			In chapter \autoref{c:td}, we saw that \ac{MC} methods are not the only way for estimating \(V\) and indeed, we could also use \ac{DP} or bootstrapped \ac{TD} targets, allowing step-based updates and learning from incomplete episodes. The \ac{DP} and \(n\)-step \ac{TD} targets are:
 			\begin{align}
-				U_t &= \E_{a_{t + 1}, s_{t + 1}}\bigl[ R(s_t, a) + \gamma \hat{V}(s_{t + 1}; \vec{w}) \bigr] &
-				U_t &= \sum_{k = t + 1}^{t + n} \gamma^{k - t - 1} r_k + \gamma^n \hat{V}(s_{t + n}; \vec{w}).
+				U_t & = \E_{a_{t + 1}, s_{t + 1}}\bigl[ R(s_t, a) + \gamma \hat{V}(s_{t + 1}; \vec{w}) \bigr]   &
+				U_t & = \sum_{k = t + 1}^{t + n} \gamma^{k - t - 1} r_k + \gamma^n \hat{V}(s_{t + n}; \vec{w}).
 			\end{align}
 			Note, however, that the targets themselves depend on \(\vec{w}\)! As we just ignore this dependence, the result algorithms are called \emph{semi-gradient} \ac{TD} methods. Using a linear approximator \( \hat{V}(s, \vec{w}) = \vec{w}^\transposed \vec{\phi}(s) \) with features \(\vec{\phi}(s)\), the update rule of semi-gradient TD(\(0\)) becomes
 			\begin{align}
 				\vec{w}_{t + 1}
-					&\eqmakebox[sgm][r]{\(\;\gets\;\)} \vec{w}_t + \alpha \Bigl[ r_{t + 1} + \gamma \hat{V}(s_{t + 1}; \vec{w}_t) - \hat{V}(s_t; \vec{w}_t) \Bigr] \grad_{\vec{w}} \hat{V}(s; \vec{w}) \bigr\rvert_{\vec{w} = \vec{w}_t} \\
-					&\eqmakebox[sgm][r]{\(\;=\;\)} \vec{w}_t + \alpha \Bigl[ r_{t + 1} + \gamma \vec{w}_t^\transposed \vec{\phi}(s_{t + 1}) - \vec{w}_t^\transposed \vec{\phi}(s_t) \Bigr] \vec{\phi}(s_t) \\
-					&\eqmakebox[sgm][r]{\(\;=\;\)} \vec{w}_t + \alpha \Bigl[ r_{t + 1} \vec{\phi}(s_t) + \gamma \vec{w}_t^\transposed \vec{\phi}(s_{t + 1}) \vec{\phi}(s_t) - \vec{w}_t^\transposed \vec{\phi}(s_t) \vec{\phi}(s_t) \Bigr] \\
-					&\eqmakebox[sgm][r]{\(\;\overset{\mathclap{(\ast)}}{=}\;\)} \vec{w}_t + \alpha \Bigl[ r_{t + 1} \vec{\phi}(s_t) + \gamma \vec{\phi}(s_t) \vec{\phi}^\transposed(s_{t + 1}) \vec{w}_t - \vec{\phi}(s_t) \vec{\phi}^\transposed(s_t) \vec{w}_t \Bigr] \\
-					&\eqmakebox[sgm][r]{\(\;=\;\)} \vec{w}_t + \alpha \Bigl[ r_{t + 1} \vec{\phi}(s_t) + \vec{\phi}(s_t) \bigl( \gamma \vec{\phi}(s_{t + 1}) - \vec{\phi}(s_t) \bigr)^\transposed \vec{w}_t \Bigr] \\
-					&\eqmakebox[sgm][r]{\(\;=\;\)} \vec{w}_t + \alpha \Bigl[ r_{t + 1} \vec{\phi}(s_t) - \vec{\phi}(s_t) \bigl( \vec{\phi}(s_t) - \gamma \vec{\phi}(s_{t + 1}) \bigr)^\transposed \vec{w}_t \Bigr]
+				 & \eqmakebox[sgm][r]{\(\;\gets\;\)} \vec{w}_t + \alpha \Bigl[ r_{t + 1} + \gamma \hat{V}(s_{t + 1}; \vec{w}_t) - \hat{V}(s_t; \vec{w}_t) \Bigr] \grad_{\vec{w}} \hat{V}(s; \vec{w}) \bigr\rvert_{\vec{w} = \vec{w}_t}                                \\
+				 & \eqmakebox[sgm][r]{\(\;=\;\)} \vec{w}_t + \alpha \Bigl[ r_{t + 1} + \gamma \vec{w}_t^\transposed \vec{\phi}(s_{t + 1}) - \vec{w}_t^\transposed \vec{\phi}(s_t) \Bigr] \vec{\phi}(s_t)                                                              \\
+				 & \eqmakebox[sgm][r]{\(\;=\;\)} \vec{w}_t + \alpha \Bigl[ r_{t + 1} \vec{\phi}(s_t) + \gamma \vec{w}_t^\transposed \vec{\phi}(s_{t + 1}) \vec{\phi}(s_t) - \vec{w}_t^\transposed \vec{\phi}(s_t) \vec{\phi}(s_t) \Bigr]                              \\
+				 & \eqmakebox[sgm][r]{\(\;\overset{\mathclap{(\ast)}}{=}\;\)} \vec{w}_t + \alpha \Bigl[ r_{t + 1} \vec{\phi}(s_t) + \gamma \vec{\phi}(s_t) \vec{\phi}^\transposed(s_{t + 1}) \vec{w}_t - \vec{\phi}(s_t) \vec{\phi}^\transposed(s_t) \vec{w}_t \Bigr] \\
+				 & \eqmakebox[sgm][r]{\(\;=\;\)} \vec{w}_t + \alpha \Bigl[ r_{t + 1} \vec{\phi}(s_t) + \vec{\phi}(s_t) \bigl( \gamma \vec{\phi}(s_{t + 1}) - \vec{\phi}(s_t) \bigr)^\transposed \vec{w}_t \Bigr]                                                      \\
+				 & \eqmakebox[sgm][r]{\(\;=\;\)} \vec{w}_t + \alpha \Bigl[ r_{t + 1} \vec{\phi}(s_t) - \vec{\phi}(s_t) \bigl( \vec{\phi}(s_t) - \gamma \vec{\phi}(s_{t + 1}) \bigr)^\transposed \vec{w}_t \Bigr]
 			\end{align}
 			where \((\ast)\) is due to \( \underbrace{\vec{v}_1^\transposed \vec{v}_2}_\text{scalar} \vec{v}_3 = \vec{v}_3 \vec{v}_1^\transposed \vec{v}_2 \).
 
@@ -1402,8 +1402,8 @@
 	\section{Off-Policy Methods}
 		Of course, we can apply function approximation not only in on-, but also in off-policy methods. For instance, we can apply importance sampling to get off-policy \acs{TD}(\(0\)):
 		\begin{align}
-			\rho_t &= \frac{\phi(a_t \given s_t)}{q(a_t \given s_t)} &
-			\vec{w}_{t + 1} &\gets \vec{w}_t + \alpha \rho_t \delta_t \grad_{\vec{w}} \hat{Q}(s_t, a_t; \vec{w}) \bigr\rvert_{\vec{w} = \vec{w}_t}
+			\rho_t          & = \frac{\phi(a_t \given s_t)}{q(a_t \given s_t)}                                                                      &
+			\vec{w}_{t + 1} & \gets \vec{w}_t + \alpha \rho_t \delta_t \grad_{\vec{w}} \hat{Q}(s_t, a_t; \vec{w}) \bigr\rvert_{\vec{w} = \vec{w}_t}
 		\end{align}
 		with, for instance, \( \delta_t = r_{t + 1} + \gamma \hat{V}(s_{t + 1}; \vec{w}) - \hat{V}(s_t; \vec{w}_t) \).
 
@@ -1434,8 +1434,8 @@
 			\end{equation}
 			If we directly finds the fixed point by solving \eqref{eq:lstd}, we arrive at \emph{\ac{LSTD}}, an \emph{offline} variant of semi-gradient \acs{TD}(\(0\)). Given a set of transitions, \ac{LSTD} first compute the weight matrix and vector,
 			\begin{align}
-				\hat{\mat{A}}_t &= \sum_{k = 0}^{t - 1} \vec{\phi}(s_k) \bigl( \vec{\phi}(s_k) - \gamma \vec{\phi}(s_{k + 1}) \bigr)^\transposed &
-				\hat{\vec{b}}_t &= \sum_{k = 0}^{t - 1} r_{k + 1} \vec{\phi}(s_k),
+				\hat{\mat{A}}_t & = \sum_{k = 0}^{t - 1} \vec{\phi}(s_k) \bigl( \vec{\phi}(s_k) - \gamma \vec{\phi}(s_{k + 1}) \bigr)^\transposed &
+				\hat{\vec{b}}_t & = \sum_{k = 0}^{t - 1} r_{k + 1} \vec{\phi}(s_k),
 			\end{align}
 			and then solves then computes the fixed point using \( \vec{w}_t = \bigl( \hat{\mat{A}}_t + \varepsilon \mat{I} \bigr)^{-1} \hat{b}_t \) where \( \epsilon \) is a small regularization constant.
 
@@ -1494,8 +1494,8 @@
 	So far, we always learned/estimated a value function and extracted a policy from it. However, why bother to learn a value function and not directly learn a policy which is what we are actually interested in? This is the idea of \emph{policy search.} Given a \ac{MDP}, policy search can be formalized as an explicit optimization problem over the expected reward,
 	\begin{equation}
 		\pi^\ast
-			= \argmax_\pi \; \underbrace{\E_{\tau \sim \pi}[J(\tau)]}_{\mathcal{J}(\pi) \coloneqq}
-			= \argmax_\pi \, \mathcal{J}_\pi,
+		= \argmax_\pi \; \underbrace{\E_{\tau \sim \pi}[J(\tau)]}_{\mathcal{J}(\pi) \coloneqq}
+		= \argmax_\pi \, \mathcal{J}_\pi,
 		\label{eq:policySearchOptPart}
 	\end{equation}
 	where \(J(\tau)\) is the cumulative discounted reward for a trajectory \(\tau\) and the expectation is w.r.t. the initial state distribution, state dynamics, and policy. Policy search has some major advantages:
@@ -1510,8 +1510,8 @@
 	As policy search can be applied to both discrete and continuous control actions, we will confine ourselves to the discussion of a discrete set of continuous control variables, i.e., a vector\footnote{Note that even though \(a\) is a vector now, we will stick to the lightface notation for consistency.} \( a = (a_1, a_2, \dots, a_M) \). Like before, \emph{exploration is crucial!} For continuous variables, the most common option is to use a Gaussian action distribution \( \pi_{\vec{\theta}}(a \given s) = \mathcal{N}\bigl( a \biggiven \mu_{\vec{\theta}}(s), \Sigma_{\vec{\theta}}(s) \bigr) \) where the mean and covariance matrix are given by a (usually learnable) state-dependent function approximator with parameters \(\vec{\theta}\). This can, for instance, be a \ac{NN}. For discrete actions, choosing an exploration strategy like a Boltzmann policy (see \autoref{subsec:mcExploration}) is usually a good choice. In fact, we will also confine ourselves to \emph{parametric} policies, i.e., policies \(\pi_{\vec{\theta}}\) with parameters \(\vec{\theta}\) that govern our search space. We can then re-frame the optimization problem \eqref{eq:policySearchOptPart} as
 	\begin{equation}
 		\pi^\ast
-			= \argmax_{\pi \in \{ \pi_{\vec{\theta}_i} \}} \, \mathcal{J}(\pi_{\vec{\theta}})
-			= \argmax_{\vec{\theta}} \, \mathcal{J}(\vec{\theta})
+		= \argmax_{\pi \in \{ \pi_{\vec{\theta}_i} \}} \, \mathcal{J}(\pi_{\vec{\theta}})
+		= \argmax_{\vec{\theta}} \, \mathcal{J}(\vec{\theta})
 	\end{equation}
 	That is, we optimize our objective just w.r.t. the policy's parameters \(\vec{\theta}\). We will now go over to a general discussion of \emph{\acl{PG}} methods which we will focus on in this chapter.
 
@@ -1665,23 +1665,23 @@
 				where \(\iota(s_0)\) is the initial state distribution. With this distribution, we can rewrite \( \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \) as
 				\begin{equation}
 					\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta})
-						= \grad_{\vec{\theta}} \int\! J(\tau) \, p(\tau \given \theta) \dd{\tau}
-						= \int\! J(\tau) \, \grad_{\vec{\theta}} \, p(\tau \given \theta) \dd{\tau}
+					= \grad_{\vec{\theta}} \int\! J(\tau) \, p(\tau \given \theta) \dd{\tau}
+					= \int\! J(\tau) \, \grad_{\vec{\theta}} \, p(\tau \given \theta) \dd{\tau}
 					\label{eq:policyGradient}
 				\end{equation}
 				where we can swap the limits under some mild conditions. By the log-ratio trick, we have \( \grad_{\vec{\theta}} p(\tau \given \vec{\theta}) = p(\tau \given \vec{\theta}) \grad_{\vec{\theta}} \log p(\tau \given \vec{\theta}) \) and \eqref{eq:policyGradient} simplifies to an expectation over the gradient of the log-likelihood,
 				\begin{equation}
 					\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta})
-						= \int\! J(\tau) \, \grad_{\vec{\theta}} \, p(\tau \given \theta) \dd{\tau}
-						= \int\! p(\tau \given \vec{\theta}) \, J(\tau) \, \grad_{\vec{\theta}} \log p(\tau \given \vec{\theta}) \dd{\tau}
-						= \E_\tau\bigl[ J(\tau) \, \grad_{\vec{\theta}} \log p(\tau \given \vec{\theta}) \bigr].
+					= \int\! J(\tau) \, \grad_{\vec{\theta}} \, p(\tau \given \theta) \dd{\tau}
+					= \int\! p(\tau \given \vec{\theta}) \, J(\tau) \, \grad_{\vec{\theta}} \log p(\tau \given \vec{\theta}) \dd{\tau}
+					= \E_\tau\bigl[ J(\tau) \, \grad_{\vec{\theta}} \log p(\tau \given \vec{\theta}) \bigr].
 					\label{eq:policyGradientExp}
 				\end{equation}
 				And this expectation can be estimated by sampling! Hence, we just have to compute \( \grad_{\vec{\theta}} \log p(\tau \given \vec{\theta}) \). With the decomposition \eqref{eq:markovProperty}, we can apply logarithm rules
 				\begin{align}
 					\log( \iota(s_0) \prod_{t = 0}^{T - 1} P(s_{t + 1} \given s_t, a_t) \, \pi_{\vec{\theta}}(a_t \given s_t) )
-						&= \log \iota(s_0) + \sum_{t = 0}^{T - 1} \log P(s_{t + 1} \given s_t, a_t) + \log \pi_{\vec{\theta}}(a_t \given s_t) \\
-						&= \sum_{t = 0}^{T - 1} \log \pi_{\vec{\theta}}(a_t \given s_t) + \const_{\vec{\theta}}
+					 & = \log \iota(s_0) + \sum_{t = 0}^{T - 1} \log P(s_{t + 1} \given s_t, a_t) + \log \pi_{\vec{\theta}}(a_t \given s_t) \\
+					 & = \sum_{t = 0}^{T - 1} \log \pi_{\vec{\theta}}(a_t \given s_t) + \const_{\vec{\theta}}
 				\end{align}
 				and everything except for the log-policy (which we model explicitly) is constant w.r.t. \(\vec{\theta}\)! Hence, we can compute the gradient in closed form if we choose \(\pi\) wisely and have
 				\begin{equation}
@@ -1696,21 +1696,21 @@
 			We already saw the simple policy gradient \eqref{eq:policyGradientSimple}. If we combine this with the \ac{MC} estimate of \eqref{eq:policyGradientExp}, we arrive at the \emph{REINFORCE} gradient estimator:
 			\begin{equation}
 				\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})
-					= \frac{1}{N} \sum_{i = 1}^{N} \Biggl[ \Biggl(\, \sum_{t = 0}^{T_i - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}\bigl( a_t^{[i]} \biggiven s_t^{[i]} \bigr) \!\Biggr)\, J\bigl( \tau^{[i]} \bigr) \Biggr].
+				= \frac{1}{N} \sum_{i = 1}^{N} \Biggl[ \Biggl(\, \sum_{t = 0}^{T_i - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}\bigl( a_t^{[i]} \biggiven s_t^{[i]} \bigr) \!\Biggr)\, J\bigl( \tau^{[i]} \bigr) \Biggr].
 			\end{equation}
 			While this estimator is nice, simple, and \emph{unbiased,} but it has very high variance! In fact, a specific estimate is pretty useless and causes divergence pretty quickly. However, we can introduce a \emph{baseline} to reduce the variance. Let \(\vec{b}\) be the baseline with as many entries as the gradient (i.e., the vectors are of same length). Then we have the \emph{REINFORCE} policy gradient with baseline,
 			\begin{equation}
 				\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})
-					= \frac{1}{N} \sum_{i = 1}^{N} \Biggl[ \Biggl(\, \sum_{t = 0}^{T_i - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \!\Biggr) \odot \Bigl( J(\tau) \vec{1} - \vec{b} \Bigr) \Biggr],
+				= \frac{1}{N} \sum_{i = 1}^{N} \Biggl[ \Biggl(\, \sum_{t = 0}^{T_i - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \!\Biggr) \odot \Bigl( J(\tau) \vec{1} - \vec{b} \Bigr) \Biggr],
 				\label{eq:reinforceArbitraryBaseline}
 			\end{equation}
 			where the \(\odot\) denotes element-wise multiplication and \(\vec{1}\) is the one-vector. While this baseline does not affect the bias as its expectation vanishes,
 			\begin{equation}
 				\E_\tau\bigl[ \vec{b} \odot \grad_{\vec{\theta}} \log p(\tau \given \vec{\theta}) \bigr]
-					= \int\! p(\tau \given \vec{\theta}) \vec{b} \odot \grad_{\vec{\theta}} \log p(\tau \given \vec{\theta}) \dd{\tau}
-					= \vec{b} \odot \int\! p(\tau \given \vec{\theta}) \grad_{\vec{\theta}} \log p(\tau \given \vec{\theta}) \dd{\tau}
-					= \vec{b} \odot \vec{0}
-					= \vec{0},
+				= \int\! p(\tau \given \vec{\theta}) \vec{b} \odot \grad_{\vec{\theta}} \log p(\tau \given \vec{\theta}) \dd{\tau}
+				= \vec{b} \odot \int\! p(\tau \given \vec{\theta}) \grad_{\vec{\theta}} \log p(\tau \given \vec{\theta}) \dd{\tau}
+				= \vec{b} \odot \vec{0}
+				= \vec{0},
 			\end{equation}
 			it still reduces the variance. In each iteration, we can also find an optimal baseline.
 
@@ -1718,8 +1718,8 @@
 				The optimal baseline for the REINFORCE gradient \eqref{eq:reinforceArbitraryBaseline} is
 				\begin{equation}
 					\vec{b}^\mathrm{RF}
-						= \argmin_{\vec{b}} \Var_\tau\Bigl[ \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr]
-						= \frac{\E_\tau\bigl[ \vec{v}_\tau^2 J(\tau) \bigr]}{\E_\tau\bigl[ \vec{v}_\tau^2 \bigr]}
+					= \argmin_{\vec{b}} \Var_\tau\Bigl[ \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr]
+					= \frac{\E_\tau\bigl[ \vec{v}_\tau^2 J(\tau) \bigr]}{\E_\tau\bigl[ \vec{v}_\tau^2 \bigr]}
 					\label{eq:reinforceOptimalBaseline}
 				\end{equation}
 				with \( \vec{v}_\tau \coloneqq  \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \) where division and exponentiation are element-wise and \( \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \) refers to the "\ac{MC} target" of \eqref{eq:reinforceArbitraryBaseline}.
@@ -1728,29 +1728,29 @@
 				The variance of the estimator decomposes as
 				\begin{equation}
 					\Var_\tau\Bigl[  \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr]
-						= \E_\tau\biggl[ \Bigl( \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr)^2 \biggr] - \Bigl( \E_\tau\biggl[ \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr] \biggr)^2
+					= \E_\tau\biggl[ \Bigl( \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr)^2 \biggr] - \Bigl( \E_\tau\biggl[ \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr] \biggr)^2
 				\end{equation}
 				where the second term is invariant w.r.t. \(\vec{b}\) by design (the baseline does not effect the expectation of the estimator and therefore it is unbiased for every baseline). Hence, the gradient w.r.t. \(\vec{b}\) reduces to
 				\begin{equation}
 					\grad_{\vec{b}} \Var_\tau\Bigl[ \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr]
-						= \E_\tau\biggl[ \grad_{\vec{b}} \Bigl( \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr)^2 \biggr]
-						\propto \E_\tau\Bigl[ \Bigl( \grad_{\vec{b}} \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr) \odot \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr]
+					= \E_\tau\biggl[ \grad_{\vec{b}} \Bigl( \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr)^2 \biggr]
+					\propto \E_\tau\Bigl[ \Bigl( \grad_{\vec{b}} \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr) \odot \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \Bigr]
 					\label{eq:reinforceOptBaselinePart}
 				\end{equation}
 				where we swapped the limits\footnote{Take a course on measure theory if you want mathematical rigor!} and used the chain rule. We can now take the derivative of \( \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})} \) w.r.t. \(\vec{b}\):
 				\begin{equation}
 					\grad_{\vec{b}} \overline{\grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta})}
-						= \grad_{\vec{b}} \Biggl[ \Biggl(\, \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \!\Biggr) \odot \Bigl( J(\tau) \vec{1} - \vec{b} \Bigr) \Biggr]
-						= \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t).
+					= \grad_{\vec{b}} \Biggl[ \Biggl(\, \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \!\Biggr) \odot \Bigl( J(\tau) \vec{1} - \vec{b} \Bigr) \Biggr]
+					= \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t).
 				\end{equation}
 				Plugging this result back into \eqref{eq:reinforceOptBaselinePart} yields
 				\begin{align}
 					\grad_{\vec{b}} \Var_\tau\bigl[ \grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta}) \bigr]
-						&\propto \E_\tau\Bigl[ \bigl( \grad_{\vec{b}} \grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta}) \bigr) \grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta}) \Bigr]
-						 = \E_\tau\Biggl[ \Biggl(\, \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \Biggr) \odot \grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta}) \Biggr] \\
-						&= \E_\tau\Biggl[ \Biggl(\, \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \Biggr) \odot \Biggl(\, \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \!\Biggr) \odot \Bigl( J(\tau) \vec{1} - \vec{b} \Bigr) \Biggr] \\
-						&= \E_\tau\Biggl[ \Biggl(\, \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \Biggr)^{\!2} J(\tau) \Biggr] - \E_\tau\Biggl[ \Biggl(\, \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \!\Biggr)^{\!2} \odot \vec{b} \Biggr]
-						 \overset{!}{=} \vec{0}
+					 & \propto \E_\tau\Bigl[ \bigl( \grad_{\vec{b}} \grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta}) \bigr) \grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta}) \Bigr]
+					= \E_\tau\Biggl[ \Biggl(\, \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \Biggr) \odot \grad_{\vec{\theta}}^\mathrm{RF} \mathcal{J}(\vec{\theta}) \Biggr]                                                                                                    \\
+					 & = \E_\tau\Biggl[ \Biggl(\, \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \Biggr) \odot \Biggl(\, \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \!\Biggr) \odot \Bigl( J(\tau) \vec{1} - \vec{b} \Bigr) \Biggr]        \\
+					 & = \E_\tau\Biggl[ \Biggl(\, \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \Biggr)^{\!2} J(\tau) \Biggr] - \E_\tau\Biggl[ \Biggl(\, \sum_{t = 0}^{T - 1} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \!\Biggr)^{\!2} \odot \vec{b} \Biggr]
+					\overset{!}{=} \vec{0}
 				\end{align}
 				using the linearity of the expectation. Rearranging the terms then yields \eqref{eq:reinforceOptimalBaseline} as the optimal baseline.
 			\end{proof}
@@ -1774,7 +1774,7 @@
 		% end
 
 		\subsection{\acs{GPOMDP}}
-		 \label{subsec:gpomdp}
+			\label{subsec:gpomdp}
 
 			Even though a baseline reduces the variance of the REINFORCE gradient estimate, it still has fairly high variance as the returns are extremely noisy (remember from the \ac{MC} methods that they are composed of a lot of random variables). We can further reduce the variance by not considering the total return \( J(\tau) = \sum_{t = 0}^{T - 1} \gamma^t r_{t + 1} \) but instead observing that \emph{returns from the past do not depend on actions in the future,} i.e.,
 			\begin{equation}
@@ -1783,12 +1783,12 @@
 			Plugging this result into \eqref{eq:reinforceArbitraryBaseline} with a time-dependent baseline yields the \emph{\ac{GPOMDP}\footnote{"\acs{GPOMDP}" stands for "\acl{GPOMDP}" as this approach was first applied for \acp{POMDP}.} gradient}
 			\begin{equation}
 				\grad_{\vec{\theta}}^\mathrm{GP} \mathcal{J}(\vec{\theta})
-					= \E_\tau\Biggl[\, \sum_{k = 0}^{T - 1} \sum_{t = 0}^{k} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \odot ( \gamma^k r_{k + 1} \vec{1} - \vec{b}_k ) \Biggr]
+				= \E_\tau\Biggl[\, \sum_{k = 0}^{T - 1} \sum_{t = 0}^{k} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \odot ( \gamma^k r_{k + 1} \vec{1} - \vec{b}_k ) \Biggr]
 			\end{equation}
 			with its optimal baseline
 			\begin{align}
-				\vec{b}_k &= \frac{\E_\tau\bigl[ \vec{v}_{\tau, k}^2 \gamma^k r_{k + 1} \bigr]}{\E_\tau\bigl[ \vec{v}_{\tau, k}^2 \bigr]} &
-				\vec{v}_{\tau, k} &= \sum_{t = 0}^{k} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t).
+				\vec{b}_k         & = \frac{\E_\tau\bigl[ \vec{v}_{\tau, k}^2 \gamma^k r_{k + 1} \bigr]}{\E_\tau\bigl[ \vec{v}_{\tau, k}^2 \bigr]} &
+				\vec{v}_{\tau, k} & = \sum_{t = 0}^{k} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t).
 			\end{align}
 			The derivation of this baseline is analogous to the REINFORCE case. The approach is summarized in \autoref{alg:gpomdp}.
 
@@ -1809,8 +1809,8 @@
 		So far, the gradient methods assumes that the optimization space is Euclidean. However, as we only modify the parameters of a probability distribution, distances between two parameter vectors are not preserved! That is, measuring the distance between parameters gives us close to no information about the distribution's distance. One idea is to use the \ac{KL} divergence of two distributions, but the \ac{KL} is not symmetric and thus not a metric and therefore difficult to use in optimization problems (also, it is hard to compute). Instead we can use the \emph{\ac{FIM}}
 		\begin{equation}
 			\mat{F}_{\vec{\theta}}
-				\doteq \Var_\tau\bigl[ \grad_{\vec{\theta}} \log p_{\vec{\theta}}(\tau) \bigr]
-				= \Var_\tau\Biggl[ \sum_{t = 0}^{T} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \Biggr]
+			\doteq \Var_\tau\bigl[ \grad_{\vec{\theta}} \log p_{\vec{\theta}}(\tau) \bigr]
+			= \Var_\tau\Biggl[ \sum_{t = 0}^{T} \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a_t \given s_t) \Biggr]
 		\end{equation}
 		as a second-order approximation of the \ac{KL} divergence for small perturbations \(\vec{\delta\theta}\) of the parameters, i.e.,
 		\begin{equation}
@@ -1819,10 +1819,10 @@
 		The core idea of the \emph{natural} \ac{PG} is to update the policy under a \ac{KL} constraint \(\varepsilon\). For a given "vanilla" update \( \vec{\delta\theta}^\mathrm{VG} \), we find the natural gradient update \( \vec{\delta\theta}^\mathrm{NG} \) by solving the following optimization problem:
 		\begin{equation}
 			\begin{aligned}
-				\vec{\delta\theta}^\mathrm{NG} &= \argmax_{\vec{\delta\theta}} \; \vec{\delta\theta}^\transposed \vec{\delta\theta}^\mathrm{VG} \\
-				\text{s.t.}\qquad&
+				\vec{\delta\theta}^\mathrm{NG} & = \argmax_{\vec{\delta\theta}} \; \vec{\delta\theta}^\transposed \vec{\delta\theta}^\mathrm{VG} \\
+				\text{s.t.}\qquad              &
 				\begin{aligned}[t]
-					\vec{\delta\theta}^\transposed \mat{F}_{\vec{\theta}} \vec{\delta\theta} &\leq \varepsilon
+					\vec{\delta\theta}^\transposed \mat{F}_{\vec{\theta}} \vec{\delta\theta} & \leq \varepsilon
 				\end{aligned}
 			\end{aligned}
 			\label{eq:ngOptProblem}
@@ -1848,9 +1848,9 @@
 			By plugging this result back into \eqref{eq:ngLagrangian}, we get the dual
 			\begin{align}
 				\mathcal{G}
-					&= -\frac{1}{2 \mu} \bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG} - \mu \varepsilon + \frac{1}{4 \mu} \bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \mat{F}_{\vec{\theta}} \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG} \\
-					&= -\frac{1}{2 \mu} \bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG} - \mu \varepsilon + \frac{1}{4 \mu} \bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG} \\
-					&= -\mu \varepsilon - \frac{1}{4 \mu} \bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}.
+				 & = -\frac{1}{2 \mu} \bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG} - \mu \varepsilon + \frac{1}{4 \mu} \bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \mat{F}_{\vec{\theta}} \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG} \\
+				 & = -\frac{1}{2 \mu} \bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG} - \mu \varepsilon + \frac{1}{4 \mu} \bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}                                                    \\
+				 & = -\mu \varepsilon - \frac{1}{4 \mu} \bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}.
 			\end{align}
 			Now compute the derivative of the dual w.r.t. the Lagrangian multiplier and set it to zero:
 			\begin{equation}
@@ -1861,8 +1861,8 @@
 			Plugging this result back into \eqref{eq:ngPrimal}, we get the new search direction,
 			\begin{equation}
 				\vec{\delta\theta}
-					= \frac{\mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}}{2 \sqrt{\frac{(\vec{\delta\theta}^\mathrm{VG})^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}}{4 \varepsilon}}}
-					= \underbrace{\sqrt{\frac{\varepsilon}{\bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}}}}_{\alpha(\varepsilon)} \underbrace{\mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}}_{\grad_{\vec{\theta}}^\mathrm{NG} \mathcal{J}(\vec{\theta})},
+				= \frac{\mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}}{2 \sqrt{\frac{(\vec{\delta\theta}^\mathrm{VG})^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}}{4 \varepsilon}}}
+				= \underbrace{\sqrt{\frac{\varepsilon}{\bigl(\vec{\delta\theta}^\mathrm{VG}\bigr)^\transposed \mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}}}}_{\alpha(\varepsilon)} \underbrace{\mat{F}_{\vec{\theta}}^{-1} \vec{\delta\theta}^\mathrm{VG}}_{\grad_{\vec{\theta}}^\mathrm{NG} \mathcal{J}(\vec{\theta})},
 			\end{equation}
 			where \(\alpha(\varepsilon)\) is the learning rate and \( \grad_{\vec{\theta}}^\mathrm{NG} \mathcal{J}(\vec{\theta}) \) is the natural \ac{PG}.
 		\end{proof}
@@ -1881,11 +1881,11 @@
 			The occupancy measure is not a proper probability distribution as it is not normalized:
 			\begin{equation}
 				\int_\mathcal{S} \rho^\pi(s) \dd{s}
-					= \int_\mathcal{S} \sum_{t = 0}^{\infty} \gamma^t P(s_t = s \given \pi) \dd{s}
-					\oversetfootnotemark{=} \sum_{t = 0}^{\infty} \gamma^t \int_\mathcal{S} P(s_t = s \given \pi) \dd{s}
-					= \sum_{t = 0}^{\infty} \gamma^t
-					= \frac{1}{1 - \gamma}
-					\neq 1
+				= \int_\mathcal{S} \sum_{t = 0}^{\infty} \gamma^t P(s_t = s \given \pi) \dd{s}
+				\oversetfootnotemark{=} \sum_{t = 0}^{\infty} \gamma^t \int_\mathcal{S} P(s_t = s \given \pi) \dd{s}
+				= \sum_{t = 0}^{\infty} \gamma^t
+				= \frac{1}{1 - \gamma}
+				\neq 1
 			\end{equation}
 			Rather, it can be seen as the (expected) number of visits of a state \(s\) within a trajectory.
 			\footnotetext{Again, rigor is for measure theory.}
@@ -1908,107 +1908,107 @@
 			We first write the objective \(\mathcal{J}(\vec{\theta})\) in terms of the action-value function,
 			\begin{equation}
 				\mathcal{J}(\vec{\theta})
-					= \E_{\tau}\bigl[ J(\tau) \bigr]
-					= \E_{s_0 \sim \iota}\bigl[ V^{\pi_{\vec{\theta}}}(s_0) \bigr]
-					= \E_{s_0 \sim \iota, a_0 \sim \pi_{\vec{\theta}}(\cdot \given s_0)}\bigl[ Q^{\pi_{\vec{\theta}}}(s_0, a_0) \bigr],
+				= \E_{\tau}\bigl[ J(\tau) \bigr]
+				= \E_{s_0 \sim \iota}\bigl[ V^{\pi_{\vec{\theta}}}(s_0) \bigr]
+				= \E_{s_0 \sim \iota, a_0 \sim \pi_{\vec{\theta}}(\cdot \given s_0)}\bigl[ Q^{\pi_{\vec{\theta}}}(s_0, a_0) \bigr],
 				\label{eq:pgtDecomp}
 			\end{equation}
 			and can therefore compute the gradient as
 			\begin{align}
 				\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta})
-					&= \grad_{\vec{\theta}} \E_{s_0 \sim \iota, a_0 \sim \pi_{\vec{\theta}}(\cdot \given s_0)}\bigl[ Q^{\pi_{\vec{\theta}}}(s_0, a_0) \bigr]  \label{eq:pgtDecomp2} \\
-					&= \grad_{\vec{\theta}} \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \pi(a_0 \given s_0) \, Q^{\pi_{\vec{\theta}}}(s_0, a_0) \dd{a_0} \dd{s_0} \\
-					&\overset{\mathclap{(\ast)}}{=} \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \grad_{\vec{\theta}} \bigl[ \pi(a_0 \given s_0) \, Q^{\pi_{\vec{\theta}}}(s_0, a_0) \bigr] \dd{a_0} \dd{s_0} \\
-					&= \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \bigl[ \bigl( \grad_{\vec{\theta}} \pi(a_0 \given s_0) \bigr) Q^{\pi_{\vec{\theta}}}(s_0, a_0) + \pi(a_0 \given s_0) \bigl( \grad_{\vec{\theta}} Q^{\pi_{\vec{\theta}}}(s_0, a_0) \bigr) \bigr] \dd{a_0} \dd{s_0} \\
-					&= \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \bigl( \grad_{\vec{\theta}} \pi(a_0 \given s_0) \bigr) Q^{\pi_{\vec{\theta}}}(s_0, a_0) \dd{a_0} \dd{s_0} + \underbrace{\int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \pi(a_0 \given s_0) \bigl( \grad_{\vec{\theta}} Q^{\pi_{\vec{\theta}}}(s_0, a_0) \bigr) \dd{a_0} \dd{s_0}}_{(\#)}
+				 & = \grad_{\vec{\theta}} \E_{s_0 \sim \iota, a_0 \sim \pi_{\vec{\theta}}(\cdot \given s_0)}\bigl[ Q^{\pi_{\vec{\theta}}}(s_0, a_0) \bigr]  \label{eq:pgtDecomp2}                                                                                                                                                                        \\
+				 & = \grad_{\vec{\theta}} \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \pi(a_0 \given s_0) \, Q^{\pi_{\vec{\theta}}}(s_0, a_0) \dd{a_0} \dd{s_0}                                                                                                                                                                                         \\
+				 & \overset{\mathclap{(\ast)}}{=} \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \grad_{\vec{\theta}} \bigl[ \pi(a_0 \given s_0) \, Q^{\pi_{\vec{\theta}}}(s_0, a_0) \bigr] \dd{a_0} \dd{s_0}                                                                                                                                              \\
+				 & = \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \bigl[ \bigl( \grad_{\vec{\theta}} \pi(a_0 \given s_0) \bigr) Q^{\pi_{\vec{\theta}}}(s_0, a_0) + \pi(a_0 \given s_0) \bigl( \grad_{\vec{\theta}} Q^{\pi_{\vec{\theta}}}(s_0, a_0) \bigr) \bigr] \dd{a_0} \dd{s_0}                                                                      \\
+				 & = \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \bigl( \grad_{\vec{\theta}} \pi(a_0 \given s_0) \bigr) Q^{\pi_{\vec{\theta}}}(s_0, a_0) \dd{a_0} \dd{s_0} + \underbrace{\int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \pi(a_0 \given s_0) \bigl( \grad_{\vec{\theta}} Q^{\pi_{\vec{\theta}}}(s_0, a_0) \bigr) \dd{a_0} \dd{s_0}}_{(\#)}
 			\end{align}
 			where we can exchange the limits in \((\ast)\) due to an application of some theorem from measure theory and in the last step we used the linearity of integration. We will now focus in the derivative of the action-value function w.r.t. the policy parameters. Using the Bellman expectation equation \eqref{eq:bellmanExpEqQ}, we can write \(\grad_{\vec{\theta}} Q^{\pi_{\vec{\theta}}}\) in terms of the value function \(V^{\pi_{\vec{\theta}}}\) gradient:
 			\begin{align}
 				\grad_{\vec{\theta}} Q^{\pi_{\vec{\theta}}}(s_0, a_0)
-					&= \grad_{\vec{\theta}} \biggl[ R(s_0, a_0) + \gamma \E_{s_1}\bigl[ V^{\pi_{\vec{\theta}}}(s_1) \biggiven s_0, a_0 \bigr] \biggr] \\
-					&= \grad_{\vec{\theta}} \biggl[ R(s_0, a_0) + \gamma \int_\mathcal{S} P(s_1 \given s_0, a_0) V^{\pi_{\vec{\theta}}}(s_1) \dd{s_1} \biggr] \\
-					&= \gamma \int_\mathcal{S} P(s_1 \given s_0, a_0) \, \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1) \dd{s_1}.
+				 & = \grad_{\vec{\theta}} \biggl[ R(s_0, a_0) + \gamma \E_{s_1}\bigl[ V^{\pi_{\vec{\theta}}}(s_1) \biggiven s_0, a_0 \bigr] \biggr]         \\
+				 & = \grad_{\vec{\theta}} \biggl[ R(s_0, a_0) + \gamma \int_\mathcal{S} P(s_1 \given s_0, a_0) V^{\pi_{\vec{\theta}}}(s_1) \dd{s_1} \biggr] \\
+				 & = \gamma \int_\mathcal{S} P(s_1 \given s_0, a_0) \, \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1) \dd{s_1}.
 				\label{eq:pgtQDecomp}
 			\end{align}
 			Analogous to \eqref{eq:pgtDecomp} and \eqref{eq:pgtDecomp2}, we can decompose the state-value function:
 			\begin{align}
 				\grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1)
-					&\overset{\mathclap{(\ast)}}{=} \grad_{\vec{\theta}} \int_\mathcal{A} \pi_{\vec{\theta}}(a_1 \given s_1) \, Q^{\pi_{\vec{\theta}}}(s_1, a_1) \dd{a_1} \\
-					&\overset{\mathclap{(\dagger)}}{=} \int_\mathcal{A} \bigl[ \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_1 \given s_1) \bigr) Q^{\pi_{\vec{\theta}}}(s_1, a_1) + \pi_{\vec{\theta}}(a_1 \given s_1) \bigl( \grad_{\vec{\theta}} Q^{\pi_{\vec{\theta}}}(s_1, a_1) \bigr) \bigr] \dd{a_1} \\
-					&\overset{\mathclap{(\ddagger)}}{=} \int_\mathcal{A} \biggl[ \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_1 \given s_1) \bigr) Q^{\pi_{\vec{\theta}}}(s_1, a_1) + \gamma \int_\mathcal{S} \pi_{\vec{\theta}}(a_1 \given s_1) P(s_2 \given s_1, a_1) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_2) \bigr) \dd{s_2} \biggr] \dd{a_1} \\
-					&= \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_1 \given s_1) \bigr) Q^{\pi_{\vec{\theta}}}(s_1, a_1) \dd{a_1} + \gamma \int_\mathcal{A} \int_\mathcal{S} \pi_{\vec{\theta}}(a_1 \given s_1) P(s_2 \given s_1, a_1) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_2) \bigr) \dd{s_2} \dd{a_1},
+				 & \overset{\mathclap{(\ast)}}{=} \grad_{\vec{\theta}} \int_\mathcal{A} \pi_{\vec{\theta}}(a_1 \given s_1) \, Q^{\pi_{\vec{\theta}}}(s_1, a_1) \dd{a_1}                                                                                                                                                                                            \\
+				 & \overset{\mathclap{(\dagger)}}{=} \int_\mathcal{A} \bigl[ \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_1 \given s_1) \bigr) Q^{\pi_{\vec{\theta}}}(s_1, a_1) + \pi_{\vec{\theta}}(a_1 \given s_1) \bigl( \grad_{\vec{\theta}} Q^{\pi_{\vec{\theta}}}(s_1, a_1) \bigr) \bigr] \dd{a_1}                                                       \\
+				 & \overset{\mathclap{(\ddagger)}}{=} \int_\mathcal{A} \biggl[ \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_1 \given s_1) \bigr) Q^{\pi_{\vec{\theta}}}(s_1, a_1) + \gamma \int_\mathcal{S} \pi_{\vec{\theta}}(a_1 \given s_1) P(s_2 \given s_1, a_1) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_2) \bigr) \dd{s_2} \biggr] \dd{a_1} \\
+				 & = \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_1 \given s_1) \bigr) Q^{\pi_{\vec{\theta}}}(s_1, a_1) \dd{a_1} + \gamma \int_\mathcal{A} \int_\mathcal{S} \pi_{\vec{\theta}}(a_1 \given s_1) P(s_2 \given s_1, a_1) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_2) \bigr) \dd{s_2} \dd{a_1},
 			\end{align}
 			where in step \((\ast)\) we rewrote the action-value function, in step \((\dagger)\) we pushed the gradient into the integral, and in step \((\ddagger)\) we applied the Bellman expectation equation \eqref{eq:bellmanExpEqQ} analogous to \eqref{eq:pgtQDecomp}. We can now plug these results into \((\#)\):
 			\begin{align}
 				(\#)
-					&= \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \pi(a_0 \given s_0) \bigl( \grad_{\vec{\theta}} Q^{\pi_{\vec{\theta}}}(s_0, a_0) \bigr) \dd{a_0} \dd{s_0} \\
-					&= \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \pi(a_0 \given s_0) \Biggl( \gamma \int_\mathcal{S} P(s_1 \given s_0, a_0) \, \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1) \dd{s_1} \Biggr) \dd{a_0} \dd{s_0} \\
-					&= \gamma \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} \iota(s_0) \pi(a_0 \given s_0) P(s_1 \given s_0, a_0) \, \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1) \dd{s_1} \dd{a_0} \dd{s_0}  \label{eq:pgtStep} \\
-					&= \gamma \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} \iota(s_0) \pi(a_0 \given s_0) P(s_1 \given s_0, a_0) \Biggl( \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_1 \given s_1) \bigr) Q^{\pi_{\vec{\theta}}}(s_1, a_1) \dd{a_1} \\&\qquad\qquad
-						+ \gamma \int_\mathcal{A} \int_\mathcal{S} \pi_{\vec{\theta}}(a_1 \given s_1) P(s_2 \given s_1, a_1) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_2) \bigr) \dd{s_2} \dd{a_1} \Biggr) \dd{s_1} \dd{a_0} \dd{s_0} \\
-					&= \gamma \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} \iota(s_0) \pi(a_0 \given s_0) P(s_1 \given s_0, a_0) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_1 \given s_1) \bigr) Q^{\pi_{\vec{\theta}}}(s_1, a_1) \dd{a_1} \dd{s_1} \dd{a_0} \dd{s_0} \\&\qquad\qquad
-						+ \gamma^2 \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} \iota(s_0) \pi(a_0 \given s_0) P(s_1 \given s_0, a_0) \pi_{\vec{\theta}}(a_1 \given s_1) \\&\qquad\qquad\qquad\qquad
-						  P(s_2 \given s_1, a_1) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_2) \bigr) \dd{s_2} \dd{a_1} \dd{s_1} \dd{a_0} \dd{s_0}.
+				 & = \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \pi(a_0 \given s_0) \bigl( \grad_{\vec{\theta}} Q^{\pi_{\vec{\theta}}}(s_0, a_0) \bigr) \dd{a_0} \dd{s_0}                                                                                                                      \\
+				 & = \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \pi(a_0 \given s_0) \Biggl( \gamma \int_\mathcal{S} P(s_1 \given s_0, a_0) \, \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1) \dd{s_1} \Biggr) \dd{a_0} \dd{s_0}                                                              \\
+				 & = \gamma \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} \iota(s_0) \pi(a_0 \given s_0) P(s_1 \given s_0, a_0) \, \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1) \dd{s_1} \dd{a_0} \dd{s_0}  \label{eq:pgtStep}                                                          \\
+				 & = \gamma \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} \iota(s_0) \pi(a_0 \given s_0) P(s_1 \given s_0, a_0) \Biggl( \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_1 \given s_1) \bigr) Q^{\pi_{\vec{\theta}}}(s_1, a_1) \dd{a_1}                    \\&\qquad\qquad
+				+ \gamma \int_\mathcal{A} \int_\mathcal{S} \pi_{\vec{\theta}}(a_1 \given s_1) P(s_2 \given s_1, a_1) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_2) \bigr) \dd{s_2} \dd{a_1} \Biggr) \dd{s_1} \dd{a_0} \dd{s_0}                                                         \\
+				 & = \gamma \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} \iota(s_0) \pi(a_0 \given s_0) P(s_1 \given s_0, a_0) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_1 \given s_1) \bigr) Q^{\pi_{\vec{\theta}}}(s_1, a_1) \dd{a_1} \dd{s_1} \dd{a_0} \dd{s_0} \\&\qquad\qquad
+				+ \gamma^2 \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} \iota(s_0) \pi(a_0 \given s_0) P(s_1 \given s_0, a_0) \pi_{\vec{\theta}}(a_1 \given s_1)                                                                                         \\&\qquad\qquad\qquad\qquad
+				P(s_2 \given s_1, a_1) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_2) \bigr) \dd{s_2} \dd{a_1} \dd{s_1} \dd{a_0} \dd{s_0}.
 			\end{align}
 			We can now continue inserting \( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}} \) an infinite number of times and with the abbreviation
 			\begin{align}
-				P(s = s_0 \given \pi_{\vec{\theta}}) &= \iota(s_0) \\
-				P(s = s_1 \given \pi_{\vec{\theta}}) &= \int_\mathcal{A} \int_\mathcal{S} \iota(s_0) \pi_{\vec{\theta}}(a_0 \given s_0) P(s_1 \given s_0, a_0) \dd{s_0} \dd{a_0} \\
-				&\;\;\vdots \\
-				P(s = s_t \given \pi_{\vec{\theta}}) &= \int_{\mathcal{A}^t} \int_{\mathcal{S}^t} \iota(s_0) \prod_{k = 0}^{t - 1} \pi_{\vec{\theta}}(a_k \given s_k) P(s_{k + 1} \given s_k, a_k) \dd{s_k} \dd{a_k}  \label{eq:pgtDef}
+				P(s = s_0 \given \pi_{\vec{\theta}}) & = \iota(s_0)                                                                                                                                                                      \\
+				P(s = s_1 \given \pi_{\vec{\theta}}) & = \int_\mathcal{A} \int_\mathcal{S} \iota(s_0) \pi_{\vec{\theta}}(a_0 \given s_0) P(s_1 \given s_0, a_0) \dd{s_0} \dd{a_0}                                                        \\
+				                                     & \;\;\vdots                                                                                                                                                                        \\
+				P(s = s_t \given \pi_{\vec{\theta}}) & = \int_{\mathcal{A}^t} \int_{\mathcal{S}^t} \iota(s_0) \prod_{k = 0}^{t - 1} \pi_{\vec{\theta}}(a_k \given s_k) P(s_{k + 1} \given s_k, a_k) \dd{s_k} \dd{a_k}  \label{eq:pgtDef}
 			\end{align}
 			where \(\mathcal{A}^t\) and \(\mathcal{S}^t\) are the \(t\)-times Cartesian product, we can write the policy gradient as
 			\begin{align}
 				\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta})
-					&= \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \bigl( \grad_{\vec{\theta}} \pi(a_0 \given s_0) \bigr) Q^{\pi_{\vec{\theta}}}(s_0, a_0) \dd{a_0} \dd{s_0} + (\#) \\
-					&= \int_\mathcal{S} P(s = s_0 \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi(a_0 \given s_0) \bigr) Q^{\pi_{\vec{\theta}}}(s_0, a_0) \dd{a_0} \dd{s_0} \\&\qquad\qquad
-						+ \gamma \int_\mathcal{S} P(s = s_1 \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi(a_1 \given s_1) \bigr) Q^{\pi_{\vec{\theta}}}(s_1, a_1) \dd{a_1} \dd{s_1} \\&\qquad\qquad
-						+ \gamma^2 \int_\mathcal{S} P(s = s_2 \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi(a_2 \given s_2) \bigr) Q^{\pi_{\vec{\theta}}}(s_2, a_2) \dd{a_2} \dd{s_2} \\&\qquad\qquad
-						+ \gamma^3 \int_\mathcal{S} P(s = s_3 \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi(a_3 \given s_3) \bigr) Q^{\pi_{\vec{\theta}}}(s_3, a_3) \dd{a_3} \dd{s_3} \\&\qquad\qquad
-						+ \cdots \\
-					&= \sum_{t = 0}^{\infty} \gamma^t \int_{\mathcal{S}} P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t}.
+				 & = \int_\mathcal{S} \int_\mathcal{A} \iota(s_0) \bigl( \grad_{\vec{\theta}} \pi(a_0 \given s_0) \bigr) Q^{\pi_{\vec{\theta}}}(s_0, a_0) \dd{a_0} \dd{s_0} + (\#)                                                                       \\
+				 & = \int_\mathcal{S} P(s = s_0 \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi(a_0 \given s_0) \bigr) Q^{\pi_{\vec{\theta}}}(s_0, a_0) \dd{a_0} \dd{s_0}                                                    \\&\qquad\qquad
+				+ \gamma \int_\mathcal{S} P(s = s_1 \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi(a_1 \given s_1) \bigr) Q^{\pi_{\vec{\theta}}}(s_1, a_1) \dd{a_1} \dd{s_1}                                                \\&\qquad\qquad
+				+ \gamma^2 \int_\mathcal{S} P(s = s_2 \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi(a_2 \given s_2) \bigr) Q^{\pi_{\vec{\theta}}}(s_2, a_2) \dd{a_2} \dd{s_2}                                              \\&\qquad\qquad
+				+ \gamma^3 \int_\mathcal{S} P(s = s_3 \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi(a_3 \given s_3) \bigr) Q^{\pi_{\vec{\theta}}}(s_3, a_3) \dd{a_3} \dd{s_3}                                              \\&\qquad\qquad
+				+ \cdots                                                                                                                                                                                                                                 \\
+				 & = \sum_{t = 0}^{\infty} \gamma^t \int_{\mathcal{S}} P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t}.
 			\end{align}
 
 			Note that we have to show this equivalence. First, let
 			\begin{align}
 				\bigl\{ \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \bigr\}_n
-					&\coloneqq \sum_{t = 0}^{n} \gamma^t \int_{\mathcal{S}} P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t} \\&\qquad\qquad
-						+ \underbrace{\gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 1}) \bigr) \dd{s_{n + 1}}}_{(\%)}  \label{eq:pgtProofSum}
+				 & \coloneqq \sum_{t = 0}^{n} \gamma^t \int_{\mathcal{S}} P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t} \\&\qquad\qquad
+				+ \underbrace{\gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 1}) \bigr) \dd{s_{n + 1}}}_{(\%)}  \label{eq:pgtProofSum}
 			\end{align}
 			be the policy gradient we get after when terminating after \(n\) expansion. We want to show that \( \bigl\{ \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \bigr\}_n = \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \) for all \( n \in \N_0 \). We show the equivalence by induction. For \(n = 0\), we have
 			\begin{align}
 				\bigl\{ \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \bigr\}_0
-					&= \sum_{t = 0}^{0} \gamma^t \int_{\mathcal{S}} P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t} \\&\qquad\qquad
-						+ \gamma \int_\mathcal{S} P(s = s_1 \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1) \bigr) \dd{s_1} \\
-					&= \int_{\mathcal{S}} P(s = s_0 \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_0) \bigr) Q^{\pi_{\vec{\theta}}}(s_0, a_0) \dd{a_0} \dd{s_0} \\&\qquad\qquad
-						+ \gamma \int_\mathcal{S} P(s = s_1 \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1) \bigr) \dd{s_1} \\
-					&= \int_{\mathcal{S}} \iota(s_0) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_0) \bigr) Q^{\pi_{\vec{\theta}}}(s_0, a_0) \dd{a_0} \dd{s_0} \\&\qquad\qquad
-						+ \gamma \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} \iota(s_0) \pi_{\vec{\theta}}(a_0 \given s_0) P(s_1 \given s_0, a_0) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1) \bigr) \dd{s_0} \dd{a_0} \dd{s_1}
+				 & = \sum_{t = 0}^{0} \gamma^t \int_{\mathcal{S}} P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t} \\&\qquad\qquad
+				+ \gamma \int_\mathcal{S} P(s = s_1 \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1) \bigr) \dd{s_1}                                                                                             \\
+				 & = \int_{\mathcal{S}} P(s = s_0 \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_0) \bigr) Q^{\pi_{\vec{\theta}}}(s_0, a_0) \dd{a_0} \dd{s_0}                           \\&\qquad\qquad
+				+ \gamma \int_\mathcal{S} P(s = s_1 \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1) \bigr) \dd{s_1}                                                                                             \\
+				 & = \int_{\mathcal{S}} \iota(s_0) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_0) \bigr) Q^{\pi_{\vec{\theta}}}(s_0, a_0) \dd{a_0} \dd{s_0}                                                     \\&\qquad\qquad
+				+ \gamma \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} \iota(s_0) \pi_{\vec{\theta}}(a_0 \given s_0) P(s_1 \given s_0, a_0) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_1) \bigr) \dd{s_0} \dd{a_0} \dd{s_1}
 			\end{align}
 			which exactly equals \eqref{eq:pgtStep} combined with \eqref{eq:pgtDecomp2}. This finishes the induction base. We now have to prove the induction step \( n \to n + 1 \). Assume that the equivalence holds for some \(n\). We can then explicitly expand the last term of the sum, \((\%)\) in \eqref{eq:pgtProofSum}, obtaining
 			\begin{align}
 				(\%)
-					&= \gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 1}) \bigr) \dd{s_{n + 1}} \\
-					&= \gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \Biggl( \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_{n + 1} \given s_{n + 1}) \bigr) Q^{\pi_{\vec{\theta}}}(s_{n + 1}, a_{n + 1}) \dd{a_{n + 1}} \\&\qquad\qquad
-						+ \gamma \int_\mathcal{A} \int_\mathcal{S} \pi_{\vec{\theta}}(a_{n + 1} \given s_{n + 1}) P(s_{n + 2} \given s_{n + 1}, a_{n + 1}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 2}) \bigr) \dd{s_{n + 2}} \dd{a_{n + 1}} \Biggr) \dd{s_{n + 1}} \\
-					&= \gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_{n + 1} \given s_{n + 1}) \bigr) Q^{\pi_{\vec{\theta}}}(s_{n + 1}, a_{n + 1}) \dd{a_{n + 1}} \dd{s_{n + 1}} \\&\qquad\qquad
-						+ \gamma^{n + 2} \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \, \pi_{\vec{\theta}}(a_{n + 1} \given s_{n + 1}) \\&\qquad\qquad\qquad\qquad
-						  P(s_{n + 2} \given s_{n + 1}, a_{n + 1}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 2}) \bigr) \dd{s_{n + 2}} \dd{a_{n + 1}} \dd{s_{n + 1}} \\
-					&= \gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_{n + 1} \given s_{n + 1}) \bigr) Q^{\pi_{\vec{\theta}}}(s_{n + 1}, a_{n + 1}) \dd{a_{n + 1}} \dd{s_{n + 1}} \\&\qquad\qquad
-						+ \gamma^{n + 2} \int_\mathcal{S} P(s = s_{n + 2} \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 2}) \bigr) \dd{s_{n + 2}}
+				 & = \gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 1}) \bigr) \dd{s_{n + 1}}                                                                                           \\
+				 & = \gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \Biggl( \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_{n + 1} \given s_{n + 1}) \bigr) Q^{\pi_{\vec{\theta}}}(s_{n + 1}, a_{n + 1}) \dd{a_{n + 1}}        \\&\qquad\qquad
+				+ \gamma \int_\mathcal{A} \int_\mathcal{S} \pi_{\vec{\theta}}(a_{n + 1} \given s_{n + 1}) P(s_{n + 2} \given s_{n + 1}, a_{n + 1}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 2}) \bigr) \dd{s_{n + 2}} \dd{a_{n + 1}} \Biggr) \dd{s_{n + 1}}  \\
+				 & = \gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_{n + 1} \given s_{n + 1}) \bigr) Q^{\pi_{\vec{\theta}}}(s_{n + 1}, a_{n + 1}) \dd{a_{n + 1}} \dd{s_{n + 1}} \\&\qquad\qquad
+				+ \gamma^{n + 2} \int_\mathcal{S} \int_\mathcal{A} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \, \pi_{\vec{\theta}}(a_{n + 1} \given s_{n + 1})                                                                                              \\&\qquad\qquad\qquad\qquad
+				P(s_{n + 2} \given s_{n + 1}, a_{n + 1}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 2}) \bigr) \dd{s_{n + 2}} \dd{a_{n + 1}} \dd{s_{n + 1}}                                                                                                    \\
+				 & = \gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_{n + 1} \given s_{n + 1}) \bigr) Q^{\pi_{\vec{\theta}}}(s_{n + 1}, a_{n + 1}) \dd{a_{n + 1}} \dd{s_{n + 1}} \\&\qquad\qquad
+				+ \gamma^{n + 2} \int_\mathcal{S} P(s = s_{n + 2} \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 2}) \bigr) \dd{s_{n + 2}}
 			\end{align}
 			where we split the integral by linearity and then applied \eqref{eq:pgtDef}. Plugging this result back into \eqref{eq:pgtProofSum}, we obtain the induction step
 			\begin{align}
 				\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta})
-					&= \bigl\{ \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \bigr\}_n \\
-					&= \sum_{t = 0}^{n} \gamma^t \int_{\mathcal{S}} P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t} \\&\qquad\qquad
-						+ \gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 1}) \bigr) \dd{s_{n + 1}} \\
-					&= \sum_{t = 0}^{n} \gamma^t \int_{\mathcal{S}} P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t} \\&\qquad\qquad
-						+ \gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_{n + 1} \given s_{n + 1}) \bigr) Q^{\pi_{\vec{\theta}}}(s_{n + 1}, a_{n + 1}) \dd{a_{n + 1}} \dd{s_{n + 1}} \\&\qquad\qquad
-						+ \gamma^{n + 2} \int_\mathcal{S} P(s = s_{n + 2} \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 2}) \bigr) \dd{s_{n + 2}} \\
-					&= \sum_{t = 0}^{n + 1} \gamma^t \int_{\mathcal{S}} P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t} \\&\qquad\qquad
-						+ \gamma^{(n + 1) + 1} \int_\mathcal{S} P(s = s_{(n + 1) + 1} \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{(n + 1) + 1}) \bigr) \dd{s_{(n + 1) + 1}} \\
-					&= \bigl\{ \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \bigr\}_{n + 1}.
+				 & = \bigl\{ \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \bigr\}_n                                                                                                                                                                                      \\
+				 & = \sum_{t = 0}^{n} \gamma^t \int_{\mathcal{S}} P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t}                         \\&\qquad\qquad
+				+ \gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 1}) \bigr) \dd{s_{n + 1}}                                                                                           \\
+				 & = \sum_{t = 0}^{n} \gamma^t \int_{\mathcal{S}} P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t}                         \\&\qquad\qquad
+				+ \gamma^{n + 1} \int_\mathcal{S} P(s = s_{n + 1} \given \pi_{\vec{\theta}}) \int_\mathcal{A} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_{n + 1} \given s_{n + 1}) \bigr) Q^{\pi_{\vec{\theta}}}(s_{n + 1}, a_{n + 1}) \dd{a_{n + 1}} \dd{s_{n + 1}} \\&\qquad\qquad
+				+ \gamma^{n + 2} \int_\mathcal{S} P(s = s_{n + 2} \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{n + 2}) \bigr) \dd{s_{n + 2}}                                                                                           \\
+				 & = \sum_{t = 0}^{n + 1} \gamma^t \int_{\mathcal{S}} P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t}                     \\&\qquad\qquad
+				+ \gamma^{(n + 1) + 1} \int_\mathcal{S} P(s = s_{(n + 1) + 1} \given \pi_{\vec{\theta}}) \bigl( \grad_{\vec{\theta}} V^{\pi_{\vec{\theta}}}(s_{(n + 1) + 1}) \bigr) \dd{s_{(n + 1) + 1}}                                                                   \\
+				 & = \bigl\{ \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \bigr\}_{n + 1}.
 			\end{align}
 			Hence, \( \bigl\{ \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \bigr\}_n = \grad_{\vec{\theta}} \mathcal{J}(\vec{\theta}) \) holds for all \(n \in \N_0\).
 
@@ -2019,9 +2019,9 @@
 			By swapping limits, plugging in the occupancy measure and relabeling \(s_t \mapsto s\) and \(a_t \mapsto a\), we obtain
 			\begin{align}
 				\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta})
-					&= \int_{\mathcal{S}} \sum_{t = 0}^{\infty} \gamma^t P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t} \\
-					&= \int_{\mathcal{S}} \rho^{\pi_{\vec{\theta}}}(s_t) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t} \\
-					&= \int_{\mathcal{S}} \rho^{\pi_{\vec{\theta}}}(s) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a \given s) \bigr) Q^{\pi_{\vec{\theta}}}(s, a) \dd{a} \dd{s}.
+				 & = \int_{\mathcal{S}} \sum_{t = 0}^{\infty} \gamma^t P(s = s_t \given \pi_{\vec{\theta}}) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t} \\
+				 & = \int_{\mathcal{S}} \rho^{\pi_{\vec{\theta}}}(s_t) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a_t \given s_t) \bigr) Q^{\pi_{\vec{\theta}}}(s_t, a_t) \dd{a_t} \dd{s_t}                                      \\
+				 & = \int_{\mathcal{S}} \rho^{\pi_{\vec{\theta}}}(s) \int_{\mathcal{A}} \bigl( \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a \given s) \bigr) Q^{\pi_{\vec{\theta}}}(s, a) \dd{a} \dd{s}.
 			\end{align}
 			This is exactly the result of the policy gradient theorem.
 		\end{proof}
@@ -2029,10 +2029,10 @@
 			Using the discounted state distribution \( d^{\pi_{\vec{\theta}}}(s) \) and the log-ratio trick, we can rewrite the \ac{PG} as
 			\begin{align}
 				\grad_{\vec{\theta}} \mathcal{J}(\vec{\theta})
-					&= \frac{1}{1 - \gamma} \int_\mathcal{S} d^{\pi_{\vec{\theta}}}(s) \int_\mathcal{A} Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a \given s) \dd{a} \dd{s} \\
-					&= \frac{1}{1 - \gamma} \int_\mathcal{S} d^{\pi_{\vec{\theta}}}(s) \int_\mathcal{A} \pi_{\vec{\theta}}(a \given s) \, Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \dd{a} \dd{s} \\
-					&= \frac{1}{1 - \gamma} \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr] \\
-					&\propto \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr]  \label{eq:pgt}
+				 & = \frac{1}{1 - \gamma} \int_\mathcal{S} d^{\pi_{\vec{\theta}}}(s) \int_\mathcal{A} Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \pi_{\vec{\theta}}(a \given s) \dd{a} \dd{s}                                        \\
+				 & = \frac{1}{1 - \gamma} \int_\mathcal{S} d^{\pi_{\vec{\theta}}}(s) \int_\mathcal{A} \pi_{\vec{\theta}}(a \given s) \, Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \dd{a} \dd{s} \\
+				 & = \frac{1}{1 - \gamma} \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr]        \\
+				 & \propto \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr]  \label{eq:pgt}
 			\end{align}
 			and we can readily apply \ac{MC}-based techniques if we know the true action-value function.
 		\end{remark}
@@ -2059,9 +2059,9 @@
 				then its gradient w.r.t. \(\vec{\omega}\) is
 				\begin{align}
 					\grad_{\vec{\omega}} \epsilon
-						&= 2 \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ \bigl( Q^{\pi_{\vec{\theta}}}(s, a) - \hat{Q}_{\vec{\omega}}(s, a) \bigr) \grad_{\vec{\omega}} \bigl( Q^{\pi_{\vec{\theta}}}(s, a) - \hat{Q}_{\vec{\omega}}(s, a) \bigr) \bigr] \\
-						&= 2 \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ \bigl( Q^{\pi_{\vec{\theta}}}(s, a) - \hat{Q}_{\vec{\omega}}(s, a) \bigr) \grad_{\vec{\omega}} \hat{Q}_{\vec{\omega}}(s, a) \bigr] \\
-						&= 2 \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ \bigl( Q^{\pi_{\vec{\theta}}}(s, a) - \hat{Q}_{\vec{\omega}}(s, a) \bigr) \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr]
+					 & = 2 \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ \bigl( Q^{\pi_{\vec{\theta}}}(s, a) - \hat{Q}_{\vec{\omega}}(s, a) \bigr) \grad_{\vec{\omega}} \bigl( Q^{\pi_{\vec{\theta}}}(s, a) - \hat{Q}_{\vec{\omega}}(s, a) \bigr) \bigr] \\
+					 & = 2 \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ \bigl( Q^{\pi_{\vec{\theta}}}(s, a) - \hat{Q}_{\vec{\omega}}(s, a) \bigr) \grad_{\vec{\omega}} \hat{Q}_{\vec{\omega}}(s, a) \bigr]                                              \\
+					 & = 2 \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ \bigl( Q^{\pi_{\vec{\theta}}}(s, a) - \hat{Q}_{\vec{\omega}}(s, a) \bigr) \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr]
 				\end{align}
 				where the last equality is due to the assumption of \(\hat{Q}_{\vec{\omega}}\) being compatible to \(\pi_{\vec{\theta}}\). As \(\vec{\omega}\) minimizes \(\epsilon\), \( \grad_{\vec{\omega}} \epsilon = \vec{0} \) holds. Hence,
 				\begin{equation}
@@ -2077,10 +2077,10 @@
 			Plugging the \ac{CFA} into \eqref{eq:pgt} yields
 			\begin{align}
 				\grad_{\vec{\theta}}^\mathrm{CFA} \mathcal{J}(\vec{\theta})
-					&= \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr] \\
-					&= \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ \bigl( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr)^{\transposed\,} \vec{\omega} \, \bigl( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr) \bigr] \\
-					&= \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\Bigl[ \bigl( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr) \bigl( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr)^{\transposed\,} \Bigr] \, \vec{\omega}
-					 = \mat{F}_{\vec{\theta}} \vec{\omega}
+				 & = \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ Q^{\pi_{\vec{\theta}}}(s, a) \, \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr]                                                                                      \\
+				 & = \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\bigl[ \bigl( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr)^{\transposed\,} \vec{\omega} \, \bigl( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr) \bigr] \\
+				 & = \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \subgiven s)}\Bigl[ \bigl( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr) \bigl( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr)^{\transposed\,} \Bigr] \, \vec{\omega}
+				= \mat{F}_{\vec{\theta}} \vec{\omega}
 			\end{align}
 			where the expectation is equal to the \ac{FIM} as the second component of the variance, the expectation-square, vanishes as the expectation over \( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \) is zero (see \eqref{eq:usefulIntegrals}).
 			% TODO: CFA: Is the linear CFA the only CFA? It should be, right?
@@ -2097,10 +2097,10 @@
 			Obviously, the advantage function has zero mean w.r.t. to the policy \(\pi\):
 			\begin{equation}
 				\E_{a \sim \pi}\bigl[ A^\pi(s, a) \bigr]
-					= \E_{a \sim \pi}\bigl[ Q^\pi(s, a) - V^\pi(s) \bigr]
-					= \E_{a \sim \pi}\bigl[ Q^\pi(s, a) \bigr] - V^\pi(s)
-					= V^\pi(s) - V^\pi(s)
-					= 0
+				= \E_{a \sim \pi}\bigl[ Q^\pi(s, a) - V^\pi(s) \bigr]
+				= \E_{a \sim \pi}\bigl[ Q^\pi(s, a) \bigr] - V^\pi(s)
+				= V^\pi(s) - V^\pi(s)
+				= 0
 			\end{equation}
 
 			\emph{Episodic natural actor-critic (\acsu{eNAC})} combines the idea of \ac{CFA} with \ac{NG} but estimates the advantage function rather than the action-value function\footnote{Note that this is still a \ac{CFA} its expectation vanishes.},
@@ -2109,14 +2109,14 @@
 			\end{equation}
 			as it usually has lower variance. As the \ac{CFA} and \ac{NG} gradient are given by
 			\begin{align}
-				\grad_{\vec{\theta}}^\mathrm{CFA} \mathcal{J}_{\vec{\theta}} &= \mat{F}_{\vec{\theta}} \vec{\omega} &
-				\grad_{\vec{\theta}}^\mathrm{NG} \mathcal{J}_{\vec{\theta}} &= \mat{F}_{\vec{\theta}}^{-1} \grad_{\vec{\theta}} \mathcal{J}_{\vec{\theta}}.
+				\grad_{\vec{\theta}}^\mathrm{CFA} \mathcal{J}_{\vec{\theta}} & = \mat{F}_{\vec{\theta}} \vec{\omega}                                          &
+				\grad_{\vec{\theta}}^\mathrm{NG} \mathcal{J}_{\vec{\theta}}  & = \mat{F}_{\vec{\theta}}^{-1} \grad_{\vec{\theta}} \mathcal{J}_{\vec{\theta}}.
 			\end{align}
 			Hence, the \ac{eNAC} gradient is simply
 			\begin{equation}
 				\grad_{\vec{\theta}}^\mathrm{eNAC} \mathcal{J}_{\vec{\theta}}
-					= \mat{F}_{\vec{\theta}}^{-1} \mat{F}_{\vec{\theta}} \vec{\omega}
-					= \vec{\omega}.
+				= \mat{F}_{\vec{\theta}}^{-1} \mat{F}_{\vec{\theta}} \vec{\omega}
+				= \vec{\omega}.
 			\end{equation}
 			However, we still have to compute \(\vec{\omega}\)! For this, we also need an approximation of the value function for the initial state. If the initial state does not change, this is just a constant and if it does, we choose a linear approximation \( \hat{V}_{\vec{v}}(s) = \vec{\phi}^\transposed(s) \vec{v} \) using some features \(\vec{\phi}(s)\) of the state \(s\). Now we can write
 			\begin{equation}
@@ -2128,9 +2128,9 @@
 			\end{equation}
 			with
 			\begin{align}
-				\vec{J} &= \begin{bmatrix} J\bigl( \tau^{[1]} \bigr) \\ J\bigl( \tau^{[2]} \bigr) \\ \vdots \\ J\bigl( \tau^{[N]} \bigr) \end{bmatrix} &
-				\mat{\Psi} &= \begin{bmatrix} \bigl(\vec{\psi}^{[1]}\bigr)^\transposed \\ \bigl(\vec{\psi}^{[2]}\bigr)^\transposed \\ \vdots \\ \bigl(\vec{\psi}^{[N]}\bigr)^\transposed \end{bmatrix} &
-				\vec{\psi}^{[i]} &= \begin{bmatrix} \sum_{t = 0}^{T_i - 1} \gamma^t \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}\bigl( a_t^{[i]} \biggiven s_t^{[i]} \bigr) \\ \vec{\phi}\bigl(s_0^{[i]}\bigr) \end{bmatrix}.
+				\vec{J}          & = \begin{bmatrix} J\bigl( \tau^{[1]} \bigr) \\ J\bigl( \tau^{[2]} \bigr) \\ \vdots \\ J\bigl( \tau^{[N]} \bigr) \end{bmatrix}                                                                                               &
+				\mat{\Psi}       & = \begin{bmatrix} \bigl(\vec{\psi}^{[1]}\bigr)^\transposed \\ \bigl(\vec{\psi}^{[2]}\bigr)^\transposed \\ \vdots \\ \bigl(\vec{\psi}^{[N]}\bigr)^\transposed \end{bmatrix}                                                  &
+				\vec{\psi}^{[i]} & = \begin{bmatrix} \sum_{t = 0}^{T_i - 1} \gamma^t \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}\bigl( a_t^{[i]} \biggiven s_t^{[i]} \bigr) \\ \vec{\phi}\bigl(s_0^{[i]}\bigr) \end{bmatrix}.
 			\end{align}
 			As this system is linear and overdetermined, we can evaluate \(\vec{\omega}\) and \(\vec{v}\) using least squares. Note that this is an \emph{episodic} algorithm as the calculation of \(J(\tau)\) requires a complete episode. \autoref{alg:enac} summarizes this approach.
 
@@ -2181,7 +2181,7 @@
 		\centering
 		\begin{tabular}{c|lll}
 			\toprule
-			                   \textbf{Type}                     & \textbf{Name}             & \textbf{Tackled Issue}     & \textbf{Approach}                                        \\ \midrule
+			\textbf{Type}                                        & \textbf{Name}             & \textbf{Tackled Issue}     & \textbf{Approach}                                        \\ \midrule
 			\multirowcell{4}{\rotatebox{90}{\textbf{Essential}}} & Replay Buffer             & distribution shift         & reuse old transitions                                    \\
 			                                                     & Target Network            & instability                & use a target network for the \acs{TD} error              \\
 			                                                     & Minibatch Updates         & inefficiency               & sample small minibatch                                   \\
@@ -2225,10 +2225,10 @@
 					\(\displaystyle \langle s_i, a_i, r_i, s_i' \rangle_{i = 1}^{M} \sim \mathcal{D} \) \;
 					\tcp{Compute \acs{TD} targets.}
 					\(\displaystyle y_i \gets
-						\begin{cases}
-							r_i & \text{if }s_i'\text{ is terminal} \\
-							r_i + \gamma \max_{a' \in \mathcal{A}} \hat{Q}_{\vec{\omega}'}(s_i', a') & \text{otherwise}
-						\end{cases}
+					\begin{cases}
+						r_i                                                                      & \text{if }s_i'\text{ is terminal} \\
+						r_i + \gamma \max_{a' \in \mathcal{A}} \hat{Q}_{\vec{\omega}'}(s_i', a') & \text{otherwise}
+					\end{cases}
 					\) \;
 					\tcp{Perform the optimization.}
 					perform gradient descent step on \( \bigl( y_i - \hat{Q}_{\vec{\omega}}(s_i, a_i) \bigr)^2 \) w.r.t. \(\vec{\omega}\) \;
@@ -2447,22 +2447,22 @@
 			By the definition of the advantage and action-value function, we can write
 			\begin{equation}
 				A^q(s_t, a_t)
-					\doteq Q^q(s_t, a_t) - V^q(s_t, a_t)
-					\doteq \E_{s_{t + 1}}\bigl[ R(s_t, a_t) + \gamma V^q(s_{t + 1}) - V^q(s_t) \bigr].
+				\doteq Q^q(s_t, a_t) - V^q(s_t, a_t)
+				\doteq \E_{s_{t + 1}}\bigl[ R(s_t, a_t) + \gamma V^q(s_{t + 1}) - V^q(s_t) \bigr].
 			\end{equation}
 			hence, we can rewrite the expectation in \eqref{eq:kll} as follows:
 			\begin{align}
 				\E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^t A^q(s_t, a_t) \Biggr]
-					&= \E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^t \bigl( R(s_t, a_t) + \gamma V^q(s_{t + 1}) - V^q(s_t) \bigr) \Biggr] \\
-					&= \E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^t R(s_t, a_t) \Biggr] + \E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^t \bigl( \gamma V^q(s_{t + 1}) - V^q(s_t) \bigr) \Biggr] \\
-					&= \E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^t R(s_t, a_t) \Biggr] + \E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^{t + 1} V^q(s_{t + 1}) - \gamma^t V^q(s_t) \Biggr].
+				 & = \E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^t \bigl( R(s_t, a_t) + \gamma V^q(s_{t + 1}) - V^q(s_t) \bigr) \Biggr]                                                                  \\
+				 & = \E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^t R(s_t, a_t) \Biggr] + \E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^t \bigl( \gamma V^q(s_{t + 1}) - V^q(s_t) \bigr) \Biggr] \\
+				 & = \E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^t R(s_t, a_t) \Biggr] + \E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^{t + 1} V^q(s_{t + 1}) - \gamma^t V^q(s_t) \Biggr].
 			\end{align}
 			By definition, the left expectation equals \( \mathcal{J}(\pi) \). Comparing with \eqref{eq:kll}, what remains to be shown is that the right expectation equals \( -\mathcal{J}(q) \):
 			\begin{equation}
 				\E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^{t + 1} V^q(s_{t + 1}) - \gamma^t V^q(s_t) \Biggr]
-					= \E_{\tau \sim \pi}\Biggl[ \sum_{t = 1}^{\infty} \gamma^t V^q(s_t) - \sum_{t = 0}^{\infty} \gamma^t V^q(s_t) \Biggr]
-					= \E_{s_0 \sim \iota}\bigl[ V^q(s_0) \bigr]
-					= -\mathcal{J}(q).
+				= \E_{\tau \sim \pi}\Biggl[ \sum_{t = 1}^{\infty} \gamma^t V^q(s_t) - \sum_{t = 0}^{\infty} \gamma^t V^q(s_t) \Biggr]
+				= \E_{s_0 \sim \iota}\bigl[ V^q(s_0) \bigr]
+				= -\mathcal{J}(q).
 			\end{equation}
 			With this result and by plugging everything back in, we get the Kakade-Langford-lemma.
 		\end{proof}
@@ -2470,8 +2470,8 @@
 		Let \(\pi_{\vec{\theta}}\) and \(q\) be arbitrary policies, then we can apply the Kakade-Langford-lemma (\autoref{th:kll}) and write the objective as
 		\begin{equation}
 			\mathcal{J}(\pi_{\vec{\theta}})
-				= \mathcal{J}(q) + \E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^t A^q(s_t, a_t) \Biggr]
-				= \mathcal{J}(q) + \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \given s)}\bigl[ A^q(s, a) \bigr]
+			= \mathcal{J}(q) + \E_{\tau \sim \pi}\Biggl[ \sum_{t = 0}^{\infty} \gamma^t A^q(s_t, a_t) \Biggr]
+			= \mathcal{J}(q) + \E_{s \sim d^{\pi_{\vec{\theta}}}(\cdot), a \sim \pi_{\vec{\theta}}(\cdot \given s)}\bigl[ A^q(s, a) \bigr]
 		\end{equation}
 		where we swapped the limits of expectation and sum. Note that this is still equivalent to the original objective, but with a baseline policy \(q\). As already discussed, it is difficult of computing the gradient of this objective as it contains \(d^{\pi_{\vec{\theta}}}\). Instead, we replace \(d^{\pi_{\vec{\theta}}}\) with the discounted state distribution w.r.t. \(q\), \(d^q\). This yields the surrogate objective:
 		\begin{equation}
@@ -2488,7 +2488,7 @@
 		\emph{Advantage actor-critic (\acsu{A2C})} is the simplest deep actor-critic methods and just uses \ac{MC} estimates of the value and advantage function. Subsequently, it just follows the gradient of the surrogate loss,
 		\begin{equation}
 			\grad_{\vec{\theta}} \mathcal{L}(\vec{\theta})
-				= \E_{s \sim d^q, a \sim \pi_{\vec{\theta}}(\cdot \given s)}\bigl[ \bigl( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr) \hat{A}(s, a) \bigr],
+			= \E_{s \sim d^q, a \sim \pi_{\vec{\theta}}(\cdot \given s)}\bigl[ \bigl( \grad_{\vec{\theta}} \log \pi_{\vec{\theta}}(a \given s) \bigr) \hat{A}(s, a) \bigr],
 		\end{equation}
 		where we use the log-ratio trick again. By replacing the \(d^q\) with \(u^q\) and just computing the expectation by sampling transitions, we arrive at the \ac{A2C} objective
 		\begin{equation}
@@ -2528,11 +2528,11 @@
 			In \emph{\ac{TRPO},} we essentially use the \ac{NG} but optimize the policy only in a "trust region" around the old policy where we are sure to have enough information. This idea is formalized in the following optimization problem:
 			\begin{equation}
 				\begin{aligned}
-					\vec{\theta}^\ast &= \argmax_{\vec{\theta}} \, \mathcal{L}(\vec{\theta}) \\
-					\text{s.t.}\qquad&
-						\begin{aligned}
-							\E_{s \sim u^q}\bigl[ \KL\bigl( q(a \given s) \,\big\Vert \pi_{\vec{\theta}}(a \given s) \bigr) \bigr] &\leq \varepsilon
-						\end{aligned}
+					\vec{\theta}^\ast & = \argmax_{\vec{\theta}} \, \mathcal{L}(\vec{\theta}) \\
+					\text{s.t.}\qquad &
+					\begin{aligned}
+						\E_{s \sim u^q}\bigl[ \KL\bigl( q(a \given s) \,\big\Vert \pi_{\vec{\theta}}(a \given s) \bigr) \bigr] & \leq \varepsilon
+					\end{aligned}
 				\end{aligned}
 			\end{equation}
 			where we use the importance sampling surrogate objective
@@ -2556,8 +2556,8 @@
 			Nevertheless, computing the \ac{FIM} explicitly is still costly. Instead, we can use automatic differentiation to efficiently compute Fisher-vector products \( \mat{F}_{\vec{\theta}} \vec{x} \) directly without computing the \ac{FIM}. We do this using the definition of the \ac{FIM} and "push in" the multiplication with \(\vec{x}\):
 			\begin{equation}
 				\mat{F}_{\vec{\theta}} \vec{x}
-					= \bigl( \grad_{\vec{\theta}} \grad_{\vec{\theta}} \KL(\pi_{\vec{\theta}'} \,\Vert\, \pi_{\vec{\theta}}) \bigr) \vec{x}
-					= \grad_{\vec{\theta}} \grad_{\vec{\theta}} \bigl( \KL(\pi_{\vec{\theta}'} \,\Vert\, \pi_{\vec{\theta}}) \vec{x} \bigr).
+				= \bigl( \grad_{\vec{\theta}} \grad_{\vec{\theta}} \KL(\pi_{\vec{\theta}'} \,\Vert\, \pi_{\vec{\theta}}) \bigr) \vec{x}
+				= \grad_{\vec{\theta}} \grad_{\vec{\theta}} \bigl( \KL(\pi_{\vec{\theta}'} \,\Vert\, \pi_{\vec{\theta}}) \vec{x} \bigr).
 			\end{equation}
 			With automatic differentiation, this yields an efficient way of calculating \( \mat{F}_{\vec{\theta}} \vec{x} \).
 
@@ -2591,12 +2591,12 @@
 				\( V', A \gets \) compute using \acs{GAE} of \(\mathcal{D}\) using \(V_{\vec{\omega}}\) \;
 				\( \vec{\omega} \gets \) fit value function using \(\mathcal{D}\) and \(V'\) \;
 				\For{\( N \gets 1, 2, \dots, N \)}{
-					split \(\mathcal{D}\) into \(M\) minibatches \( \{ \mathcal{B}_m \}_{m = 1}^{M} \) of size \(N\) \;
-					\For{\( m \gets 1, 2, \dots, M \)}{
-						\tcp{Maximize surrogate objective.}
-						\( \mathcal{L}(\vec{\theta}) \gets \frac{1}{N} \sum_{(s, a, \cdot, \cdot) \in \mathcal{B}_m} \clip_{-\varepsilon}^{+\varepsilon}\Bigl( \frac{\pi_{\vec{\theta}}(a \given s)}{q(a \given s)} \Bigr) \hat{A}(s, a) \) \;
-						\( \vec{\theta} \gets \) maximize \(\mathcal{L}(\vec{\theta})\) w.r.t. \(\vec{\theta}\), e.g., using Adam \;
-					}
+				split \(\mathcal{D}\) into \(M\) minibatches \( \{ \mathcal{B}_m \}_{m = 1}^{M} \) of size \(N\) \;
+				\For{\( m \gets 1, 2, \dots, M \)}{
+					\tcp{Maximize surrogate objective.}
+					\( \mathcal{L}(\vec{\theta}) \gets \frac{1}{N} \sum_{(s, a, \cdot, \cdot) \in \mathcal{B}_m} \clip_{-\varepsilon}^{+\varepsilon}\Bigl( \frac{\pi_{\vec{\theta}}(a \given s)}{q(a \given s)} \Bigr) \hat{A}(s, a) \) \;
+					\( \vec{\theta} \gets \) maximize \(\mathcal{L}(\vec{\theta})\) w.r.t. \(\vec{\theta}\), e.g., using Adam \;
+				}
 				}
 				\Return \(\vec{\theta}\), \(\vec{\omega}\) \;
 				\caption{Proximal Policy Optimization}
@@ -2729,8 +2729,8 @@
 			under the undiscounted state distribution \(u^q\). But this surrogate objective is still an expectation w.r.t. the actions (opposed to \ac{DDPG} and \ac{TD3} where the action was deterministic and just "plugged in")! Hence, its gradient is hard to compute. Instead of using the usual log-ratio trick, \ac{SAC} used the reparametrization trick (see \autoref{subsec:reparam}) which exhibits less variance. Let \( g_{\vec{\theta}}(s; \varepsilon) \) be the reparameterized policy, i.e., \( a = g_{\vec{\theta}}(s; \varepsilon) \), with \( \varepsilon \sim p(\cdot) \) being the noise. We can then rewrite the objective \eqref{eq:sacSurrogateObj} as
 			\begin{equation}
 				\mathcal{L}^\alpha(\vec{\theta})
-					= \E_{s \sim u^q, a \sim \pi_{\vec{\theta}}(\cdot \given s)}\bigl[ Q^{\pi_{\vec{\theta}}}(s, a) - \alpha \log \pi_{\vec{\theta}}(a \given s) \bigr]
-					= \E_{s \sim u^q, \varepsilon \sim p}\bigl[ Q^{\pi_{\vec{\theta}}}\bigl(s, g_{\vec{\theta}}(s; \varepsilon)\bigr) - \alpha \log \pi_{\vec{\theta}}\bigl( g_{\vec{\theta}}(s; \varepsilon) \given s \bigr) \bigr]
+				= \E_{s \sim u^q, a \sim \pi_{\vec{\theta}}(\cdot \given s)}\bigl[ Q^{\pi_{\vec{\theta}}}(s, a) - \alpha \log \pi_{\vec{\theta}}(a \given s) \bigr]
+				= \E_{s \sim u^q, \varepsilon \sim p}\bigl[ Q^{\pi_{\vec{\theta}}}\bigl(s, g_{\vec{\theta}}(s; \varepsilon)\bigr) - \alpha \log \pi_{\vec{\theta}}\bigl( g_{\vec{\theta}}(s; \varepsilon) \given s \bigr) \bigr]
 				\label{eq:sacObj}
 			\end{equation}
 			and we can readily compute its gradient by applying the chain rule. So far, the objective \eqref{eq:sacObj} depends on the hyper-parameter \(\alpha\) which is very difficult to optimize. Instead, it would be easier to specify a target entropy \(\bar{\H}\) and selecting \(\alpha\) accordingly. Hence, \ac{SAC} automatically tunes \(\alpha\) by solving
@@ -2825,8 +2825,8 @@
 		\end{equation}
 		with
 		\begin{align}
-			\eta &\coloneqq \frac{1}{P(z \given b, a)} &
-			P(z \given b, a) &= \sum_{s' \in \mathcal{S}} P(z \given s', a) \sum_{s \in \mathcal{S}} P(s' \given s, a) b(s).
+			\eta             & \coloneqq \frac{1}{P(z \given b, a)}                                                           &
+			P(z \given b, a) & = \sum_{s' \in \mathcal{S}} P(z \given s', a) \sum_{s \in \mathcal{S}} P(s' \given s, a) b(s).
 		\end{align}
 		Using \emph{belief states,} we can transform a \ac{POMDP} into a \ac{MDP} and, for instance, solve it with the well-known methods for \acp{MDP}.
 
@@ -2880,13 +2880,13 @@
 
 		For options, we can develop similar algorithms as for classical \acp{MDP}. Let \(T_o\) be the termination time step of the option \(o\), we have the option reward and option transition function
 		\begin{align}
-			R(s_t, o) &= \E_{T_o}\Biggl[ \sum_{t = 0}^{T_o - 1} \gamma^t R(s_{t + k}, a_{t + k}) \Biggr] &
-			P(s' \given s, o) &= \sum_{T_o = 1}^{\infty} \gamma^{T_o} P(s', T_o),
+			R(s_t, o)         & = \E_{T_o}\Biggl[ \sum_{t = 0}^{T_o - 1} \gamma^t R(s_{t + k}, a_{t + k}) \Biggr] &
+			P(s' \given s, o) & = \sum_{T_o = 1}^{\infty} \gamma^{T_o} P(s', T_o),
 		\end{align}
 		where \(P(s', T_o)\) is the probability of reaching \(s'\) in \(T_o\) time steps following \(o\). Similarly, we have the Bellman optimality equations
 		\begin{align}
-			V_{\mathcal{O}}^\ast(s) &= \max_{o \in \mathcal{O}_s} \;\Bigl\{ R(s, o) + \gamma \E_{s'}\bigl[ V_\mathcal{O}^\ast(s') \biggiven s \bigr] \Bigr\} \\
-			Q_\mathcal{O}^\ast(s, a) &= R(s, o) + \gamma \E_{s'}\bigl[ \textstyle\max_{a' \in \mathcal{O}_s}\displaystyle Q_\mathcal{O}^\ast(s', o') \biggiven s \bigr]
+			V_{\mathcal{O}}^\ast(s)  & = \max_{o \in \mathcal{O}_s} \;\Bigl\{ R(s, o) + \gamma \E_{s'}\bigl[ V_\mathcal{O}^\ast(s') \biggiven s \bigr] \Bigr\}           \\
+			Q_\mathcal{O}^\ast(s, a) & = R(s, o) + \gamma \E_{s'}\bigl[ \textstyle\max_{a' \in \mathcal{O}_s}\displaystyle Q_\mathcal{O}^\ast(s', o') \biggiven s \bigr]
 		\end{align}
 		where \( \mathcal{O}_s \coloneqq \{ o : s \in I_o \} \) are the available options in state \(s\). Using these equations, we can derive similar algorithms to \ac{SARSA} and Q-learning for options, but these algorithms will only update the option value functions in the end and will not exploit intermediate information. With \emph{intra-option learning,} we can update the values for multiple options at every time step; see "Intra-Option Learning about Temporally Abstract Actions" (Sutton et al., 1998).
 

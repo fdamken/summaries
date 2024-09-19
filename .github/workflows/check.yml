@@ -12,11 +12,11 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-    - name: Set up Git repository
-      uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.12"
-    - name: Execute Pre-commit Hooks
-      uses: pre-commit/action@v3.0.1
+      - name: Set up Git repository
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          apt update
+          DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt install -yq --no-install-recommends pre-commit
+      - name: Execute Pre-commit Hooks
+        run: pre-commit run --show-diff-on-failure --color=always --all-files

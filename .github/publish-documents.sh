@@ -44,7 +44,8 @@ while IFS= read -r line; do
         meta_lang_code="$(echo "$meta_lang" | sed -r 's/^(..).*$/\1/')"
 
         if [[ -f "$document_dir/$subject-summary-dark.pdf" ]]; then
-            text_dark="[![Download (Dark Mode)](/download-dark.png)]($subject-summary-dark.pdf)"
+            text_dark="
+[![Download (Dark Mode)](/download-dark.png)]($subject-summary-dark.pdf)"
         else
             text_dark=""
         fi
@@ -60,10 +61,7 @@ pdf: https://fabian.damken.net/summaries/$department/$type/$category/$subject/$s
 language: $meta_lang_code
 ---
 
-[![Download (Light Mode)](/download.png)]($subject-summary.pdf)
-$text_dark
-
-[![Buy Me a Coffee](/kofi.png)](https://ko-fi.com/fdamken)
+[![Download (Light Mode)](/download.png)]($subject-summary.pdf)$text_dark
 
 ## Recent Changes
 $(git log --pretty=tformat:'%as %s' "$document_dir" | sed -r 's/^([^ ]+)/- `\1`/g')

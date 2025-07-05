@@ -75,8 +75,8 @@
 	\section{Momentum}
 		When using SGD, the trajectory along the algorithm converges is very jittery on steep locations as the gradient is large and huge steps are made. On the other hand, only very slow progress is made at locations where the gradient is small. One approach for tackling this problem is \emph{momentum}. The formal definition is
 		\begin{align}
-			\vec{v}^{(k + 1)} &= \mu \vec{v}^{(k)} - \alpha \cdot \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr) \\
-			\vec{\theta}^{(k + 1)} &= \vec{\theta}^{(k)} + \vec{v}^{(k + 1)}
+			\vec{v}^{(k + 1)}      & = \mu \vec{v}^{(k)} - \alpha \cdot \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr) \\
+			\vec{\theta}^{(k + 1)} & = \vec{\theta}^{(k)} + \vec{v}^{(k + 1)}
 		\end{align}
 		with a "friction" coefficient \(\mu\) which is usually \num{0.5}, \num{0.9}, or \num{0.99} or annealed over time (e.g., from \num{0.5} to \num{0.99}). The intuition is that the gradient can build up velocity along shallow regions of the loss which gets damped in steep regions. This reduces the jittering at steep regions by reducing the size of the gradients and ramps up the speed on shallow regions.
 
@@ -85,13 +85,13 @@
 		\subsection{Nesterov Momentum}
 			A variant of the vanilla momentum is \emph{Nesterov momentum}, where the update is compute "one step ahead" by following the old momentum:
 			\begin{align}
-				\vec{v}^{(k + 1)} &= \mu \vec{v}^{(k)} - \alpha \cdot \grad_{\vec{\theta}} L\bigl( \vec{\theta}^{(k)} + \mu \vec{v}^{(k)} \bigr) \\
-				\vec{\theta}^{(k + 1)} &= \vec{\theta}^{(k)} + \vec{v}^{(k + 1)}
+				\vec{v}^{(k + 1)}      & = \mu \vec{v}^{(k)} - \alpha \cdot \grad_{\vec{\theta}} L\bigl( \vec{\theta}^{(k)} + \mu \vec{v}^{(k)} \bigr) \\
+				\vec{\theta}^{(k + 1)} & = \vec{\theta}^{(k)} + \vec{v}^{(k + 1)}
 			\end{align}
 			Notice the change in the top equation when calculating the gradient. But this calculation is slightly inconvenient as usually the forward pass is computed for the current parameter settings anyway, e.g., for computing the predication accuracy. This inconvenience can be circumvented by a slight change of variables. Setting \( \vec{\phi}^{(k)} = \vec{\theta}^{(k)} + \mu \vec{v}^{(k)} \) and rearranging the formulas a bit, the update equation becomes:
 			\begin{align}
-				\vec{v}^{(k + 1)} &= \mu \vec{v}^{(k)} - \alpha \cdot \grad_{\vec{\theta}} L\bigl(\vec{\phi}^{(k)}\bigr) \\
-				\vec{\phi}^{(k + 1)} &= \vec{\phi}^{(k)} - \mu \vec{v}^{(k)} + (1 + \mu) \vec{v}^{(k + 1)}
+				\vec{v}^{(k + 1)}    & = \mu \vec{v}^{(k)} - \alpha \cdot \grad_{\vec{\theta}} L\bigl(\vec{\phi}^{(k)}\bigr) \\
+				\vec{\phi}^{(k + 1)} & = \vec{\phi}^{(k)} - \mu \vec{v}^{(k)} + (1 + \mu) \vec{v}^{(k + 1)}
 			\end{align}
 			The disadvantage of this change of variables is that now the previous value of the momentum has to be kept in memory, but this is mainly an implementation pitfall one has to care for.
 		% end
@@ -99,8 +99,8 @@
 		\subsection{AdaGrad}
 			Another variant of SGD is \emph{AdaGrad} which changes the update in a ways such that the gradients are normalized by the square-root of gradient norms. This reduces the learning rate when gradients are high and increases it when gradients are small. Hence, the algorithms moves faster in shallow and slower in steep regions:
 			\begin{align}
-				s^{(k + 1)} &= s^{(k)} + \Big\lVert \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr) \Big\rVert_2^2 \\
-				\vec{\theta}^{(k + 1)} &= \vec{\theta}^{(k)} - \frac{\alpha}{\sqrt{s^{(k + 1)}} + \epsilon} \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr)
+				s^{(k + 1)}            & = s^{(k)} + \Big\lVert \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr) \Big\rVert_2^2                               \\
+				\vec{\theta}^{(k + 1)} & = \vec{\theta}^{(k)} - \frac{\alpha}{\sqrt{s^{(k + 1)}} + \epsilon} \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr)
 			\end{align}
 			The "gradient cache" \(s\) is initialized with zero and \(\epsilon\) is a small number added to the denominator to prevent divisions by zero. Problems of AdaGrad are that the first step can be far off and that the learning rate vanishes over time due to \(s\) building up large values (as norms can never be negative), causing learning to stagnate.
 		% end
@@ -108,8 +108,8 @@
 		\subsection{RMSProp}
 			\emph{RMSProp} tackles the problem of AdaGrad that the learning rate vanishes by adding a decay rate \(\eta \in [0, 1)\) to it:
 			\begin{align}
-				s^{(k + 1)} &= s^{(k)} \beta s^{(k)} + (1 - \beta) \big\lVert \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr) \big\rVert_2^2 \\
-				\vec{\theta}^{(k + 1)} &= \vec{\theta}^{(k)} - \frac{\alpha}{\sqrt{s^{(k + 1)}} + \epsilon} \cdot \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr)
+				s^{(k + 1)}            & = s^{(k)} \beta s^{(k)} + (1 - \beta) \big\lVert \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr) \big\rVert_2^2           \\
+				\vec{\theta}^{(k + 1)} & = \vec{\theta}^{(k)} - \frac{\alpha}{\sqrt{s^{(k + 1)}} + \epsilon} \cdot \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr)
 			\end{align}
 			With a decay of \( \beta = 0 \), RMSProp is equivalent to AdaGrad. The decay rate should be set to something high like \( \beta = 0.9 \) as small learning rates cause exploding updates in the first steps. Like for AdaGrad, the first few steps can be quite far off.
 		% end
@@ -117,11 +117,11 @@
 		\subsection{Adam}
 			\emph{Adam} is the state-of-the-art optimizer used nearly every time for training neural networks. It combines the idea of momentum with RMSProp
 			\begin{align}
-				\vec{v}^{(k + 1)} &= \beta_1 \vec{v}^{(k)} + (1 - \beta_1) \cdot \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr) \\
-				s^{(k + 1)} &= \beta_2 s^{(k)} + (1 - \beta_2) \big\lVert \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr) \big\rVert_2^2 \\
-				\hat{\vec{v}}^{(k + 1)} &= \frac{\vec{v}^{(k + 1)}}{1 - \beta_1^{k + 1}} \\
-				\hat{s}^{(k + 1)} &= \frac{s^{(k + 1)}}{1 - \beta_2^{k + 1}} \\
-				\vec{\theta}^{(k + 1)} &= \vec{\theta}^{(k)} - \frac{\alpha}{\sqrt{\hat{s}^{(k + 1)}} + \epsilon} \vec{v}^{(k + 1)}
+				\vec{v}^{(k + 1)}       & = \beta_1 \vec{v}^{(k)} + (1 - \beta_1) \cdot \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr)               \\
+				s^{(k + 1)}             & = \beta_2 s^{(k)} + (1 - \beta_2) \big\lVert \grad_{\vec{\theta}} L\bigl(\vec{\theta}^{(k)}\bigr) \big\rVert_2^2 \\
+				\hat{\vec{v}}^{(k + 1)} & = \frac{\vec{v}^{(k + 1)}}{1 - \beta_1^{k + 1}}                                                                  \\
+				\hat{s}^{(k + 1)}       & = \frac{s^{(k + 1)}}{1 - \beta_2^{k + 1}}                                                                        \\
+				\vec{\theta}^{(k + 1)}  & = \vec{\theta}^{(k)} - \frac{\alpha}{\sqrt{\hat{s}^{(k + 1)}} + \epsilon} \vec{v}^{(k + 1)}
 			\end{align}
 			where the hatted variables are a bias correction that compensates for the zero-initialization of \(\vec{v}\) and \(s\) and only really affects the process in the first few iterations where \(k\) i small.
 		% end
@@ -153,26 +153,26 @@
 
 	This exhibits some interesting properties of the gradient flow and the patterns several gates induce. First of all, an add gate distributes the gradient between the incoming paths:
 	\begin{align}
-		\pdv{x} (x + y) &= 1 &
-		\pdv{y} (y + y) &= 1
+		\pdv{x} (x + y) & = 1 &
+		\pdv{y} (y + y) & = 1
 	\end{align}
 	A product gate "switches" the gradient as the first downstream gradient gets multiplied by the value of the second flow:
 	\begin{align}
-		\pdv{x} (xy) &= y &
-		\pdv{y} (xy) &= y
+		\pdv{x} (xy) & = y &
+		\pdv{y} (xy) & = y
 	\end{align}
 	Another interesting gate is the max gate which "routes" the gradient depending on the input values, i.e., the gradient of which the flow has the smaller variable vanishes:
 	\begin{align}
-		\pdv{x} \max(x, y) &=
-			\begin{cases}
-				1 & \text{if } x > y \\
-				0 & \text{if } x < y
-			\end{cases} &
-		\pdv{y} \max(x, y) &=
-			\begin{cases}
-				0 & \text{if } x > y \\
-				0 & \text{if } x < y
-			\end{cases}
+		\pdv{x} \max(x, y)      & =
+		\begin{cases}
+			1 & \text{if } x > y \\
+			0 & \text{if } x < y
+		\end{cases} &
+		\pdv{y} \max(x, y)      & =
+		\begin{cases}
+			0 & \text{if } x > y \\
+			0 & \text{if } x < y
+		\end{cases}
 	\end{align}
 	An important property here is that the derivative for \(x = y\) is undefined as the maximum is not differentiable for \(x = y\). In practice, however, exact equality is rarely the case so this is not a real problem. Similarly a ReLU \( \max(0, x) \) works like a gradient switch where it can only pass through if the value was positive during the forward pass.
 
@@ -235,7 +235,7 @@ db1 = np.einsum('ib->i', dL)
 		\subsubsection{Sigmoid}
 			One of the first activation functions was \emph{sigmoid} which squashes all input numbers into a range from zero to one:
 			\begin{align}
-				\sigma : \R \to (0, 1) : x \mapsto \frac{1}{1 + e^{-x}} &&
+				\sigma : \R \to (0, 1) : x \mapsto \frac{1}{1 + e^{-x}} &  &
 				\sigma'(x) = \sigma(x) \bigl( 1 - \sigma(x) \bigr)
 			\end{align}
 			Sigmoid is best for learning logical inputs, i.e., functions with binary inputs and is used for control signals in LSTM networks. But they can kill gradients for values \( \lvert x \rvert \lg 0 \) as the derivative is near zero for values far away from the center. Sigmoid is also not good for image networks (better use ReLU) and is not zero-centered. The latter is a problem because the sigmoid itself requires zero-centered input data for producing non-trivial (constant) results.
@@ -246,7 +246,7 @@ db1 = np.einsum('ib->i', dL)
 		\subsubsection{Hyperbolic Tangent (Tanh)}
 			The shape of the \emph{hyperbolic tangent} (tanh) activation function is similar, but the numbers are squashed into a range from plus to minus one:
 			\begin{align}
-				\tanh : \R \to (-1, 1) : x \mapsto \frac{e^x - e^{-x}}{e^x + e^{-x}} &&
+				\tanh : \R \to (-1, 1) : x \mapsto \frac{e^x - e^{-x}}{e^x + e^{-x}} &  &
 				\tanh'(x) = 1 - \tanh^2(x)
 			\end{align}
 			Much like the sigmoid, gradients are killed for \(x\) values away from zero. But as the output is zero-centered, the tanh activation function is better suited for most problems as opposed to the sigmoid. It is also used for bounded, but signed, values in LSTM networks. But they are not as good as sigmoid for binary functions.
@@ -255,12 +255,12 @@ db1 = np.einsum('ib->i', dL)
 		\subsubsection{Rectified Linear Unit (ReLU)}
 			The \emph{Rectified Linear Unit} (ReLU) is (at the moment) the go-to activation function for most problems:
 			\begin{align}
-				\mathrm{ReLU} : \R \to [0, \infty) : x \mapsto \max(0, x) &&
+				\mathrm{ReLU} : \R \to [0, \infty) : x \mapsto \max(0, x) &  &
 				\mathrm{ReLU}'(x) =
-					\begin{cases}
-						1 & \text{if } x > 0 \\
-						0 & \text{if } x < 0
-					\end{cases}
+				\begin{cases}
+					1 & \text{if } x > 0 \\
+					0 & \text{if } x < 0
+				\end{cases}
 			\end{align}
 			It saturates on half of the real axis and kills the gradient there, but it does never kill the gradient on the other half and is thus better suited for most problems than sigmoid or tanh. This is also visible empirically: networks using ReLU activations converge around six times faster than networks using sigmoid/tanh activations. But it is also not suitable for logical functions or for control in recurrent networks. Also, the output is not zero-centered. Another (theoretical) problem is that the gradient at \(x = 0\) is not defined. In practice this is not a big problem as values are almost never exactly equal to zero. If they are, one usually chooses zero or one as a gradient value, it does not really matter.
 
@@ -270,12 +270,12 @@ db1 = np.einsum('ib->i', dL)
 		\subsubsection{Leaky and Parametric ReLU}
 			An alternative to the vanilla ReLU are the \emph{leaky} and \emph{parametric} ReLU. The parametric ReLU is given as
 			\begin{align}
-				\mathrm{PReLU}_\alpha : \R \to (-\infty, \infty) : x \mapsto \max(\alpha x, x) &&
+				\mathrm{PReLU}_\alpha : \R \to (-\infty, \infty) : x \mapsto \max(\alpha x, x) &  &
 				\mathrm{PReLU}_\alpha'(x) =
-					\begin{cases}
-						1      & \text{if } x > 0 \\
-						\alpha & \text{if } x < 0
-					\end{cases}
+				\begin{cases}
+					1      & \text{if } x > 0 \\
+					\alpha & \text{if } x < 0
+				\end{cases}
 			\end{align}
 			where for the leaky ReLU the parameter is fixed to \( \alpha = 0.01 \). This parameter is also learnable. Compared to all activation functions discussed before, the leaky and parametric ReLU do not saturate and have most advantages of the ReLU (e.g., faster convergence than sigmoid/tanh). Also the outputs are closer to zero-mean compared to a vanilla ReLU. But it is still not differentiable at \( x = 0 \).
 		% end
@@ -284,16 +284,16 @@ db1 = np.einsum('ib->i', dL)
 			The \emph{exponential linear unit} (ELU) combines the pros of a ReLU with differentiability at \(x = 0\):
 			\begin{align}
 				\mathrm{ELU} : \R \to (-\alpha, \infty) : x \mapsto
-					\begin{cases}
-						x                          & \text{if } x > 0    \\
-						\alpha \big( e^x - 1 \big) & \text{if } x \leq 0
-					\end{cases} &&
+				\begin{cases}
+					x                          & \text{if } x > 0    \\
+					\alpha \big( e^x - 1 \big) & \text{if } x \leq 0
+				\end{cases} &  &
 				\mathrm{ELU}'(x) =
-					\begin{cases}
-						\alpha e^x & \text{if } x > 0 \\
-						1          & \text{if } x < 0 \\
-						1          & \text{if } x = 0 \text{ and } \alpha = 1
-					\end{cases}
+				\begin{cases}
+					\alpha e^x & \text{if } x > 0                         \\
+					1          & \text{if } x < 0                         \\
+					1          & \text{if } x = 0 \text{ and } \alpha = 1
+				\end{cases}
 			\end{align}
 			As can be seen from the derivative, if \(\alpha = 1\) is chosen, the function is continuously differentiable everywhere. Otherwise it is not differentiable at \(x = 0\). The value of \(\alpha\) defines the value of the ELU as \(x \to -\infty\).
 		% end
@@ -463,31 +463,31 @@ db1 = np.einsum('ib->i', dL)
 					\begin{subfigure}{0.49\linewidth}
 						\centering
 						\begin{tikzpicture}[
-									hp/.style = {
-										draw,
-										circle,
-										fill = black,
-										inner sep = 0,
-										minimum width = 5pt,
-										minimum height = 5pt
-									},
-									lv/.style = {
-										draw,
-										rectangle,
-										fill = black,
-										inner sep = 0,
-										minimum width = 1pt,
-										minimum height = 5pt
-									},
-									lh/.style = {
-										draw,
-										rectangle,
-										fill = black,
-										inner sep = 0,
-										minimum width = 5pt,
-										minimum height = 1pt
-									}
-								]
+								hp/.style = {
+									draw,
+									circle,
+									fill = black,
+									inner sep = 0,
+									minimum width = 5pt,
+									minimum height = 5pt
+								},
+								lv/.style = {
+									draw,
+									rectangle,
+									fill = black,
+									inner sep = 0,
+									minimum width = 1pt,
+									minimum height = 5pt
+								},
+								lh/.style = {
+									draw,
+									rectangle,
+									fill = black,
+									inner sep = 0,
+									minimum width = 5pt,
+									minimum height = 1pt
+								}
+							]
 							\coordinate (a) at (-1.75, -1.75);
 							\coordinate (b) at (+1.75, -1.75);
 							\coordinate (c) at (+1.75, +1.75);
@@ -522,31 +522,31 @@ db1 = np.einsum('ib->i', dL)
 					\begin{subfigure}{0.49\linewidth}
 						\centering
 						\begin{tikzpicture}[
-									hp/.style = {
-										draw,
-										circle,
-										fill = black,
-										inner sep = 0,
-										minimum width = 5pt,
-										minimum height = 5pt
-									},
-									lv/.style = {
-										draw,
-										rectangle,
-										fill = black,
-										inner sep = 0,
-										minimum width = 1pt,
-										minimum height = 5pt
-									},
-									lh/.style = {
-										draw,
-										rectangle,
-										fill = black,
-										inner sep = 0,
-										minimum width = 5pt,
-										minimum height = 1pt
-									}
-								]
+								hp/.style = {
+									draw,
+									circle,
+									fill = black,
+									inner sep = 0,
+									minimum width = 5pt,
+									minimum height = 5pt
+								},
+								lv/.style = {
+									draw,
+									rectangle,
+									fill = black,
+									inner sep = 0,
+									minimum width = 1pt,
+									minimum height = 5pt
+								},
+								lh/.style = {
+									draw,
+									rectangle,
+									fill = black,
+									inner sep = 0,
+									minimum width = 5pt,
+									minimum height = 1pt
+								}
+							]
 							\coordinate (a) at (-1.75, -1.75);
 							\coordinate (b) at (+1.75, -1.75);
 							\coordinate (c) at (+1.75, +1.75);
@@ -680,8 +680,8 @@ db1 = np.einsum('ib->i', dL)
 	\end{equation}
 	where \(O_{x/y}\) is the width/height of the output data, \(I_{x/y}\) is the width/height of the input data, \(P_{x/y}\) is the horizontal/vertical padding, and \(S_{x/y}\) is the horizontal/vertical stride. If square input data and filters are used, the equations simplify to
 	\begin{align}
-		\text{\#Parameters} &= D \big( d F^2 + 1 \big) &
-		O &= \frac{I + 2 P - F}{S} + 1.
+		\text{\#Parameters} & = D \big( d F^2 + 1 \big)    &
+		O                   & = \frac{I + 2 P - F}{S} + 1.
 	\end{align}
 	In convolutional networks, these kind of layers are then stacked on top of each other, forming a feature hierarchy (like in multilayer perceptrons). As usual, it is not good to shrink down the spatial dimensions too slow nor too fast. Common settings are power of two for the number of filters and filter sizes, padding and stride of \( (F, S, P) = (3, 1, 1) \), \( (F, S, P) = (5, 1, 2) \), \( (F, S, P) = (5, 2, ?) \)\footnote{Whatever fits for the padding.}, or \( (F, S, P) = (1, 1, 0) \). Usually the convolutional part of a network is followed by some fully connected layers for performing the actual classification/regression task. The interpretation is that the convolutional layers produce good features that can then be used by the following multiplayer perceptron.
 
@@ -1225,11 +1225,11 @@ db1 = np.einsum('ib->i', dL)
 		Assuming stacked RNNs, the equation for updating the hidden state in a vanilla RNN is\footnote{Let \(n\) be the dimensionality of the hidden state, then the weight matrix has size \( n \times 2n \).}
 		\begin{equation}
 			\vec{h}_t^l = \tanh\,
-				\mat{W}^l
-				\begin{bmatrix}
-					\vec{h}_t^{l - 1} \\
-					\vec{h}_{t - 1}^l
-				\end{bmatrix}
+			\mat{W}^l
+			\begin{bmatrix}
+				\vec{h}_t^{l - 1} \\
+				\vec{h}_{t - 1}^l
+			\end{bmatrix}
 		\end{equation}
 		where \( \vec{h}_{t - 1}^l \) is the hidden state of layer \(l\) of the previous time step, \( \vec{h}_t^{l - 1} \) is the hidden state of the previous layer \(l - 1\) of the current time step and \(\vec{h}_t^l\) is the next hidden state. For the first layer, the hidden state equals the input: \( \vec{h}_t^0 = \vec{x}_t \). The weight matrix \( \mat{W}^l \) then summarizes the two matrices of \eqref{eq:rnnHidden}. The vanilla RNN was previously introduced like every cell has an extra output with an extra weight matrix, but this formalism is not necessary and the hidden state can just be passed to the next layer. It will be multiplied by a learnable weight matrix anyway.
 
@@ -1241,20 +1241,20 @@ db1 = np.einsum('ib->i', dL)
 				\vec{o} \\
 				\vec{g}
 			\end{bmatrix}
-			&=
-				\begin{bmatrix}
-					\sigma \\
-					\sigma \\
-					\sigma \\
-					\tanh
-				\end{bmatrix}
-				\mat{W}^l
-				\begin{bmatrix}
-					\vec{h}_t^{l - 1} \\
-					\vec{h}_{t - 1}^l
-				\end{bmatrix} &
-			\vec{c}_t^l &= \vec{f} \odot \vec{c}_{t - 1}^l + \vec{i} \odot \vec{g} &
-			\vec{h}_t^l &= \vec{o} \odot \tanh\big( \vec{c}_t^l \big)
+			                     & =
+			\begin{bmatrix}
+				\sigma \\
+				\sigma \\
+				\sigma \\
+				\tanh
+			\end{bmatrix}
+			\mat{W}^l
+			\begin{bmatrix}
+				\vec{h}_t^{l - 1} \\
+				\vec{h}_{t - 1}^l
+			\end{bmatrix} &
+			\vec{c}_t^l          & = \vec{f} \odot \vec{c}_{t - 1}^l + \vec{i} \odot \vec{g} &
+			\vec{h}_t^l          & = \vec{o} \odot \tanh\big( \vec{c}_t^l \big)
 		\end{align}
 		where now \( \mat{W}^l \in \R^{4n \times 2n} \) and \( \vec{i}, \vec{f}, \vec{o}, \vec{g} \in \R^n \) and \( \odot \) denotes the Hadamard product. These vectors have the following interpretations:
 		\begin{itemize}
@@ -1272,23 +1272,23 @@ db1 = np.einsum('ib->i', dL)
 		\begin{figure}
 			\centering
 			\begin{tikzpicture}[
-						->,
-						align = center,
-						compute/.style = {
-							draw,
-							circle,
-							minimum width = 1cm,
-							minimum height = 1cm,
-							inner sep = 0
-						},
-						select/.style = {
-							draw,
-							rectangle,
-							minimum width = 1.25cm,
-							minimum height = 0.75cm,
-							inner sep = 0
-						}
-					]
+					->,
+					align = center,
+					compute/.style = {
+						draw,
+						circle,
+						minimum width = 1cm,
+						minimum height = 1cm,
+						inner sep = 0
+					},
+					select/.style = {
+						draw,
+						rectangle,
+						minimum width = 1.25cm,
+						minimum height = 0.75cm,
+						inner sep = 0
+					}
+				]
 				\node [compute] (n2) {\(+\)};
 				\node [compute, below = 1 of n2] (n3) {\(\odot\)};
 				\node [compute, below = 1 of n3, xshift = -0.75cm] (vi) {\(\sigma\)};
@@ -1380,23 +1380,23 @@ db1 = np.einsum('ib->i', dL)
 		\centering
 		\begin{tikzpicture}[->, every node/.style = { draw, rectangle, minimum height = 0.75cm, minimum width = 4cm }]
 			\node (a) {Generative Models};
-				\node [below = 1.5 of a, xshift = -4.5cm] (aa) {Explicit Density};
-					\node [below = 1.5 of aa, xshift = -2.25cm, label = below:{Full Visible Belief Nets}] (aaa) {Tractable Density};
-					\node [below = 1.5 of aa, xshift = +2.25cm] (aab) {Approximate Density};
-						\node [below = 1.5 of aab, xshift = -2.25cm, label = below:{VAE}] (aaba) {Variational};
-						\node [below = 1.5 of aab, xshift = +2.25cm, label = below:{Boltzmann Machine}] (aabb) {Markov Chain};
-				\node [below = 1.5 of a, xshift = +4.5cm] (ab) {Implicit Density};
-					\node [below = 1.5 of ab, xshift = -2.25cm, label = below:{GAN}] (aba) {Direct};
-					\node [below = 1.5 of ab, xshift = +2.25cm, label = below:{GSN}] (abb) {Markov Chain};
+			\node [below = 1.5 of a, xshift = -4.5cm] (aa) {Explicit Density};
+			\node [below = 1.5 of aa, xshift = -2.25cm, label = below:{Full Visible Belief Nets}] (aaa) {Tractable Density};
+			\node [below = 1.5 of aa, xshift = +2.25cm] (aab) {Approximate Density};
+			\node [below = 1.5 of aab, xshift = -2.25cm, label = below:{VAE}] (aaba) {Variational};
+			\node [below = 1.5 of aab, xshift = +2.25cm, label = below:{Boltzmann Machine}] (aabb) {Markov Chain};
+			\node [below = 1.5 of a, xshift = +4.5cm] (ab) {Implicit Density};
+			\node [below = 1.5 of ab, xshift = -2.25cm, label = below:{GAN}] (aba) {Direct};
+			\node [below = 1.5 of ab, xshift = +2.25cm, label = below:{GSN}] (abb) {Markov Chain};
 
 			\draw (a.south) to[bend right, out = 0, in = 180+45+15] (aa.north);
-				\draw (aa.south) to[bend right, out = 0, in = 180+45] (aaa);
-				\draw (aa.south) to[bend left, out = 0, in = -(180+45)] (aab);
-					\draw (aab.south) to[bend right, out = 0, in = 180+45] (aaba);
-					\draw (aab.south) to[bend left, out = 0, in = -(180+45)] (aabb);
+			\draw (aa.south) to[bend right, out = 0, in = 180+45] (aaa);
+			\draw (aa.south) to[bend left, out = 0, in = -(180+45)] (aab);
+			\draw (aab.south) to[bend right, out = 0, in = 180+45] (aaba);
+			\draw (aab.south) to[bend left, out = 0, in = -(180+45)] (aabb);
 			\draw (a.south) to[bend left, out = 0, in = -(180+45+15)] (ab.north);
-				\draw (ab.south) to[bend right, out = 0, in = 180+45] (aba);
-				\draw (ab.south) to[bend left, out = 0, in = -(180+45)] (abb);
+			\draw (ab.south) to[bend right, out = 0, in = 180+45] (aba);
+			\draw (ab.south) to[bend left, out = 0, in = -(180+45)] (abb);
 		\end{tikzpicture}
 		\caption{Taxonomy of generative models. The text below the leaves name some examples models in the respective category (where VAE stands for Variational Autoencoder, GAN for Generative Adversarial Network, and GSN for Generative Stochastic Network).}
 		\label{fig:generativeModelsHierarchy}
@@ -1485,8 +1485,8 @@ db1 = np.einsum('ib->i', dL)
 		\subsection{Boltzmann Machine}
 			A \emph{Boltzmann machine} defines the likelihood as
 			\begin{align}
-				p(\vec{x}) &= \frac{1}{Z} \exp\bigl\{ -E(\vec{x}, \vec{z}) \bigr\} &
-				Z &= \sum_{\vec{x}} \sum_{\vec{z}} \exp\bigl\{ -E(\vec{x}, \vec{z}) \bigr\}
+				p(\vec{x}) & = \frac{1}{Z} \exp\bigl\{ -E(\vec{x}, \vec{z}) \bigr\}                   &
+				Z          & = \sum_{\vec{x}} \sum_{\vec{z}} \exp\bigl\{ -E(\vec{x}, \vec{z}) \bigr\}
 			\end{align}
 			As this is intractable, sampling requires Markov chain Monte Carlo methods.
 		% end
@@ -1573,12 +1573,12 @@ db1 = np.einsum('ib->i', dL)
 					To derive the ELBO using Jensen's inequality, the data likelihood is first written according to \eqref{eq:vaeLikelihood}, and then massaged using statistical properties:
 					\begin{align}
 						\log p_{\vec{\theta}}(\vec{x})
-							&= \log \int\! p_{\vec{\theta}}(\vec{z}) \, p_{\vec{\theta}}(\vec{x} \given \vec{z}) \dd{\vec{z}} \\
-							&= \log \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \frac{p_{\vec{\theta}}(\vec{x} \given \vec{z}) \, p_{\vec{\theta}}(\vec{z})}{q_{\vec{\phi}}(\vec{z} \given \vec{x})} \dd{\vec{z}} \\
-							&\geq \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{p_{\vec{\theta}}(\vec{x} \given \vec{z}) \, p_{\vec{\theta}}(\vec{z})}{q_{\vec{\phi}}(\vec{z} \given \vec{x})} \dd{\vec{z}} \\
-							&= \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \dd{\vec{z}} - \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{q_{\vec{\phi}}(\vec{z} \given \vec{x})}{p_{\vec{\theta}}(\vec{z})} \dd{\vec{z}} \\
-							&= \E_{\vec{z} \sim q_{\vec{\phi}}(\cdot \subgiven \vec{x})}\!\big[\! \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \big] - D_\mathrm{KL}\big( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \,\Vert\, p_{\vec{\theta}}(\vec{z}) \big) \\
-							&\eqqcolon \mathcal{L}_\mathrm{ELBO}(\vec{x}; \vec{\theta}, \vec{\phi})
+						 & = \log \int\! p_{\vec{\theta}}(\vec{z}) \, p_{\vec{\theta}}(\vec{x} \given \vec{z}) \dd{\vec{z}}                                                                                                                                                            \\
+						 & = \log \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \frac{p_{\vec{\theta}}(\vec{x} \given \vec{z}) \, p_{\vec{\theta}}(\vec{z})}{q_{\vec{\phi}}(\vec{z} \given \vec{x})} \dd{\vec{z}}                                                                   \\
+						 & \geq \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{p_{\vec{\theta}}(\vec{x} \given \vec{z}) \, p_{\vec{\theta}}(\vec{z})}{q_{\vec{\phi}}(\vec{z} \given \vec{x})} \dd{\vec{z}}                                                                \\
+						 & = \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \dd{\vec{z}} - \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{q_{\vec{\phi}}(\vec{z} \given \vec{x})}{p_{\vec{\theta}}(\vec{z})} \dd{\vec{z}} \\
+						 & = \E_{\vec{z} \sim q_{\vec{\phi}}(\cdot \subgiven \vec{x})}\!\big[\! \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \big] - D_\mathrm{KL}\big( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \,\Vert\, p_{\vec{\theta}}(\vec{z}) \big)                              \\
+						 & \eqqcolon \mathcal{L}_\mathrm{ELBO}(\vec{x}; \vec{\theta}, \vec{\phi})
 					\end{align}
 					In the second step the integrand was multiplied by one, the third step uses Jensen's inequality, and the rest is just moving around and exploiting of properties of the logarithm.
 				% end
@@ -1587,13 +1587,13 @@ db1 = np.einsum('ib->i', dL)
 					To derive the ELBO without Jensen's inequality, the data likelihood is surrounded by a noop integral which can then be transformed into the ELBO:
 					\begin{align}
 						\log p_{\vec{\theta}}(\vec{x})
-							&= \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log p_{\vec{\theta}}(\vec{x}) \dd{\vec{z}} \\
-							&= \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{p_{\vec{\theta}}(\vec{x} \given \vec{z}) \, p_{\vec{\theta}}(\vec{z})}{p_{\vec{\theta}}(\vec{z} \given \vec{x})} \dd{\vec{z}} \\
-							&= \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{p_{\vec{\theta}}(\vec{x} \given \vec{z}) \, p_{\vec{\theta}}(\vec{z})}{p_{\vec{\theta}}(\vec{z} \given \vec{x})} \frac{q_{\vec{\phi}}(\vec{z} \given \vec{x})}{q_{\vec{\phi}}(\vec{z} \given \vec{x})} \dd{\vec{z}} \\
-							&= \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \dd{\vec{z}} - \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{q_{\vec{\phi}}(\vec{z} \given \vec{x})}{p_{\vec{\theta}}(\vec{z})} \dd{\vec{z}} + \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{q_{\vec{\phi}}(\vec{z} \given \vec{x})}{p_{\vec{\theta}}(\vec{z} \given \vec{x})} \dd{\vec{z}} \\
-							&= \E_{\vec{z} \sim q_{\vec{\phi}}(\cdot \subgiven \vec{x})}\!\big[\! \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \big] - D_\mathrm{KL}\big( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \,\Vert\, p_{\vec{\theta}}(\vec{z}) \big) + \underbrace{D_\mathrm{KL}\big( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \,\Vert\, p_{\vec{\theta}}(\vec{z} \given \vec{x}) \big)}_{\geq\, 0} \\
-							&\geq \E_{\vec{z} \sim q_{\vec{\phi}}(\cdot \subgiven \vec{x})}\!\big[\! \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \big] - D_\mathrm{KL}\big( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \,\Vert\, p_{\vec{\theta}}(\vec{z}) \big) \\
-							&\eqqcolon \mathcal{L}_\mathrm{ELBO}(\vec{x}; \vec{\theta}, \vec{\phi})
+						 & = \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log p_{\vec{\theta}}(\vec{x}) \dd{\vec{z}}                                                                                                                                                                                                                                                                                                                           \\
+						 & = \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{p_{\vec{\theta}}(\vec{x} \given \vec{z}) \, p_{\vec{\theta}}(\vec{z})}{p_{\vec{\theta}}(\vec{z} \given \vec{x})} \dd{\vec{z}}                                                                                                                                                                                                                              \\
+						 & = \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{p_{\vec{\theta}}(\vec{x} \given \vec{z}) \, p_{\vec{\theta}}(\vec{z})}{p_{\vec{\theta}}(\vec{z} \given \vec{x})} \frac{q_{\vec{\phi}}(\vec{z} \given \vec{x})}{q_{\vec{\phi}}(\vec{z} \given \vec{x})} \dd{\vec{z}}                                                                                                                                        \\
+						 & = \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \dd{\vec{z}} - \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{q_{\vec{\phi}}(\vec{z} \given \vec{x})}{p_{\vec{\theta}}(\vec{z})} \dd{\vec{z}} + \int\! q_{\vec{\phi}}(\vec{z} \given \vec{x}) \, \log \frac{q_{\vec{\phi}}(\vec{z} \given \vec{x})}{p_{\vec{\theta}}(\vec{z} \given \vec{x})} \dd{\vec{z}} \\
+						 & = \E_{\vec{z} \sim q_{\vec{\phi}}(\cdot \subgiven \vec{x})}\!\big[\! \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \big] - D_\mathrm{KL}\big( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \,\Vert\, p_{\vec{\theta}}(\vec{z}) \big) + \underbrace{D_\mathrm{KL}\big( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \,\Vert\, p_{\vec{\theta}}(\vec{z} \given \vec{x}) \big)}_{\geq\, 0}                                              \\
+						 & \geq \E_{\vec{z} \sim q_{\vec{\phi}}(\cdot \subgiven \vec{x})}\!\big[\! \log p_{\vec{\theta}}(\vec{x} \given \vec{z}) \big] - D_\mathrm{KL}\big( q_{\vec{\phi}}(\vec{z} \given \vec{x}) \,\Vert\, p_{\vec{\theta}}(\vec{z}) \big)                                                                                                                                                                                        \\
+						 & \eqqcolon \mathcal{L}_\mathrm{ELBO}(\vec{x}; \vec{\theta}, \vec{\phi})
 					\end{align}
 					The first step adds an integral over \(\vec{z}\) which is valid because \( p_{\vec{\theta}}(\vec{x}) \) does not depend on \(\vec{z}\) and is thus just a multiplicative constant w.r.t. the integral. In the second step the data likelihood is written out using Bayes' rule. The third step multiplies the argument of the logarithm with a one, not changing the overall value. Then, in the fourth step, the integral can be split into three parts by exploiting properties of the logarithm. This yields, in the fifth step, three components: a tractable expectation, a tractable KL-divergence and an intractable KL-divergence. As the latter it always non-negative it can be discarded in the sixth step, yielding the ELBO (seventh step).
 
@@ -1635,8 +1635,8 @@ db1 = np.einsum('ib->i', dL)
 
 			The problem of this approach is that training the generator does not work well. This is because the loss in the regions where a sample is likely fake, i.e., not good enough, is relatively flat compared to regions where samples are already good. Hence, the gradient vanishes and no learning happens. This is due to the minimax game having an equilibrium at the saddle point of the loss. Do circumvent this, the training process must not alternate between minimizing and maximizing the same loss w.r.t. different parameters, but instead perform alternating gradient ascent on two different objectives:
 			\begin{align}
-				\max_{\vec{\theta}_d} \;& \E_{\vec{x} \sim p_\mathrm{data}(\cdot)}\big[\! \log D_{\vec{\theta}_d}(\vec{x}) \big] + \E_{\vec{z} \sim p(\vec{z})}\Big[\! \log\!\Big(\! 1 - D_{\vec{\theta}_d}\big( G_{\vec{\theta}_g}(\vec{z}) \big) \!\Big) \Big] \\
-				\max_{\vec{\theta}_g} &\; \E_{\vec{z} \sim p(\vec{z})}\big[\! \log D_{\vec{\theta}_d}\big( G_{\vec{\theta}_g}(\vec{z}) \big) \big]
+				\max_{\vec{\theta}_d} \; & \E_{\vec{x} \sim p_\mathrm{data}(\cdot)}\big[\! \log D_{\vec{\theta}_d}(\vec{x}) \big] + \E_{\vec{z} \sim p(\vec{z})}\Big[\! \log\!\Big(\! 1 - D_{\vec{\theta}_d}\big( G_{\vec{\theta}_g}(\vec{z}) \big) \!\Big) \Big] \\
+				\max_{\vec{\theta}_g}    & \; \E_{\vec{z} \sim p(\vec{z})}\big[\! \log D_{\vec{\theta}_d}\big( G_{\vec{\theta}_g}(\vec{z}) \big) \big]
 			\end{align}
 			This is essentially the same, but now the equilibrium is no longer describable with a single loss and the minimax game is non-saturating. But this is also heuristically motivated! But it has the advantage that the generator can also learn when the discriminator successfully rejects all generator samples, making it kind of robust towards a too good discriminator.
 
@@ -1693,18 +1693,18 @@ db1 = np.einsum('ib->i', dL)
 		This yields sufficient conditions for gradient descent to converge for both players. Given the joint gradient
 		\begin{equation}
 			\vec{\omega} =
-				\begin{bmatrix}
-					\grad_{\vec{\theta}_1} J_1(\vec{\theta}_1, \vec{\theta}_2) \\
-					\grad_{\vec{\theta}_2} J_2(\vec{\theta}_1, \vec{\theta}_2)
-				\end{bmatrix}
+			\begin{bmatrix}
+				\grad_{\vec{\theta}_1} J_1(\vec{\theta}_1, \vec{\theta}_2) \\
+				\grad_{\vec{\theta}_2} J_2(\vec{\theta}_1, \vec{\theta}_2)
+			\end{bmatrix}
 		\end{equation}
 		the Eigenvalues of the \emph{generalized Hessian}
 		\begin{equation}
 			\grad_{\vec{\theta}_1, \vec{\theta}_2} \vec{\omega} =
-				\begin{bmatrix}
-					\grad_{\vec{\theta}_1} \grad_{\vec{\theta}_1} J_1(\vec{\theta}_1, \vec{\theta}_2) & \grad_{\vec{\theta}_1} \grad_{\vec{\theta}_2} J_2(\vec{\theta}_1, \vec{\theta}_2) \\
-					\grad_{\vec{\theta}_2} \grad_{\vec{\theta}_1} J_1(\vec{\theta}_1, \vec{\theta}_2) & \grad_{\vec{\theta}_2} \grad_{\vec{\theta}_2} J_2(\vec{\theta}_1, \vec{\theta}_2)
-				\end{bmatrix}
+			\begin{bmatrix}
+				\grad_{\vec{\theta}_1} \grad_{\vec{\theta}_1} J_1(\vec{\theta}_1, \vec{\theta}_2) & \grad_{\vec{\theta}_1} \grad_{\vec{\theta}_2} J_2(\vec{\theta}_1, \vec{\theta}_2) \\
+				\grad_{\vec{\theta}_2} \grad_{\vec{\theta}_1} J_1(\vec{\theta}_1, \vec{\theta}_2) & \grad_{\vec{\theta}_2} \grad_{\vec{\theta}_2} J_2(\vec{\theta}_1, \vec{\theta}_2)
+			\end{bmatrix}
 		\end{equation}
 		must have a positive real part. This condition can be interpreted as each player's Hessian should have large, positive, Eigenvalues, expressing a strong urge to keep their strategy. The Jacobian of the gradient of one player w.r.t. the other player's strategy should have a small effect on the Eigenvalues, meaning that the change of strategy of the player has only a limited ability to change the other player's behavior. But sadly this does not apply to GANs, so their convergence still is an open question.
 
@@ -1811,7 +1811,7 @@ db1 = np.einsum('ib->i', dL)
 				and the generalized version is
 				\begin{equation}
 					\arg\max_{\vec{q}} \; p_m(\vec{Q} = \vec{q} \given \vec{E} = \vec{e})
-						= \arg\max_{\vec{q}} \; \sum_{\vec{h}} p_m(\vec{Q} = \vec{q}, \vec{H} = \vec{h} \given \vec{E} = \vec{e})
+					= \arg\max_{\vec{q}} \; \sum_{\vec{h}} p_m(\vec{Q} = \vec{q}, \vec{H} = \vec{h} \given \vec{E} = \vec{e})
 				\end{equation}
 				with \( \vec{Q} \cup \vec{H} \cup \vec{E} = \vec{X} \).
 
@@ -1881,8 +1881,8 @@ db1 = np.einsum('ib->i', dL)
 					where the first sum described a marginalization on its summation index, i.e., a summation of all possible realizations of \(X_j\), the product and the sum can be exchanged under certain circumstances. That is, if all of the factors are independent of a variable \(X_k\), these factors can be pulled before the sum:
 					\begin{align}
 						P(\vec{Q})
-							&= \sum_{X_j \,\not\in\, \vec{Q}}^{\text{marg}} \prod_{i = 1}^{N} P\big( X_i \biggiven \mathrm{Pa}(X_i) \big) \\
-							&= \prod_{\substack{i \,=\, 1 \\ X_k \,\not\in\, \{ X_i \} \,\cup\, \mathrm{Pa}(X_i)}}^{N} \hspace{-1.06cm} P\big( X_i \biggiven \mathrm{Pa}(X_i) \big) \sum_{X_j \,\not\in\, \vec{Q}}^{\text{marg}} \prod_{\substack{i \,=\, 1 \\ X_k \,\in\, \{ X_i \} \,\cup\, \mathrm{Pa}(X_i)}}^{N} \hspace{-1.06cm} P\big( X_i \biggiven \mathrm{Pa}(X_i) \big)
+						 & = \sum_{X_j \,\not\in\, \vec{Q}}^{\text{marg}} \prod_{i = 1}^{N} P\big( X_i \biggiven \mathrm{Pa}(X_i) \big) \\
+						 & = \prod_{\substack{i \,=\, 1                                                                                 \\ X_k \,\not\in\, \{ X_i \} \,\cup\, \mathrm{Pa}(X_i)}}^{N} \hspace{-1.06cm} P\big( X_i \biggiven \mathrm{Pa}(X_i) \big) \sum_{X_j \,\not\in\, \vec{Q}}^{\text{marg}} \prod_{\substack{i \,=\, 1 \\ X_k \,\in\, \{ X_i \} \,\cup\, \mathrm{Pa}(X_i)}}^{N} \hspace{-1.06cm} P\big( X_i \biggiven \mathrm{Pa}(X_i) \big)
 					\end{align}
 					This way not the complete joint has to be computed for each combination of the random variables that are marginalized out. \autoref{alg:variableElimination} shows the pseudocode for this algorithm.
 
@@ -2006,16 +2006,16 @@ db1 = np.einsum('ib->i', dL)
 				p(\vec{x}, \vec{y}) = p(\vec{x}) \, p(\vec{y})
 				\quad\implies\quad
 				\iint\! p(\vec{x}, \vec{y}) \dd{\vec{x}} \dd{\vec{y}}
-					= \iint\! p(\vec{x}) \, p(\vec{y}) \dd{\vec{x}} \dd{\vec{y}}
-					= \bigg(\! \int\! p(\vec{x}) \dd{\vec{x}} \!\!\bigg) \bigg(\! \int\! p(\vec{y}) \dd{\vec{y}} \!\!\bigg)
+				= \iint\! p(\vec{x}) \, p(\vec{y}) \dd{\vec{x}} \dd{\vec{y}}
+				= \bigg(\! \int\! p(\vec{x}) \dd{\vec{x}} \!\!\bigg) \bigg(\! \int\! p(\vec{y}) \dd{\vec{y}} \!\!\bigg)
 			\end{equation}
 			and the marginalization sums can be pulled out of the integrals
 			\begin{equation}
 				p(\vec{x}) = \sum_i w_i p_i(\vec{x})
 				\quad\implies\quad
 				\int\! p(\vec{x}) \dd{\vec{x}}
-					= \int \sum_i w_i p_i(\vec{x}) \dd{\vec{x}}
-					= \sum_i w_i \int\! p_i(\vec{x}) \dd{\vec{x}}
+				= \int \sum_i w_i p_i(\vec{x}) \dd{\vec{x}}
+				= \sum_i w_i \int\! p_i(\vec{x}) \dd{\vec{x}}
 			\end{equation}
 			pushing the integrals down to the children. On both these cases, pre premise follows from the decomposability and smoothness property, respectively. To compute for example \( p(X_2, X_3) \) when there are four random variables, the inputs for \( X_1 \) and \( X_4 \) are set to \num{1} (as they get integrated out) and the inputs for \( X_2 \) and \( X_3 \) are set to their respective probability which is provided from the unimodal distribution.
 
@@ -2026,9 +2026,9 @@ db1 = np.einsum('ib->i', dL)
 			This property enables tractable MAP queries! This is due to the argmax on a mixture model that gets drastically simplified because the sum over the weights can be discarded. Let \( \vec{q} = \{ \vec{q}_x, \vec{q}_y \} \) and \( \vec{e} = \{ \vec{e}_x, \vec{e}_y \} \) be separated into two arbitrary sets of random variables, then from decomposability is follows that \( p(\vec{q}, \vec{e}) = p(\vec{q}_x, \vec{e}_x, \vec{q}_y, \vec{e}_y) = p(\vec{q}_x, \vec{e}_x) \, p(\vec{q}_y, \vec{e}_y) \). Thus, the argmax can be split at the product notes:
 			\begin{equation}
 				\arg\max_{\vec{q}} \; p(\vec{q} \given \vec{e})
-					= \arg\max_{\vec{q}} \; p(\vec{q}, \vec{e})
-					= \arg\max_{\vec{q}_x, \vec{q}_y} \; p(\vec{q}_x, \vec{e}_x, \vec{q}_y, \vec{e}_y)
-					= \arg\max_{\vec{q}_x} \; p(\vec{q}_x, \vec{e}_x),\, \arg\max_{\vec{q}_y} \; p(\vec{q}_y, \vec{e}_y)
+				= \arg\max_{\vec{q}} \; p(\vec{q}, \vec{e})
+				= \arg\max_{\vec{q}_x, \vec{q}_y} \; p(\vec{q}_x, \vec{e}_x, \vec{q}_y, \vec{e}_y)
+				= \arg\max_{\vec{q}_x} \; p(\vec{q}_x, \vec{e}_x),\, \arg\max_{\vec{q}_y} \; p(\vec{q}_y, \vec{e}_y)
 			\end{equation}
 			and the optimizations can be solved separately. Due to determinism, i.e.
 			\begin{equation}
@@ -2037,8 +2037,8 @@ db1 = np.einsum('ib->i', dL)
 			where \(p_i\) is the only non-zero distribution, the argmax of a sum node is extremely simple:
 			\begin{equation}
 				\arg\max_{\vec{q}} \; p(\vec{q}, \vec{e})
-					= \arg\max_{\vec{q}} \; \sum_i w_i p_i(\vec{q}, \vec{e})
-					= \arg\max_{\vec{q}} \; w_c p_c(\vec{q}, \vec{e})
+				= \arg\max_{\vec{q}} \; \sum_i w_i p_i(\vec{q}, \vec{e})
+				= \arg\max_{\vec{q}} \; w_c p_c(\vec{q}, \vec{e})
 			\end{equation}
 			This pushes the argmax to the children. By repeatedly applying these two rules, the argmax can be pushed to the leaves (the random variables) where a MAP query is simple to answer as the mode of the unimodal distribution. In practice, the evaluation of a MAP query goes as follows:
 			\begin{enumerate}
@@ -2066,10 +2066,10 @@ db1 = np.einsum('ib->i', dL)
 
 				Take, for example, the probabilistic tree shown in \autoref{fig:probTree}. To compile the first node, the probabilities
 				\begin{align}
-					P(A = 0 \given C = 0) &= 0.3 &
-					P(A = 1 \given C = 0) &= 0.7 \\
-					P(A = 0 \given C = 1) &= 0.6 &
-					P(A = 1 \given C = 1) &= 0.4
+					P(A = 0 \given C = 0) & = 0.3 &
+					P(A = 1 \given C = 0) & = 0.7   \\
+					P(A = 0 \given C = 1) & = 0.6 &
+					P(A = 1 \given C = 1) & = 0.4
 				\end{align}
 				are used. First the circuit for \( P(A \given C = 0) \) is built and subsequently the circuit for \( P(A \given C = 1) \) is added. Both of these steps are shown in \autoref{fig:probTreeCirc1a} and \ref{fig:probTreeCirc1a}. Analogously the circuit for \( P(B \given C = 0/1) \) is built in \autoref{fig:probTreeCirc1c} and \ref{fig:probTreeCirc1d}. To now build the probabilities \(P(A, B, C = 0/1)\) and \(P(A, B, C)\), the already build probabilities have to be multiplied and then \(C\) has to be summed up w.r.t. the probabilities \( P(C = 0) = 0.2 \) and \( P(C = 1) = 0.8 \). All of this is shown in \autoref{fig:probTreeCirc1e}.
 
@@ -2119,7 +2119,7 @@ db1 = np.einsum('ib->i', dL)
 						\label{fig:probTreeCirc1b}
 					\end{subfigure} \\ \vspace{0.4cm}
 					\begin{subfigure}{0.35\linewidth}
-					\centering
+						\centering
 						\begin{tikzpicture}[->, xscale = 2, yscale = 2, comp/.style = { draw, circle, minimum width = 0.75cm, minimum height = 0.75cm, inner sep = 0 }]
 							\node [comp, label = below:{\( B = 0 \)}] (B0) at (0, 0) {\(\bigodot\)};
 							\node [comp, label = below:{\( B = 1 \)}] (B1) at (1, 0) {\(\bigodot\)};
@@ -2225,8 +2225,8 @@ db1 = np.einsum('ib->i', dL)
 				For deterministic circuits, approximating the parameters can simply be done by maximizing the data likelihood
 				\begin{equation}
 					\vec{\theta}^\mathrm{MLE}, \vec{w}^\mathrm{MLE}
-						= \arg\max_{\vec{\theta}, \vec{w}} \; L(\vec{\theta}, \vec{w}; \mathcal{D})
-						= \arg\max_{\vec{\theta}, \vec{w}} \; \prod_{d \in \mathcal{D}} p_{\vec{\theta}, \vec{w}}(d).
+					= \arg\max_{\vec{\theta}, \vec{w}} \; L(\vec{\theta}, \vec{w}; \mathcal{D})
+					= \arg\max_{\vec{\theta}, \vec{w}} \; \prod_{d \in \mathcal{D}} p_{\vec{\theta}, \vec{w}}(d).
 				\end{equation}
 				With determinism, the likelihood decomposes over the parameters and the optimization problem has a closed-form solution.
 			% end
@@ -2279,45 +2279,45 @@ db1 = np.einsum('ib->i', dL)
 
 			% TODO: PGMs: Building Circuits: Structure Learning; 10b.150--10b.160, 10b.161--19b.162, 10b.166--10b.168
 
-%			\paragraph{Cut(e)set Network}
-%				\emph{Cut(e)set networks} use likelihood decompositions for learning the parameters and for structure learning start with a single tractable model and substitute leaf nodes with the best CNet which improves all likelihood decompositions.
-%			% end
-%
-%			\paragraph{PSDD Structure Learning}
-%				\emph{PSDD structure learning} learning a binary tree where the leaves are labeled with variables and the internal nodes split the variables into those appearing in the left and those appearing in the right sub-tree. Learning takes place in a bottom-up or top-down fashion max maximizing the pairwise MI instead of the joint MI.
-%			% end
-%
-%			\paragraph{LearnPSDD}
-%				\emph{LearnPSDD} incrementally improves the structure of a PSDD to better fit the data. Learning continuous until the log-likelihood on the validation data set converges or a desired time or size limit is reached. In every step the structure is changed by executing an operation that is greedily chosen based on the best likelihood improvement per size increment.
-%			% end
-%
-%			\paragraph{Learning Logic Circuits}
-%				To learn logic circuits, the values and parameters are propagated bottom-up. For parameter learning, due to decomposability and determinism, any logic circuit model can be reduced to a logistic regression model over some features. For structure learning, split operations like in LearnPSDD are performed.
-%			% end
+			%			\paragraph{Cut(e)set Network}
+			%				\emph{Cut(e)set networks} use likelihood decompositions for learning the parameters and for structure learning start with a single tractable model and substitute leaf nodes with the best CNet which improves all likelihood decompositions.
+			%			% end
+			%
+			%			\paragraph{PSDD Structure Learning}
+			%				\emph{PSDD structure learning} learning a binary tree where the leaves are labeled with variables and the internal nodes split the variables into those appearing in the left and those appearing in the right sub-tree. Learning takes place in a bottom-up or top-down fashion max maximizing the pairwise MI instead of the joint MI.
+			%			% end
+			%
+			%			\paragraph{LearnPSDD}
+			%				\emph{LearnPSDD} incrementally improves the structure of a PSDD to better fit the data. Learning continuous until the log-likelihood on the validation data set converges or a desired time or size limit is reached. In every step the structure is changed by executing an operation that is greedily chosen based on the best likelihood improvement per size increment.
+			%			% end
+			%
+			%			\paragraph{Learning Logic Circuits}
+			%				To learn logic circuits, the values and parameters are propagated bottom-up. For parameter learning, due to decomposability and determinism, any logic circuit model can be reduced to a logistic regression model over some features. For structure learning, split operations like in LearnPSDD are performed.
+			%			% end
 
-%			\paragraph{Bayesian Structure Learning} % 10b.156
-%				\todo{Content}
-%			% end
-%
-%			\paragraph{Automatic Bayesian Density Analysis (ABDA)} % 10b.157, 10b.158
-%				\todo{Content}
-%			% end
-%
-%			\paragraph{Bayesian SPNs} % 10b.159, 10b.160
-%				\todo{Content}
-%			% end
-%
-%			\paragraph{Randomized Structure Learning: RAT-SPNs} % 10b.161, 19b.162
-%				\todo{Content}
-%			% end
-%
-%			\paragraph{Extremely Randomized CNets: XCNets} % 10b.166, 10b.167
-%				\todo{Content}
-%			% end
-%
-%			\paragraph{Online Learning} % 10b.168
-%				\todo{Content}
-%			% end
+			%			\paragraph{Bayesian Structure Learning} % 10b.156
+			%				\todo{Content}
+			%			% end
+			%
+			%			\paragraph{Automatic Bayesian Density Analysis (ABDA)} % 10b.157, 10b.158
+			%				\todo{Content}
+			%			% end
+			%
+			%			\paragraph{Bayesian SPNs} % 10b.159, 10b.160
+			%				\todo{Content}
+			%			% end
+			%
+			%			\paragraph{Randomized Structure Learning: RAT-SPNs} % 10b.161, 19b.162
+			%				\todo{Content}
+			%			% end
+			%
+			%			\paragraph{Extremely Randomized CNets: XCNets} % 10b.166, 10b.167
+			%				\todo{Content}
+			%			% end
+			%
+			%			\paragraph{Online Learning} % 10b.168
+			%				\todo{Content}
+			%			% end
 		% end
 
 		\subsection{Ensembles of Probabilistic Circuits}
@@ -2340,49 +2340,49 @@ db1 = np.einsum('ib->i', dL)
 
 		% TODO: PGMs: Applications; 10a.4, 10a.5, 10b.174--10b.190
 
-%		\paragraph{Computer Vision} % 10b.178, 10a.5
-%			\todo{Content}
-%		% end
-%
-%		\paragraph{Image Segmentation} % 10b.179
-%			\todo{Content}
-%		% end
-%
-%		\paragraph{Scene Understanding: Su-PAIR} % 10b.180
-%			\todo{Content}
-%		% end
-%
-%		\paragraph{Activity Recognition} % 10b.182
-%			\todo{Content}
-%		% end
-%
-%		\paragraph{Speec Reconstriction and Extension} % 10b.183, 10a.4
-%			\todo{Content}
-%		% end
-%
-%		\paragraph{Sequence Labeling} % 10b.184
-%			\todo{Content}
-%		% end
-%
-%		\paragraph{Robotics} % 10b.185
-%			\todo{Content}
-%		% end
-%
-%		\paragraph{SOP: Preference Learning} % 10b.186
-%			\todo{Content}
-%		% end
-%
-%		\paragraph{SOP: Routing} % 10b.187
-%			\todo{Content}
-%		% end
-%
-%		\paragraph{Probabilistic Programming} % 10b.189
-%			\todo{Content}
-%		% end
-%
-%		\paragraph{And more\dots} % 10b.190
-%			\todo{Content}
-%		% end
+		%		\paragraph{Computer Vision} % 10b.178, 10a.5
+		%			\todo{Content}
+		%		% end
+		%
+		%		\paragraph{Image Segmentation} % 10b.179
+		%			\todo{Content}
+		%		% end
+		%
+		%		\paragraph{Scene Understanding: Su-PAIR} % 10b.180
+		%			\todo{Content}
+		%		% end
+		%
+		%		\paragraph{Activity Recognition} % 10b.182
+		%			\todo{Content}
+		%		% end
+		%
+		%		\paragraph{Speec Reconstriction and Extension} % 10b.183, 10a.4
+		%			\todo{Content}
+		%		% end
+		%
+		%		\paragraph{Sequence Labeling} % 10b.184
+		%			\todo{Content}
+		%		% end
+		%
+		%		\paragraph{Robotics} % 10b.185
+		%			\todo{Content}
+		%		% end
+		%
+		%		\paragraph{SOP: Preference Learning} % 10b.186
+		%			\todo{Content}
+		%		% end
+		%
+		%		\paragraph{SOP: Routing} % 10b.187
+		%			\todo{Content}
+		%		% end
+		%
+		%		\paragraph{Probabilistic Programming} % 10b.189
+		%			\todo{Content}
+		%		% end
+		%
+		%		\paragraph{And more\dots} % 10b.190
+		%			\todo{Content}
+		%		% end
 	% end
 
 	\section{Takeaways and Open Challenges}
@@ -2429,8 +2429,8 @@ db1 = np.einsum('ib->i', dL)
 				\mathrm{vec}(\text{"man"}) = \begin{bmatrix} -0.1 \\ 2.3 \\ -1.5 \\ \vdots \end{bmatrix} \\
 				\implies\qquad
 				\mathrm{vec}(\text{"dog bites man"})
-					= \mathrm{vec}(\text{"dog"}) + \mathrm{vec}(\text{"bites"}) + \mathrm{vec}(\text{"man"})
-					= \begin{bmatrix} 0.6 \\ 2.0 \\ -0.4 \\ \vdots \end{bmatrix}
+				= \mathrm{vec}(\text{"dog"}) + \mathrm{vec}(\text{"bites"}) + \mathrm{vec}(\text{"man"})
+				= \begin{bmatrix} 0.6 \\ 2.0 \\ -0.4 \\ \vdots \end{bmatrix}
 			\end{gather}
 			The following sections will cover four models that all fall into the category of vector representations: latent semantic analysis, word2vec, skip-thought vectors and Siamese networks.
 
@@ -2466,37 +2466,37 @@ db1 = np.einsum('ib->i', dL)
 				\begin{figure}
 					\centering
 					\begin{tikzpicture}[
-								->,
-								label/.style = {
-									text height = 0.3cm,
-									inner sep = 0,
-									minimum height = 0.4cm
-								},
-								input/.style = {
-									fill = TUDa-0b,
-									draw,
-									circle,
-									minimum width = 0.5cm,
-									minimum height = 0.5cm,
-									inner sep = 0
-								},
-								previous/.style = {
-									fill = TUDa-4a,
-									draw,
-									circle,
-									minimum width = 0.5cm,
-									minimum height = 0.5cm,
-									inner sep = 0
-								},
-								next/.style = {
-									fill = TUDa-2a,
-									draw,
-									circle,
-									minimum width = 0.5cm,
-									minimum height = 0.5cm,
-									inner sep = 0
-								}
-							]
+							->,
+							label/.style = {
+								text height = 0.3cm,
+								inner sep = 0,
+								minimum height = 0.4cm
+							},
+							input/.style = {
+								fill = TUDa-0b,
+								draw,
+								circle,
+								minimum width = 0.5cm,
+								minimum height = 0.5cm,
+								inner sep = 0
+							},
+							previous/.style = {
+								fill = TUDa-4a,
+								draw,
+								circle,
+								minimum width = 0.5cm,
+								minimum height = 0.5cm,
+								inner sep = 0
+							},
+							next/.style = {
+								fill = TUDa-2a,
+								draw,
+								circle,
+								minimum width = 0.5cm,
+								minimum height = 0.5cm,
+								inner sep = 0
+							}
+						]
 						\node [input] (a) {};
 						\node [input, right = 0.65 of a] (b) {};
 						\node [input, right = 0.65 of b] (c) {};
@@ -2587,25 +2587,25 @@ db1 = np.einsum('ib->i', dL)
 		In theory it is possible to develop machine translation models by using many-to-many RNNs that take a sentence as an input and produce the sentence as an output in another language (see \autoref{fig:rnnTranslation}). It is also possible to generate multiple possible output sequences, compare them to each other and choose the best. One possible score for comparing machine translations is a \emph{unigram precision}. It compares machine translations against human translations by dividing the number of words of the machine translation that also appear in the reference by the total number of words in the candidate sentence (a \emph{unigram} is a single word). This has the problem that for example the candidate "the the the the the the the" compared to the references "the cat is on the mat" and "there is a cat on the mat" has the maximum precision of \( 7/7 = 1 \):
 		\begin{equation}
 			\text{Unigram Precision} =
-				= \frac{\text{Correct words occuring in reference sentence.}}{\text{Words occuring in candidate sentence.}}
-				= \frac{7 \cdot \text{"the"}}{7 \cdot \text{"the"}}
-				= 7/7 = 1
+			= \frac{\text{Correct words occuring in reference sentence.}}{\text{Words occuring in candidate sentence.}}
+			= \frac{7 \cdot \text{"the"}}{7 \cdot \text{"the"}}
+			= 7/7 = 1
 		\end{equation}
 		An alternative is to use the maximum number of occurrences throughout the candidates as the nominator. This way, in the above example, the unigram precision would be \(2/7\) because the word "the" appears two times in "the cat is on the mat". A generalization are \emph{\(n\)-gram precisions} that are defined similarly:
 		\begin{equation}
 			\text{\(n\)-Gram Precision}
-				= \frac{\text{Correct \(n\)-grams occuring in reference sentence.}}{\text{\(n\)-Grams occuring in candidate sentence.}}
+			= \frac{\text{Correct \(n\)-grams occuring in reference sentence.}}{\text{\(n\)-Grams occuring in candidate sentence.}}
 		\end{equation}
 		Like the unigram precision, the modified \(n\)-gram precision clips the nominator by the maximum occurrences throughout the candidates. Unigram precisions tend to capture adequacy while \(n\)-gram precisions tend to capture fluency.
 
 		To combine multiple \(n\)-gram precisions, the \emph{BLEU} score can be used. It defines a weighted geometric mean over \(N\) different \(n\)-scores:
 		\begin{align}
-			\text{BLEU} &= \text{BP} \cdot \exp\bigg\{ \sum_{n = 1}^{N} w_n \log p_n \bigg\} &
-			\text{BP} &=
-				\begin{cases}
-					1 & \text{if } c > r \\
-					e^{1 - r/c} & \text{if } c \leq r
-				\end{cases}
+			\text{BLEU} & = \text{BP} \cdot \exp\bigg\{ \sum_{n = 1}^{N} w_n \log p_n \bigg\} &
+			\text{BP}   & =
+			\begin{cases}
+				1           & \text{if } c > r    \\
+				e^{1 - r/c} & \text{if } c \leq r
+			\end{cases}
 		\end{align}
 		Here \(p_n\) is the \(n\)-gram precision, \(c\) is the length of the candidate and \(r\) is the length of the reference translation. It has been shown that the BLEU score highly correlates with human judgment.
 
@@ -2615,20 +2615,20 @@ db1 = np.einsum('ib->i', dL)
 			\centering
 			\begin{tikzpicture}[
 					->,
-						label/.style = {
-							text height = 0.3cm,
-							inner sep = 0,
-							minimum height = 0.4cm
-						},
-						cell/.style = {
-							fill = TUDa-0b,
-							draw,
-							circle,
-							minimum width = 0.5cm,
-							minimum height = 0.5cm,
-							inner sep = 0
-						},
-					]
+					label/.style = {
+						text height = 0.3cm,
+						inner sep = 0,
+						minimum height = 0.4cm
+					},
+					cell/.style = {
+						fill = TUDa-0b,
+						draw,
+						circle,
+						minimum width = 0.5cm,
+						minimum height = 0.5cm,
+						inner sep = 0
+					},
+				]
 				\node [cell] (a) {};
 				\node [cell, right = 1 of a] (b) {};
 				\node [cell, right = 1 of b] (c) {};

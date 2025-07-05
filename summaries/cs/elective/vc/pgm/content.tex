@@ -35,7 +35,7 @@
 
 		One note on notation: whenever a sum represents a marginalization over some random variable \(X\), it is written as
 		\begin{equation}
-		P(Y) = \sum_{X}^{\marg} P(X, Y) \coloneqq \sum_{x \in \val(X)} P(X = x, Y)
+			P(Y) = \sum_{X}^{\marg} P(X, Y) \coloneqq \sum_{x \in \val(X)} P(X = x, Y)
 		\end{equation}
 		for brevity.
 
@@ -78,15 +78,15 @@
 				Information theory is trying to quantify how much information is encoded in some distribution \(P(X)\). The central measure is \emph{entropy}:
 				\begin{equation}
 					H_P(X)
-						= \E\bigl[ \log(1/P(X)) \bigr]
-						= \sum_{x \in \val(X)} P(X) \,\log \frac{1}{\log P(X)}
-						= -\sum_{x \in \val(X)} P(X) \,\log P(X)
+					= \E\bigl[ \log(1/P(X)) \bigr]
+					= \sum_{x \in \val(X)} P(X) \,\log \frac{1}{\log P(X)}
+					= -\sum_{x \in \val(X)} P(X) \,\log P(X)
 				\end{equation}
 				If the logarithm is of base two, the entropy encodes how much bits are required \emph{on average} to encode \(X\) when \(X\) follows the distribution \(P(X)\). Similarly, \emph{conditional entropy} can be defined as
 				\begin{equation}
 					H_P(X \given Y)
-						= \E\bigl[ \log(1/P(X \given Y)) \bigr]
-						= H_P(X, Y) - H_P(X)
+					= \E\bigl[ \log(1/P(X \given Y)) \bigr]
+					= H_P(X, Y) - H_P(X)
 				\end{equation}
 				where \( H_P(X, Y) \) is the joint entropy over \(X\) and \(Y\). Like for probabilities, a \emph{chain rule of entropies} is derivable:
 				\begin{equation}
@@ -111,25 +111,25 @@
 				\begin{tikzpicture}
 					\node (cpt) {
 						\begin{tabular}{c|cc}
-								\( P(X = x \given Y = y, Z = z) \)	  & \( x = \mathfrak{f} \) & \( x = \mathfrak{t} \) \\ \midrule
-							\( (Y, Z) = (\mathfrak{t}, \mathfrak{t}) \) &		\(0.8\)		 &		\(0.2\)		 \\
-							\( (Y, Z) = (\mathfrak{t}, \mathfrak{f}) \) &		\(0.5\)		 &		\(0.5\)		 \\
-							\( (Y, Z) = (\mathfrak{t}, \mathfrak{t}) \) &		\(0.2\)		 &		\(0.8\)		 \\
-							\( (Y, Z) = (\mathfrak{t}, \mathfrak{f}) \) &		\(0.7\)		 &		\(0.3\)
+							\( P(X = x \given Y = y, Z = z) \)          & \( x = \mathfrak{f} \) & \( x = \mathfrak{t} \) \\ \midrule
+							\( (Y, Z) = (\mathfrak{t}, \mathfrak{t}) \) & \(0.8\)                & \(0.2\)                \\
+							\( (Y, Z) = (\mathfrak{t}, \mathfrak{f}) \) & \(0.5\)                & \(0.5\)                \\
+							\( (Y, Z) = (\mathfrak{t}, \mathfrak{t}) \) & \(0.2\)                & \(0.8\)                \\
+							\( (Y, Z) = (\mathfrak{t}, \mathfrak{f}) \) & \(0.7\)                & \(0.3\)
 						\end{tabular}
 					};
 					\node [right = 2 of cpt] (transfer) {\( \longleftrightarrow \)};
 					\node [right = 2 of transfer] (potential) {
 						\begin{tabular}{ccc|c|c}
-								 \(X\)	   &	  \(Y\)	   &	  \(Z\)	   & \(\phi_{X, Y, Z}\) & \(\tilde{\phi}_{X, Y, Z}\) \\ \midrule
-							\(\mathfrak{t}\) & \(\mathfrak{t}\) & \(\mathfrak{t}\) &	  \(0.8\)	   &		   \(8\)			\\
-							\(\mathfrak{t}\) & \(\mathfrak{t}\) & \(\mathfrak{f}\) &	  \(0.2\)	   &		   \(2\)			\\
-							\(\mathfrak{t}\) & \(\mathfrak{f}\) & \(\mathfrak{t}\) &	  \(0.5\)	   &		   \(5\)			\\
-							\(\mathfrak{t}\) & \(\mathfrak{f}\) & \(\mathfrak{f}\) &	  \(0.5\)	   &		   \(5\)			\\
-							\(\mathfrak{f}\) & \(\mathfrak{t}\) & \(\mathfrak{t}\) &	  \(0.2\)	   &		   \(2\)			\\
-							\(\mathfrak{f}\) & \(\mathfrak{t}\) & \(\mathfrak{f}\) &	  \(0.8\)	   &		   \(8\)			\\
-							\(\mathfrak{f}\) & \(\mathfrak{f}\) & \(\mathfrak{t}\) &	  \(0.7\)	   &		   \(7\)			\\
-							\(\mathfrak{f}\) & \(\mathfrak{f}\) & \(\mathfrak{f}\) &	  \(0.3\)	   &		   \(3\)
+							\(X\)            & \(Y\)            & \(Z\)            & \(\phi_{X, Y, Z}\) & \(\tilde{\phi}_{X, Y, Z}\) \\ \midrule
+							\(\mathfrak{t}\) & \(\mathfrak{t}\) & \(\mathfrak{t}\) & \(0.8\)            & \(8\)                      \\
+							\(\mathfrak{t}\) & \(\mathfrak{t}\) & \(\mathfrak{f}\) & \(0.2\)            & \(2\)                      \\
+							\(\mathfrak{t}\) & \(\mathfrak{f}\) & \(\mathfrak{t}\) & \(0.5\)            & \(5\)                      \\
+							\(\mathfrak{t}\) & \(\mathfrak{f}\) & \(\mathfrak{f}\) & \(0.5\)            & \(5\)                      \\
+							\(\mathfrak{f}\) & \(\mathfrak{t}\) & \(\mathfrak{t}\) & \(0.2\)            & \(2\)                      \\
+							\(\mathfrak{f}\) & \(\mathfrak{t}\) & \(\mathfrak{f}\) & \(0.8\)            & \(8\)                      \\
+							\(\mathfrak{f}\) & \(\mathfrak{f}\) & \(\mathfrak{t}\) & \(0.7\)            & \(7\)                      \\
+							\(\mathfrak{f}\) & \(\mathfrak{f}\) & \(\mathfrak{f}\) & \(0.3\)            & \(3\)
 						\end{tabular}
 					};
 				\end{tikzpicture}
@@ -159,10 +159,10 @@
 		To classify a new instance \(\vec{x}\) (a vector composed of the individual instances of \(X_1, X_2, \dots, X_n\)), the class \(c \in \val(C)\) with the highest posterior probability is selected:
 		\begin{equation}
 			c_\mathrm{MAP}
-				= \argmax_{c \in \val(C)} \; P(c \given \vec{x})
-				= \argmax_{c \in \val(C)} \; \frac{P(\vec{x} \given c) \, P(c)}{P(\vec{x})}
-				= \argmax_{c \in \val(C)} \; P(\vec{x} \given c) \, P(c)
-				= \argmax_{c \in \val(C)} \; P(X) \prod_{i = 1}^{n} P(X_i).
+			= \argmax_{c \in \val(C)} \; P(c \given \vec{x})
+			= \argmax_{c \in \val(C)} \; \frac{P(\vec{x} \given c) \, P(c)}{P(\vec{x})}
+			= \argmax_{c \in \val(C)} \; P(\vec{x} \given c) \, P(c)
+			= \argmax_{c \in \val(C)} \; P(X) \prod_{i = 1}^{n} P(X_i).
 		\end{equation}
 
 		\begin{figure}
@@ -188,13 +188,13 @@
 		\subsection{Maximum Likelihood Parameter Estimation}
 			To learn the probabilities required to perform classification using the naive Bayes model, the straightforward approach is to use maximum likelihood estimates, i.e., the frequencies in the data:
 			\begin{align}
-				\hat{P}(C = c_j) &= \frac{N(C = c_j)}{N} &
-				\hat{P}(X_i = x_{ik} \given c_j) &= \frac{N(X_i = x_{ik}, C = C_j)}{N(C = c_j)}.
+				\hat{P}(C = c_j)                 & = \frac{N(C = c_j)}{N}                         &
+				\hat{P}(X_i = x_{ik} \given c_j) & = \frac{N(X_i = x_{ik}, C = C_j)}{N(C = c_j)}.
 			\end{align}
 			here, \( N(C = c_j) \) is the number of data points where the class is \(c_j\) and \( N(X_i = x_{ik}, C = C_j) \) is the number of data points with class \( c_j \) and value \(x_{ik}\) in the \(i\)-th feature. Using the identity function \(\mathbbm{1}[\psi]\) that is one iff \(\psi\) is true and zero otherwise, these quantities can be expressed as
 			\begin{align}
-				N(C = c_j) &= \sum_{((x_1, x_2, \dots, x_n), c) \in \mathcal{D}} \mathbbm{1}[c = c_j] &
-				N(X_i = x_{ik}, C = C_j) &= \sum_{(x_1, x_2, \dots, x_n, c) \in \mathcal{D}} \mathbbm{1}[x_i = x_{ik}, c = c_j]
+				N(C = c_j)               & = \sum_{((x_1, x_2, \dots, x_n), c) \in \mathcal{D}} \mathbbm{1}[c = c_j]             &
+				N(X_i = x_{ik}, C = C_j) & = \sum_{(x_1, x_2, \dots, x_n, c) \in \mathcal{D}} \mathbbm{1}[x_i = x_{ik}, c = c_j]
 			\end{align}
 			where \( \mathcal{D} \subseteq \val(X_1) \times \val(X_2) \times \dots \times \val(X_n) \times \val(C) \) is the data set. Note that the formality of the data set and values is quite rigorous in this section. From now on, the notation will be abused from time to time for brevity.
 
@@ -231,8 +231,8 @@
 		\end{equation}
 		Let \( \Ch(X_i) \) be the children of \(X_i\), then \(X_i\)'s non-descendants are all random variables that are not in \( \Des(X_i) \), \(X_i\)'s descendants:
 		\begin{align}
-			\ND(X_i) &= \{ X_1, X_2, \dots, X_n \} \setminus \Des(X_i), &
-			\Des(X_i) &= \Ch(X_i) \cup \bigcup_{X_j \in \Ch(X_i)} \Des(X_j).
+			\ND(X_i)  & = \{ X_1, X_2, \dots, X_n \} \setminus \Des(X_i),     &
+			\Des(X_i) & = \Ch(X_i) \cup \bigcup_{X_j \in \Ch(X_i)} \Des(X_j).
 		\end{align}
 		This is a recursive definition for which \( \Des(X_i) = \emptyset \) holds iff \( X_i \) does not have children.
 
@@ -497,8 +497,8 @@
 		However, to computing \(P(X_n)\) still requires an exponential number of operations, \( \mathcal{O}(k^n) \):
 		\begin{align}
 			P(X_n)
-				&= \sum_{X_1}^{\marg} \sum_{X_2}^{\marg} \cdots \sum_{X_{n - 1}}^{\marg} P(X_1, X_2, \dots, X_{n - 1}, X_n) \\
-				&= \sum_{X_1}^{\marg} \sum_{X_2}^{\marg} \cdots \sum_{X_{n - 1}}^{\marg} P(X_1) \, P(X_2 \given X_1) \, \cdots \, P(X_n \given X_{n - 1}).
+			 & = \sum_{X_1}^{\marg} \sum_{X_2}^{\marg} \cdots \sum_{X_{n - 1}}^{\marg} P(X_1, X_2, \dots, X_{n - 1}, X_n)                                \\
+			 & = \sum_{X_1}^{\marg} \sum_{X_2}^{\marg} \cdots \sum_{X_{n - 1}}^{\marg} P(X_1) \, P(X_2 \given X_1) \, \cdots \, P(X_n \given X_{n - 1}).
 		\end{align}
 		Instead, it is advisable to reverse the sums and to pull the independent factors out of the marginalization. This corresponds to iteratively computing \( P(X_1) \), \( P(X_2) \), \dots, \( P(X_n) \):
 		\begin{equation}
@@ -864,17 +864,17 @@
 		\subsection{Complexity}
 			As already pointed out in \autoref{sec:variableElimination}, the driving factor of the complexity of VE is the number of variables in the intermediate factors. Hence, for VE on moral graphs, the complexity is determined by the number of variables in the domains of the potentials producing during the elimination. This leads to a set of domains where all sets that are subsets of other sets can be removed (as they do not affect the complexity). For the elimination ordering shown in \autoref{fig:perfectSequence}, these are, in order of appearance, the following sets:
 			\begin{align}
-				&\bigl\{ \{ X_1, X_2, X_3 \},\, \{ X_2, X_4 \}, \{ X_3, X_6 \}, \{ X_2, X_3, X_5 \}, \{ X_3, X_5 \}, \{ X_5 \} \bigr\} \\
+				 & \bigl\{ \{ X_1, X_2, X_3 \},\, \{ X_2, X_4 \}, \{ X_3, X_6 \}, \{ X_2, X_3, X_5 \}, \{ X_3, X_5 \}, \{ X_5 \} \bigr\} \\
 				\longrightarrow\qquad
-				&\bigl\{ \{ X_1, X_2, X_3 \},\, \{ X_2, X_4 \}, \{ X_3, X_6 \}, \{ X_2, X_3, X_5 \} \bigr\}
+				 & \bigl\{ \{ X_1, X_2, X_3 \},\, \{ X_2, X_4 \}, \{ X_3, X_6 \}, \{ X_2, X_3, X_5 \} \bigr\}
 			\end{align}
 			It turns out that all perfect elimination orderings (i.e., those that do not produce fill-ins), have the same set of potential domains. Also, all perfect elimination orderings ending some random variable \(X\) are \emph{optimal} in terms of computing \( P(X) \).
 
 			For the imperfect elimination ordering \( (X_3, X_4, X_6, X_1, X_2, X_5) \) (for which the first elimination is shown in \autoref{fig:fillIns}), the following sets of potentials are created:
 			\begin{align}
-				&\bigl\{ \{ X_1, X_2, X_3, X_5, X_6 \},\, \{ X_2, X_4 \}, \{ X_1, X_2, X_5, X_6 \}, \{ X_1, X_2, X_5 \}, \{ X_2, X_5 \}, \{ X_5 \} \bigr\} \\
+				 & \bigl\{ \{ X_1, X_2, X_3, X_5, X_6 \},\, \{ X_2, X_4 \}, \{ X_1, X_2, X_5, X_6 \}, \{ X_1, X_2, X_5 \}, \{ X_2, X_5 \}, \{ X_5 \} \bigr\} \\
 				\longrightarrow\qquad
-				&\bigl\{ \{ X_1, X_2, X_3, X_5, X_6 \},\, \{ X_2, X_4 \} \bigr\}
+				 & \bigl\{ \{ X_1, X_2, X_3, X_5, X_6 \},\, \{ X_2, X_4 \} \bigr\}
 			\end{align}
 			Intuitively, the number of items of this clique are closely related to the complexity of VE (a small clique set corresponds to large connectivity in the graph, hence large factors).
 
@@ -928,11 +928,11 @@
 					\centering
 					\begin{tabular}{c|c|c}
 						\toprule
-						                                &          \multicolumn{2}{c}{\textbf{Graph Type}}          \\
-						        \textbf{Query}          &         \textbf{General}         & \textbf{Low Treewidth} \\ \midrule
-						    Probabilistic Inference     &           \#P-Complete           &          Easy          \\
-						Most Probable Explanation (MPE) &           NP-Complete            &          Easy          \\
-						  Maximum A Posteriori (MAP)    & \(\text{NP}^\text{PP}\)-Complete &        NP-Hard         \\ \bottomrule
+						                                & \multicolumn{2}{c}{\textbf{Graph Type}}                   \\
+						\textbf{Query}                  & \textbf{General}                 & \textbf{Low Treewidth} \\ \midrule
+						Probabilistic Inference         & \#P-Complete                     & Easy                   \\
+						Most Probable Explanation (MPE) & NP-Complete                      & Easy                   \\
+						Maximum A Posteriori (MAP)      & \(\text{NP}^\text{PP}\)-Complete & NP-Hard                \\ \bottomrule
 					\end{tabular}
 					\begin{center}
 						For approximate probabilistic inference, hardness depends on the error: \\
@@ -1361,8 +1361,8 @@
 		\centering
 		\begin{tabular}{c|ccc}
 			\toprule
-			\textbf{Observed} & \textbf{Fixed Structure} & \textbf{Fixed Variables} & \textbf{Hidden Variables} \\ \midrule
-			\textbf{Fully} & Easy (Counting, MLE) & Selection of Edges & --- \\
+			\textbf{Observed}  & \textbf{Fixed Structure}                                            & \textbf{Fixed Variables}                                                      & \textbf{Hidden Variables}          \\ \midrule
+			\textbf{Fully}     & Easy (Counting, MLE)                                                & Selection of Edges                                                            & ---                                \\
 			\textbf{Partially} & \makecell{Numerical Optimization \\ (difficult for large networks)} & \makecell{Encompasses for Difficult Subproblem \\ (only structural EM known)} & \makecell{Scientific \\ Discovery} \\ \bottomrule
 		\end{tabular}
 		\caption[Overview Over Different Learning Problems]{Overview over different learning problems and solution approaches.}
@@ -1379,13 +1379,13 @@
 				An important property of the likelihood for a Bayesian network is that it is \emph{decomposable}. Let \( \theta_i \) be the CPT of \( P\bigl(X_i \given \Pa(X_i) \bigr) \) and let \( \vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \) be the data points. Then the log-likelihood is
 				\begin{equation}
 					\log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given \theta_1, \theta_2, \dots, \theta_n)
-						= \sum_{j = 1}^{N} \log P(\vec{x}^{(j)} \given \theta_j)
-						= \sum_{j = 1}^{N} \sum_{i = 1}^{n} \log P\bigl(X_i = x_i^{(j)} \biggiven \Pa(X_i), \theta_j \bigr).
+					= \sum_{j = 1}^{N} \log P(\vec{x}^{(j)} \given \theta_j)
+					= \sum_{j = 1}^{N} \sum_{i = 1}^{n} \log P\bigl(X_i = x_i^{(j)} \biggiven \Pa(X_i), \theta_j \bigr).
 				\end{equation}
 				By swapping the sums, the log-likelihood can be rewritten as
 				\begin{equation}
 					\log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given \theta_1, \theta_2, \dots, \theta_n)
-						= \sum_{i = 1}^{n} \log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given \theta_i).
+					= \sum_{i = 1}^{n} \log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given \theta_i).
 				\end{equation}
 				Hence, it is possible to maximize each likelihood function independently and subsequently combine the solutions to get an ML estimate. This allows efficient solutions by distributing the calculations.
 			% end
@@ -1467,13 +1467,13 @@
 			As the true parameter is unknown, one idea is to integrate it out and compute the marginal data likelihood. With the prior \( P(\theta) = 1 \) for \( 0 < \theta < 1 \) and the likelihood \( P(x_1, x_2, \dots, x_n \given \theta) = \theta^k (1 - \theta)^{n - k} \) with \( k = \sum_{i = 1}^{n} X_i \) and binary variables, the marginal likelihood is
 			\begin{equation}
 				P(x_1, x_2, \dots, x_n)
-					= \int_0^1\! P(x_1, x_2, \dots, x_n \given \theta) \, P(\theta) \dd{\theta}
-					= \frac{1}{n + 1} { n \choose k }^{-1}
+				= \int_0^1\! P(x_1, x_2, \dots, x_n \given \theta) \, P(\theta) \dd{\theta}
+				= \frac{1}{n + 1} { n \choose k }^{-1}
 			\end{equation}
 			and, by Bayes rule, the posterior is
 			\begin{equation}
 				P(\theta \given x_1, x_2, \dots, x_n)
-					= (n + 1) { n \choose k } \theta^k (1 - \theta)^{n - k}.
+				= (n + 1) { n \choose k } \theta^k (1 - \theta)^{n - k}.
 			\end{equation}
 			To now perform prediction, it can be considered to compute the probability of the variable \(x_{n + 1}\), treating the realizations as a chain. Observing that \( P(x_{n + 1} \given \theta, x_1, x_2, \dots, x_n) = P(x_{n + 1} \given \theta) \) simplifies the integrals down to
 			\begin{equation}
@@ -1605,7 +1605,7 @@
 				\emph{Score-based} learning depends on a score function to assess a model's accuracy and searches for a structure with maximum score. A straightforward approach is to use the (log-)likelihood
 				\begin{equation}
 					\log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given G)
-						= N \sum_{i = 1}^{n} \bigl( \hat{I}\bigl( X_i; \Pa_G(X_i) \bigr) - \hat{H}(X_i) \bigr)
+					= N \sum_{i = 1}^{n} \bigl( \hat{I}\bigl( X_i; \Pa_G(X_i) \bigr) - \hat{H}(X_i) \bigr)
 				\end{equation}
 				where \(\hat{I}\) and \(\hat{H}\) are the approximate mutual information and entropy, respectively. Note that the data is used in the computation of the mutual information and entropy as the probabilities are based on counting the samples.
 
@@ -1618,8 +1618,8 @@
 				for the marginal likelihood can be approximated as
 				\begin{align}
 					\log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given G)
-						&= \log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given G, \Theta) - \frac{\log M}{2} \dim G + \mathcal{O}(1) \\
-						&= N \sum_{i = 1}^{n} \bigl( \hat{I}\bigl( X_i; \Pa_G(X_i) \bigr) - \hat{H}(X_i) \bigr) - \frac{\log N}{2} \dim G + \mathcal{O}(1),
+					 & = \log P(\vec{x}^{(1)}, \vec{x}^{(2)}, \dots, \vec{x}^{(N)} \given G, \Theta) - \frac{\log M}{2} \dim G + \mathcal{O}(1)           \\
+					 & = N \sum_{i = 1}^{n} \bigl( \hat{I}\bigl( X_i; \Pa_G(X_i) \bigr) - \hat{H}(X_i) \bigr) - \frac{\log N}{2} \dim G + \mathcal{O}(1),
 				\end{align}
 				where \( \dim G \) is the number of parameters. The the first term is simply the data log-likelihood and assesses the fit to the data while the second term penalizes model complexity (quantified by the number of parameters) and avoid fitting noise. As the amount of data \(N\) grows, the former term becomes prevalent and hence the BIC score is consistent (i.e., converges to the "true" data and overrides the Dirichlet prior).
 			% end
@@ -1660,8 +1660,8 @@
 	A \emph{hidden Markov model} (HMM) is a graphical model with \(T\) \emph{states} \(S_t\), \( t = 1, 2, \dots, T \) and as many \emph{observations} \(O_t\), \( t = 1, 2, \dots, T \); see \autoref{fig:hmm}. The terminology of states and observations stems from its applications in robotics and similar fields where the observations are usually sensor data and the states are the actual, non-observable/latent, physical states (e.g., the acceleration). According to the Bayesian network, the HMM factors as
 	\begin{equation}
 		P(S_1, S_2, \dots, S_T,\, O_1, O_2, \dots, O_T)
-			= P(S_1) \prod_{t = 1}^{T - 1} P(S_{t + 1} \given S_t) \prod_{t = 1}^{T} P(O_t \given S_t)
-			= \pi_{S_1} \, \prod_{t = 1}^{T - 1} a_{S_t S_{t + 1}} \, \prod_{t = 1}^{T} b_{S_t O_t}  \label{eqn:hmmFactor}
+		= P(S_1) \prod_{t = 1}^{T - 1} P(S_{t + 1} \given S_t) \prod_{t = 1}^{T} P(O_t \given S_t)
+		= \pi_{S_1} \, \prod_{t = 1}^{T - 1} a_{S_t S_{t + 1}} \, \prod_{t = 1}^{T} b_{S_t O_t}  \label{eqn:hmmFactor}
 	\end{equation}
 	where \( \pi_{S_1} \coloneqq P(S_1) \), \( a_{S_t S_{t + 1}} \coloneqq P(S_{t + 1} \given S_t) \), \( b_{S_t O_t} \coloneqq P(O_t \given S_t) \) are called the \emph{initial}, \emph{transition}, and \emph{observation} distributions, respectively. By the local Markov assumption, the "future is independent of the past given the present", i.e., the next state only depends on the current state and not on the state beforehand\footnote{Note that there are other variants of HMMs, called \emph{\(k\)-th order HMMs}, that can watch up to \(k\) steps into the past. So the HMM covered here has \(k = 1\). However, any \(k\)-th order HMM can be reduced to a first-order HMM, so the theory stays the same (cf. higher-order ordinary differential equations).}.
 
@@ -1699,10 +1699,10 @@
 		\subsection{Decoding}
 			Decoding is concerned with computing the following probabilities:
 			\begin{align}
-				P(O \given S, \Theta) &= \prod_{t = 1}^{T} b_t &
-				   P(S \given \Theta) &= \pi \prod_{t = 1}^{T - 1} a_t \\
-				P(O, S \given \Theta) &= P(O \given S, \Theta) \, P(S \given \Theta) &
-				   P(O \given \Theta) &= \sum_{S}^{\marg} P(O, S \given \Theta)
+				P(O \given S, \Theta) & = \prod_{t = 1}^{T} b_t                       &
+				P(S \given \Theta)    & = \pi \prod_{t = 1}^{T - 1} a_t                 \\
+				P(O, S \given \Theta) & = P(O \given S, \Theta) \, P(S \given \Theta) &
+				P(O \given \Theta)    & = \sum_{S}^{\marg} P(O, S \given \Theta)
 			\end{align}
 			While of of these are trivial expressions, computing \( P(O \given \Theta) \) has complexity \( \mathcal{O}(N^T \cdot 2T) \) due to the exponential number of entries in the CPT!
 
@@ -1715,9 +1715,9 @@
 			The left column is a forward pass for computing \( \alpha_\ell(T) = P(O_1, O_2, \dots, O_T,\, S_T = \ell \given \Theta) \) and the right column is a backward pass for computing \( \beta_s(1) = P(O_2, O_3, \dots, O_T \given S_1 = s \given \Theta) \). These quantities can then be used in three different fashions for computing \( P(O \given \Theta) \):
 			\begin{equation}
 				P(O \given \Theta)
-					= \sum_s \alpha_s(T)
-					= \sum_s \pi_s \, b_{s O_1} \, \beta_s(1)
-					= \sum_s \alpha_s(t) \, \beta_s(t)
+				= \sum_s \alpha_s(T)
+				= \sum_s \pi_s \, b_{s O_1} \, \beta_s(1)
+				= \sum_s \alpha_s(t) \, \beta_s(t)
 			\end{equation}
 			Where the latter is true for all \( t = 1, 2, \dots, T \).
 
@@ -1725,15 +1725,15 @@
 				Showing that the recursive relation for \( \alpha_\ell(t) \) is straightforward by invoking the chain rule and exploiting the HMM's independencies multiple times (omitting the explicit dependence on \(\Theta\) for brevity):
 				\begin{align}
 					\alpha_\ell(t + 1)
-						&= P(O_1, O_2, \dots, O_t, O_{t + 1},\, S_{t + 1} = \ell) \\
-						&= P(O_1, O_2, \dots, O_t, O_{t + 1} \given S_{t + 1} = \ell) \, P(S_{t + 1} = \ell) \\
-						&= P(O_1, O_2, \dots, O_t \given S_{t + 1} = \ell) \, P(O_{t + 1} \given S_{t + 1} = \ell) \, P(S_{t + 1} = \ell) \\
-						&= P(O_1, O_2, \dots, O_t,\, S_{t + 1} = \ell) \, P(O_{t + 1} \given S_{t + 1} = \ell) \\
-						&= \sum_s P(O_1, O_2, \dots, O_t,\, S_t = s, S_{t + 1} = \ell) \, P(O_{t + 1} \given S_{t + 1} = \ell) \\
-						&= \sum_s P(O_1, O_2, \dots, O_t,\, S_{t + 1} = \ell \given S_t = s) \, P(S_t = s) \, P(O_{t + 1} \given S_{t + 1} = \ell) \\
-						&= \sum_s P(O_1, O_2, \dots, O_t, \given S_t = s) \, P(S_{t + 1} = \ell \given S_t = s) \, P(S_t = s) \, P(O_{t + 1} \given S_{t + 1} = \ell) \\
-						&= \sum_s P(O_1, O_2, \dots, O_t,\, S_t = s) \, P(S_{t + 1} = \ell \given S_t = s) \, P(O_{t + 1} \given S_{t + 1} = \ell) \\
-						&= \sum_s \alpha_s(t) \, a_{s \ell} \, b_{\ell O_{t + 1}}
+					 & = P(O_1, O_2, \dots, O_t, O_{t + 1},\, S_{t + 1} = \ell)                                                                                     \\
+					 & = P(O_1, O_2, \dots, O_t, O_{t + 1} \given S_{t + 1} = \ell) \, P(S_{t + 1} = \ell)                                                          \\
+					 & = P(O_1, O_2, \dots, O_t \given S_{t + 1} = \ell) \, P(O_{t + 1} \given S_{t + 1} = \ell) \, P(S_{t + 1} = \ell)                             \\
+					 & = P(O_1, O_2, \dots, O_t,\, S_{t + 1} = \ell) \, P(O_{t + 1} \given S_{t + 1} = \ell)                                                        \\
+					 & = \sum_s P(O_1, O_2, \dots, O_t,\, S_t = s, S_{t + 1} = \ell) \, P(O_{t + 1} \given S_{t + 1} = \ell)                                        \\
+					 & = \sum_s P(O_1, O_2, \dots, O_t,\, S_{t + 1} = \ell \given S_t = s) \, P(S_t = s) \, P(O_{t + 1} \given S_{t + 1} = \ell)                    \\
+					 & = \sum_s P(O_1, O_2, \dots, O_t, \given S_t = s) \, P(S_{t + 1} = \ell \given S_t = s) \, P(S_t = s) \, P(O_{t + 1} \given S_{t + 1} = \ell) \\
+					 & = \sum_s P(O_1, O_2, \dots, O_t,\, S_t = s) \, P(S_{t + 1} = \ell \given S_t = s) \, P(O_{t + 1} \given S_{t + 1} = \ell)                    \\
+					 & = \sum_s \alpha_s(t) \, a_{s \ell} \, b_{\ell O_{t + 1}}
 				\end{align}
 				By marginalizing out \(S_1\) of \( \alpha_{S_1}(T) \), this is equivalent to \( P(O \given \Theta) \).
 				\qed
@@ -1744,10 +1744,10 @@
 				Showing the computation for \( P(O \given \Theta) \) is also straightforward:
 				\begin{align}
 					\sum_s \pi_s \, b_{s O_1} \, \beta_s(1)
-						&= \sum_s P(S_1 = s) \, P(O_1 \given S_1 = s ) \, P(O_2, O_3, \dots, O_T \given S_1 = s) \\
-						&= \sum_s P(S_1 = s) \, P(O_1, O_2, \dots, O_T \given S_1 = s) \\
-						&= \sum_s P(O_1, O_2, \dots, O_T,\, S_1 = s) \\
-						&= P(O_1, O_2, \dots, O_T)
+					 & = \sum_s P(S_1 = s) \, P(O_1 \given S_1 = s ) \, P(O_2, O_3, \dots, O_T \given S_1 = s) \\
+					 & = \sum_s P(S_1 = s) \, P(O_1, O_2, \dots, O_T \given S_1 = s)                           \\
+					 & = \sum_s P(O_1, O_2, \dots, O_T,\, S_1 = s)                                             \\
+					 & = P(O_1, O_2, \dots, O_T)
 				\end{align}
 				\qed
 			% end
@@ -1756,11 +1756,11 @@
 				Showing the combined pass formulation is just plugging in of distributions and leveraging independencies, too:
 				\begin{align}
 					\sum_s \alpha_s(t) \, \beta_s(t)
-						&= \sum_s P(O_1, O_2, \dots, O_t,\, S_t = s) \, P(O_{t + 1}, O_{t + 2}, \dots, O_T \given S_t = s) \\
-						&= \sum_s P(O_1, O_2, \dots, O_t \given S_t = s) \, P(O_{t + 1}, O_{t + 2}, \dots, O_T \given S_t = s) \, P(S_t = s) \\
-						&= \sum_s P(O_1, O_2, \dots, O_T \given S_t = s) \, P(S_t = s) \\
-						&= \sum_s P(O_1, O_2, \dots, O_T,\, S_t = s) \\
-						&= P(O_1, O_2, \dots, O_T)
+					 & = \sum_s P(O_1, O_2, \dots, O_t,\, S_t = s) \, P(O_{t + 1}, O_{t + 2}, \dots, O_T \given S_t = s)                   \\
+					 & = \sum_s P(O_1, O_2, \dots, O_t \given S_t = s) \, P(O_{t + 1}, O_{t + 2}, \dots, O_T \given S_t = s) \, P(S_t = s) \\
+					 & = \sum_s P(O_1, O_2, \dots, O_T \given S_t = s) \, P(S_t = s)                                                       \\
+					 & = \sum_s P(O_1, O_2, \dots, O_T,\, S_t = s)                                                                         \\
+					 & = P(O_1, O_2, \dots, O_T)
 				\end{align}
 				\qed
 			% end
@@ -1772,9 +1772,9 @@
 			The former is relatively straightforward using the \(\alpha\)'s and \(\beta\)'s defined before:
 			\begin{equation}
 				\gamma_s(t)
-					= P(S_t = s \given O, \Theta)
-					= \frac{P(S_t = s, O \given \Theta)}{P(O \given \Theta)}
-					= \frac{\alpha_s(t) \, \beta_s(t)}{\sum_s \alpha_s(t) \, \beta_s(t)}
+				= P(S_t = s \given O, \Theta)
+				= \frac{P(S_t = s, O \given \Theta)}{P(O \given \Theta)}
+				= \frac{\alpha_s(t) \, \beta_s(t)}{\sum_s \alpha_s(t) \, \beta_s(t)}
 			\end{equation}
 			Subsequently, this quantity can be maximized, \( s_t^\ast = \argmax_s \, \gamma_s(t) \).
 
@@ -1792,9 +1792,9 @@
 			\end{equation}
 			After iterating, the most likely state sequence can be computed using the following:
 			\begin{align}
-				s_T^\ast &= \argmax_s \; \delta_s(T) &
-				s_t^\ast &= \psi_s(t + 1) &
-				P(s^\ast) &= \argmax_s \; \delta_s(T)
+				s_T^\ast  & = \argmax_s \; \delta_s(T) &
+				s_t^\ast  & = \psi_s(t + 1)            &
+				P(s^\ast) & = \argmax_s \; \delta_s(T)
 			\end{align}
 			This allows computing the most likely state sequence efficiently.
 		% end
@@ -1802,14 +1802,14 @@
 		\subsection{Parameter Estimation (Using EM)}
 			Parameter estimation in a HMM is concerned with finding the parameters \(\Theta\) given an observation sequence. This is essentially done using an EM algorithm like it was introduced before in \autoref{subsec:em}, but using the probabilities \(\alpha\) and \(\beta\). The estimated \(\hat{\pi}\), \(\hat{a}\), and \(\hat{b}\) are then given as
 			\begin{align}
-				\hat{\pi}_{S_1} &= \gamma_{S_1}(1) &
-				\hat{a}_{S_t S_{t + 1}} &= \frac{\sum_{t = 1}^{T - 1} p_t(S_t, S_{t + 1})}{\sum_{t = 1}^{T - 1} \gamma_{S_t}(t)} &
-				\hat{b}_{S_t O_t} &= \frac{\sum_{\substack{t = 1; o_t = O_t}}^{T} \gamma_{S_t}(t)}{\sum_{t = 1}^{T} \gamma_{S_t}(t)}
+				\hat{\pi}_{S_1}         & = \gamma_{S_1}(1)                                                                                 &
+				\hat{a}_{S_t S_{t + 1}} & = \frac{\sum_{t = 1}^{T - 1} p_t(S_t, S_{t + 1})}{\sum_{t = 1}^{T - 1} \gamma_{S_t}(t)}           &
+				\hat{b}_{S_t O_t}       & = \frac{\sum_{\substack{t = 1; o_t = O_t}}^{T} \gamma_{S_t}(t)}{\sum_{t = 1}^{T} \gamma_{S_t}(t)}
 			\end{align}
 			where \( p_t(S_t, S_{t + 1}) \) and \( \gamma_{S_t}(t) \) are the probability of traversing from a state \(S_t\) to a state \(S_{t + 1}\) and the probability of being in a state \(S_t\), respectively:
 			\begin{align}
-				p_t(S_t, S_{t + 1}) &= \frac{\alpha_{S_t}(t) \, a_{S_t S_{t + 1}} \, b_{S_{t + 1} O_{t + 1}} \, \beta_{S_{t + 1}}(t + 1)}{\sum_s \alpha_s(t) \, \beta_s(t)} &
-				\gamma_{S_t}(t) &= \sum_s p_t(S_t, s)
+				p_t(S_t, S_{t + 1}) & = \frac{\alpha_{S_t}(t) \, a_{S_t S_{t + 1}} \, b_{S_{t + 1} O_{t + 1}} \, \beta_{S_{t + 1}}(t + 1)}{\sum_s \alpha_s(t) \, \beta_s(t)} &
+				\gamma_{S_t}(t)     & = \sum_s p_t(S_t, s)
 			\end{align}
 			Note that the data is incorporated in computing the \(p\)'s and \(\gamma\)'s (this is effectively the E-step). By iterating these two sets of equations, the algorithm will converge (although possibly to a local maximum). This is known as the \emph{Baum-Welch algorithm}.
 		% end
@@ -1829,21 +1829,21 @@
 		\subsection{Discrete-Time Kalman Filter}
 			The discrete-time Kalman filter tackles dynamical systems of the form
 			\begin{align}
-				\vec{x}_1 &\sim \mathcal{N}(\vec{\mu}_0, \mat{\Sigma}_0) \\
-				\vec{x}_{t + 1} &\sim \mathcal{N}\bigl( \mat{A}_t \vec{x}_t + \mat{B}_t \vec{u}_t,\, \mat{R}_t \bigr) \\
-				\vec{y}_t &\sim \mathcal{N}\bigl( \mat{C}_t \vec{x}_t,\, \mat{Q}_t \bigr)
+				\vec{x}_1       & \sim \mathcal{N}(\vec{\mu}_0, \mat{\Sigma}_0)                                        \\
+				\vec{x}_{t + 1} & \sim \mathcal{N}\bigl( \mat{A}_t \vec{x}_t + \mat{B}_t \vec{u}_t,\, \mat{R}_t \bigr) \\
+				\vec{y}_t       & \sim \mathcal{N}\bigl( \mat{C}_t \vec{x}_t,\, \mat{Q}_t \bigr)
 			\end{align}
 			where \(\vec{x}_{1:T}\), \(\vec{y}_{1:T}\), and \(\vec{u}_{1:T - 1}\) are the states, observations, and actions, respectively. The matrices \(\mat{A}_t\), \(\mat{B}_t\), \(\mat{C}_t\), \(\mat{R}_t\), and \(\mat{Q}_t\) are the dynamics, control, observation, state covariance, and observation covariance matrices, respectively. \(\vec{\mu}_0\) and \(\mat{\Sigma}_0\) are the mean and covariance of the initial state. All of these parameters are assumed to be known for state estimation.
 
 			As the integrals of the Bayesian filter can be solved in closed form for LGDS's, the Kalman filter equations can also be stated in closed form. The state estimation consists of two steps: \emph{prediction} and \emph{correction}. In the prediction step, the state is predicted from the prior knowledge:
 			\begin{align}
-				\bar{\vec{\mu}}_t &= \mat{A}_t \vec{\mu}_{t - 1} + \mat{B}_t \vec{u}_t &
-				\bar{\mat{\Sigma}}_t &=\mat{A}_t \mat{\sigma}_{t - 1} \mat{A}_t^\top + \mat{R}_t
+				\bar{\vec{\mu}}_t    & = \mat{A}_t \vec{\mu}_{t - 1} + \mat{B}_t \vec{u}_t        &
+				\bar{\mat{\Sigma}}_t & =\mat{A}_t \mat{\sigma}_{t - 1} \mat{A}_t^\top + \mat{R}_t
 			\end{align}
 			In the correction step, a new observation \(\vec{y}_t\) is incorporated to correct the previous prediction:
 			\begin{align}
-				\vec{\mu}_t &= \bar{\vec{\mu}}_t + \mat{K}_t (\vec{y}_t - \mat{C}_t \bar{\vec{\mu}}_t) &
-				\mat{\Sigma}_t &= (\mat{I} - \mat{K}_t \mat{C}_t) \bar{\mat{\Sigma}}_t
+				\vec{\mu}_t    & = \bar{\vec{\mu}}_t + \mat{K}_t (\vec{y}_t - \mat{C}_t \bar{\vec{\mu}}_t) &
+				\mat{\Sigma}_t & = (\mat{I} - \mat{K}_t \mat{C}_t) \bar{\mat{\Sigma}}_t
 			\end{align}
 			Here, \( \mat{K}_t = \bar{\mat{\Sigma}}_t \mat{C}_t^\top \bigl( \mat{C}_t \bar{\mat{\Sigma}}_t \mat{C}_t^\top + \mat{Q}_t \bigr)^{-1} \) is the \emph{Kalman gain}. The estimations \( \vec{\mu}_{1:T} \) are the expected states with covariance \( \mat{\Sigma}_{1:T} \) given the observations \( \vec{y}_{1:T} \).
 		% end
@@ -1926,13 +1926,13 @@
 
 		The messages are constructed as follows (from variables to factors on the top, and vice versa on the bottom; \(\mathcal{N}(\cdot)\) are the neighbors of the node/factor):
 		\begin{align}
-			\mu_{i \to \alpha}(x_i) &= \prod_{\alpha \,\in\, \mathcal{N}(i) \setminus \{ \alpha \}} \mu_{\alpha \to i}(x_i) \\
-			\mu_{\alpha \to i}(x_i) &= \sum_{\vec{x}_\alpha;\, x_{\alpha, i} \,=\, x_i} f_\alpha(\vec{x}_\alpha) \prod_{j \,\in\, \mathcal{N}(\alpha) \setminus \{ i \}} \mu_{j \to \alpha}(x_{\alpha, i})
+			\mu_{i \to \alpha}(x_i) & = \prod_{\alpha \,\in\, \mathcal{N}(i) \setminus \{ \alpha \}} \mu_{\alpha \to i}(x_i)                                                                                \\
+			\mu_{\alpha \to i}(x_i) & = \sum_{\vec{x}_\alpha;\, x_{\alpha, i} \,=\, x_i} f_\alpha(\vec{x}_\alpha) \prod_{j \,\in\, \mathcal{N}(\alpha) \setminus \{ i \}} \mu_{j \to \alpha}(x_{\alpha, i})
 		\end{align}
 		Subsequently (after propagating the messages), the beliefs can be computed as follows:
 		\begin{align}
-			b_i(x_i) &= \prod_{\alpha \,\in\, \mathcal{N}(i)} \mu_{\alpha \to i}(x_i) &
-			b_\alpha(\vec{x}_\alpha) &= f_\alpha(\vec{x}_\alpha) \prod_{i \,\in\, \mathcal{N}(\alpha)} \mu_{i \to \alpha}(x_{\alpha, i})
+			b_i(x_i)                 & = \prod_{\alpha \,\in\, \mathcal{N}(i)} \mu_{\alpha \to i}(x_i)                                    &
+			b_\alpha(\vec{x}_\alpha) & = f_\alpha(\vec{x}_\alpha) \prod_{i \,\in\, \mathcal{N}(\alpha)} \mu_{i \to \alpha}(x_{\alpha, i})
 		\end{align}
 		The complete pseudocode is given in \autoref{alg:spa}.
 
@@ -1984,14 +1984,14 @@
 				\KwIn{Bayesian network with variables \(X_1, X_2, \dots, X_n\), number of samples \(T\), evidence \(\vec{E} = \vec{e}\)}
 				\KwOut{Set of samples \( \vec{x}^{(1:T)} \)}
 				\For{\( t = 1, 2, \dots, T \)}{
-					\tcp{Initialize empty sample:}
-					\( \vec{x}^{(t)} \gets \mathit{Empty} \)  \label{algline:forwardSamplingRestart} \;
-					\ForEach{\(X_i\) in a topological ordering}{
-						\( x_i^{(t)} \gets \text{Sample from } P\bigl(X_i \given \Pa(X_i) = \vec{x}^{(t)} \bigr) \) \;
-						\If{\( X_i \in \vec{E} \) and \( x_i^{(t)} \neq e_i \)}{
-							Reject sample and start over (go to \autoref{algline:forwardSamplingRestart}). \;
-						}
-					}
+				\tcp{Initialize empty sample:}
+				\( \vec{x}^{(t)} \gets \mathit{Empty} \)  \label{algline:forwardSamplingRestart} \;
+				\ForEach{\(X_i\) in a topological ordering}{
+				\( x_i^{(t)} \gets \text{Sample from } P\bigl(X_i \given \Pa(X_i) = \vec{x}^{(t)} \bigr) \) \;
+				\If{\( X_i \in \vec{E} \) and \( x_i^{(t)} \neq e_i \)}{
+				Reject sample and start over (go to \autoref{algline:forwardSamplingRestart}). \;
+				}
+				}
 				}
 				\caption{Forward Sampling}
 				\label{alg:forwardSampling}
@@ -2027,10 +2027,10 @@
 				\tcp{Initialize zeroth sample somehow, e.g., uniformly:}
 				\( \vec{x}^{(0)} \gets \mathit{Random} \) \;
 				\For{\( t = 1, 2, \dots, T \)}{
-					\For{\( t = 1, 2, \dots, n \)}{
-						\tcp{Generate sample levaraging the Markov blanket \( M(X_i) \) to compute the CPT:}
-						\( x_i^{(t + 1)} \gets \text{Sample from } P(\cdot \given \vec{X}_{i + 1:\tilde{n}} = \vec{x}_{i + 1:\tilde{n}}^{(t)}, \vec{X}_{1:i - 1} = \vec{x}_{1:i - 1}^{(t)}, \vec{E} = \vec{e}) \) \;
-					}
+				\For{\( t = 1, 2, \dots, n \)}{
+				\tcp{Generate sample levaraging the Markov blanket \( M(X_i) \) to compute the CPT:}
+				\( x_i^{(t + 1)} \gets \text{Sample from } P(\cdot \given \vec{X}_{i + 1:\tilde{n}} = \vec{x}_{i + 1:\tilde{n}}^{(t)}, \vec{X}_{1:i - 1} = \vec{x}_{1:i - 1}^{(t)}, \vec{E} = \vec{e}) \) \;
+				}
 				}
 				\caption{Gibbs Sampling}
 				\label{alg:gibbs}
@@ -2072,18 +2072,18 @@
 				\KwIn{Bayesian network with variables \(X_1, X_2, \dots, X_n\), number of samples \(T\), evidence \(\vec{E} = \vec{e}\)}
 				\KwOut{Set of samples \( \vec{x}^{(1:T)} \) and weights \( w^{(1:T)} \)}
 				\For{\( t = 1, 2, \dots, T \)}{
-					\tcp{Initialize empty sample and sample weight:}
-					\( \vec{x}^{(t)} \gets \mathit{Empty} \) \;
-					\( w^{(t)} \gets 1 \) \;
-					\ForEach{\(X_i\) in a topological ordering}{
-						\If{\( X_i \in \vec{E} \) and \( x_i^{(t)} \neq e_i \)}{
-							\( x_i^{(t)} \gets e_i \) \;
-							\( w^{(t)} \gets w^{(t)} P\bigl(E_i = e_i \given \Pa(X_i) = \vec{x}^{(t)} \bigr) \) \;
-						}
-						\Else{
-							\( x_i^{(t)} \gets \text{Sample from } P\bigl(X_i \given \Pa(X_i) = \vec{x}^{(t)} \bigr) \) \;
-						}
-					}
+				\tcp{Initialize empty sample and sample weight:}
+				\( \vec{x}^{(t)} \gets \mathit{Empty} \) \;
+				\( w^{(t)} \gets 1 \) \;
+				\ForEach{\(X_i\) in a topological ordering}{
+				\If{\( X_i \in \vec{E} \) and \( x_i^{(t)} \neq e_i \)}{
+				\( x_i^{(t)} \gets e_i \) \;
+				\( w^{(t)} \gets w^{(t)} P\bigl(E_i = e_i \given \Pa(X_i) = \vec{x}^{(t)} \bigr) \) \;
+				}
+				\Else{
+				\( x_i^{(t)} \gets \text{Sample from } P\bigl(X_i \given \Pa(X_i) = \vec{x}^{(t)} \bigr) \) \;
+				}
+				}
 				}
 				\caption{Likelihood Weighting Sampling}
 				\label{alg:likelihoodWeighting}
@@ -2150,8 +2150,8 @@
 			To learn the parameters, it is possible to directly maximize the log-likelihood over the dataset \(\mathcal{D}\):
 			\begin{equation}
 				\argmax_\theta \; \log P(\mathcal{D} \given \theta)
-					= \argmax_\theta \; \sum_{\vec{x} \in \mathcal{D}} \log P(\mathcal{D} \given \theta)
-					= \argmax_\theta \; \sum_{\vec{x} \in \mathcal{D}} \sum_{i = 1}^{n} \log P(x_i \given x_1, x_2, \dots, x_{i - 1}).
+				= \argmax_\theta \; \sum_{\vec{x} \in \mathcal{D}} \log P(\mathcal{D} \given \theta)
+				= \argmax_\theta \; \sum_{\vec{x} \in \mathcal{D}} \sum_{i = 1}^{n} \log P(x_i \given x_1, x_2, \dots, x_{i - 1}).
 			\end{equation}
 			The constraint on tractable factors allows exact computation of the likelihood! The conditionals can be evaluated in parallel during training, making it faster. To sample from the model, forward sampling can be used with the usual caveats (i.e., being slow with evidence).
 

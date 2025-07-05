@@ -20,7 +20,7 @@
 
 		\subsection{Skalierbare Objektmodellierung/-erkennung}
 			Heutige visuelle Objekterkennungsalgorithmen sind auf wenige hundert Kategorien limitiert, für die semantische Beschreibung der Umwelt werden aber mehrere zehntausend benötigt. Außerdem müssen neue Kategorien anhand weniger Beispiele erlernbar werden! Dazu werden 3D-Objektdatenbanken benötigt, um ähnliche Objekte zu bestimmen.
-			
+
 			Häufig werden Deep-Learning-Verfahren eingesetzt, die gigantische Berechnungen und intelligente (stochastische) Optimierungsalgorithmen benötigen.
 		% end
 
@@ -30,7 +30,7 @@
 
 		\subsection{Scene Understanding}
 			Scene Unterstanding beschäftigt sich \zB damit, einmal erkannte Personen in einem Video auch nicht zu verlieren, wenn diese verdeckt werden. Dazu wird Personendetektion und -verfolgung integriert.
-			
+
 			Das allgemeine Ziel ist die vollständige Modellierung und Darstellung einer erfassten Szene sowie die semantische Beschreibung dieser.
 		% end
 	% end
@@ -51,13 +51,13 @@
 \chapter{Wahrnehmung}
 	\section{Human-Computer-Interaction}
 		Abbildung~\ref{fig:hci} zeigt den klassischen Zyklus der \emph{Human-Computer-Interaction} (HCI), \dh der Interaktion zwischen Mensch und Maschine. Dabei spielt insbesondere die visuelle Interaktion und Kommunikation über das Auge eine große Rolle.
-	
+
 		\begin{figure}
 			\centering
 			\begin{tikzpicture}[->, every node/.style = { align = center }]
 				\node [draw, rectangle] (human) {Human};
 				\node [draw, rectangle, right = 4 of human] (computer) {Computer};
-				
+
 				\draw (human) to[bend right] node[below]{Explizite Eingabe, \\ Implizite Interaktion} (computer);
 				\draw (computer) to[bend right] node[above]{Visuelle Ausgabe, \\ Andere Ausgabemodalitäten} (human);
 			\end{tikzpicture}
@@ -68,9 +68,9 @@
 
 	\section{Überblick}
 		Der Mensch hat fünf grundlegende Sinne: Sehen, Hören, Fühlen, Schmecken und Riechen, wobei das Sehen, Hören und Fühlen derzeit dominant sind. Der heute sicherlich relevanteste Sinn ist dabei das Sehen und das menschliche Auge. Da die meisten erzeugten Bilder der Kommunikation von und zum Menschen dienen sollen, ist es gut, das menschliche visuelle System zu kennen, um den Informationstransfer optimal zu gestalten (der Monitorausgang ist nicht das Ende des Informationsflusses).
-		
+
 		Hören und Fühlen sind dabei relevant für die Informationsaufnahme und Interaktion mit der realen Welt (außerhalb der Mensch-Maschine-Interaktion).
-		
+
 		Bei der Gestaltung von Kommunikation gibt es zwei große Probleme:
 		\begin{itemize}
 			\item Die Wahrnehmung ist nicht objektiv.
@@ -85,23 +85,23 @@
 				\item \emph{Reaktion} durch den Körper.
 			\end{itemize}
 			Dabei verhält sich die Ausführungszeit additiv und die Funktionen werden durch neurologisch getrennte Gehirnteile ausgeführt, die "elektronisch" verbunden sind.
-			
+
 			\begin{figure}
 				\centering
 				\begin{tikzpicture}[->, every node/.style = { draw, rectangle, minimum height = 0.8cm, minimum width = 5cm }]
 					\node (a) {Wahrnehmung (Sensorik)};
 					\node [below = 0.5 of a] (b) {Entscheidung (Kognition)};
 					\node [below = 0.5 of b] (c) {Reaktion (Motorik)};
-					
+
 					\draw (a) -- (b);
 					\draw (b) -- (c);
 				\end{tikzpicture}
 				\caption{Modulares Drei-Stufen-Modell der menschlichen Informationsverarbeitung.}
 				\label{fig:humaninfoprocessing}
 			\end{figure}
-			
+
 			Dabei braucht jede Bearbeitung in den einzelnen Stufen unterschiedlich lange und die benötigten Zeiten können verwendet werden, um die Performanz abzuschätzen, \bzw vorherzusagen (\bspw für die Bildfrequenz von Filmen, die maximale Morserate, \dots). Typische Zeiten sind in Tabelle~\ref{fig:humanprocessingtimes} abgebildet.
-			
+
 			\begin{table}
 				\centering
 				\begin{tabular}{l|l|l}
@@ -122,7 +122,7 @@
 					\item Haptisch (Fühlen)
 				\end{itemize}
 				können dabei (theoretisch) parallel arbeiten.
-			
+
 				\paragraph{Klangwahrnehmung}
 					Die Hauptkomponenten von Klängen sind
 					\begin{itemize}
@@ -150,14 +150,14 @@
 					\item Motorisch (Bewegen)
 				\end{itemize}
 				können dabei (theoretisch) parallel arbeiten.
-				
+
 				Die motorische Ausgabe kann dabei auf verschiedene Weisen angewandt werden:
 				\begin{itemize}
 					\item Diskret (Schalter) oder
 					\item Kontinuierlich (Heben).
 				\end{itemize}
 				Sie ist dabei beschränkt durch Geschwindigkeit, Stärke, Koordinationsvermögen, Wendigkeit, \dots. Neurologisch ist die motorische Ausgabe dabei mit dem haptischen System verbunden (Reflexe).
-				
+
 				Das \emph{Muskelgedächtnis} hilft dabei, relevante Positionen im Raum (\zB die Gangschaltung im Auto) zu lernen.
 			% end
 		% end
@@ -167,13 +167,13 @@
 		\subsection{Das Auge}
 			\subsubsection{Reiz und Licht}
 				Ein äußerer, visueller Reiz (Licht) erzeugt beim Menschen eine physikalische Rezeption des äußeren Reizes (Input). Dies geschieht durch einen Sensor (\bspw das Auge) und die Reizung produziert ein neurophysiologisches Signal. Dieses wird anschließend verarbeitet und interpretiert.
-				
+
 				Physikalisch ist ein solcher Reiz elektromagnetische Strahlung. Dabei wird monochromatisches, \dh einfarbiges, Licht durch die Angabe der Frequenz \(v\), \bzw der Wellenlänge \(\lambda\), beschrieben. Diese beiden Größen sind durch die Beziehung
 				\begin{equation*}
 					v \lambda = c, \quad c \approx \SI{3e8}{\meter\per\second}
 				\end{equation*}
 				miteinander verknüpft, wobei \(c\) die Ausbreitungsgeschwindigkeit des Lichts ist.
-				
+
 				Das menschliche Auge kann dabei Frequenzen im Wellenlängenbereich \( \SIrange{380}{750}{\nano\meter} \) wahrnehmen. Kleinere Wellenlängen haben \zB Ultraviolett-Licht, Röntgen- und \(\gamma\)-Strahlung. Darüber liegende Wellenlängen haben \zB Infrarot-Licht und Rundfunk-Wellen.
 			% end
 
@@ -259,7 +259,7 @@
 						K = \frac{L_R - L_H}{L_H} = \frac{\delta L}{L_H}
 					\end{equation*}
 					wobei \( L_R \) die Leuchtdichte des Vordergrunds und \(L_H\) die Leuchtdichte des Hintergrunds darstellt.
-					
+
 					\todo{Wahrnehmung: Weber-Fechnersches Gesetz, Stevensches Gesetz; 2.65}
 				% end
 			% end
@@ -297,7 +297,7 @@
 
 		\subsection{Informationsextraktion}
 			Ein reiner Reiz ist noch keine \emph{Wahrnehmung}. Dazu kommen noch andere Faktoren wie Kontext, Erwartungen, Adaption. Das Messen der tatsächlichen Wahrnehmung ist leider sehr schwierig, weshalb häufig nur statistische Aussagen auf Basis von User-Tests getätigt werden können.
-			
+
 			Dabei erschwert, dass die Wahrnehmung nicht immer der Realität entspricht. Es wird hingegen das Bild durch einen Wahrnehmungsprozess im Gehirn produziert. Dabei wird die menschliche Wahrnehmung adaptiert, \bspw dreht sich das Bild bei einem Kopfstand.
 
 			\subsubsection{Raumwahrnehmung}
@@ -315,9 +315,9 @@
 					\item Propriozeptives System (Eigenwahrnehmung)
 					\item Visuelles System
 				\end{itemize}
-			
+
 				Dabei ist die Raumwahrnehmung auch mit einem Auge (Monokular) möglich (tatsächlich sind \SIrange{5}{10}{\percent} aller Menschen stereoblind und \SI{20}{\percent} haben eine Stereo-Schwäche).
-				
+
 				Tatsächlich ist die Raumwahrnehmung ein sehr komplexer Prozess, der auch heute nur zu Teilen verstanden wird. Dabei fließen noch viele weitere Phänomene ein, \zB Größenkonstanz, Annahme starrer Körper oder Vektion. Letzteres ist dabei die scheinbare Eigenbewegung bei einem statischen Vordergrund als Referenzrahmen und einem bewegten Hintergrund.
 			% end
 
@@ -435,9 +435,9 @@
 						\item Dies geschieht \zB wenn man von einem Tier angefallen wird.
 					\end{itemize}
 			\end{itemize}
-		
+
 			Das menschliche Gedächtnis ist in mehrere "Teilgedächtnisse" aufgeteilt. Voran steht das \emph{Arbeitsgedächtnis}, auf das ein schneller Zugriff (\ca \SI{70}{\milli\second}) möglich ist, welches aber einen schnellen Verfall hat (nach \ca \SI{200}{\milli\second}). Es stellt sozusagen das "Schmierblatt" des Gehirns da. Nach wenigen Sekunden wird der Inhalt jedoch an das Langzeitgedächtnis weitergegeben.
-			
+
 			Das Langzeitgedächtnis ist langsamer (\ca \SI{100}{\milli\second}), dafür aber auch sehr viel größer (die genaue Größe ist unbekannt). Das Langzeitgedächtnis hat dabei drei Hauptaufgaben:
 			\begin{itemize}
 				\item Informationen speichern und sich an diese erinnern,
@@ -453,9 +453,9 @@
 
 	\section{Computer Vision}
 		Das einfachste Standardmodell einer Lochkamera ist ein Kasten mit einem kleinen Loch. Um ein digitales Bild eines solchen Kameramodells zu erhalten, wird das Bild rasterisiert. Demnach ist ein Graustufenbild eine Matrix an Pixeln mit jeweils einem Wert (die "Grauigkeit" des Pixels).
-		
+
 		Die Computer Vision beschäftigt sich nun damit, aus einem solchen Bild Informationen zu extrahieren. Bei der Objekterkennung ist es wichtig, eine gute lokale Beschreibung/Merkmale zu haben (\zB Augen, Mund, Nase) und eine globale Anordnung der lokalen Merkmale (\zB relative Positionen, relative Größen). Es ist aber auch eine schnelle Generierung guter Hypothesen, Segmentierung der Bildbereiche und Kennen des Szenenkontextes wichtig.
-		
+
 		Nach Fischler und Elschlager hat das Modell eines Bildes zwei Komponenten: Teile (2D Bildfragmente) und den Aufbau (die Anordnung der Teile). Mit diesem abstrakten Modell lassen sich viele Dinge (\zB ein Gesicht) charakterisieren.
 	% end
 
@@ -474,15 +474,15 @@
 				\end{equation*}
 				kann Wahrscheinlichkeitsdichte und Wahrscheinlichkeit in den meisten Fällen gegeneinander ausgetauscht werden.
 			% end
-		
+
 			\paragraph{1. Konzept: A-Priori Wahrscheinlichkeit (Prior)}
 				Die \emph{a-priori Wahrscheinlichkeit} (Prior) enthält die Information, wie wahrscheinlich eine beliebige Messung der Klasse zugehört (\dh die "Klassenhäufigkeit"). Ist \( C_k \) eine Klasse, so ist \( P(C_k) \) der Prior \bzgl der Klasse \( C_k \) (analog für \( p(C_k) \)).
 			% end
-			
+
 			\paragraph{2. Konzept: Bedingte Wahrscheinlichkeit (Likelihood)}
 				Ist \(\vec{x}\) der Merkmalsvektor (Feature), welcher Eigenschaften der Messung beschreibt (Anzahl schwarzer Pixel, Höhe/Breite, \dots) und \( C_k \) eine Klasse, so ist \( P(\vec{x} \given C_k) \) die \emph{Likelihood}, \dh die Wahrscheinlichkeit, dass \(\vec{x}\) für einen Buchstaben der Klasse \( C_k \) gemessen wird (analog für \( p(\vec{x} \given X_k) \)).
 			% end
-			
+
 			\paragraph{3. Konzept: A-Posteriori Wahrscheinlichkeit (Posterior), Bayes Theorem}
 				Die \emph{a-posteriori Wahrscheinlichkeit} (Posterior) ist die Wahrscheinlichkeit, dass ein Merkmalsvektor \(\vec{x}\) einer Klasse \( C_k \) angehört, \dh \( P(C_k \given \vec{x}) \). Dieser Posterior kann durch Bayes Theorem gefunden werden:
 				\begin{equation*}
@@ -498,9 +498,9 @@
 		\subsection{Problemstellung}
 			Abbildung~\ref{fig:likelihoodPriorPosterior} zeigt die Likelihood, Prior und den Posterior auf. Die Zielstellung eines Bayesian Classifier ist nun, die Wahrscheinlichkeit der Fehlklassifikation zu minimieren und somit eine Entscheidungsgrenze zu bestimmen. Die Wahrscheinlichkeit eines Fehlers ist gegeben durch:
 			\begin{align*}
-				P(\text{Fehler}) &= P(x \in R_2, C_1) + P(x \in R_1, C_2) \\
-					&= P(x \in R_2 \given C_1) P(C_1) + P(x \in R_1 \given C_2) P(C_2) \\
-					&= \int_{R_2} \! p(x \in R_2 \given C_1) P(C_1) \dd{x} + \int_{R_2} \! p(x \in R_2 \given C_2) P(X_2) \dd{x}
+				P(\text{Fehler}) & = P(x \in R_2, C_1) + P(x \in R_1, C_2)                                                                     \\
+				                 & = P(x \in R_2 \given C_1) P(C_1) + P(x \in R_1 \given C_2) P(C_2)                                           \\
+				                 & = \int_{R_2} \! p(x \in R_2 \given C_1) P(C_1) \dd{x} + \int_{R_2} \! p(x \in R_2 \given C_2) P(X_2) \dd{x}
 			\end{align*}
 			Dabei ist \( P(x \in R_i, C_j) \) die Wahrscheinlichkeit, dass \(x\) zu Klasse \(R_i\) gehört, aber als Klasse \(C_j\) klassifiziert wurde (für \( i \neq j \) entspricht dies einer Fehlklassifikation).
 
@@ -508,57 +508,57 @@
 				\centering
 				\begin{tikzpicture}
 					\begin{axis}[
-								name = likelihood,
-								domain = 0:15,
-								xmin = 0,
-								xmax = 15,
-								ymin = 0,
-								ymax = 0.5,
-								xlabel = \(x\),
-								width = 12cm,
-								height = 7cm,
-								legend style = { xshift = -0.5cm, yshift = -0.5cm, fill=\thepagecolor, draw=fgcolor },
-								xticklabels = {,,}
-							]
+							name = likelihood,
+							domain = 0:15,
+							xmin = 0,
+							xmax = 15,
+							ymin = 0,
+							ymax = 0.5,
+							xlabel = \(x\),
+							width = 12cm,
+							height = 7cm,
+							legend style = { xshift = -0.5cm, yshift = -0.5cm, fill=\thepagecolor, draw=fgcolor },
+							xticklabels = {,,}
+						]
 						\addplot [density, TUDa-9\IfDarkModeTF{a}{b}, smooth] { gaussian(x, 5, 2) }; \addlegendentry{\( p(x \given a) \)};
 						\addplot [density, TUDa-1\IfDarkModeTF{a}{b}, smooth] { gaussian(x, 11, 2) }; \addlegendentry{\( p(x \given b) \)};
 					\end{axis}
 					\begin{axis}[
-								name = likelihoodPrior,
-								domain = 0:15,
-								xmin = 0,
-								xmax = 15,
-								ymin = 0,
-								ymax = 0.5,
-								xlabel = \(x\),
-								width = 12cm,
-								height = 7cm,
-								at = (likelihood.right of south east),
-								anchor = north,
-								xshift = -5.23cm,
-								yshift = -0.5cm,
-								legend style = { xshift = -0.5cm, yshift = -0.5cm, fill=\thepagecolor, draw=fgcolor },
-								xticklabels = {,,}
-							]
+							name = likelihoodPrior,
+							domain = 0:15,
+							xmin = 0,
+							xmax = 15,
+							ymin = 0,
+							ymax = 0.5,
+							xlabel = \(x\),
+							width = 12cm,
+							height = 7cm,
+							at = (likelihood.right of south east),
+							anchor = north,
+							xshift = -5.23cm,
+							yshift = -0.5cm,
+							legend style = { xshift = -0.5cm, yshift = -0.5cm, fill=\thepagecolor, draw=fgcolor },
+							xticklabels = {,,}
+						]
 						\addplot [density, TUDa-9\IfDarkModeTF{a}{b}, smooth] { gaussian(x, 5, 2) * 0.8 }; \addlegendentry{\( p(x \given a) p(a) \)};
 						\addplot [density, TUDa-1\IfDarkModeTF{a}{b}, smooth] { gaussian(x, 11, 2) * 0.2 }; \addlegendentry{\( p(x \given b) p(b) \)};
 					\end{axis}
 					\begin{axis}[
-								name = posterior,
-								domain = 0:15,
-								xmin = 0,
-								xmax = 15,
-								ymin = 0,
-								ymax = 1.1,
-								xlabel = \(x\),
-								width = 12cm,
-								height = 7cm,
-								at = (likelihoodPrior.right of south east),
-								anchor = north,
-								xshift = -5.23cm,
-								yshift = -0.5cm,
-								legend style = { xshift = -0.5cm, yshift = -0.5cm, fill=\thepagecolor, draw=fgcolor },
-							]
+							name = posterior,
+							domain = 0:15,
+							xmin = 0,
+							xmax = 15,
+							ymin = 0,
+							ymax = 1.1,
+							xlabel = \(x\),
+							width = 12cm,
+							height = 7cm,
+							at = (likelihoodPrior.right of south east),
+							anchor = north,
+							xshift = -5.23cm,
+							yshift = -0.5cm,
+							legend style = { xshift = -0.5cm, yshift = -0.5cm, fill=\thepagecolor, draw=fgcolor },
+						]
 						\addplot [density, TUDa-9\IfDarkModeTF{a}{b}, smooth] { (gaussian(x, 5, 2) * 0.8) / (gaussian(x, 5, 2) * 0.8 + gaussian(x, 11, 2) * 0.2) }; \addlegendentry{\( p(a \given x) \)};
 						\addplot [density, TUDa-1\IfDarkModeTF{a}{b}, smooth] { (gaussian(x, 11, 2) * 0.2) / (gaussian(x, 5, 2) * 0.8 + gaussian(x, 11, 2) * 0.2) }; \addlegendentry{\( p(b \given x) \)};
 					\end{axis}
@@ -575,13 +575,13 @@
 			\end{equation*}
 			Da die Posteriors im Allgemeinen nicht bekannt sind, werden die über Bayes Theorem berechnet:
 			\begin{align*}
-				               &  & P(C_1 \given x)                         & > P(C_2 \given x)                     &  \\
-				\quad\iff\quad &  & \frac{P(x \given C_1) P(C_1)}{P(x)}     & > \frac{P(c \given C_2) P(C_2)}{P(x)} &  \\
-				\quad\iff\quad &  & P(x \given C_1) P(C_1)                  & > P(c \given C_2) P(C_2)              &  \\
+				               &  & P(C_1 \given x)                         & > P(C_2 \given x)                     & \\
+				\quad\iff\quad &  & \frac{P(x \given C_1) P(C_1)}{P(x)}     & > \frac{P(c \given C_2) P(C_2)}{P(x)} & \\
+				\quad\iff\quad &  & P(x \given C_1) P(C_1)                  & > P(c \given C_2) P(C_2)              & \\
 				\quad\iff\quad &  & \frac{P(x \given C_1)}{P(x \given C_2)} & > \frac{P(C_1)}{P(C_2)}               &
 			\end{align*}
 			Dies wird auch \emph{Likelihood Ratio Test} genannt.
-			
+
 			Dieser Test kann sich für mehr als zwei Klassen verallgemeinern lassen: Wähle Klasse \( k \) genau dann, wenn
 			\begin{equation*}
 				P(C_k \given x) > P(C_j \given x) \quad\forall j \neq k
@@ -616,7 +616,7 @@
 
 		\subsection{Sliding Window Ansatz}
 			\label{sec:slidingwindow}
-			
+
 			Bei dem \emph{Sliding Window Ansatz} wird ein Bild in Ein-Pixel-Schritten horizontal und vertikal gescannt. Nach jedem Durchlauf wird das Bild immer wieder verkleinert, bis das Bild zu klein ist. So können auch mit einem Klassifikator, der nur Bilder einer Größe entgegen nehmen kann, große Bilder durchsucht werden.
 		% end
 
@@ -657,7 +657,7 @@
 						\item Dann wird ein Likelihood Ration Test verwendet.
 					\end{itemize}
 			\end{enumerate}
-		
+
 			Um Bilder aus verschiedenen Perspektiven zu erkennen, wird für jede Ansicht ein eigener Detektor verwendet (jeder für eine Ansicht) und diese kombiniert.
 		% end
 
@@ -675,23 +675,23 @@
 	Bei der Beugung an einem einfachen Spalt der breite \(a\) ergibt sich auf dem Schirm ein Beugungsmuster, welches im Zentrum ein Intensitätsmaximum und nach außen hin immer wieder Intensitätsminima und -maxima hat. Der Spalt kann durch eine Rechteckfunktion
 	\begin{equation*}
 		\text{Rect}(x) =
-			\begin{cases}
-				1 & -1 \leq x \leq 1 \\
-				0 & \text{sonst}
-			\end{cases}
+		\begin{cases}
+			1 & -1 \leq x \leq 1 \\
+			0 & \text{sonst}
+		\end{cases}
 	\end{equation*}
 	beschrieben werden. Das sich ergebende Beugungsmuster, \bzw die zeitlich gemittelte Intensität \(I\), hat dann die Form
 	\begin{equation*}
 		I(\theta) = I_0 \, \Bigg( \frac{\sin(\theta)}{\theta} \Bigg)^2 = I_0 \cdot \sinc^2(\theta)
 	\end{equation*}
 	mit der \(\sinc\)-Funktion \( \sinc(\theta) = \sin(\theta) / \theta \). Dabei stellt \(\theta\) den Ausfallwinkel des Lichts aus dem Spalt hinaus dar.
-	
+
 	Dieser Zusammenhang zwischen der Gestalt des beugenden Objekts (hier der Spalt) und der Amplitudenfunktion \( I(\theta) \) ist durch eine \emph{Fourier-Transformation} gegeben.
 
 	\section{Mathematische Grundlagen}
 		\subsection{Vektorraum}
 			Ein \emph{Vektorraum} ist eine algebraische Struktur über einen Zahlenbereich mit Operationen wie Addition und Multiplikationen mit einem Skalar. Alle Operationen müssen dabei Elemente des Vektorraums wieder auf selbigen abbilden. Die Elemente eines solchen Raums sind \emph{Vektoren}.
-			
+
 			\subparagraph{Beispiel}
 				Ein Beispiel ist er euklidische Vektorraum über den reellen Zahlen. Dabei repräsentieren Vektoren Verschiebungen und es lassen sich Längen und Winkel messen (rechtwinkliges, kartesisches Koordinatensystem). Es ist außerdem ein Skalarprodukt definiert:
 				\begin{gather*}
@@ -704,7 +704,7 @@
 
 		\subsection{Basis eines Vektorraums}
 			Jeder Satz (Menge) an linear unabhängigen Vektoren eines Vektorraums kann als Basis verwendet werden. Zwei Vektoren \(\vec{v}\), \(\vec{w}\) sind genau dann linear unabhängig, wenn \( \big\lvert \langle \vec{v}, \vec{w} \rangle \big\rvert < \lVert \vec{v} \rVert \cdot \lVert \vec{w} \rVert \) gilt.
-		
+
 			\subparagraph{Beispiel}
 				In der euklidischen Ebene \( \R^2 \) ist eine Basis durch
 				\begin{equation*}
@@ -720,17 +720,17 @@
 		\subsection{Krummlinige Koordinatensysteme}
 			Gerade in physikalischen Anwendungen kann es von Vorteil sein, keine kartesischen Koordinaten (mit \(x\)- und \(y\)-Wert) zu nutzen, sondern auf \emph{krummlinige Koordinaten} umzusteigen. Ein typisches krummliniges Koordinatensystem sind \zB Polarkoordinaten. Dabei wird ein Punkt in der Ebene durch den Abstand \(r\) vom Ursprung und durch den Winkel \(\varphi\) mit der \(x\)-Achse beschrieben. Die Koordinaten lassen sich durch
 			\begin{align*}
-				x(r, \varphi) &= r \cdot \cos(\varphi) \\
-				y(r, \varphi) &= r \cdot \sin(\varphi)
+				x(r, \varphi) & = r \cdot \cos(\varphi) \\
+				y(r, \varphi) & = r \cdot \sin(\varphi)
 			\end{align*}
 			in kartesische Koordinaten umrechnen.
-			
+
 			Weitere krummlinige Koordinatensysteme sind \zB Kugel- oder Zylinderkoordinaten.
 		% end
 
 		\subsection{Andere Räume}
 			Es ist auch möglich, dass die Elemente eines Vektorraums Funktionen sind (Funktionenräume). Auch kann ein Raum unendlich-dimensional sein.
-			
+
 			Die \emph{Fourier-Theorie} beschäftigt sich mit der Frage, ob es möglich ist, Basisfunktionen zu finden, mit denen sich beliebige Funktionen \bzgl dieser Basen darstellen lassen.
 		% end
 
@@ -744,15 +744,15 @@
 				z = r e^{\varphi i}
 			\end{equation*}
 			wobei sich kartesische und Polardarstellung wie bei Polarkoordinaten ineinander umrechnen lassen.
-			
+
 			Die Äquivalenz der beiden Darstellung geht auf die Euler-Identität
 			\begin{equation*}
 				e^{i \varphi} = \cos(\varphi) + i \sin(\varphi)
 			\end{equation*}
 			zurück, wobei hier \( r = 1 \) gilt. Aus aus dieser folgt (für \( \lvert z \rvert = 1 \)) ebenfalls:
 			\begin{align}
-				a = \cos(\varphi) &= \frac{1}{2} \big( e^{i \varphi} + e^{-i \varphi} \big) \\
-				b = \sin(\varphi) &= \frac{1}{2i} \big( e^{i \varphi} - e^{-i \varphi} \big)
+				a = \cos(\varphi) & = \frac{1}{2} \big( e^{i \varphi} + e^{-i \varphi} \big)  \\
+				b = \sin(\varphi) & = \frac{1}{2i} \big( e^{i \varphi} - e^{-i \varphi} \big)
 			\end{align}
 		% end
 
@@ -794,29 +794,29 @@
 				\langle f, g \rangle \coloneqq \int_{-\pi}^{\pi} \! f(\tau) g(\tau) \dd{\tau}
 			\end{equation*}
 			ein Skalarprodukt definiert.
-			
+
 			Die Funktionen
 			\begin{align*}
-				u_n(x) &= \cos(nx) \\
-				v_n(x) &= \sin(nx)
+				u_n(x) & = \cos(nx) \\
+				v_n(x) & = \sin(nx)
 			\end{align*}
 			bilden dann eine orthogonale Funktionenfolge in \(H\):
 			\begin{align*}
-				\langle u_n, u_m \rangle &=
-					\begin{cases}
-						0    & m \neq n  \\
-						2\pi & m = n = 0 \\
-						\pi  & m = n > 0
-					\end{cases} \\
-				\langle v_n, v_m \rangle &=
-					\begin{cases}
-						0   & m \neq n  \\
-						0   & m = n = 0 \\
-						\pi & m = n > 0
-					\end{cases} \\
-				\langle u_n, v_m \rangle = \langle v_m, u_n \rangle &= 0
+				\langle u_n, u_m \rangle                            & =
+				\begin{cases}
+					0    & m \neq n  \\
+					2\pi & m = n = 0 \\
+					\pi  & m = n > 0
+				\end{cases}                                          \\
+				\langle v_n, v_m \rangle                            & =
+				\begin{cases}
+					0   & m \neq n  \\
+					0   & m = n = 0 \\
+					\pi & m = n > 0
+				\end{cases}                                           \\
+				\langle u_n, v_m \rangle = \langle v_m, u_n \rangle & = 0
 			\end{align*}
-			
+
 			Durch diese Darstellung kann die allgemeine Fourier-Reihe mit \( u_n = u_n(x) \) und \( v_n = v_n(x) \) auch geschrieben werden als:
 			\begin{equation*}
 				f(x) = \sum_{n = 0}^{\infty} \big( a_n u_n + b_n v_n \big)
@@ -827,39 +827,39 @@
 			Um die Koeffizienten \( a_m \), \( m = 1, 2, \cdots \) zu bestimmen, wird das Skalarprodukt zwischen \(f\) und \( u_m \) gebildet:
 			\begin{equation*}
 				\langle f, u_m \rangle
-					= \Bigg\langle \sum_{n = 0}^{\infty} \big( a_n u_n + b_n v_n \big),\, u_m \Bigg\rangle
-					= \Big\langle \big( a_m u_m + b_m v_m \big),\, u_m \Big\rangle
-					= \langle a_m u_m,\, u_m \rangle
-					= a_m \langle u_m, u_m \rangle
-					= a_m \pi
+				= \Bigg\langle \sum_{n = 0}^{\infty} \big( a_n u_n + b_n v_n \big),\, u_m \Bigg\rangle
+				= \Big\langle \big( a_m u_m + b_m v_m \big),\, u_m \Big\rangle
+				= \langle a_m u_m,\, u_m \rangle
+				= a_m \langle u_m, u_m \rangle
+				= a_m \pi
 			\end{equation*}
 			Umstellen nach \( a_m \) liefert die Werte der Fourier-Koeffizienten:
 			\begin{equation*}
 				a_m = \frac{1}{\pi} \langle f, u_m \rangle = \frac{1}{\pi} \int_{-\pi}^{\pi} \! f(x) \cos(mx) \dd{x}
 			\end{equation*}
-			
+
 			Analog für \( a_0 \) mit \( u_0 \):
 			\begin{equation*}
 				\langle f, u_0 \rangle
-					= \Bigg\langle \sum_{n = 0}^{\infty} \big( a_n u_n + b_n v_n \big),\, u_0 \Bigg\rangle
-					= \Big\langle \big( a_0 u_0 + b_0 v_0 \big),\, u_0 \Big\rangle
-					= \langle a_0 u_0,\, u_0 \rangle
-					= a_0 \langle u_0, u_0 \rangle
-					= a_0 2\pi
+				= \Bigg\langle \sum_{n = 0}^{\infty} \big( a_n u_n + b_n v_n \big),\, u_0 \Bigg\rangle
+				= \Big\langle \big( a_0 u_0 + b_0 v_0 \big),\, u_0 \Big\rangle
+				= \langle a_0 u_0,\, u_0 \rangle
+				= a_0 \langle u_0, u_0 \rangle
+				= a_0 2\pi
 			\end{equation*}
 			Umstellen nach \( a_0 \):
 			\begin{equation*}
 				a_0 = \frac{1}{2\pi} \langle f, u_0 \rangle = \frac{1}{2\pi} \int_{-\pi}^{\pi} \! f(x) \cos(0x) \dd{x} = \frac{1}{2\pi} \int_{-\pi}^{\pi} f(x) \dd{x}
 			\end{equation*}
-			
+
 			Analog für \( b_m \), \( m = 1, 2, \cdots \):
 			\begin{equation*}
 				\langle f, v_m \rangle
-					= \Bigg\langle \sum_{n = 0}^{\infty} \big( a_n u_n + b_n v_n \big),\, v_m \Bigg\rangle
-					= \Big\langle \big( a_m u_m + b_m v_m \big),\, v_m \Big\rangle
-					= \langle b_m v_m, v_m \rangle
-					= b_m \langle v_m, v_m \rangle
-					= b_m \pi
+				= \Bigg\langle \sum_{n = 0}^{\infty} \big( a_n u_n + b_n v_n \big),\, v_m \Bigg\rangle
+				= \Big\langle \big( a_m u_m + b_m v_m \big),\, v_m \Big\rangle
+				= \langle b_m v_m, v_m \rangle
+				= b_m \langle v_m, v_m \rangle
+				= b_m \pi
 			\end{equation*}
 			Umstellen nach \( b_m \):
 			\begin{equation*}
@@ -872,22 +872,22 @@
 			Sei eine Rechteck-Schwingung
 			\begin{equation*}
 				f(x) =
-					\begin{cases}
-						-k & -\pi < x < 0 \\
-						k  & 0 < x < \pi
-					\end{cases},\quad f(x) = f(x + 2\pi)
+				\begin{cases}
+					-k & -\pi < x < 0 \\
+					k  & 0 < x < \pi
+				\end{cases},\quad f(x) = f(x + 2\pi)
 			\end{equation*}
 			gegeben. Für diese lauten die Fourier-Koeffizienten:
 			\begin{align*}
-				a_0 &= 0 \\
-				a_n &= 0 \\
-				b_n &= \frac{4k}{n\pi} \text{ für ungerade } n
+				a_0 & = 0                                       \\
+				a_n & = 0                                       \\
+				b_n & = \frac{4k}{n\pi} \text{ für ungerade } n
 			\end{align*}
 			Daraus ergibt sich die Fourier-Reihe:
 			\begin{equation*}
 				f(x) = \frac{4k}{\pi} \sum_{n = 0}^{\infty} \frac{1}{2k + 1} \sin\big((2k + 1) x\big)
 			\end{equation*}
-			
+
 			Die Rechteck-Schwingung ist dabei eine ungerade Funktion. Allgemein gilt:
 			\begin{itemize}
 				\item Für gerade Funktionen sind alle \( b_n = 0 \).
@@ -898,18 +898,18 @@
 
 	\section{Fourier-Transformation}
 		Mit der Fourier-Transformation wird versucht, eine ähnliche Darstellung wie die Fourier-Reihe für Funktionen zu finden, die nicht \(2\pi\)-periodisch sind.
-		
+
 		Durch die Euler-Identität kann die allgemeine Fourier-Reihe umgeformt werden:
 		\begin{align*}
 			f(x)
-				&= a_0 + \sum_{n = 1}^{\infty} \big( a_n \cos(nx) + b_n \sin(nx) \big) \\
-				&= a_0 + \sum_{n = 1}^{\infty} \Bigg( a_n \frac{e^{inx} + e^{-inx}}{2} + b_n \frac{e^{inx} - e^{-inx}}{2i} \Bigg) \\
-				&= a_0 + \sum_{n = 1}^{\infty} \Bigg( a_n \frac{e^{inx} + e^{-inx}}{2} - b_n i \frac{e^{inx} - e^{-inx}}{2} \Bigg) \\
-				&= a_0 + \sum_{n = 1}^{\infty} \Bigg( \frac{a_n - ib_n}{2} e^{inx} + \frac{a_n + ib_n}{2} e^{-inx} \Bigg) \\
-				&= a_0 + \sum_{n = 1}^{\infty} \frac{a_n - ib_n}{2} e^{inx} + \sum_{n = 1}^{\infty} \frac{a_n + ib_n}{2} e^{-inx} \\
-				&= a_0 + \sum_{n = 1}^{\infty} \frac{a_n - ib_n}{2} e^{inx} + \sum_{n = -\infty}^{-1} \frac{a_{-n} + ib_{-n}}{2} e^{inx} \\
-				&= c_0 + \sum_{n = 1}^{\infty} c_n e^{inx} + \sum_{n = -\infty}^{-1} c_n e^{inx} \\
-				&= \sum_{n = -\infty}^{\infty} c_n e^{inx}
+			 & = a_0 + \sum_{n = 1}^{\infty} \big( a_n \cos(nx) + b_n \sin(nx) \big)                                                   \\
+			 & = a_0 + \sum_{n = 1}^{\infty} \Bigg( a_n \frac{e^{inx} + e^{-inx}}{2} + b_n \frac{e^{inx} - e^{-inx}}{2i} \Bigg)        \\
+			 & = a_0 + \sum_{n = 1}^{\infty} \Bigg( a_n \frac{e^{inx} + e^{-inx}}{2} - b_n i \frac{e^{inx} - e^{-inx}}{2} \Bigg)       \\
+			 & = a_0 + \sum_{n = 1}^{\infty} \Bigg( \frac{a_n - ib_n}{2} e^{inx} + \frac{a_n + ib_n}{2} e^{-inx} \Bigg)                \\
+			 & = a_0 + \sum_{n = 1}^{\infty} \frac{a_n - ib_n}{2} e^{inx} + \sum_{n = 1}^{\infty} \frac{a_n + ib_n}{2} e^{-inx}        \\
+			 & = a_0 + \sum_{n = 1}^{\infty} \frac{a_n - ib_n}{2} e^{inx} + \sum_{n = -\infty}^{-1} \frac{a_{-n} + ib_{-n}}{2} e^{inx} \\
+			 & = c_0 + \sum_{n = 1}^{\infty} c_n e^{inx} + \sum_{n = -\infty}^{-1} c_n e^{inx}                                         \\
+			 & = \sum_{n = -\infty}^{\infty} c_n e^{inx}
 		\end{align*}
 		woraus sich eine äquivalente Formulierung der Fourier-Reihe mit den komplexen Koeffizienten
 		\begin{equation*}
@@ -917,37 +917,37 @@
 		\end{equation*}
 		ergibt. Nun werden zunächst Funktionen \( f_L(x) \) mit einer beliebigen Periode \( 2L \) betrachtet:
 		\begin{align*}
-			f_L(x) &= \sum_{n = -\infty}^{\infty} c_n e^{in \frac{2\pi}{2L} x} \\
-				 &= \sum_{n = -\infty}^{\infty} c_n e^{in \frac{\pi}{L} x} \\
+			f_L(x) & = \sum_{n = -\infty}^{\infty} c_n e^{in \frac{2\pi}{2L} x}                                                                                    \\
+			       & = \sum_{n = -\infty}^{\infty} c_n e^{in \frac{\pi}{L} x}                                                                                      \\
 			\intertext{Einsetzen der Koeffizienten \(c_n\):}
-				&= \sum_{n = -\infty}^{\infty} \Bigg( \frac{1}{2L} \int_{-L}^{L} \! f(\tau) e^{-in \frac{\pi}{L} \tau} \dd{\tau} \Bigg) e^{in \frac{\pi}{L} x}
+			       & = \sum_{n = -\infty}^{\infty} \Bigg( \frac{1}{2L} \int_{-L}^{L} \! f(\tau) e^{-in \frac{\pi}{L} \tau} \dd{\tau} \Bigg) e^{in \frac{\pi}{L} x}
 		\end{align*}
 		Nun wird der Übergang \( L \to \infty \), \dh zu nicht-periodischen Funktionen, betrachtet:
 		\begin{align*}
 			\lim\limits_{L \to \infty} f(x)
-				&= \lim\limits_{L \to \infty} \sum_{n = -\infty}^{\infty} \Bigg( \frac{1}{2L} \int_{-L}^{L} \! f(\tau) e^{-in \frac{\pi}{L} \tau} \dd{\tau} \Bigg) e^{in \frac{\pi}{L} x} \\
-				&= \lim\limits_{L \to \infty} \sum_{n = -\infty}^{\infty} \frac{1}{2L} \int_{-L}^{L} \! f(\tau) e^{-in \frac{\pi}{L} (\tau - x)} \dd{\tau} \\
-				&= \lim\limits_{L \to \infty} \sum_{n = -\infty}^{\infty} \int_{-L}^{L} \! \frac{1}{2L} f(\tau) e^{-in \frac{\pi}{L} (\tau - x)} \dd{\tau} \\
-				&= \lim\limits_{L \to \infty} \int_{-L}^{L} \sum_{n = -\infty}^{\infty} \frac{1}{2L} f(\tau) e^{-in \frac{2\pi}{2L} (\tau - x)} \dd{\tau} \\
-				&= \lim\limits_{L \to \infty} \int_{-L}^{L} \! f(\tau) \int_{-\infty}^{\infty} \! e^{-2\pi i u (\tau - x)} \dd{u} \dd{\tau} \\
-				&= \int_{-\infty}^{\infty} \! f(\tau) \int_{-\infty}^{\infty} \! e^{-2\pi i u (\tau - x)} \dd{u} \dd{\tau}
+			 & = \lim\limits_{L \to \infty} \sum_{n = -\infty}^{\infty} \Bigg( \frac{1}{2L} \int_{-L}^{L} \! f(\tau) e^{-in \frac{\pi}{L} \tau} \dd{\tau} \Bigg) e^{in \frac{\pi}{L} x} \\
+			 & = \lim\limits_{L \to \infty} \sum_{n = -\infty}^{\infty} \frac{1}{2L} \int_{-L}^{L} \! f(\tau) e^{-in \frac{\pi}{L} (\tau - x)} \dd{\tau}                                \\
+			 & = \lim\limits_{L \to \infty} \sum_{n = -\infty}^{\infty} \int_{-L}^{L} \! \frac{1}{2L} f(\tau) e^{-in \frac{\pi}{L} (\tau - x)} \dd{\tau}                                \\
+			 & = \lim\limits_{L \to \infty} \int_{-L}^{L} \sum_{n = -\infty}^{\infty} \frac{1}{2L} f(\tau) e^{-in \frac{2\pi}{2L} (\tau - x)} \dd{\tau}                                 \\
+			 & = \lim\limits_{L \to \infty} \int_{-L}^{L} \! f(\tau) \int_{-\infty}^{\infty} \! e^{-2\pi i u (\tau - x)} \dd{u} \dd{\tau}                                               \\
+			 & = \int_{-\infty}^{\infty} \! f(\tau) \int_{-\infty}^{\infty} \! e^{-2\pi i u (\tau - x)} \dd{u} \dd{\tau}
 		\end{align*}
 		Dieser Übergang lässt sich als "Superposition" auffassen mit:
 		\begin{align*}
-			f(x) &= \int_{-\infty}^{\infty} \! F(u) e^{ 2\pi i u x} \dd{u} \\
-			F(u) &= \int_{-\infty}^{\infty} \! f(x) e^{-2\pi i u x} \dd{x}
+			f(x) & = \int_{-\infty}^{\infty} \! F(u) e^{ 2\pi i u x} \dd{u} \\
+			F(u) & = \int_{-\infty}^{\infty} \! f(x) e^{-2\pi i u x} \dd{x}
 		\end{align*}
-		
+
 		Dabei heißt der Übergang \( f(x) \to F(u) \) \emph{Fourier-Transformation} und der Übergang \( F(u) \to f(x) \) \emph{Inverse Fourier-Transformation}. Dabei ist \(F(u)\) oft komplex und \(f(x)\) ist reell.
 
 		\subsection{Beispiel: Rechteckimpuls}
 			Für einen Rechteckimpuls
 			\begin{equation*}
 				f(x) =
-					\begin{cases}
-						1 & -1 < x < 1 \\
-						0 & \text{sonst}
-					\end{cases}
+				\begin{cases}
+					1 & -1 < x < 1   \\
+					0 & \text{sonst}
+				\end{cases}
 			\end{equation*}
 			ergibt sich die Fourier-Transformation
 			\begin{equation*}
@@ -964,12 +964,12 @@
 				\item \( \sin(kx) \):    \tabto{2.5cm} Delta-Funktion bei \( u = \pm ik \)
 			\end{itemize}
 		% end
-		
+
 		\subsection{2D-Fourier-Transformation}
 			Für eine zweidimensionale Funktion \( f(x, y) \) lautet die Fourier-Transformation:
 			\begin{align*}
-				f(u, v) &= \iint_{-\infty}^{\infty} \! f(x, y) e^{ 2\pi i (xu + vy)} \dd{u} \dd{v} \\
-				F(u, v) &= \iint_{-\infty}^{\infty} \! f(x, y) e^{-2\pi i (ux + vy)} \dd{x} \dd{y}
+				f(u, v) & = \iint_{-\infty}^{\infty} \! f(x, y) e^{ 2\pi i (xu + vy)} \dd{u} \dd{v} \\
+				F(u, v) & = \iint_{-\infty}^{\infty} \! f(x, y) e^{-2\pi i (ux + vy)} \dd{x} \dd{y}
 			\end{align*}
 			Die Fourier-Transformierte ist entspricht also zweidimensionalen Funktionen (Real- und Imaginärteil), die als Graustufenbilder visualisiert werden können. Meistens wird dabei aber nur das sogenannte Amplituden-Spektrum betrachtet, welches die Amplituden der Fourier-Transformation visualisiert. Dabei entspricht der Pixelwert an der Stelle \( (u, v) \) der Amplitude, \dh dem Betrag, der Frequenzen \( \big\lvert F(u, v) \big\rvert \).
 		% end
@@ -979,16 +979,16 @@
 		Werden zwei Funktionen \( F(u) \), \( G(u) \) im Frequenzraum multipliziert:
 		\begin{align*}
 			F(u) \cdot G(u)
-				&= \int_{-\infty}^{\infty} \! f(\tau) e^{-2\pi i u \tau} \dd{\tau} \cdot \int_{-\infty}^{\infty} \! g(t) e^{-2\pi i u t} \dd{t} \\
-				&= \int_{-\infty}^{\infty} \! f(\tau) e^{-2\pi i u \tau} \int_{-\infty}^{\infty} \! g(t - \tau) e^{-2\pi i u (t - \tau)} \dd{\tau} \dd{t} \\
-				&= \int_{-\infty}^{\infty} \! e^{-2\pi i u t} \underbrace{\int_{-\infty}^{\infty} \! f(\tau) g(t - \tau) \dd{\tau}}_{h(t) \coloneqq} \dd{t} \\
-				&= \int_{-\infty}^{\infty} \! h(t) e^{-2\pi i u t} \dd{t} \\
-				&= H(t)
+			 & = \int_{-\infty}^{\infty} \! f(\tau) e^{-2\pi i u \tau} \dd{\tau} \cdot \int_{-\infty}^{\infty} \! g(t) e^{-2\pi i u t} \dd{t}             \\
+			 & = \int_{-\infty}^{\infty} \! f(\tau) e^{-2\pi i u \tau} \int_{-\infty}^{\infty} \! g(t - \tau) e^{-2\pi i u (t - \tau)} \dd{\tau} \dd{t}   \\
+			 & = \int_{-\infty}^{\infty} \! e^{-2\pi i u t} \underbrace{\int_{-\infty}^{\infty} \! f(\tau) g(t - \tau) \dd{\tau}}_{h(t) \coloneqq} \dd{t} \\
+			 & = \int_{-\infty}^{\infty} \! h(t) e^{-2\pi i u t} \dd{t}                                                                                   \\
+			 & = H(t)
 		\end{align*}
 		Das Integral \( h(t) = \int_{-\infty}^{\infty} \! h(t) e^{-2\pi i u t} \dd{t} \eqqcolon f(t) \ast g(t) \) ist das sogenannte \emph{Faltungsintegral} der Funktionen \(f\) und \(g\). Eine Faltung im Ortsraum entspricht somit einer Multiplikation im Frequenzraum!
-		
+
 		Eine Faltung \( f(t) \ast g(t) \) kann als Mittelwertbildung der Werte von \(f\) mit Gewichten \(g\) verstanden werden. So kann \bspw analytisch ein gleitender Durchschnitt (mit einer Kastenfunktion \(g\)) erstellt werden.
-		
+
 		\subsection{Anwendung: Filter} % 4.68
 			\todo{Fourier: Anwendung Filter}
 		% end
@@ -1003,9 +1003,9 @@
 
 		\subsection{Abtasttheorie}
 			Sei die Funktion \( f(x) \) bandbegrenzt durch eine Maximalfrequenz \( u_G \), \dh \( F(u) = 0 \) für \( \lvert u \rvert > u_G \).
-			
+
 			Gilt nun \( 2u_G < 1 / \Delta x \), so überlappen sich die Fouriertransformierten nicht, \dh die Spektren von \( F(u) \) und \( \hat{F}(u) \) stimmen auf dem Intervall \( [-u_G, u_G] \) (bis auf die Skalierung \( 1 / \Delta x \)) überein. Das Frequenzspektrum von \( F(u) \) kann somit vollständig aus dem Abtastsignal und den Abtastwerten berechnet werden.
-			
+
 			Gilt nun \( 2u_G > 1 / \Delta x \), so überlappen sich die Fouriertransformierten und in den Überschneidungsbereichen bilden sich Summen. Damit ist es unmöglich, das originale Frequenzspektrum von \( F(u) \) zu bestimmen (\emph{Aliasing}).
 		% end
 
@@ -1019,179 +1019,179 @@
 % end
 
 \chapter{Bilder}
-	\section{Bildverbesserung}
-		Bei der Bildverbesserung wird versucht, die Bildinformationen so aufzubereiten, dass die für den Betrachter verbessert sind/wirken. Dafür gibt es (leider) keine allgemeine Theorie, sondern die möglichen Verbesserungen sind sehr Anwendungsspezifisch und abhängig von Bild und Betrachter. Typische Anwendungen sind dabei der Ausgleich von nicht-Linearitäten der Kamera, Anpassung von Helligkeit und Kontrast und Hervorhebung von Bildbereichen.
-		
-		Es wird unterschieden zwischen Methoden im Ortsraum (die direkt Pixelwerte manipulieren) und Methoden im Frequenzraum, bei denen das Bild zunächst durch eine Fourier-Transformation in seine Frequenzen zerlegt, manipuliert und rücktransformiert wird.
+\section{Bildverbesserung}
+	Bei der Bildverbesserung wird versucht, die Bildinformationen so aufzubereiten, dass die für den Betrachter verbessert sind/wirken. Dafür gibt es (leider) keine allgemeine Theorie, sondern die möglichen Verbesserungen sind sehr Anwendungsspezifisch und abhängig von Bild und Betrachter. Typische Anwendungen sind dabei der Ausgleich von nicht-Linearitäten der Kamera, Anpassung von Helligkeit und Kontrast und Hervorhebung von Bildbereichen.
 
-		\subsection{Histogramm}
-			Das Histogramm eines Bildes ist die graphische Darstellung der Häufigkeitsverteilung von bestimmten Merkmalen (\zB von bestimmten Grauwerten). Histogramme von Bildern können viele Aussagen treffen, \zB über:
-			\begin{itemize}
-				\item Dynamik (Bereich reeller Lichtintensitäten, er auf der Grauwertskala abgebildet wird)
-				\item Kontrast (Bereich der Grauwertskala, der zur Darstellung ausgenutzt wird)
-				\item Helligkeit (Beleuchtungsstärke (der Grauwert))
-			\end{itemize}
-			Dabei entspricht die Helligkeit eines Grauwertbildes dem Mittelwert aller Grauwerte und der Bildkontrast der Varianz aller Grauwerte.
-		% end
+	Es wird unterschieden zwischen Methoden im Ortsraum (die direkt Pixelwerte manipulieren) und Methoden im Frequenzraum, bei denen das Bild zunächst durch eine Fourier-Transformation in seine Frequenzen zerlegt, manipuliert und rücktransformiert wird.
 
-		\subsection{Pixeloperationen}
-			Bei Pixeloperationen wird ein Pixel unabhängig von seiner Nachbarschaft modifiziert. Beispiele für solche Operationen sind:
-			\begin{itemize}
-				\item Negativ
-				\item Binärisierung/Thresholding
-				\item Fensterung
-				\item Kontrastspreizung
-				\item Dynamikkompression
-				\item Gammakorrektur (Bildschirm)
-				\item Helligkeit
-				\item Histogrammausgleich
-				\item Differenz
-				\item Mittelung
-			\end{itemize}
-
-			\subsubsection{Bildnegativ}
-				Bei einem Bildnegativ wird der Wert eines Pixels von der Maximal möglichen Intensität abgezogen und dieser Wert als neuer Pixelwert verwendet:
-				\begin{equation*}
-					g[m, n] = f_\text{max} - f[m, n]
-				\end{equation*}
-			% end
-
-			\subsubsection{Binärisierung/Thresholding}
-				Bei der Binärisierung wird ein Schwellwert \(\tau\) sowie zwei Werte \(f_\text{max}\) und \(f_\text{min}\) festgelegt und das Bild wie folgt manipuliert:
-				\begin{equation*}
-					g[m, n] =
-						\begin{cases}
-							f_\text{max} & f[m, n] > \tau \\
-							f_\text{min} & f[m, n] \leq \tau
-						\end{cases}
-				\end{equation*}
-				Für den Spezialfall der Binärisierung gilt \( f_\text{max} = 1 \) und \( g_\text{min} = 0 \).
-			% end
-
-			\subsubsection{Grauwertfensterung}
-				Bei der Grauwertfensterung wird ein bestimmtes Intensitätsintervall hervorgehoben (gespreizt) und alles andere wird auf einen fixen Wert gesetzt.
-			% end
-			
-			\subsection{Kontrastspreizung}
-				Bei der Kontrastspreizung wird der Grauwert auf eine neue Grauwertskala anhand einer einwertigen oder monotonen Funktion abgebildet.
-			% end
-			
-			\subsection{Histogrammausgleich}
-				Bei einem Histogrammausgleich wird die Grauwertskala anhand der Kurve der Summenwahrscheinlichkeiten, \dh anhand der kumulierten Wahrscheinlichkeiten bis zu einem bestimmten Wert, transformiert:
-				\begin{equation*}
-					p(g) = \max(\text{Intensität}) \cdot \sum_{i = 0}^{g} p(i)
-				\end{equation*}
-				Ein solcher Histogrammausgleich ist verlustbehaftet und nicht umkehrbar!
-			% end
-			
-			\subsection{Mittelung}
-				Ein unkorreliertes Rauschen im Bild kann durch Mittelung über \(k\) Aufnahmen des gleichen Motivs unterdrückt werden:
-				\begin{equation*}
-					g[m, n] = \frac{1}{k} \sum_{i = 0}^{k - 1} f_i[m, n]
-				\end{equation*}
-			% end
-		% end
+	\subsection{Histogramm}
+		Das Histogramm eines Bildes ist die graphische Darstellung der Häufigkeitsverteilung von bestimmten Merkmalen (\zB von bestimmten Grauwerten). Histogramme von Bildern können viele Aussagen treffen, \zB über:
+		\begin{itemize}
+			\item Dynamik (Bereich reeller Lichtintensitäten, er auf der Grauwertskala abgebildet wird)
+			\item Kontrast (Bereich der Grauwertskala, der zur Darstellung ausgenutzt wird)
+			\item Helligkeit (Beleuchtungsstärke (der Grauwert))
+		\end{itemize}
+		Dabei entspricht die Helligkeit eines Grauwertbildes dem Mittelwert aller Grauwerte und der Bildkontrast der Varianz aller Grauwerte.
 	% end
 
-	\section{Bildfilterung}
-		Zur Bildfilterung gibt es zwei grundlegende Vorgehensweise:
+	\subsection{Pixeloperationen}
+		Bei Pixeloperationen wird ein Pixel unabhängig von seiner Nachbarschaft modifiziert. Beispiele für solche Operationen sind:
 		\begin{itemize}
-			\item Filterung im Ortsraum durch direkte Manipulation der Pixel und
-			\item Filterung im Frequenzraum durch vorherige Fourier-Transformation und Rücktransformation.
+			\item Negativ
+			\item Binärisierung/Thresholding
+			\item Fensterung
+			\item Kontrastspreizung
+			\item Dynamikkompression
+			\item Gammakorrektur (Bildschirm)
+			\item Helligkeit
+			\item Histogrammausgleich
+			\item Differenz
+			\item Mittelung
 		\end{itemize}
 
-		\subsection{Ortsraum}
-			Filter im Ortsraum werden durch \emph{Filtermasken} beschrieben. Dabei wird ein Pixel in Abhängigkeit von seiner Nachbarschaft modifiziert. Eine Filtermaske wird durch eine \( k \times l \)-Matrix (mit \(k\), \(l\) ungerade) beschrieben, die die Gewichtung der umliegenden Pixel beschreibt. Dies entspricht einer linearen Filterung (Faltung) im Ortsraum:
+		\subsubsection{Bildnegativ}
+			Bei einem Bildnegativ wird der Wert eines Pixels von der Maximal möglichen Intensität abgezogen und dieser Wert als neuer Pixelwert verwendet:
 			\begin{equation*}
-				(f \ast w)[m, n] = \sum_{i = -\lfloor k/2 \rfloor}^{\lfloor k/2 \rfloor} \sum_{j = -\lfloor l/2 \rfloor}^{\lfloor l/2 \rfloor} w_{ij} f[m + i, n + j]
+				g[m, n] = f_\text{max} - f[m, n]
 			\end{equation*}
-			Dabei entspricht \( w \in \R^{k \times l} \) der Filtermaske.
+		% end
 
-			\subsubsection{Tiefpass-Filter}
-				\begin{itemize}
-					\item Die Koeffizienten (\dh die Einträge der Filtermaske) sind allesamt positiv und normalisiert, sodass die Summe \num{1} ergibt.
-					\item Dadurch werden nur positive Werte produziert.
-					\item Es kommt zu Randeffekten, da am Rand die Nachbarn eines Pixels nicht definiert sind.
-					\item Typische Vertreter dieser Kategorie sind Mittelwert- und Gauß-Filter.
-				\end{itemize}
+		\subsubsection{Binärisierung/Thresholding}
+			Bei der Binärisierung wird ein Schwellwert \(\tau\) sowie zwei Werte \(f_\text{max}\) und \(f_\text{min}\) festgelegt und das Bild wie folgt manipuliert:
+			\begin{equation*}
+				g[m, n] =
+				\begin{cases}
+					f_\text{max} & f[m, n] > \tau    \\
+					f_\text{min} & f[m, n] \leq \tau
+				\end{cases}
+			\end{equation*}
+			Für den Spezialfall der Binärisierung gilt \( f_\text{max} = 1 \) und \( g_\text{min} = 0 \).
+		% end
 
-				\paragraph{Mittelwert-Filter}
-					\( 3 \times 3 \)-Mittelwertfilter ("Boxfilter"):
-					\begin{equation*}
-						\frac{1}{9}
-						\begin{bmatrix}
-							1 & 1 & 1 \\
-							1 & 1 & 1 \\
-							1 & 1 & 1
-						\end{bmatrix}
-					\end{equation*}
-					\indent \( 5 \times 5 \)-Mittelwertfilter:
-					\begin{equation*}
-						\frac{1}{25}
-						\begin{bmatrix}
-							1 & 1 & 1 & 1 & 1 \\
-							1 & 1 & 1 & 1 & 1 \\
-							1 & 1 & 1 & 1 & 1 \\
-							1 & 1 & 1 & 1 & 1 \\
-							1 & 1 & 1 & 1 & 1
-						\end{bmatrix}
-					\end{equation*}
-					
-					Je größer der Filter gewählt wird, desto mehr wird das Bild "verwischt".
-				% end
+		\subsubsection{Grauwertfensterung}
+			Bei der Grauwertfensterung wird ein bestimmtes Intensitätsintervall hervorgehoben (gespreizt) und alles andere wird auf einen fixen Wert gesetzt.
+		% end
 
-				\paragraph{Gauß-Filter}
-					Bei einem Gauß-Filter werden die umliegenden Pixel durch eine diskrete Approximation der Funktion
-					\begin{equation*}
-						G(x, y) = \frac{1}{2\pi\sigma^2} \exp \Bigg\{ -\frac{x^2 + y^2}{2\sigma^2} \Bigg\}
-					\end{equation*}
-					gewichtet. Für \( 3 \times 3 \) ("Binomialfilter") und \( 5 \times 5 \) (\( \sigma = 1 \)) ergeben such folgende Approximationen:
-					\begin{equation*}
-						\frac{1}{16}
-						\begin{bmatrix}
-							1 & 2 & 1 \\
-							2 & 4 & 2 \\
-							1 & 2 & 1
-						\end{bmatrix}
-						\quad\quad\quad\quad
-						\frac{1}{273}
-						\begin{bmatrix}
-							1 & 4  & 7  & 4  & 1 \\
-							4 & 16 & 26 & 16 & 4 \\
-							7 & 26 & 41 & 26 & 7 \\
-							4 & 16 & 26 & 16 & 4 \\
-							1 & 4  & 7  & 4  & 1
-						\end{bmatrix}
-					\end{equation*}
-				% end
+		\subsection{Kontrastspreizung}
+			Bei der Kontrastspreizung wird der Grauwert auf eine neue Grauwertskala anhand einer einwertigen oder monotonen Funktion abgebildet.
+		% end
 
-				\paragraph{Median-Filter}
-					Der Median-Filter ist ein nichtlinearer Filter und kann daher nicht durch eine Faltung ausgedrückt werden. Bei ihm wird jeder Pixel durch den Medianwert seiner Nachbarschaft ersetzt. Dadurch werden keine Grautöne interpoliert, isolierte Punkte und Rauschen wird minimiert und dir Schärfe der Kanten bleibt erhalten. Jedoch ist dieser Filter aufgrund der Sortierung sehr rechenintensiv.
-				% end
-			% end
+		\subsection{Histogrammausgleich}
+			Bei einem Histogrammausgleich wird die Grauwertskala anhand der Kurve der Summenwahrscheinlichkeiten, \dh anhand der kumulierten Wahrscheinlichkeiten bis zu einem bestimmten Wert, transformiert:
+			\begin{equation*}
+				p(g) = \max(\text{Intensität}) \cdot \sum_{i = 0}^{g} p(i)
+			\end{equation*}
+			Ein solcher Histogrammausgleich ist verlustbehaftet und nicht umkehrbar!
+		% end
 
-			\subsubsection{Hochpass-Filter}
-				\begin{itemize}
-					\item Die Koeffizienten können sowohl negativ und positiv sein und sind normalisiert, sodass die Summe \num{0} ergibt.
-					\item Dadurch werden positive und negative Werte produziert.
-					\item Typischer Vertreter dieser Kategorie sind Ableitungen und Differenzfilter.
-				\end{itemize}
-			
-				\paragraph{Diskretisierung von Ableitungen}
-					Eine Ableitung \( \partial f / \partial x \) einer Funktion kann durch Rückwärtsdifferenzen approximiert werden:
-					\begin{equation*}
-						\frac{\partial f}{\partial x}(x) = \lim\limits_{h \to 0} \frac{f(x) - f(x - h)}{h} \overset{\,h \,=\, 1\,}{\approx} \frac{f(x) - f(x - 1)}{1} = f(x) - f(x - 1)
-					\end{equation*}
-					Dies gilt ebenfalls für die zweite Ableitung \( \partial^2 f / \partial x^2 \) (diesmal durch Vorwärtsdifferenzen):
+		\subsection{Mittelung}
+			Ein unkorreliertes Rauschen im Bild kann durch Mittelung über \(k\) Aufnahmen des gleichen Motivs unterdrückt werden:
+			\begin{equation*}
+				g[m, n] = \frac{1}{k} \sum_{i = 0}^{k - 1} f_i[m, n]
+			\end{equation*}
+		% end
+	% end
+% end
+
+\section{Bildfilterung}
+Zur Bildfilterung gibt es zwei grundlegende Vorgehensweise:
+\begin{itemize}
+	\item Filterung im Ortsraum durch direkte Manipulation der Pixel und
+	\item Filterung im Frequenzraum durch vorherige Fourier-Transformation und Rücktransformation.
+\end{itemize}
+
+\subsection{Ortsraum}
+Filter im Ortsraum werden durch \emph{Filtermasken} beschrieben. Dabei wird ein Pixel in Abhängigkeit von seiner Nachbarschaft modifiziert. Eine Filtermaske wird durch eine \( k \times l \)-Matrix (mit \(k\), \(l\) ungerade) beschrieben, die die Gewichtung der umliegenden Pixel beschreibt. Dies entspricht einer linearen Filterung (Faltung) im Ortsraum:
+\begin{equation*}
+	(f \ast w)[m, n] = \sum_{i = -\lfloor k/2 \rfloor}^{\lfloor k/2 \rfloor} \sum_{j = -\lfloor l/2 \rfloor}^{\lfloor l/2 \rfloor} w_{ij} f[m + i, n + j]
+\end{equation*}
+Dabei entspricht \( w \in \R^{k \times l} \) der Filtermaske.
+
+\subsubsection{Tiefpass-Filter}
+	\begin{itemize}
+		\item Die Koeffizienten (\dh die Einträge der Filtermaske) sind allesamt positiv und normalisiert, sodass die Summe \num{1} ergibt.
+		\item Dadurch werden nur positive Werte produziert.
+		\item Es kommt zu Randeffekten, da am Rand die Nachbarn eines Pixels nicht definiert sind.
+		\item Typische Vertreter dieser Kategorie sind Mittelwert- und Gauß-Filter.
+	\end{itemize}
+
+	\paragraph{Mittelwert-Filter}
+		\( 3 \times 3 \)-Mittelwertfilter ("Boxfilter"):
+		\begin{equation*}
+			\frac{1}{9}
+			\begin{bmatrix}
+				1 & 1 & 1 \\
+				1 & 1 & 1 \\
+				1 & 1 & 1
+			\end{bmatrix}
+		\end{equation*}
+		\indent \( 5 \times 5 \)-Mittelwertfilter:
+		\begin{equation*}
+			\frac{1}{25}
+			\begin{bmatrix}
+				1 & 1 & 1 & 1 & 1 \\
+				1 & 1 & 1 & 1 & 1 \\
+				1 & 1 & 1 & 1 & 1 \\
+				1 & 1 & 1 & 1 & 1 \\
+				1 & 1 & 1 & 1 & 1
+			\end{bmatrix}
+		\end{equation*}
+
+		Je größer der Filter gewählt wird, desto mehr wird das Bild "verwischt".
+	% end
+
+	\paragraph{Gauß-Filter}
+		Bei einem Gauß-Filter werden die umliegenden Pixel durch eine diskrete Approximation der Funktion
+		\begin{equation*}
+			G(x, y) = \frac{1}{2\pi\sigma^2} \exp \Bigg\{ -\frac{x^2 + y^2}{2\sigma^2} \Bigg\}
+		\end{equation*}
+		gewichtet. Für \( 3 \times 3 \) ("Binomialfilter") und \( 5 \times 5 \) (\( \sigma = 1 \)) ergeben such folgende Approximationen:
+		\begin{equation*}
+			\frac{1}{16}
+			\begin{bmatrix}
+				1 & 2 & 1 \\
+				2 & 4 & 2 \\
+				1 & 2 & 1
+			\end{bmatrix}
+			\quad\quad\quad\quad
+			\frac{1}{273}
+			\begin{bmatrix}
+				1 & 4  & 7  & 4  & 1 \\
+				4 & 16 & 26 & 16 & 4 \\
+				7 & 26 & 41 & 26 & 7 \\
+				4 & 16 & 26 & 16 & 4 \\
+				1 & 4  & 7  & 4  & 1
+			\end{bmatrix}
+		\end{equation*}
+	% end
+
+	\paragraph{Median-Filter}
+		Der Median-Filter ist ein nichtlinearer Filter und kann daher nicht durch eine Faltung ausgedrückt werden. Bei ihm wird jeder Pixel durch den Medianwert seiner Nachbarschaft ersetzt. Dadurch werden keine Grautöne interpoliert, isolierte Punkte und Rauschen wird minimiert und dir Schärfe der Kanten bleibt erhalten. Jedoch ist dieser Filter aufgrund der Sortierung sehr rechenintensiv.
+	% end
+% end
+
+\subsubsection{Hochpass-Filter}
+\begin{itemize}
+	\item Die Koeffizienten können sowohl negativ und positiv sein und sind normalisiert, sodass die Summe \num{0} ergibt.
+	\item Dadurch werden positive und negative Werte produziert.
+	\item Typischer Vertreter dieser Kategorie sind Ableitungen und Differenzfilter.
+\end{itemize}
+
+\paragraph{Diskretisierung von Ableitungen}
+	Eine Ableitung \( \partial f / \partial x \) einer Funktion kann durch Rückwärtsdifferenzen approximiert werden:
+			\begin{equation*}
+				\frac{\partial f}{\partial x}(x) = \lim\limits_{h \to 0} \frac{f(x) - f(x - h)}{h} \overset{\,h \,=\, 1\,}{\approx} \frac{f(x) - f(x - 1)}{1} = f(x) - f(x - 1)
+			\end{equation*}
+			Dies gilt ebenfalls für die zweite Ableitung \( \partial^2 f / \partial x^2 \) (diesmal durch Vorwärtsdifferenzen):
 					\begin{align*}
 						\frac{\partial^2 f}{\partial x^2}(x)
-							=&\, \lim\limits_{h \to 0} \frac{\frac{\partial f}{\partial x}(x + h) - \frac{\partial f}{\partial x}(x)}{h} \\
-							\approx&\, \lim\limits_{h \to 0} \frac{f(x + h) - f(x + h - 1) - f(x) + f(x - 1)}{h} \\
-							\approx&\, \frac{f(x + 1) - f(x) - f(x) + f(x - 1)}{1} \\
-							=&\, f(x + 1) - 2f(x) + f(x - 1)
+						=       & \, \lim\limits_{h \to 0} \frac{\frac{\partial f}{\partial x}(x + h) - \frac{\partial f}{\partial x}(x)}{h} \\
+						\approx & \, \lim\limits_{h \to 0} \frac{f(x + h) - f(x + h - 1) - f(x) + f(x - 1)}{h}                               \\
+						\approx & \, \frac{f(x + 1) - f(x) - f(x) + f(x - 1)}{1}                                                             \\
+						=       & \, f(x + 1) - 2f(x) + f(x - 1)
 					\end{align*}
 				% end
-				
+
 				\paragraph{Laplacian-Filter}
 					Durch den Laplacian-Filter wird der Laplace-Operator
 					\begin{equation*}
@@ -1205,7 +1205,7 @@
 							0 & 1  & 0
 						\end{bmatrix}
 					\end{equation*}
-					
+
 					Eine alternative Approximation mit Parametern stellt
 					\begin{equation*}
 						\frac{1}{\beta}
@@ -1218,14 +1218,14 @@
 					da, wobei
 					\begin{equation*}
 						\beta =
-							\begin{cases}
-								4             & 0 \leq \alpha \leq 1 \\
-								4(q - \alpha) & -1 \leq \alpha < 0
-							\end{cases}
+						\begin{cases}
+							4             & 0 \leq \alpha \leq 1 \\
+							4(q - \alpha) & -1 \leq \alpha < 0
+						\end{cases}
 					\end{equation*}
 					gilt (der Parameter \( \alpha \) ist frei wählbar).
 				% end
-				
+
 				\paragraph{Laplacian of Gaussian Filter}
 					Oftmals wird zunächst ein Gauß- und danach ein Laplacian-Filter angewandt. Dieser Filter wird "Laplacian of Gaussian Filter", "Marr-Hildreth-Operator", "Mexican Hat Filter" oder "Sombrerofilter" genannt. Dabei wird die Funktion
 					\begin{equation*}
@@ -1234,7 +1234,7 @@
 					approximiert.
 				% end
 			% end
-			
+
 			\subsubsection{Bilaterale Filter}
 				Bei der bilateralen Filterung wird versucht, die Bilder weichzuzeichnen, aber scharfe Kanten zu erhalten. Dabei fließen Pixelfarben aus der Nachbarschaft nicht nur in Abhängigkeit von der Entfernung, sondern auch vom Farbabstand in die Berechnung ein.
 			% end
@@ -1242,7 +1242,7 @@
 
 		\subsection{Frequenzraum}
 			Durch eine Multiplikation jeder Frequenz-Komponente \( F(u, v) \) anhand einer Gewichtungsfunktion (Filter), können bestimmte Komponenten erhöht oder verringert werden. Durch eine inverse Fouriertransformation werden die Veränderungen sichtbar. Eine solche selektive Beseitigung von Frequenz-Komponenten heißt \emph{Fourier-Filterung}. Filter werden \bspw eingesetzt, um den Einfluss von Datenfehlern oder Störsignalen zu verringern, hoch-/niederfrequente Signale zu trennen oder bestimmte Frequenzen hervorzuheben.
-			
+
 			Es werden dabei drei grundlegende Filtertypen unterschieden:
 			\begin{itemize}
 				\item Hochpass-Filter \\ Tiefe Frequenzen \( \lvert \omega \rvert < D_0 \) werden abgeschnitten und es können nur hohe Frequenzen passieren. Dadurch werden scharfe Übergange deutlicher.
@@ -1253,12 +1253,12 @@
 			\subsubsection{Idealer Tiefpass-Filter}
 				Bei einem idealen Tiefpass-Filter werden alle Frequenzen jenseits einer Grenzfrequenz \( D_0 \) abgeschnitten und der "Kegel" ist radialsymmetrisch zum Ursprung. Der Filter hat dann die Form
 				\begin{align*}
-					H(u, v) &=
-						\begin{cases}
-							1 & D \leq D_0 \\
-							0 & D > D_0
-						\end{cases} \\
-					D(u, v) &= \sqrt{u^2 + v^2}
+					H(u, v) & =
+					\begin{cases}
+						1 & D \leq D_0 \\
+						0 & D > D_0
+					\end{cases}               \\
+					D(u, v) & = \sqrt{u^2 + v^2}
 				\end{align*}
 				Dieser Filter ist aber so physikalisch nicht realisierbar (dies liegt an der unendlich langen Impulsantwort, \zB bei einer Rechteck-Funktion)!
 			% end
@@ -1270,12 +1270,12 @@
 			\subsubsection{Idealer Hochpass-Filter}
 				Ein idealer Hochpass-Filter schneidet alle Frequenzen unter einer Grenzfrequenz \( D_0 \) ab:
 				\begin{align*}
-					H(u, v) &=
-						\begin{cases}
-							0 & D \leq D_0 \\
-							1 & D > D_0
-						\end{cases} \\
-					D(u, v) &= \sqrt{u^2 + v^2}
+					H(u, v) & =
+					\begin{cases}
+						0 & D \leq D_0 \\
+						1 & D > D_0
+					\end{cases}               \\
+					D(u, v) & = \sqrt{u^2 + v^2}
 				\end{align*}
 				Ebenso wie der ideale Tiefpass-Filter ist auch dieser Filter physikalisch nicht realisierbar.
 			% end
@@ -1292,7 +1292,7 @@
 
 	\section{Bildkompression}
 		Die Rasterung und Abtastung einer Intensitätsfunktion von Licht erzeugt eine große Menge an Daten, was unpraktisch zur Speicherung und Übertragung ist. Es ist somit eine kompaktere Darstellung gewünscht (ohne oder mit zumutbarem Qualitätsverlust).
-		
+
 		Bildkompression versucht dabei die Menge an Daten zur Repräsentation zu reduzieren:
 		\begin{itemize}
 			\item Eliminierung redundanter Daten
@@ -1316,7 +1316,7 @@
 					\item Häufig werden Modelle der menschlichen Wahrnehmung verwenden (zur Identifizierung von für den Betrachter irrelevanten Bildeigenschaften, die nicht kodiert werden müssen).
 				\end{itemize}
 		\end{itemize}
-	
+
 		Beispiele für Kompressionsverfahren:
 		\begin{itemize}
 			\item Audio
@@ -1344,7 +1344,7 @@
 
 			\subsubsection{JPEG}
 				JPEG ist eine Familie von Algorithmen zur Kompression in Echtfarbqualität (dabei gibt es verlustfreie und verlustbehaftete Verfahren). Die verlustbehafteten Prozesse sind für fotografische Aufnahmen mit fließenden Farbübergängen optimiert und daher nicht so gut für Text oder ähnlichen Bilddaten mit harten Kontrasten geeignet.
-				
+
 				Durch JPEG sind Kompressionsraten bis zu \( 1:20 \) bis \( 1:35 \) erreichbar, wobei diese in den Hauptanwendungsgebieten verlustbehaftet sind. Dabei basiert JPEG auf einer diskreten Kosinustransformation.
 
 				\paragraph{Schritt 1: Umwandlung in den YCbCr-Farbraum}
@@ -1357,13 +1357,13 @@
 					kodiert:
 					\begin{equation*}
 						\begin{bmatrix}
-							Y \\
+							Y   \\
 							C_B \\
 							C_R
 						\end{bmatrix}
 						\approx
 						\begin{bmatrix}
-							0 \\
+							0   \\
 							128 \\
 							128
 						\end{bmatrix}
@@ -1388,9 +1388,9 @@
 
 				\paragraph{Schritt 3: Diskrete Kosinustransformation}
 					In diesem Schritt werden die Bildinformationen in den Frequenzbereich zerlegt. Dazu wird zunächst jede Komponente \( (Y, C_B, C_R) \) in \( 8 \cdot 8 = 64 \) Bildblöcke gerastert und diese anschließend einer diskreten Fourier-Transformation unterzogen. Dabei wird nur der Kosinus-Teil berechnet, da dadurch die Berechnung einfacher wird.
-					
+
 					Das Ziel ist, die Informationen in eine Darstellung zu überführen, die besser für die folgenden Schritte geeignet ist.
-					
+
 					Vorteil: Wenn sich benachbarte Bildpunkte kaum unterscheiden, \dh das Bild keine scharfen Kanten hat, sind die meisten Koeffizienten gleich Null.
 				% end
 
@@ -1400,7 +1400,7 @@
 
 				\paragraph{Schritt 5: Kodierung der Koeffizienten}
 					Aus den entstehenden Blöcken wird ein sequentieller Bitstrom erzeugt und die Koeffizienten werden als Differenzen zum vorhergehenden Koeffizienten kodiert (durch die Kohärenz ergeben sich hier kleine Werte). Die Koeffizienten werden dabei entlang einer Zick-Zack-Kurve kodiert (ähnliche wie bei Cantors Diagonalargument). Da hohe Frequenzen oft sehr klein sind, entsteht so eine für die Kompression günstige Reihenfolge.
-					
+
 					Bisher wurde noch nichts wirklich komprimiert, sondern nur grob Transformiert. Der entstehende Bitstrom kann nun aber durch typische Kompressionstechniken (Huffman-Algorithmus, Arithmetisches Kodieren) komprimiert werden.
 				% end
 			% end
@@ -1434,7 +1434,7 @@
 			\item die Lösung in einer vernünftigen Topologie kontinuierlich von den Daten abhängt.
 		\end{itemize}
 		Ansonsten ist das Problem nicht korrekt gestellt.
-		
+
 		Als Konsequenz daraus folgt, dass Blurring korrekt gestellt, Deblurring aber nicht korrekt gestellt ist. Daher ist eine Regularisierung notwendig, \dh es werden zusätzliche Annahmen (Glätte, Informationen zum Rauschen) hinzugenommen.
 	% end
 
@@ -1465,7 +1465,7 @@
 						\item Rauschen wird entfernt.
 					\end{itemize}
 			\end{itemize}
-		
+
 			\textbf{Vorteile:}
 			\begin{itemize}
 				\item Schnell
@@ -1508,13 +1508,13 @@
 				E(L) = \frac{1}{2} \iint_{x, y} \! L^2 \dd{x} \dd{y}
 			\end{equation*}
 			Diese "Energie" sagt aus, wie viel Intensität in den Pixeln vorhanden ist. Eine Minimierung der Intensität führt dann zum optimalen Bild \bzgl der definierten Energie. Dieses Minimum kann durch Variationsrechnung oder iterative Prozesse gefunden werden.
-		
+
 			Die Variationsableitung \( \delta E(L) \) eine eine Verallgemeinerung der normalen Ableitung, wobei dieses Prinzip hier nicht näher beleuchtet werden soll. Für die Energie
 			\begin{equation*}
 				E(L) = \frac{1}{2} \iint_{x, y} \! L^2 \dd{x} \dd{y}
 			\end{equation*}
 			gilt \( \delta E(L) = L \) und das Minimum liegt bei \( \delta E(L) \overset{!}{=} 0 \). In diesem Fall liegt das Minimum also bei \( L = 0 \), \dh \( E(L) = 0 \).
-			
+
 			Für die Energie
 			\begin{equation*}
 				E(L) = \frac{1}{2} \iint_{x, y} \! L_x^2 + L_y^2 \dd{x} \dd{y}
@@ -1588,8 +1588,8 @@
 			\subsubsection{Distance Penalty}
 				Bei einer Distance Penalty wird zusätzlich zum Modell des Bildes ein Rauschmodell angenommen (\zB gaußsches Zufallsrauschen), sodass es zusätzliche Bedingungen an die Lösung \(L\) gibt:
 				\begin{align*}
-					\iint_{x, y} \! \big( g - a(L) \big) \dd{x} \dd{y} &= 0 \\
-					\iint_{x, y} \! \big( g - a(L) \big)^2 \dd{x} \dd{y} &= \sigma^2
+					\iint_{x, y} \! \big( g - a(L) \big) \dd{x} \dd{y}   & = 0        \\
+					\iint_{x, y} \! \big( g - a(L) \big)^2 \dd{x} \dd{y} & = \sigma^2
 				\end{align*}
 				Diese Beschränkungen können zur Energie hinzugefügt werden, um das Konvergenzverhalten zu verbessern.
 			% end
@@ -1616,7 +1616,7 @@
 \chapter{Grafikpipeline}
 	\section{Hardware}
 		Abbildung~\ref{fig:hardwareandparadigms} zeigt einen Überblick über Computer-Paradigmen. Die Überschneidungen sind dabei Bereiche, in denen mehrere Paradigmen zusammenlaufen.
-	
+
 		\begin{figure}
 			\centering
 			\begin{tikzpicture}[->, every node/.style = { align = center }]
@@ -1624,17 +1624,17 @@
 				\node [draw, circle, minimum width = 5cm] (p4) at (0, 4) {P4: Network};
 				\node [draw, circle, minimum width = 5cm] (p2) at (-2, 7) {P2: Personal};
 				\node [draw, circle, minimum width = 5cm] (p3) at (2, 7) {P3: Mobile};
-				
+
 				\path (p1) -- coordinate(a) (p4);
 				\path (p4) -- coordinate(b) (p2);
 				\path (p4) -- coordinate(c) (p3);
 				\path (p2) -- coordinate(d) (p3);
 				\coordinate (e) at (intersection of b--p3 and c--p2);
-				
+
 				\node [left  = 3 of b, yshift = -1cm] (B) {Public-Personal};
 				\node [right = 3 of c, yshift = -1cm] (C) {Virtual Reality, \\ Ambient, Invisible};
 				\node [above = 5 of e]                (E) {Collaborative, \\ Wearable, Uniquitous};
-				
+
 				\draw (B) -- (b);
 				\draw (C) -- (c);
 				\draw (E) -- (e);
@@ -1642,7 +1642,7 @@
 			\caption{Hardware und Paradigmen}
 			\label{fig:hardwareandparadigms}
 		\end{figure}
-	
+
 		\subsection{P1: Large-Scale-Computing}
 			Die ursprünglichen Mainframe-Computer waren sehr große Rechenmaschinen, die als Hosts angesteuert wurden. Der Zugriff auf diese fand über externe, mit Tastaturen ausgerüstete, alphanumerische, Terminals statt (Host- und Terminal-System).
 		% end
@@ -1686,14 +1686,14 @@
 
 	\section{Computergrafik}
 		Abbildung~\ref{fig:computergraphics} zeigt eine stark vereinfachte Pipeline der Computergrafik.
-	
+
 		\begin{figure}
 			\centering
 			\begin{tikzpicture}[->, every node/.style = { draw, rectangle, align = center }]
 				\node (a) {3D-Objekte};
 				\node [right = 2 of a] (b) {3D-Modelle \\ (Szene, Geometrie, \\ Material, Beleuchtung) \\ Notwendig zur \\ Rasterisierung};
 				\node [right = 2 of b] (c) {Bilder \\ (Interaktion, \\ Animation)};
-				
+
 				\draw (a) -- (b);
 				\draw (b) -- (c);
 			\end{tikzpicture}
@@ -1714,7 +1714,7 @@
 			\item Rasterisierung \\ Dieser Schritt produziert ein Rasterbild (Bildspeicher).
 			\item Ausgabe \\ Speichern/Anzeigen des Bilds.
 		\end{itemize}
-	
+
 		\begin{figure}
 			\centering
 			\begin{tikzpicture}[block/.style = { draw, rectangle, minimum height = 1cm, minimum width = 3cm, align = center }]
@@ -1722,18 +1722,18 @@
 				\node [block, right = 1.5 of a] (b) {Geometrie- \\ verarbeitung};
 				\node [block, right = 1 of b] (c) {Rasterisierung};
 				\node [block, right = 1.5 of c, label = above:{\zB Monitor}] (d) {Ausgabe};
-				
+
 				\coordinate [above left  = 0.5 of b.north west] (A);
 				\coordinate [below left  = 0.5 of b.south west] (B);
 				\coordinate [below right = 0.5 of c.south east] (C);
 				\coordinate [above right = 0.5 of c.north east] (D);
 				\path (D) -- coordinate(X) (C);
 				\path (A) -- coordinate(Y) (B);
-				
+
 				\path (A) -- node[above]{GPU} (D);
-				
+
 				\draw (A) -| (C) -| cycle;
-				
+
 				\draw [->] (a) -- (Y);
 				\draw [->] (b) -- (c);
 				\draw [->] (X) -- (d);
@@ -1745,7 +1745,7 @@
 
 	\section{Anwendung}
 		Die Anwendung beschäftigt sich mit der Eingabe von grafischen Daten, sowie deren Repräsentation.
-	
+
 		\subsection{Eingabe grafischer Daten}
 			Grafische Daten können \bspw durch die Generierung von 3D-Modellen oder der Abtastung realer Objekte eingegeben werden.
 		% end
@@ -1783,7 +1783,7 @@
 
 				\paragraph{Quadtree/Octree}
 					Bei einem \emph{Quadtree} wird der Raum in ein Gitter aufgeteilt und aus diesem ein Baum berechnet (siehe \href{https://fabian.damken.net/summaries/cs/elective/ce/gdr/}{GdR Zusammenfassung}, Abschnitt "Approximative Zellzerlegung").
-					
+
 					Ein \emph{Octree} entspricht dann einem Quadtree im dreidimensionalen.
 				% end
 
@@ -1850,7 +1850,7 @@
 
 		\subsection{Culling (Verdeckungsrechnung im Objektraum)}
 			Üblicherweise machen die Rückseiten von Objekten \ca die Hälfte der vorkommenden Flächen aus, können aber nicht gesehen werden. Durch \emph{Culling} werden die Rückseiten berechnet und beim Rendering explizit ausgeschlossen, um Rechenleistung zu sparen.
-			
+
 			Eine Fläche ist immer dann eine Rückseite, wenn das Skalarprodukt von Sehstrahl \( \vec{s} \) und Normale \( \vec{n} \) positiv ist: \( \vec{n} \circ \vec{s} > 0 \).
 		% end
 
@@ -1865,33 +1865,33 @@
 		\subsection{Scan-Konvertierung}
 			\subsubsection{Rasterisierung von Linien (Bresenham-Algorithmus)}
 				Der Bresenham-Algorithmus~\ref{alg:bresenham} ist ein Algorithmus zum Zeichnen von Linien von Anfangspunkt \( (x_1, y_1) \) mit Endpunkt \( (x_2, y_2) \). Mit \( \Delta x \coloneqq x_2 - x_1 \geq 0 \) und \( \Delta y \coloneqq y_2 - y_1 \geq 0 \) (die Bedingung \( \geq 0 \) kann durch geschicktes Vertauschen immer eingehalten werden), muss der Algorithmus genau \( \max \big\{ \Delta x, \Delta y \big\} + 1 \) Pixel zeichnen.
-				
+
 				\begin{algorithm}
 					\DontPrintSemicolon
-					
+
 					\KwIn{Startpunkt \( (x_1, y_1) \), Endpunkt \( (x_2, y_2) \)}
-					
+
 					\( \delta x \gets x_2 - x_1 \)\;
 					\( \delta y \gets y_2 - y_1 \) \;
 					\( x \gets x_1 \) \;
 					\( y \gets y_1 \) \;
-					
-					
+
+
 					Setze Pixel \( (x, y) \) \;
 					\( \xi \gets \delta x / 2 \) \;
-					
+
 					\While{\( x < x_2 \)}{
 						\( x \gets x + 1 \) \;
 						\( \xi \gets \xi - \delta y \) \;
-						
+
 						\If{\( \xi < 0 \)}{
 							\( y \gets y + 1 \) \;
 							\( \xi \gets \xi + \delta x \)
 						}
-					
+
 						Setze Pixel \( (x, y) \);
 					}
-				
+
 					\caption{Bresenham-Algorithmus zum Rastern einer Linie.}
 					\label{alg:bresenham}
 				\end{algorithm}
@@ -1908,10 +1908,10 @@
 					\item Zu jedem Bildpunkt wird noch ein z-Wert gespeichert.
 					\item Initialisierung: Der Bildspeicher wird auf die Hintergrundfarbe gesetzt, der z-Speicher auf den maximalen Wert.
 					\item Anschließend werden alle Objekte der Szene nacheinander gerastert, wobei keine besondere Reihenfolge notwendig ist: \\
-							Für jeden Punkt \( (x, y) \) eines Polygons wird \( z(x, y) \) berechnet. Aufgrund der perspektivischen Transformation ist eine lineare Interpolation nicht mehr einfach möglich! Ist \( z(x, y) \) kleiner als der bereits gespeicherte Wert, so wird \( z(x, y) \) gespeichert und der zugehörige Farbwert in den Bildspeicher geschrieben.
+						Für jeden Punkt \( (x, y) \) eines Polygons wird \( z(x, y) \) berechnet. Aufgrund der perspektivischen Transformation ist eine lineare Interpolation nicht mehr einfach möglich! Ist \( z(x, y) \) kleiner als der bereits gespeicherte Wert, so wird \( z(x, y) \) gespeichert und der zugehörige Farbwert in den Bildspeicher geschrieben.
 					\item Nach der Behandlung aller Objekte steht im Objektspeicher das Bild der gewünschten (Teil-)~Flächen.
 				\end{itemize}
-			
+
 				\textbf{Vorteile:}
 				\begin{itemize}
 					\item Jede Szene mit jeder Art von Objekten kann behandelt werden.
@@ -1932,239 +1932,239 @@
 % end
 
 \chapter{Transformationen}
-	\label{c:transformations}
-	
-	Aus Sicht der Grafikpipeline gibt es viele unterschiedliche Koordinaten:
-	\begin{itemize}
-		\item Objektkoordinaten (Festlegung der lokalen Lage von 3D-Objekten)
-		\item Weltkoordinaten (Beschreibung der gesamten Szene in 3D)
-		\item Projektionskoordinaten (nach der Anwendung der Projektionstransformation)
-		\item Bildschirmkoordinaten (Darstellung der Szene in einem Fenster mit gewählter Position und Größe)
-	\end{itemize}
-	Abbildung~\ref{fig:pipelinecoordinates} zeigt die Umwandlung der Koordinaten innerhalb der Grafikpipeline.
+\label{c:transformations}
 
-	\begin{figure}
-		\centering
-		\begin{tikzpicture}[ every node/.style = { align = center }, block/.style = { draw, rectangle }]
-			\coordinate (a);
-			\node [block, right = 1.5 of a] (b) {Modell};
-			\node [block, right = 1 of b] (c) {Projektions- \\ Transformation};
-			\node [block, right = 1 of c] (d) {Normierung};
-			\node [block, right = 1 of d] (e) {Viewport \\ Transformation};
-			\coordinate [right = 1.5 of e] (f);
-			
-			\draw [->] (a) -- coordinate[label = above:Vertex](A) (b);
-			\draw [->] (b) -- coordinate(B) (c);
-			\draw [->] (c) -- coordinate(C) (d);
-			\draw [->] (d) -- coordinate(D) (e);
-			\draw [->] (e) -- coordinate(E) (f);
-			
-			\node [below = 2 of A] (aA) {Objekt- \\ koordinaten};
-			\node [below = 2 of B] (bB) {Welt- \\ koordinaten};
-			\node [below = 2 of C] (cC) {Projektions- \\ koordinaten};
-			\node [below = 2 of D] (dD) {Normierte \\ Koordinaten};
-			\node [below = 2 of E] (eE) {Bildschirm- \\ koordinaten};
-			
-			\draw [<-] (aA) -- (A);
-			\draw [<-] (bB) -- (B);
-			\draw [<-] (cC) -- (C);
-			\draw [<-] (dD) -- (D);
-			\draw [<-] (eE) -- (E);
-		\end{tikzpicture}
-		\caption{Änderung der Koordinaten innerhalb der Grafikpipeline.}
-		\label{fig:pipelinecoordinates}
-	\end{figure}
+Aus Sicht der Grafikpipeline gibt es viele unterschiedliche Koordinaten:
+\begin{itemize}
+	\item Objektkoordinaten (Festlegung der lokalen Lage von 3D-Objekten)
+	\item Weltkoordinaten (Beschreibung der gesamten Szene in 3D)
+	\item Projektionskoordinaten (nach der Anwendung der Projektionstransformation)
+	\item Bildschirmkoordinaten (Darstellung der Szene in einem Fenster mit gewählter Position und Größe)
+\end{itemize}
+Abbildung~\ref{fig:pipelinecoordinates} zeigt die Umwandlung der Koordinaten innerhalb der Grafikpipeline.
 
-	\section{Affine Abbildungen}
-		\subsection{Eigenschaften}
-			\emph{Affine Abbildungen} (Translation, Rotation, Skalierung, Scherung) haben folgende Eigenschaften:
-			\begin{itemize}
-				\item Geraden werden auf Gerade abgebildet.
-				\item Beschränkte Objekte bleiben beschränkt.
-				\item Verhältnisse von Längen, Flächen, Volumen bleiben erhalten.
-				\item Parallele Objekte bleiben parallel.
-			\end{itemize}
-		
-			Mathematischer formuliert: Eine Abbildung \( \Phi : \R^n \to \R^n \) heißt \emph{affin}, \gdw \( \Phi \) in der Form
-			\begin{equation*}
-				\Phi(\vec{v}) = A(\vec{v}) + I(\vec{b})
-			\end{equation*}
-			mit einer linearen Abbildung \( A : \R^n \to \R^n \), der Identitätsabbildung \( I : \R^n \to \R^n \) und \( \vec{v}, \vec{b} \in \R^n \) darstellbar ist. Eine affine Abbildung setzt sich also aus einer linearen Abbildung und einer Translation zusammen.
-			
-			Eine Abbildung \( A : \R^n \to \R^n \) heißt \emph{linear}, \gdw
-			\begin{equation*}
-				A(\lambda \vec{u} + \mu \vec{v}) = \lambda \, A(\vec{u}) + \mu \, A(\vec{v})
-			\end{equation*}
-			für alle \( \vec{u}, \vec{v} \in \R^n \) und \( \lambda, \mu \in \R \) gilt.
-		% end
+\begin{figure}
+	\centering
+	\begin{tikzpicture}[ every node/.style = { align = center }, block/.style = { draw, rectangle }]
+		\coordinate (a);
+		\node [block, right = 1.5 of a] (b) {Modell};
+		\node [block, right = 1 of b] (c) {Projektions- \\ Transformation};
+		\node [block, right = 1 of c] (d) {Normierung};
+		\node [block, right = 1 of d] (e) {Viewport \\ Transformation};
+		\coordinate [right = 1.5 of e] (f);
 
-		\subsection{Homogene Koordinaten}
-			Anstelle der aufwendigen Notation \( A\vec{v} + \vec{b} \) für affine Abbildungen können homogene Koordinaten verwendet werden (sei dazu im folgenden \( n = 3 \)). Dann wird eine Äquivalenzklasse nach \( \R^4 \) definiert durch:
-			\begin{equation*}
-				\begin{bmatrix}
-					x \\
-					y \\
-					z
-				\end{bmatrix}
-				\to
-				\begin{bmatrix}
-					x \\
-					y \\
-					z \\
-					1
-				\end{bmatrix}
-				\quad\quad\quad\quad
-				\begin{bmatrix}
-					x \\
-					y \\
-					z \\
-					w
-				\end{bmatrix}
-				\to
-				\begin{bmatrix}
-					x/w \\
-					y/w \\
-					z/w
-				\end{bmatrix}
-			\end{equation*}
-			Wobei \( w \neq 0 \) einen Skalierungsfaktor darstellt (dieser ist meistens \num{1}).
-			
-			Eine reine Translation kann dann in homogenen Koordinaten ausgedrückt werden als:
-			\begin{equation*}
-				\begin{bmatrix}
-					x' \\
-					y' \\
-					z' \\
-					1
-				\end{bmatrix}
-				=
-				\begin{bmatrix}
-					1 & 0 & 0 & x_0 \\
-					0 & 1 & 0 & y_0 \\
-					0 & 0 & 1 & z_0 \\
-					0 & 0 & 0 & 1
-				\end{bmatrix}
-				\cdot
-				\begin{bmatrix}
-					x \\
-					y \\
-					z \\
-					1
-				\end{bmatrix}
-				=
-				\begin{bmatrix}
-					x + x_0 \\
-					y + y_0 \\
-					z + z_0 \\
-					1
-				\end{bmatrix}
-			\end{equation*}
-			
-			Allgemein ergibt sich für homogene Koordinaten die Transformationsmatrix
-			\begin{equation*}
-				\begin{bmatrix}
-					a_{11} & a_{12} & a_{13} & x_0 \\
-					a_{21} & a_{22} & a_{23} & y_0 \\
-					a_{31} & a_{32} & a_{33} & z_0 \\
-					0      & 0      & 0      & 1
-				\end{bmatrix}
-			\end{equation*}
-			was einer Anwendung der Matrix \( \mat{A} \) und eine Translation um den Vektor \( \begin{bmatrix} x_0 & y_0 & z_0 \end{bmatrix}^T \) entspricht (dies ist leicht nachzurechnen).
-			
-			Diese einheitliche und kompakte Darstellung von Rotationen/Skalierungen/\dots und Translationen als eine Matrixmultiplikation erlaubt eine einfache Implementierung und eine Hintereinanderausführung mehrerer Operationen entspricht einer reinen Multiplikation von Matrizen.
-		% end
+		\draw [->] (a) -- coordinate[label = above:Vertex](A) (b);
+		\draw [->] (b) -- coordinate(B) (c);
+		\draw [->] (c) -- coordinate(C) (d);
+		\draw [->] (d) -- coordinate(D) (e);
+		\draw [->] (e) -- coordinate(E) (f);
+
+		\node [below = 2 of A] (aA) {Objekt- \\ koordinaten};
+		\node [below = 2 of B] (bB) {Welt- \\ koordinaten};
+		\node [below = 2 of C] (cC) {Projektions- \\ koordinaten};
+		\node [below = 2 of D] (dD) {Normierte \\ Koordinaten};
+		\node [below = 2 of E] (eE) {Bildschirm- \\ koordinaten};
+
+		\draw [<-] (aA) -- (A);
+		\draw [<-] (bB) -- (B);
+		\draw [<-] (cC) -- (C);
+		\draw [<-] (dD) -- (D);
+		\draw [<-] (eE) -- (E);
+	\end{tikzpicture}
+	\caption{Änderung der Koordinaten innerhalb der Grafikpipeline.}
+	\label{fig:pipelinecoordinates}
+\end{figure}
+
+\section{Affine Abbildungen}
+	\subsection{Eigenschaften}
+		\emph{Affine Abbildungen} (Translation, Rotation, Skalierung, Scherung) haben folgende Eigenschaften:
+		\begin{itemize}
+			\item Geraden werden auf Gerade abgebildet.
+			\item Beschränkte Objekte bleiben beschränkt.
+			\item Verhältnisse von Längen, Flächen, Volumen bleiben erhalten.
+			\item Parallele Objekte bleiben parallel.
+		\end{itemize}
+
+		Mathematischer formuliert: Eine Abbildung \( \Phi : \R^n \to \R^n \) heißt \emph{affin}, \gdw \( \Phi \) in der Form
+		\begin{equation*}
+			\Phi(\vec{v}) = A(\vec{v}) + I(\vec{b})
+		\end{equation*}
+		mit einer linearen Abbildung \( A : \R^n \to \R^n \), der Identitätsabbildung \( I : \R^n \to \R^n \) und \( \vec{v}, \vec{b} \in \R^n \) darstellbar ist. Eine affine Abbildung setzt sich also aus einer linearen Abbildung und einer Translation zusammen.
+
+		Eine Abbildung \( A : \R^n \to \R^n \) heißt \emph{linear}, \gdw
+		\begin{equation*}
+			A(\lambda \vec{u} + \mu \vec{v}) = \lambda \, A(\vec{u}) + \mu \, A(\vec{v})
+		\end{equation*}
+		für alle \( \vec{u}, \vec{v} \in \R^n \) und \( \lambda, \mu \in \R \) gilt.
 	% end
 
-	\section{Skalierung, Scherung, Rotation}
-		Die affinen Abbildungen der Skalierung, Scherung und Rotation lassen den Ursprung invariant, \dh der Vektor \( \begin{bmatrix} 0 & 0 & 0 \end{bmatrix}^T \) wird nicht verschoben. Hierfür wären theoretisch normale \( (3 \times 3) \)-Matrizen ausreichend.
+	\subsection{Homogene Koordinaten}
+		Anstelle der aufwendigen Notation \( A\vec{v} + \vec{b} \) für affine Abbildungen können homogene Koordinaten verwendet werden (sei dazu im folgenden \( n = 3 \)). Dann wird eine Äquivalenzklasse nach \( \R^4 \) definiert durch:
+		\begin{equation*}
+			\begin{bmatrix}
+				x \\
+				y \\
+				z
+			\end{bmatrix}
+			\to
+			\begin{bmatrix}
+				x \\
+				y \\
+				z \\
+				1
+			\end{bmatrix}
+			\quad\quad\quad\quad
+			\begin{bmatrix}
+				x \\
+				y \\
+				z \\
+				w
+			\end{bmatrix}
+			\to
+			\begin{bmatrix}
+				x/w \\
+				y/w \\
+				z/w
+			\end{bmatrix}
+		\end{equation*}
+		Wobei \( w \neq 0 \) einen Skalierungsfaktor darstellt (dieser ist meistens \num{1}).
 
-		\subsection{Skalierung}
-			Eine Skalierung wird durch eine Diagonalmatrix
-			\begin{equation*}
+		Eine reine Translation kann dann in homogenen Koordinaten ausgedrückt werden als:
+		\begin{equation*}
+			\begin{bmatrix}
+				x' \\
+				y' \\
+				z' \\
+				1
+			\end{bmatrix}
+			=
+			\begin{bmatrix}
+				1 & 0 & 0 & x_0 \\
+				0 & 1 & 0 & y_0 \\
+				0 & 0 & 1 & z_0 \\
+				0 & 0 & 0 & 1
+			\end{bmatrix}
+			\cdot
+			\begin{bmatrix}
+				x \\
+				y \\
+				z \\
+				1
+			\end{bmatrix}
+			=
+			\begin{bmatrix}
+				x + x_0 \\
+				y + y_0 \\
+				z + z_0 \\
+				1
+			\end{bmatrix}
+		\end{equation*}
+
+		Allgemein ergibt sich für homogene Koordinaten die Transformationsmatrix
+		\begin{equation*}
+			\begin{bmatrix}
+				a_{11} & a_{12} & a_{13} & x_0 \\
+				a_{21} & a_{22} & a_{23} & y_0 \\
+				a_{31} & a_{32} & a_{33} & z_0 \\
+				0      & 0      & 0      & 1
+			\end{bmatrix}
+		\end{equation*}
+		was einer Anwendung der Matrix \( \mat{A} \) und eine Translation um den Vektor \( \begin{bmatrix} x_0 & y_0 & z_0 \end{bmatrix}^T \) entspricht (dies ist leicht nachzurechnen).
+
+		Diese einheitliche und kompakte Darstellung von Rotationen/Skalierungen/\dots und Translationen als eine Matrixmultiplikation erlaubt eine einfache Implementierung und eine Hintereinanderausführung mehrerer Operationen entspricht einer reinen Multiplikation von Matrizen.
+	% end
+% end
+
+\section{Skalierung, Scherung, Rotation}
+	Die affinen Abbildungen der Skalierung, Scherung und Rotation lassen den Ursprung invariant, \dh der Vektor \( \begin{bmatrix} 0 & 0 & 0 \end{bmatrix}^T \) wird nicht verschoben. Hierfür wären theoretisch normale \( (3 \times 3) \)-Matrizen ausreichend.
+
+	\subsection{Skalierung}
+		Eine Skalierung wird durch eine Diagonalmatrix
+		\begin{equation*}
+			\begin{bmatrix}
+				s_1 & 0   & 0   \\
+				0   & s_2 & 0   \\
+				0   & 0   & s_3
+			\end{bmatrix}
+			\to
+			\underbrace{
 				\begin{bmatrix}
-					s_1 & 0   & 0   \\
-					0   & s_2 & 0   \\
-					0   & 0   & s_3
+					s_1 & 0   & 0   & 0 \\
+					0   & s_2 & 0   & 0 \\
+					0   & 0   & s_3 & 0 \\
+					0   & 0   & 0   & 1
 				\end{bmatrix}
-				\to
-				\underbrace{
-					\begin{bmatrix}
-						s_1 & 0   & 0   & 0 \\
-						0   & s_2 & 0   & 0 \\
-						0   & 0   & s_3 & 0 \\
-						0   & 0   & 0   & 1
-					\end{bmatrix}
-				}_\text{Homogene Koordinaten}
-			\end{equation*}
-			beschrieben. Dabei wird die \(x\)-Achse um \(s_1\) skaliert, die \(y\)-Achse um \(s_2\) und die \(z\)-Achse um \(s_3\). Gilt \( s_1 = s_2 = s_3 \), so werden alle Koordinaten gleichermaßen skaliert.
-		% end
+			}_\text{Homogene Koordinaten}
+		\end{equation*}
+		beschrieben. Dabei wird die \(x\)-Achse um \(s_1\) skaliert, die \(y\)-Achse um \(s_2\) und die \(z\)-Achse um \(s_3\). Gilt \( s_1 = s_2 = s_3 \), so werden alle Koordinaten gleichermaßen skaliert.
+	% end
 
-		\subsection{Scherung}
-			Eine Scherung wird durch eine Matrix
-			\begin{equation*}
+	\subsection{Scherung}
+		Eine Scherung wird durch eine Matrix
+		\begin{equation*}
+			\begin{bmatrix}
+				1   & s_2 & s_5 \\
+				s_1 & 1   & s_6 \\
+				s_3 & s_4 & 1
+			\end{bmatrix}
+			\to
+			\underbrace{
 				\begin{bmatrix}
-					1   & s_2 & s_5 \\
-					s_1 & 1   & s_6 \\
-					s_3 & s_4 & 1
+					1   & s_2 & s_5 & 0 \\
+					s_1 & 1   & s_6 & 0 \\
+					s_3 & s_4 & 1   & 0 \\
+					0   & 0   & 0   & 1
 				\end{bmatrix}
-				\to
-				\underbrace{
-					\begin{bmatrix}
-						1   & s_2 & s_5 & 0 \\
-						s_1 & 1   & s_6 & 0 \\
-						s_3 & s_4 & 1   & 0 \\
-						0   & 0   & 0   & 1
-					\end{bmatrix}
-				}_\text{Homogene Koordinaten}
-			\end{equation*}
-			beschrieben.
-		% end
+			}_\text{Homogene Koordinaten}
+		\end{equation*}
+		beschrieben.
+	% end
 
-		\subsection{Rotation}
-			Eine Basisrotation (um eine der Koordinatenachsen) wird durch folgende drei Matrizen beschrieben (von oben nach unten jeweils um die \(x\)-, \(y\)- und \(z\)-Achse):
+	\subsection{Rotation}
+		Eine Basisrotation (um eine der Koordinatenachsen) wird durch folgende drei Matrizen beschrieben (von oben nach unten jeweils um die \(x\)-, \(y\)- und \(z\)-Achse):
+		\begin{align*}
+			\mat{R}(x; \alpha) & =
+			\begin{bmatrix}
+				1 & 0            & 0             \\
+				0 & \cos(\alpha) & -\sin(\alpha) \\
+				0 & \sin(\alpha) & \cos(\alpha)
+			\end{bmatrix} \\
+			\mat{R}(y; \alpha) & =
+			\begin{bmatrix}
+				\cos(\alpha)  & 0 & \sin(\alpha) \\
+				0             & 1 & 0            \\
+				-\sin(\alpha) & 0 & \cos(\alpha)
+			\end{bmatrix} \\
+			\mat{R}(z; \alpha) & =
+			\begin{bmatrix}
+				\cos(\alpha) & -\sin(\alpha) & 0 \\
+				\sin(\alpha) & \cos(\alpha)  & 0 \\
+				0            & 0             & 1
+			\end{bmatrix}
+		\end{align*}
+		Der Kompaktheit halber wurden hier die homogenen Formulierungen weg gelassen, sie werden aber analog zu denen der Skalierung und Scherung gebildet.
+
+		\subsubsection{Rotation um beliebige Achse}
+			Zur Rotation um einen beliebigen, normierten Vektor \( \vec{r} \) um den Winkel \(\alpha\) muss zunächst das körperfeste Koordinatensystem des zu rotierenden Körpers koinzident zu den Ursprungsachsen gedreht werden (durch eine Rotationsmatrix \( \mat{R} \)) und anschließend um eine der Achsen (\zB der \(x\)-Achse) rotiert werden und anschließend wieder zurück in das körperfeste Koordinatensystem gedreht werden:
+			\begin{equation*}
+				\mat{R}_{\vec{r}}(\alpha) = \mat{R}^{-1} \cdot \mat{R}(x; \alpha) \cdot \mat{R}
+			\end{equation*}
+			Dazu muss zunächst eine orthonormale Basis \( (\vec{r}, \vec{s}, \vec{t}) \) bestimmt werden. Der erste Basisvektor ist die Drehachse \(\vec{r}\), die anderen beiden Vektoren werden wie folgt berechnet:
 			\begin{align*}
-				\mat{R}(x; \alpha) &=
-					\begin{bmatrix}
-						1 & 0            & 0             \\
-						0 & \cos(\alpha) & -\sin(\alpha) \\
-						0 & \sin(\alpha) & \cos(\alpha)
-					\end{bmatrix} \\
-				\mat{R}(y; \alpha) &=
-					\begin{bmatrix}
-						\cos(\alpha)  & 0 & \sin(\alpha) \\
-						0             & 1 & 0            \\
-						-\sin(\alpha) & 0 & \cos(\alpha)
-					\end{bmatrix} \\
-				\mat{R}(z; \alpha) &=
-					\begin{bmatrix}
-						\cos(\alpha) & -\sin(\alpha) & 0 \\
-						\sin(\alpha) & \cos(\alpha)  & 0 \\
-						0            & 0             & 1
-					\end{bmatrix}
+				\vec{s} & =
+				\begin{cases}
+					\frac{\vec{r} \times \vec{e}_y}{\lVert \vec{r} \times \vec{e}_y \rVert} & \text{falls } r \parallel \vec{e}_x \\
+					\frac{\vec{r} \times \vec{e}_x}{\lvert \vec{r} \times \vec{e}_x \rVert} & \text{sonst}
+				\end{cases} \\
+				\vec{t} = \vec{r} \times \vec{s}
 			\end{align*}
-			Der Kompaktheit halber wurden hier die homogenen Formulierungen weg gelassen, sie werden aber analog zu denen der Skalierung und Scherung gebildet.
+			Daraus ergibt sich mit \( \mat{R} = \begin{bmatrix} \vec{r} & \vec{s} & \vec{t} \end{bmatrix} \) die benötigte Transformationsmatrix.
+		% end
 
-			\subsubsection{Rotation um beliebige Achse}
-				Zur Rotation um einen beliebigen, normierten Vektor \( \vec{r} \) um den Winkel \(\alpha\) muss zunächst das körperfeste Koordinatensystem des zu rotierenden Körpers koinzident zu den Ursprungsachsen gedreht werden (durch eine Rotationsmatrix \( \mat{R} \)) und anschließend um eine der Achsen (\zB der \(x\)-Achse) rotiert werden und anschließend wieder zurück in das körperfeste Koordinatensystem gedreht werden:
-				\begin{equation*}
-					\mat{R}_{\vec{r}}(\alpha) = \mat{R}^{-1} \cdot \mat{R}(x; \alpha) \cdot \mat{R}
-				\end{equation*}
-				Dazu muss zunächst eine orthonormale Basis \( (\vec{r}, \vec{s}, \vec{t}) \) bestimmt werden. Der erste Basisvektor ist die Drehachse \(\vec{r}\), die anderen beiden Vektoren werden wie folgt berechnet:
-				\begin{align*}
-					\vec{s} &=
-						\begin{cases}
-							\frac{\vec{r} \times \vec{e}_y}{\lVert \vec{r} \times \vec{e}_y \rVert} & \text{falls } r \parallel \vec{e}_x \\
-							\frac{\vec{r} \times \vec{e}_x}{\lvert \vec{r} \times \vec{e}_x \rVert} & \text{sonst}
-						\end{cases} \\
-					\vec{t} = \vec{r} \times \vec{s}
-				\end{align*}
-				Daraus ergibt sich mit \( \mat{R} = \begin{bmatrix} \vec{r} & \vec{s} & \vec{t} \end{bmatrix} \) die benötigte Transformationsmatrix.
-			% end
+		\subsubsection{Rotation um beliebigen Punkt}
+			Soll ein Objekt um einen anderen Punkt als den Ursprung gedreht werden, so muss das Rotationszentrum zunächst in den Ursprung verschoben, dann die Rotation durchgeführt und anschließend das Rotationszentrum wieder zurückgeschoben werden.
 
-			\subsubsection{Rotation um beliebigen Punkt}
-				Soll ein Objekt um einen anderen Punkt als den Ursprung gedreht werden, so muss das Rotationszentrum zunächst in den Ursprung verschoben, dann die Rotation durchgeführt und anschließend das Rotationszentrum wieder zurückgeschoben werden.
-				
-				\subparagraph{Beispiel}
+			\subparagraph{Beispiel}
 				Es soll eine Transformationsmatrix erstellt werden, die eine Rotation um die \(i\)-Achse (\( i \in \{\, x, y, z \,\} \)) im Punkt beschrieben durch \( \vec{r} \) durchführt. Die Transformationsmatrix lautet dann allgemein:
 				\begin{equation*}
 					\mat{T} = \text{Trans}(\vec{r}) \cdot \text{Rot}(i; \alpha) \cdot \text{Trans}(-\vec{r})
@@ -2183,7 +2183,7 @@
 
 	\section{Projektion}
 		\label{sec:projection}
-		
+
 		Zur Projektion von 3D-Elementen gibt es viele unterschiedliche Möglichkeiten:
 		\begin{itemize}
 			\item Aufriss (Frontansicht)
@@ -2193,7 +2193,7 @@
 			\item Zentralperspektive
 			\item Vogelperspektive
 		\end{itemize}
-	
+
 		Solche projektiven Abbildungen können durch homogene Transformationen beschrieben werden, wobei jedoch die Winkel verändert werden! Außerdem geht die Parallelität von Linien oft verloren (\dh Parallelen schneiden sich in Fluchtpunkten). Dies ist der allgemeine Unterschied zwischen perspektivischer und paralleler Projektion:
 		\begin{itemize}
 			\item Bei einer perspektivischen Projektion treffen sich die Strahlen im Augenpunkt (Projektionszentrum) und Winkel werden verändert.
@@ -2209,9 +2209,9 @@
 				\item Winkel ändern sich.
 				\item Parallele Geraden bleiben nicht parallel.
 			\end{itemize}
-		
+
 			Das heißt perspektivische Projektionen sind im Allgemeinen keine affinen Abbildungen! Insbesondere werden vom Blickpunkt weiter entfernte Objekte kleiner dargestellt.
-			
+
 			Ist der zu projizierende Punkt \( P = (x, y) \) und der Augpunkt \( A = (-x_0, 0) \) gegeben, so gilt für den Bildpunkt \( B = (0, y_0) \):
 			\begin{equation*}
 				\frac{y_0}{y} = \frac{x_0}{x + x_0}
@@ -2231,13 +2231,13 @@
 			Daraus ergibt sich die homogene \( (3 \times 3) \)-Matrix:
 			\begin{equation*}
 				\begin{bmatrix}
-					0 \\
+					0                     \\
 					\frac{y x_0}{x_0 + x} \\
 					1
 				\end{bmatrix}
 				\simeq
 				\begin{bmatrix}
-					0 \\
+					0     \\
 					y x_0 \\
 					x_0 + x
 				\end{bmatrix}
@@ -2270,8 +2270,8 @@
 				\end{bmatrix}
 				=
 				\begin{bmatrix}
-					0 & 0 & 0 \\
-					0 & 1 & 0 \\
+					0     & 0 & 0 \\
+					0     & 1 & 0 \\
 					1/x_0 & 0 & 1
 				\end{bmatrix}
 				\cdot
@@ -2316,7 +2316,7 @@
 				\item Parallele Geraden bleiben parallel.
 			\end{itemize}
 		% end
-		
+
 		\subsection{Kanonisches Sichtvolumen}
 			Die perspektivische Projektion wird in zwei Abbildungen zerlegt:
 			\begin{itemize}
@@ -2327,36 +2327,36 @@
 			\begin{equation*}
 				\underbrace{
 					\begin{bmatrix}
-					0     & 0 & 0 \\
-					0     & 1 & 0 \\
-					1/x_0 & 0 & 1
+						0     & 0 & 0 \\
+						0     & 1 & 0 \\
+						1/x_0 & 0 & 1
 					\end{bmatrix}
 				}_\text{Perspektivische Projektion}
 				=
 				\underbrace{
 					\begin{bmatrix}
-					0 & 0 & 0 \\
-					0 & 1 & 0 \\
-					0 & 0 & 1
+						0 & 0 & 0 \\
+						0 & 1 & 0 \\
+						0 & 0 & 1
 					\end{bmatrix}
 				}_\text{Parallelprojektion}
 				\cdot
 				\underbrace{
 					\begin{bmatrix}
-					1     & 0 & 0 \\
-					0     & 1 & 0 \\
-					1/x_0 & 0 & 1
+						1     & 0 & 0 \\
+						0     & 1 & 0 \\
+						1/x_0 & 0 & 1
 					\end{bmatrix}
 				}_\text{Perspektivische Transformation}
 			\end{equation*}
-			
+
 			Ist die Kamera im Unendlichen (Parallelprojektion), wird das Sichtvolumen ein Einheitswürfel. Bei einer perspektivischen Projektion ist das Sichtvolumen eine Pyramide, nach der perspektivischen Transformation hingegen wieder ein Würfel!
 		% end
 	% end
 
 	\section{3D-Interaktion}
 		\label{sec:3dinteraction}
-	
+
 		Bei der 3D-Interaktion ist nicht immer klar, welche Bewegung der Nutzer ausgeführt haben möchte. Ansätze hierzu sind
 		\begin{itemize}
 			\item Desktop,
@@ -2367,7 +2367,7 @@
 
 		\subsection{Manipulatoren}
 			Im Zweidimensionalen werden Manipulatoren häufig eingesetzt (Manipulatoren sind dabei zum Beispiel kleine "Rädchen" um ein Objekt, mit welchen dieses gedreht werden kann). Auch werden \zB Kästchen eingesetzt, mit denen skaliert und verschoben werden kann (Drag-and-Drop). Dabei sind sie im zweidimensionalen sehr einfach zu implementieren, da eine Eins-zu-Eins Abbildung der Mauszeigerposition zum Manipulator erstellt werden kann. Außerdem gibt es keine Probleme bei der perspektivischen Abbildung.
-			
+
 			Immer häufiger werden Manipulatoren auch im Dreidimensionalen, \zB zur Navigation der Kamera eingesetzt. Hier ist die Implementierung jedoch sehr viel schwieriger, da es unendlich viele Möglichkeiten gibt, eine Cursorposition auf einer geraden Linie im 3D-Raum abzubilden. Dennoch stellen Manipulatoren eines der besten momentan verfügbaren Werkzeuge zur 3D-Interaktion dar.
 		% end
 	% end
@@ -2408,7 +2408,7 @@
 		\subsection{Voronoi-Diagramm}
 			Statt einer idealen Triangulation, die schwer zu berechnen ist, kann ein Voronoi-Diagramm eingesetzt werden. Dabei wird für jeden (in 2D projizierten) Punkt \( \bar{s}_i \) eine \emph{Voronoi-Zelle} definiert, die alle Punkte enthält, die näher an \( \bar{s}_i \) als an allen anderen Orten (andere \( \bar{s}_j \)) liegen. Die Kante einer Voronoi-Zelle liegt dann auf den Punkten mit dem gleichen Abstand zu den zwei nächsten Orten und der Knoten einer Voronoi-Zelle auf einem Punkt, der den gleichen Abstand zu drei anderen Orten hat. Dadurch wird die 2D-Fläche "parkettiert".
 		% end
-		
+
 		\subsection{Delaunay-Triangulation}
 			Durch Betrachtung des dualen Graph zu einem Voronoi-Diagramm wird eine \emph{Delaunay-Triangulation} beschrieben (es sind jedoch \mglw Korrekturen nötig). Dabei ist ein Dreiecksnetz nur dann eine Delaunay-Triangulation, wenn alle Umkreise von allen Dreiecken leer sind, \dh es liegt kein Ort in ihnen. Dies kann durch das "Umdrehen" einer Kante korrigiert werden.
 		% end
@@ -2419,7 +2419,7 @@
 
 		\subsection{3D-Volumen und Nachbarschaft}
 			In einem normalen 3D-Raster wird ein Volumenelement (Würfel) als \emph{Voxel} bezeichnet. Die Dicke eines Slices (\dh die Breite eines Würfels) ist dabei oftmals größer als die Pixelabstände (anisotropische Volumen). Die eine Rasterposition wird dabei durch einen Index \( (i, j, k) \) beschrieben.
-			
+
 			Ein Voxel ist dabei adjazent zu einem Referenzvoxel:
 			\begin{itemize}
 				\item Im Zweidimensionalen sind dies über \num{4} Kanten und \num{4} Ecken insgesamt \num{8} Nachbarvoxel.
@@ -2441,9 +2441,9 @@
 
 		\subsection{2D: Marching Squares}
 			Der \emph{Marching Squares Algorithmus} versucht, gegeben einen fixen Isowert \( \tau \) die Isolinie \( s(x) = 0 \) zu finden, um so die Fläche in innen und außen zu unterteilen. Dabei sei jede Bildzelle durch ihre vier umgebenden Pixel definiert. Danach wird jede Bildzelle abgelaufen, um sie einem der in Abbildung~\ref{fig:marchingsquares} aufgezeigten Fälle zuzuordnen und die Isolinie entsprechend zu ziehen. Ein Pixel hat dabei den "Set Pixel"-Zustand, wenn dieser größer oder gleich \( \tau \) ist.
-			
+
 			Werden Rotationen und Symmetrien beachtet, so reduzieren sich die Fälle auf vier Fälle.
-			
+
 			\begin{figure}
 				\centering
 				\begin{tikzpicture}[xscale = 1/2, yscale = 1/2, set/.style = { draw, circle, fill = fgcolor }, reset/.style = { draw, circle }, alt/.style = { dashed }]
@@ -2457,7 +2457,7 @@
 					\coordinate [above = 0.25 of d] (D);
 					\path (c) -- node[below, yshift = -0.2cm]{Fall 0} (d);
 					\draw (ref) -- (b) -- (c) -- (d) -- (ref);
-					
+
 					\node [reset, right = 1 of b] (a) {};
 					\node [reset, right = 0.5 of a] (b) {};
 					\node [reset, below = 0.5 of b] (c) {};
@@ -2469,7 +2469,7 @@
 					\path (c) -- node[below, yshift = -0.2cm]{Fall 1} (d);
 					\draw (a) -- (b) -- (c) -- (d) -- (a);
 					\draw (C) -- (D);
-					
+
 					\node [reset, right = 1 of b] (a) {};
 					\node [reset, right = 0.5 of a] (b) {};
 					\node [  set, below = 0.5 of b] (c) {};
@@ -2481,7 +2481,7 @@
 					\path (c) -- node[below, yshift = -0.2cm]{Fall 2} (d);
 					\draw (a) -- (b) -- (c) -- (d) -- (a);
 					\draw (B) -- (C);
-					
+
 					\node [reset, right = 1 of b] (a) {};
 					\node [reset, right = 0.5 of a] (b) {};
 					\node [  set, below = 0.5 of b] (c) {};
@@ -2493,7 +2493,7 @@
 					\path (c) -- node[below, yshift = -0.2cm]{Fall 3} (d);
 					\draw (a) -- (b) -- (c) -- (d) -- (a);
 					\draw (B) -- (D);
-					
+
 					\node [reset, right = 1 of b] (a) {};
 					\node [  set, right = 0.5 of a] (b) {};
 					\node [reset, below = 0.5 of b] (c) {};
@@ -2505,7 +2505,7 @@
 					\path (c) -- node[below, yshift = -0.2cm]{Fall 4} (d);
 					\draw (a) -- (b) -- (c) -- (d) -- (a);
 					\draw (A) -- (B);
-					
+
 					\node [reset, right = 1 of b] (a) {};
 					\node [  set, right = 0.5 of a] (b) {};
 					\node [reset, below = 0.5 of b] (c) {};
@@ -2520,7 +2520,7 @@
 					\draw [alt] (C) -- (D);
 					\draw (A) -- (D);
 					\draw (B) -- (C);
-					
+
 					\node [reset, right = 1 of b] (a) {};
 					\node [  set, right = 0.5 of a] (b) {};
 					\node [  set, below = 0.5 of b] (c) {};
@@ -2532,7 +2532,7 @@
 					\path (c) -- node[below, yshift = -0.2cm]{Fall 6} (d);
 					\draw (a) -- (b) -- (c) -- (d) -- (a);
 					\draw (A) -- (C);
-					
+
 					\node [reset, right = 1 of b] (a) {};
 					\node [  set, right = 0.5 of a] (b) {};
 					\node [  set, below = 0.5 of b] (c) {};
@@ -2544,8 +2544,8 @@
 					\path (c) -- node[below, yshift = -0.2cm]{Fall 7} (d);
 					\draw (a) -- (b) -- (c) -- (d) -- (a);
 					\draw (A) -- (D);
-					
-					
+
+
 					\node [  set, below = 2 of ref] (a) {};
 					\node [reset, right = 0.5 of a] (b) {};
 					\node [reset, below = 0.5 of b] (c) {};
@@ -2557,7 +2557,7 @@
 					\path (c) -- node[below, yshift = -0.2cm]{Fall 8} (d);
 					\draw (a) -- (b) -- (c) -- (d) -- (a);
 					\draw (A) -- (D);
-					
+
 					\node [  set, right = 1 of b] (a) {};
 					\node [reset, right = 0.5 of a] (b) {};
 					\node [reset, below = 0.5 of b] (c) {};
@@ -2569,7 +2569,7 @@
 					\path (c) -- node[below, yshift = -0.2cm]{Fall 9} (d);
 					\draw (a) -- (b) -- (c) -- (d) -- (a);
 					\draw (A) -- (C);
-					
+
 					\node [  set, right = 1 of b] (a) {};
 					\node [reset, right = 0.5 of a] (b) {};
 					\node [  set, below = 0.5 of b] (c) {};
@@ -2584,7 +2584,7 @@
 					\draw [alt] (B) -- (C);
 					\draw (A) -- (B);
 					\draw (C) -- (D);
-					
+
 					\node [  set, right = 1 of b] (a) {};
 					\node [reset, right = 0.5 of a] (b) {};
 					\node [  set, below = 0.5 of b] (c) {};
@@ -2596,7 +2596,7 @@
 					\path (c) -- node[below, yshift = -0.2cm]{Fall 11} (d);
 					\draw (a) -- (b) -- (c) -- (d) -- (a);
 					\draw (A) -- (B);
-					
+
 					\node [  set, right = 1 of b] (a) {};
 					\node [  set, right = 0.5 of a] (b) {};
 					\node [reset, below = 0.5 of b] (c) {};
@@ -2608,7 +2608,7 @@
 					\path (c) -- node[below, yshift = -0.2cm]{Fall 12} (d);
 					\draw (a) -- (b) -- (c) -- (d) -- (a);
 					\draw (B) -- (D);
-					
+
 					\node [  set, right = 1 of b] (a) {};
 					\node [  set, right = 0.5 of a] (b) {};
 					\node [reset, below = 0.5 of b] (c) {};
@@ -2620,7 +2620,7 @@
 					\path (c) -- node[below, yshift = -0.2cm]{Fall 13} (d);
 					\draw (a) -- (b) -- (c) -- (d) -- (a);
 					\draw (B) -- (C);
-					
+
 					\node [  set, right = 1 of b] (a) {};
 					\node [  set, right = 0.5 of a] (b) {};
 					\node [  set, below = 0.5 of b] (c) {};
@@ -2632,7 +2632,7 @@
 					\path (c) -- node[below, yshift = -0.2cm]{Fall 14} (d);
 					\draw (a) -- (b) -- (c) -- (d) -- (a);
 					\draw (C) -- (D);
-					
+
 					\node [  set, right = 1 of b] (a) {};
 					\node [  set, right = 0.5 of a] (b) {};
 					\node [  set, below = 0.5 of b] (c) {};
@@ -2672,7 +2672,7 @@
 
 			\subsubsection{Mesh-Glättung}
 				Das Ziel der Mesh-Glättung ist die Bereitstellung einer guten Visualisierung sowie der Artefakt-Reduzierung und Entfernung von "Löchern". Die Herausforderung hierbei ist das Volumen zu erhalten.
-				
+
 				Laplacian Glättung:
 				\begin{itemize}
 					\item Es wird eine "Regenschirm"-Region betrachtet (\dh ausgehend von einem Vertex alle durch eine Kante verbundenen Vertexe sowie deren Verbindungen).
@@ -2693,7 +2693,7 @@
 				\item Das Licht wird schwächer, wenn es durch die Volumendatenmenge wandert.
 				\item Das Medium ist eine homogene Dichtewolke.
 			\end{itemize}
-		
+
 			Dadurch wird die Bestrahlungsstärke \( I(s) \) eines Voxels \(s\) beschrieben durch:
 			\begin{equation}
 				I(s) = I_{s_0} \cdot \exp \Bigg\{ -\int_{s_0}^{s} \! \tau(t) \dd{t} \Bigg\} + \int_{s_0}^{s} \! Q(\tilde{s}) \cdot \exp \Bigg\{ -\int_{\tilde{s}}^{s} \tau(t) \dd{t} \Bigg\} \dd{\tilde{s}}  \label{eq:volumerendering}
@@ -2715,7 +2715,7 @@
 
 			\paragraph{Abtastung}
 				Es werden Voxelwerte an bestimmten Orten angesammelt, wobei die Position dieser Orte durch die Abtastdistanz \( \Delta s \) festgelegt ist (diese sollte kleiner als die Hälfte der Rasterauflösung sein, Shannons Abtasttheorem). Dabei befinden sich die Abtastpositionen meistens zwischen den Rasterpostionen.
-				
+
 				Anschließend werden die Werte Interpoliert, \bspw mit Nearest Neighbor, Trilinear oder B-Spline Modellen.
 			% end
 
@@ -2733,21 +2733,21 @@
 				\subparagraph{Back-to-Front-Komposition}
 					Bei der Back-to-Front-Komposition wird mit der Abtastposition am Ende des Volumens mit der Zusammensetzung begonnen und in die Richtung des Sichtpunktes fortgefahren. Dabei wird iterativ die Farbe \( C_k \) sowie die Intensität \( T_k \) an der aktuellen Abtastposition \( k \) berechnet:
 					\begin{align*}
-						C_k &= Q(k \cdot \Delta s) \cdot \Delta s \\
-						I_k &= I_{k - 1} \cdot t_k + C_k
+						C_k & = Q(k \cdot \Delta s) \cdot \Delta s \\
+						I_k & = I_{k - 1} \cdot t_k + C_k
 					\end{align*}
 				% end
 
 				\subparagraph{Front-to-Back-Komposition}
 					Es wird mit der Abtastposition am Anfang des Volumens begonnen und in Richtung des Endes fortgefahren. Dabei werden iterativ Intensität \( I_{k - 1} \) und Transparenz \( \tau_{k - 1} \) berechnet:
 					\begin{align*}
-						I_{n - 1} &= C_{n - 1} \\
-						\tau_{n - 1} &= t_{n - 1} \\
-						I_{k - 1} &= T_k + C_k \cdot \tau_k \\
-						\tau_{k - 1} &= t_k \cdot \tau_k
+						I_{n - 1}    & = C_{n - 1}              \\
+						\tau_{n - 1} & = t_{n - 1}              \\
+						I_{k - 1}    & = T_k + C_k \cdot \tau_k \\
+						\tau_{k - 1} & = t_k \cdot \tau_k
 					\end{align*}
 					Es müssen immer zwei akkumulierte Werte (Intensität und Transparenz) berechnet werden, um \zB Nebel darzustellen (bei diesem sind Lichtquellen ab einem bestimmten Punkt irrelevant).
-					
+
 					Die Zusammensetzung wird gestoppt, sobald die akkumulierte Transparenz zu klein wird (Early Ray Termination). Dadurch müssen nicht alle Positionen entlang des Strahls betrachtet werden und die Rendering-Geschwindigkeit wird erhöht. Üblicherweise ist dies durch ein Transparenz-Threshold definiert.
 				% end
 			% end
@@ -2757,9 +2757,9 @@
 				\begin{equation*}
 					\textit{tf}_i : V \to O_i
 				\end{equation*}
-				
+
 				Bei Grauwertabbildungen werden nur Grauwerte betrachtet und die Intensität wird gemäß den Abtastwerten zugewiesen (niedrigster Wert schwarz, höchster Wert weiß, die Werte dazwischen werden linear interpoliert). Dunklen Werten wird dabei eine geringe Opazität (Transparenz) zugewiesen.
-				
+
 				Spezifikation:
 				\begin{itemize}
 					\item Es kann \zB ein Histogramm verwendet werden.
@@ -2787,7 +2787,7 @@
 		\item uvm.
 	\end{itemize}
 	Dabei haben die Daten untereinander komplexe Beziehungen, \zB verwenden verschiedene Objekte das gleiche Material, das gleiche Objekt ist an mehreren Orten instantiiert, Objekte werden gruppiert, uvm.. \emph{Szenengraphen} strukturieren diese Informationen.
-	
+
 	\section{Szenengraph}
 		Ein Szenengraph ist ein gerichteter, azyklischer Graph mit einem Wurzelknoten, der die gesamte Szene "zusammenhält". Zum Rendering wird der Graph durchlaufen (traversiert):
 		\begin{itemize}
@@ -2835,7 +2835,7 @@
 					\item Keine Legende
 				\end{itemize}
 		\end{itemize}
-	
+
 		\begin{figure}
 			\centering
 			\begin{tikzpicture}[->, every node/.style = { align = center }, block/.style = { draw, rectangle, minimum width = 2.2cm, minimum height = 1.3cm }]
@@ -2844,19 +2844,19 @@
 				\node [block, right = 1.5 of b] (c) {Visual \\ Structures};
 				\node [block, right = 1.5 of c] (d) {View};
 				\node [right = 0.5 of d] (e) {Human};
-				
+
 				\draw (a) -- node[below, minimum height = 1.2cm, yshift = -0.7cm](A){Data \\ Transformations} (b);
 				\draw (b) -- node[below, minimum height = 1.2cm, yshift = -0.7cm](B){Visual \\ Mappings} (c);
 				\draw (c) -- node[below, minimum height = 1.2cm, yshift = -0.7cm](C){View \\ Transformations} (d);
-				
+
 				\coordinate [below = 0.7 of A] (X);
 				\coordinate [below = 0.7 of B] (Y);
 				\coordinate [below = 0.7 of C] (Z);
-				
+
 				\draw (e) |- (X) -- (A);
 				\draw (e) |- (Y) -- (B);
 				\draw (e) |- (Z) -- (C);
-				
+
 				\draw (b) to[out = 160, in = 140, looseness = 4] (b);
 				\draw (c) to[out = 160, in = 140, looseness = 4] (c);
 				\draw (d) to[out = 160, in = 140, looseness = 4] (d);
@@ -3029,9 +3029,9 @@
 		\begin{equation*}
 			\text{Sättigung} = \frac{\text{Farbigkeit}}{\text{Helligkeit}} = \frac{\text{Buntheit}}{\text{Relative Helligkeit}}
 		\end{equation*}
-		
+
 		Eine \emph{bezogene Farbe} wird dabei in Bezug zu anderen Farben wahrgenommen, \emph{unbezogene Farben} werden isoliert wahrgenommen.
-		
+
 		Buntheit und relative Helligkeit können wie folgt berechnet werden:
 		\begin{equation*}
 			\text{Buntheit} = \frac{\text{Farbigkeit}}{\text{Helligkeit von Weiß}} \quad\quad\quad\quad \text{Relative Helligkeit} = \frac{\text{Helligkeit}}{\text{Helligkeit von Weiß}}
@@ -3049,13 +3049,13 @@
 				y_i = \int_{\Lambda} \! x(\lambda) s_i(\lambda) \dd{\lambda},\quad i = 1, 2, \cdots
 			\end{equation*}
 			mit der \(i\)-ten Farbfrequenz \(y_i\), dem Farbreiz \(x(\lambda)\), der \(i\)-ten Spektralempfindlichkeit \(s_i(\lambda)\) und dem Sensitivitätsbereich \( \Lambda = [\SI{380}{\nano\meter}, \SI{730}{\nano\meter}] \) modellieren.
-			
+
 			Wird angenommen, dass es nur drei Fotorezeptoren gibt und das Auge ein lineares System ist, so kann das Modell mit
 			\begin{equation*}
 				\vec{y} = \mat{S} \vec{x}
 			\end{equation*}
 			diskretisiert werden (mit dem 3-dimensionalen Farbvalenzvektor \(\vec{y}\), dem \(N\)-dimensionalen Farbreizvektor \(\vec{x}\) und der \( (3 \times N) \)-dimensionalen Systemmatrix \( \mat{S} \)).
-			
+
 			Die Systemmatrix \(S\) kann dabei \zB durch ein Farbabgleichsexperiment gewonnen werden. Dabei sollen Probanden das Licht dreier linear unabhängiger Lichtquellen \( \vec{p}_1, \vec{p}_2, \vec{p}_3 \in \R^N \) durch Verstellung der Intensität \( \vec{a}_1, \vec{a}_2, \vec{a}_3 \in \R \) mit einer Testlichtquelle \( \vec{f} \in \R^N = \const \) abgleichen. Dieser Zusammenhang wird durch
 			\begin{equation*}
 				\mat{S} \vec{f} = \mat{S} \mat{P} \vec{a}
@@ -3073,7 +3073,7 @@
 				\mat{S} \vec{g} = \mat{S} \vec{f} \quad\iff\quad (\mat{S}\mat{P})^{-1} \mat{S} \vec{g} = (\mat{S} \mat{P})^{-1} \mat{S} \vec{f} \quad\iff\quad \mat{A} \vec{g} = \mat{A} \vec{f}
 			\end{equation*}
 			Die Zeilen von \( \mat{A} \) heißen \emph{Spektralwertfunktionen} (Color Matching Functions, CMF). Durch die Multiplikation mit einer regulären \( (3 \times 3) \)-Matrix werden neue CMFs erzeugt: \( \mat{B} = \mat{M} \mat{A} \).
-			
+
 			Hilfreiche Eigenschaften von CMFs sind:
 			\begin{itemize}
 				\item Die Funktionen sind positiv.
@@ -3098,7 +3098,7 @@
 			\item \( \vec{r} \in \R^N \): Reflektionsspektrum
 		\end{itemize}
 		Die Matrix \( \mat{L} \) wird \emph{Lichtmatrix} genannt.
-		
+
 		Die \emph{CIEXYZ-Farbkoordinaten} (Farbvalenzen) sind definiert als
 		\begin{equation*}
 			\begin{bmatrix}
@@ -3110,14 +3110,14 @@
 			\frac{100}{\bar{\vec{y}}^T \vec{l}} \mat{L} \vec{r}
 		\end{equation*}
 		wobei \( \mat{L} = \begin{bmatrix} \bar{\vec{x}} & \bar{\vec{y}} & \bar{\vec{z}} \end{bmatrix}^T \) die Lichtmatrix und \( \vec{r} \) das Reflektionszentrum ist. Diese Farbwerte heißen \emph{Normfarbwerte}.
-		
+
 		\subsection{Das CIE Chromaticity Diagramm}
 			Chromaticity-Koordinaten sind gegeben durch:
 			\begin{equation*}
 				x = \frac{X}{X + Y + Z} \quad\quad y = \frac{Y}{X + Y + Z} \quad\quad z = \frac{Z}{X + Y + Z}
 			\end{equation*}
 			Die \(x\)-\(y\)-Koordinaten der monochromatischen Farbreize erzeugen dabei die Spektralfarblinie. Die restlichen \(x\)-\(y\)-Chromaticity-Koordinaten mit einer additiven Mischung aus Farbreizen liegen alle innerhalb der konvexen Hülle der Chromaticity-Koordinaten der monochromatischen Farbreize (\dh der Spektralfarblinie).
-			
+
 			Der CIEXYZ-Farbraum ist dabei nicht wahrnehmungsgleichabständig, \dh der wahrgenommene Farbabstand \( \Delta V (\vec{q}, \vec{p}) \) ist nicht immer gleich dem Abstand im CIEXYZ-Farbraum:
 			\begin{equation*}
 				\exists \vec{q}, \vec{p} \in \text{CIEXYZ} : \big( \Delta V(\vec{q}, \vec{p}) \neq \lVert \vec{q} - \vec{p} \rVert_2 \big)
@@ -3180,24 +3180,24 @@
 		\end{itemize}
 		Für die Umrechnung gilt dann:
 		\begin{align*}
-			L^\ast &= 116 f(Y / Y_n) - 16 \\
-			a^\ast &= 500 \big( f(X / X_n) - f(Y / Y_n) \big) \\
-			b^\ast &= 200 \big( f(Y / Y_n) - f(Z / Z_n) \big) \\
-			f(\omega) &=
-				\begin{cases}
-					\sqrt[3]{\omega}     & \omega > 0.008856    \\
-					7.787\omega + 16/116 & \omega \leq 0.008856
-				\end{cases}
+			L^\ast    & = 116 f(Y / Y_n) - 16                     \\
+			a^\ast    & = 500 \big( f(X / X_n) - f(Y / Y_n) \big) \\
+			b^\ast    & = 200 \big( f(Y / Y_n) - f(Z / Z_n) \big) \\
+			f(\omega) & =
+			\begin{cases}
+				\sqrt[3]{\omega}     & \omega > 0.008856    \\
+				7.787\omega + 16/116 & \omega \leq 0.008856
+			\end{cases}
 		\end{align*}
 		wobei \( L^\ast \) die relative Helligkeit, \( a^\ast \) die Rot-Grün Komponente und \( b^\ast \) die Blau-Gelb Komponente darstellt.
-		
+
 		Eigenschaften des CIELAB-Farbraums:
 		\begin{itemize}
 			\item Gegenfarbraum
 			\item Es werden Nichtlinearitäten des visuellen Systems modelliert.
 			\item Nahezu wahrnehmungsgleichabständig, \dh \( \forall \vec{q}, \vec{p} \in \text{CIELAB} : \big( \Delta V (\vec{q}, \vec{p}) \approx \rVert \vec{q} - \vec{p} \lVert_2 \big) \).
 		\end{itemize}
-	
+
 		Durch die zylindrische Darstellung des CIELAB-Farbraums lässt sich der LCh-Farbraum ableiten mit der Buntheit \( C_{ab}^\ast = \sqrt{\big(a^\ast\big)^2 + \big(b^\ast\big)^2} \) und dem Farbton \( h_{ab} = \arctan\big( b^\ast / a^\ast \big) \).
 	% end
 
@@ -3262,9 +3262,9 @@
 					=
 					K^{-1}
 					\begin{bmatrix}
-						L_{w, 2} / L_{w, 1} & 0 & 0 \\
-						0 & M_{w, 2} / M_{w, 1} & 0 \\
-						0 & 0 & S_{w, 2} / S_{w, 2}
+						L_{w, 2} / L_{w, 1} & 0                   & 0                   \\
+						0                   & M_{w, 2} / M_{w, 1} & 0                   \\
+						0                   & 0                   & S_{w, 2} / S_{w, 2}
 					\end{bmatrix}
 					K
 					\begin{bmatrix}
@@ -3282,11 +3282,11 @@
 					\end{bmatrix}
 					=
 					\underbrace{
-					\begin{bmatrix}
-						0.3897  & 0.6890 & -0.0787 \\
-						-0.2298 & 1.1834 & 0.0464  \\
-						0.0000  & 0.0000 & 1.0000
-					\end{bmatrix}
+						\begin{bmatrix}
+							0.3897  & 0.6890 & -0.0787 \\
+							-0.2298 & 1.1834 & 0.0464  \\
+							0.0000  & 0.0000 & 1.0000
+						\end{bmatrix}
 					}_{K \coloneqq}
 					\begin{bmatrix}
 						X \\
@@ -3332,7 +3332,7 @@
 
 			\subsubsection{CIECAM02}
 				Das \emph{CIECAM02-Farbwahrnehmungsmodell} ist ein invertierbares Modell, welches eine vorhersage über den empfundenen Farbabstand zulässt. Dabei gibt es von den Betrachtungsbedingungen abhängige Nichtlinearitäten zur Relation der Leuchtdichte mit der (relativen) Helligkeit.
-				
+
 				Vorgehen zur Farbanpassung:
 				\begin{enumerate}
 					\item Berechnung der Farbattribute mit dem CIECAM02-Modell für die erste Betrachtungsbedingung.
@@ -3344,7 +3344,7 @@
 		\newpage
 		\subsection{Kontrastsensitivität}
 			Die achromatische Kontrastsensitivität ist größer bei höheren Ortsfrequenzen.
-			
+
 			Aufgrund der Kontrastsensitivität sind zusätzlich zu Farbwahrnehmungsmodellen auch Bildwahrnehmungsmodelle nötigt. Beispiele sind:
 			\begin{itemize}
 				\item S-CIELAB (Spacial-CIELAB)
@@ -3441,9 +3441,9 @@
 
 		\subsection{Designprozess}
 			Der Prozess des Interaktionsdesigns ist ein iterativer Prozess, wobei nach einem Schritt vorwärts auch mal zurück gegangen werden muss, der "Pfad des Wissens" sich jedoch konstant vorwärts bewegt.
-			
+
 			Das Ziel von \emph{User Centered Design} (UCD) ist es, ein Framework zu entwickeln, das Interaktionsdesignern ermöglicht, besser nutzbare Systeme zu entwickeln. Das Fundament des UCD liegt dabei auf dem frühen Fokus auf Nutzer und deren Aufgaben, eine andauernde Bewertung bezogen auf Erlernbarkeit und Benutzbarkeit und ein iteratives Design.
-			
+
 			Siehe hierzu auch \href{https://fabian.damken.net/summaries/cs/mandatory/fs3/se/}{Software Engineering Zusammenfassung}.
 
 			\subsubsection{Wasserfallmodell}
@@ -3576,7 +3576,7 @@
 			\subsubsection{Untermenüs}
 				Ein Menü kann weitere Untermenüs enthalten, um zusammengehörige Optionen zu gruppieren.
 			% end
-			
+
 			\subsubsection{Auswahl}
 				Durch einen geschickten Menüaufbau sind Verzweigungen (if-then-else-, case-Strukturen) umsetzbar, die sich auch verschachteln lassen
 			% end
@@ -3607,12 +3607,12 @@
 
 	\section{Inhaltsbasierte Suche}
 		Bei der inhaltsbasierten Suche wird versucht, Eigenschaften abzuleiten, die die Dokumente sinnvoll beschreiben. Dabei werden mathematische Deskriptoren aus dem Inhalt des Dokuments berechnet. Ein Distanzmaß über diese Deskriptoren erlaubt einen inhaltlichen Vergleich.
-		
+
 		Die Wahl eines Deskriptors sollte dabei abhängen von Problemstellung, Semantik der Objekte und den verfügbaren Daten sein.
 
 		\subsection{Distanzmaße}
 			Ein Distanzmaß soll die Ähnlichkeit der Featurevektoren von Dokumenten messen. Typische Distanzmaße (euklidische Distanz, City-Block) sind dabei Metriken.
-			
+
 			Sei \(S\) die Menge an Features. Dann ist eine Funktion \( d : S \times S \to \R \) genau dann, wenn gilt:
 			\begin{enumerate}
 				\item \( d(x, y) \geq 0 \) (Nicht-Negativität)
@@ -3624,7 +3624,7 @@
 		% end
 
 		\subsection{Query-Modalitäten}
-			\subsubsection{Text} 
+			\subsubsection{Text}
 				Query-by-Text arbeitet (meistens) auf manuell annotierten Metadaten, die als Zeichenfolge dargestellt sind. Der "Text" kann auch sprachlich eingegeben werden, wobei hier zunächst die einzelnen Wörter erkannt werden müssen (aber nur syntaktisch, nicht semantisch!).
 			% end
 
@@ -3634,7 +3634,7 @@
 
 			\subsubsection{Sketch}
 				Bei Query-by-Sketch ist kein Beispielbild erforderlich, sondern der Nutzer hat nur eine Idee, was er sucht. Diese Idee stellt er durch eine Skizze (Sketch) dar.
-				
+
 				Problem: Die zeichnerischen Fähigkeiten haben großen Einfluss auf den (Miss-)~Erfolg.
 			% end
 		% end

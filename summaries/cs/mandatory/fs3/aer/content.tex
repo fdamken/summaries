@@ -119,7 +119,7 @@
 		descending_urgency, preempts, conservative_implicit_conditions,
 		internal_scheduling, method_scheduling,
 		CLK, RST_N, RSTN, ungated_clock
-	}, 
+	},
 	morekeywords = [3]{
 		%% Frequently used expressions
 		True,
@@ -191,7 +191,7 @@
 				\item Methoden können auch Methoden \textit{anderer} Module aufrufen
 			\end{itemize}
 		% end
-		
+
 		\subsection{Methodenarten}
 			Bluespec kennt die folgenden Methodenarten:
 			\paragraph{Value}
@@ -201,14 +201,14 @@
 					\item Geben Daten zurück
 				\end{itemize}
 			% end
-			
+
 			\paragraph{Action}
 				\begin{itemize}
 					\item Können den Zustand der Schaltung ändern
 					\item Können keine Daten zurück geben
 				\end{itemize}
 			% end
-			
+
 			\paragraph{Action-Value}
 				\begin{itemize}
 					\item Können den Zustand der Schaltung ändern
@@ -216,7 +216,7 @@
 				\end{itemize}
 			% end
 		% end
-		
+
 		\subsection{Zuweisungsoperatoren}
 			Bluespec kennt die folgenden Zuweisungsoperatoren:
 			\begin{description}
@@ -226,15 +226,15 @@
 			\end{description}
 		% end
 	% end
-	
+
 	\section{Ausführungssemantik}
 		\subsection{\texttt{WILL\_FIRE}}
 			Das \texttt{WILL\_FIRE} einer Methode setzt sich aus dem Guard der Methode/Regel und den Guards der aufgerufenen Methoden.
 		% end
-		
+
 		\subsection{Parallelität}
 			Die Aktionen innerhalb einer Regel werden Echtparallel ausgeführt und \textit{nach} der Auswertung der Regel den Registern zugewiesen. Zum Zeitpunkt des Lesens von Registern wird immer der alte Wert zurück gegeben.
-			
+
 			Hierdurch sind die folgenden Codebeispiele identisch und tauschen die Werte der Register \texttt{x} und \texttt{y}:
 			\begin{figure}[ht]
 				\centering
@@ -258,32 +258,32 @@ endrule
 				\end{subfigure}
 			\end{figure}
 		% end
-		
+
 		\subsection{Nebenläufigkeit}
 			\subsubsection{Ablaufplan}
 				\paragraph{Ausführungsreihenfolge}
 					Es werden möglichst viele Regeln \textit{innerhalb eines Taktes}, aber \textit{nicht zeitgleich} ausgeführt, solange dies nicht zu Konflikten führt.
 				% end
-				
+
 				\paragraph{Beeinflussung}
 					Der Ablaufplan kann mit einigen Attributen beeinflusst werden, siehe \ref{sec:bsvkomponenten}.
 				% end
 			% end
-			
+
 			\subsubsection{Konflikte}
 				Bei der der Erstellung des Ablaufplans kann es zu Konflikten kommen, da es (bei manchem Methoden) Einschränkungen gibt, in welcher Reihenfolge diese ausgeführt werden:
 				\begin{table}[ht]
 					\centering
 					\begin{tabular}{c c}
-						Einschränkung & Bedeutung: Regeln mit Aufrufern von \texttt{mA} und \texttt{mB} können \dots \\
+						Einschränkung                                 & Bedeutung: Regeln mit Aufrufern von \texttt{mA} und \texttt{mB} können \dots   \\
 						\hline
-						\texttt{mA} \textit{konfliktfrei} \texttt{mB} & \dots nebenläufig feuern (beliebige Reihenfolge). \\
-						\texttt{mA < mB} & \dots nebenläufig feuern, solange \texttt{mA} vor \texttt{mB} ausgeführt wird. \\
-						\texttt{mB < mA} & \dots nebenläufig feuern, solange \texttt{mB} vor \texttt{mA} ausgeführt wird. \\
-						\texttt{mA} \textit{konflikt} \texttt{mB} & \dots nicht nebenläufig feuern. \\
+						\texttt{mA} \textit{konfliktfrei} \texttt{mB} & \dots nebenläufig feuern (beliebige Reihenfolge).                              \\
+						\texttt{mA < mB}                              & \dots nebenläufig feuern, solange \texttt{mA} vor \texttt{mB} ausgeführt wird. \\
+						\texttt{mB < mA}                              & \dots nebenläufig feuern, solange \texttt{mB} vor \texttt{mA} ausgeführt wird. \\
+						\texttt{mA} \textit{konflikt} \texttt{mB}     & \dots nicht nebenläufig feuern.                                                \\
 					\end{tabular}
 				\end{table}
-				
+
 				\paragraph{Häufige Ursachen}
 					\begin{description}[leftmargin = 5cm]
 						\item[Rule Ordering Conflict] Zustandselemente können nur einmal je Takt umschalten
@@ -295,7 +295,7 @@ endrule
 				% end
 			% end
 		% end
-		
+
 		\subsection{Pipelines}
 			\paragraph{Dynamische Pipeline}
 				\begin{itemize}
@@ -303,7 +303,7 @@ endrule
 					\item Gegenteil: statische Pipeline
 				\end{itemize}
 			% end
-			
+
 			\paragraph{Elastische Pipeline}
 				\begin{itemize}
 					\item Daten bewegen sich mit unterschiedlichem Fortschritt durch die Pipeline
@@ -312,11 +312,11 @@ endrule
 			% end
 		% end
 	% end
-	
+
 	\section{Synthetisierung}
 		Die Synthetisierung kann mit einigen Attributen beeinflusst werden, siehe \ref{sec:bsvkomponenten}.
 	% end
-	
+
 	\section{Komponenten}
 		\label{sec:bsvkomponenten}
 
@@ -327,14 +327,14 @@ endrule
 					\item Ist die FIFO voll, ist kein \texttt{enq} möglich (auch wenn zeitgleich ein \texttt{deq} stattfindet).
 				\end{itemize}
 			% end
-			
+
 			\paragraph{Pipeline FIFO}
 				\begin{itemize}
 					\item Ist die FIFO leer, ist kein \texttt{deq} möglich.
 					\item Ist die FIFO voll, ist \texttt{enq} möglich, wenn zeitgleich ein \texttt{deq} stattfindet. \texttt{first} liefert in dem Falle den alten Wert (vor \texttt{enq}).
 				\end{itemize}
 			% end
-			
+
 			\paragraph{Bypass FIFO}
 				\begin{itemize}
 					\item Ist die FIFO leer, ist \texttt{deq} möglich, wenn zeitgleich in \texttt{enq} stattfindet. \texttt{first} liefert in dem Falle den neuen Wert (nach \texttt{enq}).
@@ -342,7 +342,7 @@ endrule
 				\end{itemize}
 			% end
 		% end
-		
+
 		\subsection{Concurrent Registers}
 			\begin{itemize}
 				\item Halten eine Historie von Werten innerhalb eines Taktes
@@ -358,10 +358,10 @@ ports[N - 1]._read < ports[N - 1].write
 					\end{lstlisting}
 			\end{itemize}
 		% end
-		
+
 		\subsection{Attribute}
 			Attribute werden in Runden Klammern mit Sternchen angegeben. Beispiel: \texttt{(* <attribute> *)}
-			
+
 			\subsubsection{Scheduling Attribute}
 				\begin{description}
 					\item[\texttt{descending\_urgency}] Reihenfolge/Priorität der Berechnung der \texttt{WILL\_FIRE} Bedingungen (Dringlichkeit).
@@ -370,7 +370,7 @@ ports[N - 1]._read < ports[N - 1].write
 					\item[\texttt{mutually\_exclusive}] Zusicherung an dem Compiler, dass zwei Regelbedingungen \textit{niemals zeitgleich} wahr sind (bspw. bei One-Hot-Kodierungen).
 				\end{description}
 			% end
-			
+
 			\subsubsection{Synthetisierung Attribute}
 				\begin{description}
 					\item[\texttt{synthesize}] Verhindert das Inlining eines Moduls. Kann nur angewandt werden auf Module, welche ausschließlich Schnittstellen mit Bits, Skalaren und Bit-Vektoren hat (da Verilog weniger mächtig ist als Bluespec).
@@ -409,7 +409,7 @@ ports[N - 1]._read < ports[N - 1].write
 				\end{itemize}
 		\end{enumerate}
 	% end
-	
+
 	\section{Ablauf der Synthese}
 		Siehe \ref{fig:synthesis}.
 
@@ -424,13 +424,13 @@ ports[N - 1]._read < ports[N - 1].write
 				\node [below = 1.5 of stepTech, repr] (reprGate) {optimiertes Gattermodell};
 				\node [right of = stepLogic, node distance = 7cm] (design) {Design-Constraints};
 				\node [right of = stepTech, node distance = 7cm] (tech) {Technologie-Bibliothek};
-				
+
 				\coordinate [below = 1 of reprGate] (after);
 				\coordinate [above left = 1 of stepLogic] (topLeft);
 				\coordinate [above right = 1 of stepLogic] (topRight);
 				\coordinate [below right = 1 of stepTech] (bottomRight);
 				\coordinate [below left = 1 of stepTech] (bottomLeft);
-				
+
 				\draw [-{Latex[length=3mm]}] (reprRtl) -- (stepHdlc);
 				\draw [-{Latex[length=3mm]}] (stepHdlc) -- (reprSec);
 				\draw [-{Latex[length=3mm]}] (reprSec) -- (stepLogic);
@@ -440,7 +440,7 @@ ports[N - 1]._read < ports[N - 1].write
 				\draw [-{Latex[length=3mm]}] (design) -- (stepLogic);
 				\draw [-{Latex[length=3mm]}] (design) -- (stepTech);
 				\draw [-{Latex[length=3mm]}] (tech) -- (stepTech);
-				
+
 				\draw (topLeft) -- (topRight);
 				\draw (topRight) -- (bottomRight);
 				\draw (bottomRight) -- (bottomLeft);
@@ -450,7 +450,7 @@ ports[N - 1]._read < ports[N - 1].write
 			\label{fig:synthesis}
 		\end{figure}
 	% end
-	
+
 	\section{Design Constraints (Einschränkungen)}
 		\begin{itemize}
 			\item Zeit
@@ -472,14 +472,14 @@ ports[N - 1]._read < ports[N - 1].write
 				\end{itemize}
 		\end{itemize}
 	% end
-	
+
 	\section{Verifikation}
 		\subsection{Prä-Synthese-Simulation}
 			\begin{itemize}
 				\item Testen der Implementierung in der HDL (Simulation)
 			\end{itemize}
 		% end
-		
+
 		\subsection{Post-Synthese-Simulation}
 			\begin{itemize}
 				\item Gleiche Testdaten wie bei der Prä-Synthese-Simulation
@@ -493,7 +493,7 @@ ports[N - 1]._read < ports[N - 1].write
 					\end{itemize}
 			\end{itemize}
 		% end
-		
+
 		\subsection{Post-Layout-Simulation}
 			\begin{itemize}
 				\item Gleiche Testdaten wie bei der Prä-/Post-Synthese-Simulation
@@ -524,14 +524,14 @@ ports[N - 1]._read < ports[N - 1].write
 				\end{itemize}
 		\end{itemize}
 	% end
-	
+
 	\section{SIMD Rechnungen mit NEON}
 		\begin{itemize}
 			\item \textit{Single Instruction Multiple Data} (die gleiche Operation wird auf mehreren Daten ausgeführt)
 			\item Wird auch als normale FPU (auf skalaren Daten) genutzt
 		\end{itemize}
 	% end
-	
+
 	\section{Speichersystem}
 		\begin{itemize}
 			\item Prefetching
@@ -564,7 +564,7 @@ ports[N - 1]._read < ports[N - 1].write
 		\end{itemize}
 	% end
 
-	
+
 	\section{Programmierbare Logik}
 		\subsection{Konfigurierbarer Logikblock}
 			\begin{itemize}
@@ -572,7 +572,7 @@ ports[N - 1]._read < ports[N - 1].write
 				\item Verbunden mit der Switch Matrix
 			\end{itemize}
 		% end
-	
+
 		\subsection{Hard Blocks}
 			\begin{itemize}
 				\item Integrierter Speicher (BRAM)
@@ -585,13 +585,13 @@ ports[N - 1]._read < ports[N - 1].write
 			\end{itemize}
 		% end
 	% end
-	
+
 	\section{Hard Core vs. Soft Core}
 		\begin{description}
 			\item[Hard Core] In ASIC erstellter Prozessor.
 			\item[Soft Core] Auf einem FPGA realisierter Prozessor.
 		\end{description}
-		
+
 		\paragraph{Vergleich Hard/Soft Core}
 			\begin{itemize}
 				\item Soft Cores in rekonfigurierbarer Logik
@@ -607,7 +607,7 @@ ports[N - 1]._read < ports[N - 1].write
 			\end{itemize}
 		% end
 	% end
-	
+
 	\section{Schnittstelle PS $ \leftrightarrow $ PL}
 		\paragraph{General Purpose Interface (GP)}
 			\begin{itemize}
@@ -618,7 +618,7 @@ ports[N - 1]._read < ports[N - 1].write
 				\item Cache-inkohärent zu der CPU
 			\end{itemize}
 		% end
-		
+
 		\paragraph{High Performance Interface (HP)}
 			\begin{itemize}
 				\item Hochperformantes AXI-Interface für schnelle Datenübertragung
@@ -628,7 +628,7 @@ ports[N - 1]._read < ports[N - 1].write
 				\item Zugriff immer direkt auf den RAM, belastet nicht den L2-Cache der CPU
 			\end{itemize}
 		% end
-		
+
 		\paragraph{Amber Coherence Protocol Interface (ACP)}
 			\begin{itemize}
 				\item Zugriff auf die SCU (Snoop-Control-Unit)
@@ -638,7 +638,7 @@ ports[N - 1]._read < ports[N - 1].write
 			\end{itemize}
 		% end
 	% end
-	
+
 	\section{AXI4}
 		\subsection{Protokollfamilie}
 			\paragraph{AXI4}
@@ -649,7 +649,7 @@ ports[N - 1]._read < ports[N - 1].write
 					\item Erlaubt effiziente Übertragung von Datengruppen (\textit{burst transfer})
 				\end{itemize}
 			% end
-			
+
 			\paragraph{AXI3-Lite}
 				\begin{itemize}
 					\item Einfacher als AXI4
@@ -658,7 +658,7 @@ ports[N - 1]._read < ports[N - 1].write
 					\item Erlaubt keine Burst-Transfers, sonder nur einzelne Daten
 				\end{itemize}
 			% end
-			
+
 			\paragraph{AXI4-Stream}
 				\begin{itemize}
 					\item Spezialisierte Realisierung (z.B. für Sensoren)
@@ -668,7 +668,7 @@ ports[N - 1]._read < ports[N - 1].write
 				\end{itemize}
 			% end
 		% end
-		
+
 		\subsection{Grundkonzepte AXI4}
 			\begin{itemize}
 				\item Master löst Übertragung aus, Slave reagiert auf die Übertragung
@@ -676,13 +676,13 @@ ports[N - 1]._read < ports[N - 1].write
 				\item Slave nimmt Daten vom Master entgegen bei Schreibzugriff
 				\item Slave liefert Status an Master (über Lesekanal oder extra Rückkanal für Antworten bei Schreibzugriffen)
 			\end{itemize}
-			
-			
+
+
 			Bei einer Burst-Übertragung setzt der Master nur die Start-Adresse, der Slave muss die Folgeadressen selbst bestimmen (bspw. durch inkrementieren).
-			
+
 			Die maximale Länge eines Bursts ist bei AXI4 256 Datensätze (genannt \textit{beats}). Ein Beat kann 1 bis 128 Bytes umfassen.
 		% end
-		
+
 		\subsection{Grundlagen der Signalisierung}
 			\begin{itemize}
 				\item Handshake zwischen Quelle und Ziel von Daten, ausgewertet bei \texttt{@posedge}
@@ -702,7 +702,7 @@ ports[N - 1]._read < ports[N - 1].write
 			\end{itemize}
 		% end
 	% end
-	
+
 	\section{IP-Blöcke}
 		\begin{itemize}
 			\item \enquote{Intellectual Property}
@@ -727,7 +727,7 @@ ports[N - 1]._read < ports[N - 1].write
 				\item[FPGA] Field Programmable Logic Gate Array
 			\end{description}
 		% end
-		
+
 		\subsection{Klassifikation}
 			\begin{description}
 				\item[Commodity ISAs] microController, LPCPUs, Multi-Core CPUs, SoCs
@@ -758,19 +758,19 @@ ports[N - 1]._read < ports[N - 1].write
 					\end{itemize}
 			\end{description}
 		% end
-		
+
 		\subsection{Hardware-Anforderungen}
 			\todo{Slides 17, 18, 19}
 		% end
 	% end
-	
+
 	\section{Moore's Law}
 		\paragraph{Aussage}
 			\textbf{Die Anzahl der Transistoren pro Fläche verdoppelt sich alle zwei Jahre.}
-			
+
 			Hat sich 10 Jahre gehalten!
 		% end
-		
+
 		\paragraph{Ende von Moore's Law}
 			\begin{itemize}
 				\item 2014 wurden 14nm nur knapp erreicht
@@ -779,17 +779,17 @@ ports[N - 1]._read < ports[N - 1].write
 			\end{itemize}
 		% end
 	% end
-	
+
 	\section{Patterson's Walls}
 		\paragraph{Aussage}
 			\textbf{Power Wall + Memory Wall + ILP Wall = Brick Wall}
-			
+
 			Wenn man zwei der Mauern durchbricht, scheitert man an der dritten.
-			
+
 			Des hat sich für alle bisherigen Computersysteme bewahrheitet (Energieeffizienz vs. Performanz, Performanz vs. Speicher, \dots).
 		% end
 	% end
-	
+
 	\section{FPGA Entwicklungsablauf}
 		\begin{enumerate}
 			\item Auswahl oder Bau des FPGAs
@@ -799,17 +799,17 @@ ports[N - 1]._read < ports[N - 1].write
 			\item Platzieren und Verdrahten
 			\item Testen auf echter Hardware
 		\end{enumerate}
-		
+
 		Dabei werden die Schritte 1 und 2 als \enquote{Hardware Bring-Up}, die Schritte 3 und 4 als \enquote{Logikdesign} und die Schritte 5 und 6 als \enquote{Hardware Synthese} bezeichnet.
 	% end
 % end
 
 \chapter{TaPaSCo}
-    \todo{tapasco}
+	\todo{tapasco}
 % end
 
 \chapter{Abkürzungen}
-    \begin{description}
+	\begin{description}
 		\item[ACP] Amber Coherence Protocol
 		\item[ALU] Arithmetic Logical Unit
 		\item[AMBA] Advanced Microcontroller Bus Architecture
@@ -893,5 +893,5 @@ ports[N - 1]._read < ports[N - 1].write
 		\item[USB] Universal Serial Bus
 		\item[VGA] Video Graphics Array
 		\item[VHDL] Very High Speed Integrated Circuit Hardware Description Language
-    \end{description}
+	\end{description}
 % end

@@ -35,9 +35,9 @@ if [[ "$scope" == "all" ]]; then
 fi
 
 # Extract documents from the found files.
+echo "$files"
 echo "$files" | sed -nr 's@^summaries/([^/]+)/([^/]+)/([^/]+)/([^/]+)/.+tex$@"\1 \2 \3 \4"@g p'
 documents="$(echo "$files" | sed -nr 's@^summaries/([^/]+)/([^/]+)/([^/]+)/([^/]+)/.+tex$@"\1 \2 \3 \4"@g p' | sort | uniq)"
 
 # And output the JSON array for GitHub to parse.
-echo "documents=$(echo "$documents" | paste -sd ",")]"
-echo "documents=$(echo "$documents" | paste -sd "," | jq -R 'split(",") | .[] |= tostring' | jq -cM)" >>$GITHUB_OUTPUT
+echo "documents=[$(echo "$documents" | paste -sd ",")]" | tee -a $GITHUB_OUTPUT

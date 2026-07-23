@@ -34,9 +34,10 @@ if [[ "$scope" == "all" ]]; then
     files="$(find . -type f | sed 's@^./@@g')"
 fi
 
-# Extract documents from the found files.
-echo "$files"
-echo "$files" | sed -nr 's@^summaries/([^/]+)/([^/]+)/([^/]+)/([^/]+)/.+tex$@"\1 \2 \3 \4"@g p'
+# Extract existing documents from the found files.
+echo "$files" \
+    | xargs ls -d 2>/dev/null \
+    | sed -nr 's@^summaries/([^/]+)/([^/]+)/([^/]+)/([^/]+)/.+tex$@"\1 \2 \3 \4"@g p'
 documents="$(echo "$files" | sed -nr 's@^summaries/([^/]+)/([^/]+)/([^/]+)/([^/]+)/.+tex$@"\1 \2 \3 \4"@g p' | sort | uniq)"
 
 # And output the JSON array for GitHub to parse.
